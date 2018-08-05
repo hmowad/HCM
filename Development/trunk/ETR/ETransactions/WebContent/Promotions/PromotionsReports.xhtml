@@ -128,7 +128,7 @@
 													</th>
 													<td width="10%">
 														<h:commandButton action="#{promotionsReports.scaleUpJobs()}" title="#{promotionsReports.scaleUpFlag ? msgs.label_cancelScaleUpFlag : msgs.label_scaleUpPromotion}" value="#{promotionsReports.scaleUpFlag ? msgs.fa_toggle_on : msgs.fa_toggle_off} " styleClass="#{promotionsReports.scaleUpFlag ? 'btn_toggleOn' :  'btn_toggleOff'}">
-															<f:ajax execute="promotionsReportsFormId:scaleUpPanelId" render="promotionsReportsFormId:promotionsReportsDataId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															<f:ajax execute="promotionsReportsFormId:promotionsReportsDataId" render="promotionsReportsFormId:promotionsReportsDataId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
 													</td>
 													<th width="15%">
