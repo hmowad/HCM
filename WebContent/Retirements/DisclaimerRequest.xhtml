@@ -1,0 +1,365 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	function getEmployee(contextPath) {
+		var loginEmpDataHkey;
+		if (#{disclaimerRequest.manager}){
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 16, #{disclaimerRequest.mode}, -1, -1, -1, -1,#{disclaimerRequest.loginEmpData.physicalUnitHKey}, -1);
+		}else if(#{disclaimerRequest.admin}){
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, #{disclaimerRequest.mode}, -1, -1, -1, -1,-1, -1);
+		}
+	}
+	
+	function handleEmpMiniSearchResult(ret) {
+		if(ret!=null) { 
+	         document.getElementById('disclaimerRequestFormId:employeeIDId').value=ret[0];
+	         document.getElementById('disclaimerRequestFormId:searchEmpBtnId').click();
+		}
+	}
+
+	function getReviewerEmp(contextPath){
+		openEmpsMiniSearch(contextPath,'handleReviewerEmpMiniSearchResult(ret)', 15, -1, -1, -1, -1, -1, '#{disclaimerRequest.hkeyReviewerEmps}');
+    }
+
+	function handleReviewerEmpMiniSearchResult(ret){
+   	  	if(ret != null){
+   			document.getElementById('disclaimerRequestFormId:reviewerEmpIDId').value = ret[0];
+          	document.getElementById('disclaimerRequestFormId:reviewerEmpNameId').innerHTML = ret[1];
+	        document.getElementById('disclaimerRequestFormId:searchReviewerEmpBtnId').click();
+     	}
+     }
+
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="disclaimerRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{disclaimerRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId" rendered="#{(disclaimerRequest.admin or disclaimerRequest.manager) and disclaimerRequest.role == 'Requester'}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="10%">
+										<h:outputText value="#{disclaimerRequest.mode ==1 ? msgs.label_selectOfficer : (disclaimerRequest.mode == 2 ? msgs.label_selectSoldier : msgs.label_selectPerson)}" />
+									</th>
+									<td width="85%">
+
+										<h:outputText id="employeeNameId" value="#{disclaimerRequest.employee.name}" />
+										<h:inputHidden id="employeeIDId" value="#{disclaimerRequest.employee.empId}" />
+										<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+										<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{disclaimerRequest.getEmployeeData()}">
+											<f:ajax execute="disclaimerRequestFormId:employeeIDId" render="disclaimerRequestFormId:employeeNameId disclaimerRequestFormId:employeeDataPanelId:data  disclaimerRequestFormId:terminationDataPanelId   disclaimerRequestFormId:claimsDataPanelId notifyMessagesId" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp id="employeeDataPanelId" value="#{disclaimerRequest.employee}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_terminationData}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="terminationDataPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_serviceTerminationDate}</th>
+									<td width="25%">
+										<h:outputText value="#{disclaimerRequest.wfDisclaimerData.serviceTerminationDateString}" />
+									</td>
+									<th width="15%">#{msgs.label_terminationReason}</th>
+									<td width="45%">
+										<h:outputText value="#{disclaimerRequest.wfDisclaimerData.terminationReason}" />
+									</td>
+								</tr>
+								<tr>
+									<th>#{msgs.label_rank}</th>
+									<td>
+										<h:outputText value="#{disclaimerRequest.wfDisclaimerData.empRankDesc}" />
+									</td>
+									<th>#{msgs.label_job}</th>
+									<td>
+										<h:outputText value="#{disclaimerRequest.wfDisclaimerData.empJobDesc}" />
+									</td>
+								</tr>
+								<tr>
+									<th>#{msgs.label_officialUnit}</th>
+									<td colspan="3">
+										<h:outputText value="#{disclaimerRequest.wfDisclaimerData.empOfficialUnitFullName}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup rendered="#{disclaimerRequest.payrollReviewer or disclaimerRequest.role == 'Notification'}">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>
+										<h:outputText value="#{msgs.title_claims}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="claimsDataPanelId" rendered="#{disclaimerRequest.payrollReviewer or disclaimerRequest.role == 'ExtraSignManager' or disclaimerRequest.role == 'Notification'}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th colspan="3">
+										<h:outputText align="center" value="#{msgs.label_amountClaimed}" />
+									</th>
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_basicAmount}
+										<font style="display: #{(disclaimerRequest.payrollReviewer and (disclaimerRequest.role == 'SignManager' or disclaimerRequest.role == 'SecondarySignManager') )? '' : 'none'}; color: red;">*</font>
+									</th>
+									<td width="25%">
+										<h:inputText id="basicAmountFieldId" disabled="#{disclaimerRequest.role == 'ExtraSignManager' or disclaimerRequest.role == 'Notification'}" value="#{disclaimerRequest.wfDisclaimerData.basicAmount}" maxlength="7" onkeypress="return isFloat(event,this.value,false);">
+											<f:ajax event="blur" listener="#{disclaimerRequest.updateAmounts()}" execute="@this" render="disclaimerRequestFormId:totalDueAmountId" />
+										</h:inputText>
+									</td>
+									<td width="60%">#{msgs.label_riyals}</td>
+								</tr>
+								<tr>
+									<th>
+										#{msgs.label_allowances}
+										<font style="display: #{(disclaimerRequest.payrollReviewer and (disclaimerRequest.role == 'SignManager' or disclaimerRequest.role == 'SecondarySignManager') )? '' : 'none'}; color: red;">*</font>
+									</th>
+									<td>
+										<h:inputText id="allowancesFieldId" disabled="#{disclaimerRequest.role == 'ExtraSignManager' or disclaimerRequest.role == 'Notification'}" value="#{disclaimerRequest.wfDisclaimerData.allowanceAmount}" maxlength="7" onkeypress="return isFloat(event,this.value,false);">
+											<f:ajax event="blur" listener="#{disclaimerRequest.updateAmounts()}" execute="@this" render="disclaimerRequestFormId:totalDueAmountId" />
+										</h:inputText>
+									</td>
+									<td>#{msgs.label_riyals}</td>
+								</tr>
+								<tr>
+									<th>#{msgs.label_totalDegree}</th>
+									<td>
+										<h:outputText id="totalDueAmountId" value="#{disclaimerRequest.wfDisclaimerData.totalDueAmount}" >
+										<f:convertNumber maxFractionDigits="2" minFractionDigits="2" groupingUsed="false" />
+										</h:outputText>
+									</td>
+									<td>#{msgs.label_riyals}</td>
+								</tr>
+								<tr>
+									<th>#{msgs.label_deductionReason}</th>
+									<td colspan="2">
+										<h:inputText disabled="#{disclaimerRequest.role == 'ExtraSignManager' or disclaimerRequest.role == 'Notification'}" value="#{disclaimerRequest.wfDisclaimerData.deductionReason}" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+								<tr>
+									<th colspan="3">
+										<h:outputText align="center" value="#{msgs.label_governmentClaims}" />
+									</th>
+								</tr>
+								<tr>
+									<th>
+										#{msgs.label_realEstateFundAmount}
+										<font style="display: #{(disclaimerRequest.payrollReviewer and (disclaimerRequest.role == 'SignManager' or disclaimerRequest.role == 'SecondarySignManager') )? '' : 'none'}; color: red;">*</font>
+									</th>
+									<td>
+										<h:inputText id="realEstateFundAmountFieldId" disabled="#{disclaimerRequest.role == 'ExtraSignManager' or disclaimerRequest.role == 'Notification'}" value="#{disclaimerRequest.wfDisclaimerData.realEstateFundAmount}" maxlength="7" onkeypress="return isFloat(event,this.value,false);">
+											<f:ajax event="blur" listener="#{disclaimerRequest.updateAmounts()}" execute="@this" render="disclaimerRequestFormId:totalGovernmentalDueAmountId" />
+										</h:inputText>
+									</td>
+									<td>#{msgs.label_riyals}</td>
+								</tr>
+								<tr>
+									<th>
+										#{msgs.label_creditBankAmount}
+										<font style="display: #{(disclaimerRequest.payrollReviewer and (disclaimerRequest.role == 'SignManager' or disclaimerRequest.role == 'SecondarySignManager') )? '' : 'none'}; color: red;">*</font>
+									</th>
+									<td>
+										<h:inputText id="creditBankAmountFieldId" disabled="#{disclaimerRequest.role == 'ExtraSignManager' or disclaimerRequest.role == 'Notification'}" value="#{disclaimerRequest.wfDisclaimerData.creditBankAmount}" maxlength="7" onkeypress="return isFloat(event,this.value,false);">
+											<f:ajax event="blur" listener="#{disclaimerRequest.updateAmounts()}" execute="@this" render="disclaimerRequestFormId:totalGovernmentalDueAmountId" />
+										</h:inputText>
+									</td>
+									<td>#{msgs.label_riyals}</td>
+								</tr>
+								<tr>
+									<th>
+										#{msgs.lable_otherAmount}
+										<font style="display: #{(disclaimerRequest.payrollReviewer and (disclaimerRequest.role == 'SignManager' or disclaimerRequest.role == 'SecondarySignManager') )? '' : 'none'}; color: red;">*</font>
+									</th>
+									<td>
+										<h:inputText disabled="#{disclaimerRequest.role == 'ExtraSignManager' or disclaimerRequest.role == 'Notification'}" value="#{disclaimerRequest.wfDisclaimerData.otherAmount}" maxlength="7" onkeypress="return isFloat(event,this.value,false);">
+											<f:ajax event="blur" listener="#{disclaimerRequest.updateAmounts()}" execute="@this" render="disclaimerRequestFormId:totalGovernmentalDueAmountId" />
+										</h:inputText>
+									</td>
+									<td>#{msgs.label_riyals}</td>
+								</tr>
+								<tr>
+									<th>#{msgs.label_totalDegree}</th>
+									<td>
+										<h:outputText id="totalGovernmentalDueAmountId" value="#{disclaimerRequest.wfDisclaimerData.totalGovernmentalDueAmount}">
+										<f:convertNumber maxFractionDigits="2" minFractionDigits="2" groupingUsed="false" />
+										</h:outputText>
+									</td>
+									<td>#{msgs.label_riyals}</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<code:prevTasks rendered="#{disclaimerRequest.role != 'Requester'}" value="#{disclaimerRequest.prevTasks}" />
+				</tr>
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{disclaimerRequest.currentEmployee}" rendered="#{disclaimerRequest.role != 'Requester' and disclaimerRequest.role != 'Notification' and disclaimerRequest.role != 'History'}">
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{disclaimerRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{disclaimerRequest.role == 'Notification' or disclaimerRequest.role == 'History'}" value="#{disclaimerRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<h:panelGroup id="redirectPanelId" rendered="#{disclaimerRequest.role != 'ExtraSignManager' and disclaimerRequest.role != 'Requester' and disclaimerRequest.role != 'Notification' and disclaimerRequest.role != 'History'}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_redirectTo}" />
+									</th>
+									<td width="85%">
+										<h:outputText id="reviewerEmpNameId" />
+										<h:inputHidden id="reviewerEmpIDId" value="#{disclaimerRequest.reviewerEmpId}" />
+										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_redirectTo}" onclick="getReviewerEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+										<h:commandButton id="searchReviewerEmpBtnId" style="display:none;">
+											<f:ajax execute="disclaimerRequestFormId:reviewerEmpIDId" />
+										</h:commandButton>
+									</td>
+								</tr>
+
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:panelGroup rendered="#{disclaimerRequest.role=='Requester'}">
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_send}', 'true');" action="#{disclaimerRequest.initProcess()}" value="#{msgs.label_send}  &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{disclaimerRequest.role == 'ReviewerEmp' or disclaimerRequest.role == 'SecondaryReviewerEmp'}">
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_redirect}', 'true');" action="#{disclaimerRequest.doRetirementsRedirectRE()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_review}');" action="#{disclaimerRequest.doRetirementsAprroveRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+
+									</h:panelGroup>
+									<h:panelGroup rendered="#{disclaimerRequest.role == 'SignManager' or disclaimerRequest.role == 'SecondarySignManager'}">
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_redirect}', 'true');" action="#{disclaimerRequest.doRetirementRedirectSM()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton rendered="#{disclaimerRequest.payrollReviewer}" onclick="return handleOnAction('#{msgs.q_claim}', 'true');" action="#{disclaimerRequest.doRetirementClaimSM()}" value="#{msgs.label_claimed} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_disclaim}', 'true');" action="#{disclaimerRequest.doRetirementDisclaimSM()}" value="#{msgs.label_disclaimed} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+
+									<h:panelGroup rendered="#{disclaimerRequest.role=='ExtraSignManager'}">
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_superSign}', 'true');" action="#{disclaimerRequest.doRetirementsAprroveESM()}" value="#{msgs.label_superSign}  &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax />
+										</h:commandButton>
+									</h:panelGroup>
+
+
+									<h:panelGroup rendered="#{disclaimerRequest.role == 'Notification' and disclaimerRequest.instanceApproved == 1}">
+										<h:commandButton action="#{disclaimerRequest.print()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{disclaimerRequest.role == 'Notification'}">
+										<h:commandButton id="nBtnId" action="#{disclaimerRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>
+

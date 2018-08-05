@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+	
+	function getEmp(contextPath) {
+		var categoryId = document.getElementById('retirementsReportsFormId:categoryIDHId').value;
+		openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, categoryId, -1, -1, -1, -1, -1, #{retirementsReports.getLoginEmpPhysicalRegionFlag(true)});
+	}
+
+	function handleEmpMiniSearchResult(ret) {
+		if (ret != null) {
+				if(ret[2] != 1 && ret[2] != 2){
+					alert("#{msgs.error_categoryRestrictedToOfficersAndSoldiersOnly}");
+					return false;
+				}
+					
+				document.getElementById('retirementsReportsFormId:empHId').value = ret[0];
+				document.getElementById('retirementsReportsFormId:empNameId').innerHTML = ret[1];
+		}
+	}
+	  
+  function validateSearchData() {
+  		var empIDHId = document.getElementById('retirementsReportsFormId:empHId').value;
+		
+		if(empIDHId == -1){
+             alert("#{msgs.error_empSelectionManadatory}");
+		    return false;
+		}
+		return true;
+   }	
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="retirementsReportsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{msgs.title_retirementReports}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.title_retirementReports}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="reportsId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:selectOneRadio id="reportTypeId" value="#{retirementsReports.reportType}" layout="pageDirection">
+											<f:selectItem itemLabel="#{msgs.label_sickVacations}" itemValue="10" />
+											<f:selectItem itemLabel="#{msgs.label_regularVacationsStatement}" itemValue="50" />
+											<f:selectItem itemLabel="#{msgs.label_officersServicesSummary}" itemValue="20" />
+											<f:selectItem itemLabel="#{msgs.label_officersServicesStatement}" itemValue="30" />
+											<f:selectItem itemLabel="#{msgs.label_soldiersServicesStatement}" itemValue="40" />
+											
+											<f:ajax event="change" execute="@this" listener="#{retirementsReports.reportTypeChangedListener()}" render="retirementsReportsFormId:categoryIDHId retirementsReportsFormId:searchDataId retirementsReportsFormId:actionsSectionPanelId" />
+										</h:selectOneRadio>
+										<h:inputHidden id="categoryIDHId" value="#{retirementsReports.categoryId}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<h:panelGroup id="searchDataId">
+							<table width="100%" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="70%">#{msgs.label_searchData}</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<th width="20%">
+													<h:outputText value="#{msgs.label_emp}" />
+													<font style="color: red;">*</font>
+												</th>
+												<td width="80%">
+													<h:outputText id="empNameId" />
+													<h:inputHidden id="empHId" value="#{retirementsReports.empId}" />
+													<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmp('#{request.contextPath}');return false;" />
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>		
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsSectionPanelId">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" action="#{retirementsReports.print()}" onclick="return validateSearchData();" styleClass="btn_normal_icon" />
+										<h:commandButton action="#{retirementsReports.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+											<f:ajax render="retirementsReportsFormId:searchDataId retirementsReportsFormId:notifyMessagesId" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

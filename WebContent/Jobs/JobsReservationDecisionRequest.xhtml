@@ -1,0 +1,378 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+	//<![CDATA[
+		function getJob(contextPath){
+			if (#{jobsReservationDecisionRequest.mode} == 1)
+	    		openJobsMiniSearch(contextPath, 'handleJobsMiniSearchResult(ret)', 3, 2, -1, -1,  #{jobsReservationDecisionRequest.regionId}, -1, 1);
+		    else 
+	    		openJobsMiniSearch(contextPath, 'handleJobsMiniSearchResult(ret)', 10, 2, -1, -1, #{jobsReservationDecisionRequest.regionId}, -1, 1);
+		 }
+		 
+		function handleJobsMiniSearchResult(ret){
+			if(ret != null){
+				document.getElementById('jobsReservationDecisionRequestFormId:selectedJobsIdsHId').value = ret[0]; 
+			    document.getElementById('jobsReservationDecisionRequestFormId:searchJobsBtnId').click();
+		    }
+		}
+	
+		function validateRequest() {
+			if (#{jobsReservationDecisionRequest.mode} == 1) {
+				var reservationRemarks = document.getElementById('jobsReservationDecisionRequestFormId:reservationRemarksId').value;
+				if (reservationRemarks == null || reservationRemarks == '') {
+					alert('#{msgs.error_reservationRemarksRequired}');
+					return false;
+				}
+			}
+			return true;
+		}
+	
+		function validateDecisionInfo() {
+			var decisionNumber =  document.getElementById('jobsReservationDecisionRequestFormId:decisionNumberId').value;
+			var decisionDateDay =  document.getElementById('jobsReservationDecisionRequestFormId:decisionDateId:day').value;
+	
+			if (decisionNumber == null || decisionNumber == '' || decisionDateDay == 0) {
+				alert('#{msgs.error_transactionSearchFieldsMandatory}');
+				return false;
+			}
+			return true;			
+		}
+	
+	// ]]>
+	</script>
+
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="jobsReservationDecisionRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{jobsReservationDecisionRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_decisionData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<h:panelGroup rendered="#{jobsReservationDecisionRequest.mode == 1}">
+								<tr>
+									<th width="15%">
+										#{msgs.label_theReservation}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%">
+										<h:selectOneRadio value="#{jobsReservationDecisionRequest.reservationStatus}" disabled="#{jobsReservationDecisionRequest.role != 'Requester' and jobsReservationDecisionRequest.role != 'ReviewerEmp' and jobsReservationDecisionRequest.role != 'SecondaryReviewerEmp'}">
+											<f:selectItem itemLabel="#{msgs.label_reserveJob}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_reserveJobForRecruitment}" itemValue="2" />
+											<f:selectItem itemLabel="#{msgs.label_reserveJobForPromotion}" itemValue="3" />
+										</h:selectOneRadio>
+									</td>
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_refferingTo}</th>
+								<td width="85%">
+									<h:inputText value="#{jobsReservationDecisionRequest.referring}" readonly="#{jobsReservationDecisionRequest.role != 'Requester' and jobsReservationDecisionRequest.role != 'ReviewerEmp' and jobsReservationDecisionRequest.role != 'SecondaryReviewerEmp'}" maxlength="400" styleClass="inputDataSuperLarge" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">#{msgs.label_attachments}</th>
+								<td width="85%">
+									<code:attachments loginEmpId="#{jobsReservationDecisionRequest.loginEmpData.empId}" attachmentId="#{jobsReservationDecisionRequest.attachments}" viewEnableFlag="true" addEnableFlag="#{jobsReservationDecisionRequest.role == 'Requester' or jobsReservationDecisionRequest.role == 'ReviewerEmp' or jobsReservationDecisionRequest.role == 'SecondaryReviewerEmp'}"
+										deleteEnableFlag="#{jobsReservationDecisionRequest.role == 'Requester' or jobsReservationDecisionRequest.role == 'ReviewerEmp' or jobsReservationDecisionRequest.role == 'SecondaryReviewerEmp'}" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_remarks}" />
+									<h:outputText value=" *" style="color: red;" rendered="#{jobsReservationDecisionRequest.mode == 1}" />
+								</th>
+								<td width="85%">
+									<h:inputTextarea id="reservationRemarksId" value="#{jobsReservationDecisionRequest.remarks}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" rows="3" styleClass="inputDataSuperLarge" readonly="#{jobsReservationDecisionRequest.role != 'Requester' and jobsReservationDecisionRequest.role != 'ReviewerEmp' and jobsReservationDecisionRequest.role != 'SecondaryReviewerEmp'}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<h:panelGroup rendered="#{jobsReservationDecisionRequest.role != 'Notification' and jobsReservationDecisionRequest.role != 'History'}">
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_jobs}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<h:panelGroup rendered="#{jobsReservationDecisionRequest.role == 'Requester' or jobsReservationDecisionRequest.role == 'ReviewerEmp' or jobsReservationDecisionRequest.role == 'SecondaryReviewerEmp'}">
+									<tr>
+										<td width="100%" colspan="4">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_notMandatoryJobsTransactionsData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">#{msgs.label_enrollJobsByDecisionNumber}</th>
+													<td width="25%">
+														<h:inputText id="decisionNumberId" value="#{jobsReservationDecisionRequest.decisionNumber}" />
+													</td>
+
+													<th width="15%">#{msgs.label_decisionDate}</th>
+													<td width="25%">
+														<util:hijri id="decisionDateId" value="#{jobsReservationDecisionRequest.decisionDate}" nullable="true" />
+													</td>
+
+													<td width="20%">
+														<h:commandButton onclick="return validateDecisionInfo();" action="#{jobsReservationDecisionRequest.addJobs(true)}" value="#{msgs.label_enroll}" styleClass="btn_normal">
+															<f:ajax execute="jobsReservationDecisionRequestFormId:decisionDateId jobsReservationDecisionRequestFormId:decisionNumberId jobsReservationDecisionRequestFormId:jobsPanelId" render="jobsReservationDecisionRequestFormId:jobsPanelId jobsReservationDecisionRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="jobsPanelId">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+												<tr>
+													<td width="100%">
+														<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+															<tr>
+																<td width="100%">
+																	<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getJob('#{request.contextPath}');return false;" rendered="#{jobsReservationDecisionRequest.role == 'Requester' or jobsReservationDecisionRequest.role == 'ReviewerEmp' or jobsReservationDecisionRequest.role == 'SecondaryReviewerEmp'}" />
+																	<h:commandButton id="searchJobsBtnId" style="display: none;" action="#{jobsReservationDecisionRequest.addJobs(false)}">
+																		<f:ajax execute="jobsReservationDecisionRequestFormId:selectedJobsIdsHId" render="jobsReservationDecisionRequestFormId:jobsTableId jobsReservationDecisionRequestFormId:notifyMessagesId" />
+																	</h:commandButton>
+																	<h:inputHidden id="selectedJobsIdsHId" value="#{jobsReservationDecisionRequest.selectedJobsIds}" />
+																</td>
+															</tr>
+														</table>
+													</td>
+												</tr>
+												<tr>
+													<td width="100%">
+														<rich:dataTable id="jobsTableId" value="#{jobsReservationDecisionRequest.wfJobs}" var="job" rowKeyVar="index" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{jobsReservationDecisionRequest.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+															<rich:column style="width : 10%">
+																<f:facet name="header"> #{msgs.label_jobCode} </f:facet>
+																<h:outputText value="#{job.code}" />
+															</rich:column>
+															<rich:column style="width : 15%">
+																<f:facet name="header"> #{msgs.label_jobName} </f:facet>
+																<h:outputText value="#{job.name}" />
+															</rich:column>
+															<rich:column style="width : 15%">
+																<f:facet name="header"> #{msgs.label_rank} </f:facet>
+																<h:outputText value="#{job.rankDesc}" />
+															</rich:column>
+															<rich:column style="width : 15%">
+																<f:facet name="header"> #{msgs.label_jobMinorSpec} </f:facet>
+																<h:outputText value="#{job.minorSpecializationDesc}" />
+															</rich:column>
+															<rich:column style="width : 40%">
+																<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+																<h:outputText value="#{job.unitFullName}" />
+															</rich:column>
+															<rich:column style="width : 5%" rendered="#{jobsReservationDecisionRequest.role == 'Requester' or jobsReservationDecisionRequest.role == 'ReviewerEmp' or jobsReservationDecisionRequest.role == 'SecondaryReviewerEmp'}">
+																<h:commandButton action="#{jobsReservationDecisionRequest.deleteWFJob(job)}" onclick="return confirm('#{msgs.q_delete}');" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon">
+																	<f:ajax render="jobsReservationDecisionRequestFormId:jobsPanelId jobsReservationDecisionRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																</h:commandButton>
+															</rich:column>
+															<f:facet name="footer">
+																<rich:dataScroller execute="jobsReservationDecisionRequestFormId:jobsTableId" oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+																	<f:facet name="first">#{msgs.label_first}</f:facet>
+																	<f:facet name="last">#{msgs.label_last}</f:facet>
+																	<f:facet name="next">#{msgs.label_next}</f:facet>
+																	<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																</rich:dataScroller>
+															</f:facet>
+														</rich:dataTable>
+													</td>
+												</tr>
+											</table>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:decisionCopies id="decisionCopiesId" external="#{jobsReservationDecisionRequest.externalCopies}" internal="#{jobsReservationDecisionRequest.internalCopies}" viewOnly="#{jobsReservationDecisionRequest.role != 'Requester' and jobsReservationDecisionRequest.role != 'ReviewerEmp' and jobsReservationDecisionRequest.role != 'SecondaryReviewerEmp'}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{jobsReservationDecisionRequest.role != 'Requester'}" value="#{jobsReservationDecisionRequest.prevTasks}" refuseRoles="SignManager,ReviewerEmp,SecondarySignManager,SecondaryReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{jobsReservationDecisionRequest.currentEmployee}" rendered="#{jobsReservationDecisionRequest.role != 'Requester' and jobsReservationDecisionRequest.role != 'Notification' and jobsReservationDecisionRequest.role != 'History'}">
+							<h:panelGroup rendered="#{jobsReservationDecisionRequest.role == 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{jobsReservationDecisionRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{jobsReservationDecisionRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{jobsReservationDecisionRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{jobsReservationDecisionRequest.role == 'SecondaryReviewerEmp' or jobsReservationDecisionRequest.role == 'SecondarySignManager' or jobsReservationDecisionRequest.role == 'ReviewerEmp' or jobsReservationDecisionRequest.role == 'SignManager'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{jobsReservationDecisionRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{jobsReservationDecisionRequest.role == 'Notification' or jobsReservationDecisionRequest.role == 'History'}" value="#{jobsReservationDecisionRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:panelGroup rendered="#{jobsReservationDecisionRequest.role == 'Requester'}">
+										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" action="#{jobsReservationDecisionRequest.initProcess()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{jobsReservationDecisionRequest.role == 'SecondarySignManager'}">
+										<h:commandButton id="approveSsmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;jobsReservationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{jobsReservationDecisionRequest.approveSSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="retSsmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;jobsReservationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;jobsReservationDecisionRequestFormId:curTaskId:notesId&quot;)',null);" action="#{jobsReservationDecisionRequest.modifySSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;jobsReservationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{jobsReservationDecisionRequest.rejectSSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{jobsReservationDecisionRequest.role == 'SecondaryReviewerEmp'}">
+										<h:commandButton id="approveSreBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRequest()',null);" action="#{jobsReservationDecisionRequest.approveSRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<h:commandButton id="rejectSreBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;jobsReservationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{jobsReservationDecisionRequest.rejectSRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{jobsReservationDecisionRequest.role == 'ManagerRedirect'}">
+										<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;jobsReservationDecisionRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{jobsReservationDecisionRequest.redirectMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{jobsReservationDecisionRequest.role == 'ReviewerEmp'}">
+										<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRequest()',null);" action="#{jobsReservationDecisionRequest.approveRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;jobsReservationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{jobsReservationDecisionRequest.rejectRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{jobsReservationDecisionRequest.role == 'SignManager'}">
+										<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;jobsReservationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{jobsReservationDecisionRequest.approveSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;jobsReservationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;jobsReservationDecisionRequestFormId:curTaskId:notesId&quot;)',null);" action="#{jobsReservationDecisionRequest.modifySM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;jobsReservationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{jobsReservationDecisionRequest.rejectSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{jobsReservationDecisionRequest.role == 'Notification' and jobsReservationDecisionRequest.instanceApproved == 1}">
+										<h:commandButton id="printBtnId" action="#{jobsReservationDecisionRequest.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{jobsReservationDecisionRequest.role == 'Notification'}">
+										<h:commandButton id="nBtnId" action="#{jobsReservationDecisionRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+
+		function getDelegator(contextPath){
+	  	  openEmployeesMiniSearch(contextPath, 'handleDelegatorMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{wfTasksDelegation.getLoginEmpPhysicalRegionFlag(true)});
+	    }
+	      
+	    function handleDelegatorMiniSearchResult(ret){ 
+	        if(ret != null){
+		          document.getElementById('wfTasksDelegationForm:delegatorIdId').value = ret[0];
+		          document.getElementById('wfTasksDelegationForm:delegatorNameId').innerHTML = ret[1];
+		          document.getElementById('wfTasksDelegationForm:delegatorRegionId').value = ret[3];
+		          document.getElementById('wfTasksDelegationForm:delegatorSearchBtnId').click();
+		      }
+	    }
+    
+         function getDelegatee(contextPath){
+	       	 openEmployeesMiniSearch(contextPath, 'handleDelegateeMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, document.getElementById('wfTasksDelegationForm:delegatorRegionId').value);
+         }
+         
+         function handleDelegateeMiniSearchResult(ret){
+       	  	if(ret != null){
+       			document.getElementById('wfTasksDelegationForm:delegateeIdId').value = ret[0];
+	          	document.getElementById('wfTasksDelegationForm:delegateeNameId').innerHTML = ret[1];
+         	}
+         }
+
+         var selectedTasksCount = 0;
+         function updateSelectedTasksCount(checked, allFlag) {
+            var totalNumberOfTasks = document.getElementById('wfTasksDelegationForm:tasksListSizeHId').value;
+ 			if (allFlag) {
+ 				if (checked)
+ 	                selectedTasksCount = totalNumberOfTasks;
+ 	            else 
+ 	                selectedTasksCount = 0;
+ 			} else {
+ 				if (checked) {
+ 	                selectedTasksCount++;
+ 	                if (totalNumberOfTasks == selectedTasksCount)
+ 	                	document.getElementById('wfTasksDelegationForm:tasksId:selectAllCheckboxId').checked = true;
+ 				} else {
+ 	                selectedTasksCount--;
+ 	                document.getElementById('wfTasksDelegationForm:tasksId:selectAllCheckboxId').checked = false;
+ 				}
+ 			}
+         }
+
+         function validateDelegation(){
+            if(selectedTasksCount == 0){
+                 alert('#{msgs.error_selectTasksForDelegation}');
+                 return false;
+            }
+
+            var delegatorId = document.getElementById('wfTasksDelegationForm:delegatorIdId').value;
+    		if(delegatorId == -1){
+    			alert('#{msgs.error_employeeMandatory}');
+                return false;
+    		}
+
+            var delegateeId = document.getElementById('wfTasksDelegationForm:delegateeIdId').value;
+    		if(delegateeId == -1){
+    			alert('#{msgs.error_delegateeMandatory}');
+                return false;
+    		}
+
+    		if(delegatorId == delegateeId){
+    			alert('#{msgs.error_CannotDelegateToTheSameEmployee}');
+                return false;
+    		}
+
+ 			return true;
+         }
+
+    </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="wfTasksDelegationForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_wfTasksDelegationSystemAdmin}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td>
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_selectEmp}" />
+								</th>
+								<td width="85%">
+									<h:outputText id="delegatorNameId" value="#{wfTasksDelegation.searchByDelegatorName}" />
+									<h:inputHidden id="delegatorIdId" value="#{wfTasksDelegation.searchByDelegatorId}" />
+									<h:inputHidden id="delegatorRegionId" value="#{wfTasksDelegation.searchByDelegatorRegionId}" />
+									<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getDelegator('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+									<h:commandButton id="delegatorSearchBtnId" action="#{wfTasksDelegation.searchByDelegatorId}" style="display: none;">
+										<f:ajax execute="wfTasksDelegationForm:delegatorIdId wfTasksDelegationForm:delegatorRegionId"
+												render="wfTasksDelegationForm:tasksId wfTasksDelegationForm:tasksListSizeHId wfTasksDelegationForm:notifyMessagesId" 
+												onevent="function(e){if(e.status == 'complete') selectedTasksCount = 0; }" />
+									</h:commandButton>
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_searchBy}" />
+								</th>
+								<td width="85%">
+									<h:selectOneMenu value="#{wfTasksDelegation.selectedProcessGroupId}">
+										<f:selectItem itemLabel="#{msgs.label_searchByModule}" itemValue="0" />
+										<f:selectItems value="#{wfTasksDelegation.processesGroups}" var="pG" itemLabel="#{pG.processGroupName}" itemValue="#{pG.processGroupId}" />
+
+										<f:ajax event="change" listener="#{wfTasksDelegation.searchProcesses}" execute="@this"
+										        render="wfTasksDelegationForm:processesId wfTasksDelegationForm:tasksId wfTasksDelegationForm:tasksListSizeHId wfTasksDelegationForm:notifyMessagesId" 
+												onevent="function(e){if(e.status == 'complete') selectedTasksCount = 0; }" />
+									</h:selectOneMenu>
+
+									<h:selectOneMenu id="processesId" value="#{wfTasksDelegation.selectedProcessId}">
+										<f:selectItem itemLabel="#{msgs.label_searchByProcess}" itemValue="0" />
+										<f:selectItems value="#{wfTasksDelegation.processes}" var="p" itemLabel="#{p.processName}" itemValue="#{p.processId}" />
+
+										<f:ajax event="change" listener="#{wfTasksDelegation.searchByProcess}" execute="@this"
+												render="wfTasksDelegationForm:tasksId wfTasksDelegationForm:tasksListSizeHId wfTasksDelegationForm:notifyMessagesId" 
+												onevent="function(e){if(e.status == 'complete') selectedTasksCount = 0; }" />
+									</h:selectOneMenu>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_currentProcesses}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="tasksId" rowKeyVar="index" var="task" value="#{wfTasksDelegation.tasks}" rows="#{wfTasksDelegation.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<!-- CheckBoxes Selection Column -->
+							<rich:column>
+								<f:facet name="header">
+									<h:selectBooleanCheckbox id="selectAllCheckboxId" value="#{wfTasksDelegation.selectAll}" onchange="updateSelectedTasksCount(this.checked, true)">
+										<a4j:ajax event="change" listener="#{wfTasksDelegation.selectUnselectAllRows()}" render="wfTasksDelegationForm:tasksId" oncomplete="unMaskScreen()"/>
+									</h:selectBooleanCheckbox>
+								</f:facet>
+								
+								<h:selectBooleanCheckbox value="#{task.selected}" onchange="updateSelectedTasksCount(this.checked, false)" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_taskId}" />
+								</f:facet>
+								<h:outputText value="#{task.taskId}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_processName}" />
+								</f:facet>
+								<h:outputText value="#{task.processName}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_processRequester}" />
+								</f:facet>
+								<h:outputText value="#{task.taskOwnerName}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_requesterRefernce}" />
+								</f:facet>
+								<h:outputText value="#{task.requesterReferenceRankDesc} #{task.requesterReferenceRankDesc == null ? '' : '/'} #{task.requesterReferenceName}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_taskDate}" />
+								</f:facet>
+								<h:outputText value="#{task.hijriAssignDateString}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_delegatingName}" />
+								</f:facet>
+								<h:outputText value="#{task.delegatingName}" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller execute="tasksId" oncomplete="unMaskScreen()" fastControls="hide">
+									<f:facet name="first"> #{msgs.label_first} </f:facet>
+									<f:facet name="last"> #{msgs.label_last} </f:facet>
+									<f:facet name="next"> #{msgs.label_next} </f:facet>
+									<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td>
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_selectDelegatee}" /> <font style="color: red;">*</font>
+								</th>
+								<td width="85%">
+									<h:outputText id="delegateeNameId" value="#{wfTasksDelegation.delegateeName}" />
+									<h:inputHidden id="delegateeIdId" value="#{wfTasksDelegation.delegateeId}" />
+									<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectDelegatee}" onclick="getDelegatee('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+								</td>
+							</tr>
+							
+						</table>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+								    <h:inputHidden id="tasksListSizeHId" value="#{wfTasksDelegation.tasksListSize}" />
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_delegateNOfTasks}'.format(selectedTasksCount), 'validateDelegation()');" action="#{wfTasksDelegation.delegateTasks()}" value="#{msgs.label_delegation} &nbsp; #{msgs.fa_external_link}" styleClass="btn_normal_icon">
+										<f:ajax execute="wfTasksDelegationForm:delegatorIdId wfTasksDelegationForm:delegateeIdId wfTasksDelegationForm:tasksId"
+												render="wfTasksDelegationForm:tasksId wfTasksDelegationForm:tasksListSizeHId wfTasksDelegationForm:notifyMessagesId" 
+												onevent="function(e){if(e.status == 'complete') selectedTasksCount = 0; }" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

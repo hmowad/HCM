@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<style>
+.position-center, .inner-body {
+	margin: 0px !important;
+	padding: 0px !important;
+	min-height: inherit !important;
+	width: 100% !important;
+}
+</style>
+
+	<script type="text/javascript">
+		window.onkeypress = function(e) {
+			// window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+			if (keyCode == '13') {
+				document.getElementById('loginForm:loginBtnId').click();
+				return false;
+			}
+		};
+
+		function initPage() {
+			var userName = document.getElementById('loginForm:userNameId');
+			userName.focus();
+		}
+
+		function validateData() {
+			var userName = document.getElementById('loginForm:userNameId').value;
+			var password = document.getElementById('loginForm:passwordId').value;
+
+			if (userName == null || userName == ''
+					|| userName == '#{msgs.label_userName}' || password == null
+					|| password == '' || password == '#{msgs.label_password}') {
+				alert(document.getElementById('namePasswordMandatoryId').value);
+				return false;
+			}
+
+			return true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg" onload="initPage();">
+	<f:event type="preRenderComponent" listener="#{login.init}" />
+	<h:form id="loginForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/PlainTemplate.xhtml">
+			<table style="height: 100%" border="0" cellpadding="0" cellspacing="0" width="100%" class="loginBG">
+				<tr>
+					<td align="center">
+						<div class="logo-pagelogin">
+							<h3 class="textlogo-login">
+								<h:outputText value="#{msgs.title_etrTitle}" rendered="#{request.contextPath != msgs.module_hcm}" />
+								<h:outputText value="#{msgs.title_hcmTitle}" rendered="#{request.contextPath == msgs.module_hcm}" />
+							</h3>
+							<img src="../resources/images/logo.png" class="fright" />
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<br />
+						<table class="userPass_Tb" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<table border="0" cellpadding="0" cellspacing="0" class="userPass_TbText">
+										<tr>
+											<td align="center">
+												<h:outputText id="errorMessageId" value="#{login.serverSideErrorMessages}" styleClass="errorMessage" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<h:inputText id="userNameId" value="#{login.username}" styleClass="input-login">
+													<rich:placeholder value="#{msgs.label_userName}" styleClass="placeholder-password-username"></rich:placeholder>
+												</h:inputText>
+											</td>
+										</tr>
+										<tr>
+											<td height="15px"></td>
+										</tr>
+										<tr>
+											<td>
+												<h:inputSecret id="passwordId" value="#{login.password}" styleClass="input-login">
+													<rich:placeholder value="#{msgs.label_password}" styleClass="placeholder-password-username"></rich:placeholder>
+												</h:inputSecret>
+											</td>
+										</tr>
+										<tr>
+											<td height="10px"></td>
+										</tr>
+										<tr>
+											<td class="textleft">
+												<h:commandButton id="loginBtnId" onclick="return validateData();" action="#{login.login}" value="#{msgs.label_login} &nbsp; #{msgs.fa_sign_in}" styleClass="btn-login">
+													<f:ajax render="errorMessageId" execute="@form" />
+												</h:commandButton>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<div class="kindly-massage-loginpage">#{msgs.label_login_note1}</div>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr align="center">
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%" style="text-align: center;" class="footer">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_version} #{login.versionNumber}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h:outputText value="#{login.versionYear}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_complainsMail}" />
+									<br />
+									<br />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="140" />
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="namePasswordMandatoryId" value="#{msgs.error_userNameAndPasswordMandatory}" />
+</h:body>
+</html>

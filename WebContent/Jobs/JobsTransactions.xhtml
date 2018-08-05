@@ -1,0 +1,978 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">   
+		var callerId;
+		function getMinorSpec(contextPath, cId) {
+			callerId=cId;
+			if (#{jobsTransactions.mode} == 3)
+				minorSpecializationsMiniSearch(contextPath,'handleMinorSpecializationMiniSearchResult(ret)', 2, 0);
+			else
+				minorSpecializationsMiniSearch(contextPath,'handleMinorSpecializationMiniSearchResult(ret)', 1, 0);
+		}
+		
+		function handleMinorSpecializationMiniSearchResult(ret){
+			if (ret != null) {
+				var idTokens = callerId.split(':');
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobMinorSpecializationIDId').value = ret[0];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobMinorSpecializationCodeId').value = ret[1];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobMinorSpecializationDescriptionHId').value = ret[2];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobMinorSpecializationDescriptionId').innerHTML = ret[2];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobGeneralSpecializationHId').value = ret[6];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobGeneralTypeHId').value = ret[7];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobMinorSpecializationBtnId').click();
+			}
+		}
+
+		function getNewMinorSpec(contextPath, cId) {
+			callerId=cId;
+			if (#{jobsTransactions.mode} == 3)
+				minorSpecializationsMiniSearch(contextPath,'handleNewMinorSpecializationMiniSearchResult(ret)', 2, 0);
+			else
+				minorSpecializationsMiniSearch(contextPath,'handleNewMinorSpecializationMiniSearchResult(ret)', 1, 0);
+		}
+		
+		function handleNewMinorSpecializationMiniSearchResult(ret){
+			if (ret != null) {
+				var idTokens = callerId.split(':');
+				document.getElementById('jobsTransactionsFormId:minorSpecsModifiedJobsTableId:' + idTokens[2] + ':jobNewMinorSpecializationIDId').value = ret[0];
+				document.getElementById('jobsTransactionsFormId:minorSpecsModifiedJobsTableId:' + idTokens[2] + ':jobNewMinorSpecializationDescriptionHId').value = ret[2];
+				document.getElementById('jobsTransactionsFormId:minorSpecsModifiedJobsTableId:' + idTokens[2] + ':jobNewMinorSpecializationDescriptionId').innerHTML = ret[2];
+				document.getElementById('jobsTransactionsFormId:minorSpecsModifiedJobsTableId:' + idTokens[2] + ':jobNewGeneralSpecializationHId').value = ret[6];
+				document.getElementById('jobsTransactionsFormId:minorSpecsModifiedJobsTableId:' + idTokens[2] + ':jobNewGeneralTypeHId').value = ret[7];
+			}
+		}
+		
+		function getUnit(contextPath, cId) {
+			callerId=cId;
+			var idTokens = callerId.split(':');
+			openUnitsMiniSearch(2, '#{request.contextPath}','handleUnitMiniSearchResult(ret)', -1, -1, -1);
+		}
+		
+		function handleUnitMiniSearchResult(ret){
+			if (ret != null) {
+				var idTokens = callerId.split(':');
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobUnitIDId').value = ret[0];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobUnitFullNameHId').value = ret[1];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobUnitFullNameId').innerHTML = ret[1];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobUnitRegionIDId').value = ret[4];
+			}
+		}
+
+		
+		function getJobClassification(contextPath, cId) {
+			callerId=cId;
+			var idTokens = callerId.split(':');
+
+			var	rankCode = document.getElementById('jobsTransactionsFormId:newJobsTableId:'+ idTokens[2] + ':jobRankId').value;
+			if (rankCode == '') {
+				alert('#{msgs.error_insertJobRankFirst}');
+				return;
+			}
+			openJobClassificationsMiniSearch(contextPath,'handleJobClassificationMiniSearchResult(ret)', rankCode);
+		}
+		
+		function handleJobClassificationMiniSearchResult(ret){
+			if (ret != null) {
+				var idTokens = callerId.split(':');
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:'+ idTokens[2] + ':jobClassificationIDId').value = ret[0];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:'+ idTokens[2] + ':jobClassificationCodeHId').value = ret[1];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:'+ idTokens[2] + ':jobClassificationCodeId').innerHTML = ret[1];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:'+ idTokens[2] + ':jobClassificationDescription').value = ret[2];
+			}
+		}
+	
+		function getNewJobClassification(contextPath, cId) {
+			callerId=cId;
+			var idTokens = callerId.split(':');
+			rankCode = document.getElementById('jobsTransactionsFormId:modifiedJobsTableId:'+ idTokens[2] + ':jobRankCodeId').value;
+			newRankCode = document.getElementById('jobsTransactionsFormId:modifiedJobsTableId:'+ idTokens[2] + ':newPersonRankId').value;
+			if (newRankCode == '-1') {
+				openJobClassificationsMiniSearch(contextPath,'handleNewJobClassificationMiniSearchResult(ret)', rankCode);
+			} else {
+				openJobClassificationsMiniSearch(contextPath,'handleNewJobClassificationMiniSearchResult(ret)', newRankCode);
+			}
+		}
+		
+		function handleNewJobClassificationMiniSearchResult(ret){
+			if (ret != null) {
+				var idTokens = callerId.split(':');
+				document.getElementById('jobsTransactionsFormId:modifiedJobsTableId:' + idTokens[2] + ':jobNewClassificationIDId').value = ret[0];
+				document.getElementById('jobsTransactionsFormId:modifiedJobsTableId:' + idTokens[2] + ':jobNewClassificationCodeHId').value = ret[1];
+				document.getElementById('jobsTransactionsFormId:modifiedJobsTableId:' + idTokens[2] + ':jobNewClassificationCodeId').innerHTML = ret[1];
+				document.getElementById('jobsTransactionsFormId:modifiedJobsTableId:' + idTokens[2] + ':jobNewClassificationDescriptionId').value = ret[2];
+			}
+		}
+		
+		function getNewUnit(contextPath, cId) {
+			callerId=cId;
+			var idTokens = callerId.split(':');
+			openUnitsMiniSearch(2, '#{request.contextPath}','handleNewUnitMiniSearchResult(ret)', -1, -1, -1);
+		}
+		
+		function handleNewUnitMiniSearchResult(ret){
+			if (ret != null) {
+				var idTokens = callerId.split(':');
+				document.getElementById('jobsTransactionsFormId:movedJobsTableId:' + idTokens[2] + ':jobNewUnitIDId').value = ret[0];
+				document.getElementById('jobsTransactionsFormId:movedJobsTableId:' + idTokens[2] + ':jobNewUnitFullNameHId').value = ret[1];
+				document.getElementById('jobsTransactionsFormId:movedJobsTableId:' + idTokens[2] + ':jobNewUnitFullNameId').innerHTML = ret[1];
+				document.getElementById('jobsTransactionsFormId:movedJobsTableId:' + idTokens[2] + ':jobNewUnitRegionIdHId').value = ret[4];
+			}
+		}
+		
+		function getModifiedJob(contextPath) {
+			openJobsMiniSearch(contextPath,'handleModifiedJobsMiniSearchResult(ret)',1,#{jobsTransactions.mode},-1,-1,-1,-1,1);
+	    }
+      
+        function handleModifiedJobsMiniSearchResult(ret){
+        	if(ret != null){
+        		 document.getElementById('jobsTransactionsFormId:selectedJobsIDsId').value=ret[0];
+   				 document.getElementById('jobsTransactionsFormId:searchModifiedJobsBtnId').click();
+        	}
+        }
+
+        function getMinorSpecsModifiedJob(contextPath) {
+			openJobsMiniSearch(contextPath,'handleMinorSpecsModifiedJobsMiniSearchResult(ret)',11,#{jobsTransactions.mode},-1,-1,-1,-1,1);
+	    }
+      
+        function handleMinorSpecsModifiedJobsMiniSearchResult(ret){
+        	if(ret != null){
+        		 document.getElementById('jobsTransactionsFormId:selectedJobsIDsId').value=ret[0];
+   				 document.getElementById('jobsTransactionsFormId:searchMinorSpecsModifiedJobsBtnId').click();
+        	}
+        }
+        
+        function getFreezedJob(contextPath) {
+        	openJobsMiniSearch(contextPath,'handleFreezedJobsMiniSearchResult(ret)',2,#{jobsTransactions.mode},-1,-1,-1,-1,1);
+        }
+        
+        function handleFreezedJobsMiniSearchResult(ret){
+        	if(ret != null){
+        	 document.getElementById('jobsTransactionsFormId:selectedJobsIDsId').value=ret[0];
+    		 document.getElementById('jobsTransactionsFormId:searchFreezedJobsBtnId').click();
+        	}
+        }
+        
+        function getUnFreezedJob(contextPath) {
+        	openJobsMiniSearch(contextPath,'handleUnFreezedJobsMiniSearchResult(ret)',4,#{jobsTransactions.mode},-1,-1,-1,-1,1);
+        }
+        
+        function handleUnFreezedJobsMiniSearchResult(ret){
+        	if(ret != null){
+        	 document.getElementById('jobsTransactionsFormId:selectedJobsIDsId').value=ret[0];
+       		 document.getElementById('jobsTransactionsFormId:searchUnfreezedJobsBtnId').click();
+        	}
+        }
+        
+        function getMovedJob(contextPath) {
+        	openJobsMiniSearch(contextPath,'handleMovedJobsMiniSearchResult(ret)',1,#{jobsTransactions.mode},-1,-1,-1,-1,1);
+        }
+        
+        function handleMovedJobsMiniSearchResult(ret){
+        	if(ret != null){
+        	 document.getElementById('jobsTransactionsFormId:selectedJobsIDsId').value=ret[0];
+       		 document.getElementById('jobsTransactionsFormId:searchMovedJobsBtnId').click();
+        	}
+        }
+        
+        function getCancelledJob(contextPath) {
+        	openJobsMiniSearch(contextPath,'handleCancelledJobsMiniSearchResult(ret)',3,#{jobsTransactions.mode},-1,-1,-1,-1,1);
+        }
+        
+        function handleCancelledJobsMiniSearchResult(ret){
+        	if(ret != null){
+        	 document.getElementById('jobsTransactionsFormId:selectedJobsIDsId').value=ret[0];
+       		 document.getElementById('jobsTransactionsFormId:searchCancelledJobsBtnId').click();
+        	}
+        }
+
+        function getBasicJobName(contextPath, cId){
+        	callerId = cId;
+			openBasicJobsNamesMiniSearch(contextPath, 'handleBasicJobsNamesMiniSearchResult(ret)', 1, #{jobsTransactions.mode}, 0);
+		}
+		 
+		function handleBasicJobsNamesMiniSearchResult(ret){
+			if(ret != null){
+				var idTokens = callerId.split(':');
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobNameId').innerHTML = ret[1];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobNameHId').value = ret[1];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobCategoryHId').value = ret[2];
+				if (#{jobsTransactions.mode} == 3)
+					document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':changeJobNameBtnId').click();
+		    }
+		}
+
+		function getNewBasicJobName(contextPath, cId){
+			callerId = cId;
+			var idTokens = callerId.split(':');
+			// couldn't change the category of the job when renaming it so open it with the same category.
+			var categoryId = document.getElementById(idTokens[0] + ':' + idTokens[1] + ':' + idTokens[2] + ':jobCategoryHId').value;
+			openBasicJobsNamesMiniSearch(contextPath, 'handleNewBasicJobsNamesMiniSearchResult(ret)', 3, categoryId, 0);
+		}
+		 
+		function handleNewBasicJobsNamesMiniSearchResult(ret){
+			if(ret != null){
+				var idTokens = callerId.split(':');
+				document.getElementById(idTokens[0] + ':' + idTokens[1] + ':' + idTokens[2] + ':jobNewNameId').innerHTML = ret[1];
+				document.getElementById(idTokens[0] + ':' + idTokens[1] + ':' + idTokens[2] + ':jobNewNameHId').value = ret[1];
+		    }
+		}
+
+   </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<ui:debug />
+	<h:form id="jobsTransactionsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<h:panelGroup id="mainPanelId">
+				<table border="0" cellpadding="0" cellspacing="0" width="100%">
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td class="screenTitle">#{jobsTransactions.screenTitle}</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_decisionData}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="decisionDataPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th>
+											#{msgs.label_decisionNumber}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<h:inputText id="decisionNumber" value="#{jobsTransactions.decisionNumber}" />
+										</td>
+										<th>#{msgs.label_decisionDate}</th>
+										<td>
+											<util:hijri id="decisionDate" value="#{jobsTransactions.decisionDate}"></util:hijri>
+										</td>
+										<th>#{msgs.label_executionDate}</th>
+										<td>
+											<util:hijri id="executionDate" value="#{jobsTransactions.executionDate}"></util:hijri>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="newJobsPanelId">
+								<rich:collapsiblePanel switchType="client" expanded="true" header="#{jobsTransactions.mode == 1 ? (msgs.label_addNewOfficerJob) : (jobsTransactions.mode == 2 ? (msgs.label_addNewSoldierJob) : (msgs.label_addNewPersonJob))}">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td width="100%">
+															<h:commandButton action="#{jobsTransactions.addNewJob()}" value="#{msgs.label_add}" styleClass="btn_normal">
+																<f:ajax execute="jobsTransactionsFormId:newJobsTableId jobsTransactionsFormId:newJobDetailsPanelId" render="jobsTransactionsFormId:newJobsTableId jobsTransactionsFormId:newJobDetailsPanelId jobsTransactionsFormId:notifyMessagesId" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%">
+												<rich:dataTable id="newJobsTableId" value="#{jobsTransactions.newJobs}" var="job" rows="#{jobsTransactions.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+													<rich:column style="width : 5%;">
+														<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_select}" onclick="changeSelectedRowStyle(this.parentElement.parentElement);" action="#{jobsTransactions.selectNewJob(job)}" styleClass="btn_icon">
+															<f:ajax execute="jobsTransactionsFormId:newJobDetailsPanelId" render="jobsTransactionsFormId:newJobDetailsPanelId jobsTransactionsFormId:notifyMessagesId" />
+														</h:commandButton>
+													</rich:column>
+													<rich:column style="width : #{jobsTransactions.mode == 3 ? 5 : 10}%;">
+														<f:facet name="header"> #{msgs.label_jobCode} </f:facet>
+														<h:outputText value="#{job.code}" />
+													</rich:column>
+													<rich:column style="width : 5%;" rendered="#{jobsTransactions.mode == 3}">
+														<f:facet name="header"> #{msgs.label_jobSequence} <font style="color: red;">*</font>
+														</f:facet>
+														<h:inputText value="#{job.sequence}" maxlength="5" onkeypress="return isDigit(event);" styleClass="inputDataLarge" />
+													</rich:column>
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{msgs.label_jobName} <font style="color: red;">*</font>
+														</f:facet>
+														<h:outputText id="jobNameId" value="#{job.name}" />
+														<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getBasicJobName('#{request.contextPath}',this.id);return false;" />
+														<h:inputHidden id="jobNameHId" value="#{job.name}" />
+														<h:inputHidden id="jobCategoryHId" value="#{job.categoryId}" />
+														<h:commandButton id="changeJobNameBtnId" style="display: none;" action="#{jobsTransactions.jobNameChanged(job)}">
+															<f:ajax execute="jobsTransactionsFormId:newJobsTableId jobsTransactionsFormId:newJobDetailsPanelId" render="jobsTransactionsFormId:newJobsTableId jobsTransactionsFormId:newJobDetailsPanelId jobsTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</rich:column>
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{jobsTransactions.mode==3 ? msgs.label_personRank : msgs.label_rank} <font style="color: red;">*</font>
+														</f:facet>
+														<h:selectOneMenu value="#{job.rankId}" rendered="#{(jobsTransactions.mode==1 or jobsTransactions.mode==2)}">
+															<f:selectItem itemLabel="" itemValue="" />
+															<f:selectItems value="#{jobsTransactions.ranks}" var="rank" itemValue="#{rank.id}" itemLabel="#{rank.description}" />
+														</h:selectOneMenu>
+														<h:selectOneMenu id="jobRankId" value="#{job.rankId}" rendered="#{jobsTransactions.mode==3}" disabled="#{job.categoryId == null}">
+															<f:ajax event="change" listener="#{jobsTransactions.jobRankChanged(job)}" execute="jobsTransactionsFormId:newJobsTableId" render="jobsTransactionsFormId:newJobsTableId jobsTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+															<f:selectItem itemLabel="" itemValue="" />
+															<f:selectItems value="#{jobsTransactions.getJobsRanks(job.categoryId)}" var="rank" itemValue="#{rank.id}" itemLabel="#{rank.description}" />
+														</h:selectOneMenu>
+													</rich:column>
+													<rich:column style="width : 10%;" rendered="#{jobsTransactions.mode == 3}">
+														<f:facet name="header"> #{msgs.label_jobClass} <font style="color: red;">*</font>
+														</f:facet>
+														<h:outputText id="jobClassificationCodeId" value="#{job.classificationJobCode}" />
+														<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" disabled="#{job.categoryId != 3 or job.rankId == null}" onclick="getJobClassification('#{request.contextPath}',this.id); return false;" />
+														<h:inputHidden id="jobClassificationIDId" value="#{job.classificationId}" rendered="#{jobsTransactions.mode == 3}" />
+														<h:inputHidden id="jobClassificationCodeHId" value="#{job.classificationJobCode}" rendered="#{jobsTransactions.mode == 3}" />
+														<h:inputHidden id="jobClassificationDescription" value="#{job.classificationJobDescription}" rendered="#{jobsTransactions.mode == 3}" />
+													</rich:column>
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{msgs.label_jobMinorSpec} <font style="color: red;">*</font>
+														</f:facet>
+														<h:outputText id="jobMinorSpecializationDescriptionId" value="#{job.minorSpecializationDescription}" />
+														<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getMinorSpec('#{request.contextPath}',this.id);return false;" />
+														<h:inputHidden id="jobMinorSpecializationIDId" value="#{job.minorSpecializationId}" />
+														<h:inputHidden id="jobMinorSpecializationCodeId" value="#{job.minorSpecializationCode}" />
+														<h:inputHidden id="jobMinorSpecializationDescriptionHId" value="#{job.minorSpecializationDescription}" />
+														<h:inputHidden id="jobGeneralSpecializationHId" value="#{job.generalSpecialization}" />
+														<h:inputHidden id="jobGeneralTypeHId" value="#{job.generalType}" />
+														<h:commandButton id="jobMinorSpecializationBtnId" style="display: none;">
+															<f:ajax execute="jobsTransactionsFormId:newJobsTableId" render="jobsTransactionsFormId:newJobsTableId jobsTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+														</h:commandButton>
+													</rich:column>
+													<rich:column style="width :25%;">
+														<f:facet name="header"> #{msgs.label_orgUnit} <font style="color: red;">*</font>
+														</f:facet>
+														<h:outputText id="jobUnitFullNameId" value="#{job.unitFullName}" />
+														<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getUnit('#{request.contextPath}',this.id);return false;" />
+														<h:inputHidden id="jobUnitRegionIDId" value="#{job.regionId}" />
+														<h:inputHidden id="jobUnitIDId" value="#{job.unitId}" />
+														<h:inputHidden id="jobUnitFullNameHId" value="#{job.unitFullName}" />
+													</rich:column>
+													<rich:column rendered="#{jobsTransactions.mode != 3}" style="width : 5%;">
+														<f:facet name="header"> #{msgs.label_generalSpec} <font style="color: red;">*</font>
+														</f:facet>
+														<h:outputText rendered="#{job.generalSpecialization == 1}" value="#{msgs.label_overland}" />
+														<h:outputText rendered="#{job.generalSpecialization == 2}" value="#{msgs.label_naval}" />
+														<h:outputText rendered="#{job.generalSpecialization == 3}" value="#{msgs.label_aerial}" />
+													</rich:column>
+													<rich:column style="width : 5%;">
+														<f:facet name="header"> #{msgs.label_generalType} <font style="color: red;">*</font>
+														</f:facet>
+														<h:outputText rendered="#{job.generalType == 1}" value="#{msgs.label_jobTypeNormal}" />
+														<h:outputText rendered="#{job.generalType == 2}" value="#{msgs.label_jobTypeTechnical}" />
+														<h:outputText rendered="#{job.generalType == 3}" value="#{msgs.label_jobTypeField}" />
+													</rich:column>
+													<rich:column rendered="#{jobsTransactions.mode==2}" style="width : 5%;">
+														<f:facet name="header"> #{msgs.label_approved} <font style="color: red;">*</font>
+														</f:facet>
+														<h:selectOneMenu value="#{job.approvedFlag}" rendered="#{jobsTransactions.mode==2}">
+															<f:selectItem itemValue="1" itemLabel="#{msgs.label_approved}" />
+															<f:selectItem itemValue="0" itemLabel="#{msgs.label_notApproved}" />
+															<f:ajax execute="@this jobsTransactionsFormId:newJobDetailsPanelId" render="jobsTransactionsFormId:newJobDetailsPanelId" listener="#{jobsTransactions.jobApprovedFlagListener(job)}" />
+														</h:selectOneMenu>
+													</rich:column>
+													<rich:column style="width : #{jobsTransactions.mode == 1 ? 15 : 10}%;">
+														<f:facet name="header"> #{msgs.label_reason} </f:facet>
+														<h:inputText value="#{job.reasons}" maxlength="200" />
+													</rich:column>
+													<rich:column style="width : 5%;">
+														<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{jobsTransactions.deleteNewJob(job)}" onclick="var r = confirm('#{msgs.q_delete}');if (r == false){return false;}">
+															<f:ajax execute="jobsTransactionsFormId:newJobsTableId jobsTransactionsFormId:newJobDetailsPanelId" render="jobsTransactionsFormId:newJobsTableId jobsTransactionsFormId:newJobDetailsPanelId jobsTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</rich:column>
+													<f:facet name="footer">
+														<rich:dataScroller execute="jobsTransactionsFormId:newJobsTableId jobsTransactionsFormId:newJobDetailsPanelId" oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="newJobDetailsPanelId">
+													<rich:collapsiblePanel switchType="client" header="#{msgs.label_jobDetails}" expanded="true" rendered="#{(jobsTransactions.selectedNewJob!=null)}">
+														<table width="100%">
+															<tr>
+																<th width="20%">#{msgs.label_status}</th>
+																<td width="80%">
+																	<h:outputText value="#{jobsTransactions.selectedNewJob.approvedFlag == 1 ? msgs.label_vacant :msgs.label_frozen}" />
+																</td>
+															</tr>
+															<tr>
+																<th width="20%">#{msgs.label_jobDescription}</th>
+																<td width="80%">
+																	<h:inputTextarea styleClass="inputDataLarge" value="#{jobsTransactions.selectedNewJob.jobDesc}" />
+																</td>
+															</tr>
+															<tr>
+																<th width="20%">#{msgs.label_jobDuties}</th>
+																<td width="80%">
+																	<h:inputTextarea styleClass="inputDataLarge" value="#{jobsTransactions.selectedNewJob.dutiesDesc}" />
+																</td>
+															</tr>
+															<tr>
+																<th width="20%">#{msgs.label_remarks}</th>
+																<td width="80%">
+																	<h:inputTextarea styleClass="inputDataLarge" value="#{jobsTransactions.selectedNewJob.remarks}" maxlength="500" />
+																</td>
+															</tr>
+														</table>
+													</rich:collapsiblePanel>
+												</h:panelGroup>
+											</td>
+										</tr>
+									</table>
+								</rich:collapsiblePanel>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%" colspan="6">
+							<h:panelGroup id="modifiedJobsPanelId">
+								<rich:collapsiblePanel switchType="client" expanded="false" header="#{jobsTransactions.mode==1?(msgs.label_modifyOfficerJob):(jobsTransactions.mode==2?(msgs.label_modifySoldierJob):(msgs.label_modifyPersonJob))}">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+															<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getModifiedJob('#{request.contextPath}');return false;" />
+															<h:commandButton id="searchModifiedJobsBtnId" style="display: none;" action="#{jobsTransactions.addModifiedJobs()}">
+																<f:ajax execute="jobsTransactionsFormId:selectedJobsIDsId jobsTransactionsFormId:modifiedJobsTableId" render="jobsTransactionsFormId:modifiedJobsTableId jobsTransactionsFormId:notifyMessagesId" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%">
+												<rich:dataTable id="modifiedJobsTableId" value="#{jobsTransactions.modifiedJobs}" rowKeyVar="index" var="job" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{jobsTransactions.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+													<rich:column style="width : #{jobsTransactions.mode == 3 ? 5 : 10}%;">
+														<f:facet name="header"> #{msgs.label_jobCode} </f:facet>
+														<h:outputText value="#{job.code}" />
+													</rich:column>
+													<rich:column style="width : 5%;" rendered="#{jobsTransactions.mode==3}">
+														<f:facet name="header"> #{msgs.label_jobClass} </f:facet>
+														<h:outputText value="#{job.classificationJobCode}" />
+													</rich:column>
+													<rich:column style="width : #{jobsTransactions.mode == 3 ? 10 : 15}%;">
+														<f:facet name="header"> #{msgs.label_jobName} </f:facet>
+														<h:outputText value="#{job.name}" />
+													</rich:column>
+													<rich:column rendered="#{jobsTransactions.mode!=1}" style="width : 10%;">
+														<f:facet name="header"> #{jobsTransactions.mode==2?(msgs.label_rank):(msgs.label_personRank)} </f:facet>
+														<h:outputText value="#{job.rankDescription}" />
+													</rich:column>
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{msgs.label_jobMinorSpec} </f:facet>
+														<h:outputText value="#{job.minorSpecializationDescription}" />
+													</rich:column>
+													<rich:column style="width : #{jobsTransactions.mode == 1 ? 30 : 20}%;">
+														<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+														<h:outputText value="#{job.unitFullName}" />
+													</rich:column>
+													<rich:column style="width : 5%;" rendered="#{jobsTransactions.mode == 3}">
+														<f:facet name="header"> #{msgs.label_jobNewSequence} <font style="color: red;">*</font>
+														</f:facet>
+														<h:inputText value="#{job.sequence}" maxlength="5" onkeypress="return isDigit(event);" styleClass="inputDataLarge" />
+													</rich:column>
+													<rich:column style="width : #{jobsTransactions.mode == 3 ? 10 : 15}%;">
+														<f:facet name="header">
+															#{msgs.label_jobNewName}
+															<h:outputText value=" *" style="color: red;" rendered="#{jobsTransactions.mode == 1}" />
+														</f:facet>
+														<h:outputText id="jobNewNameId" value="#{job.newName}" />
+														<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getNewBasicJobName('#{request.contextPath}',this.id);return false;" />
+														<h:inputHidden id="jobNewNameHId" value="#{job.newName}" />
+														<h:inputHidden id="jobCategoryHId" value="#{job.categoryId}" />
+													</rich:column>
+													<rich:column rendered="#{(jobsTransactions.mode!=1)}" style="width : 10%;">
+														<f:facet name="header"> #{jobsTransactions.mode==3 ? msgs.label_personNewRank : msgs.label_newRank} </f:facet>
+														<h:selectOneMenu value="#{job.newRankId}" rendered="#{(jobsTransactions.mode==2)}" disabled="#{job.approvedFlag.intValue()==1}">
+															<f:selectItem itemLabel="" itemValue="-1" />
+															<f:selectItems value="#{jobsTransactions.ranks}" var="rank" itemValue="#{rank.id}" itemLabel="#{rank.description}" />
+														</h:selectOneMenu>
+														<h:selectOneMenu id="newPersonRankId" value="#{job.newRankId}" rendered="#{jobsTransactions.mode==3}">
+															<f:ajax event="change" listener="#{jobsTransactions.jobNewRankChanged(job)}" execute="jobsTransactionsFormId:modifiedJobsTableId" render="jobsTransactionsFormId:modifiedJobsTableId jobsTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+															<f:selectItem itemLabel="" itemValue="-1" />
+															<f:selectItems value="#{jobsTransactions.getJobsRanks(job.categoryId)}" var="rank" itemValue="#{rank.id}" itemLabel="#{rank.description}" />
+														</h:selectOneMenu>
+													</rich:column>
+													<rich:column rendered="#{jobsTransactions.mode==3}" style="width : 5%;">
+														<f:facet name="header"> #{msgs.label_jobNewClass} </f:facet>
+														<h:outputText id="jobNewClassificationCodeId" value="#{job.newClassificationJobCode}" />
+														<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" disabled="#{job.categoryId!=3}" onclick="getNewJobClassification('#{request.contextPath}',this.id) ; return false;" />
+														<h:inputHidden id="jobRankCodeId" value="#{job.rankId}" rendered="#{jobsTransactions.mode==3}" />
+														<h:inputHidden id="jobNewClassificationIDId" value="#{job.newClassificationId}" rendered="#{jobsTransactions.mode==3}" />
+														<h:inputHidden id="jobNewClassificationCodeHId" value="#{job.newClassificationJobCode}" rendered="#{jobsTransactions.mode==3}" />
+														<h:inputHidden id="jobNewClassificationDescriptionId" value="#{job.newClassificationJobDescription}" rendered="#{jobsTransactions.mode==3}" />
+													</rich:column>
+													<rich:column style="width : #{jobsTransactions.mode == 1 ? 15 : 5}%;">
+														<f:facet name="header"> #{msgs.label_reason} </f:facet>
+														<h:inputText id="reasons" value="#{job.reasons}" maxlength="200" />
+													</rich:column>
+													<rich:column style="width : 5%;">
+														<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{jobsTransactions.deleteModifiedJob(job)}" onclick="return confirm('#{msgs.q_delete}');">
+															<f:ajax execute="jobsTransactionsFormId:modifiedJobsTableId" render="jobsTransactionsFormId:modifiedJobsTableId jobsTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</rich:column>
+													<f:facet name="footer">
+														<rich:dataScroller execute="jobsTransactionsFormId:modifiedJobsTableId" oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+											</td>
+										</tr>
+									</table>
+								</rich:collapsiblePanel>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%" colspan="6">
+							<h:panelGroup id="minorSpecsModifiedJobsPanelId">
+								<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_modifySoldierJobMinorSpecs}">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+															<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getMinorSpecsModifiedJob('#{request.contextPath}');return false;" />
+															<h:commandButton id="searchMinorSpecsModifiedJobsBtnId" style="display: none;" action="#{jobsTransactions.addMinorSpecsModifiedJobs()}">
+																<f:ajax execute="jobsTransactionsFormId:selectedJobsIDsId jobsTransactionsFormId:minorSpecsModifiedJobsTableId" render="jobsTransactionsFormId:minorSpecsModifiedJobsTableId jobsTransactionsFormId:notifyMessagesId" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%">
+												<rich:dataTable id="minorSpecsModifiedJobsTableId" value="#{jobsTransactions.minorSpecsModifiedJobs}" rowKeyVar="index" var="job" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{jobsTransactions.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+													<rich:column style="width : 5%;">
+														<f:facet name="header"> #{msgs.label_jobCode} </f:facet>
+														<h:outputText value="#{job.code}" />
+													</rich:column>
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{msgs.label_jobName} </f:facet>
+														<h:outputText value="#{job.name}" />
+													</rich:column>
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{jobsTransactions.mode==3 ? msgs.label_personRank : msgs.label_rank}</f:facet>
+														<h:outputText value="#{job.rankDescription}" />
+													</rich:column>
+													<rich:column style="width : 15%;">
+														<f:facet name="header"> #{msgs.label_jobMinorSpec} </f:facet>
+														<h:outputText value="#{job.minorSpecializationDescription}" />
+													</rich:column>
+													<rich:column style="width : 20%;">
+														<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+														<h:outputText value="#{job.unitFullName}" />
+													</rich:column>
+													<rich:column style="width : 15%;">
+														<f:facet name="header"> #{msgs.label_jobNewMinorSpec} <font style="color: red;">*</font>
+														</f:facet>
+														<h:outputText id="jobNewMinorSpecializationDescriptionId" value="#{job.newMinorSpecializationDescription}" />
+														<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getNewMinorSpec('#{request.contextPath}',this.id);return false;" />
+														<h:inputHidden id="jobNewMinorSpecializationIDId" value="#{job.newMinorSpecializationId}" />
+														<h:inputHidden id="jobNewMinorSpecializationDescriptionHId" value="#{job.newMinorSpecializationDescription}" />
+														<h:inputHidden id="jobNewGeneralSpecializationHId" value="#{job.generalSpecialization}" />
+														<h:inputHidden id="jobNewGeneralTypeHId" value="#{job.generalType}" />
+													</rich:column>
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{msgs.label_jobNewName} </f:facet>
+														<h:outputText id="jobNewNameId" value="#{job.newName}" />
+														<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getNewBasicJobName('#{request.contextPath}',this.id);return false;" />
+														<h:inputHidden id="jobNewNameHId" value="#{job.newName}" />
+														<h:inputHidden id="jobCategoryHId" value="#{job.categoryId}" />
+													</rich:column>
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{msgs.label_reason} </f:facet>
+														<h:inputText id="reasons" value="#{job.reasons}" maxlength="200" />
+													</rich:column>
+													<rich:column style="width : 5%;">
+														<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{jobsTransactions.deleteMinorSpecsModifiedJob(job)}" onclick="return confirm('#{msgs.q_delete}');">
+															<f:ajax execute="jobsTransactionsFormId:minorSpecsModifiedJobsTableId" render="jobsTransactionsFormId:minorSpecsModifiedJobsTableId jobsTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</rich:column>
+													<f:facet name="footer">
+														<rich:dataScroller execute="jobsTransactionsFormId:minorSpecsModifiedJobsTableId" oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+											</td>
+										</tr>
+									</table>
+								</rich:collapsiblePanel>
+							</h:panelGroup>
+						</td>
+					</tr>
+
+					<h:panelGroup rendered="#{jobsTransactions.mode==2}">
+						<tr>
+							<td width="100%" height="5" />
+						</tr>
+					</h:panelGroup>
+					<tr>
+						<td width="100%" colspan="6">
+							<h:panelGroup id="freezedJobsPanelId">
+								<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_freezeSoldierJob}" rendered="#{jobsTransactions.mode==2}">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+															<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getFreezedJob('#{request.contextPath}');return false" />
+															<h:commandButton id="searchFreezedJobsBtnId" style="display : none;" action="#{jobsTransactions.addFreezedJobs()}">
+																<f:ajax execute="jobsTransactionsFormId:selectedJobsIDsId jobsTransactionsFormId:freezedJobsTableId" render="jobsTransactionsFormId:freezedJobsTableId jobsTransactionsFormId:notifyMessagesId" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%">
+												<rich:dataTable id="freezedJobsTableId" value="#{jobsTransactions.freezedJobs}" rowKeyVar="index" var="job" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{jobsTransactions.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{msgs.label_jobCode} </f:facet>
+														<h:outputText value="#{job.code}" />
+													</rich:column>
+													<rich:column style="width : 15%;">
+														<f:facet name="header"> #{msgs.label_jobName} </f:facet>
+														<h:outputText value="#{job.name}" />
+													</rich:column>
+													<rich:column style="width : 15%;">
+														<f:facet name="header"> #{msgs.label_rank} </f:facet>
+														<h:outputText value="#{job.rankDescription}" />
+													</rich:column>
+													<rich:column style="width : 15%;">
+														<f:facet name="header"> #{msgs.label_jobMinorSpec} </f:facet>
+														<h:outputText value="#{job.minorSpecializationDescription}" />
+													</rich:column>
+													<rich:column style="width : 25%;">
+														<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+														<h:outputText value="#{job.unitFullName}" />
+													</rich:column>
+													<rich:column style="width : 15%;">
+														<f:facet name="header"> #{msgs.label_reason} </f:facet>
+														<h:inputText value="#{job.reasons}" maxlength="200" />
+													</rich:column>
+													<rich:column style="width : 5%;">
+														<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{jobsTransactions.deleteFreezedJob(job)}" onclick="return confirm('#{msgs.q_delete}');">
+															<f:ajax execute="jobsTransactionsFormId:freezedJobsTableId" render="jobsTransactionsFormId:freezedJobsTableId jobsTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</rich:column>
+													<f:facet name="footer">
+														<rich:dataScroller execute="jobsTransactionsFormId:freezedJobsTableId" oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+											</td>
+										</tr>
+									</table>
+								</rich:collapsiblePanel>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<h:panelGroup rendered="#{jobsTransactions.mode==2}">
+						<tr>
+							<td width="100%" height="5" />
+						</tr>
+					</h:panelGroup>
+					<tr>
+						<td width="100%" colspan="6">
+							<h:panelGroup id="unFreezedJobsPanelId">
+								<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_unFreezeSoldierJob}" rendered="#{jobsTransactions.mode==2}">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+															<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getUnFreezedJob('#{request.contextPath}');return false;" />
+															<h:commandButton id="searchUnfreezedJobsBtnId" style="display : none;" action="#{jobsTransactions.addUnFreezedJobs()}">
+																<f:ajax render="jobsTransactionsFormId:unFreezedJobsTableId jobsTransactionsFormId:notifyMessagesId" execute="jobsTransactionsFormId:selectedJobsIDsId jobsTransactionsFormId:unFreezedJobsTableId" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%">
+												<rich:dataTable id="unFreezedJobsTableId" value="#{jobsTransactions.unFreezedJobs}" rowKeyVar="index" var="job" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{jobsTransactions.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{msgs.label_jobCode} </f:facet>
+														<h:outputText value="#{job.code}" />
+													</rich:column>
+													<rich:column style="width : 15%;">
+														<f:facet name="header"> #{msgs.label_jobName} </f:facet>
+														<h:outputText value="#{job.name}" />
+													</rich:column>
+													<rich:column style="width : 15%;">
+														<f:facet name="header"> #{msgs.label_rank} </f:facet>
+														<h:outputText value="#{job.rankDescription}" />
+													</rich:column>
+													<rich:column style="width : 15%;">
+														<f:facet name="header"> #{msgs.label_jobMinorSpec} </f:facet>
+														<h:outputText value="#{job.minorSpecializationDescription}" />
+													</rich:column>
+													<rich:column style="width : 25%;">
+														<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+														<h:outputText value="#{job.unitFullName}" />
+													</rich:column>
+													<rich:column style="width : 15%;">
+														<f:facet name="header"> #{msgs.label_reason} </f:facet>
+														<h:inputText value="#{job.reasons}" maxlength="200" />
+													</rich:column>
+													<rich:column style="width : 5%;">
+														<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{jobsTransactions.deleteUnFreezedJob(job)}" onclick="return confirm('#{msgs.q_delete}');">
+															<f:ajax execute="jobsTransactionsFormId:unFreezedJobsTableId" render="jobsTransactionsFormId:unFreezedJobsTableId jobsTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</rich:column>
+													<f:facet name="footer">
+														<rich:dataScroller execute="jobsTransactionsFormId:unFreezedJobsTableId" oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+											</td>
+										</tr>
+									</table>
+								</rich:collapsiblePanel>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%" colspan="6">
+							<h:panelGroup id="movedJobsPanelId">
+								<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_movePersonJob}">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+															<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getMovedJob('#{request.contextPath}');return false;" />
+															<h:commandButton id="searchMovedJobsBtnId" style="display:none;" action="#{jobsTransactions.addMovedJobs()}">
+																<f:ajax execute="jobsTransactionsFormId:selectedJobsIDsId jobsTransactionsFormId:movedJobsTableId" render="jobsTransactionsFormId:movedJobsTableId jobsTransactionsFormId:notifyMessagesId" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%">
+												<rich:dataTable id="movedJobsTableId" value="#{jobsTransactions.movedJobs}" var="job" rowKeyVar="index" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{jobsTransactions.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+													<rich:column style="width : 5%;">
+														<f:facet name="header"> #{msgs.label_jobCode} </f:facet>
+														<h:outputText value="#{job.code}" />
+													</rich:column>
+													<rich:column style="width : 10%;" rendered="#{jobsTransactions.mode == 3}">
+														<f:facet name="header"> #{msgs.label_jobClass} </f:facet>
+														<h:outputText value="#{job.classificationJobCode}" />
+													</rich:column>
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{msgs.label_jobName} </f:facet>
+														<h:outputText value="#{job.name}" />
+													</rich:column>
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{jobsTransactions.mode==3 ? msgs.label_personRank : msgs.label_rank} </f:facet>
+														<h:outputText value="#{job.rankDescription}" />
+													</rich:column>
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{msgs.label_jobMinorSpec} </f:facet>
+														<h:outputText value="#{job.minorSpecializationDescription}" />
+													</rich:column>
+													<rich:column style="width : #{jobsTransactions.mode == 3 ? 20 : 25}%;">
+														<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+														<h:outputText value="#{job.unitFullName}" />
+													</rich:column>
+													<rich:column style="width : #{jobsTransactions.mode == 3 ? 20 : 25}%;">
+														<f:facet name="header"> #{msgs.label_newUnit} <font style="color: red;">*</font>
+														</f:facet>
+														<h:outputText id="jobNewUnitFullNameId" value="#{job.newUnitFullName}" />
+														<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getNewUnit('#{request.contextPath}',this.id);return false;" />
+														<h:inputHidden id="jobNewUnitIDId" value="#{job.newUnitId}" />
+														<h:inputHidden id="jobNewUnitFullNameHId" value="#{job.newUnitFullName}" />
+														<h:inputHidden id="jobNewUnitRegionIdHId" value="#{job.newRegionId}" />
+													</rich:column>
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{msgs.label_reason} </f:facet>
+														<h:inputText value="#{job.reasons}" maxlength="200" />
+													</rich:column>
+													<rich:column style="width : 5%;">
+														<h:commandButton id="deleteButton" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{jobsTransactions.deleteMovedJob(job)}" onclick="return confirm('#{msgs.q_delete}');">
+															<f:ajax execute="jobsTransactionsFormId:movedJobsTableId" render="jobsTransactionsFormId:movedJobsTableId jobsTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</rich:column>
+													<f:facet name="footer">
+														<rich:dataScroller execute="jobsTransactionsFormId:movedJobsTableId" oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+											</td>
+										</tr>
+									</table>
+								</rich:collapsiblePanel>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%" colspan="6">
+							<h:panelGroup id="cancelledJobsPanelId">
+								<rich:collapsiblePanel switchType="client" expanded="false" header="#{jobsTransactions.mode==1?(msgs.label_cancelOfficerJob):(jobsTransactions.mode==2?(msgs.label_cancelSoldierJob):(msgs.label_cancelPersonJob))}">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+															<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getCancelledJob('#{request.contextPath}');return false;" />
+															<h:commandButton id="searchCancelledJobsBtnId" style="display:none;" action="#{jobsTransactions.addCancelledJobs()}">
+																<f:ajax execute="jobsTransactionsFormId:selectedJobsIDsId jobsTransactionsFormId:cancelledJobsTableId" render="jobsTransactionsFormId:cancelledJobsTableId jobsTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%">
+												<rich:dataTable id="cancelledJobsTableId" value="#{jobsTransactions.cancelledJobs}" var="job" rowKeyVar="index" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{jobsTransactions.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+													<rich:column style="width : 10%;">
+														<f:facet name="header"> #{msgs.label_jobCode} </f:facet>
+														<h:outputText value="#{job.code}" />
+													</rich:column>
+													<rich:column style="width : #{jobsTransactions.mode == 1 ? 20 : 15}%;">
+														<f:facet name="header"> #{msgs.label_jobName} </f:facet>
+														<h:outputText value="#{job.name}" />
+													</rich:column>
+													<rich:column style="width : 15%;" rendered="#{jobsTransactions.mode != 1}">
+														<f:facet name="header"> #{jobsTransactions.mode==2 ? msgs.label_rank : msgs.label_personRank} </f:facet>
+														<h:outputText value="#{job.rankDescription}" />
+													</rich:column>
+													<rich:column style="width : 15%;">
+														<f:facet name="header"> #{msgs.label_jobMinorSpec} </f:facet>
+														<h:outputText value="#{job.minorSpecializationDescription}" />
+													</rich:column>
+													<rich:column style="width : #{jobsTransactions.mode == 1 ? 35 : 25}%;">
+														<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+														<h:outputText value="#{job.unitFullName}" />
+													</rich:column>
+													<rich:column style="width : 15%;">
+														<f:facet name="header"> #{msgs.label_reason} </f:facet>
+														<h:inputText value="#{job.reasons}" maxlength="200" />
+													</rich:column>
+													<rich:column style="width : 5%;">
+														<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{jobsTransactions.deleteDeletedJob(job)}" onclick="return confirm('#{msgs.q_delete}');">
+															<f:ajax execute="jobsTransactionsFormId:cancelledJobsTableId" render="jobsTransactionsFormId:cancelledJobsTableId jobsTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</rich:column>
+													<f:facet name="footer">
+														<rich:dataScroller execute="jobsTransactionsFormId:cancelledJobsTableId" oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+											</td>
+										</tr>
+									</table>
+								</rich:collapsiblePanel>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%" colspan="6">
+							<h:panelGroup id="actionsBtnsId">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<h:commandButton id="saveBtnId" action="#{jobsTransactions.save()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" rendered="#{!jobsTransactions.done}">
+												<f:ajax execute="jobsTransactionsFormId:decisionDataPanelId jobsTransactionsFormId:newJobsPanelId jobsTransactionsFormId:modifiedJobsPanelId jobsTransactionsFormId:minorSpecsModifiedJobsPanelId jobsTransactionsFormId:freezedJobsPanelId jobsTransactionsFormId:unFreezedJobsPanelId jobsTransactionsFormId:movedJobsPanelId jobsTransactionsFormId:cancelledJobsPanelId"
+													render="jobsTransactionsFormId:newJobsPanelId jobsTransactionsFormId:modifiedJobsPanelId jobsTransactionsFormId:movedJobsPanelId jobsTransactionsFormId:actionsBtnsId jobsTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+											</h:commandButton>
+											<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{jobsTransactions.resetForm()}">
+												<f:ajax render="jobsTransactionsFormId:decisionDataPanelId jobsTransactionsFormId:actionsBtnsId jobsTransactionsFormId:newJobsPanelId jobsTransactionsFormId:modifiedJobsPanelId jobsTransactionsFormId:minorSpecsModifiedJobsPanelId jobsTransactionsFormId:freezedJobsPanelId jobsTransactionsFormId:unFreezedJobsPanelId jobsTransactionsFormId:movedJobsPanelId jobsTransactionsFormId:cancelledJobsPanelId jobsTransactionsFormId:notifyMessagesId "
+													onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+				</table>
+			</h:panelGroup>
+		</ui:decorate>
+		<h:inputHidden id="selectedJobsIDsId" value="#{jobsTransactions.selectedJobsIds}" />
+	</h:form>
+</h:body>
+</html>

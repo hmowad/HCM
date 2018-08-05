@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript"> 
+	 //<![CDATA[
+	
+	function getEmp(contextPath) {
+		var categoryId = #{terminationDecisionCancellation.mode};
+		openEmployeesMiniSearchByOfficialRegionId(contextPath, 'handleEmpMiniSearchResult(ret)', 1, categoryId,-1); // In all regions
+	}
+
+	function handleEmpMiniSearchResult(ret) {
+		if (ret != null) {
+				document.getElementById('terminationDecisionCancellationFormId:selectedEmpHId').value = ret[0];
+				document.getElementById('terminationDecisionCancellationFormId:searchEmpBtnId').click();
+		}
+	}
+
+    function getJob(contextPath) {
+        var empRankId = document.getElementById('terminationDecisionCancellationFormId:selectedEmpRankHId').value;
+    	openJobsMiniSearch(contextPath,'handleJobMiniSearchResult(ret)',2 ,#{terminationDecisionCancellation.mode},-1, empRankId,-1,-1,0);
+    }
+    
+    function handleJobMiniSearchResult(ret){
+    	if(ret != null){
+    	 document.getElementById('terminationDecisionCancellationFormId:selectedJobIDHId').value=ret[0];
+    	 document.getElementById('terminationDecisionCancellationFormId:selectedJobCodeHId').value=ret[1];
+    	 document.getElementById('terminationDecisionCancellationFormId:selectedJobNameId').innerHTML = ret[2];
+    	 document.getElementById('terminationDecisionCancellationFormId:jobCodeId').innerHTML=ret[1];
+    	}
+    }
+	
+	function validateData(){
+
+		var empId =  document.getElementById('terminationDecisionCancellationFormId:selectedEmpHId').value;
+		var jobId =  document.getElementById('terminationDecisionCancellationFormId:selectedJobIDHId').value;
+		var reasons =  document.getElementById('terminationDecisionCancellationFormId:reasonsId').value.trim();
+		var referring =  document.getElementById('terminationDecisionCancellationFormId:referringId').value.trim();
+
+
+		if (empId == null || empId == '' || empId == -1) {
+			alert("#{msgs.error_employeeMandatory}");
+			return false;
+		}
+		
+		if (jobId == null || jobId == '') {
+			alert("#{msgs.error_steCancellationReturnedToJobIsMandatory}");
+			return false;
+		}
+		
+		if (reasons == null || reasons == '') {
+			alert("#{msgs.error_reasonsMandatory}");
+			return false;
+		}
+		
+		if (referring == null || referring == '') {
+			alert("#{msgs.error_refferingToIsMandatory}");
+			return false;
+		}
+		
+		return true;
+	}
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="terminationDecisionCancellationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{terminationDecisionCancellation.screenTitle}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="terminationEmployeeDataPanelId">
+							<h:panelGroup>
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">#{msgs.title_employeeData}</td>
+									</tr>
+								</table>
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_emp}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="80%" colspan="3">
+											<h:outputText value="#{terminationDecisionCancellation.wfCancellationMovementData.empName}" />
+											<h:inputHidden id="selectedEmpHId" value="#{terminationDecisionCancellation.selectedEmpId}" />
+											<h:inputHidden id="selectedEmpRankHId" value="#{terminationDecisionCancellation.selectedEmpRankId}" />
+											<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmp('#{request.contextPath}');return false;" rendered="#{terminationDecisionCancellation.role == 'Requester' or terminationDecisionCancellation.role == 'ReviewerEmp'}" />
+											<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{terminationDecisionCancellation.constructEmpData()}">
+												<f:ajax execute="terminationDecisionCancellationFormId:terminationEmployeeDataPanelId" render="terminationDecisionCancellationFormId:terminationEmployeeDataPanelId terminationDecisionCancellationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{terminationDecisionCancellation.mode == 2 ? msgs.label_serviceTerminationDecisionNumber : msgs.label_terminationDecisionNumber}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationDecisionCancellation.cancelledTerminationTransactionData.decisionNumber}" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{terminationDecisionCancellation.mode == 2 ? msgs.label_serviceTerminationDecisionDate :msgs.label_terminationDecisionDate}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationDecisionCancellation.cancelledTerminationTransactionData.decisionDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{terminationDecisionCancellation.mode == 2  ? msgs.label_terminationReason : msgs.label_terminationReasonCivilians}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationDecisionCancellation.cancelledTerminationTransactionData.reasonDesc}" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{terminationDecisionCancellation.mode == 2  ? msgs.label_serviceTerminationDate : msgs.label_serviceTerminationDateCivilians}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationDecisionCancellation.cancelledTerminationTransactionData.serviceTerminationDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_lastJobNameForEmployee}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationDecisionCancellation.cancelledTerminationTransactionData.jobName}" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_lastJobCodeForEmployee}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationDecisionCancellation.cancelledTerminationTransactionData.jobCode}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_officialUnit}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationDecisionCancellation.cancelledTerminationTransactionData.transEmpUnitFullName}" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{terminationDecisionCancellation.mode == 2 ? msgs.label_rank :  msgs.label_personRank}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationDecisionCancellation.cancelledTerminationTransactionData.transEmpRankDesc}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_cancelTerminationNewJobName}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="30%">
+											<h:outputText id="selectedJobNameId" value="#{terminationDecisionCancellation.wfCancellationMovementData.jobName}" />
+											<h:inputHidden id="selectedJobIDHId" value="#{terminationDecisionCancellation.wfCancellationMovementData.jobId}" />
+											<h:inputHidden id="selectedJobCodeHId" value="#{terminationDecisionCancellation.wfCancellationMovementData.jobCode}" />
+											<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getJob('#{request.contextPath}');return false;" rendered="#{terminationDecisionCancellation.role == 'Requester' or terminationDecisionCancellation.role == 'ReviewerEmp'}" disabled="#{terminationDecisionCancellation.selectedEmpId == null or terminationDecisionCancellation.disableChangeJobFlag() == true}">
+												<f:ajax render="terminationDecisionCancellationFormId:terminationEmployeeDataPanelId terminationDecisionCancellationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_cancelTerminationNewJobNumber}" />
+										</th>
+										<td width="30%">
+											<h:outputText id="jobCodeId" value="#{terminationDecisionCancellation.wfCancellationMovementData.jobCode}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_justifications}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="80%" colspan="3">
+											<h:inputText id="reasonsId" value="#{terminationDecisionCancellation.wfCancellationMovementData.reasons}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" styleClass="inputDataSuperLarge" disabled="#{terminationDecisionCancellation.role != 'Requester' and terminationDecisionCancellation.role !='ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_refferingTo}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="80%" colspan="3">
+											<h:inputTextarea id="referringId" value="#{terminationDecisionCancellation.wfCancellationMovementData.referring}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge" disabled="#{terminationDecisionCancellation.role != 'Requester' and terminationDecisionCancellation.role !='ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_attachments}" />
+										</th>
+										<td width="80%" colspan="3">
+											<code:attachments loginEmpId="#{terminationDecisionCancellation.loginEmpData.empId}" attachmentId="#{terminationDecisionCancellation.attachments}" addEnableFlag="#{terminationDecisionCancellation.role == 'Requester' or terminationDecisionCancellation.role =='ReviewerEmp'}" viewEnableFlag="true" deleteEnableFlag="#{terminationDecisionCancellation.role == 'Requester' or terminationDecisionCancellation.role =='ReviewerEmp'}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="decisionCopiesPanelId">
+							<h:panelGroup>
+								<code:decisionCopies viewOnly="#{terminationDecisionCancellation.role != 'Requester' and terminationDecisionCancellation.role != 'ReviewerEmp'}" external="#{terminationDecisionCancellation.wfCancellationMovementData.externalCopies}" internal="#{terminationDecisionCancellation.internalCopies}" />
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<code:prevTasks rendered="#{terminationDecisionCancellation.role != 'Requester'}" value="#{terminationDecisionCancellation.prevTasks}" refuseRoles="SignManager," />
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="curTaskPanelId" rendered="#{terminationDecisionCancellation.role !='Requester'}">
+							<code:curTask id="curTaskId" value="#{terminationDecisionCancellation.currentEmployee}" rendered="#{terminationDecisionCancellation.role != 'Requester' and terminationDecisionCancellation.role != 'Notification' and terminationDecisionCancellation.role != 'History'}">
+								<tr>
+									<th width="15%">#{msgs.label_notes}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="notesId" value="#{terminationDecisionCancellation.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{terminationDecisionCancellation.role == 'ReviewerEmp' or terminationDecisionCancellation.role == 'SignManager'}">
+									<tr>
+										<th width="15%">#{msgs.label_refuseReasons}</th>
+										<td width="85%" colspan="3">
+											<h:inputText id="refuseReasonsId" value="#{terminationDecisionCancellation.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+										</td>
+									</tr>
+								</h:panelGroup>
+							</code:curTask>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{terminationDecisionCancellation.role == 'Notification' or terminationDecisionCancellation.role == 'History'}" value="#{terminationDecisionCancellation.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsSectionId">
+							<h:panelGroup>
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<h:panelGroup rendered="#{terminationDecisionCancellation.role == 'Requester'}">
+												<h:commandButton id="sendBtnId" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" onclick="return handleOnAction('#{msgs.q_send}', 'validateData()');" action="#{terminationDecisionCancellation.initProcess()}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{terminationDecisionCancellation.role == 'ReviewerEmp'}">
+												<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}', 'validateData()');" action="#{terminationDecisionCancellation.approveRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;terminationDecisionCancellationFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationDecisionCancellation.rejectRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{terminationDecisionCancellation.role == 'SignManager'}">
+												<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;terminationDecisionCancellationFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationDecisionCancellation.signSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="modifySmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;terminationDecisionCancellationFormId:curTaskId:refuseReasonsId&quot;, &quot;terminationDecisionCancellationFormId:curTaskId:notesId&quot;)');" action="#{terminationDecisionCancellation.modifySM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;terminationDecisionCancellationFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationDecisionCancellation.rejectSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{terminationDecisionCancellation.role == 'Notification' and terminationDecisionCancellation.instanceApproved == 1}">
+												<h:commandButton id="printBtnId" action="#{terminationDecisionCancellation.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{terminationDecisionCancellation.role == 'Notification'}">
+												<h:commandButton id="nBtnId" action="#{terminationDecisionCancellation.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

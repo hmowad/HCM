@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+		function getEmployee(contextPath) {
+			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',
+					15, '#{managerAssignmentManagement.mode}', -1, 1, -1, -1,
+					-1);
+		}
+
+		function handleEmpMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('managerAssignmentManagementId:employeeIDId').value = ret[0];
+				document.getElementById('managerAssignmentManagementId:employeeNameId').innerHTML = ret[1];
+				document.getElementById('managerAssignmentManagementId:getEmpBtnId').click();
+			}
+		}
+		
+		function getUnit() {
+			var regionId = document.getElementById('managerAssignmentManagementId:physicalRegionIDId').value;
+
+			openUnitsMiniSearch(4, '#{request.contextPath}',
+					'handleUnitMiniSearchResult(ret)', -1,
+					regionId,-1);
+		}
+
+		function handleUnitMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('managerAssignmentManagementId:unitIDId').value = ret[0];
+				document
+						.getElementById('managerAssignmentManagementId:unitFullNameId').innerHTML = ret[1];
+				document.getElementById(
+						'managerAssignmentManagementId:getUnitBtnId').click();
+			}
+		}
+
+		// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="managerAssignmentManagementId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{managerAssignmentManagement.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="10%">
+									<h:outputText value="#{managerAssignmentManagement.mode ==1 ? msgs.label_selectOfficer : (managerAssignmentManagement.mode == 2 ? msgs.label_selectSoldier : msgs.label_selectPerson)}" />
+								</th>
+								<td width="90%">
+									<h:inputHidden id="employeeIDId" value="#{managerAssignmentManagement.employeeId}" />
+									<h:outputText id="employeeNameId" value="#{managerAssignmentManagement.employee.name}" />
+									<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}'); return false;" />
+									<h:commandButton id="getEmpBtnId" style="display:none;" action="#{managerAssignmentManagement.getEmployeeData()}">
+										<f:ajax execute="managerAssignmentManagementId:employeeIDId" render="managerAssignmentManagementId:notifyMessagesId managerAssignmentManagementId:requesterPanelId managerAssignmentManagementId:physicalUnitPanelId managerAssignmentManagementId:unitPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+
+								</td>
+							</tr>
+						</table>
+
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requesterPanelId">
+							<h:panelGroup rendered="#{managerAssignmentManagement.employeeId !=0}">
+								<code:emp value="#{managerAssignmentManagement.employee}" />
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+<tr>
+		<td width="100%" height="7"/>
+	</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="unitPanelId">
+							<h:panelGroup rendered="#{managerAssignmentManagement.employeeId !=0}">
+								<table class="sectionTitle" style="margin-top: 0" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										
+										<td width="90%">
+											<h:inputHidden id="unitIDId" value="#{managerAssignmentManagement.unitId}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getUnit(); return false;" />
+											<h:commandButton id="getUnitBtnId" style="display:none;" action="#{managerAssignmentManagement.getEmployeeSelectedUnit()}">
+												<f:ajax execute="managerAssignmentManagementId:unitIDId" render="managerAssignmentManagementId:notifyMessagesId managerAssignmentManagementId:physicalUnitPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+
+				<!-- List of physical unit  -->
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="physicalUnitPanelId">
+						<h:inputHidden id="physicalRegionIDId" value="#{managerAssignmentManagement.employee.physicalRegionId}" />
+							<h:panelGroup rendered="#{managerAssignmentManagement.employeeId !=0}">
+								<rich:dataTable id="employeePhysicalUnitsTableId" rowKeyVar="index" var="unit" value="#{managerAssignmentManagement.employeePhysicalUnits}" rows="#{managerAssignmentManagement.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+									<rich:column style="width : 5%">
+										<f:facet name="header">#</f:facet>
+										<h:outputText value="#{index + 1}" />
+									</rich:column>
+									<rich:column style="width : 70%">
+										<f:facet name="header">#{msgs.label_physicalUnit}</f:facet>
+										<h:outputText value="#{unit.fullName}" />
+									</rich:column>
+									<rich:column style="width : 25%">
+										<f:facet name="header">#{msgs.label_delete}</f:facet>
+										<h:commandButton action="#{managerAssignmentManagement.removePhysicalManagerFromlUnit(unit)}" value="#{msgs.fa_times}" onclick="return confirm('#{msgs.q_delete}');" title="#{msgs.label_delete}" styleClass="btn_icon">
+											<f:ajax execute="managerAssignmentManagementId:employeePhysicalUnitsTableId" render="managerAssignmentManagementId:employeePhysicalUnitsTableId managerAssignmentManagementId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</rich:column>
+									<f:facet name="footer">
+										<rich:dataScroller execute="managerAssignmentManagementId:employeePhysicalUnitsTableId" fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+											<f:facet name="first">#{msgs.label_first}</f:facet>
+											<f:facet name="last">#{msgs.label_last}</f:facet>
+											<f:facet name="next">#{msgs.label_next}</f:facet>
+											<f:facet name="previous">#{msgs.label_previous}</f:facet>
+										</rich:dataScroller>
+									</f:facet>
+
+								</rich:dataTable>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

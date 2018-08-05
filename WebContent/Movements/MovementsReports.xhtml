@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="movementsReportsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_statisticalReports}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="reportPanelGroupId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+
+								<tr>
+									<th width="10%">
+										#{msgs.label_region}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="40%" colspan="3">
+										<h:selectOneMenu id="regionId" value="#{movementsReports.selectedRegionId}" disabled="#{movementsReports.getLoginEmpPhysicalRegionFlag(true) != -1}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItems value="#{movementsReports.regionList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+
+								<tr>
+									<th width="10%">
+										#{msgs.label_fromDate}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="40%">
+										<util:hijri value="#{movementsReports.fromDate}" />
+									</td>
+
+									<th width="10%">
+										#{msgs.label_toDate}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="40%">
+										<util:hijri value="#{movementsReports.toDate}" />
+									</td>
+								</tr>
+
+								<tr>
+									<th width="10%">
+										#{msgs.label_category}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="40%" colspan="3">
+										<h:selectOneMenu value="#{movementsReports.selectedCategoryId}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItem itemLabel="#{msgs.label_officers}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_soldiers}" itemValue="2" />
+											<f:selectItem itemLabel="#{msgs.label_employees}" itemValue="3" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton action="#{movementsReports.print()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									<h:commandButton action="#{movementsReports.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="movementsReportsFormId:reportPanelGroupId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

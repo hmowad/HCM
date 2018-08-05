@@ -1,0 +1,415 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	function getEmployee(contextPath) {
+		openEmpsMiniSearch(contextPath,'handleEmpMiniSearchResult(ret)',5,#{moveByReplacementRequest.mode}, -1, -1, -1, -1, -1);
+	}
+	
+	function handleEmpMiniSearchResult(ret) { 
+		
+		if(ret != null) {
+			if(#{moveByReplacementRequest.loginEmpData.empId} == ret[0]){
+				alert('#{msgs.error_selfExchangeIsInvalid}');
+				return;	
+			}
+			document.getElementById('moveByReplacementRequestFormId:replacementEmployeeIDId').value = ret[0];
+			document.getElementById('moveByReplacementRequestFormId:searchEmpBtnId').click();
+		}
+	}
+	    
+    function validateRequest() {
+        exchangeEmployeeId = document.getElementById('moveByReplacementRequestFormId:replacementEmployeeIDId').value;
+        reasons=document.getElementById('moveByReplacementRequestFormId:reasonsId').value;
+        
+        if(exchangeEmployeeId == null || exchangeEmployeeId == '' || reasons == null || reasons == ''){
+        	alert('#{msgs.error_exchangeMoveFieldsAreMandatory}');
+   		    return false;
+        }
+        return true;
+     }
+    
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="moveByReplacementRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{moveByReplacementRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requester}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{moveByReplacementRequest.requester}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{moveByReplacementRequest.mode==1 ? msgs.label_exchangeOfficerData : ( moveByReplacementRequest.mode==2 ? msgs.label_exchangeSoldierData : msgs.label_exchangePersonData )}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="exchangeEmployeePanelId">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+								<h:panelGroup rendered="#{moveByReplacementRequest.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+														<h:commandButton value="#{moveByReplacementRequest.mode==1 ? msgs.label_exchangeOfficer :(moveByReplacementRequest.mode==2 ? msgs.label_exchangeSoldier : msgs.label_exchangePerson )}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+														<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{moveByReplacementRequest.searchReplacementEmployee()}">
+															<f:ajax execute="moveByReplacementRequestFormId:exchangeEmployeePanelId" render="moveByReplacementRequestFormId:exchangeEmployeePanelId moveByReplacementRequestFormId:warningsPanelId moveByReplacementRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:inputHidden id="replacementEmployeeIDId" value="#{moveByReplacementRequest.wfMovement.replacementEmployeeId}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp rendered="#{moveByReplacementRequest.replacementEmployee.empId != null}" value="#{moveByReplacementRequest.replacementEmployee}"></code:emp>
+									</td>
+								</tr>
+
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">#{msgs.label_requestInfo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">#{msgs.label_requiredAttachments}</th>
+								<td width="85%">
+									<code:attachments loginEmpId="#{moveByReplacementRequest.loginEmpData.empId}" attachmentId="#{moveByReplacementRequest.attachments}" addEnableFlag="#{moveByReplacementRequest.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{moveByReplacementRequest.role == 'Requester'}" />
+									<h:outputText rendered="#{moveByReplacementRequest.role == 'Requester'}" value="#{msgs.label_attachmentsAreMandatoryWarning}" styleClass="remarkMessage" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">
+									#{msgs.label_moveJustifications}
+									<h:outputText value=" " />
+									<font style="color: red;">*</font>
+								</th>
+								<td width="85%">
+									<h:inputText id="reasonsId" styleClass="inputDataSuperLarge" value="#{moveByReplacementRequest.wfMovement.reasons}" readonly="#{moveByReplacementRequest.role != 'Requester'}" maxlength="200" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">#{msgs.label_remarks}</th>
+								<td width="85%">
+									<h:inputText id="remarksId" styleClass="inputDataSuperLarge" value="#{moveByReplacementRequest.wfMovement.remarks}" readonly="#{moveByReplacementRequest.role != 'Requester'}" maxlength="500" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+
+				<code:specialAuthorityData id="specialAuthorityDataId" loginEmpId="#{moveByReplacementRequest.loginEmpData.empId}" wfMovement="#{moveByReplacementRequest.wfMovement}" role="#{moveByReplacementRequest.role}" requestFlag="#{true}" rendered="#{moveByReplacementRequest.role == 'ReviewerEmp' or moveByReplacementRequest.role == 'SignManager' or moveByReplacementRequest.role == 'SecondaryReviewerEmp' or moveByReplacementRequest.role == 'SecondarySignManager' or moveByReplacementRequest.role == 'ReplacementSecondaryReviewerEmp' or moveByReplacementRequest.role == 'ReplacementSecondarySignManager'}" />
+
+				<h:panelGroup
+					rendered="#{moveByReplacementRequest.role != 'Requester' and moveByReplacementRequest.role != 'ExchangeEmp' and moveByReplacementRequest.role != 'DirectManager' and moveByReplacementRequest.role != 'ReplacementDirectManager' and moveByReplacementRequest.role != 'ManagerRedirect' and moveByReplacementRequest.role != 'ManagerRedirectToSecurity' and moveByReplacementRequest.role != 'SecurityEmp' and moveByReplacementRequest.role != 'SecondaryReviewerEmp' and moveByReplacementRequest.role != 'SecondarySignManager' and moveByReplacementRequest.role != 'SecondaryManagerRedirect' and moveByReplacementRequest.role != 'ReplacementSecondaryReviewerEmp' and moveByReplacementRequest.role != 'ReplacementSecondarySignManager' and moveByReplacementRequest.role != 'ReplacementSecondaryManagerRedirect'}">
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">#{msgs.label_dataFilledBySpecializedEmployee}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="reviewerEmpPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="20%">
+											#{msgs.label_isMoveConsideredFromDecisionDate}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="#{moveByReplacementRequest.wfMovement.executionDateFlag==0 ? 30 : 80}%" colspan="#{moveByReplacementRequest.wfMovement.executionDateFlag==0 ? 1 : 3}">
+											<h:selectBooleanCheckbox id="executionDateFlagId" value="#{moveByReplacementRequest.wfMovement.executionDateFlagBoolean}" disabled="#{moveByReplacementRequest.role != 'ReviewerEmp'}">
+												<f:ajax execute="moveByReplacementRequestFormId:reviewerEmpPanelId" render="moveByReplacementRequestFormId:reviewerEmpPanelId" listener="#{moveByReplacementRequest.executionDateFlagChanged()}" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectBooleanCheckbox>
+										</td>
+										<h:panelGroup rendered="#{moveByReplacementRequest.wfMovement.executionDateFlag==0}">
+											<th width="20%">
+												#{msgs.label_moveConsideredFrom}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="50%">
+												<util:hijri id="executionDateId" rendered="#{moveByReplacementRequest.role == 'ReviewerEmp'}" value="#{moveByReplacementRequest.wfMovement.executionDate}" listenerMethod="#{moveByReplacementRequest.calculateWarnings()}" onChangeAjaxSubmit="true" reRenderIds="moveByReplacementRequestFormId:warningsPanelId moveByReplacementRequestFormId:notifyMessagesId" />
+												<h:outputText value="#{moveByReplacementRequest.wfMovement.executionDateString}" rendered="#{moveByReplacementRequest.role != 'ReviewerEmp'}" />
+											</td>
+										</h:panelGroup>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:panelGroup
+					rendered="#{moveByReplacementRequest.role != 'Requester' and moveByReplacementRequest.role != 'ExchangeEmp' and moveByReplacementRequest.role != 'DirectManager' and moveByReplacementRequest.role != 'ReplacementDirectManager' and moveByReplacementRequest.role != 'ManagerRedirect' and moveByReplacementRequest.role != 'ManagerRedirectToSecurity' and moveByReplacementRequest.role != 'SecurityEmp' and moveByReplacementRequest.role != 'SecondaryManagerRedirect' and moveByReplacementRequest.role != 'ReplacementSecondaryManagerRedirect' and moveByReplacementRequest.role != 'SecondaryReviewerEmp' and moveByReplacementRequest.role != 'ReplacementSecondaryReviewerEmp' and moveByReplacementRequest.role != 'SecondarySignManager' and moveByReplacementRequest.role != 'ReplacementSecondarySignManager'}">
+					<tr>
+						<td width="100%" colspan="4">
+							<code:decisionCopies external="#{moveByReplacementRequest.externalCopies}" internal="#{moveByReplacementRequest.internalCopies}" viewOnly="#{moveByReplacementRequest.role!='ReviewerEmp'}" />
+						</td>
+					</tr>
+				</h:panelGroup>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{moveByReplacementRequest.role != 'Requester' and moveByReplacementRequest.role != 'ExchangeEmp'}" value="#{moveByReplacementRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReplacementDirectManager,ReviewerEmp,ExchangeEmp,SecondarySignManager,ReplacementSecondarySignManager,SecondaryReviewerEmp,ReplacementSecondaryReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{moveByReplacementRequest.currentEmployee}"
+							rendered="#{moveByReplacementRequest.role == 'DirectManager' or moveByReplacementRequest.role == 'ReplacementDirectManager' or moveByReplacementRequest.role == 'ManagerRedirectToSecurity' or moveByReplacementRequest.role == 'SecurityEmp' or moveByReplacementRequest.role == 'ManagerRedirect' or moveByReplacementRequest.role == 'ReviewerEmp' or moveByReplacementRequest.role == 'SignManager' or moveByReplacementRequest.role == 'ExchangeEmp' or moveByReplacementRequest.role == 'SecondaryManagerRedirect' or moveByReplacementRequest.role == 'SecondaryReviewerEmp' or moveByReplacementRequest.role == 'SecondarySignManager' or moveByReplacementRequest.role == 'ReplacementSecondaryManagerRedirect' or moveByReplacementRequest.role == 'ReplacementSecondaryReviewerEmp' or moveByReplacementRequest.role == 'ReplacementSecondarySignManager'}">
+							<h:panelGroup rendered="#{moveByReplacementRequest.role == 'ManagerRedirect' or moveByReplacementRequest.role == 'SecondaryManagerRedirect' or moveByReplacementRequest.role == 'ReplacementSecondaryManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{moveByReplacementRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{moveByReplacementRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{moveByReplacementRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{moveByReplacementRequest.role != 'ManagerRedirect' and moveByReplacementRequest.role != 'SecondaryManagerRedirect' and moveByReplacementRequest.role != 'ReplacementSecondaryManagerRedirect' and moveByReplacementRequest.role != 'ManagerRedirectToSecurity' and moveByReplacementRequest.role != 'SecurityEmp'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{moveByReplacementRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="warningsPanelId">
+							<h:panelGroup rendered="#{moveByReplacementRequest.wfMovement.warningMessages != null and moveByReplacementRequest.wfMovement.warningMessages != '' }">
+								<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th>#{msgs.label_warnings}</th>
+									</tr>
+									<tr>
+										<td>
+											<h:outputText value="#{moveByReplacementRequest.getActualWarningMessage(moveByReplacementRequest.wfMovement.warningMessages)}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{moveByReplacementRequest.role == 'Notification' or moveByReplacementRequest.role == 'History'}" value="#{moveByReplacementRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" action="#{moveByReplacementRequest.initMovement()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveByReplacementRequest.approveMovementEE()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'ExchangeEmp'}">
+										<f:ajax render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveByReplacementRequest.rejectMovementEE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'ExchangeEmp'}">
+										<f:ajax render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveByReplacementRequest.approveMovementDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveByReplacementRequest.rejectMovementDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveByReplacementRequest.approveMovementReplacementDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'ReplacementDirectManager'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveByReplacementRequest.rejectMovementReplacementDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'ReplacementDirectManager'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="redirectMrtsBtnId" onclick="return handleOnAction('#{msgs.q_redirectToSecurity}', 'validateRefuseAndNotes(1, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveByReplacementRequest.redirectMovementMRTS()}" value="#{msgs.label_redirectToSecurity} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'ManagerRedirectToSecurity'}">
+										<f:ajax render="notifyMessagesId" execute="@form" />
+									</h:commandButton>
+									<h:commandButton id="rejectMrtsBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveByReplacementRequest.rejectMovementMRTS()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'ManagerRedirectToSecurity'}">
+										<f:ajax render="notifyMessagesId" execute="@form" />
+									</h:commandButton>
+
+									<h:commandButton id="approveSeBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveByReplacementRequest.approveMovementSE()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'SecurityEmp'}">
+										<f:ajax render="notifyMessagesId" execute="@form" />
+									</h:commandButton>
+									<h:commandButton id="rejectSeBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{moveByReplacementRequest.rejectMovementSE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'SecurityEmp'}">
+										<f:ajax render="notifyMessagesId" execute="@form" />
+									</h:commandButton>
+
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;moveByReplacementRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{moveByReplacementRequest.redirectMovementMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'ManagerRedirect'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;moveByReplacementRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{moveByReplacementRequest.redirectMovementSMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'SecondaryManagerRedirect'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;moveByReplacementRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{moveByReplacementRequest.redirectMovementRSMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'ReplacementSecondaryManagerRedirect'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton action="#{moveByReplacementRequest.approveMovementRE}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" onclick="return handleOnAction('#{moveByReplacementRequest.mode == 1 ? msgs.q_reviewOfficers : (moveByReplacementRequest.mode == 2 ? msgs.q_reviewSoldiers : msgs.q_reviewCivilians)}','validateRefuseAndNotes(1, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)',null);" styleClass="btn_normal_icon"
+										rendered="#{moveByReplacementRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveByReplacementRequest.rejectMovementRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton action="#{moveByReplacementRequest.approveMovementSRE}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" onclick="return handleOnAction('#{moveByReplacementRequest.mode == 1 ? msgs.q_reviewOfficers : msgs.q_reviewSoldiers}','validateRefuseAndNotes(1, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)',null);" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'SecondaryReviewerEmp'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton action="#{moveByReplacementRequest.rejectMovementSRE}" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'SecondaryReviewerEmp'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton action="#{moveByReplacementRequest.approveMovementRSRE}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" onclick="return handleOnAction('#{moveByReplacementRequest.mode == 1 ? msgs.q_reviewOfficers : msgs.q_reviewSoldiers}','validateRefuseAndNotes(1, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)',null);" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'ReplacementSecondaryReviewerEmp'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton action="#{moveByReplacementRequest.rejectMovementRSRE}" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'ReplacementSecondaryReviewerEmp'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveByReplacementRequest.approveMovementSM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateDecisionApprovalNotes(&quot;moveByReplacementRequestFormId:specialAuthorityDataId:decisionApprovalRemarksId&quot;, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;moveByReplacementRequestFormId:curTaskId:notesId&quot;)',null);" action="#{moveByReplacementRequest.returnMovementSM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon"
+										rendered="#{moveByReplacementRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveByReplacementRequest.rejectMovementSM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveByReplacementRequest.approveMovementSSM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;moveByReplacementRequestFormId:curTaskId:notesId&quot;)',null);" action="#{moveByReplacementRequest.returnMovementSSM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveByReplacementRequest.rejectMovementSSM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveByReplacementRequest.approveMovementRSSM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'ReplacementSecondarySignManager'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;moveByReplacementRequestFormId:curTaskId:notesId&quot;)',null);" action="#{moveByReplacementRequest.returnMovementRSSM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'ReplacementSecondarySignManager'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveByReplacementRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveByReplacementRequest.rejectMovementRSSM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'ReplacementSecondarySignManager'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton action="#{moveByReplacementRequest.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'Notification' and moveByReplacementRequest.instanceApproved == 1}" />
+
+									<h:commandButton action="#{moveByReplacementRequest.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveByReplacementRequest.role == 'Notification'}">
+										<f:ajax execute="@form" render="moveByReplacementRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

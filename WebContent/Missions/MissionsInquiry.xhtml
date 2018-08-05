@@ -1,0 +1,294 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">   
+			window.onkeypress = function(e) {
+				  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			  	  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+			      if (keyCode == '13'){
+			    	  document.getElementById('missionsInquiryFormId:searchBtnId').click();
+			    	  return false;
+			      }
+			}; 
+			
+	        function getEmp(contextPath){
+	        	openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, #{missionsInquiry.mode}, -1, -1, -1, -1, -1, #{missionsInquiry.employeesSearchRegionId});
+	        }
+	        
+	        function handleEmpMiniSearchResult(ret){ 
+	        	if(ret != null){
+		               document.getElementById('missionsInquiryFormId:empIDHId').value = ret[0];
+		               document.getElementById('missionsInquiryFormId:empNameId').innerHTML = ret[1];
+		               document.getElementById('missionsInquiryFormId:empNameHId').value = ret[1];
+			           document.getElementById('missionsInquiryFormId:removeButtonId').style.display = '';
+		        }
+	    	}
+
+	        function resetEmpName(){
+	        	document.getElementById('missionsInquiryFormId:empIDHId').value = '';
+	       	 	document.getElementById('missionsInquiryFormId:empNameId').innerHTML = '';
+	       	 	document.getElementById('missionsInquiryFormId:empNameHId').value = '';
+	       	 	document.getElementById('missionsInquiryFormId:removeButtonId').style.display = 'none';
+	        }
+	        
+	        function validateSearchPanel() {
+	        	empIDHId = document.getElementById('missionsInquiryFormId:empIDHId').value;
+ 				decisionId = document.getElementById('missionsInquiryFormId:decisionId').value;
+ 				purposeId = document.getElementById('missionsInquiryFormId:purposeId').value;
+ 				destinationId = document.getElementById('missionsInquiryFormId:destinationId').value;
+ 				adminUserHId = document.getElementById('adminUserHId').value;
+ 				var purposeLength = purposeId.length;
+ 				var destinationLength = destinationId.length;
+              if ( adminUserHId == 1 )
+               {
+	 				if ((empIDHId == null || empIDHId == '')
+	 					 &amp;&amp;(decisionId == null || decisionId == '')
+	 					 &amp;&amp;(purposeId == null || purposeId == '')
+	 					 &amp;&amp;(destinationId == null || destinationId == '')
+	 					 ) 
+	 				{
+	 					alert("#{msgs.error_missionFieldsAreMandatory}");
+	 					return false;
+	 				}else if(( purposeLength &lt; 3 ) 
+	                           &amp;&amp;(empIDHId == null || empIDHId == '')
+	                           &amp;&amp;(decisionId == null || decisionId == '')
+	 					       &amp;&amp;(destinationId == null || destinationId == '' || destinationLength &lt; 3))
+	                 {
+	 					alert("#{msgs.error_fieldsLength}");
+	 				    return false;
+	 				}else if((destinationLength &lt; 3) 
+	                           &amp;&amp;(empIDHId == null || empIDHId == '')
+	                           &amp;&amp;(decisionId == null || decisionId == '')
+	 					       &amp;&amp;(purposeId == null || purposeId == '' || purposeLength &lt; 3))
+	                {
+	 					alert("#{msgs.error_fieldsLength}");
+	 				    return false;
+	 				}
+ 				}else{
+ 					if(empIDHId == null || empIDHId == '')
+ 	 				{
+                        alert("#{msgs.error_empSelectionManadatory}");
+	 				    return false;
+ 	 				}
+ 	 	 			
+ 	 			}
+ 				 return true;
+             }
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="missionsInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{missionsInquiry.screenTitle}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionEmpName}" />
+									</th>
+									<td width="35%">
+										<h:outputText id="empNameId" value="#{missionsInquiry.empName}" />
+										<h:inputHidden id="empIDHId" value="#{missionsInquiry.empId}" />
+										<h:inputHidden id="empNameHId" value="#{missionsInquiry.empName}" />
+										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_missionEmpName}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+										<h:panelGroup id="removeButtonId" rendered="#{missionsInquiry.empId != null}">
+											<h:commandButton value="#{msgs.fa_times}" onclick="resetEmpName(); return false;" title="#{msgs.label_cancelSelection}" styleClass="btn_icon" />
+										</h:panelGroup>
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionDecisionNumber}" />
+									</th>
+									<td width="35%">
+										<h:inputText id="decisionId" value="#{missionsInquiry.decisionNumber}" onkeypress="return isDigit(event);" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionLocationFlag}" />
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="loactionFlagId" value="#{missionsInquiry.locationFlag}">
+											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+											<f:selectItem itemLabel="#{msgs.label_locIn}" itemValue="0" />
+											<f:selectItem itemLabel="#{msgs.label_locOut}" itemValue="1" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionDestination}" />
+									</th>
+									<td width="35%">
+										<h:inputText id="destinationId" value="#{missionsInquiry.destination}" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionPurpose}" />
+									</th>
+									<td width="35%">
+										<h:inputText id="purposeId" value="#{missionsInquiry.purpose}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="20%">#{msgs.label_fromDate}</th>
+									<td width="30%">
+										<util:hijri id="fromDateId" value="#{missionsInquiry.fromDate}" nullable="true" />
+									</td>
+									<th width="20%">#{msgs.label_toDate}</th>
+									<td width="30%">
+										<util:hijri id="toDateId" value="#{missionsInquiry.toDate}" nullable="true" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{missionsInquiry.searchMissions()}" onclick="return validateSearchPanel();" styleClass="btn_normal_icon" title="#{msgs.label_searchByRoot}">
+										<f:ajax execute="missionsInquiryFormId:searchPanelId" render="missionsInquiryFormId:missionsTableId missionsInquiryFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{missionsInquiry.resetForm()}" styleClass="btn_normal_icon">
+										<f:ajax render="missionsInquiryFormId:searchPanelId missionsInquiryFormId:missionsTableId missionsInquiryFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="missionsTableId" rowKeyVar="index" var="mission" value="#{missionsInquiry.missionList}" rows="#{missionsInquiry.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 3%">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                            </rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_missionDecisionNumber}</f:facet>
+								<h:outputText value="#{mission.decisionNumber}" />
+							</rich:column>
+							<rich:column style="width : 7%">
+								<f:facet name="header">#{msgs.label_missionDecisionDate}</f:facet>
+								<h:outputText value="#{mission.decisionDateString}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_missionLocationFlag}</f:facet>
+								<h:outputText value="#{msgs.label_locIn}" rendered="#{mission.locationFlag == 0}" />
+								<h:outputText value="#{msgs.label_locOut}" rendered="#{mission.locationFlag == 1}" />
+							</rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header">#{msgs.label_missionDestination}</f:facet>
+								<h:outputText value="#{mission.destination}" />
+							</rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header">#{msgs.label_missionPurpose}</f:facet>
+								<h:outputText value="#{mission.purpose}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_period}</f:facet>
+								<h:outputText value="#{mission.period}" />
+							</rich:column>
+							<rich:column style="width : 7%">
+								<f:facet name="header">#{msgs.label_fromDate}</f:facet>
+								<h:outputText value="#{mission.startDateString}" />
+							</rich:column>
+							<rich:column style="width : 7%">
+								<f:facet name="header">#{msgs.label_toDate}</f:facet>
+								<h:outputText value="#{mission.endDateString}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_DetailedData}" />
+								</f:facet>
+								<a target="_blank" href="#{request.contextPath}/Missions/MissionView.jsf?missionId=#{mission.id}" style="text-decoration: none;">
+									<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_DetailedData}"></i>
+								</a>
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_PrintTaskOrder}" />
+								</f:facet>
+								<h:commandButton value="#{msgs.fa_print}" title="#{msgs.label_PrintTaskOrder}" styleClass="btn_icon" action="#{missionsInquiry.printMission(mission)}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_officailMissionPrint}" />
+								</f:facet>
+								<h:commandButton value="#{msgs.fa_print}" title="#{msgs.label_officailMissionPrint}" styleClass="btn_icon" action="#{missionsInquiry.printMissionOfficailPerformance(mission)}" />
+							</rich:column>
+							<rich:column style="width : 5%" rendered="#{missionsInquiry.adminUser==1 and (missionsInquiry.mode==1 or missionsInquiry.mode==2)}">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_PrintPaymentOrder}" />
+								</f:facet>
+								<h:commandButton value="#{msgs.fa_print}" title="#{msgs.label_PrintPaymentOrder}" styleClass="btn_icon" action="#{missionsInquiry.printPaymentDecision(mission)}" />
+							</rich:column>
+							<rich:column style="width : 5%" rendered="#{missionsInquiry.adminUser==1 and missionsInquiry.mode==1 and missionsInquiry.loginEmpData.physicalRegionId == 1}">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_PrintFinancialLink}" />
+								</f:facet>
+								<h:commandButton value="#{msgs.fa_print}" title="#{msgs.label_PrintFinancialLink}" styleClass="btn_icon" action="#{missionsInquiry.printFinancialLink(mission)}" />
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="adminUserHId" value="#{missionsInquiry.adminUser}" />
+</h:body>
+</html>

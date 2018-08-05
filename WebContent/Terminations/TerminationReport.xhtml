@@ -1,0 +1,317 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:c="http://java.sun.com/jsp/jstl/core">
+   <h:head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <h:outputStylesheet library="css" name="styles.css" />
+      <h:outputStylesheet library="css" name="grid.css" />
+      <h:outputScript name="utilities.js" library="javascript" target="head" />
+      <script type="text/javascript">
+         //<![CDATA[
+         	
+         	function getUnit(regionId) {
+         		openUnitsMiniSearch(2, '#{request.contextPath}', 'handleUnitMiniSearchResult(ret)', -1, document.getElementById('terminationReportFormId:employeeRegionId').value, -1);
+         	}
+         
+         	function handleUnitMiniSearchResult(ret) {
+         		if (ret != null) {
+         			document.getElementById('terminationReportFormId:employeeUnitFullNameId').innerHTML = ret[1];
+         			document.getElementById('terminationReportFormId:employeeUnitFullNameHId').value = ret[1];
+         		}
+         	}
+         // ]]>
+      </script>
+   </h:head>
+   <h:body styleClass="screenBg">
+      <h:form id="terminationReportFormId" dir="#{msgs.dir}">
+         <ui:decorate template="/Main/Template.xhtml">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+               <tr>
+                  <td width="100%" height="5" />
+               </tr>
+               <tr>
+                  <td width="100%" class="screenTitle">
+                     <h:outputText value="#{terminationReport.screenTitle}" />
+                  </td>
+               </tr>
+               <tr>
+                  <td width="100%" height="10" />
+               </tr>
+               <tr>
+                  <td width="100%">
+                     <table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                           <td>#{msgs.title_theReports}</td>
+                        </tr>
+                     </table>
+                  </td>
+               </tr>
+               <tr>
+                  <td width="100%">
+                     <h:panelGroup id="reportsPanelId">
+                        <table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+                           <h:panelGroup>
+                              <tr>
+                                 <td width="100%">
+                                    <h:selectOneRadio value="#{terminationReport.reportType}" layout="pageDirection">
+                                       <f:selectItem itemLabel="#{msgs.label_serviceTerminatedReport}" itemValue="1" />
+                                       <f:selectItem itemLabel="#{terminationReport.mode == 3 ? msgs.label_terminatedServicesStatisticalReportRegionPersonRank : msgs.label_terminatedServicesStatisticalReportRegionRank}" itemValue="2" />
+                                       <f:selectItem itemLabel="#{terminationReport.mode == 3 ? msgs.label_terminatedServicesStatisticalReportReasonPersonRank : msgs.label_terminatedServicesStatisticalReportReasonRank}" itemValue="8" />
+                                       <f:selectItem itemLabel="#{terminationReport.mode == 2 ? msgs.label_extensionDecisionIssuedReportSoldier : msgs.label_extensionDecisionIssuedReport}" itemValue="3" />
+                                       <f:selectItem itemLabel="#{terminationReport.mode == 2 ? msgs.label_extensionDecisionIssuedStatisticalReportSoldier : msgs.label_extensionDecisionIssuedStatisticalReport}" itemValue="4" />
+                                       <f:selectItem itemLabel="#{terminationReport.mode == 2 ? msgs.label_printSoldiersTerminationsDetailedReport : msgs.label_retirementEligiblityInquiry}" itemValue="5" />
+                                       <c:if test="#{terminationReport.mode==2}">
+                                          <f:selectItem itemLabel="#{msgs.label_printSoldiersTerminationsStaticalReport}" itemValue="6" />
+                                       </c:if>
+                                       <c:if test="#{terminationReport.mode==3}">
+                                          <f:selectItem itemLabel="#{msgs.label_contractorsEligiblePrint}" itemValue="7" />
+                                       </c:if>
+                                       <f:ajax event="change" execute="@this terminationReportFormId:searchDataPanelId terminationReportFormId:actionsSectionPanelId" listener="#{terminationReport.resetForm()}" render="terminationReportFormId:searchDataPanelId terminationReportFormId:actionsSectionPanelId" />
+                                    </h:selectOneRadio>
+                                 </td>
+                              </tr>
+                           </h:panelGroup>
+                        </table>
+                     </h:panelGroup>
+                  </td>
+               </tr>
+               <tr>
+                  <td>
+                     <h:panelGroup id="searchDataPanelId">
+                        <h:panelGroup rendered="#{terminationReport.reportType != 7}">
+                           <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                              <tr>
+                                 <td width="100%">
+                                    <table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+                                       <tr>
+                                          <td width="70%">#{msgs.label_searchData}</td>
+                                       </tr>
+                                    </table>
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <td width="100%">
+                                    <table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+                                       <h:panelGroup rendered="#{terminationReport.reportType == 1 || terminationReport.reportType == 2 || terminationReport.reportType == 8}">
+                                          <tr>
+                                             <th width="15%">
+                                                <h:outputText value="#{msgs.label_terminationReason}" />
+                                                <font style="color: red;">*</font>
+                                             </th>
+                                             <td width="85%" colspan="3">
+                                                <h:selectOneMenu id="reasonsId" value="#{terminationReport.reasonId}">
+                                                   <f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+                                                   <f:selectItems value="#{terminationReport.terminationReasons}" var="reason" itemLabel="#{reason.description}" itemValue="#{reason.id}" />
+                                                </h:selectOneMenu>
+                                             </td>
+                                          </tr>
+                                       </h:panelGroup>
+                                       <h:panelGroup rendered="#{terminationReport.reportType == 1 || terminationReport.reportType == 2 || terminationReport.reportType == 3 || terminationReport.reportType == 4 || terminationReport.reportType == 8}">
+                                          <tr>
+                                             <th width="15%">
+                                                <h:outputText value="#{(terminationReport.reportType == 1 || terminationReport.reportType == 2 || terminationReport.reportType == 8) ? msgs.label_employeeRegionDuringDecisionIssuing : msgs.label_region}" />
+                                                <font style="color: red;">*</font>
+                                             </th>
+                                             <td width="35%">
+                                                <h:selectOneMenu id="employeeRegionId" value="#{terminationReport.regionId}" disabled="#{terminationReport.loginEmpData.physicalRegionId != 1}">
+                                                   <f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+                                                   <f:selectItems value="#{terminationReport.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}"  />
+                                                   <f:ajax event="change" listener="#{terminationReport.resetEmployeeUnit()}" render="terminationReportFormId:employeeUnitPanelId terminationReportFormId:notifyMessagesId" />
+                                                </h:selectOneMenu>
+                                             </td>
+                                             <th width="15%">
+                                                <h:outputText value="#{(terminationReport.reportType == 1 || terminationReport.reportType == 2 || terminationReport.reportType == 8) ? msgs.label_employeeUnitDuringDecisionIssuing : msgs.label_unit}" />
+                                             </th>
+                                             <td width="35%">
+                                                <h:panelGroup id="employeeUnitPanelId">
+                                                   <h:outputText id="employeeUnitFullNameId" value="#{terminationReport.unitFullName}"/>
+                                                   <h:outputText value=" " />
+                                                   <h:inputHidden id="employeeUnitFullNameHId" value="#{terminationReport.unitFullName}" />
+                                                   <h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+                                                </h:panelGroup>
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <h:panelGroup rendered="#{terminationReport.mode == 3}">
+                                                <th width="15%">
+                                                   <h:outputText value="#{msgs.label_civilianCategory}" />
+                                                </th>
+                                                <td width="35%">
+                                                   <h:selectOneMenu value="#{terminationReport.categoryId}" rendered="#{terminationReport.mode == 3}">
+                                                      <f:selectItems value="#{terminationReport.categories}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+                                                      <f:ajax event="change" execute="@this" listener="#{terminationReport.civilianCategoryChanged()}" render="terminationReportFormId:reasonsId terminationReportFormId:civiliansRanksId terminationReportFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+                                                   </h:selectOneMenu>
+                                                </td>
+                                                <th width="15%">
+                                                   <h:outputText value="#{(terminationReport.reportType == 1 || terminationReport.reportType == 2 || terminationReport.reportType == 8) ? msgs.label_employeePersonRankDuringDecisionIssuing : msgs.label_personRank}" />
+                                                   <font style="color: red;">*</font>
+                                                </th>
+                                                <td width="85%" colspan="3">
+                                                   <h:selectOneMenu id="civiliansRanksId" value="#{terminationReport.rankId}">
+                                                      <f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+                                                      <f:selectItems value="#{terminationReport.ranks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+                                                   </h:selectOneMenu>
+                                                </td>
+                                             </h:panelGroup>
+                                          </tr>
+                                          <tr>
+                                             <h:panelGroup rendered="#{terminationReport.mode != 3 }">
+                                                <th width="15%">
+                                                   <h:outputText value="#{(terminationReport.reportType == 1 || terminationReport.reportType == 2 || terminationReport.reportType == 8) ? msgs.label_employeeRankDuringDecisionIssuing : msgs.label_rank}" />
+                                                   <font style="color: red;">*</font>
+                                                </th>
+                                                <td width="85%" colspan="3">
+                                                   <h:selectOneMenu value="#{terminationReport.rankId}" rendered="#{terminationReport.mode != 3}">
+                                                      <f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+                                                      <f:selectItems value="#{terminationReport.ranks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+                                                   </h:selectOneMenu>
+                                                </td>
+                                             </h:panelGroup>
+                                          </tr>
+                                       </h:panelGroup>
+                                       <h:panelGroup rendered="#{terminationReport.reportType == 1 || terminationReport.reportType == 2 || terminationReport.reportType == 8}">
+                                          <tr>
+                                             <th width="15%">
+                                                <h:outputText value="#{msgs.label_serviceTerminationDateFrom}" />
+                                             </th>
+                                             <td width="35%">
+                                                <util:hijri value="#{terminationReport.serviceTerminationDateFrom}" nullable="true" />
+                                             </td>
+                                             <th width="15%">
+                                                <h:outputText value="#{msgs.label_to}" />
+                                                <font style="color: red;">*</font>
+                                             </th>
+                                             <td width="35%">
+                                                <util:hijri value="#{terminationReport.serviceTerminationDateTo}" />
+                                             </td>
+                                          </tr>
+                                       </h:panelGroup>
+                                       <h:panelGroup rendered="#{terminationReport.reportType == 3 || terminationReport.reportType == 4}">
+                                          <tr>
+                                             <th width="15%">
+                                                <h:outputText value="#{terminationReport.mode == 2 ? msgs.label_extensionSoldierDateFrom : msgs.label_extensionDateFrom}" />
+                                             </th>
+                                             <td width="35%">
+                                                <util:hijri value="#{terminationReport.extensionDateFrom}" nullable="true" />
+                                             </td>
+                                             <th width="15%">
+                                                <h:outputText value="#{msgs.label_to}" />
+                                                <font style="color: red;">*</font>
+                                             </th>
+                                             <td width="35%">
+                                                <util:hijri value="#{terminationReport.extensionDateTo}" />
+                                             </td>
+                                          </tr>
+                                       </h:panelGroup>
+                                       <h:panelGroup rendered="#{terminationReport.reportType == 5 || terminationReport.reportType == 6}">
+                                          <tr>
+                                             <h:panelGroup rendered="#{terminationReport.mode == 1}">
+                                                <th width="15%">
+                                                   <h:outputText value="#{msgs.label_terminationReason}" />
+                                                   <font style="color: red;">*</font>
+                                                </th>
+                                                <td width="85%" colspan="3">
+                                                   <h:selectOneMenu value="#{terminationReport.reasonId}">
+                                                      <f:selectItems value="#{terminationReport.terminationReasons}" var="reason" itemLabel="#{reason.description}" itemValue="#{reason.id}" />
+                                                      <f:ajax event="change" execute="terminationReportFormId:ranksId" render="terminationReportFormId:ranksId" listener="#{terminationReport.changeOfficerRanks()}" />
+                                                   </h:selectOneMenu>
+                                                </td>
+                                             </h:panelGroup>
+                                          </tr>
+                                          <tr>
+                                             <h:panelGroup rendered="#{terminationReport.mode == 3}">
+                                                <th width="15%">
+                                                   <h:outputText value="#{msgs.label_civilianCategory}" />
+                                                   <font style="color: red;">*</font>
+                                                </th>
+                                                <td width="85%" colspan="3">
+                                                   <h:selectOneMenu value="#{terminationReport.categoryId}">
+                                                      <f:selectItems value="#{terminationReport.categories}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+                                                      <f:ajax event="change" execute="terminationReportFormId:ranksId" render="terminationReportFormId:ranksId " listener="#{terminationReport.civilianCategoryChanged()}" />
+                                                   </h:selectOneMenu>
+                                                </td>
+                                             </h:panelGroup>
+                                          </tr>
+                                          <tr>
+                                             <th width="15%">
+                                                <h:outputText value="#{msgs.label_region}" />
+                                                <font style="color: red;">*</font>
+                                             </th>
+                                             <td width="35%">
+                                                <h:selectOneMenu value="#{terminationReport.regionId}" disabled="#{terminationReport.loginEmpData.physicalRegionId != 1}">
+                                                   <f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+                                                   <f:selectItems value="#{terminationReport.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+                                                </h:selectOneMenu>
+                                             </td>
+                                             <th width="15%">
+                                                <h:outputText value="#{terminationReport.mode == 3 ? msgs.label_personRank : msgs.label_rank}" />
+                                                <font style="color: red;">*</font>
+                                             </th>
+                                             <td width="35%">
+                                                <h:selectOneMenu id="ranksId" value="#{terminationReport.rankId}">
+                                                   <f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+                                                   <f:selectItems value="#{terminationReport.ranks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+                                                </h:selectOneMenu>
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <th width="15%">
+                                                <h:outputText value="#{msgs.label_terminationDueDateFrom}" />
+                                             </th>
+                                             <td width="35%">
+                                                <util:hijri value="#{terminationReport.terminationDueDateFrom}" nullable="true" />
+                                             </td>
+                                             <th width="15%">
+                                                <h:outputText value="#{msgs.label_to}" />
+                                                <font style="color: red;">*</font>
+                                             </th>
+                                             <td width="35%">
+                                                <util:hijri value="#{terminationReport.terminationDueDateTo}" />
+                                             </td>
+                                          </tr>
+                                       </h:panelGroup>
+                                       <h:panelGroup rendered="#{terminationReport.reportType != 5 and terminationReport.reportType != 6}">
+											<th width="15%">#{msgs.label_decisionDateFrom}</th>
+											<td width="35%">
+												<util:hijri value="#{terminationReport.decisionDateFrom}" nullable="true" />
+											</td>
+											<th width="15%">
+											<h:outputText value="#{msgs.label_to}" />
+											<font style="color: red;">*</font>
+											</th>
+											<td width="35%">
+												<util:hijri value="#{terminationReport.decisionDateTo}" />
+											</td>
+                                       </h:panelGroup>
+                                    </table>
+                                 </td>
+                              </tr>
+                           </table>
+                        </h:panelGroup>
+                     </h:panelGroup>
+                  </td>
+               </tr>
+               <tr>
+                  <td width="100%" height="5" />
+               </tr>
+               <tr>
+                  <td width="100%">
+                     <h:panelGroup id="actionsSectionPanelId">
+                        <table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+                           <tr>
+                              <td width="100%">
+                                 <h:commandButton value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" action="#{terminationReport.print()}" styleClass="btn_normal_icon" />
+                                 <h:commandButton action="#{terminationReport.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+                                    <f:ajax render="terminationReportFormId:searchDataPanelId terminationReportFormId:reportsPanelId terminationReportFormId:notifyMessagesId" />
+                                 </h:commandButton>
+                              </td>
+                           </tr>
+                        </table>
+                     </h:panelGroup>
+                  </td>
+               </tr>
+            </table>
+         </ui:decorate>
+      </h:form>
+   </h:body>
+</html>

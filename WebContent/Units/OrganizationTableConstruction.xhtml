@@ -1,0 +1,585 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+	//<![CDATA[
+
+	function changeCategory() {
+		var confirmedFlag = confirm('#{msgs.q_confirmChangeCategoryClass}');
+		var oldCategoryClass = document.getElementById('organizationTableConstructionFormId:oldCategoryClassHId').value;
+
+		if(! confirmedFlag) {
+ 			document.getElementById('organizationTableConstructionFormId:categoryClassId').value = oldCategoryClass;
+ 			return false;
+		} else {
+			document.getElementById('organizationTableConstructionFormId:oldCategoryClassHId').value = document.getElementById('organizationTableConstructionFormId:categoryClassId').value;
+			return true;
+		}
+	}
+
+	function getBasicJobsName(contextPath) {
+		var categoryClass = document.getElementById('organizationTableConstructionFormId:categoryClassId').value;
+
+		openBasicJobsNamesMiniSearch(contextPath, 'handleBasicJobsNamesMiniSearchResult(ret)', 2, categoryClass, 1);
+	}
+	
+	function handleBasicJobsNamesMiniSearchResult(ret){
+		if (ret != null) {
+			document.getElementById('organizationTableConstructionFormId:returnedBasicJobsNamesIdsHId').value = ret[0];
+			document.getElementById('organizationTableConstructionFormId:returnedBasicJobsNamesHId').value = ret[1];
+			document.getElementById('organizationTableConstructionFormId:returnedCategoryIdsHId').value = ret[2];
+
+			// Click add details button
+			document.getElementById('organizationTableConstructionFormId:addDetailBtnId').click();
+		}
+	}
+	
+	function getMinorSpec(contextPath) {
+		var categoryClass = document.getElementById('organizationTableConstructionFormId:categoryClassId').value;
+		if (categoryClass == 1)
+			minorSpecializationsMiniSearch(contextPath,'handleMinorSpecializationMiniSearchResult(ret)', 1, 0);
+		else
+			minorSpecializationsMiniSearch(contextPath,'handleMinorSpecializationMiniSearchResult(ret)', 2, 0);
+	}
+	
+	function handleMinorSpecializationMiniSearchResult(ret){
+		if (ret != null) {
+			document.getElementById('organizationTableConstructionFormId:jobMinorSpecializationIDHId').value = ret[0];
+			document.getElementById('organizationTableConstructionFormId:jobMinorSpecializationDescriptionHId').value = ret[2];
+			document.getElementById('organizationTableConstructionFormId:jobMinorSpecializationDescriptionId').innerHTML = ret[2];
+			document.getElementById('organizationTableConstructionFormId:jobGeneralSpecializationHId').value = ret[6];
+			document.getElementById('organizationTableConstructionFormId:jobGeneralTypeHId').value = ret[7];
+			document.getElementById('organizationTableConstructionFormId:jobMinorSpecializationBtnId').click();
+		}
+	}
+	
+	function getJobClassification(contextPath) {
+		var rankCode = document.getElementById('organizationTableConstructionFormId:jobRankCodeId').value;
+		if (rankCode == null || rankCode == '' || rankCode == -1) {
+			alert('#{msgs.error_insertJobRankFirst}');
+			return;
+		}
+		openJobClassificationsMiniSearch(contextPath,'handleJobClassificationMiniSearchResult(ret)', rankCode);
+	}
+	
+	function handleJobClassificationMiniSearchResult(ret){
+		if (ret != null) {
+			document.getElementById('organizationTableConstructionFormId:jobClassificationIDHId').value = ret[0];
+			document.getElementById('organizationTableConstructionFormId:jobClassificationCodeHId').value = ret[1];
+			document.getElementById('organizationTableConstructionFormId:jobClassificationCodeId').innerHTML = ret[1];
+			document.getElementById('organizationTableConstructionFormId:jobClassificationDescriptionHId').value = ret[2];
+		}
+	}
+
+	function validateData(){
+
+		var unitsListSize = document.getElementById('organizationTableConstructionFormId:unitsListSizeHId').value;
+		if(unitsListSize == 0){
+			alert('#{msgs.error_orgTableUnitsListEmpty}');
+            return false;
+		}
+		
+		var decNumber = document.getElementById('organizationTableConstructionFormId:decisionNumberId').value.trim();
+        if(decNumber == null || decNumber == '') {
+        	alert('#{msgs.error_decNumberMandatory}');
+            return false;
+        } else if (decNumber.indexOf("*") > -1 || decNumber.indexOf("#") > -1) {
+        	alert('#{msgs.error_decNumberContainsProhibitedCharacter}');
+            return false;
+        }
+
+		var detailsListSize = document.getElementById('organizationTableConstructionFormId:detailsListSizeHId').value;
+		if(detailsListSize == 0){
+			alert('#{msgs.error_orgTableDetailsListEmpty}');
+            return false;
+		}
+
+        return true;
+    }
+
+	function validateDetailData(){
+
+		// Check details List size
+		var detailsListSize = document.getElementById('organizationTableConstructionFormId:detailsListSizeHId').value;
+		if(detailsListSize == 0){
+			alert('#{msgs.error_orgTableDetailsListEmpty}');
+            return false;
+		}
+		
+		var jobRank = document.getElementById('organizationTableConstructionFormId:jobRankCodeId').value.trim();
+        if(jobRank == null || jobRank == '' || jobRank == -1){
+        	alert('#{msgs.error_orgTableDetailEmpRankMandatory}');
+            return false;
+        }
+        
+        var jobsCount = document.getElementById('organizationTableConstructionFormId:jobsCountId').value.trim();
+        if(jobsCount == null || jobsCount =='' || jobsCount <= 0 || jobsCount > 999){
+        	alert('#{msgs.error_jobsCountMandatory}');
+            return false;
+        }
+        
+        var minorSpec = document.getElementById('organizationTableConstructionFormId:jobMinorSpecializationDescriptionId').innerHTML.trim();
+        if(minorSpec == null || minorSpec==''){
+         	alert('#{msgs.error_orgTableDetailMinorSpecializationMandatory}');
+            return false;
+        }
+
+		var categoryClass = document.getElementById('organizationTableConstructionFormId:categoryClassId').value.trim();
+		if(categoryClass == null || categoryClass == ''){
+			alert('#{msgs.error_categoryClassMandatory}');
+		}
+			
+		if(categoryClass == 3){
+			var classificationCode = document.getElementById('organizationTableConstructionFormId:jobClassificationCodeId').innerHTML.trim();
+			if(classificationCode == null || classificationCode=='' || classificationCode==0){
+		        alert('#{msgs.error_orgTableDetailClassificationIsMandatory}');
+		        return false;
+           }
+		}
+		
+        return true;
+    }
+	
+	// ]]>
+    </script>
+
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{organizationTableConstruction.initialize}" />
+	<h:form id="organizationTableConstructionFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_organizationTableConstruction}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="35%" valign="top">
+									<!-- tree -->
+									<table cellpadding="0" cellspacing="0" width="98%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsTree}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:inputText id="searchNameValue" value="#{organizationTableConstruction.searchName}" styleClass="inputDataLarge" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_search}" action="#{organizationTableConstruction.search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+																<f:ajax render="organizationTableConstructionFormId:treePanelId organizationTableConstructionFormId:notifyMessagesId" execute="searchNameValue" />
+															</h:commandButton>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<!-- toChange ids, value of tree, .... -->
+															<h:panelGroup id="treePanelId">
+																<rich:tree id="unitTreeId" toggleListener="#{organizationTableConstruction.treeToggleHandler(item)}" render="treePanelId" value="#{organizationTableConstruction.unitTree}" var="item" dir="#{msgs.dir}" nodeType="unitType">
+																	<rich:treeNode type="unitType" expanded="#{item.expanded}" iconExpanded="/resources/images/#{item.unitType}.png" iconCollapsed="/resources/images/#{item.unitType}.png" iconLeaf="/resources/images/#{item.unitType}.png" title="#{item.orderUnderParent}" ontoggle="unMaskScreen();">
+																		<h:commandLink value="#{item.unitName}" action="#{organizationTableConstruction.selectUnit(item)}">
+																			<f:ajax execute="organizationTableConstructionFormId:decisionDataPanelId" render="organizationTableConstructionFormId:unitsListId organizationTableConstructionFormId:decisionDataPanelId organizationTableConstructionFormId:detailsPanelId organizationTableConstructionFormId:actionsBtnsId organizationTableConstructionFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandLink>
+																	</rich:treeNode>
+																</rich:tree>
+																<h:outputStylesheet library="css" name="tree.css" />
+															</h:panelGroup>
+														</td>
+													</tr>
+
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="65%" valign="top">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%" height="12" />
+										</tr>
+										<!-- Category chosen -->
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="categoryPanelId">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<th>
+																#{msgs.label_category}
+																<font style="color: red;">*</font>
+															</th>
+															<td>
+																<h:selectOneMenu id="categoryClassId" value="#{organizationTableConstruction.selectedCategoryClass}" onchange="return changeCategory()">
+																	<f:selectItems value="#{organizationTableConstruction.categoryClasses}" var="category" itemValue="#{category.id}" itemLabel="#{category.description}" />
+
+																	<f:ajax event="change" listener="#{organizationTableConstruction.reset()}" render="organizationTableConstructionFormId:unitsListId organizationTableConstructionFormId:decisionDataPanelId organizationTableConstructionFormId:detailsPanelId organizationTableConstructionFormId:actionsBtnsId organizationTableConstructionFormId:notifyMessagesId" />
+
+																</h:selectOneMenu>
+																<h:inputHidden id="oldCategoryClassHId" value="#{organizationTableConstruction.selectedCategoryClass}" />
+															</td>
+															<th>#{msgs.label_categoryClassMessage}</th>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+
+										<!-- Units selected -->
+										<tr>
+											<td width="100%">
+												<table border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td>
+															<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>#{msgs.label_organizationTableUnits}</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<!-- Org Table Units -->
+															<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>
+																		<rich:dataTable id="unitsListId" var="unit" rowKeyVar="index" value="#{organizationTableConstruction.selectedUnits}" rows="#{organizationTableConstruction.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+																			<rich:column>
+																				<f:facet name="header" style="width : 5%;">#</f:facet>
+																					#{index+1}
+																				</rich:column>
+																			<rich:column>
+																				<f:facet name="header" style="width : 90%;">
+																					<h:outputText value="#{msgs.label_organizationTableUnits}" />
+																				</f:facet>
+																				<h:outputText value="#{unit.fullName}" />
+																			</rich:column>
+																			<rich:column style="width : 5%;">
+																				<f:facet name="header">#{msgs.label_delete}</f:facet>
+																				<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{organizationTableConstruction.deleteUnit(unit)}" onclick="return confirm('#{msgs.q_delete}');" disabled="#{organizationTableConstruction.completionFlag}">
+																					<f:ajax execute="organizationTableConstructionFormId:decisionDataPanelId" render="organizationTableConstructionFormId:treePanelId organizationTableConstructionFormId:unitsListId organizationTableConstructionFormId:decisionDataPanelId organizationTableConstructionFormId:detailsPanelId organizationTableConstructionFormId:actionsBtnsId organizationTableConstructionFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																				</h:commandButton>
+																			</rich:column>
+																			<f:facet name="footer">
+																				<rich:dataScroller oncomplete="unMaskScreen()" fastControls="hide">
+																					<f:facet name="first">#{msgs.label_first}</f:facet>
+																					<f:facet name="last">#{msgs.label_last}</f:facet>
+																					<f:facet name="next">#{msgs.label_next}</f:facet>
+																					<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																				</rich:dataScroller>
+																			</f:facet>
+																		</rich:dataTable>
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<!-- Decision number and date -->
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="decisionDataPanelId">
+													<!-- Decision info -->
+													<table border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<td>
+																<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<td>#{msgs.label_decisionData}</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<table class="sectionContent" cellpadding="0" cellspacing="0" width="100%">
+																	<tr>
+																		<td width="100%">
+																			<table cellpadding="0" cellspacing="0">
+																				<tr>
+																					<th width="20%">
+																						#{msgs.label_decisionNumber}
+																						<h:outputText value=" " />
+																						<font style="color: red;">*</font>
+																					</th>
+																					<td width="30%">
+																						<h:inputText id="decisionNumberId" value="#{organizationTableConstruction.decisionNumber}" readonly="#{organizationTableConstruction.completionFlag}" />
+																					</td>
+																					<th width="20%">
+																						#{msgs.label_decisionDate}
+																						<font style="color: red;">*</font>
+																					</th>
+																					<td width="30%">
+																						<util:hijri value="#{organizationTableConstruction.decisionDate}" rendered="#{! organizationTableConstruction.completionFlag}" />
+																						<h:outputText value="#{organizationTableConstruction.decisionDateString}" rendered="#{organizationTableConstruction.completionFlag}" />
+																					</td>
+																				</tr>
+																			</table>
+																		</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+
+										<!-- Details panel -->
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="detailsPanelId">
+													<!-- organizationTable Details -->
+													<table border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<td colspan="2">
+																<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<td>#{msgs.label_organizationalDetails}</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<table border="0" cellpadding="0" cellspacing="0" width="100%">
+																	<tr>
+																		<td width="54%" valign="top">
+																			<table class="sectionContent" cellpadding="0" cellspacing="0">
+																				<tr>
+																					<td>
+																						<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getBasicJobsName('#{request.contextPath}'); return false;" disabled="#{organizationTableConstruction.selectedUnits.size() == 0}" />
+																						<h:commandButton id="addDetailBtnId" action="#{organizationTableConstruction.addOrganizationTableDetail()}" style="display: none;">
+																							<f:ajax execute="organizationTableConstructionFormId:returnedBasicJobsNamesIdsHId organizationTableConstructionFormId:returnedBasicJobsNamesHId organizationTableConstructionFormId:returnedCategoryIdsHId" render="organizationTableConstructionFormId:detailsPanelId organizationTableConstructionFormId:actionsBtnsId organizationTableConstructionFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																						</h:commandButton>
+																						<h:inputHidden id="returnedBasicJobsNamesIdsHId" value="#{organizationTableConstruction.selectedBasicJobsNamesIds}" />
+																						<h:inputHidden id="returnedBasicJobsNamesHId" value="#{organizationTableConstruction.selectedBasicJobsNamesNames}" />
+																						<h:inputHidden id="returnedCategoryIdsHId" value="#{organizationTableConstruction.selectedBasicJobNamesCategoriesIds}" />
+
+																					</td>
+																				</tr>
+																				<tr>
+																					<td>
+																						<rich:dataTable id="detailsTableId" var="detail" rowKeyVar="index" value="#{organizationTableConstruction.organizationTableDetails}" rows="#{organizationTableConstruction.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+																							<rich:column style="width : 6%;">
+																								<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_select}" onclick="changeSelectedRowStyle(this.parentElement.parentElement);" action="#{organizationTableConstruction.selectOrganizationTableDetail(detail)}" styleClass="btn_icon">
+																									<f:ajax render="organizationTableConstructionFormId:detailsDataId organizationTableConstructionFormId:notifyMessagesId" />
+																								</h:commandButton>
+																							</rich:column>
+																							<rich:column>
+																								<f:facet name="header">
+																									<h:outputText value="#{msgs.label_basicJobName}" />
+																								</f:facet>
+																								<h:outputText value="#{detail.basicJobName}" />
+																							</rich:column>
+																							<rich:column>
+																								<f:facet name="header">
+																									<h:outputText value="#{organizationTableConstruction.selectedCategoryClass == 1 ? msgs.label_rank : msgs.label_personRank}" />
+																								</f:facet>
+																								<h:outputText value="#{detail.rankDescription}" />
+																							</rich:column>
+																							<rich:column>
+																								<f:facet name="header">
+																									<h:outputText value="#{msgs.label_count}" />
+																								</f:facet>
+																								<h:outputText value="#{detail.jobsCount}" />
+																							</rich:column>
+																							<rich:column style="width : 5%;">
+																								<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{organizationTableConstruction.deleteOrganizationTableDetail(detail)}" onclick="return confirm('#{msgs.q_delete}');" disabled="#{detail.id != null}">
+																									<f:ajax render="organizationTableConstructionFormId:detailsPanelId organizationTableConstructionFormId:actionsBtnsId organizationTableConstructionFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																								</h:commandButton>
+																							</rich:column>
+																							<f:facet name="footer">
+																								<rich:dataScroller oncomplete="unMaskScreen()" fastControls="hide">
+																									<f:facet name="first">#{msgs.label_first}</f:facet>
+																									<f:facet name="last">#{msgs.label_last}</f:facet>
+																									<f:facet name="next">#{msgs.label_next}</f:facet>
+																									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																								</rich:dataScroller>
+																							</f:facet>
+																						</rich:dataTable>
+																					</td>
+																				</tr>
+																			</table>
+																		</td>
+																		<td width="1%" valign="top"></td>
+																		<td width="45%" valign="top">
+																			<h:panelGroup id="detailsDataId">
+																				<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																					<tr>
+																						<th colspan="2">#{msgs.label_extraDataForJobsGeneration}</th>
+																					</tr>
+																					<tr>
+																						<th>
+																							#{organizationTableConstruction.selectedCategoryClass == 1 ? msgs.label_rank : msgs.label_personRank}
+																							<font style="color: red;">*</font>
+																						</th>
+																						<td>
+																							<h:selectOneMenu id="jobRankCodeId" value="#{organizationTableConstruction.selectedOrganizationTableDetail.rankId}" disabled="#{organizationTableConstruction.selectedOrganizationTableDetail.id != null}">
+																								<f:selectItem itemValue="-1" itemLabel="" />
+																								<f:selectItems value="#{organizationTableConstruction.ranks}" var="rank" itemValue="#{rank.id}" itemLabel="#{rank.description}" />
+																							</h:selectOneMenu>
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>
+																							#{msgs.label_count}
+																							<font style="color: red;">*</font>
+																						</th>
+																						<td>
+																							<h:inputText id="jobsCountId" value="#{organizationTableConstruction.selectedOrganizationTableDetail.jobsCount}" disabled="#{organizationTableConstruction.selectedOrganizationTableDetail.id != null}" styleClass="inputDataNormal" onkeypress="return isDigit(event);" maxlength="3" />
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>
+																							#{msgs.label_jobMinorSpec}
+																							<font style="color: red;">*</font>
+																						</th>
+																						<td>
+																							<h:outputText id="jobMinorSpecializationDescriptionId" value="#{organizationTableConstruction.selectedOrganizationTableDetail.minorSpecializationDescription}" />
+																							<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getMinorSpec('#{request.contextPath}');return false;" disabled="#{organizationTableConstruction.selectedOrganizationTableDetail.id != null}" />
+																							<h:inputHidden id="jobMinorSpecializationIDHId" value="#{organizationTableConstruction.selectedOrganizationTableDetail.minorSpecializationId}" />
+																							<h:inputHidden id="jobMinorSpecializationDescriptionHId" value="#{organizationTableConstruction.selectedOrganizationTableDetail.minorSpecializationDescription}" />
+																							<h:inputHidden id="jobGeneralSpecializationHId" value="#{organizationTableConstruction.selectedOrganizationTableDetail.generalSpecialization}" />
+																							<h:inputHidden id="jobGeneralTypeHId" value="#{organizationTableConstruction.selectedOrganizationTableDetail.generalType}" />
+																							<h:commandButton id="jobMinorSpecializationBtnId" style="display: none;">
+																								<f:ajax execute="organizationTableConstructionFormId:jobGeneralSpecializationHId organizationTableConstructionFormId:jobGeneralTypeHId" 
+																										render="organizationTableConstructionFormId:generalSpecializationPanelId organizationTableConstructionFormId:generalTypePanelId organizationTableConstructionFormId:notifyMessagesId" />
+																							</h:commandButton>
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>
+																							#{msgs.label_generalSpec}
+																							<font style="color: red;">*</font>
+																						</th>
+																						<td>
+																							<h:panelGroup id="generalSpecializationPanelId">
+																								<h:outputText rendered="#{organizationTableConstruction.selectedOrganizationTableDetail.generalSpecialization == 1}" value="#{msgs.label_overland}" />
+																								<h:outputText rendered="#{organizationTableConstruction.selectedOrganizationTableDetail.generalSpecialization == 2}" value="#{msgs.label_naval}" />
+																								<h:outputText rendered="#{organizationTableConstruction.selectedOrganizationTableDetail.generalSpecialization == 3}" value="#{msgs.label_aerial}" />
+																							</h:panelGroup>
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>
+																							#{msgs.label_generalType}
+																							<font style="color: red;">*</font>
+																						</th>
+																						<td>
+																							<h:panelGroup id="generalTypePanelId">
+																								<h:outputText rendered="#{organizationTableConstruction.selectedOrganizationTableDetail.generalType == 1}" value="#{msgs.label_jobTypeNormal}" />
+																								<h:outputText rendered="#{organizationTableConstruction.selectedOrganizationTableDetail.generalType == 2}" value="#{msgs.label_jobTypeTechnical}" />
+																								<h:outputText rendered="#{organizationTableConstruction.selectedOrganizationTableDetail.generalType == 3}" value="#{msgs.label_jobTypeField}" />
+																							</h:panelGroup>
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>
+																							#{msgs.label_approved}
+																							<font style="color: red;">*</font>
+																						</th>
+																						<td>
+																							<h:selectOneRadio value="#{organizationTableConstruction.selectedOrganizationTableDetail.approvedFlag}" disabled="#{organizationTableConstruction.selectedOrganizationTableDetail.id != null or organizationTableConstruction.selectedOrganizationTableDetail.categoryId.longValue() != 2}">
+																								<f:selectItem itemValue="1" itemLabel="#{msgs.label_approved}" />
+																								<f:selectItem itemValue="0" itemLabel="#{msgs.label_notApproved}" />
+																							</h:selectOneRadio>
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>
+																							#{msgs.label_jobClass}
+																							<font style="color: red;">*</font>
+																						</th>
+																						<td>
+																							<h:outputText id="jobClassificationCodeId" value="#{organizationTableConstruction.selectedOrganizationTableDetail.classificationJobCode}" />
+																							<h:commandButton id="jobClassificationBtnId" title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getJobClassification('#{request.contextPath}'); return false;" disabled="#{organizationTableConstruction.selectedOrganizationTableDetail.id != null or organizationTableConstruction.selectedOrganizationTableDetail.categoryId.longValue() != 3}" />
+																							<h:inputHidden id="jobClassificationIDHId" value="#{organizationTableConstruction.selectedOrganizationTableDetail.classificationId}" />
+																							<h:inputHidden id="jobClassificationCodeHId" value="#{organizationTableConstruction.selectedOrganizationTableDetail.classificationJobCode}" />
+																							<h:inputHidden id="jobClassificationDescriptionHId" value="#{organizationTableConstruction.selectedOrganizationTableDetail.classificationDescription}" />
+
+																						</td>
+																					</tr>
+																					<tr>
+																						<td colspan="2" width="100%" height="5" />
+																					</tr>
+																					<tr>
+																						<td colspan="2">
+																							<h:commandButton action="#{organizationTableConstruction.saveDetail()}" styleClass="btn_normal_icon" value="#{msgs.label_saveData} &nbsp; #{msgs.fa_floppy_o}" onclick="return handleOnAction('#{msgs.q_save}', 'validateDetailData()');" style="float:left">
+																								<f:ajax execute="organizationTableConstructionFormId:detailsPanelId" render="organizationTableConstructionFormId:detailsTableId organizationTableConstructionFormId:notifyMessagesId" />
+																							</h:commandButton>
+																						</td>
+																					</tr>
+																				</table>
+																			</h:panelGroup>
+
+																		</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="20" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="actionsBtnsId">
+													<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="100%">
+																<h:commandButton action="#{organizationTableConstruction.save()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');" disabled="#{organizationTableConstruction.selectedUnits.size() == 0}" rendered="#{!organizationTableConstruction.done}" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}">
+																	<f:ajax execute="organizationTableConstructionFormId:categoryClassId organizationTableConstructionFormId:unitsListId organizationTableConstructionFormId:decisionDataPanelId" render="organizationTableConstructionFormId:actionsBtnsId organizationTableConstructionFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+																</h:commandButton>
+																<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{organizationTableConstruction.reset()}">
+																	<f:ajax render="organizationTableConstructionFormId:treePanelId organizationTableConstructionFormId:unitsListId organizationTableConstructionFormId:detailsPanelId organizationTableConstructionFormId:decisionDataPanelId organizationTableConstructionFormId:actionsBtnsId organizationTableConstructionFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+																</h:commandButton>
+																<h:inputHidden id="detailsListSizeHId" value="#{organizationTableConstruction.organizationTableDetails.size()}" />
+																<h:inputHidden id="unitsListSizeHId" value="#{organizationTableConstruction.selectedUnits.size()}" />
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

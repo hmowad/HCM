@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="promotionsReportsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{promotionsReports.screenTitle}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="20" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.title_theReports}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:selectOneRadio value="#{promotionsReports.reportType}" layout="pageDirection">
+										<f:selectItem itemLabel="#{msgs.label_promotionEligiblityInquiry}" itemValue="10" />
+										<f:selectItem itemLabel="#{msgs.label_promotionPromotedInquiry}" itemValue="20" />
+										<f:selectItem itemLabel="#{msgs.label_PromotionPromotedInquiryStatistical}" itemValue="30" />
+										<c:if test="#{promotionsReports.mode == 2}">
+											<f:selectItem itemLabel="#{msgs.label_PromotionSoldiersEligibleInquiryStatistical}" itemValue="40" />
+										</c:if>
+										<f:ajax event="change" listener="#{promotionsReports.changeReportType()}" execute="@this" render="promotionsReportsFormId:promotionsReportsDataId" />
+									</h:selectOneRadio>
+								</td>
+							</tr>
+						</table>
+
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<h:panelGroup id="promotionsReportsDataId">
+							<table width="100%" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="70%">#{msgs.label_searchData}</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<th width="15%">
+													<h:outputText value="#{(promotionsReports.reportType == 20 || promotionsReports.reportType == 30) ? msgs.label_employeeRegionDuringDecisionIssuing : msgs.label_region}" />
+												</th>
+												<td width="35%">
+													<h:selectOneMenu value="#{promotionsReports.regionId}" disabled="#{promotionsReports.loginEmpData.physicalRegionId != 1}">
+														<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+														<f:selectItems value="#{promotionsReports.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+													</h:selectOneMenu>
+												</td>
+												<th width="15%">
+													<h:outputText value="#{(promotionsReports.reportType == 20 || promotionsReports.reportType == 30) ? (promotionsReports.mode == 3 ? msgs.label_toPromotedPersonRank : msgs.label_toPromotedRank) : (promotionsReports.mode == 3 ? msgs.label_personRank : msgs.label_rank)}" />
+												</th>
+												<td width="35%">
+													<h:selectOneMenu value="#{promotionsReports.rankId}">
+														<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+														<f:selectItems value="#{promotionsReports.ranks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+													</h:selectOneMenu>
+												</td>
+											</tr>
+											<h:panelGroup rendered="#{promotionsReports.reportType == 10 || promotionsReports.reportType == 40}">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_promotionDueDateFrom}" />
+													</th>
+													<td width="35%">
+														<util:hijri value="#{promotionsReports.promotionDueDateFrom}" nullable="true" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_to}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="35%">
+														<util:hijri value="#{promotionsReports.promotionDueDateTo}" />
+													</td>
+												</tr>
+											</h:panelGroup>
+											<h:panelGroup rendered="#{promotionsReports.reportType == 20  || promotionsReports.reportType == 30}">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_decisionDateFrom}" />
+													</th>
+													<td width="35%">
+														<util:hijri value="#{promotionsReports.decisionDateFrom}" nullable="true" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_to}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="35%">
+														<util:hijri value="#{promotionsReports.decisionDateTo}" />
+													</td>
+												</tr>
+											</h:panelGroup>
+											<h:panelGroup id="scaleUpPanelId" rendered="#{promotionsReports.reportType == 30 and promotionsReports.mode == 2}">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_scaleUpPromotion}" />
+													</th>
+													<td width="10%">
+														<h:commandButton action="#{promotionsReports.scaleUpJobs()}" title="#{promotionsReports.scaleUpFlag ? msgs.label_cancelScaleUpFlag : msgs.label_scaleUpPromotion}" value="#{promotionsReports.scaleUpFlag ? msgs.fa_toggle_on : msgs.fa_toggle_off} " styleClass="#{promotionsReports.scaleUpFlag ? 'btn_toggleOn' :  'btn_toggleOff'}">
+															<f:ajax execute="promotionsReportsFormId:scaleUpPanelId" render="promotionsReportsFormId:promotionsReportsDataId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_promotionDate}" />
+													</th>
+													<td width="35%">
+														<util:hijri value="#{promotionsReports.promotionDate}" />
+													</td>
+												</tr>
+											</h:panelGroup>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup>
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" action="#{promotionsReports.printPromotionsReport()}" />
+										<h:commandButton id="resetFormBtnId" action="#{promotionsReports.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+											<f:ajax render="promotionsReportsFormId:promotionsReportsDataId" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

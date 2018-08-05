@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+
+	//<![CDATA[   
+		function getEmp(contextPath) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 12, #{terminationPrerequisiteData.categoryMode}, -1, -1, -1, -1, -1, #{terminationPrerequisiteData.employeesSearchRegionId});
+		}
+		
+		function handleEmpMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('terminationPrerequisiteDataFormId:employeeIDId').value = ret[0];
+				document.getElementById('terminationPrerequisiteDataFormId:searchEmpBtnId').click();
+			}
+		}
+
+		
+		function validateTerminationPrerequisiteData(){
+			var terminationDueDateDay  =  document.getElementById('terminationPrerequisiteDataFormId:terminationDueDateId:day').value;
+			if(terminationDueDateDay == null || terminationDueDateDay.trim() == '' || terminationDueDateDay == 0 ){
+	           	alert("#{msgs.error_terminationDueDateIsMandatory}");
+	            return false;
+	        }
+	        
+			return true;
+		}
+		// ]]>
+    </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="terminationPrerequisiteDataFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{terminationPrerequisiteData.categoryMode == 1 ? msgs.title_terminationOfficersPrerequisite : ( terminationPrerequisiteData.categoryMode == 2 ? msgs.title_terminationSoldiersPrerequisite : msgs.title_terminationCiviliansPrerequisite )}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{terminationPrerequisiteData.categoryMode == 1 ? msgs.label_selectOfficer : ( terminationPrerequisiteData.categoryMode == 2 ? msgs.label_selectSoldier : msgs.label_selectPerson )}" />
+								</th>
+								<td width="75%">
+									<h:inputHidden id="employeeIDId" value="#{terminationPrerequisiteData.empId}" />
+									<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmp('#{request.contextPath}');return false;" />
+									<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{terminationPrerequisiteData.searchEmpData()}">
+										<f:ajax execute="terminationPrerequisiteDataFormId:employeeIDId" render="terminationPrerequisiteDataFormId:employeeDataPanelId terminationPrerequisiteDataFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">#{terminationPrerequisiteData.categoryMode == 1 ? msgs.title_officerData : ( terminationPrerequisiteData.categoryMode == 2 ? msgs.title_soldierData : msgs.title_personData )}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="employeeDataPanelId">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<th width="20%">
+													<h:outputText value="#{msgs.label_empName}" />
+												</th>
+												<td width="30%">
+													<h:outputText value="#{terminationPrerequisiteData.employeeData.name}" />
+												</td>
+												<th width="20%">
+													<h:outputText value="#{terminationPrerequisiteData.categoryMode == 3 ? msgs.label_personRank : msgs.label_rank}" />
+												</th>
+												<td width="30%">
+													<h:outputText value="#{terminationPrerequisiteData.employeeData.rankDesc}" />
+												</td>
+											</tr>
+											<tr>
+												<h:panelGroup rendered="#{terminationPrerequisiteData.categoryMode == 1}">
+													<th width="20%">
+														<h:outputText value="#{msgs.label_militaryNumber}" />
+													</th>
+													<td width="30%">
+														<h:outputText value="#{terminationPrerequisiteData.employeeData.militaryNumber}" />
+													</td>
+												</h:panelGroup>
+												<h:panelGroup rendered="#{terminationPrerequisiteData.categoryMode != 1}">
+													<th width="20%">
+														<h:outputText value="#{msgs.label_jobCode}" />
+													</th>
+													<td width="30%">
+														<h:outputText value="#{terminationPrerequisiteData.employeeData.jobCode}" />
+													</td>
+												</h:panelGroup>
+												<th width="20%">
+													<h:outputText value="#{msgs.label_jobName}" />
+												</th>
+												<td width="30%">
+													<h:outputText value="#{terminationPrerequisiteData.employeeData.jobDesc}" />
+												</td>
+											</tr>
+											<tr>
+												<th width="20%">
+													<h:outputText value="#{msgs.label_officialUnit}" />
+												</th>
+												<td width="80%" colspan="3">
+													<h:outputText value="#{terminationPrerequisiteData.employeeData.officialUnitFullName}" />
+												</td>
+											</tr>
+											<tr>
+												<th width="20%">
+													<h:outputText value="#{msgs.label_birthDate}" />
+												</th>
+												<td width="30%">
+													<h:outputText value="#{terminationPrerequisiteData.employeeData.birthDateString}" />
+												</td>
+												<th width="20%">
+													<h:outputText value="#{msgs.label_recruitmentDate}" />
+												</th>
+												<td width="30%">
+													<h:outputText value="#{terminationPrerequisiteData.employeeData.recruitmentDateString}" />
+												</td>
+											</tr>
+											<tr>
+												<th width="20%">
+													<h:outputText value="#{msgs.label_serviceTerminationDueDate}" />
+												</th>
+												<td width="30%">
+													<h:outputText value="#{terminationPrerequisiteData.employeeData.serviceTerminationDueDateString}" />
+												</td>
+												<th width="20%">
+													<h:outputText value="#{terminationPrerequisiteData.categoryMode == 2 ? msgs.label_soldiersLastExtensionEndDate :  msgs.label_lastExtensionEndDate}" />
+												</th>
+												<td width="30%">
+													<h:outputText value="#{terminationPrerequisiteData.employeeData.lastExtensionEndDateString}" />
+												</td>
+											</tr>
+											<tr>
+												<th width="20%">
+													<h:outputText value="#{msgs.label_promotionDueDate}" />
+												</th>
+												<td width="30%">
+													<h:outputText value="#{terminationPrerequisiteData.employeeData.promotionDueDateString}" />
+												</td>
+												<th width="20%">
+													<h:outputText value="#{msgs.lable_lastPromotionDate}" />
+												</th>
+												<td width="30%">
+													<h:outputText value="#{terminationPrerequisiteData.employeeData.lastPromotionDateString}" />
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="employeeTerminationDatesId" rendered="#{terminationPrerequisiteData.empId != null}">
+											<table border="0" cellpadding="0" cellspacing="0" width="100%">
+												<tr>
+													<td width="100%">
+														<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+															<tr>
+																<td width="100%">#{msgs.label_terminationData}</td>
+															</tr>
+														</table>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+															<tr>
+																<th width="15%">
+																	<h:outputText value="#{msgs.label_serviceTerminationDueDate}" />
+																	<font style="color: red;">*</font>
+																</th>
+																<td width="85%">
+																	<util:hijri id="terminationDueDateId" value="#{terminationPrerequisiteData.terminationDueDate}" viewFutureRange="true" nullable="true" />
+																</td>
+															</tr>
+														</table>
+													</td>
+												</tr>
+											</table>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td>
+													<h:commandButton value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return validateTerminationPrerequisiteData();" action="#{terminationPrerequisiteData.saveTerminationEmployeeData()}" title="#{msgs.label_save}" styleClass="btn_normal_icon" disabled="#{terminationPrerequisiteData.empId == null}">
+														<f:ajax execute="terminationPrerequisiteDataFormId:employeeTerminationDatesId" render="terminationPrerequisiteDataFormId:employeeDataPanelId terminationPrerequisiteDataFormId:employeeTerminationDatesId terminationPrerequisiteDataFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+													</h:commandButton>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

@@ -1,0 +1,528 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+    function getUnit(contextPath) {
+          openUnitsMiniSearch(5,'#{request.contextPath}','handleUnitMiniSearchResult(ret)', -1, -1,-1);
+	 }
+    
+    function handleUnitMiniSearchResult(ret) {
+    	if(ret!=null){
+        	document.getElementById('moveRequestFormId:requestedUnitToMoveToIDId').value = ret[0];
+        	document.getElementById('moveRequestFormId:requestedUnitToMoveToNameId').innerHTML = ret[1];
+        	document.getElementById('moveRequestFormId:requestedUnitToMoveToNameHId').value = ret[1];
+         }
+    }
+    
+    function getJob(contextPath) {
+        openJobsMiniSearch(contextPath,'handleJobsMiniSearchResult(ret)',6,#{moveRequest.mode},'#{moveRequest.wfMovement.unitHKey}',-1,-1,-1, 0);
+    }
+    
+    function handleJobsMiniSearchResult(ret) { 
+    	if(ret!=null){
+        	document.getElementById('moveRequestFormId:movedToJobIDId').value = ret[0];
+        	document.getElementById('moveRequestFormId:movedToJobCodeId').innerHTML = ret[1];
+        	document.getElementById('moveRequestFormId:movedToJobCodeHId').value = ret[1];
+        	document.getElementById('moveRequestFormId:movedToJobNameId').innerHTML = ret[2];
+        	document.getElementById('moveRequestFormId:movedToJobNameHId').value = ret[2];
+        	document.getElementById('moveRequestFormId:movedToUnitHId').value = ret[4];
+        	document.getElementById('moveRequestFormId:searchJobBtnId').click();
+        }
+    }
+
+    function checkAsManager() {
+	    var unitFullName = document.getElementById('moveRequestFormId:movedToUnitHId').value;
+	    var unitManagerFlag = document.getElementById('moveRequestFormId:managerFlagId').checked;
+
+	    if(unitManagerFlag == true) {
+	    	if (unitFullName != null && unitFullName != '') {
+	    		if(!confirm("#{msgs.q_isAsManager} (" + unitFullName + ")")) {
+		    		document.getElementById('moveRequestFormId:managerFlagId').checked = false;
+		    	}
+	    	} else {
+	    		document.getElementById('moveRequestFormId:managerFlagId').checked = false;
+		    	alert("#{msgs.error_unitIsMandatory}");
+		    }
+    	}
+    }
+    
+    function validateRequest() {
+        	reasons=document.getElementById('moveRequestFormId:reasonsId').value;
+        	locationFlag=document.getElementById('moveRequestFormId:locationFlagId:0'); // Get the internal option
+        	
+			if(#{moveRequest.mode != 2} || locationFlag.checked) {
+				
+				requestedUnitToMoveTo = document.getElementById('moveRequestFormId:requestedUnitToMoveToIDId').value;
+				if(reasons == null || reasons == '' || requestedUnitToMoveTo == null || requestedUnitToMoveTo == ''){
+					alert('#{msgs.error_reasonsAndRequestedUnitToMoveToAreRequired}');
+					return false;
+				}
+				return true;
+				
+			} else{
+				
+				externalUnitToMoveTo=document.getElementById('moveRequestFormId:externalUnitToMoveToIDId').value;
+				if(reasons == null || reasons=='' || externalUnitToMoveTo == null || externalUnitToMoveTo == ''){
+					alert('#{msgs.error_reasonsAndRequestedExternalUnitToMoveToAreRequired}');
+					return false;
+					}
+				return true;
+			}
+     }
+    
+    function validateReview() {
+    	
+    	if(document.getElementById('moveRequestFormId:ministryAgreementNumberId') != null){
+    		ministryAgreementNumberValue = document.getElementById('moveRequestFormId:ministryAgreementNumberId').value;
+	    	if(ministryAgreementNumberValue == null || ministryAgreementNumberValue == '') {
+	    		alert('#{msgs.error_ministryAgreementDataIsRequired}');
+				return false;
+	        }
+	    	return validateRefuseAndNotes(1, 'moveRequestFormId:curTaskId:refuseReasonsId') ;
+    	}
+    	
+    	movedToJob = document.getElementById('moveRequestFormId:movedToJobIDId');
+    	executionDateFlag = document.getElementById('moveRequestFormId:executionDateFlagId');
+    	
+    	if(executionDateFlag.checked) {
+        	
+			if(movedToJob!=null && (movedToJob.value==null||movedToJob.value=='')) {
+				alert('#{msgs.error_movedToJobMandatory}');
+				return false;
+			}
+	    } else {
+        	
+    		executionDate = document.getElementById('moveRequestFormId:executionDateId:day').value;
+    		if(movedToJob!=null && (movedToJob.value==null||movedToJob.value=='' ||executionDate==0)) {
+    			alert('#{msgs.error_movedToJobAndExecutionDateRequired}');
+				return false;
+        	}
+        }
+        
+    	return validateRefuseAndNotes(1, 'moveRequestFormId:curTaskId:refuseReasonsId') ;
+    }
+ 	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="moveRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{moveRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requester}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{moveRequest.requester}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">#{msgs.label_requestInfo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requesterPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<h:panelGroup rendered="#{moveRequest.mode == 2}">
+									<tr>
+										<th width="15%">
+											#{msgs.label_internalExternal}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="#{moveRequest.wfMovement.locationFlag == 1 ? 20 : 85}%" colspan="#{moveRequest.wfMovement.locationFlag == 0 ? 3 : 1}">
+											<h:selectOneRadio id="locationFlagId" value="#{moveRequest.wfMovement.locationFlag}" disabled="#{ moveRequest.role != 'Requester'}">
+												<f:selectItem itemLabel="#{msgs.label_insideFrontierGurads}" itemValue="0" />
+												<f:selectItem itemLabel="#{msgs.label_outsideFrontierGuards}" itemValue="1" />
+												<f:ajax execute="moveRequestFormId:requesterPanelId" render="moveRequestFormId:requesterPanelId moveRequestFormId:notifyMessagesId" listener="#{moveRequest.moveLocationFlagChanged()}" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneRadio>
+										</td>
+										<h:panelGroup rendered="#{moveRequest.wfMovement.locationFlag == 1}">
+											<th width="15%">
+												#{msgs.label_requestedExternalUnitToMoveTo}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="50%">
+												<h:inputText id="externalUnitToMoveToIDId" value="#{moveRequest.wfMovement.location}" readonly="#{moveRequest.role != 'Requester' }" styleClass="inputDataLarge" maxlength="100" />
+											</td>
+										</h:panelGroup>
+									</tr>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{moveRequest.wfMovement.locationFlag == 0}">
+									<tr>
+										<th width="15%">
+											#{msgs.label_requestedUnitToMoveTo}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="85%" colspan="#{moveRequest.mode ==2 ? 3 : 1}">
+											<h:outputText id="requestedUnitToMoveToNameId" value="#{moveRequest.wfMovement.unitFullName}" />
+											<h:outputText value=" " />
+											<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getUnit('#{request.contextPath}');return false;" rendered="#{moveRequest.role == 'Requester' }" />
+											<h:inputHidden id="requestedUnitToMoveToIDId" value="#{moveRequest.wfMovement.unitId}" />
+											<h:inputHidden id="requestedUnitToMoveToNameHId" value="#{moveRequest.wfMovement.unitFullName}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th width="15%">#{msgs.label_requiredAttachments}</th>
+									<td width="85%" colspan="#{moveRequest.mode == 2 ? 3 : 1}">
+										<code:attachments loginEmpId="#{moveRequest.loginEmpData.empId}" attachmentId="#{moveRequest.attachments}" addEnableFlag="#{moveRequest.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{moveRequest.role == 'Requester'}" />
+										<h:outputText rendered="#{moveRequest.role == 'Requester'}" value="#{msgs.label_attachmentsAreMandatoryWarning}" styleClass="remarkMessage" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_moveJustifications}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%" colspan="#{moveRequest.mode == 2 ? 3 : 1}">
+										<h:inputText id="reasonsId" styleClass="inputDataSuperLarge" value="#{moveRequest.wfMovement.reasons}" readonly="#{moveRequest.role != 'Requester'}" maxlength="200" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_remarks}</th>
+									<td width="85%" colspan="#{moveRequest.mode == 2 ? 3 : 1}">
+										<h:inputText id="remarksId" styleClass="inputDataSuperLarge" value="#{moveRequest.wfMovement.remarks}" readonly="#{moveRequest.role != 'Requester'}" maxlength="500" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup rendered="#{moveRequest.role != 'Requester' and moveRequest.role != 'DirectManager' and moveRequest.role != 'ManagerRedirect' and moveRequest.role != 'ManagerRedirectToSecurity' and moveRequest.role != 'SecondaryManagerRedirect' and moveRequest.role != 'SecondaryReviewerEmp' and moveRequest.role != 'SecondarySignManager' and moveRequest.role != 'SecurityEmp' and moveRequest.wfMovement.locationFlag == 1}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td width="100%">
+										<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%">#{msgs.label_interiorMinisteryAgreementData}</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<th>
+													#{msgs.label_interiorMinisteryAgreementNumber}
+													<h:outputText value=" " />
+													<font style="color: red;">*</font>
+												</th>
+												<td>
+													<h:inputText id="ministryAgreementNumberId" styleClass="inputDataLarge" value="#{moveRequest.wfMovement.ministryApprovalNumber}" internal="#{moveRequest.internalCopies}" readonly="#{moveRequest.role != 'ReviewerEmp'}" maxlength="50" />
+												</td>
+												<th>
+													#{msgs.label_interiorMinisteryAgreementDate}
+													<h:outputText value=" " />
+													<font style="color: red;">*</font>
+												</th>
+												<td>
+													<util:hijri value="#{moveRequest.wfMovement.ministryApprovalDate}" rendered="#{moveRequest.role == 'ReviewerEmp'}" />
+													<h:outputText value="#{moveRequest.wfMovement.ministryApprovalDateString}" rendered="#{moveRequest.role != 'ReviewerEmp'}" />
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<code:specialAuthorityData id="specialAuthorityDataId" loginEmpId="#{moveRequest.loginEmpData.empId}" wfMovement="#{moveRequest.wfMovement}" role="#{moveRequest.role}" requestFlag="#{true}" rendered="#{moveRequest.role == 'ReviewerEmp' or moveRequest.role  == 'SignManager' or moveRequest.role == 'SecondaryReviewerEmp' or moveRequest.role == 'SecondarySignManager'}" />
+
+				<h:panelGroup rendered="#{(moveRequest.role != 'Requester' and moveRequest.role != 'DirectManager' and moveRequest.role != 'ManagerRedirect' and moveRequest.role != 'ManagerRedirectToSecurity' and moveRequest.role != 'SecurityEmp' and moveRequest.role != 'SecondarySignManager' and moveRequest.role != 'SecondaryManagerRedirect' and moveRequest.role != 'SecondaryReviewerEmp')}">
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">#{msgs.label_dataFilledBySpecializedEmployee}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="reviewerEmpPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="20%">
+											#{msgs.label_isMoveConsideredFromDecisionDate}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="#{moveRequest.wfMovement.executionDateFlag==0 ? 30 : 80}%" colspan="#{moveRequest.wfMovement.executionDateFlag==0 ? 1 : 3}">
+											<h:selectBooleanCheckbox id="executionDateFlagId" value="#{moveRequest.wfMovement.executionDateFlagBoolean}" disabled="#{moveRequest.role != 'ReviewerEmp'}">
+												<f:ajax execute="moveRequestFormId:reviewerEmpPanelId" render="moveRequestFormId:reviewerEmpPanelId" listener="#{moveRequest.executionDateFlagChanged()}" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectBooleanCheckbox>
+										</td>
+										<h:panelGroup rendered="#{moveRequest.wfMovement.executionDateFlag == 0}">
+											<th width="20%">
+												#{msgs.label_moveConsideredFrom}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="50%">
+												<util:hijri id="executionDateId" rendered="#{moveRequest.role == 'ReviewerEmp'}" value="#{moveRequest.wfMovement.executionDate}" listenerMethod="#{moveRequest.calculateWarnings()}" onChangeAjaxSubmit="true" reRenderIds="moveRequestFormId:warningsPanelId moveRequestFormId:notifyMessagesId" />
+												<h:outputText value="#{moveRequest.wfMovement.executionDateString}" rendered="#{moveRequest.role != 'ReviewerEmp'}" />
+											</td>
+										</h:panelGroup>
+									</tr>
+									<h:panelGroup rendered="#{moveRequest.wfMovement.locationFlag == 0}">
+										<tr>
+											<th width="20%">
+												#{msgs.label_jobToBeMovedTo}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="70%" colspan="3">
+												<h:outputText id="movedToJobCodeId" value="#{moveRequest.wfMovement.jobCode}" />
+												<h:outputText value=" - " />
+												<h:outputText id="movedToJobNameId" value="#{moveRequest.wfMovement.jobName}" />
+												<h:outputText value=" " />
+												<h:inputHidden id="movedToJobIDId" value="#{moveRequest.wfMovement.jobId}" />
+												<h:inputHidden id="movedToJobNameHId" value="#{moveRequest.wfMovement.jobName}" />
+												<h:inputHidden id="movedToJobCodeHId" value="#{moveRequest.wfMovement.jobCode}" />
+												<h:inputHidden id="movedToUnitHId" value="#{moveRequest.movedToUnitFullName}" />
+
+												<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" onclick="getJob('#{request.contextPath}');return false;" styleClass="btn_icon" rendered="#{moveRequest.role == 'ReviewerEmp'}" />
+												<h:commandButton id="searchJobBtnId" style="display:none;" action="#{moveRequest.calculateWarnings()}">
+													<f:ajax execute="moveRequestFormId:movedToJobIDId" render="moveRequestFormId:warningsPanelId" />
+												</h:commandButton>
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{moveRequest.mode != 2}">
+										<tr>
+
+											<th width="20%">
+												#{msgs.label_asManager}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:selectBooleanCheckbox id="managerFlagId" value="#{moveRequest.wfMovement.managerFlagBoolean}" onclick="checkAsManager()" disabled="#{moveRequest.role != 'ReviewerEmp'}" />
+											</td>
+
+										</tr>
+									</h:panelGroup>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{moveRequest.role != 'Requester' and moveRequest.role != 'DirectManager' and moveRequest.role != 'ManagerRedirect' and moveRequest.role != 'ManagerRedirectToSecurity' and moveRequest.role != 'SecurityEmp' and moveRequest.role != 'SecondaryReviewerEmp' and moveRequest.role != 'SecondarySignManager' and moveRequest.role != 'SecondaryManagerRedirect'}">
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%" colspan="4">
+							<code:decisionCopies external="#{moveRequest.externalCopies}" internal="#{moveRequest.internalCopies}" viewOnly="#{moveRequest.role!='ReviewerEmp'}" />
+						</td>
+					</tr>
+				</h:panelGroup>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{moveRequest.role != 'Requester'}" value="#{moveRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp,SecondarySignManager,SecondaryReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{moveRequest.currentEmployee}" rendered="#{moveRequest.role == 'DirectManager' or moveRequest.role == 'ManagerRedirect' or moveRequest.role == 'ManagerRedirectToSecurity' or moveRequest.role == 'SecurityEmp' or moveRequest.role == 'ReviewerEmp' or moveRequest.role == 'SignManager' or moveRequest.role == 'SecondaryReviewerEmp' or moveRequest.role == 'SecondarySignManager' or moveRequest.role == 'SecondaryManagerRedirect'}">
+							<h:panelGroup rendered="#{moveRequest.role == 'ManagerRedirect' or moveRequest.role == 'SecondaryManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{moveRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{moveRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{moveRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{moveRequest.role != 'ManagerRedirect' and moveRequest.role != 'SecondaryManagerRedirect' and moveRequest.role != 'ManagerRedirectToSecurity' and moveRequest.role != 'SecurityEmp'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{moveRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="warningsPanelId">
+							<h:panelGroup rendered="#{moveRequest.wfMovement.warningMessages != null and moveRequest.wfMovement.warningMessages != '' }">
+								<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th>#{msgs.label_warnings}</th>
+									</tr>
+									<tr>
+										<td>
+											<h:outputText value="#{moveRequest.getActualWarningMessage(moveRequest.wfMovement.warningMessages)}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{moveRequest.role == 'Notification' or moveRequest.role == 'History'}" value="#{moveRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" action="#{moveRequest.initMovement()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveRequest.approveMovementDM}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveRequest.rejectMovementDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="redirectMrtsBtnId" onclick="return handleOnAction('#{msgs.q_redirectToSecurity}', 'validateRefuseAndNotes(1, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveRequest.redirectMovementMRTS()}" value="#{msgs.label_redirectToSecurity} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'ManagerRedirectToSecurity'}">
+										<f:ajax render="notifyMessagesId" execute="@form" />
+									</h:commandButton>
+									<h:commandButton id="rejectMrtsBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveRequest.rejectMovementMRTS()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'ManagerRedirectToSecurity'}">
+										<f:ajax render="notifyMessagesId" execute="@form" />
+									</h:commandButton>
+
+									<h:commandButton id="approveSeBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveRequest.approveMovementSE()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'SecurityEmp'}">
+										<f:ajax render="notifyMessagesId" execute="@form" />
+									</h:commandButton>
+									<h:commandButton id="rejectSeBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{moveRequest.rejectMovementSE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'SecurityEmp'}">
+										<f:ajax render="notifyMessagesId" execute="@form" />
+									</h:commandButton>
+
+									<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;moveRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{moveRequest.redirectMovementMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'ManagerRedirect'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="smrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;moveRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{moveRequest.redirectMovementSMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'SecondaryManagerRedirect'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveReBtnId" action="#{moveRequest.approveMovementRE}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" onclick="return handleOnAction('#{moveRequest.mode == 1 ? msgs.q_reviewForMovements : (moveRequest.mode == 2 ? msgs.q_reviewSoldiers : msgs.q_reviewCivilians)}','validateReview()',null);" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveRequest.rejectMovementRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveSreBtnId" action="#{moveRequest.approveMovementSRE}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" onclick="return handleOnAction('#{moveRequest.mode == 1 ? msgs.q_reviewForMovements : msgs.q_reviewSoldiers}');" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'SecondaryReviewerEmp'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSreBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveRequest.rejectMovementSRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'SecondaryReviewerEmp'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveRequest.approveMovementSM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateDecisionApprovalNotes(&quot;moveRequestFormId:specialAuthorityDataId:decisionApprovalRemarksId&quot;, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;moveRequestFormId:curTaskId:notesId&quot;)',null);" action="#{moveRequest.returnMovementSM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon"
+										rendered="#{moveRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveRequest.rejectMovementSM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveSsmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveRequest.approveMovementSSM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="retSsmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;moveRequestFormId:curTaskId:notesId&quot;)',null);" action="#{moveRequest.returnMovementSSM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveRequest.rejectMovementSSM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="printBtnId" action="#{moveRequest.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'Notification' and moveRequest.instanceApproved == 1}" />
+
+									<h:commandButton id="nBtnId" action="#{moveRequest.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'Notification'}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

@@ -1,0 +1,569 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:a4j="http://richfaces.org/a4j" xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function getUnit() {
+			if (#{employeesReports.admin}){
+				var reportType = document.getElementById('employeesReportsFormId:reportTypeId').value;
+				var regionIdValue;
+				if (reportType == 1 || reportType == 5 || reportType == 8 || reportType == 9) {
+					regionIdValue = document
+							.getElementById('employeesReportsFormId:regionIDId').value
+				} else if (reportType == 7) {
+					regionIdValue = document
+							.getElementById('employeesReportsFormId:qualRegionIDId').value
+				}
+				openUnitsMiniSearch(2, '#{request.contextPath}',
+						'handleUnitMiniSearchResult(ret)', -1, regionIdValue, -1);
+			}
+			else if (#{employeesReports.manager}){
+				unitsMiniSearch(7, '#{request.contextPath}','handleUnitMiniSearchResult(ret)', -1, -1, -1,'#{employeesReports.managerUnitHKeyPrefix}',0);
+			}
+																												  
+																																														  
+		}
+
+		function handleUnitMiniSearchResult(ret) {
+			if (ret != null) {
+				var reportType = document
+						.getElementById('employeesReportsFormId:reportTypeId').value;
+				if (reportType == 1 || reportType == 5 || reportType == 8 || reportType == 9) {
+					document.getElementById('employeesReportsFormId:unitIDId').value = ret[0];
+					document
+							.getElementById('employeesReportsFormId:unitFullNameHId').value = ret[1];
+					document
+							.getElementById('employeesReportsFormId:unitFullNameId').innerHTML = ret[1];
+					document
+							.getElementById('employeesReportsFormId:unitHKeyId').value = ret[3];
+				} else if (reportType == 7 ) {
+					document
+							.getElementById('employeesReportsFormId:qualUnitIDId').value = ret[0];
+					document
+							.getElementById('employeesReportsFormId:qualUnitFullNameHId').value = ret[1];
+					document
+							.getElementById('employeesReportsFormId:qualUnitFullNameId').innerHTML = ret[1];
+				}
+			}
+		}
+
+		function getTrainingUnit() {
+			openUnitsMiniSearch(6, '#{request.contextPath}',
+					'handleTrainingUnitMiniSearchResult(ret)', -1, -1, -1);
+		}
+
+		function handleTrainingUnitMiniSearchResult(ret) {
+			if (ret != null) {
+				document
+						.getElementById('employeesReportsFormId:trainingUnitIDId').value = ret[0];
+				document
+						.getElementById('employeesReportsFormId:trainingUnitFullNameId').innerHTML = ret[1];
+			}
+		}
+
+		function getMinorSpecialization() {
+			openMinorSpecializationsMiniSearch('#{request.contextPath}',
+					'handleMinorSpecializationMiniSearchResult(ret)');
+		}
+
+		function handleMinorSpecializationMiniSearchResult(ret) {
+			if (ret != null) {
+				var reportType = document
+						.getElementById('employeesReportsFormId:reportTypeId').value;
+				if (reportType == 1 || reportType == 5) {
+					document
+							.getElementById('employeesReportsFormId:minorSpecilizationIDId').value = ret[0];
+					document
+							.getElementById('employeesReportsFormId:minorSpecilizationDescId').innerHTML = ret[2];
+				} 
+			}
+		}
+
+		function getDistributionMinorSpecialization() {
+			openMinorSpecializationsMiniSearch('#{request.contextPath}',
+					'handleDistributionMinorSpecializationMiniSearchResult(ret)');
+		}
+
+		function handleDistributionMinorSpecializationMiniSearchResult(ret) {
+			if (ret != null) {
+				document
+						.getElementById('employeesReportsFormId:distributionMinorSpecilizationIDId').value = ret[0];
+				document
+						.getElementById('employeesReportsFormId:distributionMinorSpecilizationDescId').innerHTML = ret[2];
+			}
+		}
+		function getQualLevelSpec() {
+			openQualificationLevelsMiniSearch('#{request.contextPath}',
+					'handleQualLevelMiniSearchResult(ret)');
+		}
+		function handleQualLevelMiniSearchResult(ret) {
+			if (ret != null) {
+				document
+						.getElementById('employeesReportsFormId:distributionMinorSpecilizationIDId').value = ret[0];
+				document
+						.getElementById('employeesReportsFormId:distributionMinorSpecilizationDescId').innerHTML = ret[2];
+			}
+		}
+
+		function getGraduationPlaces(contextPath) {
+			openGraduationPlacesMiniSearch(contextPath,'handleGraduationPlacesMiniSearchResult(ret)',1);
+		}
+
+		function handleGraduationPlacesMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('employeesReportsFormId:graduationPlaceIDHId').value = ret[0];
+				document.getElementById('employeesReportsFormId:graduationPlaceDataId').innerHTML = ret[1];
+				document.getElementById('employeesReportsFormId:graduationPlaceDataHId').value = ret[1];
+			}
+		}
+		function getQualificationMajorSpec() {
+			openQualificationMajorSpecsMiniSearch('#{request.contextPath}',
+					'handleQualificationMajorSpecMiniSearchResult(ret)', 0);
+		}
+
+		function handleQualificationMajorSpecMiniSearchResult(ret) {
+			if (ret != null) {
+				document
+						.getElementById('employeesReportsFormId:qualificationMajorSpecIdHId').value = ret[0];
+				document
+						.getElementById('employeesReportsFormId:qualificationMajorSpecId').innerHTML = ret[1];
+				document
+						.getElementById('employeesReportsFormId:qualificationMajorSpecDescHId').value = ret[1];
+			}
+		}
+
+		function getQualificationMinorSpecs() {
+			openQualificationMinorSpecsMiniSearch('#{request.contextPath}',
+					'handleQualificationMiniSearchResult(ret)', 0);
+		}
+
+		function handleQualificationMiniSearchResult(ret) {
+			if (ret != null) {
+				document
+						.getElementById('employeesReportsFormId:qualificationMinorSpecIDId').value = ret[0];
+				document
+						.getElementById('employeesReportsFormId:qualificationMinorSpecDescId').innerHTML = ret[1];
+				document
+						.getElementById('employeesReportsFormId:qualificationMinorSpecDescHId').value = ret[1];
+			}
+		}
+
+		function checkServiceYearsBeginEnd(){
+			var serviceYearsBeginValue = document.getElementById('employeesReportsFormId:serviceYearsBeginId').value ;
+			var serviceYearsEndValue = document.getElementById('employeesReportsFormId:serviceYearsEndId').value ;
+
+			if(serviceYearsBeginValue != null &amp;&amp; serviceYearsBeginValue != '' &amp;&amp; serviceYearsEndValue != null &amp;&amp; serviceYearsEndValue != ''){
+				if(parseInt(serviceYearsBeginValue) > parseInt(serviceYearsEndValue)){
+					alert("#{msgs.error_serviceYearNumber}");
+			        return false;
+				}
+			}
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="employeesReportsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{employeesReports.screenTitle}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:panelGroup rendered="#{!employeesReports.admin and !employeesReports.manager}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%">
+										<h:outputText value="#{msgs.error_privilegeError}" />
+									</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{employeesReports.admin or employeesReports.manager}">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.title_theReports}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:selectOneRadio value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 1}" layout="pageDirection">
+											<f:selectItem itemLabel="#{msgs.label_officersData}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_officersStatisticalReport}" itemValue="5" />
+											<f:selectItem itemLabel="#{msgs.label_officersQualificationsReport}" itemValue="7" />
+											<f:selectItem itemLabel="#{msgs.label_officersWorkYears}" itemValue="8" />
+											<f:ajax event="change" execute="@this" listener="#{employeesReports.resetForm()}" render="employeesReportsFormId:searchPanelId" />
+										</h:selectOneRadio>
+
+										<h:selectOneRadio value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 2}" layout="pageDirection">
+											<f:selectItem itemLabel="#{msgs.label_soldiersData}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_soldiersStatisticalReport}" itemValue="5" />
+											<f:selectItem itemLabel="#{msgs.label_soldiersQualificationsReport}" itemValue="7" />
+											<f:selectItem itemLabel="#{msgs.label_soldiersWorkYears}" itemValue="8" />
+											<f:selectItem itemLabel="#{msgs.label_soldiersJobModification}" itemValue = "9"/>
+											<f:ajax event="change" execute="@this" listener="#{employeesReports.resetForm()}" render="employeesReportsFormId:searchPanelId" />
+										</h:selectOneRadio>
+
+										<h:selectOneRadio value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 3}" layout="pageDirection">
+											<f:selectItem itemLabel="#{msgs.label_personsData}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.lablel_personsStatisticalReport}" itemValue="5" />
+											<f:selectItem itemLabel="#{msgs.label_personsQualificationsReport}" itemValue="7" />
+											<f:selectItem itemLabel="#{msgs.label_personsWorkYears}" itemValue="8" />
+											<f:ajax event="change" execute="@this" listener="#{employeesReports.resetForm()}" render="employeesReportsFormId:searchPanelId" />
+										</h:selectOneRadio>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_searchData}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="searchPanelId">
+								<h:inputHidden id="reportTypeId" value="#{employeesReports.reportType}" />
+								<h:panelGroup id="recruitedPanelId" rendered="#{employeesReports.reportType == 1 || employeesReports.reportType == 5 || employeesReports.reportType == 8 || employeesReports.reportType == 9 }">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+										<h:panelGroup rendered="#{employeesReports.reportType != 8 and employeesReports.reportType != 9}">
+											<tr>
+												<th width="10%">#{msgs.label_officialOrPhysical}</th>
+												<td colspan="3" width="90%">
+													<h:selectOneRadio value="#{employeesReports.officialPhysicalFlag}">
+														<f:selectItem itemValue="0" itemLabel="#{msgs.label_official}" />
+														<f:selectItem itemValue="1" itemLabel="#{msgs.label_physical}" />
+													</h:selectOneRadio>
+													<h:selectOneRadio value="#{employeesReports.officialPhysicalSimilarityFlag}">
+														<f:selectItem itemValue="-1" itemLabel="#{msgs.label_allForEmployeesReports}" />
+														<f:selectItem itemValue="1" itemLabel="#{msgs.label_physicalOfficalUnitSimilar}" />
+														<f:selectItem itemValue="0" itemLabel="#{msgs.label_physicalOfficalUnitNotSimilar}" />
+													</h:selectOneRadio>
+												</td>
+											</tr>
+										</h:panelGroup>
+										<tr>
+											<th width="10%">#{msgs.label_region}</th>
+											<td width="40%">
+												<h:selectOneMenu id="regionIDId" value="#{employeesReports.regionId}" disabled="#{!employeesReports.admin or employeesReports.loginEmpData.physicalRegionId != 1}">
+													<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+													<f:selectItems value="#{employeesReports.regionsList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+													<f:ajax event="change" listener="#{employeesReports.regionChangeListener()}" render="employeesReportsFormId:unitFullNameId employeesReportsFormId:unitFullNameHId employeesReportsFormId:unitIDId employeesReportsFormId:unitHKeyId" />
+												</h:selectOneMenu>
+											</td>
+											<th width="10%">#{msgs.label_orgUnit}</th>
+											<td width="40%">
+												<h:outputText id="unitFullNameId" value="#{employeesReports.unitFullName}" />
+												<h:inputHidden id="unitFullNameHId" value="#{employeesReports.unitFullName}" />
+												<h:inputHidden id="unitIDId" value="#{employeesReports.unitId}" />
+												<h:inputHidden id="unitHKeyId" value="#{employeesReports.unitHKey}" />
+												<h:outputText value=" " />
+												<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											</td>
+										</tr>
+										<h:panelGroup rendered="#{employeesReports.reportType == 9}">
+											<tr>
+												<th width="15%">#{msgs.label_isModifiedJob}</th>
+												<td width = "40%">
+													<h:selectOneMenu value="#{employeesReports.jobModifiedFlag}">
+														<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+														<f:selectItem itemLabel="#{msgs.label_yes}" itemValue="1" />
+														<f:selectItem itemLabel="#{msgs.label_no}" itemValue="0" />
+													</h:selectOneMenu>
+												</td>
+											</tr>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{employeesReports.reportType == 8}">
+											<tr>
+												<th width="15%">#{msgs.label_status}</th>
+												<td width="25%">
+													<h:selectOneMenu value="#{employeesReports.onDutyFlag}">
+														<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+														<f:selectItem itemLabel="#{msgs.label_onDuty}" itemValue="1" />
+														<f:selectItem itemLabel="#{msgs.label_serviceTerminated}" itemValue="0" />
+													</h:selectOneMenu>
+												</td>
+												<th width="20%">#{msgs.label_workYearsStart}</th>
+												<td width="10%">
+													<h:inputText id="serviceYearsBeginId" value="#{employeesReports.serviceYearsBegin}" maxlength="3" onkeypress="return isDigit(event);" />
+												</td>
+												<th width="20%">#{msgs.label_workYearsEnd}</th>
+												<td width="10%">
+													<h:inputText id="serviceYearsEndId" value="#{employeesReports.serviceYearsEnd}" maxlength="3" onkeypress="return isDigit(event);" />
+												</td>
+											</tr>								
+										</h:panelGroup>
+										<h:panelGroup rendered="#{employeesReports.reportType != 8 and employeesReports.reportType != 9}">
+											<tr>
+												<th width="10%">#{msgs.label_status}</th>
+												<td width="90%" colspan="3">
+													<h:selectManyCheckbox value="#{employeesReports.statusIds}" layout="pageDirection" rendered="#{employeesReports.mode == 1}">
+														<f:selectItem itemLabel="#{msgs.label_onDuty}" itemValue="15" />
+														<f:selectItem itemLabel="#{msgs.label_assigned}" itemValue="25" />
+														<f:selectItem itemLabel="#{msgs.label_subjoined}" itemValue="20" />
+														<f:selectItem itemLabel="#{msgs.label_assignedExternally}" itemValue="40" />
+														<f:selectItem itemLabel="#{msgs.label_subjoinedExternally}" itemValue="45" />
+														<c:if test="#{employeesReports.reportType!=5}">
+															<f:selectItem itemLabel="#{msgs.label_movedExternally}" itemValue="50" />
+															<f:selectItem itemLabel="#{msgs.label_serviceTerminated}" itemValue="70" />
+														</c:if>
+													</h:selectManyCheckbox>
+													<h:selectManyCheckbox value="#{employeesReports.statusIds}" layout="pageDirection" rendered="#{employeesReports.mode == 2}">
+														<f:selectItem itemLabel="#{msgs.label_onDuty}" itemValue="15" />
+														<f:selectItem itemLabel="#{msgs.label_subjoined}" itemValue="20" />
+														<f:selectItem itemLabel="#{msgs.label_subjoinedExternally}" itemValue="45" />
+														<f:selectItem itemLabel="#{msgs.label_mandated}" itemValue="30" />
+														<f:selectItem itemLabel="#{msgs.label_secondmented}" itemValue="35" />
+														<c:if test="#{employeesReports.reportType!=5}">
+															<f:selectItem itemLabel="#{msgs.label_movedExternally}" itemValue="50" />
+															<f:selectItem itemLabel="#{msgs.label_serviceTerminated}" itemValue="70" />
+														</c:if>
+													</h:selectManyCheckbox>
+													<h:selectManyCheckbox value="#{employeesReports.statusIds}" layout="pageDirection" rendered="#{employeesReports.mode == 3}">
+														<f:selectItem itemLabel="#{msgs.label_onDuty}" itemValue="15" />
+														<f:selectItem itemLabel="#{msgs.label_assigned}" itemValue="22" />
+														<f:selectItem itemLabel="#{msgs.label_assignedExternally}" itemValue="42" />
+														<c:if test="#{employeesReports.reportType!=5}">
+															<f:selectItem itemLabel="#{msgs.label_movedExternally}" itemValue="50" />
+															<f:selectItem itemLabel="#{msgs.label_serviceTerminated}" itemValue="70" />
+														</c:if>
+													</h:selectManyCheckbox>
+												</td>
+
+											</tr>
+											<tr>
+												<th width="10%">#{msgs.label_minorSpecDesc}</th>
+												<td width="90%" colspan="3">
+													<h:outputText id="minorSpecilizationDescId" />
+													<h:inputHidden id="minorSpecilizationIDId" value="#{employeesReports.minorSpecializationId}" />
+													<h:outputText value=" " />
+													<h:commandButton value="#{msgs.fa_external_link}" onclick="getMinorSpecialization(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+												</td>
+											</tr>
+											<h:panelGroup rendered="#{employeesReports.mode != 3}">
+												<th width="20%">#{msgs.label_generalSpec}</th>
+												<td width="40%">
+													<h:selectOneMenu value="#{employeesReports.generalSpecialization}">
+														<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+
+														<f:selectItem itemValue="1" itemLabel="#{msgs.label_overland}" />
+														<f:selectItem itemValue="2" itemLabel="#{msgs.label_naval}" />
+														<f:selectItem itemValue="3" itemLabel="#{msgs.label_aerial}" />
+													</h:selectOneMenu>
+												</td>
+											</h:panelGroup>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{employeesReports.mode == 3}">
+											<h:panelGroup rendered="#{employeesReports.reportType != 8}">
+												<tr>
+													<th width="10%">#{msgs.label_category}</th>
+													<td width="40%">
+														<h:selectOneMenu rendered="#{employeesReports.reportType == 1}" value="#{employeesReports.categoryId}">
+															<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+															<f:selectItems value="#{employeesReports.personsCategorieslist}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+															<f:ajax listener="#{employeesReports.categoryChangedListener()}" execute="@this" render="employeesReportsFormId:ranksIDId" />
+														</h:selectOneMenu>
+														<h:selectOneMenu rendered="#{employeesReports.reportType == 5}" value="#{employeesReports.categoryId}">
+															<f:selectItems value="#{employeesReports.personsCategorieslist}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+															<f:ajax listener="#{employeesReports.categoryChangedListener()}" execute="@this" render="employeesReportsFormId:ranksIDId" />
+														</h:selectOneMenu>
+													</td>
+
+													<th width="10%">#{msgs.label_personRank}</th>
+													<td width="40%">
+														<h:selectOneMenu id="ranksIDId" value="#{employeesReports.rankId}">
+															<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+															<f:selectItems value="#{employeesReports.ranksList}" var="rank" itemValue="#{rank.id}" itemLabel="#{rank.description}" />
+														</h:selectOneMenu>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{employeesReports.mode != 3}">
+											<h:panelGroup rendered="#{employeesReports.reportType != 8 and employeesReports.reportType != 9}">
+												<tr>
+													<th width="10%">#{msgs.label_rank}</th>
+													<td width="40%">
+														<h:selectOneMenu value="#{employeesReports.rankId}">
+															<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+															<f:selectItems value="#{employeesReports.ranksList}" var="rank" itemValue="#{rank.id}" itemLabel="#{rank.description}" />
+														</h:selectOneMenu>
+													</td>
+
+													<h:panelGroup rendered="#{employeesReports.mode == 1}">
+														<th width="10%">#{msgs.label_rankTitle}</th>
+														<td width="40%">
+															<h:selectOneMenu value="#{employeesReports.rankTitleId}">
+																<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+																<f:selectItems value="#{employeesReports.rankTitlesList}" var="rankTitle" itemValue="#{rankTitle.id}" itemLabel="#{rankTitle.description}" />
+															</h:selectOneMenu>
+														</td>
+													</h:panelGroup>
+
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+
+										<tr>
+											<h:panelGroup rendered="#{employeesReports.mode == 1}">
+												<h:panelGroup rendered="#{employeesReports.reportType != 8}">
+													<th width="10%">#{msgs.label_groupNumber}</th>
+													<td width="40%">
+														<h:inputText value="#{employeesReports.groupNumber}" maxlength="2" onkeypress="return isDigit(event);" />
+													</td>
+
+													<td colspan="2" width="50%"></td>
+												</h:panelGroup>
+											</h:panelGroup>
+										</tr>
+									</table>
+								</h:panelGroup>
+								<h:panelGroup id="qualificationPanelId" rendered="#{employeesReports.reportType == 7}">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<th width="15%">#{msgs.label_qualification}</th>
+											<td colspan="3" width="85%">
+												<h:selectOneRadio value="#{employeesReports.countryFlag}">
+													<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+													<f:selectItem itemValue="0" itemLabel="#{msgs.label_locIn}" />
+													<f:selectItem itemValue="1" itemLabel="#{msgs.label_locOut}" />
+												</h:selectOneRadio>
+												<h:selectOneRadio value="#{employeesReports.currentQualFlag}">
+													<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+													<f:selectItem itemValue="0" itemLabel="#{msgs.label_recruitmentQualification}" />
+													<f:selectItem itemValue="1" itemLabel="#{msgs.label_currentQualification}" />
+												</h:selectOneRadio>
+												<h:selectOneRadio value="#{employeesReports.curRecSimilarityFlag}">
+													<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+													<f:selectItem itemValue="1" itemLabel="#{msgs.label_currentRecQualificationsSimilar}" />
+													<f:selectItem itemValue="0" itemLabel="#{msgs.label_currentQualRecQualNotSimilar}" />
+												</h:selectOneRadio>
+											</td>
+										</tr>
+										<tr>
+											<th width="15%">#{msgs.label_region}</th>
+											<td width="35%">
+												<h:selectOneMenu id="qualRegionIDId" value="#{employeesReports.regionId}" disabled="#{!employeesReports.admin or employeesReports.loginEmpData.physicalRegionId != 1}">
+													<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+													<f:selectItems value="#{employeesReports.regionsList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+													<f:ajax event="change" listener="#{employeesReports.regionChangeListener()}" render="employeesReportsFormId:qualUnitFullNameId employeesReportsFormId:qualUnitFullNameHId employeesReportsFormId:qualUnitIDId" />
+												</h:selectOneMenu>
+											</td>
+											<th width="15%">#{msgs.label_orgUnit}</th>
+											<td width="35%">
+												<h:outputText id="qualUnitFullNameId" value="#{employeesReports.unitFullName}" />
+												<h:inputHidden id="qualUnitFullNameHId" value="#{employeesReports.unitFullName}" />
+												<h:inputHidden id="qualUnitIDId" value="#{employeesReports.unitId}" />
+												<h:outputText value=" " />
+												<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											</td>
+										</tr>
+
+										<tr>
+											<th width="15%">#{msgs.label_majorQualificationSpecialization}</th>
+											<td width="35%">
+												<h:outputText id="qualificationMajorSpecId" value="#{employeesReports.qualMajorSpecDesc}" />
+												<h:inputHidden id="qualificationMajorSpecIdHId" value="#{employeesReports.qualMajorSpecId}" />
+												<h:inputHidden id="qualificationMajorSpecDescHId" value="#{employeesReports.qualMajorSpecDesc}" />
+												<h:commandButton value="#{msgs.fa_external_link}" onclick="getQualificationMajorSpec(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											</td>
+											<th width="15%">#{msgs.label_minorQualificationSpecialization}</th>
+											<td width="35%">
+												<h:outputText id="qualificationMinorSpecDescId" value="#{employeesReports.qualMinorSpecDesc}" />
+												<h:inputHidden id="qualificationMinorSpecDescHId" value="#{employeesReports.qualMinorSpecDesc}" />
+												<h:inputHidden id="qualificationMinorSpecIDId" value="#{employeesReports.qualMinorSpecId}" />
+												<h:outputText value=" " />
+												<h:commandButton value="#{msgs.fa_external_link}" onclick="getQualificationMinorSpecs(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											</td>
+										</tr>
+										<tr>
+											<th width="15%">#{msgs.label_qualificationLevel}</th>
+											<td width="35%">
+												<h:selectOneMenu id="qualificationLevelIDId" value="#{employeesReports.qualLevelId}">
+													<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+													<f:selectItems value="#{employeesReports.qualificationLevels}" var="qualification" itemLabel="#{qualification.description}" itemValue="#{qualification.id}" />
+												</h:selectOneMenu>
+											</td>
+											<th width="15%">#{msgs.label_graduationPlaces}</th>
+											<td width="35%">
+												<h:commandButton value="#{msgs.fa_external_link}" onclick="getGraduationPlaces('#{request.contextPath}'); return false;" title="#{msgs.label_select}" styleClass="btn_icon">
+													<f:ajax execute="employeesReportsFormId:qualificationPanelId" />
+												</h:commandButton>
+												<h:outputText value=" " />
+												<h:outputText id="graduationPlaceDataId" value="#{employeesReports.graduationPlaceDetailsDescs}" />
+												<h:inputHidden id="graduationPlaceDataHId" value="#{employeesReports.graduationPlaceDetailsDescs}" />
+												<h:inputHidden id="graduationPlaceIDHId" value="#{employeesReports.graduationPlaceDetailsIds}" />
+											</td>
+										</tr>
+										<tr>
+											<th width="15%">#{msgs.label_status}</th>
+											<td width="35%">
+												<h:selectOneMenu value="#{employeesReports.onDutyFlag}">
+													<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+													<f:selectItem itemLabel="#{msgs.label_onDuty}" itemValue="1" />
+													<f:selectItem itemLabel="#{msgs.label_serviceTerminated}" itemValue="0" />
+												</h:selectOneMenu>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
+							</h:panelGroup>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td>
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton onclick="return checkServiceYearsBeginEnd()" action="#{employeesReports.print()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+										<h:commandButton action="#{employeesReports.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+											<f:ajax render="employeesReportsFormId:searchPanelId" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

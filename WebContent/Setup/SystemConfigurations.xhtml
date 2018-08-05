@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function validateSaveConfiguration(callerId){
+			var idTokens = callerId.split(':');
+			var configurationValue = document.getElementById('systemConfigurationsFormId:configurationsTableId:' + idTokens[2] + ':configurationValueId').value;
+
+			if (configurationValue == null || configurationValue.trim() == '') {
+				alert('#{msgs.error_configurationValueMandatory}');
+				return false;
+		    }
+			return true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="systemConfigurationsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{msgs.title_systemConfigurations}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.title_systemConfigurations}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="100%">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<th>
+												<h:outputText value="#{msgs.label_searchBy}" />
+											</th>
+											<td>
+												<h:selectOneMenu value="#{systemConfigurations.transactionClass}">
+													<f:selectItem itemLabel="#{msgs.label_searchByModule}" itemValue="-1" />
+													
+													<f:selectItem itemLabel="#{msgs.label_generalConfigurations}" itemValue="0" />
+													<f:selectItem itemLabel="#{msgs.label_organizationHierarchy}" itemValue="10" />
+													<f:selectItem itemLabel="#{msgs.title_jobs}" itemValue="20" />
+													<f:selectItem itemLabel="#{msgs.title_Recruitments}" itemValue="30" />
+													<f:selectItem itemLabel="#{msgs.title_movements}" itemValue="40" />
+													<f:selectItem itemLabel="#{msgs.title_promotions}" itemValue="50" />
+													<f:selectItem itemLabel="#{msgs.title_vacations}" itemValue="60" />
+													<f:selectItem itemLabel="#{msgs.title_missions}" itemValue="70" />
+													<f:selectItem itemLabel="#{msgs.title_terminations}" itemValue="80" />
+													<f:selectItem itemLabel="#{msgs.title_trainingAndScholarship}" itemValue="90" />
+													
+			
+													<f:ajax event="change" listener="#{systemConfigurations.searchETRConfig()}" execute="@this" render="systemConfigurationsFormId:configurationsTableId" />
+												</h:selectOneMenu>
+											</td>
+											<td>
+												<h:outputText value="#{msgs.label_warningsForSystemConfigurations}" style="color: red; font-weight: bold" />
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+
+						<rich:dataTable id="configurationsTableId" rowKeyVar="index" var="configuration" rows="#{systemConfigurations.pageSize}" value="#{systemConfigurations.configurationList}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 3%">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                        </rich:column>
+							<rich:column style="width : 25%">
+								<f:facet name="header">#{msgs.label_configurationCode}</f:facet>
+								<h:outputText value="#{configuration.code}" />
+							</rich:column>
+							<rich:column style="width : 62%">
+								<f:facet name="header">#{msgs.label_configurationValue}</f:facet>
+								<h:inputText id="configurationValueId" value="#{configuration.value}" styleClass="inputDataSuperLarge" maxlength="4000" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_configurationRemarks}</f:facet>
+								<h:graphicImage value="/resources/images/warning.png" width="25px" height="25px" title="#{configuration.remarks}" />
+							</rich:column>
+							<rich:column style="width : 5%" rendered="#{systemConfigurations.adminFlag}">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_save}" />
+								</f:facet>
+								<h:commandButton value="#{msgs.fa_floppy_o}" title="#{msgs.label_save}" styleClass="btn_icon" action="#{systemConfigurations.updateETRConfig(configuration)}" onclick="return validateSaveConfiguration(this.id);">
+									<f:ajax execute="systemConfigurationsFormId:configurationsTableId" render="systemConfigurationsFormId:configurationsTableId systemConfigurationsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+								</h:commandButton>
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller page="#{systemConfigurations.pageNum}" fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

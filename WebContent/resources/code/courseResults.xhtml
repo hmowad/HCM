@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:f="http://java.sun.com/jsf/core" xmlns:composite="http://java.sun.com/jsf/composite" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<composite:interface componentType="com.code.ui.components.util.UIAttachments">
+	<composite:attribute name="trainingObject" required="true" />
+	<composite:attribute name="loginEmpId" required="true" />
+	<composite:attribute name="showGraduationDate" default="true" />
+	<composite:attribute name="military" required="true" />
+	<composite:attribute name="viewOnly" required="true" />
+	<composite:attribute name="claim" required="true" />
+	<composite:attribute name="successFlagChangeListener" required="false" />
+</composite:interface>
+
+<composite:implementation>
+	<script type="text/javascript">
+	//<![CDATA[
+	function validResultsComponent() {
+	    if(#{cc.attrs.military}) {
+	       return validateMilitary();
+		}
+	    else {
+	       return validateCivilian();
+		}
+	}
+
+	function validateCivilian() {	 
+		   
+	    var passedResultChecked = document.getElementById('#{cc.clientId}' +':resultId:0').checked;
+	    var failedResultChecked = document.getElementById('#{cc.clientId}' +':resultId:1').checked;
+	    
+		if(!passedResultChecked && !failedResultChecked) {
+		    alert('#{msgs.error_courseResultsMandatory}');
+		    return false;
+		}
+		
+		if(passedResultChecked) {
+			 	var excellentQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':civilianQualificationGradeId:0').checked;
+				var veryGoodQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':civilianQualificationGradeId:1').checked;
+				var goodQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':civilianQualificationGradeId:2').checked;
+				var acceptedQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':civilianQualificationGradeId:3').checked;
+				var unavailableQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':civilianQualificationGradeId:4').checked;
+
+			if(!excellentQualificationGradeChecked && !veryGoodQualificationGradeChecked &&!goodQualificationGradeChecked &&!acceptedQualificationGradeChecked &&!unavailableQualificationGradeChecked) {
+		    	alert('#{msgs.error_courseGradeMandatory}');
+				return false;
+			}
+		} else {
+			var failedQualificationGradeChecked  = document.getElementById('#{cc.clientId}' +':civilianQualificationGradeId:0').checked;
+			var unavailableQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':civilianQualificationGradeId:1').checked;
+			if(!failedQualificationGradeChecked && !unavailableQualificationGradeChecked){
+				alert('#{msgs.error_courseGradeMandatory}');
+				return false;
+			}
+		}
+
+		if(#{cc.attrs.showGraduationDate} && document.getElementById('#{cc.clientId}' +':resultId:0').checked) {
+		    var graduationDateValue = document.getElementById('#{cc.clientId}' +':graduationDateId:day').value;
+		    
+			if(graduationDateValue == 0) {
+		   		alert('#{msgs.error_graduationDateMandatory}');
+		    	return false;
+			}
+		}
+		return true;
+	}
+
+	function validateMilitary() {
+		// success indicator validation
+	    var passedIndicatorChecked = document.getElementById('#{cc.clientId}' +':successIndicatorId:0').checked;
+	    var failedIndicatorChecked = document.getElementById('#{cc.clientId}' +':successIndicatorId:1').checked;
+	
+	 	var qualificationGradePercentage = document.getElementById('#{cc.clientId}' +':qualificationGradePercentageId').value;
+		// attendence grade
+	    var attendenceGradePercentage = document.getElementById('#{cc.clientId}' +':attendenceGradePercentageId').value;
+	    var excellentAttendenceGradeChecked = document.getElementById('#{cc.clientId}' +':attendenceGradeId:0').checked;
+		var veryGoodAttendenceGradeChecked = document.getElementById('#{cc.clientId}' +':attendenceGradeId:1').checked;
+		var goodAttendenceGradeChecked = document.getElementById('#{cc.clientId}' +':attendenceGradeId:2').checked;
+		var acceptedAttendenceGradeChecked = document.getElementById('#{cc.clientId}' +':attendenceGradeId:3').checked;
+		var unavailableAttendenceGradeChecked = document.getElementById('#{cc.clientId}' +':attendenceGradeId:4').checked;
+		var failedAttendenceGradeChecked = document.getElementById('#{cc.clientId}' +':attendenceGradeId:5').checked;
+		// behavior grade
+	    var behaviorGradePercentage = document.getElementById('#{cc.clientId}' +':behaviorGradePercentageId').value;
+	    var excellentBehaviorGradeChecked = document.getElementById('#{cc.clientId}' +':behaviorGradeId:0').checked;
+		var veryGoodBehaviorGradeChecked = document.getElementById('#{cc.clientId}' +':behaviorGradeId:1').checked;
+		var goodBehaviorGradeChecked = document.getElementById('#{cc.clientId}' +':behaviorGradeId:2').checked;
+		var acceptedBehaviorGradeChecked = document.getElementById('#{cc.clientId}' +':behaviorGradeId:3').checked;
+		var unavailableBehaviorGradeChecked = document.getElementById('#{cc.clientId}' +':behaviorGradeId:4').checked;
+		var failedBehaviorGradeChecked = document.getElementById('#{cc.clientId}' +':behaviorGradeId:5').checked;
+		
+		if(!passedIndicatorChecked && !failedIndicatorChecked) {
+		    alert('#{msgs.error_successIndicatorMandatory}');
+		    return false;
+		} 
+	
+		
+		
+		if(passedIndicatorChecked) {
+			var successRanking = document.getElementById('#{cc.clientId}' +':successRankingId').value;
+			var successRankingDesc = document.getElementById('#{cc.clientId}' +':successRankingDescId').value; 
+				
+				if((successRanking == null || successRanking == '') && (successRankingDesc != null && successRankingDesc != '')
+						|| (successRanking != null && successRanking != '') && (successRankingDesc == null || successRankingDesc == '')) {
+					alert('#{msgs.error_successRankMandatory}');
+				    return false;
+				}
+			
+				 if(successRanking != null && successRanking != '' && successRanking <= 0) {
+					alert('#{msgs.error_successRankingCannotBeZeroOrLess}');
+					return false;
+				} 
+					    
+		    // qualification grade
+		    var excellentMilitaryQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':militaryQualificationGradeId:0').checked;
+			var veryGoodMilitaryQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':militaryQualificationGradeId:1').checked;
+			var goodMilitaryQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':militaryQualificationGradeId:2').checked;
+			var acceptedMilitaryQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':militaryQualificationGradeId:3').checked;
+			var unavailableMilitaryQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':militaryQualificationGradeId:4').checked;
+			if(!excellentMilitaryQualificationGradeChecked && !veryGoodMilitaryQualificationGradeChecked &&!goodMilitaryQualificationGradeChecked &&!acceptedMilitaryQualificationGradeChecked &&!unavailableMilitaryQualificationGradeChecked) {
+			    alert('#{msgs.error_militaryQualificationGradeMandatory}');
+				return false;
+			}
+		} else {
+			var failedMilitaryQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':militaryQualificationGradeId:0').checked;
+			var unavailableMilitaryQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':militaryQualificationGradeId:1').checked;
+			if(!failedMilitaryQualificationGradeChecked && !unavailableMilitaryQualificationGradeChecked) {
+				alert('#{msgs.error_militaryQualificationGradeMandatory}');
+				return false;
+			}
+		}
+
+		if(qualificationGradePercentage != null && qualificationGradePercentage != '') {
+			 if (qualificationGradePercentage > 100.0 || qualificationGradePercentage < 0.0 || (passedIndicatorChecked == 1 && qualificationGradePercentage == 0.0)){
+				 alert('#{msgs.error_qualificationGradePercentageInvalid}');
+			 	return false;
+			}
+		}
+		
+		if(attendenceGradePercentage != null && attendenceGradePercentage != '') {
+			if (attendenceGradePercentage > 100.0 || attendenceGradePercentage < 0.0 ) {
+				alert('#{msgs.error_attendenceGradePercentageInvalid}');
+			 	return false;
+			}
+		}
+		
+		if(!excellentAttendenceGradeChecked && !veryGoodAttendenceGradeChecked &&!goodAttendenceGradeChecked &&!acceptedAttendenceGradeChecked &&!failedAttendenceGradeChecked &&!unavailableAttendenceGradeChecked) {
+		    alert('#{msgs.error_attendenceGradeMandatory}');
+			return false;
+		} 
+		
+		if(behaviorGradePercentage != null && behaviorGradePercentage != ''){	
+			 if (behaviorGradePercentage > 100.0 || behaviorGradePercentage < 0.0 ){
+				 alert('#{msgs.error_behaviorGradePercentageInvalid}');
+				 return false;
+			}
+		}
+		
+	    if(!excellentBehaviorGradeChecked && !veryGoodBehaviorGradeChecked &&!goodBehaviorGradeChecked &&!acceptedBehaviorGradeChecked && !failedBehaviorGradeChecked &&!unavailableBehaviorGradeChecked) {
+		    alert('#{msgs.error_behaviorGradeMandatory}');
+			return false;
+		}
+			
+		return true;
+	}
+	// ]]>
+	</script>
+	<h:panelGroup rendered="#{cc.attrs.military}">
+		<tr>
+			<th width="15%">
+				#{msgs.label_successIndicator}
+				<h:outputText value=" " />
+				<font style="color: red;">*</font>
+			</th>
+			<td width="20%">
+				<h:outputText value="#{cc.attrs.trainingObject.successFlag == 1 ? msgs.label_successful : msgs.label_residual}" rendered="#{cc.attrs.viewOnly}" />
+				<h:selectOneRadio id="successIndicatorId" value="#{cc.attrs.trainingObject.successFlag}" rendered="#{!cc.attrs.viewOnly}">
+					<f:selectItem itemValue="1" itemLabel="#{msgs.label_successful}" />
+					<f:selectItem itemValue="0" itemLabel="#{msgs.label_residual}" itemDisabled="#{cc.attrs.claim}" />
+					<f:ajax event="change" listener="#{cc.attrs.successFlagChangeListener}" render="#{cc.clientId}:successRankingPanelId #{cc.clientId}:militaryQualificationGradeId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+				</h:selectOneRadio>
+			</td>
+
+			<td width="65%" colspan="2">
+				<h:panelGroup id="successRankingPanelId">
+					<h:panelGroup rendered="#{cc.attrs.trainingObject.successFlag == null or cc.attrs.trainingObject.successFlag == 1}">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<th width="15%">#{msgs.label_theRanking}</th>
+								<td width="50%">
+									<h:inputText id="successRankingId" value="#{cc.attrs.trainingObject.successRanking}" rendered="#{!cc.attrs.viewOnly}" styleClass="inputDataNormal" maxlength="5" onkeypress="return isDigit(event);" />
+									<h:outputText value="  " rendered="#{!cc.attrs.viewOnly}" />
+									<h:inputText id="successRankingDescId" value="#{cc.attrs.trainingObject.successRankingDesc}" rendered="#{!cc.attrs.viewOnly}" onkeypress="return !isFloat(event, this.value, true);" maxlength="100" />
+									<h:outputText value="#{cc.attrs.trainingObject.successRanking} - #{cc.attrs.trainingObject.successRankingDesc}" rendered="#{cc.attrs.viewOnly}" />
+									<br />
+									<h:outputText value="#{msgs.label_successRankingFieldDescriprion}" rendered="#{!cc.attrs.viewOnly}" style="color: red; font-weight: bold;"/>
+								</td>
+							</tr>
+						</table>
+					</h:panelGroup>
+				</h:panelGroup>
+			</td>
+		</tr>
+		<tr>
+			<td width="15%"></td>
+			<th width="20%">#{msgs.label_percentage}</th>
+			<th width="15%">#{msgs.label_evaluation}</th>
+			<td width="50%"></td>
+		</tr>
+		<tr>
+			<th width="15%">#{msgs.label_qualificationGradePercentage}</th>
+			<td width="20%">
+				<h:inputText id="qualificationGradePercentageId" value="#{cc.attrs.trainingObject.qualificationGradePercentage}" readonly="#{cc.attrs.viewOnly}" styleClass="inputDataLarge" onkeypress="return isFloat(event, this.value);" maxlength="5" />
+			</td>
+			<td width="65%" colspan="2">
+				<h:outputText value="#{cc.attrs.trainingObject.qualificationGrade == 1 ? msgs.label_excellent : (cc.attrs.trainingObject.qualificationGrade == 2 ? msgs.label_veryGood : (cc.attrs.trainingObject.qualificationGrade == 3 ? msgs.label_good : (cc.attrs.trainingObject.qualificationGrade == 4 ? msgs.label_accepted : msgs.label_notAvailable )))}" rendered="#{cc.attrs.viewOnly}" />
+				<h:selectOneRadio id="militaryQualificationGradeId" value="#{cc.attrs.trainingObject.qualificationGrade}" rendered="#{!cc.attrs.viewOnly}">
+					<c:if test="#{cc.attrs.trainingObject.successFlag == 1}">
+						<f:selectItem itemLabel="#{msgs.label_excellent}" itemValue="1" />
+						<f:selectItem itemLabel="#{msgs.label_veryGood}" itemValue="2" />
+						<f:selectItem itemLabel="#{msgs.label_good}" itemValue="3" />
+						<f:selectItem itemLabel="#{msgs.label_accepted}" itemValue="4" />
+					</c:if>
+					<c:if test="#{cc.attrs.trainingObject.successFlag == 0}">
+						<f:selectItem itemLabel="#{msgs.label_failed}" itemValue="5" />
+
+					</c:if>
+					<f:selectItem itemLabel="#{msgs.label_notAvailable}" itemValue="6" />
+				</h:selectOneRadio>
+			</td>
+		</tr>
+		<tr>
+			<th width="15%">#{msgs.label_attendanceGradePercentage}</th>
+			<td width="20%">
+				<h:inputText id="attendenceGradePercentageId" value="#{cc.attrs.trainingObject.attendanceGradePercentage}" readonly="#{cc.attrs.viewOnly}" styleClass="inputDataLarge" onkeypress="return isFloat(event, this.value);" maxlength="5" />
+			</td>
+			<td width="65%" colspan="2">
+				<h:outputText value="#{cc.attrs.trainingObject.attendanceGrade == 1 ? msgs.label_excellent : (cc.attrs.trainingObject.attendanceGrade == 2 ? msgs.label_veryGood : (cc.attrs.trainingObject.attendanceGrade == 3 ? msgs.label_good : (cc.attrs.trainingObject.attendanceGrade == 4 ? msgs.label_accepted : (cc.attrs.trainingObject.attendanceGrade == 5 ? msgs.label_failed : msgs.label_notAvailable ))))}" rendered="#{cc.attrs.viewOnly}" />
+				<h:selectOneRadio id="attendenceGradeId" value="#{cc.attrs.trainingObject.attendanceGrade}" rendered="#{!cc.attrs.viewOnly}">
+					<f:selectItem itemLabel="#{msgs.label_excellent}" itemValue="1" />
+					<f:selectItem itemLabel="#{msgs.label_veryGood}" itemValue="2" />
+					<f:selectItem itemLabel="#{msgs.label_good}" itemValue="3" />
+					<f:selectItem itemLabel="#{msgs.label_accepted}" itemValue="4" />
+					<f:selectItem itemLabel="#{msgs.label_failed}" itemValue="5" />
+					<f:selectItem itemLabel="#{msgs.label_notAvailable}" itemValue="6" />
+				</h:selectOneRadio>
+			</td>
+		</tr>
+		<tr>
+			<th width="15%">#{msgs.label_behaviourGradePercentage}</th>
+			<td width="20%">
+				<h:inputText id="behaviorGradePercentageId" value="#{cc.attrs.trainingObject.behaviorGradePercentage}" readonly="#{cc.attrs.viewOnly}" styleClass="inputDataLarge" onkeypress="return isFloat(event, this.value);" maxlength="5" />
+			</td>
+			<td width="65%" colspan="2">
+				<h:outputText value="#{cc.attrs.trainingObject.behaviorGrade == 1 ? msgs.label_excellent : (cc.attrs.trainingObject.behaviorGrade == 2 ? msgs.label_veryGood : (cc.attrs.trainingObject.behaviorGrade == 3 ? msgs.label_good : (cc.attrs.trainingObject.behaviorGrade == 4 ? msgs.label_accepted : (cc.attrs.trainingObject.behaviorGrade == 5 ? msgs.label_failed : msgs.label_notAvailable ))))}" rendered="#{cc.attrs.viewOnly}" />
+				<h:selectOneRadio id="behaviorGradeId" value="#{cc.attrs.trainingObject.behaviorGrade}" rendered="#{!cc.attrs.viewOnly}">
+					<f:selectItem itemLabel="#{msgs.label_excellent}" itemValue="1" />
+					<f:selectItem itemLabel="#{msgs.label_veryGood}" itemValue="2" />
+					<f:selectItem itemLabel="#{msgs.label_good}" itemValue="3" />
+					<f:selectItem itemLabel="#{msgs.label_accepted}" itemValue="4" />
+					<f:selectItem itemLabel="#{msgs.label_failed}" itemValue="5" />
+					<f:selectItem itemLabel="#{msgs.label_notAvailable}" itemValue="6" />
+				</h:selectOneRadio>
+			</td>
+		</tr>
+		<tr>
+			<th width="15%">
+				#{msgs.label_attachments}
+				<h:outputText value=" " />
+				<font style="color: red;">*</font>
+			</th>
+			<td width="85%" colspan="3">
+				<code:attachments loginEmpId="#{cc.attrs.loginEmpId}" attachmentId="#{cc.attrs.trainingObject.attachments}" addEnableFlag="#{!cc.attrs.viewOnly}" viewEnableFlag="true" deleteEnableFlag="#{!cc.attrs.viewOnly}" />
+				<h:outputText value=" " />
+				<h:outputText value="#{cc.attrs.trainingObject.trainingTypeId == 2 ? msgs.label_attachNominationLetterAndGraduationCertificateRequired : msgs.label_attachGraduationCertificateRequired}" rendered="#{cc.attrs.claim}" style="color: red; font-weight: bold;" />
+			</td>
+		</tr>
+	</h:panelGroup>
+
+	<h:panelGroup id="civillainCourseResultsPanelId" rendered="#{!cc.attrs.military}">
+		<tr>
+			<th width="15%">
+				#{msgs.label_results}
+				<h:outputText value=" " />
+				<font style="color: red;">*</font>
+			</th>
+			<td width="85%" colspan="3">
+				<h:outputText value="#{cc.attrs.trainingObject.successFlag == 1 ? msgs.label_passing : msgs.label_noPassing}" rendered="#{cc.attrs.viewOnly}" />
+				<h:selectOneRadio id="resultId" value="#{cc.attrs.trainingObject.successFlag}" rendered="#{!cc.attrs.viewOnly}">
+					<f:selectItem itemLabel="#{msgs.label_passing}" itemValue="1" />
+					<f:selectItem itemLabel="#{msgs.label_noPassing}" itemValue="0" itemDisabled="#{cc.attrs.claim}" />
+					<f:ajax event="change" listener="#{cc.attrs.successFlagChangeListener}" execute="#{cc.clientId}:civillainCourseResultsPanelId" render="#{cc.clientId}:civilianQualificationGradePanelId #{cc.clientId}:graduationDatePanelId" />
+				</h:selectOneRadio>
+			</td>
+		</tr>
+		<tr>
+			<th width="15%">
+				#{msgs.label_evaluation}
+				<h:outputText value=" " />
+				<font style="color: red;">*</font>
+			</th>
+			<td width="85%" colspan="3">
+				<h:panelGroup id="civilianQualificationGradePanelId">
+					<h:outputText value="#{cc.attrs.trainingObject.qualificationGrade == 1 ? msgs.label_excellent : (cc.attrs.trainingObject.qualificationGrade == 2 ? msgs.label_veryGood : (cc.attrs.trainingObject.qualificationGrade == 3 ? msgs.label_good : (cc.attrs.trainingObject.qualificationGrade == 4 ? msgs.label_accepted : msgs.label_notAvailable )))}" rendered="#{cc.attrs.viewOnly}" />
+					<h:selectOneRadio id="civilianQualificationGradeId" value="#{cc.attrs.trainingObject.qualificationGrade}" rendered="#{!cc.attrs.viewOnly}">
+						<c:if test="#{cc.attrs.trainingObject.successFlag == 1}">
+							<f:selectItem itemLabel="#{msgs.label_excellent}" itemValue="1" />
+							<f:selectItem itemLabel="#{msgs.label_veryGood}" itemValue="2" />
+							<f:selectItem itemLabel="#{msgs.label_good}" itemValue="3" />
+							<f:selectItem itemLabel="#{msgs.label_accepted}" itemValue="4" />
+						</c:if>
+						<c:if test="#{cc.attrs.trainingObject.successFlag == 0}">
+							<f:selectItem itemLabel="#{msgs.label_failed}" itemValue="5" />
+						</c:if>
+						<f:selectItem itemLabel="#{msgs.label_notAvailable}" itemValue="6" />
+					</h:selectOneRadio>
+				</h:panelGroup>
+			</td>
+		</tr>
+		<h:panelGroup rendered="#{cc.attrs.showGraduationDate}">
+			<tr>
+				<th width="15%">
+					#{msgs.label_graduationDate}
+					<h:outputText value=" " />
+					<font style="color: red;">*</font>
+				</th>
+				<td width="85%" colspan="3">
+					<h:panelGroup id="graduationDatePanelId">
+						<h:panelGroup rendered="#{cc.attrs.trainingObject.successFlag != 0}">
+							<util:hijri id="graduationDateId" nullable="true" value="#{cc.attrs.trainingObject.studyGraduationDate}" rendered="#{!cc.attrs.viewOnly}" viewOldRange="true"/>
+							<h:outputText value="#{cc.attrs.trainingObject.studyGraduationDateString}" rendered="#{cc.attrs.viewOnly}" />
+						</h:panelGroup>
+					</h:panelGroup>
+				</td>
+			</tr>
+		</h:panelGroup>
+		<tr>
+			<th width="15%">
+				#{msgs.label_attachments}
+				<h:outputText value=" " />
+				<font style="color: red;">*</font>
+			</th>
+			<td width="85%" colspan="3">
+				<code:attachments loginEmpId="#{cc.attrs.loginEmpId}" attachmentId="#{cc.attrs.trainingObject.attachments}" addEnableFlag="#{!cc.attrs.viewOnly}" viewEnableFlag="true" deleteEnableFlag="#{!cc.attrs.viewOnly}" />
+				<h:outputText value=" " />
+				<h:outputText value="#{msgs.label_attachNominationLetterAndGraduationCertificateRequired}" rendered="#{cc.attrs.claim}" style="color: red; font-weight: bold;" />
+			</td>
+		</tr>
+	</h:panelGroup>
+</composite:implementation>
+</html>

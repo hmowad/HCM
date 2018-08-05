@@ -1,0 +1,265 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+		function getEmployee(contextPath) {
+			openEmployeesMiniSearch(contextPath,
+					'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1,
+					-1, -1);
+		}
+		function handleEmpMiniSearchResult(ret) {
+			if (ret != null) {
+				document
+						.getElementById('employeeMilitaryExtCourseEventCancelFormId:beneficiaryEmployeeHId').value = ret[0];
+				document
+						.getElementById(
+								'employeeMilitaryExtCourseEventCancelFormId:searchEmpBtnId')
+						.click();
+			}
+		}
+
+		function validateRequest() {
+			var beneficiaryEmployeeHId = document
+					.getElementById('employeeMilitaryExtCourseEventCancelFormId:beneficiaryEmployeeHId').value;
+			var courseEventId = document
+					.getElementById('employeeMilitaryExtCourseEventCancelFormId:courseEventId').value;
+			var cancelReasonChecked1 = document
+					.getElementById('employeeMilitaryExtCourseEventCancelFormId:cancelReasonId:0').checked;
+			var cancelReasonChecked2 = document
+					.getElementById('employeeMilitaryExtCourseEventCancelFormId:cancelReasonId:1').checked;
+			var cancelReasonChecked3 = document
+					.getElementById('employeeMilitaryExtCourseEventCancelFormId:cancelReasonId:2').checked;
+			var cancelReasonChecked4 = document
+					.getElementById('employeeMilitaryExtCourseEventCancelFormId:cancelReasonId:3').checked;
+
+			if (beneficiaryEmployeeHId == null || beneficiaryEmployeeHId == '') {
+				alert('#{msgs.error_employeeMandatory}');
+				return false;
+			}
+
+			if (courseEventId == null || courseEventId == '-1') {
+				alert('#{msgs.error_trainingCourseIsMandatory}');
+				return false;
+			}
+			if (!cancelReasonChecked1 && !cancelReasonChecked2
+					&& !cancelReasonChecked3 && !cancelReasonChecked4) {
+				alert("#{msgs.error_cancelReasonMandatory}");
+				return false;
+			}
+			if (!confirm('#{msgs.q_save}'))
+				return false;
+			return true;
+		}
+		// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="employeeMilitaryExtCourseEventCancelFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{employeeMilitaryExtCourseEventCancel.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.title_employeeData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="beneficiaryPanelId">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="50%">
+													<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+													<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{employeeMilitaryExtCourseEventCancel.selectEmployee()}">
+														<f:ajax execute="employeeMilitaryExtCourseEventCancelFormId:beneficiaryEmployeeHId" render="employeeMilitaryExtCourseEventCancelFormId:beneficiaryPanelId employeeMilitaryExtCourseEventCancelFormId:courseDetailsPanelId employeeMilitaryExtCourseEventCancelFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+													</h:commandButton>
+													<h:inputHidden id="beneficiaryEmployeeHId" value="#{employeeMilitaryExtCourseEventCancel.employeeId}" />
+
+												</td>
+											</tr>
+										</table>
+
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<code:emp value="#{employeeMilitaryExtCourseEventCancel.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="courseDetailsPanelId">
+							<h:panelGroup rendered="#{employeeMilitaryExtCourseEventCancel.courseEvents!=null and !employeeMilitaryExtCourseEventCancel.courseEvents.isEmpty()}">
+								<table width="100%" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_trainingCourseData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														#{msgs.label_trainingCourse}
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="35%">
+														<h:selectOneMenu id="courseEventId" value="#{employeeMilitaryExtCourseEventCancel.courseEventId}">
+															<f:selectItem itemLabel="" itemValue="-1" />
+															<f:selectItems value="#{employeeMilitaryExtCourseEventCancel.courseEvents}" var="course" itemLabel="#{course.courseName}" itemValue="#{course.id}" />
+															<f:ajax event="change" listener="#{employeeMilitaryExtCourseEventCancel.selectCourse()}" render="employeeMilitaryExtCourseEventCancelFormId:actionPanelId employeeMilitaryExtCourseEventCancelFormId:courseDetailsPanelId employeeMilitaryExtCourseEventCancelFormId:notifyMessagesId" execute="employeeMilitaryExtCourseEventCancelFormId:courseEventId employeeMilitaryExtCourseEventCancelFormId:beneficiaryEmployeeHId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:selectOneMenu>
+													</td>
+													<th width="15%">#{msgs.label_theTrainingUnit}</th>
+													<td width="35%">
+														<h:outputText value="#{employeeMilitaryExtCourseEventCancel.selectedCourseEvent.externalPartyDesc}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">#{msgs.label_courseStartDate}</th>
+													<td width="35%">
+														<h:outputText value="#{employeeMilitaryExtCourseEventCancel.selectedCourseEvent.actualStartDateString}" />
+													</td>
+
+													<th width="15%">#{msgs.label_courseEndDate}</th>
+													<td width="35%">
+														<h:outputText value="#{employeeMilitaryExtCourseEventCancel.selectedCourseEvent.actualEndDateString}" />
+													</td>
+												</tr>
+											</table>
+
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+
+											<h:panelGroup rendered="#{employeeMilitaryExtCourseEventCancel.trainingTransaction != null}">
+												<table width="100%" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+															<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>#{msgs.label_cancelData}</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td>
+															<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<th width="15%">
+																		#{msgs.label_cancelReason}
+																		<font style="color: red;"> *</font>
+																	</th>
+																	<td width="85%">
+																		<h:selectOneRadio id="cancelReasonId" value="#{employeeMilitaryExtCourseEventCancel.trainingTransaction.reasonType}">
+																			<f:selectItem itemLabel="#{msgs.label_notPassedSubjectsInCourse}" itemValue="3" />
+																			<f:selectItem itemLabel="#{msgs.label_absence}" itemValue="4" />
+																			<f:selectItem itemLabel="#{msgs.label_badBehavior}" itemValue="5" />
+																			<f:selectItem itemLabel="#{msgs.label_traineeCircumstances}" itemValue="6" />
+																		</h:selectOneRadio>
+																	</td>
+																</tr>
+																<tr>
+																	<th width="15%">#{msgs.label_notes}</th>
+																	<td width="85%">
+																		<h:inputTextarea styleClass="inputDataSuperLarge" value="#{employeeMilitaryExtCourseEventCancel.trainingTransaction.reasons}" rows="3" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" />
+																	</td>
+																</tr>
+																<tr>
+																	<th width="15%">#{msgs.label_attachments}</th>
+																	<td width="85%">
+																		<code:attachments loginEmpId="#{employeeMilitaryExtCourseEventCancel.loginEmpData.empId}" attachmentId="#{employeeMilitaryExtCourseEventCancel.trainingTransaction.attachments}" addEnableFlag="true" viewEnableFlag="true" deleteEnableFlag="true" />
+																	</td>
+																</tr>
+
+															</table>
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</td>
+
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:panelGroup id="actionPanelId">
+															<h:commandButton rendered="#{employeeMilitaryExtCourseEventCancel.trainingTransaction != null and !employeeMilitaryExtCourseEventCancel.savedFlag}" onclick="return validateRequest();" action="#{employeeMilitaryExtCourseEventCancel.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon">
+																<f:ajax execute="@form" render="employeeMilitaryExtCourseEventCancelFormId:actionPanelId employeeMilitaryExtCourseEventCancelFormId:courseDetailsPanelId employeeMilitaryExtCourseEventCancelFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															</h:commandButton>
+															<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{employeeMilitaryExtCourseEventCancel.reset()}" styleClass="btn_normal_icon">
+																<f:ajax render="@form" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															</h:commandButton>
+														</h:panelGroup>
+													</td>
+
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+
+</h:body>
+</html>

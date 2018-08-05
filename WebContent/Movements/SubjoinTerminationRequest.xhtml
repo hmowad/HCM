@@ -1,0 +1,395 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function validateSend() {
+			destinationValue = document.getElementById('subjoinTerminationRequestFormId:destinationId').innerHTML;
+			if(destinationValue == null || destinationValue == '') {
+				alert("#{msgs.error_thereIsNoLastValidTrans}");
+				return false;
+			}
+			
+			terminationDateValue = document.getElementById('subjoinTerminationRequestFormId:terminationDateId:day').value;
+			if(terminationDateValue == 0) {
+				if(#{subjoinTerminationRequest.mode} == 3)
+					alert("#{msgs.error_subjoinTerminationPersonFieldsMandatory}");
+				else
+					alert("#{msgs.error_subjoinTerminationFieldsMandatory}");
+				return false;
+			}
+
+			if(document.getElementById('subjoinTerminationRequestFormId:ministryApprovalNumberId') != null) {
+		    	ministryApprovalNumberValue = document.getElementById('subjoinTerminationRequestFormId:ministryApprovalNumberId').value;
+		    	if(ministryApprovalNumberValue == null || ministryApprovalNumberValue == '') {
+					alert('#{msgs.error_ministryAgreementDataIsRequired}');
+					return false;
+		        }
+			}
+			
+			return #{subjoinTerminationRequest.role == 'ReviewerEmp'} ? validateRefuseAndNotes(1, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;) : true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="subjoinTerminationRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{subjoinTerminationRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_applicantData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{subjoinTerminationRequest.requester}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requestPanelId">
+							<h:panelGroup rendered="#{subjoinTerminationRequest.lastValidTran != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{subjoinTerminationRequest.mode == 3 ? msgs.label_lastInternalAssignmentData : msgs.label_lastSubjoinData}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{subjoinTerminationRequest.mode == 3 ? msgs.label_assignmentDestination : msgs.label_subjoinDestination}" />
+													</th>
+													<td width="35%">
+														<h:outputText id="destinationId" value="#{subjoinTerminationRequest.lastValidTran.locationFlag == 1 ? subjoinTerminationRequest.lastValidTran.location : subjoinTerminationRequest.lastValidTran.unitFullName}" />
+													</td>
+													<th width="10%">#{msgs.label_period}</th>
+													<td width="15%">
+														<h:outputText rendered="#{subjoinTerminationRequest.lastValidTran.periodMonths != null and subjoinTerminationRequest.lastValidTran.periodMonths != 0}" value="#{subjoinTerminationRequest.lastValidTran.periodMonths} #{msgs.label_month} " />
+														<h:outputText rendered="#{subjoinTerminationRequest.lastValidTran.periodDays != null and subjoinTerminationRequest.lastValidTran.periodDays != 0}" value="#{subjoinTerminationRequest.lastValidTran.periodDays} #{msgs.label_day}" />
+													</td>
+													<th width="10%">#{msgs.label_endDate}</th>
+													<td width="15%">
+														<h:outputText value="#{subjoinTerminationRequest.lastValidTran.endDateString}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_requestData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														#{subjoinTerminationRequest.mode == 1 ? msgs.label_officersSubjoinTerminationDate :(subjoinTerminationRequest.mode == 2 ? msgs.label_subjoinTerminationDate : msgs.label_assignmentTerminationDate)}
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="85%">
+														<util:hijri id="terminationDateId" rendered="#{subjoinTerminationRequest.role == 'Requester' or subjoinTerminationRequest.role == 'ReviewerEmp'}" value="#{subjoinTerminationRequest.wfMovement.endDate}" onChangeAjaxSubmit="true" reRenderIds="subjoinTerminationRequestFormId:notifyMessagesId" />
+														<h:outputText value="#{subjoinTerminationRequest.wfMovement.endDateString}" rendered="#{subjoinTerminationRequest.role != 'Requester' and subjoinTerminationRequest.role != 'ReviewerEmp'}" />
+													</td>
+												</tr>
+												<tr>
+													<th>#{msgs.label_requiredAttachments}</th>
+													<td colspan="3">
+														<code:attachments loginEmpId="#{subjoinTerminationRequest.loginEmpData.empId}" attachmentId="#{subjoinTerminationRequest.attachments}" addEnableFlag="#{subjoinTerminationRequest.role == 'Requester' }" viewEnableFlag="true" deleteEnableFlag="#{subjoinTerminationRequest.role == 'Requester'}" />
+													</td>
+												</tr>
+												<tr>
+													<th>#{msgs.label_justifications}</th>
+													<td>
+														<h:inputText readonly="#{subjoinTerminationRequest.role != 'Requester'}" value="#{subjoinTerminationRequest.wfMovement.reasons}" styleClass="inputDataSuperLarge" maxlength="200" />
+													</td>
+												</tr>
+												<tr>
+													<th>#{msgs.label_notes}</th>
+													<td>
+														<h:inputText readonly="#{subjoinTerminationRequest.role != 'Requester' }" value="#{subjoinTerminationRequest.wfMovement.remarks}" styleClass="inputDataSuperLarge" maxlength="500" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<h:panelGroup
+												rendered="#{subjoinTerminationRequest.role != 'Requester' and subjoinTerminationRequest.role != 'DirectManager' and subjoinTerminationRequest.role != 'ManagerRedirect'  and subjoinTerminationRequest.role != 'ManagerRedirectToSecurity' and subjoinTerminationRequest.role != 'SecurityEmp' and subjoinTerminationRequest.role != 'SecondaryManagerRedirect' and subjoinTerminationRequest.role != 'SecondaryReviewerEmp' and subjoinTerminationRequest.role != 'SecondarySignManager' and subjoinTerminationRequest.wfMovement.locationFlag == 1}">
+												<table border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td width="100%">
+															<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>#{msgs.label_dataFilledBySpecializedEmployee}</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td width="100%">
+															<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<th>
+																		#{msgs.label_interiorMinisteryAgreementNumber}
+																		<h:outputText value=" " />
+																		<font style="color: red;">*</font>
+																	</th>
+																	<td>
+																		<h:inputText id="ministryApprovalNumberId" value="#{subjoinTerminationRequest.wfMovement.ministryApprovalNumber}" readonly="#{subjoinTerminationRequest.role != 'ReviewerEmp'}" maxlength="50" />
+																	</td>
+																	<th>
+																		#{msgs.label_interiorMinisteryAgreementDate}
+																		<h:outputText value=" " />
+																		<font style="color: red;">*</font>
+																	</th>
+																	<td>
+																		<util:hijri value="#{subjoinTerminationRequest.wfMovement.ministryApprovalDate}" rendered="#{subjoinTerminationRequest.role == 'ReviewerEmp'}" />
+																		<h:outputText value="#{subjoinTerminationRequest.wfMovement.ministryApprovalDateString}" rendered="#{subjoinTerminationRequest.role != 'ReviewerEmp'}" />
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+
+									<code:specialAuthorityData id="specialAuthorityDataId" loginEmpId="#{subjoinTerminationRequest.loginEmpData.empId}" wfMovement="#{subjoinTerminationRequest.wfMovement}" role="#{subjoinTerminationRequest.role}" requestFlag="#{true}" rendered="#{subjoinTerminationRequest.role == 'ReviewerEmp' or subjoinTerminationRequest.role  == 'SignManager' or subjoinTerminationRequest.role == 'SecondaryReviewerEmp' or subjoinTerminationRequest.role == 'SecondarySignManager'}" />
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<h:panelGroup rendered="#{subjoinTerminationRequest.role != 'Requester' and subjoinTerminationRequest.role != 'DirectManager' and subjoinTerminationRequest.role != 'ManagerRedirect' and subjoinTerminationRequest.role != 'ManagerRedirectToSecurity' and subjoinTerminationRequest.role != 'SecurityEmp' and subjoinTerminationRequest.role != 'SecondaryReviewerEmp' and subjoinTerminationRequest.role != 'SecondarySignManager' and subjoinTerminationRequest.role != 'SecondaryManagerRedirect'}">
+										<tr>
+											<td width="100%">
+												<code:decisionCopies external="#{subjoinTerminationRequest.externalCopies}" internal="#{subjoinTerminationRequest.internalCopies}" viewOnly="#{subjoinTerminationRequest.role != 'ReviewerEmp'}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<td width="100%">
+											<code:prevTasks rendered="#{subjoinTerminationRequest.role != 'Requester'}" value="#{subjoinTerminationRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp,SecondaryReviewerEmp,SecondaryManagerRedirect," />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:curTask id="curTaskId" value="#{subjoinTerminationRequest.currentEmployee}"
+												rendered="#{subjoinTerminationRequest.role == 'DirectManager' or subjoinTerminationRequest.role == 'ManagerRedirect' or subjoinTerminationRequest.role == 'ManagerRedirectToSecurity' or subjoinTerminationRequest.role == 'SecurityEmp' or subjoinTerminationRequest.role == 'ReviewerEmp' or subjoinTerminationRequest.role == 'SignManager' or subjoinTerminationRequest.role == 'SecondaryReviewerEmp' or subjoinTerminationRequest.role == 'SecondaryManagerRedirect' or subjoinTerminationRequest.role == 'SecondarySignManager'}">
+												<h:panelGroup rendered="#{subjoinTerminationRequest.role == 'ManagerRedirect' or subjoinTerminationRequest.role == 'SecondaryManagerRedirect'}">
+													<tr>
+														<th width="15%">
+															#{msgs.label_selectEmp}
+															<h:outputText itemLabel="" itemValue="0" />
+															<font style="color: red;">*</font>
+														</th>
+														<td width="85%" colspan="3">
+															<h:selectOneMenu id="reviewersId" value="#{subjoinTerminationRequest.selectedReviewerEmpId}">
+																<f:selectItem itemLabel="" />
+																<f:selectItems value="#{subjoinTerminationRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+															</h:selectOneMenu>
+														</td>
+													</tr>
+												</h:panelGroup>
+												<tr>
+													<th width="15%">#{msgs.label_notes}</th>
+													<td width="85%" colspan="3">
+														<h:inputText id="notesId" value="#{subjoinTerminationRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+													</td>
+												</tr>
+												<h:panelGroup rendered="#{subjoinTerminationRequest.role != 'ManagerRedirect' and subjoinTerminationRequest.role != 'SecurityEmp' and subjoinTerminationRequest.role != 'SecondaryManagerRedirect' and subjoinTerminationRequest.role != 'ManagerRedirectToSecurity'}">
+													<tr>
+														<th width="15%">#{msgs.label_refuseReasons}</th>
+														<td width="85%" colspan="3">
+															<h:inputText id="refuseReasonsId" value="#{subjoinTerminationRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+														</td>
+													</tr>
+												</h:panelGroup>
+											</code:curTask>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:outputText rendered="#{subjoinTerminationRequest.role == 'Notification' or subjoinTerminationRequest.role == 'History'}" value="#{subjoinTerminationRequest.notificationMessage}" styleClass="successMessage" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+
+														<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateSend(#{subjoinTerminationRequest.mode})');" action="#{subjoinTerminationRequest.initMovement()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'Requester'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationRequest.approveMovementDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'DirectManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationRequest.rejectMovementDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'DirectManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="redirectMrtsBtnId" onclick="return handleOnAction('#{msgs.q_redirectToSecurity}', 'validateRefuseAndNotes(1, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationRequest.redirectMovementMRTS()}" value="#{msgs.label_redirectToSecurity} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'ManagerRedirectToSecurity'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectMrtsBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationRequest.rejectMovementMRTS()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'ManagerRedirectToSecurity'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSeBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationRequest.approveMovementSE()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SecurityEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectSeBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{subjoinTerminationRequest.rejectMovementSE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SecurityEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinTerminationRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinTerminationRequest.redirectMovementMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'ManagerRedirect'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="smrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinTerminationRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinTerminationRequest.redirectMovementSMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SecondaryManagerRedirect'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveReBtnId" action="#{subjoinTerminationRequest.approveMovementRE()}" onclick="return handleOnAction('#{msgs.q_reviewForMovements}', 'validateSend(#{subjoinTerminationRequest.mode})');" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'ReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationRequest.rejectMovementRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'ReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSreBtnId" action="#{subjoinTerminationRequest.approveMovementSRE()}" onclick="return handleOnAction('#{msgs.q_reviewForMovements}');" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SecondaryReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectSreBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationRequest.rejectMovementSRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SecondaryReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationRequest.approveMovementSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateDecisionApprovalNotes(&quot;subjoinTerminationRequestFormId:specialAuthorityDataId:decisionApprovalRemarksId&quot;, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;subjoinTerminationRequestFormId:curTaskId:notesId&quot;)');" action="#{subjoinTerminationRequest.returnMovementSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}"
+															styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationRequest.rejectMovementSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSsmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationRequest.approveMovementSSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SecondarySignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="retSsmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;subjoinTerminationRequestFormId:curTaskId:notesId&quot;)');" action="#{subjoinTerminationRequest.returnMovementSSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SecondarySignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationRequest.rejectMovementSSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SecondarySignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="printBtnId" action="#{subjoinTerminationRequest.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'Notification' and subjoinTerminationRequest.instanceApproved == 1}" />
+
+														<h:commandButton id="nBtnId" action="#{subjoinTerminationRequest.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'Notification'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup rendered="#{subjoinTerminationRequest.lastValidTran == null}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>
+										<h:outputText value="#{msgs.error_thereIsNoLastValidTrans}" styleClass="remarkMessage" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+		function getMilitaryCourses() {
+			openTrainingCoursesMiniSearch('#{request.contextPath}','handleMilitaryCoursesMiniSearchResult(ret)', 2);
+		}
+
+		function handleMilitaryCoursesMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('trainingCourseSyllabusApproveDecisionRequestFormId:searchCourseIDId').value = ret[0];
+				document.getElementById('trainingCourseSyllabusApproveDecisionRequestFormId:searchCourseDescId').innerHTML = ret[1];
+			}
+		}
+		function getEmployee() {
+			openEmployeesMiniSearch('#{request.contextPath}','handleEmpMiniSearchResult(ret)',15, -1, -1, -1, -1, -1, -1, -1);
+		}
+
+		function handleEmpMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('trainingCourseSyllabusApproveDecisionRequestFormId:preparatorEmployeeIDId').value = ret[0];
+				document.getElementById('trainingCourseSyllabusApproveDecisionRequestFormId:preparatorEmployeeNameId').innerHTML = ret[1];
+			}
+		}
+		function getCommitteeEmployee() {
+			openEmployeesMiniSearch('#{request.contextPath}','handleEmpMiniSearchResultCM(ret)', 15, -1, -1, -1, -1, -1, -1, -1);
+		}
+
+		function handleEmpMiniSearchResultCM(ret) {
+			if (ret != null) {
+				var selectedEmpIDsId = 'trainingCourseSyllabusApproveDecisionRequestFormId:selectedCommitteeEmployeeId';
+				var searcEmpBtnId = 'trainingCourseSyllabusApproveDecisionRequestFormId:searchEmpBtnCCId';
+				document.getElementById(selectedEmpIDsId).value = ret[0];
+				document.getElementById(searcEmpBtnId).click();
+			}
+		}
+		function validateRequest() {
+
+			var attachmentTypeCurriculumChecked = document.getElementById('trainingCourseSyllabusApproveDecisionRequestFormId:attachmentsTypeId:0').checked;
+			var attachmentTypeScheduleChecked = document.getElementById('trainingCourseSyllabusApproveDecisionRequestFormId:attachmentsTypeId:1').checked;
+			var attachmentTypeSyllabusChecked = document.getElementById('trainingCourseSyllabusApproveDecisionRequestFormId:attachmentsTypeId:2').checked;
+
+			if (!attachmentTypeCurriculumChecked && !attachmentTypeScheduleChecked && !attachmentTypeSyllabusChecked) {
+				alert('#{msgs.error_contentTypeMandatory}');
+				return false;
+			}
+			var searchCourseIDId = document.getElementById('trainingCourseSyllabusApproveDecisionRequestFormId:searchCourseIDId').value;
+			if (searchCourseIDId == null || searchCourseIDId == '') {
+				alert('#{msgs.error_courseNameMandatory}');
+				return false;
+			}
+			var preparatorEmployeeID = document.getElementById('trainingCourseSyllabusApproveDecisionRequestFormId:preparatorEmployeeIDId').value;
+			if (preparatorEmployeeID != null && preparatorEmployeeID == '' || preparatorEmployeeID == -1) {
+				alert('#{msgs.error_preparatorMandatory}');
+				return false;
+			}
+			return true;
+		}
+		// ]]>
+	</script>
+</h:head>
+
+<h:body styleClass="screenBg">
+	<h:form id="trainingCourseSyllabusApproveDecisionRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{trainingCourseSyllabusApproveDecisionRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requestData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15">#{msgs.label_contentType}</th>
+								<td width="85%">
+									<h:selectOneRadio disabled="#{trainingCourseSyllabusApproveDecisionRequest.role != 'Requester'}" id="attachmentsTypeId" value="#{trainingCourseSyllabusApproveDecisionRequest.wfTrainingCourse.contentType}">
+										<f:selectItem itemLabel="#{msgs.label_curriculum}" itemValue="1" />
+										<f:selectItem itemLabel="#{msgs.label_schedule}" itemValue="2" />
+										<f:selectItem itemLabel="#{msgs.label_syllabus}" itemValue="3" />
+									</h:selectOneRadio>
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">
+									#{msgs.label_trainingCourseName}
+									<h:outputText value=" " />
+									<font style="color: red;">*</font>
+								</th>
+								<td width="85%">
+									<h:inputHidden id="searchCourseIDId" value="#{trainingCourseSyllabusApproveDecisionRequest.wfTrainingCourse.courseId}" />
+									<h:outputText id="searchCourseDescId" value="#{trainingCourseSyllabusApproveDecisionRequest.selectedCourseName}" />
+									<h:commandButton rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'Requester'}" onclick="getMilitaryCourses(); return false;" value="#{msgs.fa_external_link}" styleClass="btn_icon" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{trainingCourseSyllabusApproveDecisionRequest.role != 'Requester'}">
+								<tr>
+									<th width="15">
+										#{msgs.label_syllabusAttachments}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%">
+										<code:attachments loginEmpId="#{trainingCourseSyllabusApproveDecisionRequest.loginEmpData.empId}" attachmentId="#{trainingCourseSyllabusApproveDecisionRequest.wfTrainingCourse.syllabusAttachments}" addEnableFlag="#{trainingCourseSyllabusApproveDecisionRequest.role == 'CommitteeSecretary' or trainingCourseSyllabusApproveDecisionRequest.role == 'Preparator'}" viewEnableFlag="true"
+											deleteEnableFlag="#{trainingCourseSyllabusApproveDecisionRequest.role == 'CommitteeSecretary' or trainingCourseSyllabusApproveDecisionRequest.role == 'Preparator'}" />
+									</td>
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15">#{msgs.label_attachments}</th>
+								<td width="85%">
+									<code:attachments loginEmpId="#{trainingCourseSyllabusApproveDecisionRequest.loginEmpData.empId}" attachmentId="#{trainingCourseSyllabusApproveDecisionRequest.attachments}" addEnableFlag="#{trainingCourseSyllabusApproveDecisionRequest.role != 'Notification' and trainingCourseSyllabusApproveDecisionRequest.role != 'History'}" viewEnableFlag="true" deleteEnableFlag="#{trainingCourseSyllabusApproveDecisionRequest.role == 'CommitteeSecretary'}" />
+								</td>
+							</tr>
+							<tr>
+								<h:panelGroup rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'Requester'}">
+									<th width="15%">
+										<h:outputText value="#{msgs.label_preparator}" />
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%">
+										<h:outputText id="preparatorEmployeeNameId" />
+										<h:outputText value=" " />
+										<h:inputHidden id="preparatorEmployeeIDId" value="#{trainingCourseSyllabusApproveDecisionRequest.preparatorEmployeeId}" />
+										<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee();return false;" />
+									</td>
+								</h:panelGroup>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:panelGroup rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'CommitteePresident'}">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_curriculumCommitteeMembers}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" style="vertical-align: top;">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getCommitteeEmployee();return false;" />
+										<h:commandButton id="searchEmpBtnCCId" style="display:none;" action="#{trainingCourseSyllabusApproveDecisionRequest.addCommitteeEmployee()}">
+											<f:ajax execute="trainingCourseSyllabusApproveDecisionRequestFormId:selectedCommitteeEmployeeId" render="trainingCourseSyllabusApproveDecisionRequestFormId:committeeEmployeeTableId trainingCourseSyllabusApproveDecisionRequestFormId:notifyMessagesId  " />
+										</h:commandButton>
+										<h:inputHidden id="selectedCommitteeEmployeeId" value="#{trainingCourseSyllabusApproveDecisionRequest.selectedCommitteeEmployeeId}" />
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<rich:dataTable id="committeeEmployeeTableId" value="#{trainingCourseSyllabusApproveDecisionRequest.committeEmployeesList}" rowKeyVar="index" var="emp" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+											<rich:column>
+												<f:facet name="header">#{msgs.label_name}</f:facet>
+												<h:outputText value="#{emp.name}" />
+											</rich:column>
+											<rich:column>
+												<f:facet name="header">#{msgs.label_rank}</f:facet>
+												<h:outputText value="#{emp.rankDesc}" />
+											</rich:column>
+											<rich:column>
+												<f:facet name="header">#{msgs.label_job}</f:facet>
+												<h:outputText value="#{emp.jobDesc}" />
+											</rich:column>
+											<rich:column>
+												<f:facet name="header">#{msgs.label_unit}</f:facet>
+												<h:outputText value="#{emp.physicalUnitFullName}" />
+											</rich:column>
+											<rich:column>
+												<h:commandButton value="#{msgs.fa_times}" action="#{trainingCourseSyllabusApproveDecisionRequest.deleteCommitteeEmployee(emp)}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="return confirm('#{msgs.q_delete}');">
+													<f:ajax render="committeeEmployeeTableId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+												</h:commandButton>
+											</rich:column>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{trainingCourseSyllabusApproveDecisionRequest.role != 'Requester'}" value="#{trainingCourseSyllabusApproveDecisionRequest.prevTasks}" refuseRoles="SignManager,CommitteeSecretary,CommitteePresident," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{trainingCourseSyllabusApproveDecisionRequest.currentEmployee}" rendered="#{trainingCourseSyllabusApproveDecisionRequest.role != 'Requester'and trainingCourseSyllabusApproveDecisionRequest.role != 'Notification' and trainingCourseSyllabusApproveDecisionRequest.role != 'History'}">
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{trainingCourseSyllabusApproveDecisionRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{trainingCourseSyllabusApproveDecisionRequest.role != 'Requester' and trainingCourseSyllabusApproveDecisionRequest.role != 'Preparator' and trainingCourseSyllabusApproveDecisionRequest.role != 'CommitteeMember'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{trainingCourseSyllabusApproveDecisionRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'Requester' }">
+							<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th>#{msgs.label_warnings}</th>
+								</tr>
+								<tr>
+									<td>
+										<h:outputText value="#{msgs.notify_copySyllabusAttachmentsToHistoricalSyllabusAttachments}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'Notification' or trainingCourseSyllabusApproveDecisionRequest.role == 'History'}" value="#{trainingCourseSyllabusApproveDecisionRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:commandButton action="#{trainingCourseSyllabusApproveDecisionRequest.print()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{(trainingCourseSyllabusApproveDecisionRequest.role == 'Notification' or trainingCourseSyllabusApproveDecisionRequest.role == 'History')and trainingCourseSyllabusApproveDecisionRequest.instanceApproved == 1}" />
+
+									<!-- Requester -->
+									<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" action="#{trainingCourseSyllabusApproveDecisionRequest.initWFTrainingCourse()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<!-- Preparator -->
+									<h:commandButton id="preparePrBtnId" onclick="return confirm('#{msgs.q_prepare}');" action="#{trainingCourseSyllabusApproveDecisionRequest.prepareWFTrainingCourse()}" value="#{msgs.label_prepare} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'Preparator'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- CommitteeSecretary -->
+									<h:commandButton id="approveCsBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)',null);" action="#{trainingCourseSyllabusApproveDecisionRequest.approveWFTrainingCourseCS()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon"
+										rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'CommitteeSecretary'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectCsBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{trainingCourseSyllabusApproveDecisionRequest.rejectWFTrainingCourseCS()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'CommitteeSecretary'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="returnCsBtnId" onclick="return handleOnAction('#{msgs.q_returnToPreparator}','validateRefuseAndNotes(2,&quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:notesId&quot;)',null);" action="#{trainingCourseSyllabusApproveDecisionRequest.returnWFTrainingCourseCS()}" value="#{msgs.label_returnToPreparator} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon"
+										rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'CommitteeSecretary'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- CommitteePresident -->
+									<h:commandButton id="sendForAdviceCpBtnId" onclick="return handleOnAction('#{msgs.q_sendForAdvise}','validateRefuseAndNotes(2,&quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:notesId&quot;)',null);" action="#{trainingCourseSyllabusApproveDecisionRequest.sendForAdviceWFTrainingCourseCP()}" value="#{msgs.label_sendForAdvise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon"
+										rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'CommitteePresident'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveCpBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{trainingCourseSyllabusApproveDecisionRequest.approveWFTrainingCourseCP()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'CommitteePresident'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectCpBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{trainingCourseSyllabusApproveDecisionRequest.rejectWFTrainingCourseCP()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'CommitteePresident'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="returnCpBtnId" onclick="return handleOnAction('#{msgs.q_returnToCommitteeSecretary}','validateRefuseAndNotes(2,&quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:notesId&quot;)',null);" action="#{trainingCourseSyllabusApproveDecisionRequest.returnWFTrainingCourseCP()}" value="#{msgs.label_returnToCommitteeSecretary} &nbsp; #{msgs.fa_undo}"
+										styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'CommitteePresident'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- CommitteeMember -->
+									<h:commandButton id="approveCmBtnId" onclick="return confirm('#{msgs.q_recommedApprove}');" action="#{trainingCourseSyllabusApproveDecisionRequest.approveWFTrainingCourseCM()}" value="#{msgs.label_recommedApprove} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'CommitteeMember'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="reviewCmBtnId" onclick="return handleOnAction('#{msgs.q_returnForReview}','validateRefuseAndNotes(2,null, &quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:notesId&quot;)',null);" action="#{trainingCourseSyllabusApproveDecisionRequest.returnForReviewWFTrainingCourseCM()}" value="#{msgs.label_returnForReview} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'CommitteeMember'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- Sign manager -->
+									<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{trainingCourseSyllabusApproveDecisionRequest.approveWFTrainingCourseSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{trainingCourseSyllabusApproveDecisionRequest.rejectWFTrainingCourseSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="returnSmBtnId" onclick="return handleOnAction('#{msgs.q_returnToCommitteePresident}','validateRefuseAndNotes(2,&quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;trainingCourseSyllabusApproveDecisionRequestFormId:curTaskId:notesId&quot;)',null);" action="#{trainingCourseSyllabusApproveDecisionRequest.returnWFTrainingCourseSM()}" value="#{msgs.label_returnToCommitteePresident} &nbsp; #{msgs.fa_undo}"
+										styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="nBtnId" action="#{trainingCourseSyllabusApproveDecisionRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusApproveDecisionRequest.role == 'Notification'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

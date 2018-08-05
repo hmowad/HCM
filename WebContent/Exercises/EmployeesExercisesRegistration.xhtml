@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:rich="http://richfaces.org/rich">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+    //<![CDATA[
+ 	    function getEmp(contextPath){
+       		openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, #{employeesExercisesRegistration.mode}, -1, -1, -1, -1, -1, #{employeesExercisesRegistration.getLoginEmpPhysicalRegionFlag(true)});
+        }
+            
+ 	    function handleEmpMiniSearchResult(ret){ 
+       	    if(ret != null){
+                document.getElementById('employeesExercisesRegistrationFormId:empIdHId').value = ret[0];
+                document.getElementById('employeesExercisesRegistrationFormId:empNameId').innerHTML = ret[1];
+                document.getElementById('employeesExercisesRegistrationFormId:empNameHId').value = ret[1];
+            }
+  	    }
+
+ 	    function validateData(){
+        	var employeeId = document.getElementById('employeesExercisesRegistrationFormId:empIdHId').value;
+        	if(employeeId == null || employeeId == ''){
+            	alert('#{msgs.error_employeeMandatory}');
+            	return false;
+        	}
+
+        	var exerciseId = document.getElementById('employeesExercisesRegistrationFormId:exerciseId').value;
+        	if(exerciseId == null || exerciseId == ''){
+               	alert('#{msgs.error_exerciseMandatory}');
+               	return false;
+            }
+        	
+   	        var period = document.getElementById('employeesExercisesRegistrationFormId:periodId').value;
+   	        if(period == null || period == ''){
+   	        	alert('#{msgs.error_periodMandatory}');
+   	        	return false;
+   	        } else if (period <= 0) {
+   	         	alert('#{msgs.error_periodNotNegative}');
+   	            return false;
+   	        }
+                 
+            return true;
+        }
+    // ]]>
+    </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="employeesExercisesRegistrationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText id="screenTitleId" value="#{employeesExercisesRegistration.screenTitle}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_employeeExerciseInfo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="employeeExercisePanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_selectEmp}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText id="empNameId" value="#{employeesExercisesRegistration.selectedEmployeeName}" />
+										<h:inputHidden id="empNameHId" value="#{employeesExercisesRegistration.selectedEmployeeName}" />
+										<h:inputHidden id="empIdHId" value="#{employeesExercisesRegistration.employeeExerciseData.employeeId}" />
+										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_exercise}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="exerciseId" value="#{employeesExercisesRegistration.employeeExerciseData.exerciseId}">
+											<f:selectItems value="#{employeesExercisesRegistration.exercisesData}" var="exercise" itemLabel="#{exercise.name}" itemValue="#{exercise.id}" />
+											<f:ajax event="change" execute="@this" listener="#{employeesExercisesRegistration.exerciseChangeListener()}" render="employeesExercisesRegistrationFormId:periodId employeesExercisesRegistrationFormId:startDatePanelId employeesExercisesRegistrationFormId:endDateId employeesExercisesRegistrationFormId:notifyMessagesId" />
+										</h:selectOneMenu>
+									</td>
+									
+									<th width="15%">
+										#{msgs.label_employeeExercisePeriod}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%" >
+										<h:inputText id="periodId" value="#{employeesExercisesRegistration.employeeExerciseData.period}" maxlength="3" onkeypress="return isDigit(event);">
+											<f:ajax event="blur" execute="@this employeesExercisesRegistrationFormId:startDateId" render="employeesExercisesRegistrationFormId:endDateId employeesExercisesRegistrationFormId:notifyMessagesId" />
+										</h:inputText>
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_employeeExerciseStartDate}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:panelGroup id="startDatePanelId">
+											<util:hijri id="startDateId" value="#{employeesExercisesRegistration.employeeExerciseData.startDate}" onChangeAjaxSubmit="true" reRenderIds="employeesExercisesRegistrationFormId:endDateId employeesExercisesRegistrationFormId:notifyMessagesId" />
+										</h:panelGroup>
+									</td>
+	
+									<th width="15%">
+										#{msgs.label_employeeExerciseEndDate}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:outputText id="endDateId" value="#{employeesExercisesRegistration.employeeExerciseData.endDateString}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				
+				<tr>
+					<td>
+						<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="100%">
+									<h:outputText value="#{msgs.notify_employeesExercisesMessage}" escape="false" styleClass="remarkMessage" />
+								</th>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsBtnsId">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton action="#{employeesExercisesRegistration.save}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');" rendered="#{!employeesExercisesRegistration.done}" >
+											<f:ajax execute="employeesExercisesRegistrationFormId:employeeExercisePanelId" render="employeesExercisesRegistrationFormId:employeeExercisePanelId employeesExercisesRegistrationFormId:actionsBtnsId employeesExercisesRegistrationFormId:notifyMessagesId" 
+												onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+										<h:commandButton action="#{employeesExercisesRegistration.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" >
+											<f:ajax render="employeesExercisesRegistrationFormId:employeeExercisePanelId employeesExercisesRegistrationFormId:actionsBtnsId employeesExercisesRegistrationFormId:notifyMessagesId "
+												onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

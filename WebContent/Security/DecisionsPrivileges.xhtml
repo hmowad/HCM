@@ -1,0 +1,462 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+
+		function getBeneficiaryUnit(contextPath) {
+			openUnitsMiniSearch(2, '#{request.contextPath}','handleBeneficiaryUnitMiniSearchResult(ret)', -1, -1, -1);
+		}
+	
+		function handleBeneficiaryUnitMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('decisionsPrivilegesFormId:beneficiaryUnitIDId').value = ret[0];
+				document.getElementById('decisionsPrivilegesFormId:beneficiaryUnitFullNameId').innerHTML = ret[1];
+				document.getElementById('decisionsPrivilegesFormId:beneficiaryUnitFullNameHId').value = ret[1];
+			}
+		}
+
+		function getEmployee(contextPath) {
+			openEmployeesMiniSearch(contextPath,'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1,-1, -1);
+		}
+
+		function handleEmpMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('decisionsPrivilegesFormId:employeeIDId').value = ret[0];
+				document.getElementById('decisionsPrivilegesFormId:employeeNameId').innerHTML = ret[1];
+				document.getElementById('decisionsPrivilegesFormId:employeeNameHId').value = ret[1];
+				document.getElementById('decisionsPrivilegesFormId:searchEmpBtnId').click();
+			}
+		}
+
+	    function getJob(contextPath,btnId){
+	        openJobsMiniSearch(contextPath,'handleJobsMiniSearchResult(ret)', 5, -1, -1, -1, -1, -1, 0);
+	    }
+	    
+	    function handleJobsMiniSearchResult(ret){
+	    	if(ret!=null){
+		        document.getElementById('decisionsPrivilegesFormId:jobIDId').value = ret[0];
+		        document.getElementById('decisionsPrivilegesFormId:jobNameId').innerHTML = ret[2];
+		        document.getElementById('decisionsPrivilegesFormId:jobNameHId').value = ret[2];
+		        document.getElementById('decisionsPrivilegesFormId:jobUnitIDId').value = ret[3];
+		        document.getElementById('decisionsPrivilegesFormId:jobUnitFullNameId').innerHTML = ret[4];
+		        document.getElementById('decisionsPrivilegesFormId:jobUnitFullNameHId').value = ret[4];
+	       }
+	    }
+
+		function getUnit(contextPath) {
+			openUnitsMiniSearch(2, '#{request.contextPath}','handleUnitMiniSearchResult(ret)', -1, -1, -1);
+		}
+
+		function handleUnitMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('decisionsPrivilegesFormId:unitIDId').value = ret[0];
+				document.getElementById('decisionsPrivilegesFormId:unitFullNameId').innerHTML = ret[1];
+				document.getElementById('decisionsPrivilegesFormId:unitFullNameHId').value = ret[1];
+			}
+		}
+
+		function validateSave() {
+
+			if(document.getElementById('decisionsPrivilegesFormId:unitIDId') != null) {
+				unitIDIdValue = document.getElementById('decisionsPrivilegesFormId:unitIDId').value;
+				if((unitIDIdValue == null || unitIDIdValue == '')) {
+					alert("#{msgs.error_decisionPrivilegeSaveFields}");
+					return false;
+				}
+			} else if(document.getElementById('decisionsPrivilegesFormId:jobIDId') != null) {
+				jobIDIdValue = document.getElementById('decisionsPrivilegesFormId:jobIDId').value;
+				if(jobIDIdValue == null || jobIDIdValue == '') {
+					alert("#{msgs.error_decisionPrivilegeSaveFields}");
+					return false;
+				}
+			} else if (document.getElementById('decisionsPrivilegesFormId:employeeIDId') != null) {
+				employeeIDIdValue = document.getElementById('decisionsPrivilegesFormId:employeeIDId').value;
+				if(employeeIDIdValue == null || employeeIDIdValue == '') {
+					alert("#{msgs.error_decisionPrivilegeSaveFields}");
+					return false;
+				}
+			}
+		
+
+			if(document.getElementById('decisionsPrivilegesFormId:beneficiaryUnitIDId') != null) {
+				beneficiaryUnitIDIdValue = document.getElementById('decisionsPrivilegesFormId:beneficiaryUnitIDId').value;
+				if(beneficiaryUnitIDIdValue == null || beneficiaryUnitIDIdValue == '') {
+					alert("#{msgs.error_decisionPrivilegeBeneficiaryUnitMandatory}");
+					return false;
+				}
+			}
+			return true;
+		}
+
+		function validateSearchPanel() {
+			categroyMenuValue = document.getElementById('decisionsPrivilegesFormId:categoryMenuId').value;
+			processGroupMenuValue = document.getElementById('decisionsPrivilegesFormId:processGroupMenuId').value;
+			if(categroyMenuValue == -1 &amp;&amp; processGroupMenuValue == -1) {
+				alert("#{msgs.error_decisionPrivilegeSearchPanelSelection}");
+				return false;
+			}
+			return true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="decisionsPrivilegesFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{decisionsPrivileges.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_category}</th>
+									<td width="35%">
+										<h:selectOneMenu id="categoryMenuId" value="#{decisionsPrivileges.selectedCategoryId}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItems value="#{decisionsPrivileges.categories}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+										</h:selectOneMenu>
+									</td>
+
+									<th width="15%">#{msgs.label_moduleName}</th>
+									<td width="35%">
+										<h:selectOneMenu id="processGroupMenuId" value="#{decisionsPrivileges.selectedWFProcessGroupId}">
+											<f:selectItem itemLabel="#{msgs.label_searchByModule}" itemValue="-1" />
+											<f:selectItems value="#{decisionsPrivileges.wfProcessGroups}" var="processGroup" itemLabel="#{processGroup.processGroupName}" itemValue="#{processGroup.processGroupId}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{decisionsPrivileges.searchDecisionsPrivileges()}" title="#{msgs.label_searchByRoot}" styleClass="btn_normal_icon" onclick="return validateSearchPanel();">
+										<f:ajax execute="decisionsPrivilegesFormId:searchPanelId" render="decisionsPrivilegesFormId:decisionsPrivilegesTableId decisionsPrivilegesFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton action="#{decisionsPrivileges.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="decisionsPrivilegesFormId:decisionsPrivilegesTableId decisionsPrivilegesFormId:searchPanelId decisionsPrivilegesFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_searchResults} " />
+									<h:commandButton onclick="location.href='#decisionPrivilegeDetailReferenceId'" action="#{decisionsPrivileges.instantiateNewDecisionPrivilegeData()}" value="#{msgs.label_add}" styleClass="btn_normal">
+										<f:ajax render="decisionsPrivilegesFormId:decisionPrivilegeDetailPanelId decisionsPrivilegesFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="decisionsPrivilegesTableId" value="#{decisionsPrivileges.decisionsPrivilegesData}" rowKeyVar="index" var="decisionPrivilegeData" rows="#{decisionsPrivileges.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<f:facet name="header">
+								<rich:columnGroup>
+									<rich:column rowspan="2">#</rich:column>
+									<rich:column colspan="4">#{msgs.label_privilegeDetails}</rich:column>
+									<rich:column colspan="3">#{msgs.label_privilegeOwner}</rich:column>
+									<rich:column rowspan="2">#{msgs.label_delete}</rich:column>
+									<rich:column breakRowBefore="true">#{msgs.label_category}</rich:column>
+									<rich:column>#{msgs.label_moduleName}</rich:column>
+									<rich:column>#{msgs.label_region}</rich:column>
+									<rich:column>#{msgs.label_unit}</rich:column>
+									<rich:column>#{msgs.label_emp}</rich:column>
+									<rich:column>#{msgs.label_job}</rich:column>
+									<rich:column>#{msgs.label_unit}</rich:column>
+								</rich:columnGroup>
+							</f:facet>
+							<rich:column style="width : 5%">
+								#{index + 1}
+                        	</rich:column>
+							<rich:column style="width : 10%">
+	                        	#{decisionPrivilegeData.beneficiaryCategoryDesc}
+	                         </rich:column>
+							<rich:column style="width : 5%">
+	                         	#{decisionPrivilegeData.processGroupName}
+	                         </rich:column>
+							<rich:column style="width : 10%">
+	                        	#{decisionPrivilegeData.beneficiaryRegionDesc}
+	                        </rich:column>
+							<rich:column style="width : 20%">
+	                        	#{decisionPrivilegeData.beneficiaryUnitFullName}
+	                        </rich:column>
+							<rich:column style="width : 15%">
+	                        	#{decisionPrivilegeData.empName}
+	                        </rich:column>
+							<rich:column style="width : 10%">
+	                        	#{decisionPrivilegeData.jobName}
+	                        </rich:column>
+							<rich:column style="width : 20%">
+	                        	#{decisionPrivilegeData.unitFullName}
+	                        </rich:column>
+							<rich:column style="width : 5%">
+								<h:commandButton action="#{decisionsPrivileges.deleteDecisionPrivilege(decisionPrivilegeData)}" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="return confirm('#{msgs.q_delete}');">
+									<f:ajax render="decisionsPrivilegesFormId:decisionsPrivilegesTableId decisionsPrivilegesFormId:notifyMessagesId " onevent="function(e){if(e.status == 'complete') unMaskScreen()}" />
+								</h:commandButton>
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<a href="#" id="decisionPrivilegeDetailReferenceId" />
+						<h:panelGroup id="decisionPrivilegeDetailPanelId">
+							<h:panelGroup rendered="#{decisionsPrivileges.selectedDecisionPrivilege != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_privilegeOwner}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:panelGroup id="privilegeOwnerTypePanelId">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<th>
+															#{msgs.label_privilegeOwner}
+															<h:outputText value=" " />
+															<font style="color: red;">*</font>
+														</th>
+														<td width="85" colspan="3">
+															<h:selectOneRadio value="#{decisionsPrivileges.privilegeOwnerType}">
+																<f:selectItem itemLabel="#{msgs.label_anEmployee}" itemValue="1" />
+																<f:selectItem itemLabel="#{msgs.label_aJob}" itemValue="2" />
+																<f:selectItem itemLabel="#{msgs.label_aUnit}" itemValue="3" />
+																<f:ajax event="change" execute="decisionsPrivilegesFormId:privilegeOwnerTypePanelId" listener="#{decisionsPrivileges.resetPrivilegeOwnerData()}" render="decisionsPrivilegesFormId:privilegeOwnerTypePanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen()}" />
+															</h:selectOneRadio>
+														</td>
+													</tr>
+
+													<h:panelGroup rendered="#{decisionsPrivileges.privilegeOwnerType == 1}">
+														<tr>
+															<th width="15%">
+																#{msgs.label_emp}
+																<h:outputText value=" " />
+																<font style="color: red;">*</font>
+															</th>
+															<td width="35">
+																<h:inputHidden id="employeeIDId" value="#{decisionsPrivileges.selectedDecisionPrivilege.empId}" />
+																<h:outputText value=" " />
+																<h:outputText id="employeeNameId" value="#{decisionsPrivileges.selectedDecisionPrivilege.empName}" />
+																<h:inputHidden id="employeeNameHId" value="#{decisionsPrivileges.selectedDecisionPrivilege.empName}" />
+																<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+																<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{decisionsPrivileges.getPrivilegeOwner()}">
+																	<f:ajax execute="decisionsPrivilegesFormId:employeeIDId decisionsPrivilegesFormId:employeeNameHId" render="decisionsPrivilegesFormId:employeeIDId decisionsPrivilegesFormId:employeeNameId decisionsPrivilegesFormId:employeeUnitIDId decisionsPrivilegesFormId:employeeUnitFullNameId decisionsPrivilegesFormId:notifyMessagesId" />
+																</h:commandButton>
+															</td>
+
+															<th width="15%">#{msgs.label_unit}</th>
+															<td width="35">
+																<h:inputHidden id="employeeUnitIDId" value="#{decisionsPrivileges.selectedDecisionPrivilege.unitId}" />
+																<h:outputText id="employeeUnitFullNameId" value="#{decisionsPrivileges.selectedDecisionPrivilege.unitFullName}" />
+															</td>
+														</tr>
+													</h:panelGroup>
+
+													<h:panelGroup rendered="#{decisionsPrivileges.privilegeOwnerType == 2}">
+														<tr>
+															<th width="15%">
+																#{msgs.label_job}
+																<h:outputText value=" " />
+																<font style="color: red;">*</font>
+															</th>
+															<td width="35">
+																<h:inputHidden id="jobIDId" value="#{decisionsPrivileges.selectedDecisionPrivilege.jobId}" />
+																<h:outputText value=" " />
+																<h:outputText id="jobNameId" value="#{decisionsPrivileges.selectedDecisionPrivilege.jobName}" />
+																<h:inputHidden id="jobNameHId" value="#{decisionsPrivileges.selectedDecisionPrivilege.jobName}" />
+																<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getJob('#{request.contextPath}');return false;" />
+															</td>
+
+															<th width="15%">#{msgs.label_unit}</th>
+															<td width="35">
+																<h:inputHidden id="jobUnitIDId" value="#{decisionsPrivileges.selectedDecisionPrivilege.unitId}" />
+																<h:outputText id="jobUnitFullNameId" value="#{decisionsPrivileges.selectedDecisionPrivilege.unitFullName}" />
+																<h:inputHidden id="jobUnitFullNameHId" value="#{decisionsPrivileges.selectedDecisionPrivilege.unitFullName}" />
+															</td>
+														</tr>
+													</h:panelGroup>
+
+													<h:panelGroup rendered="#{decisionsPrivileges.privilegeOwnerType == 3}">
+														<tr>
+															<th width="15%">
+																#{msgs.label_unit}
+																<h:outputText value=" " />
+																<font style="color: red;">*</font>
+															</th>
+															<td width="85" colspan="3">
+																<h:inputHidden id="unitIDId" value="#{decisionsPrivileges.selectedDecisionPrivilege.unitId}" />
+																<h:outputText id="unitFullNameId" value="#{decisionsPrivileges.selectedDecisionPrivilege.unitFullName}" />
+																<h:inputHidden id="unitFullNameHId" value="#{decisionsPrivileges.selectedDecisionPrivilege.unitFullName}" />
+																<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getUnit('#{request.contextPath}');return false;" />
+															</td>
+														</tr>
+													</h:panelGroup>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_privilegeDetails}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:panelGroup id="privilegeTypePanelId">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<th width="15%">
+															#{msgs.label_category}
+															<h:outputText value=" " />
+															<font style="color: red;">*</font>
+														</th>
+														<td width="35%">
+															<h:selectOneMenu value="#{decisionsPrivileges.selectedDecisionPrivilege.beneficiaryCategoryId}">
+																<f:selectItems value="#{decisionsPrivileges.categories}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+															</h:selectOneMenu>
+														</td>
+														<th width="15%">
+															#{msgs.label_moduleName}
+															<h:outputText value=" " />
+															<font style="color: red;">*</font>
+														</th>
+														<td width="35%">
+															<h:selectOneMenu value="#{decisionsPrivileges.selectedDecisionPrivilege.processGroupId}">
+																<f:selectItems value="#{decisionsPrivileges.wfProcessGroups}" var="wfProcessGroup" itemLabel="#{wfProcessGroup.processGroupName}" itemValue="#{wfProcessGroup.processGroupId}" />
+															</h:selectOneMenu>
+														</td>
+													</tr>
+
+													<tr>
+														<th>
+															#{msgs.label_privilege}
+															<h:outputText value=" " />
+															<font style="color: red;">*</font>
+														</th>
+														<td width="85" colspan="3">
+															<h:selectOneRadio value="#{decisionsPrivileges.privilegeType}" layout="pageDirection">
+																<f:selectItem itemLabel="#{msgs.label_fullPrivilege}" itemValue="1" />
+																<f:selectItem itemLabel="#{msgs.label_regionPrivilege}" itemValue="2" />
+																<f:selectItem itemLabel="#{msgs.label_unitPrivilege}" itemValue="3" />
+																<f:ajax event="change" execute="decisionsPrivilegesFormId:privilegeTypePanelId" listener="#{decisionsPrivileges.resetPrivilegeTypeData()}" render="decisionsPrivilegesFormId:privilegeTypePanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen()}" />
+															</h:selectOneRadio>
+														</td>
+													</tr>
+
+													<h:panelGroup rendered="#{decisionsPrivileges.privilegeType == 2}">
+														<tr>
+															<th width="15%">
+																#{msgs.label_region}
+																<h:outputText value=" " />
+																<font style="color: red;">*</font>
+															</th>
+															<td width="85%" colspan="3">
+																<h:selectOneMenu value="#{decisionsPrivileges.selectedDecisionPrivilege.beneficiaryRegionId}">
+																	<f:selectItems value="#{decisionsPrivileges.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+																</h:selectOneMenu>
+															</td>
+														</tr>
+													</h:panelGroup>
+
+													<h:panelGroup rendered="#{decisionsPrivileges.privilegeType == 3}">
+														<tr>
+															<th width="15%">
+																#{msgs.label_unit}
+																<h:outputText value=" " />
+																<font style="color: red;">*</font>
+															</th>
+															<td width="85%" colspan="3">
+																<h:outputText id="beneficiaryUnitFullNameId" value="#{decisionsPrivileges.selectedDecisionPrivilege.beneficiaryUnitFullName}" />
+																<h:inputHidden id="beneficiaryUnitFullNameHId" value="#{decisionsPrivileges.selectedDecisionPrivilege.beneficiaryUnitFullName}" />
+																<h:inputHidden id="beneficiaryUnitIDId" value="#{decisionsPrivileges.selectedDecisionPrivilege.beneficiaryUnitId}" />
+																<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getBeneficiaryUnit('#{request.contextPath}');return false;" />
+															</td>
+														</tr>
+													</h:panelGroup>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td>
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+														<h:commandButton action="#{decisionsPrivileges.saveSelectedDecisionPrivilege()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return validateSave();">
+															<f:ajax execute="decisionsPrivilegesFormId:decisionPrivilegeDetailPanelId" render="decisionsPrivilegesFormId:decisionPrivilegeDetailPanelId decisionsPrivilegesFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen()}" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

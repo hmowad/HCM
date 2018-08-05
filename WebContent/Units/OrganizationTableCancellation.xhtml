@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+
+	function changeCategory() {
+		var confirmedFlag = confirm('#{msgs.q_confirmChangeCategoryClass}');
+		var oldCategoryClass = document.getElementById('organizationTableCancellationFormId:oldCategoryClassHId').value;
+
+		if(! confirmedFlag) {
+ 			document.getElementById('organizationTableCancellationFormId:categoryClassId').value = oldCategoryClass;
+ 			return false;
+		} else {
+			document.getElementById('organizationTableCancellationFormId:oldCategoryClassHId').value = document.getElementById('organizationTableCancellationFormId:categoryClassId').value;
+			return true;
+		}
+	}
+	
+	function validateData(){
+
+		var unitsListSize = document.getElementById('organizationTableCancellationFormId:unitsListSizeHId').value;
+		if(unitsListSize == 0){
+			alert('#{msgs.error_orgTableUnitsListEmpty}');
+            return false;
+		}
+		
+		var decNumber = document.getElementById('organizationTableCancellationFormId:decisionNumberId').value.trim();
+        if(decNumber == null || decNumber == '') {
+        	alert('#{msgs.error_decNumberMandatory}');
+            return false;
+        } else if (decNumber.indexOf("*") > -1 || decNumber.indexOf("#") > -1) {
+        	alert('#{msgs.error_decNumberContainsProhibitedCharacter}');
+            return false;
+        }
+
+		var detailsListSize = document.getElementById('organizationTableCancellationFormId:detailsListSizeHId').value;
+		if(detailsListSize == 0){
+			alert('#{msgs.error_orgTableDetailsListEmpty}');
+            return false;
+		}    
+
+        return true;
+    }	
+	
+    </script>
+
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{organizationTableCancellation.initialize}" />
+	<h:form id="organizationTableCancellationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_organizationTableCancellation}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="35%" valign="top">
+									<!-- tree -->
+									<table cellpadding="0" cellspacing="0" width="98%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsTree}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:inputText id="searchNameValue" value="#{organizationTableCancellation.searchName}" styleClass="inputDataLarge" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_search}" action="#{organizationTableCancellation.search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+																<f:ajax render="organizationTableCancellationFormId:treePanelId organizationTableCancellationFormId:notifyMessagesId" execute="searchNameValue" />
+															</h:commandButton>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<!-- toChange ids, value of tree, .... -->
+															<h:panelGroup id="treePanelId">
+																<rich:tree id="unitTreeId" toggleListener="#{organizationTableCancellation.treeToggleHandler(item)}" render="treePanelId" value="#{organizationTableCancellation.unitTree}" var="item" dir="#{msgs.dir}" nodeType="unitType">
+																	<rich:treeNode type="unitType" expanded="#{item.expanded}" iconExpanded="/resources/images/#{item.unitType}.png" iconCollapsed="/resources/images/#{item.unitType}.png" iconLeaf="/resources/images/#{item.unitType}.png" title="#{item.orderUnderParent}" ontoggle="unMaskScreen();">
+																		<h:commandLink value="#{item.unitName}" action="#{organizationTableCancellation.selectUnit(item)}">
+																			<f:ajax execute="organizationTableCancellationFormId:decisionDataPanelId" render="organizationTableCancellationFormId:unitsListId organizationTableCancellationFormId:decisionDataPanelId organizationTableCancellationFormId:detailsPanelId organizationTableCancellationFormId:actionsBtnsId organizationTableCancellationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandLink>
+																	</rich:treeNode>
+																</rich:tree>
+																<h:outputStylesheet library="css" name="tree.css" />
+															</h:panelGroup>
+														</td>
+													</tr>
+
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="65%" valign="top">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%" height="12" />
+										</tr>
+										<!-- Category chosen -->
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="categoryPanelId">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<th>
+																#{msgs.label_category}
+																<font style="color: red;">*</font>
+															</th>
+															<td>
+																<h:selectOneMenu id="categoryClassId" value="#{organizationTableCancellation.selectedCategoryClass}" onchange="return changeCategory()">
+																	<f:selectItems value="#{organizationTableCancellation.categoryClasses}" var="category" itemValue="#{category.id}" itemLabel="#{category.description}" />
+
+																	<f:ajax event="change" listener="#{organizationTableCancellation.reset()}" render="organizationTableCancellationFormId:unitsListId organizationTableCancellationFormId:decisionDataPanelId organizationTableCancellationFormId:detailsPanelId organizationTableCancellationFormId:actionsBtnsId organizationTableCancellationFormId:notifyMessagesId" />
+
+																</h:selectOneMenu>
+																<h:inputHidden id="oldCategoryClassHId" value="#{organizationTableCancellation.selectedCategoryClass}" />
+															</td>
+															<th>#{msgs.label_categoryClassMessageForCancellation}</th>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<!-- Units selected -->
+										<tr>
+											<td width="100%">
+												<table border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td>
+															<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>#{msgs.label_organizationTableUnits}</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<!-- Org Table Units -->
+															<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>
+																		<rich:dataTable id="unitsListId" var="unit" rowKeyVar="index" value="#{organizationTableCancellation.selectedUnits}" rows="#{organizationTableCancellation.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+																			<rich:column>
+																				<f:facet name="header" style="width : 5%;">#</f:facet>
+																					#{index+1}
+																				</rich:column>
+																			<rich:column>
+																				<f:facet name="header">
+																					<h:outputText value="#{msgs.label_organizationTableUnits}" />
+																				</f:facet>
+																				<h:outputText value="#{unit.fullName}" />
+																			</rich:column>
+																			<rich:column style="width : 5%;">
+																				<f:facet name="header">#{msgs.label_delete}</f:facet>
+																				<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{organizationTableCancellation.deleteUnit(unit)}" onclick="var r = confirm('#{msgs.q_delete}'); if (r == false){return false;}">
+																					<f:ajax execute="organizationTableCancellationFormId:decisionDataPanelId" render="organizationTableCancellationFormId:unitsListId organizationTableCancellationFormId:decisionDataPanelId organizationTableCancellationFormId:detailsPanelId organizationTableCancellationFormId:actionsBtnsId organizationTableCancellationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																				</h:commandButton>
+																			</rich:column>
+																			<f:facet name="footer">
+																				<rich:dataScroller oncomplete="unMaskScreen()" fastControls="hide">
+																					<f:facet name="first">#{msgs.label_first}</f:facet>
+																					<f:facet name="last">#{msgs.label_last}</f:facet>
+																					<f:facet name="next">#{msgs.label_next}</f:facet>
+																					<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																				</rich:dataScroller>
+																			</f:facet>
+																		</rich:dataTable>
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<!-- Decision number and date -->
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="decisionDataPanelId">
+													<!-- Decision info -->
+													<table border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<td>
+																<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<td>#{msgs.label_decisionData}</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<table class="sectionContent" cellpadding="0" cellspacing="0" width="100%">
+
+																	<tr>
+																		<td width="100%">
+																			<table cellpadding="0" cellspacing="0">
+																				<tr>
+																					<th width="20%">
+																						#{msgs.label_decisionNumber}
+																						<h:outputText value=" " />
+																						<font style="color: red;">*</font>
+																					</th>
+																					<td width="30%">
+																						<h:inputText id="decisionNumberId" value="#{organizationTableCancellation.decisionNumber}" />
+																					</td>
+																					<th width="20%">
+																						#{msgs.label_decisionDate}
+																						<font style="color: red;">*</font>
+																					</th>
+																					<td width="30%">
+																						<util:hijri value="#{organizationTableCancellation.decisionDate}" />
+																					</td>
+																				</tr>
+																			</table>
+																		</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+
+										<!-- Details panel -->
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="detailsPanelId">
+													<!-- organizationTable Details -->
+													<table border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<td>
+																<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<td>#{msgs.label_organizationalDetails}</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+														<tr>
+															<td width="100%" valign="top">
+																<table class="sectionContent" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<td>
+																			<rich:dataTable var="detail" rowKeyVar="index" value="#{organizationTableCancellation.organizationTableDetails}" rows="#{organizationTableCancellation.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+																				<rich:column>
+																					<f:facet name="header">#</f:facet>
+																					#{index+1}
+																				</rich:column>
+																				<rich:column>
+																					<f:facet name="header">
+																						<h:outputText value="#{msgs.label_basicJobName}" />
+																					</f:facet>
+																					<h:outputText value="#{detail.basicJobName}" />
+																				</rich:column>
+																				<rich:column>
+																					<f:facet name="header">
+																						<h:outputText value="#{organizationTableCancellation.selectedCategoryClass == 1 ? msgs.label_rank : msgs.label_personRank}" />
+																					</f:facet>
+																					<h:outputText value="#{detail.rankDescription}" />
+																				</rich:column>
+																				<rich:column>
+																					<f:facet name="header">
+																						<h:outputText value="#{msgs.label_count}" />
+																					</f:facet>
+																					<h:outputText value="#{detail.jobsCount}" />
+																				</rich:column>
+																				<f:facet name="footer">
+																					<rich:dataScroller oncomplete="unMaskScreen()" fastControls="hide">
+																						<f:facet name="first">#{msgs.label_first}</f:facet>
+																						<f:facet name="last">#{msgs.label_last}</f:facet>
+																						<f:facet name="next">#{msgs.label_next}</f:facet>
+																						<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																					</rich:dataScroller>
+																				</f:facet>
+																			</rich:dataTable>
+																		</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="actionsBtnsId">
+													<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="100%">
+																<h:commandButton action="#{organizationTableCancellation.save()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');" disabled="#{organizationTableCancellation.selectedUnits.size() == 0}" rendered="#{!organizationTableCancellation.done}">
+																	<f:ajax execute="organizationTableCancellationFormId:categoryClassId organizationTableCancellationFormId:unitsListId organizationTableCancellationFormId:decisionDataPanelId organizationTableCancellationFormId:detailsPanelId" render="organizationTableCancellationFormId:actionsBtnsId organizationTableCancellationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+																</h:commandButton>
+																<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{organizationTableCancellation.reset()}">
+																	<f:ajax render="organizationTableCancellationFormId:treePanelId organizationTableCancellationFormId:unitsListId organizationTableCancellationFormId:decisionDataPanelId organizationTableCancellationFormId:detailsPanelId organizationTableCancellationFormId:actionsBtnsId organizationTableCancellationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+																</h:commandButton>
+
+																<h:inputHidden id="detailsListSizeHId" value="#{organizationTableCancellation.organizationTableDetails.size()}" />
+																<h:inputHidden id="unitsListSizeHId" value="#{organizationTableCancellation.selectedUnits.size()}" />
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

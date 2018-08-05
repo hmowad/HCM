@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">  
+
+	function validateData(){
+        var unitNewName = document.getElementById('unitRenamingFormId:unitNewNameId').value;
+        if(unitNewName == null || unitNewName == ''){
+            alert('#{msgs.error_unitNameMandatory}');
+            return false;
+        }
+
+        var unitOldName = document.getElementById('unitRenamingFormId:unitNameId').innerHTML;
+        if(unitNewName == unitOldName){
+        	alert('#{msgs.error_unitSameName}');
+            return false;
+            }
+
+        var unitOrder = document.getElementById('unitRenamingFormId:unitOrderId').value;
+        if(unitOrder == null || unitOrder == ''){
+            alert('#{msgs.error_unitOrderMandatory}');
+            return false;
+        }
+
+        var decNumber = document.getElementById('unitRenamingFormId:decNumberId').value;
+        if(decNumber == null || decNumber == ''){
+            alert('#{msgs.error_decNumberMandatory}');
+            return false;
+        }
+
+        var atatchmentsDoneFlag = document.getElementById('unitRenamingFormId:attachmentsDoneFlagId').checked;
+        if(! atatchmentsDoneFlag){
+            alert('#{msgs.error_attachmentsMandatory}');
+            return false;
+        }
+
+        document.getElementById('unitRenamingFormId:attachmentsDoneFlagId').checked = false;
+        return true;
+      }
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{unitRenaming.init}" />
+	<h:form id="unitRenamingFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<a4j:status onstart="#{rich:component('reload')}.hide()" />
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_unitRenaming}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="35%" valign="top">
+									<!--tree-->
+									<table cellpadding="0" cellspacing="0" width="98%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsTree}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:inputText id="searchNameValue" value="#{unitRenaming.searchName}" styleClass="inputDataLarge" onkeypress="return pressEnter(event);" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_search}" action="#{unitRenaming.search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+																<f:ajax render="unitRenamingFormId:treePanelId unitRenamingFormId:unitInformationPanelId unitRenamingFormId:notifyMessagesId" execute="searchNameValue" />
+															</h:commandButton>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" colspan="2">
+															<h:panelGroup id="treePanelId">
+																<rich:tree id="unitTreeId" toggleListener="#{unitRenaming.treeToggleHandler(item)}" render="treePanelId" value="#{unitRenaming.unitTree}" var="item" dir="#{msgs.dir}" nodeType="unitType">
+																	<rich:treeNode type="unitType" expanded="#{item.expanded}" iconExpanded="/resources/images/#{item.unitType}.png" iconCollapsed="/resources/images/#{item.unitType}.png" iconLeaf="/resources/images/#{item.unitType}.png">
+																		<h:commandLink value="#{item.unitName}" action="#{unitRenaming.click(item)}">
+																			<f:ajax render="unitRenamingFormId:unitInformationPanelId" />
+																		</h:commandLink>
+																	</rich:treeNode>
+																</rich:tree>
+																<h:outputStylesheet library="css" name="tree.css" />
+															</h:panelGroup>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="65%" valign="top">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+
+												<h:panelGroup id="unitInformationPanelId">
+													<!--tree from-->
+													<table border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<td>
+																<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<td>#{msgs.label_unitDetails}</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+														<tr>
+															<td width="100%">
+																<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<th width="20%">
+																			#{msgs.label_decNumber}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<h:inputText id="decNumberId" value="#{unitRenaming.decNumber}" maxlength="50" />
+																		</td>
+																		<th width="20%">#{msgs.label_decisionDate}</th>
+																		<td width="30%">
+																			<util:hijri value="#{unitRenaming.decDate}" />
+																		</td>
+																	</tr>
+																	<tr>
+																		<th width="20%">#{msgs.label_unitType}</th>
+																		<td width="30%">
+																			<h:outputText id="unitTypeId" value="#{unitRenaming.selectedUnitData.unitTypeDesc}" />
+																		</td>
+																		<th width="20%">#{msgs.label_region}</th>
+																		<td width="30%">
+																			<h:outputText id="unitRegionId" value="#{unitRenaming.selectedUnitData.regionDesc}" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_parentUnit}</th>
+																		<td width="30%">
+																			<h:outputText id="parentUnitId" value="#{unitRenaming.selectedUnitData.parentUnitName}" />
+																		</td>
+																		<th width="20%">
+																			#{msgs.label_unitOrderUnderParent}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<h:inputText id="unitOrderId" value="#{unitRenaming.selectedUnitData.orderUnderParent}" onkeypress="return isDigit(event);" maxlength="2" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_unitName}</th>
+																		<td width="80%" colspan="3">
+																			<h:outputText id="unitNameId" value="#{unitRenaming.selectedUnitData.name}" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">
+																			#{msgs.label_unitNewName}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="80%" colspan="3">
+																			<h:inputText id="unitNewNameId" value="#{unitRenaming.selectedUnitData.newName}" styleClass="inputDataLarge" maxlength="200" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_orgRemarks}</th>
+																		<td width="80%" colspan="3">
+																			<h:inputText id="remarksId" styleClass="inputDataLarge" value="#{unitRenaming.selectedUnitData.remarks}" maxlength="500" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_attachments}</th>
+																		<td width="30%">
+																			<h:panelGroup id="attachmentComponentPanelId">
+																				<code:attachments id="attachmentComponentId" loginEmpId="#{unitRenaming.loginEmpData.empId}" attachmentId="#{unitRenaming.selectedUnitData.attachments}" addEnableFlag="true" viewEnableFlag="true" deleteEnableFlag="true" />
+																			</h:panelGroup>
+																		</td>
+																		<th width="20%">#{msgs.label_attachmentsDoneFlag}</th>
+																		<td width="30%">
+																			<h:selectBooleanCheckbox id="attachmentsDoneFlagId" />
+																		</td>
+																	</tr>
+
+																</table>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+
+											</td>
+										</tr>
+
+										<tr>
+											<td width="100%" height="15" />
+										</tr>
+
+										<tr>
+											<td width="100%">
+												<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:commandButton action="#{unitRenaming.update}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');" styleClass="btn_normal_icon">
+																<f:ajax render="unitRenamingFormId:notifyMessagesId unitRenamingFormId:treePanelId unitRenamingFormId:unitInformationPanelId" execute="unitInformationPanelId" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

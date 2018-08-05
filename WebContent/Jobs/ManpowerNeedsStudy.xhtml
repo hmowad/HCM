@@ -1,0 +1,490 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+		function getManpowerNeedRequests(contextPath) {
+        	openManpowerNeedsRequestsMiniSearch('#{request.contextPath}','handleManpowerNeedRequestsMiniSearchResult(ret)', #{manpowerNeedsStudy.mode}, #{manpowerNeedsStudy.getLoginEmpPhysicalRegionFlag(false)}, 1);
+	    }
+      
+        function handleManpowerNeedRequestsMiniSearchResult(ret){
+        	if(ret != null){
+        		document.getElementById('manpowerNeedsStudyFormId:selectedManpowerNeedRequestsAndStudiesIdsHId').value=ret[0];
+        		document.getElementById('manpowerNeedsStudyFormId:addNewManpowerNeedBtnId').click();
+        	}
+        }
+
+        var callerId;
+		function getMinorSpec(contextPath, cId) {
+			callerId=cId;
+			openMinorSpecializationsMiniSearch(contextPath,'handleMinorSpecializationMiniSearchResult(ret)');
+		}
+		
+		function handleMinorSpecializationMiniSearchResult(ret){
+			if (ret != null) {
+				var idTokens = callerId.split(':');
+				document.getElementById('manpowerNeedsStudyFormId:manpowerNeedStudyDetailsTableId:' + idTokens[2] + ':minorSpecializationIDHId').value = ret[0];
+				document.getElementById('manpowerNeedsStudyFormId:manpowerNeedStudyDetailsTableId:' + idTokens[2] + ':minorSpecializationDescriptionHId').value = ret[2];
+				document.getElementById('manpowerNeedsStudyFormId:manpowerNeedStudyDetailsTableId:' + idTokens[2] + ':minorSpecializationDescriptionId').innerHTML = ret[2];
+				document.getElementById('manpowerNeedsStudyFormId:manpowerNeedStudyDetailsTableId:' + idTokens[2] + ':calculateEmployeesCountsBtnId').click();
+			}
+		}
+
+        function getUnit(contextPath) {
+			unitsMiniSearch(2, '#{request.contextPath}','handleUnitMiniSearchResult(ret)', -1, #{manpowerNeedsStudy.getLoginEmpPhysicalRegionFlag(true)}, -1, null, 0);
+	    }
+      
+        function handleUnitMiniSearchResult(ret){
+        	if(ret != null){
+        		 document.getElementById('manpowerNeedsStudyFormId:unitIDHId').value = ret[0];
+ 				 document.getElementById('manpowerNeedsStudyFormId:unitFullNameHId').value = ret[1];
+ 				 document.getElementById('manpowerNeedsStudyFormId:unitHKeyHId').value = ret[3];
+   				 document.getElementById('manpowerNeedsStudyFormId:addNewManpowerNeedStudyDetailBtnId').click();
+        	}
+        }
+
+        function validateSuggestedCount(callerInputTextId) {
+
+        	var idTokens = callerInputTextId.split(':');        	
+        	var requiredCount = document.getElementById('manpowerNeedsStudyFormId:manpowerNeedRequestDetailsTableId:' + idTokens[2] + ':requiredCountId').innerHTML;
+        	var suggestedCount;
+        	
+        	if (#{manpowerNeedsStudy.manpowerNeedStudyData.needType} == 2)
+        		suggestedCount = document.getElementById('manpowerNeedsStudyFormId:manpowerNeedRequestDetailsTableId:' + idTokens[2] + ':studySuggestedCountId').value;
+        	else if (#{manpowerNeedsStudy.manpowerNeedStudyData.needType} == 3)
+        		suggestedCount = document.getElementById('manpowerNeedsStudyFormId:manpowerNeedRequestDetailsTableId:' + idTokens[2] + ':mainStudySuggestedCountId').value;
+
+        	if (requiredCount != suggestedCount)
+        		alert('#{msgs.error_requiredCountNotEqualSuggestedCount}');
+        }
+        
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="manpowerNeedsStudyFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{manpowerNeedsStudy.screenTitle}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requestData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" colspan="6">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getManpowerNeedRequests('#{request.contextPath}');return false;" rendered="#{manpowerNeedsStudy.role == 'Requester' or manpowerNeedsStudy.role == 'ReviewerEmp' or manpowerNeedsStudy.role == 'SecondaryReviewerEmp'}" />
+												<h:commandButton id="addNewManpowerNeedBtnId" style="display: none;" action="#{manpowerNeedsStudy.addManpowerNeedRequestsAndStudies()}">
+													<f:ajax execute="manpowerNeedsStudyFormId:selectedManpowerNeedRequestsAndStudiesIdsHId manpowerNeedsStudyFormId:manpowerNeedRequestDetailsTableId" render="manpowerNeedsStudyFormId:manpowerNeedsTableId manpowerNeedsStudyFormId:manpowerNeedRequestDetailsTableId manpowerNeedsStudyFormId:notifyMessagesId" />
+												</h:commandButton>
+												<h:inputHidden id="selectedManpowerNeedRequestsAndStudiesIdsHId" value="#{manpowerNeedsStudy.selectedManpowerNeedRequestsAndStudiesIds}" />
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td width="100%">
+									<rich:dataTable id="manpowerNeedsTableId" value="#{manpowerNeedsStudy.manpowerNeedRequestsAndStudies}" var="row" rows="#{manpowerNeedsStudy.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+										<rich:column style="width : 5%;">
+											<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_select}" onclick="changeSelectedRowStyle(this.parentElement.parentElement);" action="#{manpowerNeedsStudy.selectManpowerNeedRequestOrStudy(row)}" styleClass="btn_icon">
+												<f:ajax execute="manpowerNeedsStudyFormId:manpowerNeedRequestDetailsTableId" render="manpowerNeedsStudyFormId:manpowerNeedRequestDetailsTableId manpowerNeedsStudyFormId:notifyMessagesId" />
+											</h:commandButton>
+										</rich:column>
+										<rich:column style="width : 5%;">
+											<f:facet name="header">#</f:facet> 
+											#{index + 1}
+						                </rich:column>
+						                <rich:column style="width : 30%;">
+											<f:facet name="header"> #{msgs.label_region} </f:facet>
+											<h:outputText value="#{row.requestingRegionDesc}" />
+										</rich:column>
+										<rich:column style="width : 35%;">
+											<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+											<h:outputText value="#{row.requestingUnitFullName}" />
+										</rich:column>
+										<rich:column style="width : 15%;">
+											<f:facet name="header"> #{msgs.label_manpowerNeedRequestDate} </f:facet>
+											<h:outputText value="#{row.transactionDateString}" />
+										</rich:column>
+										<rich:column  style="width : 10%;" rendered="#{manpowerNeedsStudy.role == 'Requester' or manpowerNeedsStudy.role == 'ReviewerEmp' or manpowerNeedsStudy.role == 'SecondaryReviewerEmp'}">
+											<f:facet name="header">#{msgs.label_delete}</f:facet>
+											<h:commandButton action="#{manpowerNeedsStudy.deleteManpowerNeed(row)}" onclick="return confirm('#{msgs.q_delete}');" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon">
+												<f:ajax execute="manpowerNeedsStudyFormId:manpowerNeedRequestDetailsTableId" render="manpowerNeedsStudyFormId:manpowerNeedsTableId manpowerNeedsStudyFormId:manpowerNeedRequestDetailsTableId manpowerNeedsStudyFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</rich:column>
+										<f:facet name="footer">
+											<rich:dataScroller oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+												<f:facet name="first">#{msgs.label_first}</f:facet>
+												<f:facet name="last">#{msgs.label_last}</f:facet>
+												<f:facet name="next">#{msgs.label_next}</f:facet>
+												<f:facet name="previous">#{msgs.label_previous}</f:facet>
+											</rich:dataScroller>
+										</f:facet>
+									</rich:dataTable>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_details}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="100%" colspan="6">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<rich:dataTable id="manpowerNeedRequestDetailsTableId" value="#{manpowerNeedsStudy.manpowerNeedRequestsAndStudiesDetailsMap.get(manpowerNeedsStudy.selectedManpowerNeedRequestOrStudy.id)}" var="row" rows="#{manpowerNeedsStudy.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+										<rich:column style="width : 5%;">
+											<f:facet name="header">#</f:facet> 
+											#{index + 1}
+						                </rich:column>
+						                <rich:column style="width : 14%;">
+											<f:facet name="header"> #{msgs.label_region} </f:facet>
+											<h:outputText value="#{row.regionDescription}" />
+										</rich:column>
+										<rich:column style="width : 15%;">
+											<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+											<h:outputText value="#{row.unitFullName}" />
+										</rich:column>
+										<rich:column style="width : 10%;">
+											<f:facet name="header"> #{msgs.label_jobMinorSpec} </f:facet>
+											<h:outputText value="#{row.minorSpecializationDescription}" />
+										</rich:column>
+										<rich:column style="width : 9%;">
+											<f:facet name="header"> #{msgs.label_officialEmployeesCount} <font style="color: red;">*</font> </f:facet>
+											<h:outputText value="#{row.officialEmployeesCount}" />
+										</rich:column>
+										<rich:column style="width : 9%;">
+											<f:facet name="header"> #{msgs.label_physicalEmployeesCount} <font style="color: red;">*</font> </f:facet>
+											<h:outputText value="#{row.physicalEmployeesCount}" />
+										</rich:column>
+										<rich:column style="width : 6%;">
+											<f:facet name="header"> #{msgs.label_requiredCount} </f:facet>
+											<h:outputText id="requiredCountId" value="#{manpowerNeedsStudy.selectedManpowerNeedRequestOrStudy.needType == 1 ? row.requestSuggestedCount : row.studySuggestedCount}" />
+										</rich:column>
+										<rich:column style="width : 10%;">
+											<f:facet name="header"> #{msgs.label_justificationsAndNotes} </f:facet>
+											<h:outputText value="#{manpowerNeedsStudy.selectedManpowerNeedRequestOrStudy.needType == 1 ? row.requestReasons : row.studyReasons}" />
+										</rich:column>
+										<rich:column style="width : 7%;">
+											<f:facet name="header"> #{msgs.label_suggestedCount} <font style="color: red;">*</font> </f:facet>
+											<h:inputText id="studySuggestedCountId" value="#{row.studySuggestedCount}" onchange="validateSuggestedCount(this.id);" rendered="#{manpowerNeedsStudy.manpowerNeedStudyData.needType == 2}" readonly="#{manpowerNeedsStudy.role != 'Requester' and manpowerNeedsStudy.role != 'ReviewerEmp' and manpowerNeedsStudy.role != 'SecondaryReviewerEmp'}" onkeypress="return isDigit(event);" styleClass="inputDataSuperLarge" />
+											<h:inputText id="mainStudySuggestedCountId" value="#{row.mainStudySuggestedCount}" onchange="validateSuggestedCount(this.id);" rendered="#{manpowerNeedsStudy.manpowerNeedStudyData.needType == 3}" readonly="#{manpowerNeedsStudy.role != 'Requester' and manpowerNeedsStudy.role != 'ReviewerEmp'}" onkeypress="return isDigit(event);" styleClass="inputDataSuperLarge" />
+										</rich:column>
+										<rich:column style="width : 15%;">
+											<f:facet name="header"> #{msgs.label_reason} </f:facet>
+											<h:inputText value="#{row.studyReasons}" rendered="#{manpowerNeedsStudy.manpowerNeedStudyData.needType == 2}" readonly="#{manpowerNeedsStudy.role != 'Requester' and manpowerNeedsStudy.role != 'ReviewerEmp' and manpowerNeedsStudy.role != 'SecondaryReviewerEmp'}" maxlength="1000" styleClass="inputDataSuperLarge" />
+											<h:inputText value="#{row.mainStudyReasons}" rendered="#{manpowerNeedsStudy.manpowerNeedStudyData.needType == 3}" readonly="#{manpowerNeedsStudy.role != 'Requester' and manpowerNeedsStudy.role != 'ReviewerEmp'}" maxlength="1000" styleClass="inputDataSuperLarge" />
+										</rich:column>
+										<f:facet name="footer">
+											<rich:dataScroller execute="manpowerNeedsStudyFormId:manpowerNeedRequestDetailsTableId" oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+												<f:facet name="first">#{msgs.label_first}</f:facet>
+												<f:facet name="last">#{msgs.label_last}</f:facet>
+												<f:facet name="next">#{msgs.label_next}</f:facet>
+												<f:facet name="previous">#{msgs.label_previous}</f:facet>
+											</rich:dataScroller>
+										</f:facet>
+									</rich:dataTable>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_specialData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="100%" colspan="6">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getUnit('#{request.contextPath}');return false;" rendered="#{manpowerNeedsStudy.role == 'Requester' or manpowerNeedsStudy.role == 'ReviewerEmp' or manpowerNeedsStudy.role == 'SecondaryReviewerEmp'}" />
+												<h:commandButton id="addNewManpowerNeedStudyDetailBtnId" style="display: none;" action="#{manpowerNeedsStudy.addNewManpowerNeedStudyDetail()}">
+													<f:ajax execute="manpowerNeedsStudyFormId:unitFullNameHId manpowerNeedsStudyFormId:unitIDHId manpowerNeedsStudyFormId:unitHKeyHId manpowerNeedsStudyFormId:manpowerNeedStudyDetailsTableId" render="manpowerNeedsStudyFormId:manpowerNeedStudyDetailsTableId manpowerNeedsStudyFormId:notifyMessagesId" />
+												</h:commandButton>
+												<h:inputHidden id="unitFullNameHId" value="#{manpowerNeedsStudy.selectedUnit.fullName}" />
+												<h:inputHidden id="unitIDHId" value="#{manpowerNeedsStudy.selectedUnit.id}" />
+												<h:inputHidden id="unitHKeyHId" value="#{manpowerNeedsStudy.selectedUnit.hKey}" />
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td width="100%">
+									<rich:dataTable id="manpowerNeedStudyDetailsTableId" value="#{manpowerNeedsStudy.manpowerNeedStudyDetails}" var="row" rows="#{manpowerNeedsStudy.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+										<rich:column style="width : 5%;">
+											<f:facet name="header">#</f:facet> 
+											#{index + 1}
+						                </rich:column>
+										<rich:column style="width : 30%;">
+											<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+											<h:outputText value="#{row.unitFullName}" />
+										</rich:column>
+										<rich:column style="width : 10%;">
+											<f:facet name="header"> #{msgs.label_jobMinorSpec} <font style="color: red;">*</font> </f:facet>
+											<h:outputText id="minorSpecializationDescriptionId" value="#{row.minorSpecializationDescription}" />
+											<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" disabled="#{manpowerNeedsStudy.role != 'Requester' and manpowerNeedsStudy.role != 'ReviewerEmp' and manpowerNeedsStudy.role != 'SecondaryReviewerEmp'}" styleClass="btn_icon" onclick="getMinorSpec('#{request.contextPath}',this.id);return false;" />
+											<h:commandButton id="calculateEmployeesCountsBtnId" style="display: none;" action="#{manpowerNeedsStudy.calculateEmployeesCounts(row)}">
+												<f:ajax execute="manpowerNeedsStudyFormId:manpowerNeedStudyDetailsTableId" render="manpowerNeedsStudyFormId:manpowerNeedStudyDetailsTableId manpowerNeedsStudyFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:inputHidden id="minorSpecializationIDHId" value="#{row.minorSpecializationId}" />
+											<h:inputHidden id="minorSpecializationDescriptionHId" value="#{row.minorSpecializationDescription}" />
+										</rich:column>
+										<rich:column style="width : 10%;">
+											<f:facet name="header"> #{msgs.label_officialEmployeesCount} <font style="color: red;">*</font> </f:facet>
+											<h:outputText value="#{row.officialEmployeesCount}" />
+										</rich:column>
+										<rich:column style="width : 10%;">
+											<f:facet name="header"> #{msgs.label_physicalEmployeesCount} <font style="color: red;">*</font> </f:facet>
+											<h:outputText value="#{row.physicalEmployeesCount}" />
+										</rich:column>
+										<rich:column style="width : 10%;">
+											<f:facet name="header"> #{msgs.label_suggestedCount} <font style="color: red;">*</font> </f:facet>
+											<h:inputText value="#{row.studySuggestedCount}" rendered="#{manpowerNeedsStudy.manpowerNeedStudyData.needType == 2}" readonly="#{manpowerNeedsStudy.role != 'Requester' and manpowerNeedsStudy.role != 'ReviewerEmp' and manpowerNeedsStudy.role != 'SecondaryReviewerEmp'}" onkeypress="return isDigit(event);" styleClass="inputDataSuperLarge" />
+											<h:inputText value="#{row.mainStudySuggestedCount}" rendered="#{manpowerNeedsStudy.manpowerNeedStudyData.needType == 3}" readonly="#{manpowerNeedsStudy.role != 'Requester' and manpowerNeedsStudy.role != 'ReviewerEmp'}" onkeypress="return isDigit(event);" styleClass="inputDataSuperLarge" />
+										</rich:column>
+										<rich:column style="width : 20%;">
+											<f:facet name="header"> #{msgs.label_justificationsAndNotes} <font style="color: red;">*</font> </f:facet>
+											<h:inputText value="#{row.studyReasons}" rendered="#{manpowerNeedsStudy.manpowerNeedStudyData.needType == 2}" readonly="#{manpowerNeedsStudy.role != 'Requester' and manpowerNeedsStudy.role != 'ReviewerEmp' and manpowerNeedsStudy.role != 'SecondaryReviewerEmp'}" maxlength="1000" styleClass="inputDataSuperLarge" />
+											<h:inputText value="#{row.mainStudyReasons}" rendered="#{manpowerNeedsStudy.manpowerNeedStudyData.needType == 3}" readonly="#{manpowerNeedsStudy.role != 'Requester' and manpowerNeedsStudy.role != 'ReviewerEmp'}" maxlength="1000" styleClass="inputDataSuperLarge" />
+										</rich:column>
+										<rich:column  style="width : 5%;" rendered="#{manpowerNeedsStudy.role == 'Requester' or manpowerNeedsStudy.role == 'ReviewerEmp' or manpowerNeedsStudy.role == 'SecondaryReviewerEmp'}">
+											<f:facet name="header">#{msgs.label_delete}</f:facet>
+											<h:commandButton action="#{manpowerNeedsStudy.deleteManpowerNeedStudyDetail(row)}" onclick="return confirm('#{msgs.q_delete}');" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon">
+												<f:ajax execute="manpowerNeedsStudyFormId:manpowerNeedStudyDetailsTableId" render="manpowerNeedsStudyFormId:manpowerNeedStudyDetailsTableId manpowerNeedsStudyFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</rich:column>
+										<f:facet name="footer">
+											<rich:dataScroller execute="manpowerNeedsStudyFormId:manpowerNeedStudyDetailsTableId" oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+												<f:facet name="first">#{msgs.label_first}</f:facet>
+												<f:facet name="last">#{msgs.label_last}</f:facet>
+												<f:facet name="next">#{msgs.label_next}</f:facet>
+												<f:facet name="previous">#{msgs.label_previous}</f:facet>
+											</rich:dataScroller>
+										</f:facet>
+									</rich:dataTable>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<h:panelGroup rendered="#{manpowerNeedsStudy.role == 'Requester' or manpowerNeedsStudy.role == 'ReviewerEmp' or manpowerNeedsStudy.role == 'SecondaryReviewerEmp' or manpowerNeedsStudy.manpowerNeedStudyData.attachments != null}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_attachments}</th>
+									<td width="85%">
+										<code:attachments loginEmpId="#{manpowerNeedsStudy.loginEmpData.empId}" attachmentId="#{manpowerNeedsStudy.manpowerNeedStudyData.attachments}" viewEnableFlag="true" addEnableFlag="#{manpowerNeedsStudy.role == 'Requester' or manpowerNeedsStudy.role == 'ReviewerEmp' or manpowerNeedsStudy.role == 'SecondaryReviewerEmp'}" deleteEnableFlag="#{manpowerNeedsStudy.role == 'Requester' or manpowerNeedsStudy.role == 'ReviewerEmp' or manpowerNeedsStudy.role == 'SecondaryReviewerEmp'}" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				
+				<tr>
+					<td>
+						<h:outputText value="#{msgs.label_OfficialAndPhysicalEmployeesRemark}" styleClass="remarkMessage" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<code:prevTasks rendered="#{manpowerNeedsStudy.role != 'Requester' and manpowerNeedsStudy.role != 'Viewer'}" value="#{manpowerNeedsStudy.prevTasks}" refuseRoles="SecondaryReviewerEmp,SecondarySignManager,ReviewerEmp,SignManager," />
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{manpowerNeedsStudy.currentEmployee}" rendered="#{manpowerNeedsStudy.role != 'Requester' and manpowerNeedsStudy.role != 'Viewer' and manpowerNeedsStudy.role != 'Notification' and manpowerNeedsStudy.role != 'History'}">
+							<h:panelGroup rendered="#{manpowerNeedsStudy.role == 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="85%" colspan="3">
+										<h:selectOneMenu id="reviewersId" value="#{manpowerNeedsStudy.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{manpowerNeedsStudy.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+							</h:panelGroup>
+							
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{manpowerNeedsStudy.currentTask.notes}" maxlength="500" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+							
+							<h:panelGroup rendered="#{manpowerNeedsRequest.role == 'SecondaryReviewerEmp' or manpowerNeedsRequest.role == 'SecondarySignManager' or manpowerNeedsRequest.role == 'ReviewerEmp' or manpowerNeedsRequest.role == 'SignManager'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{manpowerNeedsStudy.currentTask.refuseReasons}" maxlength="500" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{manpowerNeedsStudy.role == 'Notification' or manpowerNeedsStudy.role == 'History'}" value="#{manpowerNeedsStudy.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:panelGroup rendered="#{manpowerNeedsStudy.role == 'Requester'}">
+										<h:commandButton id="saveBtnId" action="#{manpowerNeedsStudy.save}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" >
+											<f:ajax render="@form" execute="@form" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}');" action="#{manpowerNeedsStudy.initProcess}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+									
+
+									<h:panelGroup rendered="#{manpowerNeedsStudy.role == 'SecondaryReviewerEmp'}">
+										<h:commandButton id="approveSreBtnId" onclick="return handleOnAction('#{msgs.q_review}', 'validateRefuseAndNotes(1, &quot;manpowerNeedsStudyFormId:curTaskId:refuseReasonsId&quot;)');" action="#{manpowerNeedsStudy.approveSRE}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectSreBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;manpowerNeedsStudyFormId:curTaskId:refuseReasonsId&quot;)');" action="#{manpowerNeedsStudy.rejectSRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+									
+									<h:panelGroup rendered="#{manpowerNeedsStudy.role == 'SecondarySignManager'}">
+										<h:commandButton id="submitSsmBtnId" onclick="return handleOnAction('#{msgs.q_submitToStudy}', 'validateRefuseAndNotes(1, &quot;manpowerNeedsStudyFormId:curTaskId:refuseReasonsId&quot;)');" action="#{manpowerNeedsStudy.approveSSM}" value="#{msgs.label_submitToStudy} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="modifySsmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, null, &quot;manpowerNeedsStudyFormId:curTaskId:notesId&quot;)');" action="#{manpowerNeedsStudy.modifySSM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;manpowerNeedsStudyFormId:curTaskId:refuseReasonsId&quot;)');" action="#{manpowerNeedsStudy.rejectSSM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+									
+									
+									<h:panelGroup rendered="#{manpowerNeedsStudy.role == 'ManagerRedirect'}">
+										<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;manpowerNeedsStudyFormId:curTaskId:reviewersId&quot;)');" action="#{manpowerNeedsStudy.redirectMR}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+									
+									<h:panelGroup rendered="#{manpowerNeedsStudy.role == 'ReviewerEmp'}">
+										<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}', 'validateRefuseAndNotes(1, &quot;manpowerNeedsStudyFormId:curTaskId:refuseReasonsId&quot;)');" action="#{manpowerNeedsStudy.approveRE}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;manpowerNeedsStudyFormId:curTaskId:refuseReasonsId&quot;)');" action="#{manpowerNeedsStudy.rejectRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+									
+									
+									<h:panelGroup rendered="#{manpowerNeedsStudy.role == 'SignManager'}">
+										<h:commandButton id="submitSmBtnId" rendered="#{manpowerNeedsStudy.manpowerNeedStudyData.needType == 2}" onclick="return handleOnAction('#{msgs.q_submitToStudy}', 'validateRefuseAndNotes(1, &quot;manpowerNeedsStudyFormId:curTaskId:refuseReasonsId&quot;)');" action="#{manpowerNeedsStudy.submitSM}" value="#{msgs.label_submitToStudy} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="approveSmBtnId" rendered="#{manpowerNeedsStudy.manpowerNeedStudyData.needType == 3}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;manpowerNeedsStudyFormId:curTaskId:refuseReasonsId&quot;)');" action="#{manpowerNeedsStudy.approveSM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="modifySmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;manpowerNeedsStudyFormId:curTaskId:refuseReasonsId&quot;, &quot;manpowerNeedsStudyFormId:curTaskId:notesId&quot;)');" action="#{manpowerNeedsStudy.modifySM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;manpowerNeedsStudyFormId:curTaskId:refuseReasonsId&quot;)');" action="#{manpowerNeedsStudy.rejectSM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+									
+									
+									<h:panelGroup rendered="#{manpowerNeedsStudy.role == 'Notification'}">
+										<h:commandButton id="nBtnId" action="#{manpowerNeedsStudy.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

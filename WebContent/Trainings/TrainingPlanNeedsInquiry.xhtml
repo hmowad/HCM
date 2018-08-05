@@ -1,0 +1,378 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+		window.onkeypress = function(e) {
+			// window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+			if (keyCode == '13') {
+				document.getElementById(
+						'trainingPlanNeedsInquiryFormId:searchBtnId').click();
+				return false;
+			}
+		};
+
+		function validateInput() {
+			var trainingYearId = document
+					.getElementById('trainingPlanNeedsInquiryFormId:trainingYearId').value;
+			var trainingUnitId = document
+					.getElementById('trainingPlanNeedsInquiryFormId:trainingUnitId').value;
+			var requestingRegionId = document
+					.getElementById('trainingPlanNeedsInquiryFormId:requestingRegionId').value;
+			if (trainingYearId == '' || trainingYearId == '0'
+					|| trainingUnitId == '' || trainingUnitId == '0'
+					|| requestingRegionId == '' || requestingRegionId == '0') {
+				alert("#{msgs.error_trainingPlanNeedsInquiryInputRequired}");
+				return false;
+			}
+			return true;
+		}
+
+		function getUnit(requestingRegionId) {
+			openUnitsMiniSearch(3, '#{request.contextPath}',
+					'handleUnitMiniSearchResult(ret)', -1, requestingRegionId,
+					-1);
+		}
+
+		function handleUnitMiniSearchResult(ret) {
+			if (ret != null) {
+				document
+						.getElementById('trainingPlanNeedsInquiryFormId:requestingUnitIDHId').value = ret[0];
+				document
+						.getElementById('trainingPlanNeedsInquiryFormId:requestingUnitNameId').innerHTML = ret[1];
+
+			}
+		}
+
+		function getCourseEvents(trainingYearId, trainingUnitId) {
+			openTrainingIntCourseEventsMiniSearch('#{request.contextPath}','handleCourseEventsMiniSearchResult(ret)', -1, trainingYearId, trainingUnitId, -1, -1) 
+		}
+
+		function handleCourseEventsMiniSearchResult(ret) {
+			if (ret != null) {
+				document
+						.getElementById('trainingPlanNeedsInquiryFormId:trainingCourseEventHId').value = ret[0];
+				document
+						.getElementById('trainingPlanNeedsInquiryFormId:trainingCourseNameHId').value = ret[1];
+				document
+						.getElementById('trainingPlanNeedsInquiryFormId:trainingCourseNameId').innerHTML = ret[1];
+			}
+		}
+
+		function validatePrint() {
+			if(!validateInput())
+				return false;
+			var type = document
+					.getElementById('trainingPlanNeedsInquiryFormId:reportType:0').checked
+			var reportType = 2;
+			if (type)
+				reportType = 1;
+
+			var courseEventId = document
+					.getElementById('trainingPlanNeedsInquiryFormId:trainingCourseEventHId').value
+			var requestingUnitID = document
+					.getElementById('trainingPlanNeedsInquiryFormId:requestingUnitIDHId').value
+			if (reportType == 1
+					&& (courseEventId == null || courseEventId == '' || courseEventId == -1)) {
+				alert("#{msgs.error_courseNameMandatory}");
+				return false;
+			}
+
+			if (reportType == 2
+					&& (requestingUnitID == null || requestingUnitID == -1)) {
+				alert("#{msgs.error_trainingRequestingUnitMandatory}");
+				return false;
+			}
+			return true;
+		}
+		// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="trainingPlanNeedsInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{trainingPlanNeedsInquiry.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_trainingYear}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="trainingYearId" value="#{trainingPlanNeedsInquiry.trainingYearId}">
+											<f:selectItems value="#{trainingPlanNeedsInquiry.trainingYears}" var="year" itemLabel="#{year.name}" itemValue="#{year.id}" />
+										</h:selectOneMenu>
+									</td>
+									<th width="15%">
+										#{msgs.label_theTrainingUnit}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="trainingUnitId" value="#{trainingPlanNeedsInquiry.trainingUnitId}">
+											<f:selectItems value="#{trainingPlanNeedsInquiry.trainingUnits}" var="unit" itemLabel="#{unit.name}" itemValue="#{unit.unitId}" />
+										</h:selectOneMenu>
+									</td>
+
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_region}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="requestingRegionId" value="#{trainingPlanNeedsInquiry.requestingRegionId}">
+											<f:selectItems value="#{trainingPlanNeedsInquiry.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+										</h:selectOneMenu>
+									</td>
+									<th width="15%">#{msgs.label_requestingUnit}</th>
+									<td width="35%">
+										<h:outputText id="requestingUnitNameId" value="#{trainingPlanNeedsInquiry.requestingUnitFullName}" />
+										<h:inputHidden id="requestingUnitIDHId" value="#{trainingPlanNeedsInquiry.requestingUnitId}" />
+										<h:outputText value=" " />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit(document.getElementById('trainingPlanNeedsInquiryFormId:requestingRegionId').value); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_trainingCourseName}</th>
+
+									<td width="85%" colspan="3">
+
+										<h:outputText id="trainingCourseNameId" />
+										<h:inputHidden id="trainingCourseNameHId" value="#{trainingPlanNeedsInquiry.courseName}" />
+										<h:inputHidden id="trainingCourseEventHId" value="#{trainingPlanNeedsInquiry.courseEventId}" />
+										<h:outputText value=" " />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getCourseEvents(document.getElementById('trainingPlanNeedsInquiryFormId:trainingYearId').value,document.getElementById('trainingPlanNeedsInquiryFormId:trainingUnitId').value); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+									</td>
+								</tr>
+							</table>
+
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" onclick="return validateInput();" action="#{trainingPlanNeedsInquiry.searchNeedsRequests()}" styleClass="btn_normal_icon">
+										<f:ajax execute="trainingPlanNeedsInquiryFormId:searchPanelId" render="trainingPlanNeedsInquiryFormId:needsRequestsTableId trainingPlanNeedsInquiryFormId:needsDetailsPanelId  trainingPlanNeedsInquiryFormId:needsDetailsTableId trainingPlanNeedsInquiryFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{trainingPlanNeedsInquiry.reset()}" styleClass="btn_normal_icon">
+										<f:ajax render="trainingPlanNeedsInquiryFormId:searchPanelId trainingPlanNeedsInquiryFormId:needsRequestsTableId trainingPlanNeedsInquiryFormId:needsDetailsPanelId trainingPlanNeedsInquiryFormId:needsDetailsTableId trainingPlanNeedsInquiryFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_printingOptions}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">#{msgs.title_theReports}</th>
+								<td width="85%">
+									<h:selectOneRadio id="reportType" value="#{trainingPlanNeedsInquiry.reportType}">
+										<f:selectItem itemLabel="#{msgs.label_trainingPlanNeedsCourseNameReport}" itemValue="1" />
+										<f:selectItem itemLabel="#{msgs.label_trainingPlanNeedsRequestingUnitReport}" itemValue="2" />
+									</h:selectOneRadio>
+								</td>
+							</tr>
+						</table>
+
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" action="#{trainingPlanNeedsInquiry.print()}" onclick="return validatePrint();" styleClass="btn_normal_icon">
+										<ui:remove>
+											<f:ajax execute="trainingPlanNeedsInquiryFormId:searchPanelId trainingPlanNeedsInquiryFormId:reportType" render="trainingPlanNeedsInquiryFormId:notifyMessagesId" />
+										</ui:remove>
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_needsRequestingData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="needsRequestsTableId" rowKeyVar="index" var="need" value="#{trainingPlanNeedsInquiry.trainingPlanUnitsRequests}" rows="#{trainingPlanNeedsInquiry.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_select}</f:facet>
+								<h:commandButton action="#{trainingPlanNeedsInquiry.selectNeedsRequest(need)}" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon">
+									<f:ajax render="trainingPlanNeedsInquiryFormId:needsDetailsPanelId trainingPlanNeedsInquiryFormId:needsDetailsTableId trainingPlanNeedsInquiryFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+								</h:commandButton>
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                        	</rich:column>
+							<rich:column style="width : 25%">
+								<f:facet name="header">#{msgs.label_requestDate}</f:facet>
+								<h:outputText value="#{need.hijriRequestDateString}" />
+							</rich:column>
+							<rich:column style="width : 25%">
+								<f:facet name="header">#{msgs.label_requestingUnit}</f:facet>
+								<h:outputText value="#{need.requestingUnitFullName}" />
+							</rich:column>
+							<rich:column style="width : 40%">
+								<f:facet name="header">#{msgs.label_requestingUnitRemarks}</f:facet>
+								<h:outputText value="#{need.remarks}" />
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="needsDetailsPanelId">
+							<h:panelGroup rendered="#{trainingPlanNeedsInquiry.selectedRequest!=null}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>#{trainingPlanNeedsInquiry.requestingUnitDetailsMessage}</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td align="center" width="100%">
+						<h:panelGroup id="needsDetailsTableId">
+							<h:panelGroup rendered="#{trainingPlanNeedsInquiry.selectedRequest!=null}">
+								<rich:dataTable rowKeyVar="index" var="need" value="#{trainingPlanNeedsInquiry.trainingPlanUnitNeeds}" rows="#{trainingPlanNeedsInquiry.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+									<rich:column style="width : 5%">
+										<f:facet name="header">#</f:facet>
+	                              			  #{index + 1}
+	                       				 </rich:column>
+									<rich:column style="width : 20%">
+										<f:facet name="header">#{msgs.label_trainingUnit}</f:facet>
+										<h:outputText value="#{need.trainingUnitName}" />
+									</rich:column>
+									<rich:column style="width : 15%">
+										<f:facet name="header">#{msgs.label_trainingCourseName}</f:facet>
+										<h:outputText value="#{need.courseName}" />
+									</rich:column>
+									<rich:column style="width : 15%">
+										<f:facet name="header">#{msgs.label_startDate}</f:facet>
+										<h:outputText value="#{need.plannedStartDateString}" />
+									</rich:column>
+									<rich:column style="width :15%">
+										<f:facet name="header">#{msgs.label_endDate}</f:facet>
+										<h:outputText value="#{need.plannedEndDateString}" />
+									</rich:column>
+									<rich:column style="width : 20%">
+										<f:facet name="header">#{msgs.label_coursePrerequisite}</f:facet>
+										<h:outputText value="#{need.prerquisites}" />
+									</rich:column>
+									<rich:column style="width : 10%">
+										<f:facet name="header">#{msgs.label_need}</f:facet>
+										<h:outputText value="#{need.needsCount}" />
+									</rich:column>
+									<f:facet name="footer">
+										<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+											<f:facet name="first">#{msgs.label_first}</f:facet>
+											<f:facet name="last">#{msgs.label_last}</f:facet>
+											<f:facet name="next">#{msgs.label_next}</f:facet>
+											<f:facet name="previous">#{msgs.label_previous}</f:facet>
+										</rich:dataScroller>
+									</f:facet>
+								</rich:dataTable>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

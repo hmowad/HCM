@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:rich="http://richfaces.org/rich">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+    //<![CDATA[  
+            function getEmp(contextPath){
+            	openEmployeesMiniSearch(contextPath, 'handleEmpsMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{vacationJoining.getLoginEmpPhysicalRegionFlag(false)});
+             }
+            
+            function handleEmpsMiniSearchResult(ret){
+            	if(ret != null){
+                    document.getElementById('vacationJoiningForm:beneficiarySearchId').value = ret[0];
+                    document.getElementById('vacationJoiningForm:searchEmpButton').click();
+                 }
+            }
+
+            function validateData(){
+                var oldVacationId = document.getElementById('vacationJoiningForm:oldVacationId').value;
+                if(oldVacationId == null || oldVacationId == ''){
+                	alert('#{msgs.error_noPrevVacation}');
+                    return false;
+                }
+
+                var exceededFlag = getSelectOneRadioValue('vacationJoiningForm:exceededFlagId');            
+                if(exceededFlag == 1){
+                    var exceededDays = document.getElementById('vacationJoiningForm:exceededDaysId').value;
+                    if(exceededDays == null || exceededDays == '' || exceededDays == 0){
+                    	alert('#{msgs.error_exceededDaysIsZero}');
+                        return false;
+                    }
+                }
+                
+                return true;
+              }
+
+            function validateDataDM(){
+            	return validateData() && validateRefuseAndNotes(1, 'vacationJoiningForm:curTaskId:refuseReasonsId');
+            }
+        // ]]>
+        </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="vacationJoiningForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText id="screenTitleId" value="#{vacationJoining.screenTitle}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requester}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:emp value="#{vacationJoining.requester}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiary}" switchType="client" 
+							onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{vacationJoining.beneficiary.empId == vacationJoining.requester.empId}) &amp;&amp; (#{vacationJoining.role == 'Requester'})) { getEmp('#{request.contextPath}'); return false;} else {return true;}"
+							expanded="#{vacationJoining.requester.empId != vacationJoining.beneficiary.empId}" rendered="#{vacationJoining.role == 'Requester' or vacationJoining.requester.empId != vacationJoining.beneficiary.empId}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+								<h:panelGroup rendered="#{vacationJoining.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+														<h:inputHidden id="beneficiarySearchId" value="#{vacationJoining.beneficiarySearchId}" />
+														<h:commandButton id="searchEmpButton" style="display: none;" action="#{vacationJoining.searchBeneficiary}">
+															<f:ajax render="vacationJoiningForm:beneficiaryPanelId vacationJoiningForm:lastVacId:data vacationJoiningForm:requestInfoPanelId vacationJoiningForm:notifyMessagesId"
+                                                                            execute="beneficiarySearchId"
+                                                                            onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp id="beneficiaryId" value="#{vacationJoining.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_lastVacationInfo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:vac id="lastVacId" value="#{vacationJoining.lastVacation}" printAction="#{vacationJoining.print()}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requestInfo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requestInfoPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_joining}</th>
+									<td width="85%">
+										<h:selectOneRadio id="exceededFlagId" value="#{vacationJoining.exceededFlag}" disabled="#{vacationJoining.lastVacation == null or (vacationJoining.role != 'Requester' and vacationJoining.role != 'DirectManager')}">
+											<f:selectItem itemValue="0" itemLabel="#{msgs.label_attendInTime}" />
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_attendAfterTime}" />
+											<f:ajax event="click" listener="#{vacationJoining.exceededFlagListener()}" execute="@this" render="vacationJoiningForm:requestInfoPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:selectOneRadio>
+										<h:inputHidden id="oldVacationId" value="#{vacationJoining.vacRequest.oldVacationId}" />
+									</td>
+								</tr>
+								<tr>
+									<h:panelGroup rendered="#{vacationJoining.exceededFlag == 1}">
+										<th width="15%">
+											#{msgs.label_numberOfExceededDays}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="85%">
+											<h:inputText id="exceededDaysId" value="#{vacationJoining.vacRequest.exceededDays}" readonly="#{vacationJoining.lastVacation == null or (vacationJoining.role != 'Requester' and vacationJoining.role != 'DirectManager')}" maxlength="3" style="font-weight: bold !important; color: red !important;" >
+											<f:ajax event="blur" execute="@this" render="vacationJoiningForm:joiningDateId" />
+											</h:inputText>
+										</td>
+									</h:panelGroup>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_joiningDate}</th>
+									<td width="85%">
+										<h:outputText id="joiningDateId" value="#{vacationJoining.vacRequest.joiningDateString}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_notes}</th>
+									<td width="85%">
+										<h:inputText value="#{vacationJoining.vacRequest.notes}" readonly="#{vacationJoining.lastVacation == null or (vacationJoining.role != 'Requester' and vacationJoining.role != 'DirectManager')}" maxlength="500" styleClass="inputDataLarge"/>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<code:prevTasks rendered="#{vacationJoining.role != 'Requester'}" value="#{vacationJoining.prevTasks}" refuseRoles="DirectManager," />
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{vacationJoining.currentEmployee}" rendered="#{vacationJoining.role != 'Requester' and vacationJoining.role != 'Notification' and vacationJoining.role != 'History'}">
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{vacationJoining.currentTask.notes}" maxlength="500" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">#{msgs.label_refuseReasons}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="refuseReasonsId" value="#{vacationJoining.currentTask.refuseReasons}" maxlength="500" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+						</code:curTask>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{vacationJoining.role == 'Notification' or vacationJoining.role == 'History'}" value="#{vacationJoining.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:panelGroup rendered="#{vacationJoining.role == 'Requester' and vacationJoining.lastVacation != null}">
+										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateData()');" action="#{vacationJoining.initProcess}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{vacationJoining.role == 'DirectManager'}">
+										<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateDataDM()');" action="#{vacationJoining.approveDM}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;vacationJoiningForm:curTaskId:refuseReasonsId&quot;)');" action="#{vacationJoining.rejectDM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{vacationJoining.role == 'Notification'}">
+										<h:commandButton id="nBtnId" action="#{vacationJoining.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+</h:body>
+</html>

@@ -1,0 +1,435 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+	function getEmployee(contextPath) {
+		if(#{militaryTrainingApologyRequest.regionAdmin}) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, '#{militaryTrainingApologyRequest.getLoginEmpPhysicalRegionFlag(true)}');
+		} else {
+			openEmpsMiniSearch(contextPath,'handleEmpMiniSearchResult(ret)', 9, -1, -1, -1, -1, -1, '#{militaryTrainingApologyRequest.loginEmpData.physicalUnitHKey}');
+		}
+	}
+	function handleEmpMiniSearchResult(ret) { 
+		if(ret != null) {
+			document.getElementById('militaryTrainingApologyRequestFormId:beneficiaryEmployeeHId').value = ret[0];
+			document.getElementById('militaryTrainingApologyRequestFormId:beneficiaryCategoryIDId').value = ret[2];
+			document.getElementById('militaryTrainingApologyRequestFormId:searchEmpBtnId').click();
+		}
+	}
+	
+	function validateRequest() {
+		var courseEventId=document.getElementById('militaryTrainingApologyRequestFormId:courseEventId').value;
+		var workReasonChecked = document.getElementById('militaryTrainingApologyRequestFormId:apologyReasonId:0').checked;
+	    var personalReasonChecked = document.getElementById('militaryTrainingApologyRequestFormId:apologyReasonId:1').checked;
+	    var justification = document.getElementById('militaryTrainingApologyRequestFormId:justificationId').value;
+		if(courseEventId==null || courseEventId=='-1')
+			{
+			alert('#{msgs.error_trainingCourseIsMandatory}');
+			return false;
+			}
+		if(!workReasonChecked && !personalReasonChecked){
+		        alert("#{msgs.error_apologyReasonMandatory}");
+			    return false;
+		    }
+		if(justification == null || justification == '') {
+	        alert("#{msgs.error_reasonsMandatory}");
+		    return false;
+		}
+		return true;
+	}
+	function validateReview() {
+		if(validateRefuseAndNotes(1, 'militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId'))
+			{
+				return validateRequest();
+			}else
+			return false;
+	}
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="militaryTrainingApologyRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{militaryTrainingApologyRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_processRequester}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{militaryTrainingApologyRequest.requester}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiaryEmployee}" switchType="client" onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{militaryTrainingApologyRequest.beneficiary.empId == militaryTrainingApologyRequest.requester.empId})) { getEmployee('#{request.contextPath}'); return false;} else {return true;}"
+							expanded="#{militaryTrainingApologyRequest.requester.empId != militaryTrainingApologyRequest.beneficiary.empId}" rendered="#{(militaryTrainingApologyRequest.role == 'Requester' and (militaryTrainingApologyRequest.regionAdmin or militaryTrainingApologyRequest.loginEmpData.isManager == 1)) or militaryTrainingApologyRequest.requester.empId != militaryTrainingApologyRequest.beneficiary.empId}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<h:panelGroup rendered="#{militaryTrainingApologyRequest.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+														<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{militaryTrainingApologyRequest.constructWFTraining()}">
+															<f:ajax execute="militaryTrainingApologyRequestFormId:beneficiaryEmployeeHId militaryTrainingApologyRequestFormId:beneficiaryCategoryIDId" render="militaryTrainingApologyRequestFormId:beneficiaryPanelId militaryTrainingApologyRequestFormId:courseDetailsPanelId militaryTrainingApologyRequestFormId:actionPanelId militaryTrainingApologyRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:inputHidden id="beneficiaryEmployeeHId" value="#{militaryTrainingApologyRequest.wfTraining.employeeId}" />
+														<h:inputHidden id="beneficiaryCategoryIDId" value="#{militaryTrainingApologyRequest.wfTraining.categoryId}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp id="beneficiaryId" value="#{militaryTrainingApologyRequest.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<h:panelGroup id="courseDetailsPanelId">
+							<h:panelGroup rendered="#{!militaryTrainingApologyRequest.courseEvents.isEmpty()}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_trainingCourseData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														#{msgs.label_trainingCourse}
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="#{militaryTrainingApologyRequest.mode==0 ? 85:35}%" colspan="#{militaryTrainingApologyRequest.mode==0?3:1}">
+														<h:selectOneMenu id="courseEventId" disabled="#{militaryTrainingApologyRequest.role != 'Requester'}" value="#{militaryTrainingApologyRequest.wfTraining.courseEventId}">
+															<f:selectItem itemLabel="" itemValue="-1" />
+															<f:selectItems value="#{militaryTrainingApologyRequest.courseEvents}" var="course" itemLabel="#{course.courseName}" itemValue="#{course.id}" />
+															<f:ajax event="change" listener="#{militaryTrainingApologyRequest.selectCourse()}" render="militaryTrainingApologyRequestFormId:actionPanelId  militaryTrainingApologyRequestFormId:courseDetailsPanelId militaryTrainingApologyRequestFormId:notifyMessagesId" execute="militaryTrainingApologyRequestFormId:courseEventId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:selectOneMenu>
+													</td>
+													<h:panelGroup rendered="#{militaryTrainingApologyRequest.mode==1}">
+														<th width="15%">#{msgs.label_theTrainingUnit}</th>
+														<td width="35%">
+															<h:outputText value="#{militaryTrainingApologyRequest.selectedCourseEvent.externalPartyDesc}" />
+														</td>
+													</h:panelGroup>
+												</tr>
+												<h:panelGroup rendered="#{militaryTrainingApologyRequest.mode==0}">
+													<tr>
+														<th width="15%">#{msgs.label_trainingYear}</th>
+														<td width="35%">
+															<h:outputText value="#{militaryTrainingApologyRequest.selectedCourseEvent.trainingYearName}" />
+														</td>
+														<th width="15%">#{msgs.label_theTrainingUnit}</th>
+														<td width="35%">
+															<h:outputText value="#{militaryTrainingApologyRequest.selectedCourseEvent.trainingUnitName}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">#{msgs.label_trainingCourseNumber}</th>
+														<td width="35%">
+															<h:outputText value="#{militaryTrainingApologyRequest.selectedCourseEvent.serial}" />
+														</td>
+
+														<th width="15%">#{msgs.label_weeksCount}</th>
+														<td width="35%">
+															<h:outputText value="#{militaryTrainingApologyRequest.selectedCourseEvent.weeksCount}" />
+														</td>
+
+													</tr>
+												</h:panelGroup>
+												<tr>
+													<th width="15%">#{msgs.label_courseStartDate}</th>
+													<td width="35%">
+														<h:outputText value="#{militaryTrainingApologyRequest.selectedCourseEvent.actualStartDateString}" />
+													</td>
+
+													<th width="15%">#{msgs.label_courseEndDate}</th>
+													<td width="35%">
+														<h:outputText value="#{militaryTrainingApologyRequest.selectedCourseEvent.actualEndDateString}" />
+													</td>
+												</tr>
+												<h:panelGroup rendered="#{militaryTrainingApologyRequest.mode==0}">
+													<tr>
+														<th width="15%">#{msgs.label_coursePrequisities}</th>
+														<td width="35%">
+															<h:inputTextarea styleClass="inputDataSuperLarge" value="#{militaryTrainingApologyRequest.selectedCourseEvent.prerquisites}" rows="3" disabled="true" />
+														</td>
+														<td width="50%" colspan="2"></td>
+													</tr>
+												</h:panelGroup>
+												<tr>
+													<th width="15%">#{msgs.label_syllabusAttachments}</th>
+													<td width="85%" colspan="3">
+														<code:attachments loginEmpId="#{militaryTrainingApologyRequest.loginEmpData.empId}" attachmentId="#{militaryTrainingApologyRequest.selectedCourseEvent.attachments}" viewEnableFlag="true" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_apologyReasonsData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														#{msgs.label_apologyReason}
+														<font style="color: red;"> *</font>
+													</th>
+													<td width="85%">
+														<h:selectOneRadio id="apologyReasonId" value="#{militaryTrainingApologyRequest.wfTraining.reasonType}" disabled="#{militaryTrainingApologyRequest.role != 'Requester'}">
+															<f:selectItem itemLabel="#{msgs.label_workReason}" itemValue="1" />
+															<f:selectItem itemLabel="#{msgs.label_personalReason}" itemValue="2" />
+														</h:selectOneRadio>
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														#{msgs.label_justifications}
+														<font style="color: red;"> *</font>
+													</th>
+													<td width="85%">
+														<h:inputTextarea id="justificationId" styleClass="inputDataSuperLarge" value="#{militaryTrainingApologyRequest.wfTraining.reasons}" rows="3" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" disabled="#{militaryTrainingApologyRequest.role != 'Requester'}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">#{msgs.label_attachments}</th>
+													<td width="85%">
+														<code:attachments loginEmpId="#{militaryTrainingApologyRequest.loginEmpData.empId}" attachmentId="#{militaryTrainingApologyRequest.wfTraining.attachments}" addEnableFlag="#{militaryTrainingApologyRequest.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{militaryTrainingApologyRequest.role == 'Requester'}" />
+													</td>
+												</tr>
+
+											</table>
+
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{militaryTrainingApologyRequest.role != 'Requester'}" value="#{militaryTrainingApologyRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp,SecondarySignManager,SecondaryReviewerEmp,ExtraSecondarySignManager,ExtraSecondaryReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{militaryTrainingApologyRequest.currentEmployee}"
+							rendered="#{militaryTrainingApologyRequest.role == 'DirectManager'or militaryTrainingApologyRequest.role == 'ManagerRedirect'  or militaryTrainingApologyRequest.role == 'SignManager' or militaryTrainingApologyRequest.role == 'ReviewerEmp' or militaryTrainingApologyRequest.role == 'SecondaryManagerRedirect' or militaryTrainingApologyRequest.role == 'SecondaryReviewerEmp' or militaryTrainingApologyRequest.role == 'SecondarySignManager' or militaryTrainingApologyRequest.role == 'ExtraSecondaryManagerRedirect' or militaryTrainingApologyRequest.role == 'ManagerRedirectToSpecialist'}">
+							<h:panelGroup rendered="#{militaryTrainingApologyRequest.role == 'ManagerRedirect' or militaryTrainingApologyRequest.role == 'SecondaryManagerRedirect' or militaryTrainingApologyRequest.role == 'ExtraSecondaryManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{militaryTrainingApologyRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{militaryTrainingApologyRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{militaryTrainingApologyRequest.currentTask.notes}" styleClass="inputDataSuperLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{militaryTrainingApologyRequest.role != 'ManagerRedirect' and militaryTrainingApologyRequest.role != 'SecondaryManagerRedirect' and militaryTrainingApologyRequest.role != 'ManagerRedirectToSpecialist'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{militaryTrainingApologyRequest.currentTask.refuseReasons}" styleClass="inputDataSuperLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{militaryTrainingApologyRequest.role == 'Notification' or militaryTrainingApologyRequest.role == 'History'}" value="#{militaryTrainingApologyRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionPanelId">
+							<h:panelGroup rendered="#{militaryTrainingApologyRequest.selectedCourseEvent != null}">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" action="#{militaryTrainingApologyRequest.initNomination()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'Requester'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+
+											<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{militaryTrainingApologyRequest.approveNominationDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'DirectManager'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{militaryTrainingApologyRequest.rejectNominationDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'DirectManager'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+
+											<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;militaryTrainingApologyRequestFormId:curTaskId:reviewersId&quot;)');" action="#{militaryTrainingApologyRequest.redirectWFTrainingMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'ManagerRedirect'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="mrtsBtnId" onclick="return handleOnAction('#{msgs.q_redirectToTrainingUnitSpecialist}','validateEmpSelection(&quot;militaryTrainingApologyRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{militaryTrainingApologyRequest.redirectNominationMRTS()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'ManagerRedirectToSpecialist'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="smrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;militaryTrainingApologyRequestFormId:curTaskId:reviewersId&quot;)');" action="#{militaryTrainingApologyRequest.redirectNominationSMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'SecondaryManagerRedirect'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="esmrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;militaryTrainingApologyRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{militaryTrainingApologyRequest.redirectNominationESMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'ExtraSecondaryManagerRedirect'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+
+
+
+											<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRefuseAndNotes(1, &quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;)',null);" action="#{militaryTrainingApologyRequest.approveNominationRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'ReviewerEmp'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{militaryTrainingApologyRequest.rejectNominationRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'ReviewerEmp'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+
+											<h:commandButton id="approveSreBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRefuseAndNotes(1, &quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;)',null);" action="#{militaryTrainingApologyRequest.approveNominationSRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'SecondaryReviewerEmp'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectSreBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{militaryTrainingApologyRequest.rejectNominationSRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'SecondaryReviewerEmp'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+
+											<h:commandButton id="approveESreBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRefuseAndNotes(1, &quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;)',null);" action="#{militaryTrainingApologyRequest.approveNominationESRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'ExtraSecondaryReviewerEmp'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectESreBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{militaryTrainingApologyRequest.rejectNominationESRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'ExtraSecondaryReviewerEmp'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+
+
+											<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{militaryTrainingApologyRequest.approveNominationSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'SignManager'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;militaryTrainingApologyRequestFormId:curTaskId:notesId&quot;)');" action="#{militaryTrainingApologyRequest.returnNominationSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'SignManager'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{militaryTrainingApologyRequest.rejectNominationSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'SignManager'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+
+											<h:commandButton id="approveSsmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{militaryTrainingApologyRequest.approveNominationSSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'SecondarySignManager'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="retSsmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;militaryTrainingApologyRequestFormId:curTaskId:notesId&quot;)');" action="#{militaryTrainingApologyRequest.returnNominationSSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon"
+												rendered="#{militaryTrainingApologyRequest.role == 'SecondarySignManager'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{militaryTrainingApologyRequest.rejectNominationSSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'SecondarySignManager'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+
+											<h:commandButton id="approveESSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{militaryTrainingApologyRequest.approveNominationESSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'ExtraSecondarySignManager'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="retESSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;militaryTrainingApologyRequestFormId:curTaskId:notesId&quot;)');" action="#{militaryTrainingApologyRequest.returnNominationESSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon"
+												rendered="#{militaryTrainingApologyRequest.role == 'ExtraSecondarySignManager'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectESSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingApologyRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{militaryTrainingApologyRequest.rejectNominationESSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'ExtraSecondarySignManager'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+
+											<h:commandButton id="nBtnId" action="#{militaryTrainingApologyRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingApologyRequest.role == 'Notification'}">
+												<f:ajax execute="@form" render="militaryTrainingApologyRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

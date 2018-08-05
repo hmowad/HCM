@@ -1,0 +1,400 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+	
+	var callerId;
+
+	function setCallerId(cId) {
+	    callerId = cId;
+	}
+
+
+	function validateSelectTrainingUnit() {
+	    var trainingUnit = document.getElementById('trainingPlanApprovalFormId:trainingUnitId').value;
+	    if (trainingUnit == null || trainingUnit == '') {
+	        alert("#{msgs.error_chooseTrainingUnitMandatory}");
+	        return false;
+	    }
+	    return true;
+
+	}
+
+	function confirmDelete() {
+	    var allocationsFlag = document.getElementById('trainingPlanApprovalFormId:courseAllocationsFlagId').value;
+	    var idTokens = callerId.split(':');
+	    if (allocationsFlag) {
+	        if (confirm('#{msgs.q_deleteCourseEvent}')) {
+	            document.getElementById('trainingPlanApprovalFormId:trainingCoursesInPlanTableId:' + idTokens[2] + ':hiddenDeleteBtnId').click();
+	            return true;
+	        }
+	    } else {
+	        if (confirm('#{msgs.q_delete}')) {
+	            document.getElementById('trainingPlanApprovalFormId:trainingCoursesInPlanTableId:' + idTokens[2] + ':hiddenDeleteBtnId').click();
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+
+	function getMilitaryCourses() {
+	    openTrainingCoursesMiniSearch('#{request.contextPath}','handleMilitaryCoursesMiniSearchResult(ret)', 2);
+	}
+
+	function handleMilitaryCoursesMiniSearchResult(ret) {
+	    if (ret != null) {
+	        document.getElementById('trainingPlanApprovalFormId:newCourseHIDId').value = ret[0];
+	        document.getElementById('trainingPlanApprovalFormId:addCourseBtnId').click();
+	    }
+	}
+	
+	function validateRequest(){
+		  var allocationErrorsId=document.getElementById('trainingPlanApprovalFormId:allocationErrorsId').value;
+		  if(allocationErrorsId!=null && allocationErrorsId != '')
+			  {
+			  alert('#{msgs.label_errorsExists}');
+			  return false;
+			  }
+		  return true;
+	}
+	function validateReview() {
+
+		if(validateRefuseAndNotes(1, 'trainingPlanApprovalFormId:curTaskId:refuseReasonsId'))
+			{
+				return validateRequest();
+			}else
+			return false;
+	}
+	// ]]>
+	</script>
+</h:head>
+
+<h:body styleClass="screenBg">
+	<h:form id="trainingPlanApprovalFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{trainingPlanApproval.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:panelGroup rendered="#{!trainingPlanApproval.hasPrivilege}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%">
+										<h:outputText value="#{trainingPlanApproval.errorMessage}" />
+
+									</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{trainingPlanApproval.hasPrivilege}">
+					<!-- training unit data -->
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_trainingUnitData}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<h:panelGroup id="trainingUnitDataPanelId">
+							<td width="100%">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">#{msgs.label_trainingYear}</th>
+										<td width="85%">
+											<h:outputText value="#{trainingPlanApproval.trainingPlan.trainingYearName}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_theTrainingUnit}</th>
+										<td width="85%">
+											<h:selectOneMenu id="trainingUnitId" value="#{trainingPlanApproval.selectedTrainingUnitId}">
+												<f:selectItems value="#{trainingPlanApproval.trainingUnits}" var="unit" itemLabel="#{unit.name}" itemValue="#{unit.unitId}" />
+												<f:ajax event="change" execute="trainingPlanApprovalFormId:trainingUnitDataPanelId" render="trainingPlanApprovalFormId:trainingCoursesInPlanPanelId trainingPlanApprovalFormId:trainingCourseDetailPanelId trainingPlanApprovalFormId:notifyMessagesId" listener="#{trainingPlanApproval.selectTrainingUnit()}" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</h:panelGroup>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="trainingCoursesInPlanPanelId">
+								<h:panelGroup rendered="#{trainingPlanApproval.coursesEvents != null}">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<!-- training courses in plan -->
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_trainingCoursesInPlan}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="searchPanelId">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="5%">
+																<h:commandButton rendered="#{trainingPlanApproval.modifyAdmin}" value="#{msgs.label_add}" styleClass="btn_normal" onclick="getMilitaryCourses();return false;" />
+																<h:commandButton rendered="#{trainingPlanApproval.modifyAdmin}" id="addCourseBtnId" style="display:none;" action="#{trainingPlanApproval.addCourseEvent()}">
+																	<f:ajax execute="trainingPlanApprovalFormId:newCourseHIDId" render="trainingPlanApprovalFormId:trainingCoursesInPlanTableId trainingPlanApprovalFormId:trainingCourseDetailPanelId trainingPlanApprovalFormId:errorsPanelId trainingPlanApprovalFormId:notifyMessagesId" />
+																</h:commandButton>
+																<h:inputHidden id="newCourseHIDId" value="#{trainingPlanApproval.newCourseId}" />
+															</td>
+															<th width="15%">
+																<h:outputText value="#{msgs.label_searchByCourseName}" />
+															</th>
+															<td width="70%">
+																<h:inputText id="courseNameId" value="#{trainingPlanApproval.searchCourseName}" styleClass="inputDataSuperLarge" onkeypress="if (event.keyCode == 13) { document.getElementById('trainingPlanApprovalFormId:searchBtnId').click(); return false; }"/>
+															</td>
+															<td width="10%">
+																<h:commandButton id="searchBtnId" action="#{trainingPlanApproval.searchTrainingCourseEvents(trainingPlanApproval.searchCourseName)}" styleClass="btn_normal_icon" style="float: left;" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}">
+																	<f:ajax execute="trainingPlanApprovalFormId:searchPanelId" render="trainingPlanApprovalFormId:trainingCoursesInPlanTableId" />
+																</h:commandButton>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<rich:dataTable id="trainingCoursesInPlanTableId" value="#{trainingPlanApproval.coursesEvents}" var="course" rowKeyVar="index" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{trainingPlanApproval.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+													<rich:column style="width : 5%">
+														<f:facet name="header">#{msgs.label_select}</f:facet>
+														<h:commandButton action="#{trainingPlanApproval.selectCourse(course)}" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon">
+															<f:ajax render="trainingPlanApprovalFormId:trainingCourseDetailPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</rich:column>
+													<rich:column style="width : 5%">
+														<f:facet name="header"> # </f:facet>
+														<h:outputText value=" #{index + 1}" />
+													</rich:column>
+													<rich:column style="width : 15%">
+														<f:facet name="header"> #{msgs.label_trainingCourseName} </f:facet>
+														<h:outputText value="#{course.courseName}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header"> #{msgs.label_trainingCourseNumber}</f:facet>
+														<h:outputText value="#{course.serial}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header"> #{msgs.label_weeksCount}</f:facet>
+														<h:outputText value="#{course.weeksCount}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header"> #{msgs.label_candidatesNumber} </f:facet>
+														<h:outputText value="#{course.candidatesMin}-#{course.candidatesMax}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header"> #{msgs.label_startDate}</f:facet>
+														<h:outputText value="#{course.plannedStartDateString}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header"> #{msgs.label_endDate} </f:facet>
+														<h:outputText value="#{course.plannedEndDateString}" />
+													</rich:column>
+													<rich:column style="width : 20%">
+														<f:facet name="header"> #{msgs.label_coursePrequisities} </f:facet>
+														<h:outputText value="#{course.prerquisites}" style="white-space: pre;"/>
+													</rich:column>
+													<rich:column style="width : 5%" rendered="#{trainingPlanApproval.modifyAdmin}">
+														<f:facet name="header">#{msgs.label_delete}</f:facet>
+														<h:commandButton action="#{trainingPlanApproval.delete(course)}" onclick="setCallerId(this.id)" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon">
+															<f:ajax render="trainingPlanApprovalFormId:trainingCoursesInPlanTableId" onevent="function(e){if(e.status == 'complete'){ unMaskScreen(); confirmDelete();}}" />
+														</h:commandButton>
+														<h:commandButton id="hiddenDeleteBtnId" action="#{trainingPlanApproval.deleteCourseEvent(course)}" style="display:none">
+															<f:ajax render="trainingPlanApprovalFormId:trainingCoursesInPlanTableId trainingPlanApprovalFormId:trainingCourseDetailPanelId trainingPlanApprovalFormId:errorsPanelId trainingPlanApprovalFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</rich:column>
+													<f:facet name="footer">
+														<rich:dataScroller execute="trainingPlanApprovalFormId:trainingCoursesInPlanTableId" oncomplete="unMaskScreen()" fastControls="hide">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<!-- training courses data -->
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="trainingCourseDetailPanelId">
+								<h:panelGroup rendered="#{trainingPlanApproval.selectedTrainingCourseEvent !=null}">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_trainingCourseData}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+
+										<tr>
+											<td width="100%">
+
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<code:courseDetails id="trainingCourseData" courseEvent="#{trainingPlanApproval.selectedTrainingCourseEvent}" viewOnly="#{!trainingPlanApproval.modifyAdmin}" externalPartiesAllocation="#{trainingPlanApproval.externalPartiesAllocations}" regionsAllocations="#{trainingPlanApproval.regionsAllocations}" dateHandler="#{trainingPlanApproval.manipulateEndDate()}" saveAction="#{trainingPlanApproval.saveCourseEvent()}" newExternalPartyId="#{trainingPlanApproval.newExternalPartyId}" addEPAction="#{trainingPlanApproval.addExternalPartyAllocation()}" deleteEPAction="#{trainingPlanApproval.deleteExternalPartyAllocation(externalParty)}"
+													selectTrainingCourseAllocation="#{trainingPlanApproval.selectTrainingCourseAllocation(region)}" newEmpAllocationId="#{trainingPlanApproval.newEmpAllocationId}" addEmpAllocationAction="#{trainingPlanApproval.addEmpAllocation()}" deleteEmpAllocationAction="#{trainingPlanApproval.deleteEmpAllocation(allocationEmp)}" currentRegionsAllocation="#{trainingPlanApproval.currentRegionsAllocation}"/>
+												</table>
+
+											</td>
+										</tr>
+									</table>
+
+								</h:panelGroup>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<!--  -->
+					<tr>
+						<td width="100%">
+							<code:prevTasks rendered="#{trainingPlanApproval.role != 'Requester'}" value="#{trainingPlanApproval.prevTasks}" refuseRoles="SignManager,SecondarySignManager,ReviewerEmp,SecondaryReviewerEmp," />
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<code:curTask id="curTaskId" value="#{trainingPlanApproval.currentEmployee}" rendered="#{trainingPlanApproval.role == 'ReviewerEmp' or trainingPlanApproval.role == 'SignManager'}">
+								<tr>
+									<th width="15%">#{msgs.label_notes}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="notesId" value="#{trainingPlanApproval.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{trainingPlanApproval.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+
+							</code:curTask>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:outputText rendered="#{trainingPlanApproval.role == 'Notification' or trainingPlanApproval.role == 'History'}" value="#{trainingPlanApproval.notificationMessage}" styleClass="successMessage" />
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="errorsPanelId">
+								<h:panelGroup rendered="#{trainingPlanApproval.allocationsErrors!=null and trainingPlanApproval.allocationsErrors.length() !=0 }">
+									<table class="sectionError" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<th>#{msgs.label_errors}</th>
+										</tr>
+										<tr>
+											<td>
+												<h:outputText value="#{trainingPlanApproval.allocationsErrors}" />
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
+								<h:inputHidden id="allocationErrorsId" value="#{trainingPlanApproval.allocationsErrors}" />
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>
+										<!-- Print -->
+										<h:commandButton action="#{trainingPlanApproval.printTrainingPlanDecisionApprovalBytes()}" value="#{msgs.label_trainingPlanDecisionPrint} &nbsp; #{msgs.fa_print}" title="#{msgs.label_trainingPlanDecisionPrint}" styleClass="btn_normal_icon" rendered="#{trainingPlanApproval.role == 'Notification' or trainingPlanApproval.role == 'History'}"/>
+										<h:commandButton action="#{trainingPlanApproval.printTrainingPlanDecisionDetailsBytes()}" value="#{trainingPlanApproval.role == 'Notification' or trainingPlanApproval.role == 'History' ? msgs.label_trainingPlanPrint : msgs.label_print} &nbsp; #{msgs.fa_print}" title="#{trainingPlanApproval.role == 'Notification' or trainingPlanApproval.role == 'History' ? msgs.label_trainingPlanPrint : msgs.label_print}" styleClass="btn_normal_icon"/>
+										
+										<!-- Requester -->
+										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" action="#{trainingPlanApproval.initWFTrainingPlan()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{trainingPlanApproval.role == 'Requester' and trainingPlanApproval.modifyAdmin}">
+											<f:ajax execute="@form" render="trainingPlanApprovalFormId:notifyMessagesId" />
+										</h:commandButton>
+										<!-- Reviewer -->
+										<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateReview()',null);" action="#{trainingPlanApproval.approveWFTrainingPlanRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingPlanApproval.role == 'ReviewerEmp'}">
+											<f:ajax execute="@form" render="trainingPlanApprovalFormId:notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;trainingPlanApprovalFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{trainingPlanApproval.rejectWFTrainingPlanRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{trainingPlanApproval.role == 'ReviewerEmp'}">
+											<f:ajax execute="@form" render="trainingPlanApprovalFormId:notifyMessagesId" />
+										</h:commandButton>
+										<!-- Sign manager -->
+										<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;trainingPlanApprovalFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{trainingPlanApproval.approveWFTrainingPlanSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingPlanApproval.role == 'SignManager'}">
+											<f:ajax execute="@form" render="trainingPlanApprovalFormId:notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;trainingPlanApprovalFormId:curTaskId:refuseReasonsId&quot;,&quot;trainingPlanApprovalFormId:curTaskId:notesId&quot;)',null);" action="#{trainingPlanApproval.returnWFTrainingPlanSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{trainingPlanApproval.role == 'SignManager'}">
+											<f:ajax execute="@form" render="trainingPlanApprovalFormId:notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;trainingPlanApprovalFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{trainingPlanApproval.rejectWFTrainingPlanSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{trainingPlanApproval.role == 'SignManager'}">
+											<f:ajax execute="@form" render="trainingPlanApprovalFormId:notifyMessagesId" />
+										</h:commandButton>
+										<!-- Notification -->
+										<h:commandButton id="nBtnId" action="#{trainingPlanApproval.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingPlanApproval.role == 'Notification'}">
+											<f:ajax execute="@form" render="trainingPlanApprovalFormId:notifyMessagesId" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<h:inputHidden id="courseAllocationsFlagId" value="#{trainingPlanApproval.courseEventHasAllocations}" />
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

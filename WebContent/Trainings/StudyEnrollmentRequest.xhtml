@@ -1,0 +1,381 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+		function getGraduationPlaces(contextPath) {
+		openGraduationPlacesMiniSearch(contextPath,'handleGraduationPlacesMiniSearchResult(ret)', 0);
+	}
+	
+	function handleGraduationPlacesMiniSearchResult(ret) { 
+		if(ret != null) {
+			document.getElementById('studyEnrollmentRequestFormId:graduationPlaceDetailIDHId').value = ret[0];
+			document.getElementById('studyEnrollmentRequestFormId:graduationPlaceDetailDescId').innerHTML = ret[1];
+			document.getElementById('studyEnrollmentRequestFormId:graduationPlaceDescId').innerHTML = ret[3];
+			document.getElementById('studyEnrollmentRequestFormId:graduationPlaceCountryNameId').innerHTML = ret[5];
+			document.getElementById('studyEnrollmentRequestFormId:graduationPlaceDetailAddressId').innerHTML = ret[6];
+		}
+	}
+
+
+function validateRequest() {
+	var qualificationLevelIDId=document.getElementById('studyEnrollmentRequestFormId:qualificationLevelIDId').value;
+	var studySubjectId=document.getElementById('studyEnrollmentRequestFormId:studySubjectId').value;
+	var graduationPlaceDetailIDHId=document.getElementById('studyEnrollmentRequestFormId:graduationPlaceDetailIDHId').value;
+	var startDateValue =  document.getElementById('studyEnrollmentRequestFormId:startDateId:day').value;
+	var endDateValue =  document.getElementById('studyEnrollmentRequestFormId:endDateId:day').value;
+	var fundSourceOnHisOwn = document.getElementById('studyEnrollmentRequestFormId:studyFundSourceId:0').checked;
+	var fundSourceOnBorderGuard = document.getElementById('studyEnrollmentRequestFormId:studyFundSourceId:1').checked;
+
+
+	if(graduationPlaceDetailIDHId==null||graduationPlaceDetailIDHId=='') {
+		alert('#{msgs.error_trainingGraduationPlaceDetailMandatory}');
+		return false;
+	}
+	
+	
+	if(qualificationLevelIDId==null ||qualificationLevelIDId==0) {
+		alert('#{msgs.error_trainingQualificationLevelMandatory}');
+		return false;
+	}
+
+	if(studySubjectId==null||studySubjectId=='') {
+		alert('#{msgs.error_trainingStudySubjectMandatory}');
+		return false;
+	}
+
+	if(startDateValue == 0) {
+		alert('#{msgs.error_trainingStudyStartDateMandatory}');
+		return false;
+	}
+
+	if(endDateValue == 0) {
+		alert('#{msgs.error_trainingStudyEndDateMandatory}');
+		return false;
+	}
+	
+    if(!fundSourceOnHisOwn && !fundSourceOnBorderGuard) {
+    	alert('#{msgs.error_financeSourceMandatory}');
+		return false;
+	} 
+	
+	return true;
+}
+		
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="studyEnrollmentRequestFormId" dir="#{msgs.dir}">
+		<ui:debug />
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{studyEnrollmentRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_processRequester}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{studyEnrollmentRequest.requester}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_studyEnrollmentData}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="studyEnrollmentDataPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_graduationPlaceDetailName}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:outputText id="graduationPlaceDetailDescId" value="#{studyEnrollmentRequest.wfTraining.graduationPlaceDetailDesc}" />
+										<h:inputHidden id="graduationPlaceDetailIDHId" value="#{studyEnrollmentRequest.wfTraining.graduationPlaceDetailId}" />
+										<h:outputText value=" " />
+										<h:commandButton rendered="#{studyEnrollmentRequest.role == 'Requester'}" value="#{msgs.fa_external_link}" onclick="getGraduationPlaces('#{request.contextPath}'); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+									</td>
+
+									<th width="15%">#{msgs.label_graduationPlaceDetailAddress}</th>
+									<td width="35%">
+										<h:outputText id="graduationPlaceDetailAddressId" value="#{studyEnrollmentRequest.wfTraining.graduationPlaceDetailAddress}" />
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">#{msgs.label_graduationPlaceName}</th>
+									<td width="35%">
+										<h:outputText id="graduationPlaceDescId" value="#{studyEnrollmentRequest.wfTraining.graduationPlaceDesc}" />
+									</td>
+
+									<th width="15%">#{msgs.label_graduationPlaceCountryName}</th>
+									<td width="35%">
+										<h:outputText id="graduationPlaceCountryNameId" value="#{studyEnrollmentRequest.wfTraining.graduationPlaceCountryName}" />
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">
+										#{msgs.label_qualificationGrade}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:selectOneMenu disabled="#{studyEnrollmentRequest.role != 'Requester'}" id="qualificationLevelIDId" value="#{studyEnrollmentRequest.wfTraining.qualificationLevelId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{studyEnrollmentRequest.qualificationLevels}" var="qualification" itemLabel="#{qualification.description}" itemValue="#{qualification.id}" />
+										</h:selectOneMenu>
+									</td>
+									<td colspan="2" />
+								</tr>
+
+								<tr>
+									<th width="15%">
+										#{msgs.label_studySubject}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText rendered="#{studyEnrollmentRequest.role != 'Requester'}" value="#{studyEnrollmentRequest.wfTraining.studySubject}" />
+										<h:inputText id="studySubjectId" rendered="#{studyEnrollmentRequest.role == 'Requester'}" value="#{studyEnrollmentRequest.wfTraining.studySubject}" styleClass="inputDataLarge" />
+									</td>
+
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_studyStartDate}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:outputText rendered="#{studyEnrollmentRequest.role != 'Requester'}" value="#{studyEnrollmentRequest.wfTraining.startDateString}" />
+										<util:hijri id="startDateId" nullable="true" rendered="#{studyEnrollmentRequest.role == 'Requester'}" value="#{studyEnrollmentRequest.wfTraining.startDate}" />
+									</td>
+									<th width="15%">
+										#{msgs.label_studyEndDate}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:outputText rendered="#{studyEnrollmentRequest.role != 'Requester'}" value="#{studyEnrollmentRequest.wfTraining.endDateString}" />
+										<util:hijri id="endDateId" nullable="true" rendered="#{studyEnrollmentRequest.role == 'Requester'}" value="#{studyEnrollmentRequest.wfTraining.endDate}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_studyFundSource}
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="35%">
+										<h:selectOneRadio id="studyFundSourceId" value="#{studyEnrollmentRequest.wfTraining.fundSource}" disabled="#{studyEnrollmentRequest.role != 'Requester'}">
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_costOnEmployee}" />
+											<f:selectItem itemValue="2" itemLabel="#{msgs.label_costOnBorderGuard}" />
+										</h:selectOneRadio>
+									</td>
+									<td width="50%" colspan="2"></td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_justifications}" />
+									</th>
+									<td width="85%" colspan="3">
+										<h:inputTextarea id="JustificationId" styleClass="inputDataSuperLarge" value="#{studyEnrollmentRequest.wfTraining.reasons}" rows="3" disabled="#{studyEnrollmentRequest.role != 'Requester'}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15">#{msgs.label_attachments}</th>
+									<td width="85%" colspan="3">
+										<code:attachments loginEmpId="#{studyEnrollmentRequest.loginEmpData.empId}" attachmentId="#{studyEnrollmentRequest.wfTraining.attachments}" addEnableFlag="#{studyEnrollmentRequest.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{studyEnrollmentRequest.role == 'Requester'}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{studyEnrollmentRequest.role != 'Requester'}" value="#{studyEnrollmentRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp,SecondarySignManager,SecondaryReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{studyEnrollmentRequest.currentEmployee}"
+							rendered="#{studyEnrollmentRequest.role == 'DirectManager' or studyEnrollmentRequest.role == 'ManagerRedirect' or studyEnrollmentRequest.role == 'ReviewerEmp' or studyEnrollmentRequest.role == 'SignManager' or studyEnrollmentRequest.role == 'SecondaryReviewerEmp' or studyEnrollmentRequest.role == 'SecondarySignManager' or studyEnrollmentRequest.role == 'SecondaryManagerRedirect'}">
+							<h:panelGroup rendered="#{studyEnrollmentRequest.role == 'ManagerRedirect' or studyEnrollmentRequest.role == 'SecondaryManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{studyEnrollmentRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{studyEnrollmentRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{studyEnrollmentRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{studyEnrollmentRequest.role != 'ManagerRedirect' and studyEnrollmentRequest.role != 'SecondaryManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{studyEnrollmentRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{studyEnrollmentRequest.role == 'Notification' or studyEnrollmentRequest.role == 'History'}" value="#{studyEnrollmentRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<!-- Requester -->
+									<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" action="#{studyEnrollmentRequest.initNomination()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- Direct Manager -->
+									<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;studyEnrollmentRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{studyEnrollmentRequest.approveNominationDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;studyEnrollmentRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{studyEnrollmentRequest.rejectNominationDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- Manager Redirect -->
+									<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;studyEnrollmentRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{studyEnrollmentRequest.redirectNominationMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'ManagerRedirect'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- secondary manager redirect  -->
+									<h:commandButton id="smrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;studyEnrollmentRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{studyEnrollmentRequest.redirectNominationSMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'SecondaryManagerRedirect'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- Reviewer  -->
+									<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRefuseAndNotes(1, &quot;studyEnrollmentRequestFormId:curTaskId:refuseReasonsId&quot;)',null);" action="#{studyEnrollmentRequest.approveNominationRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;studyEnrollmentRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{studyEnrollmentRequest.rejectNominationRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- secondary Reviewer  -->
+									<h:commandButton id="approveSreBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRefuseAndNotes(1, &quot;studyEnrollmentRequestFormId:curTaskId:refuseReasonsId&quot;)',null);" action="#{studyEnrollmentRequest.approveNominationSRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'SecondaryReviewerEmp'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSreBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;studyEnrollmentRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{studyEnrollmentRequest.rejectNominationSRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'SecondaryReviewerEmp'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- Sign manager -->
+									<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;studyEnrollmentRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{studyEnrollmentRequest.approveNominationSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;studyEnrollmentRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;studyEnrollmentRequestFormId:curTaskId:notesId&quot;)',null);" action="#{studyEnrollmentRequest.returnNominationSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;studyEnrollmentRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{studyEnrollmentRequest.rejectNominationSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- Secondary sign manager -->
+									<h:commandButton id="approveSsmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;studyEnrollmentRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{studyEnrollmentRequest.approveNominationSSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="retSsmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;studyEnrollmentRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;studyEnrollmentRequestFormId:curTaskId:notesId&quot;)',null);" action="#{studyEnrollmentRequest.returnNominationSSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;studyEnrollmentRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{studyEnrollmentRequest.rejectNominationSSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- Notification -->
+									<h:commandButton id="nBtnId" action="#{studyEnrollmentRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentRequest.role == 'Notification'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

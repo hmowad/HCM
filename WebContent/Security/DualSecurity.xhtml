@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+		  window.onkeypress = function(e) {
+			    // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+				var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');				
+			    if (keyCode == '13'){
+			    	  document.getElementById('dualSecurityForm:agreeBtnId').click();
+			    	  return false;
+			    }
+		  }; 
+		  
+		  function validateKey() {
+        	var securityKey = document.getElementById('dualSecurityForm:securityKeyId');
+       	    if(securityKey.value == null || securityKey.value == ''){
+       	    	 alert('#{msgs.error_dualKeySecurity}');
+                    return false;			
+       	    }
+       	    return true;
+         }
+
+     	 var interval=setInterval(function(){myTimer()},1000);
+         var timeOut=setTimeout(function(){enableRecreateButton()},120000);
+		 var counter = 120;
+
+         function myTimer() {
+             var sendNewSecKeyBtn = document.getElementById('dualSecurityForm:sendNewSecKeyBtnId');
+             sendNewSecKeyBtn.value=' ('+counter+')';
+             counter = counter - 1;
+         }
+	         
+   	  	 function enableRecreateButton(){
+   	  	    var sendNewSecKeyBtn = document.getElementById('dualSecurityForm:sendNewSecKeyBtnId');
+   			if(sendNewSecKeyBtn.disabled){
+   				sendNewSecKeyBtn.disabled = false;
+   				sendNewSecKeyBtn.value='#{msgs.label_createAnotherKey}';
+	  			window.clearInterval(interval);
+	  			window.clearTimeout(timeOut);
+			}
+   	   	 }
+	   	   	 
+	   	 function resetTimers(){
+   			counter = 120;
+   			interval=setInterval(function(){myTimer()},1000);
+   			timeOut=setTimeout(function(){enableRecreateButton()},120000);
+	   	 }
+        </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="dualSecurityForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/PlainTemplate.xhtml">
+			<table style="height: 100%" border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr style="height: 110px;">
+					<td class="headerImg">
+						<div style="float: right;">
+							<img src="../resources/images#{request.contextPath}_logo.png" width="500" height="124"></img>
+						</div>
+					</td>
+				</tr>
+
+				<tr class="centerBody">
+					<td>
+						<br />
+						<br />
+						<br />
+						<table class="userPass_Tb" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td valign="top">
+									<table border="0" cellpadding="0" cellspacing="0" class="userPass_TbText">
+										<tr>
+											<td></td>
+											<td height="20px">
+												<h:outputText id="errorMessageId" value="#{dualSecurity.serverSideErrorMessages}" styleClass="errorMessage" />
+												<h:outputText id="successMessageId" value="#{dualSecurity.serverSideSuccessMessages}" styleClass="errorMessage" />
+											</td>
+										</tr>
+										<tr>
+											<td width="20%">
+												<h:outputText value="#{msgs.label_securityKey}" />
+											</td>
+											<td>
+												<h:inputText id="securityKeyId" value="#{dualSecurity.securityKey}" styleClass="field250" onkeypress="return isDigit(event);" />
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+						<table border="0" cellpadding="0" cellspacing="0" class="userPass_Action">
+							<tr>
+								<td width="65%">
+									<h:commandButton id="agreeBtnId" onclick="return validateKey();" action="#{dualSecurity.checkSecurityKey}" value="#{msgs.label_agree}" styleClass="btn_normal">
+										<f:ajax render="dualSecurityForm:errorMessageId dualSecurityForm:successMessageId" execute="@form" />
+									</h:commandButton>
+									<h:commandButton id="sendNewSecKeyBtnId" action="#{dualSecurity.sendNewSecurityKey}" disabled="true" value="#{msgs.label_createAnotherKey}" styleClass="btn_normal">
+										<f:ajax render="dualSecurityForm:errorMessageId dualSecurityForm:successMessageId dualSecurityForm:sendNewSecKeyBtnId" onevent="function(data) { if (data.status == 'success') resetTimers(); }" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

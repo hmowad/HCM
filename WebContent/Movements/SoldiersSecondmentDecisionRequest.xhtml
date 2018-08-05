@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	function getEmployee(contextPath){
+		openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',4,2,-1,-1,-1,-1, -1);
+	}
+	
+	function handleEmpMiniSearchResult(ret){
+		if(ret!=null){ 
+	         document.getElementById('soldiersSecondmentDecisionRequestFormId:soldierIDId').value=ret[0];
+	         document.getElementById('soldiersSecondmentDecisionRequestFormId:searchEmpBtnId').click();
+		}
+	}
+
+    function validateRequest(){
+        soldierId= document.getElementById('soldiersSecondmentDecisionRequestFormId:soldierIDId').value;
+    	locationValue=document.getElementById('soldiersSecondmentDecisionRequestFormId:locationId').value;
+       	number=document.getElementById('soldiersSecondmentDecisionRequestFormId:numberId').value;
+    	periodDays=document.getElementById('soldiersSecondmentDecisionRequestFormId:periodDaysId').value;
+       	periodMonths=document.getElementById('soldiersSecondmentDecisionRequestFormId:periodMonthsId').value
+       	if(soldierId==null||soldierId==''||number==null||number==''||locationValue==null||locationValue==''){
+           	if(#{soldiersSecondmentDecisionRequest.movementType}==4){
+    			alert('#{msgs.error_mandateDecisionRequestFieldsAreMandatory}');	
+            }
+           	else{
+    			alert('#{msgs.error_secondmentDecisionRequestFieldsAreMandatory}');	
+            }
+			return false;
+        }
+        if((periodDays==null ||  periodDays=='' ||  periodDays=='0') &amp;&amp; (periodMonths==null ||  periodMonths=='' ||  periodMonths=='0')){
+        	if(#{soldiersSecondmentDecisionRequest.movementType}==4){
+    			alert('#{msgs.error_mandateDecisionRequestFieldsAreMandatory}');	
+            }
+           	else{
+    			alert('#{msgs.error_secondmentDecisionRequestFieldsAreMandatory}');	
+            }
+        	return false; 
+         }
+        if(periodDays>29){
+        	alert('#{msgs.error_periodDaysMustNotExceed29Days}');	
+            return false; 
+         } 	
+
+        return #{soldiersSecondmentDecisionRequest.role == 'ReviewerEmp'} ? validateRefuseAndNotes(1, &quot;soldiersSecondmentDecisionRequestFormId:curTaskId:refuseReasonsId&quot;) : true;
+    }
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<ui:debug />
+	<h:form id="soldiersSecondmentDecisionRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{soldiersSecondmentDecisionRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_soldier}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<h:panelGroup rendered="#{soldiersSecondmentDecisionRequest.role == 'Requester'}">
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%">
+													<h:commandButton value="#{soldiersSecondmentDecisionRequest.movementType == 4 ? msgs.label_mandatedSoldier : msgs.label_secondmentedSoldier}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+													<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{soldiersSecondmentDecisionRequest.searchSoldiers()}">
+														<f:ajax execute="soldiersSecondmentDecisionRequestFormId:soldierIDId" render="soldiersSecondmentDecisionRequestFormId:soldierPanelId soldiersSecondmentDecisionRequestFormId:requesterPanelId soldiersSecondmentDecisionRequestFormId:warningsPanelId soldiersSecondmentDecisionRequestFormId:notifyMessagesId" />
+													</h:commandButton>
+													<h:inputHidden id="soldierIDId" value="#{soldiersSecondmentDecisionRequest.wfMovement.employeeId}" />
+												</td>
+											</tr>
+
+										</table>
+									</td>
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<td width="100%">
+									<h:panelGroup id="soldierPanelId">
+										<code:emp value="#{soldiersSecondmentDecisionRequest.soldier}" />
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">#{msgs.label_decisionData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requesterPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{soldiersSecondmentDecisionRequest.movementType==4 ?( msgs.label_mandateTo):(msgs.label_secondmentTo)}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="20%">
+										<h:inputText id="locationId" value="#{soldiersSecondmentDecisionRequest.wfMovement.location}" readonly="#{!(soldiersSecondmentDecisionRequest.role=='Requester' or soldiersSecondmentDecisionRequest.role=='ReviewerEmp')}" styleClass="inputDataLarge" maxlength="100" />
+									</td>
+									<th width="16%">
+										#{msgs.label_period}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="49%">
+										<h:panelGroup rendered="#{soldiersSecondmentDecisionRequest.role == 'Requester' or soldiersSecondmentDecisionRequest.role == 'ReviewerEmp'}">
+											<h:inputText id="periodMonthsId" value="#{soldiersSecondmentDecisionRequest.wfMovement.periodMonths}" maxlength="2" onkeypress="return isDigit(event);" styleClass="inputDataSmall">
+												<f:ajax event="change" listener="#{soldiersSecondmentDecisionRequest.manipulateEndDate()}" execute="@this" render="soldiersSecondmentDecisionRequestFormId:endDateId soldiersSecondmentDecisionRequestFormId:notifyMessagesId" />
+											</h:inputText>
+											<h:outputText value=" " />
+											<h:outputText value="#{msgs.label_month}" />
+											<h:outputText value=" " />
+											<h:inputText id="periodDaysId" value="#{soldiersSecondmentDecisionRequest.wfMovement.periodDays}" maxlength="2" onkeypress="return isLessOrEqualNumber(event, this.value, 29);" styleClass="inputDataSmall">
+												<f:ajax event="change" listener="#{soldiersSecondmentDecisionRequest.manipulateEndDate()}" execute="@this" render="soldiersSecondmentDecisionRequestFormId:endDateId soldiersSecondmentDecisionRequestFormId:notifyMessagesId" />
+											</h:inputText>
+											<h:outputText value=" " />
+											<h:outputText value="#{msgs.label_day}" />
+										</h:panelGroup>
+										<h:outputText rendered="#{soldiersSecondmentDecisionRequest.role != 'Requester' and soldiersSecondmentDecisionRequest.role != 'ReviewerEmp'}" value="#{soldiersSecondmentDecisionRequest.getConcatenatedPeriod(soldiersSecondmentDecisionRequest.wfMovement)}" />
+									</td>
+								</tr>
+								<tr>
+									<th>
+										#{msgs.label_startDate}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td>
+										<util:hijri id="startDateId" value="#{soldiersSecondmentDecisionRequest.wfMovement.executionDate}" rendered="#{(soldiersSecondmentDecisionRequest.role=='Requester' or soldiersSecondmentDecisionRequest.role=='ReviewerEmp')}" listenerMethod="#{soldiersSecondmentDecisionRequest.manipulateEndDate()}" onChangeAjaxSubmit="true"
+											reRenderIds="soldiersSecondmentDecisionRequestFormId:endDateId soldiersSecondmentDecisionRequestFormId:warningsPanelId soldiersSecondmentDecisionRequestFormId:notifyMessagesId" />
+										<h:outputText value="#{soldiersSecondmentDecisionRequest.wfMovement.executionDateString}" rendered="#{!(soldiersSecondmentDecisionRequest.role=='Requester' or soldiersSecondmentDecisionRequest.role=='ReviewerEmp')}" />
+									</td>
+									<th>#{msgs.label_endDate}</th>
+									<td>
+										<h:outputText id="endDateId" value="#{soldiersSecondmentDecisionRequest.wfMovement.endDateString}" />
+									</td>
+								</tr>
+								<tr>
+									<th>
+										#{msgs.label_interiorMinisteryLetterNumber}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td>
+										<h:inputText id="numberId" value="#{soldiersSecondmentDecisionRequest.wfMovement.ministryApprovalNumber}" readonly="#{!(soldiersSecondmentDecisionRequest.role=='Requester' or soldiersSecondmentDecisionRequest.role=='ReviewerEmp')}" maxlength="50" />
+									</td>
+									<th>
+										#{msgs.label_interiorMinisteryLetterDate}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td>
+										<util:hijri id="dateId" value="#{soldiersSecondmentDecisionRequest.wfMovement.ministryApprovalDate}" rendered="#{(soldiersSecondmentDecisionRequest.role=='Requester' or soldiersSecondmentDecisionRequest.role=='ReviewerEmp')}" />
+										<h:outputText value="#{soldiersSecondmentDecisionRequest.wfMovement.ministryApprovalDateString}" rendered="#{!(soldiersSecondmentDecisionRequest.role=='Requester' or soldiersSecondmentDecisionRequest.role=='ReviewerEmp')}" />
+									</td>
+								</tr>
+								<tr>
+									<th>#{msgs.label_requiredAttachments}</th>
+									<td colspan="3">
+										<code:attachments loginEmpId="#{soldiersSecondmentDecisionRequest.loginEmpData.empId}" attachmentId="#{soldiersSecondmentDecisionRequest.attachments}" addEnableFlag="#{soldiersSecondmentDecisionRequest.role == 'Requester' or soldiersSecondmentDecisionRequest.role == 'ReviewerEmp'}" viewEnableFlag="true" deleteEnableFlag="#{soldiersSecondmentDecisionRequest.role == 'Requester' or soldiersSecondmentDecisionRequest.role == 'ReviewerEmp'}" />
+									</td>
+								</tr>
+								<tr>
+									<th>#{msgs.label_remarks}</th>
+									<td colspan="3">
+										<h:inputText id="remarksId" value="#{soldiersSecondmentDecisionRequest.wfMovement.remarks}" readonly="#{!(soldiersSecondmentDecisionRequest.role=='Requester' or soldiersSecondmentDecisionRequest.role=='ReviewerEmp')}" styleClass="inputDataSuperLarge" maxlength="500" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<code:specialAuthorityData id="specialAuthorityDataId" loginEmpId="#{soldiersSecondmentDecisionRequest.loginEmpData.empId}" wfMovement="#{soldiersSecondmentDecisionRequest.wfMovement}" role="#{soldiersSecondmentDecisionRequest.role}" requestFlag="#{false}"
+					rendered="#{soldiersSecondmentDecisionRequest.role == 'Requester' or soldiersSecondmentDecisionRequest.role == 'ReviewerEmp' or soldiersSecondmentDecisionRequest.role == 'SignManager'}" />
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:decisionCopies external="#{soldiersSecondmentDecisionRequest.externalCopies}" internal="#{soldiersSecondmentDecisionRequest.internalCopies}" viewOnly="#{soldiersSecondmentDecisionRequest.role != 'Requester' and soldiersSecondmentDecisionRequest.role != 'ReviewerEmp'}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{soldiersSecondmentDecisionRequest.role != 'Requester'}" value="#{soldiersSecondmentDecisionRequest.prevTasks}" refuseRoles="SignManager,ReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{soldiersSecondmentDecisionRequest.currentEmployee}" rendered="#{soldiersSecondmentDecisionRequest.role == 'SignManager' or soldiersSecondmentDecisionRequest.role == 'ReviewerEmp'}">
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{soldiersSecondmentDecisionRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{soldiersSecondmentDecisionRequest.role == 'SignManager' or soldiersSecondmentDecisionRequest.role == 'ReviewerEmp'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{soldiersSecondmentDecisionRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="warningsPanelId">
+							<h:panelGroup rendered="#{soldiersSecondmentDecisionRequest.wfMovement.warningMessages != null and soldiersSecondmentDecisionRequest.wfMovement.warningMessages != '' }">
+								<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>#{msgs.label_warnings}</td>
+									</tr>
+									<tr>
+										<td>
+											<h:outputText value="#{soldiersSecondmentDecisionRequest.getActualWarningMessage(soldiersSecondmentDecisionRequest.wfMovement.warningMessages)}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{soldiersSecondmentDecisionRequest.role == 'Notification' or soldiersSecondmentDecisionRequest.role == 'History'}" value="#{soldiersSecondmentDecisionRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:commandButton id="rBtnId" action="#{soldiersSecondmentDecisionRequest.initMovement()}" onclick="return handleOnAction('#{msgs.q_sendSoldiers}','validateRequest()',null);" value="#{msgs.label_send} &nsbp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentDecisionRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="soldiersSecondmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveSmBtnId" action="#{soldiersSecondmentDecisionRequest.approveMovementSM()}" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;soldiersSecondmentDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" value="#{msgs.label_superSign} &nsbp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="soldiersSecondmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="retSmBtnId" action="#{soldiersSecondmentDecisionRequest.returnMovementSM()}" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateDecisionApprovalNotes(&quot;soldiersSecondmentDecisionRequestFormId:specialAuthorityDataId:decisionApprovalRemarksId&quot;, &quot;soldiersSecondmentDecisionRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;soldiersSecondmentDecisionRequestFormId:curTaskId:notesId&quot;)',null);"
+										value="#{msgs.label_returnReviewer} &nsbp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="soldiersSecondmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSmBtnId" action="#{soldiersSecondmentDecisionRequest.rejectMovementSM()}" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;soldiersSecondmentDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" value="#{msgs.label_reject} &nsbp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="soldiersSecondmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveReBtnId" action="#{soldiersSecondmentDecisionRequest.approveMovementRE()}" value="#{msgs.label_review} &nsbp; #{msgs.fa_check}" onclick="return handleOnAction('#{msgs.q_reviewSoldiers}','validateRequest()',null);" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentDecisionRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="soldiersSecondmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectReBtnId" action="#{soldiersSecondmentDecisionRequest.rejectMovementRE()}" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;soldiersSecondmentDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" value="#{msgs.label_reject} &nsbp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentDecisionRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="soldiersSecondmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="printBtnId" action="#{soldiersSecondmentDecisionRequest.print()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentDecisionRequest.role == 'Notification' and soldiersSecondmentDecisionRequest.instanceApproved == 1}" />
+
+									<h:commandButton id="nBtnId" action="#{soldiersSecondmentDecisionRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentDecisionRequest.role == 'Notification'}">
+										<f:ajax render="soldiersSecondmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

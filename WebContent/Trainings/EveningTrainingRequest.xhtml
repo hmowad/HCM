@@ -1,0 +1,338 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+    function getExternalParties() {
+		openExternalPartiesMiniSearch('#{request.contextPath}', 'handleExternalPartiesMiniSearchResult(ret)',1,0);
+	}
+	
+	function handleExternalPartiesMiniSearchResult(ret){
+		if (ret != null) {
+			document.getElementById('eveningTrainingRequestFormId:externalPartyIdHId').value = ret[0];
+			document.getElementById('eveningTrainingRequestFormId:externalPartyNameId').innerHTML = ret[1];
+			document.getElementById('eveningTrainingRequestFormId:externalPartyAddressId').innerHTML = ret[2];
+	
+		}
+	}
+
+	function getTrainingCourse() {
+	    openTrainingCoursesMiniSearch('#{request.contextPath}', 'handleCoursesMiniSearch(ret)',1);
+	}
+
+	function handleCoursesMiniSearch(ret) {
+	    if(ret != null) {
+			document.getElementById('eveningTrainingRequestFormId:trainingCourseIdHId').value = ret[0];
+			document.getElementById('eveningTrainingRequestFormId:trainingCourseNameId').innerHTML = ret[1];
+		}
+	}
+
+
+
+	function validateRequest() {
+		
+		var trainingCourseId =  document.getElementById('eveningTrainingRequestFormId:trainingCourseIdHId').value;
+		var externalPartyId = document.getElementById('eveningTrainingRequestFormId:externalPartyIdHId').value;
+		var startDateValue =  document.getElementById('eveningTrainingRequestFormId:startDateId:day').value;
+		var endDateValue =  document.getElementById('eveningTrainingRequestFormId:endDateId:day').value;
+		var financeSourceOnHisOwn = document.getElementById('eveningTrainingRequestFormId:courseFundSource:0').checked;
+		var financeSourceOnBorderGuard = document.getElementById('eveningTrainingRequestFormId:courseFundSource:1').checked;
+
+		if(trainingCourseId == null || trainingCourseId == '') {
+			
+			alert('#{msgs.error_courseNameMandatory}');
+			return false;
+		} else if(externalPartyId == null || externalPartyId == '') {
+		    alert('#{msgs.error_courseExecutionPartyMandatory}');
+			return false;
+			
+		} else if(startDateValue == 0) {
+			alert('#{msgs.error_courseStartDateMandatory}');
+			return false;
+				
+		} else if(endDateValue == 0) {
+			alert('#{msgs.error_courseEndDateMandatory}');
+			return false;
+				
+		} else if(!financeSourceOnHisOwn && !financeSourceOnBorderGuard) {
+		    alert('#{msgs.error_financeSourceMandatory}');
+			return false;		
+		}
+		
+		return true;
+	}
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="eveningTrainingRequestFormId" dir="#{msgs.dir}">
+		<ui:debug />
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{eveningTrainingRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_processRequester}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{eveningTrainingRequest.requester}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_trainingCourseData}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_trainingCourseName}" />
+									<font style="color: red;"> *</font>
+								</th>
+								<td width="85%" colspan="3">
+									<h:outputText id="trainingCourseNameId" value="#{eveningTrainingRequest.wfTraining.courseName}" />
+									<h:commandButton value="#{msgs.fa_external_link}" onclick="getTrainingCourse(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{eveningTrainingRequest.role == 'Requester'}" />
+									<h:inputHidden id="trainingCourseIdHId" value="#{eveningTrainingRequest.wfTraining.courseId}" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_courseExecutionParty}" />
+									<font style="color: red;"> *</font>
+								</th>
+								<td width="35%">
+									<h:outputText id="externalPartyNameId" value="#{eveningTrainingRequest.wfTraining.externalPartyDesc}" />
+									<h:commandButton value="#{msgs.fa_external_link}" onclick="getExternalParties(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{eveningTrainingRequest.role == 'Requester'}" />
+									<h:inputHidden id="externalPartyIdHId" value="#{eveningTrainingRequest.wfTraining.externalPartyId}" />
+								</td>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_courseExecutionAddress}" />
+								</th>
+								<td width="35%">
+									<h:outputText id="externalPartyAddressId" value="#{eveningTrainingRequest.wfTraining.externalPartyAddress}" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">
+									#{msgs.label_courseStartDate}
+									<font style="color: red;"> *</font>
+								</th>
+								<td width="20%">
+									<util:hijri id="startDateId" value="#{eveningTrainingRequest.wfTraining.startDate}" nullable="true" rendered="#{eveningTrainingRequest.role == 'Requester'}" />
+									<h:outputText value="#{eveningTrainingRequest.wfTraining.startDateString}" rendered="#{eveningTrainingRequest.role != 'Requester'}" />
+								</td>
+								<th width="15%">
+									#{msgs.label_courseEndDate}
+									<font style="color: red;"> *</font>
+								</th>
+								<td width="50%">
+									<util:hijri id="endDateId" value="#{eveningTrainingRequest.wfTraining.endDate}" nullable="true" rendered="#{eveningTrainingRequest.role == 'Requester'}" />
+									<h:outputText value="#{eveningTrainingRequest.wfTraining.endDateString}" rendered="#{eveningTrainingRequest.role != 'Requester'}" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_courseFinanceSource}" />
+									<font style="color: red;"> *</font>
+								</th>
+								<td width="85%" colspan="3">
+									<h:selectOneRadio id="courseFundSource" value="#{eveningTrainingRequest.wfTraining.fundSource}" rendered="#{eveningTrainingRequest.role == 'Requester'}">
+										<f:selectItem itemValue="1" itemLabel="#{msgs.label_costOnEmployee}" />
+										<f:selectItem itemValue="2" itemLabel="#{msgs.label_costOnBorderGuard}" />
+									</h:selectOneRadio>
+									<h:outputText value="#{eveningTrainingRequest.wfTraining.fundSource == 1 ? msgs.label_costOnEmployee : msgs.label_costOnBorderGuard}" rendered="#{eveningTrainingRequest.role != 'Requester'}" />
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<h:outputText value="#{msgs.label_justifications}" />
+								</th>
+								<td colspan="3">
+									<h:inputTextarea id="replacementJustificationId" styleClass="inputDataSuperLarge" value="#{eveningTrainingRequest.wfTraining.reasons}" rows="3" disabled="#{eveningTrainingRequest.role != 'Requester'}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" />
+								</td>
+							</tr>
+							<tr>
+								<th>#{msgs.label_attachments}</th>
+								<td colspan="3">
+									<code:attachments loginEmpId="#{eveningTrainingRequest.loginEmpData.empId}" attachmentId="#{eveningTrainingRequest.wfTraining.attachments}" addEnableFlag="#{eveningTrainingRequest.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{eveningTrainingRequest.role == 'Requester'}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{eveningTrainingRequest.role != 'Requester'}" value="#{eveningTrainingRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp,SecondarySignManager,SecondaryReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{eveningTrainingRequest.currentEmployee}" rendered="#{eveningTrainingRequest.role == 'DirectManager' or eveningTrainingRequest.role == 'ManagerRedirect' or eveningTrainingRequest.role == 'ReviewerEmp' or eveningTrainingRequest.role == 'SignManager' or eveningTrainingRequest.role == 'SecondaryReviewerEmp' or eveningTrainingRequest.role == 'SecondarySignManager' or eveningTrainingRequest.role == 'SecondaryManagerRedirect'}">
+							<h:panelGroup rendered="#{eveningTrainingRequest.role == 'ManagerRedirect' or eveningTrainingRequest.role == 'SecondaryManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{eveningTrainingRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{eveningTrainingRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{eveningTrainingRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{eveningTrainingRequest.role != 'ManagerRedirect' and eveningTrainingRequest.role != 'SecondaryManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{eveningTrainingRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{eveningTrainingRequest.role == 'Notification' or eveningTrainingRequest.role == 'History'}" value="#{eveningTrainingRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" action="#{eveningTrainingRequest.initNomination()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;eveningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{eveningTrainingRequest.approveNominationDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;eveningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{eveningTrainingRequest.rejectNominationDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;eveningTrainingRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{eveningTrainingRequest.redirectNominationMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'ManagerRedirect'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+
+									<h:commandButton id="smrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;eveningTrainingRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{eveningTrainingRequest.redirectNominationSMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'SecondaryManagerRedirect'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+
+									<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRefuseAndNotes(1, &quot;eveningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{eveningTrainingRequest.approveNominationRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;eveningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{eveningTrainingRequest.rejectNominationRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+
+									<h:commandButton id="approveSreBtnId" onclick="return handleOnAction('#{msgs.q_review}', 'validateRefuseAndNotes(1, &quot;eveningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{eveningTrainingRequest.approveNominationSRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'SecondaryReviewerEmp'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSreBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;eveningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{eveningTrainingRequest.rejectNominationSRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'SecondaryReviewerEmp'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+
+									<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;eveningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{eveningTrainingRequest.approveNominationSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;eveningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;eveningTrainingRequestFormId:curTaskId:notesId&quot;)',null);" action="#{eveningTrainingRequest.returnNominationSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;eveningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{eveningTrainingRequest.rejectNominationSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveSsmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;eveningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{eveningTrainingRequest.approveNominationSSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="retSsmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;eveningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;eveningTrainingRequestFormId:curTaskId:notesId&quot;)',null);" action="#{eveningTrainingRequest.returnNominationSSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;eveningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{eveningTrainingRequest.rejectNominationSSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="nBtnId" action="#{eveningTrainingRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{eveningTrainingRequest.role == 'Notification'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

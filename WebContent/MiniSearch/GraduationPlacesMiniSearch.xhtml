@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript"> 
+		  window.onkeypress = function(e) {
+			// window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+		    if (keyCode == '13'){
+		    	document.getElementById('graduationPlacesFormId:searchBtnID').click();
+		    	return false;
+		    }
+		  };
+  
+          function selectGraduationPlaceDetail(index){
+            var graduationPlaceDetailIdValue = document.getElementById('graduationPlacesFormId:graduationPlacesDetailsDataListId:'+index+':graduationPlaceDetailIDId').innerHTML;
+            var graduationPlaceDetailDescValue = document.getElementById('graduationPlacesFormId:graduationPlacesDetailsDataListId:'+index+':graduationPlaceDetailDescId').innerHTML;
+            var graduationPlaceIdValue = document.getElementById('graduationPlacesFormId:graduationPlacesDetailsDataListId:'+index+':graduationPlaceIDId').innerHTML;
+            var graduationPlaceDescValue = document.getElementById('graduationPlacesFormId:graduationPlacesDetailsDataListId:'+index+':graduationPlaceDescId').innerHTML;
+            var graduationPlaceCountryIdValue = document.getElementById('graduationPlacesFormId:graduationPlacesDetailsDataListId:'+index+':graduationPlaceCountryIDId').innerHTML;
+            var graduationPlaceCountryNameValue = document.getElementById('graduationPlacesFormId:graduationPlacesDetailsDataListId:'+index+':graduationPlaceCountryNameId').innerHTML;
+            var graduationPlaceAddressValue = document.getElementById('graduationPlacesFormId:graduationPlacesDetailsDataListId:'+index+':graduationPlaceAddressId').innerHTML;
+            
+            ret = new Array();
+            ret[0] = graduationPlaceDetailIdValue;
+            ret[1] = graduationPlaceDetailDescValue;
+            ret[2] = graduationPlaceIdValue;
+            ret[3] = graduationPlaceDescValue;
+            ret[4] = graduationPlaceCountryIdValue;
+            ret[5] = graduationPlaceCountryNameValue;
+            ret[6] = graduationPlaceAddressValue;
+            window.close();
+     		eval('(' + window.opener.#{param['miniSearchReturnHandler']} + ')');
+
+          }
+  			
+		  function graduationPlacesList(){
+          	var graduationPlacesIds = document.getElementById('graduationPlacesFormId:returnedGraduationPlacesIDHId').value;
+			var graduationPlacesData = document.getElementById('graduationPlacesFormId:returnedGraduationPlacesAllDataHId').value;            
+			if (graduationPlacesData.length > 0){
+				ret=new Array();
+            	ret[0] = graduationPlacesIds;
+            	ret[1] = graduationPlacesData;
+              }
+			window.close();
+			eval('(' + window.opener.#{param['miniSearchReturnHandler']} + ')');
+          }
+  </script>
+</h:head>
+<h:body onload="document.getElementById('graduationPlacesFormId:graduationPlaceDetailDescId').focus();" onunload="window.opener.unMaskOpenerScreen();">
+	<h:form id="graduationPlacesFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/PlainTemplate.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{msgs.title_graduationPlaces}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="10%">#{msgs.label_graduationPlaceDesc}</th>
+								<td width="24%">
+									<h:inputText styleClass="inputDataLarge" id="graduationPlaceDetailDescId" value="#{graduationPlacesMiniSearch.graduationPlaceDetailDesc}" />
+								</td>
+								<th width="10%">#{msgs.label_graduationPlaceSubordination}</th>
+								<td width="23%">
+									<h:inputText styleClass="inputDataLarge" id="graduationPlaceDescId" value="#{graduationPlacesMiniSearch.graduationPlaceDesc}" />
+								</td>
+								<th width="10%">#{msgs.label_country}</th>
+								<td width="23%">
+									<h:inputText styleClass="inputDataLarge" id="graduationPlaceCountryId" value="#{graduationPlacesMiniSearch.graduationPlaceCountryName}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnID" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{graduationPlacesMiniSearch.searchGraduationPlacesDetailsData()}" title="#{msgs.label_searchByRoot}" styleClass="btn_normal_icon">
+										<f:ajax execute="graduationPlacesFormId:graduationPlaceDetailDescId graduationPlacesFormId:graduationPlaceDescId graduationPlacesFormId:graduationPlaceCountryId" render="graduationPlacesFormId:graduationPlacesDetailsDataListId graduationPlacesFormId:notifyMessagesId"></f:ajax>
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="graduationPlacesDetailsDataListId" rows="#{graduationPlacesMiniSearch.rowsCount}" rowKeyVar="index" var="row" value="#{graduationPlacesMiniSearch.searchList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+							<rich:column style="width:5%">
+								<f:facet name="header">#</f:facet>
+                                        #{index + 1}
+                                    </rich:column>
+
+							<rich:column style="width:40%">
+								<f:facet name="header">#{msgs.label_graduationPlaceDesc}</f:facet>
+								<h:outputText id="graduationPlaceDetailDescId" value="#{row.description}" />
+								<h:outputText id="graduationPlaceDetailIDId" value="#{row.id}" style="display:none" />
+							</rich:column>
+							<rich:column style="width:10%">
+								<f:facet name="header">#{msgs.label_graduationPlaceSubordination}</f:facet>
+								<h:outputText id="graduationPlaceDescId" value="#{row.graduationPlaceDesc}" />
+								<h:outputText id="graduationPlaceIDId" value="#{row.graduationPlaceId}" style="display:none" />
+							</rich:column>
+							<rich:column style="width:20%">
+								<f:facet name="header">#{msgs.label_country}</f:facet>
+								<h:outputText id="graduationPlaceCountryNameId" value="#{row.graduationPlaceCountryName}" />
+								<h:outputText id="graduationPlaceCountryIDId" value="#{row.graduationPlaceCountryId}" style="display:none" />
+							</rich:column>
+							<rich:column style="width:20%">
+								<f:facet name="header">#{msgs.label_address}</f:facet>
+								<h:outputText id="graduationPlaceAddressId" value="#{row.address}" />
+							</rich:column>
+
+							<rich:column style="width:5%">
+								<f:facet name="header">#{msgs.label_select}</f:facet>
+
+								<h:commandButton rendered="#{!graduationPlacesMiniSearch.multipleSelectFlag}" value="#{msgs.fa_check_square}" onclick="selectGraduationPlaceDetail(#{index}); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+
+								<h:commandButton rendered="#{graduationPlacesMiniSearch.multipleSelectFlag}" value="#{msgs.fa_check_square}" action="#{graduationPlacesMiniSearch.addSelectedGraduationPlace(row)}" title="#{msgs.label_select}" styleClass="btn_icon">
+									<f:ajax render="graduationPlacesFormId:graduationPlacesDetailsDataListId graduationPlacesFormId:returnedGraduationPlacesAllDataHId graduationPlacesFormId:returnedGraduationPlacesIDHId graduationPlacesFormId:selectedgraduationPlacesDetailsDataListId graduationPlacesFormId:notifyMessagesId" execute="@form" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+								</h:commandButton>
+
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+									<f:facet name="first">
+                                                #{msgs.label_first}
+                                            </f:facet>
+									<f:facet name="last">
+                                                #{msgs.label_last}
+                                            </f:facet>
+									<f:facet name="next">
+                                                #{msgs.label_next}
+                                            </f:facet>
+									<f:facet name="previous">
+                                                #{msgs.label_previous}
+                                            </f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+				<h:panelGroup rendered="#{graduationPlacesMiniSearch.multipleSelectFlag == true}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th>#{msgs.label_selecetedGraduationPlaces}</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td align="center" width="100%">
+							<rich:dataTable id="selectedgraduationPlacesDetailsDataListId" rows="#{graduationPlacesMiniSearch.rowsCount}" rowKeyVar="index" var="row" value="#{graduationPlacesMiniSearch.selectedGraduationPlacesList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+								<rich:column>
+									<f:facet name="header">#</f:facet>
+                                                #{index + 1}
+                            </rich:column>
+								<rich:column style="width:40%">
+									<f:facet name="header">#{msgs.label_graduationPlaceDesc}</f:facet>
+									<h:outputText id="selectedGraduationPlaceDescriptionId" value="#{row.description}" />
+								</rich:column>
+								<rich:column style="width:10%">
+									<f:facet name="header">#{msgs.label_graduationPlaceSubordination}</f:facet>
+									<h:outputText id="graduationPlaceDescId" value="#{row.graduationPlaceDesc}" />
+								</rich:column>
+								<rich:column style="width:20%">
+									<f:facet name="header">#{msgs.label_country}</f:facet>
+									<h:outputText id="graduationPlaceCountryNameId" value="#{row.graduationPlaceCountryName}" />
+								</rich:column>
+								<rich:column style="width:20%">
+									<f:facet name="header">#{msgs.label_address}</f:facet>
+									<h:outputText id="graduationPlaceAddressId" value="#{row.address}" />
+								</rich:column>
+
+								<rich:column>
+									<f:facet name="header">#{msgs.label_delete}</f:facet>
+									<h:commandButton action="#{graduationPlacesMiniSearch.removeSelectedGraduationPlace(row)}" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon">
+										<f:ajax render="graduationPlacesFormId:graduationPlacesDetailsDataListId graduationPlacesFormId:returnedGraduationPlacesAllDataHId graduationPlacesFormId:returnedGraduationPlacesIDHId graduationPlacesFormId:selectedgraduationPlacesDetailsDataListId graduationPlacesFormId:notifyMessagesId" execute="@form" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+									</h:commandButton>
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+										<f:facet name="first">
+                                                                #{msgs.label_first}
+                                                        </f:facet>
+										<f:facet name="last">
+                                                                #{msgs.label_last}
+                                                        </f:facet>
+										<f:facet name="next">
+                                                                #{msgs.label_next}
+                                                        </f:facet>
+										<f:facet name="previous">
+                                                                #{msgs.label_previous}
+                                                        </f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td width="80%">
+							<h:inputHidden id="returnedGraduationPlacesAllDataHId" value="#{graduationPlacesMiniSearch.graduationPlacesString}" />
+							<h:inputHidden id="returnedGraduationPlacesIDHId" value="#{graduationPlacesMiniSearch.graduationPlacesIDString}" />
+						</td>
+
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td colspan="4">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton value="#{msgs.label_finish} &nbsp; #{msgs.fa_check}" onclick="graduationPlacesList(); return false;" styleClass="btn_normal_icon" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

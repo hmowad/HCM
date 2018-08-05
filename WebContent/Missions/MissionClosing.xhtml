@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">   
+
+	window.onkeypress = function(e) {
+		  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+		  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+	      if (keyCode == '13'){
+	    	  document.getElementById('missionClosingFormId:searchBtnId').click();
+	    	  return false;
+	      }
+	}; 
+	
+	function validateSearchPanel() {
+		decisionId = document.getElementById('missionClosingFormId:searchedDecisionId').value;
+		if (decisionId == null || decisionId == '') {
+			alert("#{msgs.error_missionIdRequired}");
+			return false;
+		}
+		return true;
+	}
+
+	function validateData() {
+		var period = document.getElementById('missionClosingFormId:actualPeriodId').value;
+		var missionAbsenceFlagId = document.getElementById('missionClosingFormId:missionAbsenceFlagId');
+		var paymentDecisionFlagId = document.getElementById('missionClosingFormId:paymentDecisionIssuedFlagId');
+		if (period == null || period == '' || period == 0) {
+			alert("#{msgs.error_periodRequired}");
+			return false;
+		}
+
+		if(missionAbsenceFlagId.checked == true){
+ 			var absenceReasons = document.getElementById('missionClosingFormId:absenceReasonsId').value;
+ 			if(absenceReasons == null || absenceReasons == ''){
+ 				alert("#{msgs.error_absenceReasonsRequired}");
+ 				return false;
+ 			}
+ 		 }
+ 		 
+		if(paymentDecisionFlagId.checked == true){
+ 			var paymentDecisionNumberId = document.getElementById('missionClosingFormId:paymentDecisionNumberId').value;
+ 			var paymentDecisionDay  =  document.getElementById('missionClosingFormId:paymentDecisionDateId:day').value;
+ 			if(paymentDecisionNumberId == null || paymentDecisionNumberId == ''){
+ 				alert("#{msgs.error_paymentDecisionNumberRequired}");
+ 				return false;
+ 			}
+ 			if(paymentDecisionDay == 0){
+ 				alert("#{msgs.error_paymentDecisionDateRequired}");
+ 				return false;
+ 			}
+ 		 }
+		return true;
+	}
+	              
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="missionClosingFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{missionClosing.screenTitle}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_missionDecisionNumber}</th>
+									<td width="35%">
+										<h:inputText id="searchedDecisionId" value="#{missionClosing.decisionNumber}" onkeypress="return isDigit(event);" />
+									</td>
+
+									<th width="15%">#{msgs.label_missionDecisionDate}</th>
+									<td width="35%">
+										<util:hijri id="searchedDecisionDateId" value="#{missionClosing.decisionDate}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{missionClosing.searchMissionDetails()}" styleClass="btn_normal_icon" onclick="return validateSearchPanel();">
+										<f:ajax execute="missionClosingFormId:searchPanelId" render="missionClosingFormId:missionDetailsTableId missionClosingFormId:missionViewId missionClosingFormId:actualClosingMissionId  notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{missionClosing.resetForm()}" styleClass="btn_normal_icon">
+										<f:ajax render="missionClosingFormId:searchPanelId missionClosingFormId:actualClosingMissionId missionClosingFormId:missionDetailsTableId missionClosingFormId:missionViewId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_missionData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="missionViewId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+
+								<tr>
+									<th width="15%">#{msgs.label_missionDecisionNumber}</th>
+									<td width="20%">
+										<h:outputText value="#{missionClosing.mission.decisionNumber}" />
+									</td>
+
+									<th width="15%">#{msgs.label_missionDecisionDate}</th>
+									<td width="50%" colspan="3">
+										<h:outputText value="#{missionClosing.mission.decisionDateString}" />
+									</td>
+								</tr>
+								<tr style="display:#{missionClosing.mission.locationFlag == 0 and missionClosing.mode != 1 ? '' : 'none' }">
+									<th width="15%">
+										<h:outputText rendered="#{missionClosing.mode==1}" value="#{msgs.label_missionReferring}" />
+										<h:outputText rendered="#{missionClosing.mode==2}" value="#{msgs.label_missionReferring}" />
+										<h:outputText rendered="#{missionClosing.mode==3}" value="#{msgs.label_missionThereFore}" />
+									</th>
+									<td width="85%" colspan="5">
+										<h:outputText id="referringId" value="#{missionClosing.mission.referring}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_period}</th>
+									<td width="20%">
+										<h:outputText value="#{missionClosing.mission.period}" />
+									</td>
+									<th width="15%">#{msgs.label_fromDate}</th>
+									<td width="20%">
+										<h:outputText value="#{missionClosing.mission.startDateString}" />
+									</td>
+									<th width="10%">#{msgs.label_toDate}</th>
+									<td width="20%">
+										<h:outputText value="#{missionClosing.mission.endDateString}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_missions}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="missionDetailsTableId" rowKeyVar="index" var="missionDetail" value="#{missionClosing.missionDetailList}" rows="#{missionClosing.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 3%">
+								<f:facet name="header">
+									<h:outputText value="" />
+								</f:facet>
+								<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_view}" action="#{missionClosing.showMissionDetail(missionDetail)}" styleClass="btn_icon">
+									<f:ajax render="missionClosingFormId:actualClosingMissionId" />
+								</h:commandButton>
+							</rich:column>
+							<rich:column style="width : 3%">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                            </rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header">#{msgs.label_name}</f:facet>
+								<h:outputText value="#{missionDetail.empName}" />
+							</rich:column>
+							<rich:column style="width : 20%">
+								<f:facet name="header">#{msgs.label_unit}</f:facet>
+								<h:outputText value="#{missionDetail.transEmpUnitDesc}" />
+							</rich:column>
+							<rich:column style="width : 7%">
+								<f:facet name="header">
+									<h:outputText rendered="#{missionClosing.mode==3}" value="#{msgs.label_personRank}" />
+									<h:outputText rendered="#{missionClosing.mode!=3}" value="#{msgs.label_rank}" />
+								</f:facet>
+								<h:outputText value="#{missionDetail.transEmpRankDesc}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_job}</f:facet>
+								<h:outputText value="#{missionDetail.transEmpJobDesc}" />
+							</rich:column>
+							<rich:column style="width : 7%">
+								<f:facet name="header">#{msgs.label_missionType}</f:facet>
+								<h:outputText value="#{msgs.label_locIn}" rendered="#{missionClosing.mission.locationFlag == 0}" />
+								<h:outputText value="#{msgs.label_locOut}" rendered="#{missionClosing.mission.locationFlag == 1}" />
+							</rich:column>
+							<rich:column style="width : 18%">
+								<f:facet name="header">#{msgs.label_missionDestination}</f:facet>
+								<h:outputText id="destinationId" value="#{missionClosing.mission.destination}" />
+							</rich:column>
+							<rich:column style="width : 3%">
+								<f:facet name="header">#{msgs.label_missionPeriod}</f:facet>
+								<h:outputText value="#{missionDetail.period}" />
+							</rich:column>
+							<rich:column style="width : 7%">
+								<f:facet name="header">#{msgs.label_startDate}</f:facet>
+								<h:outputText id="actualStartDateString" value="#{missionDetail.startDateString}" />
+							</rich:column>
+							<rich:column style="width : 7%">
+								<f:facet name="header">#{msgs.label_endDate}</f:facet>
+								<h:outputText id="actualEndDateString" value="#{missionDetail.endDateString}" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actualClosingMissionId">
+							<h:panelGroup rendered="#{missionClosing.missionDetailList.size() != 0 and missionClosing.selectedMissionDetail.id != null}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:outputText rendered="#{missionClosing.mode==1}" value="#{msgs.label_missionOfficers}" />
+											<h:outputText rendered="#{missionClosing.mode==2}" value="#{msgs.label_missionPersons}" />
+											<h:outputText rendered="#{missionClosing.mode==3}" value="#{msgs.label_missionEmployees}" />
+										</td>
+									</tr>
+								</table>
+
+								<table class="sectionContent" border="0" width="100%">
+									<tr>
+										<th width="15%">#{msgs.label_name}</th>
+										<td width="85%" colspan="3">
+											<h:outputText value="#{missionClosing.selectedMissionDetail.empName}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_missionActualPeriod}</th>
+										<td width="35%">
+											<h:inputText id="actualPeriodId" value="#{missionClosing.selectedMissionDetail.actualPeriod}" disabled="#{missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean == true or missionClosing.selectedMissionDetail.absenceFlagBoolean == true}" onkeypress="return isDigit(event);" maxlength="3">
+												<f:ajax event="blur" listener="#{missionClosing.adjustMissionDetailEndDate()}" execute="@this actualStartDateStringId" render="empEndDateStringId notifyMessagesId" />
+											</h:inputText>
+										</td>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionDistanceRoad}" rendered="#{missionClosing.mission.locationFlag==1}" />
+										</th>
+										<td width="35%">
+											<h:outputText id="roadPeriodId" value="#{missionClosing.selectedMissionDetail.roadPeriod}" rendered="#{missionClosing.mission.locationFlag==1}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_actualStartDateString}</th>
+										<td width="35%">
+											<util:hijri id="actualStartDateStringId" value="#{missionClosing.selectedMissionDetail.actualStartDate}" nullable="false" onChangeAjaxSubmit="true" listenerMethod="#{missionClosing.adjustMissionDetailEndDate()}" reRenderIds="missionClosingFormId:empEndDateStringId" rendered="#{missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean == false and missionClosing.selectedMissionDetail.absenceFlagBoolean == false}" />
+											<h:outputText value="#{missionClosing.selectedMissionDetail.actualStartDateString}" rendered="#{missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean == true or missionClosing.selectedMissionDetail.absenceFlagBoolean == true}" />
+										</td>
+										<th width="15%">#{msgs.label_actualEndDateString}</th>
+										<td width="35%">
+											<h:outputText id="empEndDateStringId" value="#{missionClosing.selectedMissionDetail.actualEndDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_paymentDecisionIssued}" />
+										</th>
+										<td width="35%" colspan="3">
+											<h:selectBooleanCheckbox id="paymentDecisionIssuedFlagId" value="#{missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean}" disabled="#{missionClosing.selectedMissionDetail.absenceFlagBoolean == true}">
+												<f:ajax event="change" listener="#{missionClosing.resetPaymentDecision}" execute="missionClosingFormId:actualClosingMissionId" render="missionClosingFormId:actualClosingMissionId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectBooleanCheckbox>
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_paymentDecisionIssuedNumber}" />
+											<h:outputText value="*" style="color: red;" rendered="#{missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean == true}" />
+										</th>
+										<td width="35%">
+											<h:inputText id="paymentDecisionNumberId" value="#{missionClosing.selectedMissionDetail.paymentDecisionNumber}" disabled="#{missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean == false}" maxlength="25" />
+										</td>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_paymentDecisionIssuedDate}" />
+											<h:outputText value="*" style="color: red;" rendered="#{missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean == true}" />
+										</th>
+										<td width="35%">
+											<util:hijri id="paymentDecisionDateId" nullable="true" value="#{missionClosing.selectedMissionDetail.paymentDecisionDate}" rendered="#{missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean == true}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionAbsence}" />
+										</th>
+										<td width="35%">
+											<h:selectBooleanCheckbox id="missionAbsenceFlagId" value="#{missionClosing.selectedMissionDetail.absenceFlagBoolean}" disabled="#{missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean == true}">
+												<f:ajax event="change" listener="#{missionClosing.resetAbsenceReasons}" execute="missionClosingFormId:actualClosingMissionId" render="missionClosingFormId:actualClosingMissionId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectBooleanCheckbox>
+										</td>
+										<th width="15%">
+											<h:outputText value="" />
+										</th>
+										<td width="35%">
+											<h:outputText value="" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_missionAbsenceReasonsId}" />
+											<h:outputText value="*" style="color: red;" rendered="#{missionClosing.selectedMissionDetail.absenceFlagBoolean == true}" />
+										</th>
+										<td width="80%" colspan="3">
+											<h:inputText id="absenceReasonsId" value="#{missionClosing.selectedMissionDetail.absenceReasons}" disabled="#{missionClosing.selectedMissionDetail.absenceFlagBoolean == false}" styleClass="inputDataLarge" maxlength="350" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">#{msgs.label_notes}</th>
+										<td width="80%" colspan="3">
+											<h:inputText id="remarksId" value="#{missionClosing.selectedMissionDetail.remarks}" styleClass="inputDataLarge" maxlength="350" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_missionPerformanceDocumentArchiving}</th>
+										<td width="85%" colspan="3">
+											<code:attachments loginEmpId="#{missionClosing.loginEmpData.empId}" attachmentId="#{missionClosing.selectedMissionDetail.closingAttachments}" addEnableFlag="true" viewEnableFlag="true" deleteEnableFlag="true" />
+										</td>
+									</tr>
+								</table>
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:commandButton action="#{missionClosing.modifyMissionDetail()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return validateData();">
+												<f:ajax execute="missionClosingFormId:actualClosingMissionId" render="missionClosingFormId:actualClosingMissionId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

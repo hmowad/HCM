@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">   
+		function getEmp(contextPath) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 12, #{promotionPrerequisiteData.mode}, -1, -1, -1, -1, -1, #{promotionPrerequisiteData.employeesSearchRegionId});
+		}
+		
+		function handleEmpMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('promotionPrerequisiteDataFormId:employeeIDId').value = ret[0];
+				document.getElementById('promotionPrerequisiteDataFormId:searchEmpBtnId').click();
+			}
+		}
+    </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="promotionPrerequisiteDataFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{promotionPrerequisiteData.mode == 1 ? msgs.title_promotionOfficersPrerequiste : ( promotionPrerequisiteData.mode == 2 ? msgs.title_promotionSoldiersPrerequiste : msgs.title_promotionCiviliansPrerequiste )}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{promotionPrerequisiteData.mode == 1 ? msgs.label_selectOfficer : ( promotionPrerequisiteData.mode == 2 ? msgs.label_selectSoldier : msgs.label_selectPerson )}" />
+								</th>
+								<td width="75%">
+									<h:inputHidden id="employeeIDId" value="#{promotionPrerequisiteData.empId}" />
+									<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmp('#{request.contextPath}');return false;" />
+									<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{promotionPrerequisiteData.searchEmpData()}">
+										<f:ajax execute="promotionPrerequisiteDataFormId:employeeIDId" render="promotionPrerequisiteDataFormId:employeeDataPanelId promotionPrerequisiteDataFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">#{promotionPrerequisiteData.mode == 1 ? msgs.title_officerData : ( promotionPrerequisiteData.mode == 2 ? msgs.title_soldierData : msgs.title_personData )}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="employeeDataPanelId">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td width="100%">
+										<code:emp id="employeeDataId" value="#{promotionPrerequisiteData.employeeData}" />
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="employeePromotionDatesId" rendered="#{promotionPrerequisiteData.empId != null}">
+											<table border="0" cellpadding="0" cellspacing="0" width="100%">
+												<tr>
+													<td width="100%">
+														<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+															<tr>
+																<td width="100%">#{msgs.label_promotionData}</td>
+															</tr>
+														</table>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+															<tr>
+																<th width="15%">
+																	<h:outputText value="#{msgs.label_latestPromotionDate}" />
+																</th>
+																<td width="85%">
+																	<util:hijri id="lastPromotionDateId" value="#{promotionPrerequisiteData.lastPromotionDate}" nullable="true" rendered="#{promotionPrerequisiteData.empId != null}" />
+																</td>
+															</tr>
+															<tr>
+																<th width="15%">
+																	<h:outputText value="#{msgs.label_nextPromotionDueDate}" />
+																	<font style="color: red;">*</font>
+																</th>
+																<td width="85%">
+																	<util:hijri id="promotionDueDateId" value="#{promotionPrerequisiteData.promotionDueDate}" nullable="true" rendered="#{promotionPrerequisiteData.empId != null}" viewFutureRange="true" />
+																</td>
+															</tr>
+														</table>
+													</td>
+												</tr>
+											</table>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td>
+													<h:commandButton value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" action="#{promotionPrerequisiteData.savePromotionEmployeeData()}" title="#{msgs.label_save}" styleClass="btn_normal_icon" disabled="#{promotionPrerequisiteData.empId == null}">
+														<f:ajax execute="promotionPrerequisiteDataFormId:employeePromotionDatesId" render="promotionPrerequisiteDataFormId:employeeDataPanelId promotionPrerequisiteDataFormId:employeePromotionDatesId promotionPrerequisiteDataFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+													</h:commandButton>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

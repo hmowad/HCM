@@ -1,0 +1,815 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">  
+
+	window.onkeypress = function(e) {
+			 // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');				
+			 		if (keyCode == '13' &amp;&amp; e.target.nodeName != "TEXTAREA"){
+			  			return false;
+			 	}	
+		};
+	
+		function getEmp(contextPath){
+			var rankId = document.getElementById('promotionCiviliansReportFormId:rankId').value ;
+			var promotionDueDateString = document.getElementById('promotionCiviliansReportFormId:dueDateStringId').innerHTML ;
+			openEmpsMiniSearchWithRankIdAndPromotionDueDate(contextPath, 'handleEmpMiniSearchResult(ret)', 10, 3, rankId, promotionDueDateString,-1);
+	      }
+
+		function handleEmpMiniSearchResult(ret){
+			if(ret != null){
+	            document.getElementById('promotionCiviliansReportFormId:empIDId').value = ret[0];
+	            document.getElementById('promotionCiviliansReportFormId:searchEmpBtnId').click();
+			}
+		}
+		
+		 function getNewJob(contextPath){
+			 var newJobRankId = document.getElementById('promotionCiviliansReportFormId:selectedNewJobRankIdHId').value;
+		 	 var status = document.getElementById('promotionCiviliansReportFormId:statusId').value;
+			 if(status == 15){
+				//CANDIDATE_SEQUENTIALLY so get the occupied jobs
+				openJobsMiniSearch(contextPath, 'handleJobMiniSearch(ret)',5,3,-1,newJobRankId,-1,-1,0);
+			}else if(status == 10){
+				//CANDIDATE(10) so get the vacant jobs
+				openJobsMiniSearch(contextPath, 'handleJobMiniSearch(ret)',2,3,-1,newJobRankId,-1,-1,0);
+			} else {
+				// PRECEDENTED_POINTS(25) so get the all jobs occupied and vacant 
+				openJobsMiniSearch(contextPath, 'handleJobMiniSearch(ret)',11,3,-1,newJobRankId,-1,-1,0);
+			}
+	      }
+		 
+		 function handleJobMiniSearch(ret){
+			 if(ret != null){
+		           document.getElementById('promotionCiviliansReportFormId:selectedNewJobIDHId').value = ret[0];
+		           document.getElementById('promotionCiviliansReportFormId:selectedNewJobCodeHId').value = ret[1];
+		           document.getElementById('promotionCiviliansReportFormId:selectedNewJobDescHId').value = ret[2];
+		           document.getElementById('promotionCiviliansReportFormId:selectedNewRankDescHId').value = ret[7]  
+		           document.getElementById('promotionCiviliansReportFormId:selectedNewJobDescId').innerHTML = ret[2];
+		           document.getElementById('promotionCiviliansReportFormId:selectedNewRankDescId').innerHTML = ret[7]
+		           document.getElementById('promotionCiviliansReportFormId:selectedNewJobClassCodeHId').value = ret[11];
+		           document.getElementById('promotionCiviliansReportFormId:selectedNewJobClassDescHId').value = ret[12];    
+		     }
+		}
+
+		 function closeReport() {
+				var confirmedFlag = confirm('#{msgs.q_confirmChangePromotionReportStatus}');
+
+				var oldReportStatus = document.getElementById('promotionCiviliansReportFormId:oldReportStatusHId').value;
+
+				if(! confirmedFlag) {
+		 			document.getElementById('promotionCiviliansReportFormId:reportStatusId').value = oldReportStatus;
+		 			return false;
+				} else {
+					document.getElementById('promotionCiviliansReportFormId:oldReportStatusHId').value = document.getElementById('promotionCiviliansReportFormId:reportStatusId').value;
+					return true;
+				}
+			}
+
+		function validatePromotionData(){
+		    var reportNumberId = document.getElementById('promotionCiviliansReportFormId:reportNumberId').value;
+		    var rankId = document.getElementById('promotionCiviliansReportFormId:rankId').value;
+		    if(reportNumberId == null || reportNumberId == ''){
+		         alert("#{msgs.error_reportNumberIsMandatory}");
+		         return false;
+		      }  
+		    else if(rankId == '' || rankId == 0){
+	        	alert("#{msgs.error_empRankIsMandatory}");
+	    		return false;
+        	}else{
+           		return true;
+			}
+        }   
+
+       function validatePromotionDetailsData(){
+           if(validateYearMonthDayData() == false)
+               return false;
+           
+           var qualificationDegreeId = document.getElementById('promotionCiviliansReportFormId:selectedQualificationDegreeId').value;
+           var trainingDegreeId = document.getElementById('promotionCiviliansReportFormId:selectedTrainingDegreeId').value;
+           var evaluationDegreeId = document.getElementById('promotionCiviliansReportFormId:selectedEvaluationDegreeId').value;
+           var educationDegreeId = document.getElementById('promotionCiviliansReportFormId:selectedEducationDegreeId').value;
+           
+           if(qualificationDegreeId == null || qualificationDegreeId == ''){
+		         alert("#{msgs.error_qualificationDegreeIsMandatory}");
+		         return false;
+		   } 
+           if(trainingDegreeId == null || trainingDegreeId == ''){
+		         alert("#{msgs.error_trainingDegreeIsMandatory}");
+		         return false;
+		   } 
+           if(evaluationDegreeId == null || evaluationDegreeId == ''){
+		         alert("#{msgs.error_evaluationDegreeIsMandatory}");
+		         return false;
+		   }
+           if(educationDegreeId == null || educationDegreeId == ''){
+		         alert("#{msgs.error_educationDegreeIsMandatory}");
+		         return false;
+		   }
+
+		   return true;
+       }
+       
+		function validateYearMonthDayData(){
+		    var serviceDay = document.getElementById('promotionCiviliansReportFormId:selectedServiceDegreeDayId').value;
+		    var serviceMonth = document.getElementById('promotionCiviliansReportFormId:selectedServiceDegreeMonthId').value;
+		    var serviceYear = document.getElementById('promotionCiviliansReportFormId:selectedServiceDegreeYearId').value;
+		    var experinceDay = document.getElementById('promotionCiviliansReportFormId:selectedExperinceDayId').value;
+		    var experinceMonth = document.getElementById('promotionCiviliansReportFormId:selectedExperinceMonthId').value;
+		    var experinceYear = document.getElementById('promotionCiviliansReportFormId:selectedExperinceYearId').value;
+
+			if(serviceDay == '' || serviceDay == null || serviceMonth == '' || serviceMonth == null || serviceYear == '' || serviceYear == null){
+				alert("#{msgs.error_serviceDetailsIsMandatory}");
+		         return false;
+			}
+			if(experinceDay == '' || experinceDay == null || experinceMonth == '' || experinceMonth == null || experinceYear == '' || experinceYear == null){
+				alert("#{msgs.error_experinceDetailsIsMandatory}");
+		         return false;
+			}
+			 if(serviceDay > 30){
+		         alert("#{msgs.error_excedServiceDays}");
+		         return false;
+		     }
+			 if(experinceDay > 30 ){
+		         alert("#{msgs.error_excedExperinceDays}");
+		         return false;
+		     }
+			 if(serviceMonth > 11){
+		        	alert("#{msgs.error_excedServiceMonth}");
+		    		return false;
+	        	}
+			if(experinceMonth > 11){
+		        	alert("#{msgs.error_excedExperinceMonth}");
+		    		return false;
+	        }
+             return true;
+        }
+
+    </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="promotionCiviliansReportFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{msgs.title_promotionOfPerson}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="70%">#{msgs.label_reportData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="promotionReportDataId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_reportDate}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<util:hijri id="reportDateId" value="#{promotionCiviliansReport.promotionReportData.reportDate}" rendered="#{promotionCiviliansReport.promotionReportData.id == null}" />
+										<h:outputText value="#{promotionCiviliansReport.promotionReportData.reportDateString}"  rendered="#{promotionCiviliansReport.promotionReportData.id != null}"/>
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_reportNumber}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:inputText id="reportNumberId" value="#{promotionCiviliansReport.promotionReportData.reportNumber}" disabled="#{promotionCiviliansReport.promotionReportData.id != null}"  maxlength="16" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_promotionDueDate}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<util:hijri id="dueDateId" value="#{promotionCiviliansReport.promotionReportData.dueDate}" rendered="#{promotionCiviliansReport.promotionReportData.id == null}" />
+										<h:outputText id="dueDateStringId" rendered="#{promotionCiviliansReport.promotionReportData.id != null}" value="#{promotionCiviliansReport.promotionReportData.dueDateString}" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_personRank}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="rankId" value="#{promotionCiviliansReport.promotionReportData.rankId}" disabled="#{promotionCiviliansReport.promotionReportData.id != null}">
+											<f:selectItem itemLabel="" itemValue="" />
+											<f:selectItems value="#{promotionCiviliansReport.ranks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_reportStatus}" />
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="reportStatusId" value="#{promotionCiviliansReport.promotionReportData.status}" onchange="return closeReport()"
+										disabled="#{promotionCiviliansReport.promotionReportData.id == null}" rendered="#{promotionCiviliansReport.promotionReportData.status == 5}">
+											<f:selectItem itemLabel="#{msgs.label_current}" itemValue="5" />
+											<f:selectItem itemLabel="#{msgs.label_closed}" itemValue="20" />
+											<f:ajax event="change" listener="#{promotionCiviliansReport.addModifyReportData()}" render="promotionCiviliansReportFormId:reportDetailsPanelId promotionCiviliansReportFormId:promotionReportDataId promotionCiviliansReportFormId:actionsSectionId promotionCiviliansReportFormId:savePrintSectionId promotionCiviliansReportFormId:jobDataPanelId promotionCiviliansReportFormId:promotionDataPanelId promotionCiviliansReportFormId:decisionCopiesPanelId promotionCiviliansReportFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+										</h:selectOneMenu>
+										<h:outputText value="#{msgs.label_underReview}" rendered="#{promotionCiviliansReport.promotionReportData.status == 10}" />
+										<h:outputText value="#{msgs.label_underApproved}" rendered="#{promotionCiviliansReport.promotionReportData.status == 15}" />
+										<h:outputText value="#{msgs.label_closed}" rendered="#{promotionCiviliansReport.promotionReportData.status == 20}" />
+										<h:inputHidden id="oldReportStatusHId" value="#{promotionCiviliansReport.promotionReportData.status}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="savePrintSectionId">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton id="reportSaveBtnId" action="#{promotionCiviliansReport.addPromotionReportAndReportDetails()}" onclick="return validatePromotionData();" value="#{msgs.label_savePromotionReport} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{promotionCiviliansReport.promotionReportData.id == null and ((promotionCiviliansReport.role == 'Requester' or promotionCiviliansReport.role == 'ReviewerEmp') and promotionCiviliansReport.promotionReportData.status != 20)}">
+											<f:ajax execute="promotionCiviliansReportFormId:promotionReportDataId promotionCiviliansReportFormId:reportDetailsTableId"
+												render="promotionCiviliansReportFormId:reportDetailsPanelId promotionCiviliansReportFormId:promotionReportDataId promotionCiviliansReportFormId:actionsSectionId promotionCiviliansReportFormId:savePrintSectionId promotionCiviliansReportFormId:jobDataPanelId promotionCiviliansReportFormId:promotionDataPanelId promotionCiviliansReportFormId:decisionCopiesPanelId promotionCiviliansReportFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="reportDetailsPanelId">
+							<h:panelGroup rendered="#{promotionCiviliansReport.promotionReportData.id != null}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="70%">#{msgs.label_printReports}</td>
+									</tr>
+								</table>
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td colspan="4" width="90%">
+											<h:selectOneRadio value="#{promotionCiviliansReport.reportType}" disabled="#{promotionCiviliansReport.promotionReportData.status == 20}">
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_printReportPdf}" />
+												<f:selectItem itemValue="2" itemLabel="#{msgs.label_printReportWord}" />
+												<f:selectItem itemValue="3" itemLabel="#{msgs.label_printNonCandidateNoVacant}" />
+												<f:selectItem itemValue="4" itemLabel="#{msgs.label_printNonCandidateOtherReasons}" />
+											</h:selectOneRadio>
+										</td>
+										<td width="10%">
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+														<h:commandButton title="#{msgs.label_reportDraftPrint}" action="#{promotionCiviliansReport.printPromotionReport()}" styleClass="btn_normal_icon" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" disabled="#{promotionCiviliansReport.promotionReportData.status == 20}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="70%">#{msgs.label_promotionReportDetail}</td>
+									</tr>
+								</table>
+
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+												<tr>
+													<td width="10%">
+														<h:inputHidden id="empIDId" value="#{promotionCiviliansReport.empId}" />
+														<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getEmp('#{request.contextPath}');return false;" rendered="#{(promotionCiviliansReport.role == 'Requester' or promotionCiviliansReport.role == 'ReviewerEmp') and promotionCiviliansReport.promotionReportData.status != 20}" />
+														<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{promotionCiviliansReport.addPromotionReportDetail()}">
+															<f:ajax execute="promotionCiviliansReportFormId:reportDetailsPanelId " render="promotionCiviliansReportFormId:reportDetailsTableId promotionCiviliansReportFormId:jobDataPanelId promotionCiviliansReportFormId:promotionDataPanelId   promotionCiviliansReportFormId:notifyMessagesId  promotionCiviliansReportFormId:reportDetailsPanelId promotionCiviliansReportFormId:detailSearchStatusId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</td>
+
+													<td width="25%" />
+													<td width="10%">
+														<h:selectBooleanCheckbox value="#{promotionCiviliansReport.unCandidateSearchFlag}">
+															<f:ajax event="change" listener="#{promotionCiviliansReport.searchUnCandidate()}" render="promotionCiviliansReportFormId:detailSearchStatusId promotionCiviliansReportFormId:reportDetailsPanelId  promotionCiviliansReportFormId:jobDataPanelId  promotionCiviliansReportFormId:promotionDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:selectBooleanCheckbox>
+														<h:outputText value="#{msgs.label_unCandidateStatus}" />
+													</td>
+													<th width="7%">
+														<h:outputText value="#{msgs.label_searchBy}" />
+													</th>
+													<th width="5%">
+														<h:outputText value="#{msgs.label_name}" />
+													</th>
+													<td width="15%">
+														<h:inputText id="detailSearchEmpNameId" value="#{promotionCiviliansReport.detailSearchEmpName}" maxlength="70" />
+													</td>
+
+													<th width="14%">
+														<h:outputText value="#{msgs.label_caseStandForPromotion}" />
+													</th>
+													<td width="10%">
+														<h:selectOneMenu id="detailSearchStatusId" value="#{promotionCiviliansReport.detailSearchStatus}">
+															<f:selectItem itemLabel="#{msgs.label_candidateStatus}" itemValue="10" />
+															<f:selectItem itemLabel="#{msgs.label_candidateSequentially}" itemValue="15" />
+															<f:selectItem itemLabel="#{msgs.label_unprecedentedPoints}" itemValue="25" />
+															<f:selectItem itemLabel="#{msgs.label_promotedDone}" itemValue="30" />
+														</h:selectOneMenu>
+													</td>
+
+													<td width="3%">
+														<h:commandButton value="#{msgs.fa_search}" action="#{promotionCiviliansReport.searchPromotionDetails()}" title="#{msgs.label_search}" styleClass="btn_icon">
+															<f:ajax execute="promotionCiviliansReportFormId:detailSearchEmpNameId promotionCiviliansReportFormId:detailSearchStatusId" render="promotionCiviliansReportFormId:reportDetailsPanelId promotionCiviliansReportFormId:reportDetailsTableId  promotionCiviliansReportFormId:jobDataPanelId  promotionCiviliansReportFormId:promotionDataPanelId  promotionCiviliansReportFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</td>
+
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+
+											<rich:dataTable id="reportDetailsTableId" value="#{promotionCiviliansReport.promotionReportDetailDataList}" var="reportDetail" rows="#{promotionCiviliansReport.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+												<rich:column style="width : 5%;">
+													<f:facet name="header">
+														<h:outputText value="#{msgs.label_select}" />
+													</f:facet>
+													<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon" action="#{promotionCiviliansReport.selectReportDetail(reportDetail)}">
+														<f:ajax execute="promotionCiviliansReportFormId:jobDataPanelId promotionCiviliansReportFormId:promotionDataPanelId" render="promotionCiviliansReportFormId:jobDataPanelId promotionCiviliansReportFormId:promotionDataPanelId  " />
+													</h:commandButton>
+												</rich:column>
+												<rich:column style="width : 5%" rendered="#{!promotionCiviliansReport.unCandidateSearchFlag}">
+													<f:facet name="header">#</f:facet>
+			                                         	 #{index + 1}
+			                    			     </rich:column>
+												<rich:column style="width : 20%">
+													<f:facet name="header">#{msgs.label_name}</f:facet>
+													<h:outputText value="#{reportDetail.empName}" />
+												</rich:column>
+												<rich:column style="width : 10%">
+													<f:facet name="header">#{msgs.label_personRank}</f:facet>
+													<h:outputText value="#{reportDetail.oldRankDesc}" />
+												</rich:column>
+												<rich:column style="width : 10%">
+													<f:facet name="header">#{msgs.label_degree}</f:facet>
+													<h:outputText value="#{reportDetail.oldDegreeDesc}" />
+												</rich:column>
+												<rich:column style="width : 15%">
+													<f:facet name="header">#{msgs.label_jobInstallerNo}</f:facet>
+													<h:outputText value="#{reportDetail.oldJobCode}" />
+												</rich:column>
+												<rich:column style="width : 15%">
+													<f:facet name="header">#{msgs.label_jobInstaller}</f:facet>
+													<h:outputText value="#{reportDetail.oldJobDesc}" />
+												</rich:column>
+												<rich:column style="width : 10%">
+													<f:facet name="header">#{msgs.label_promotionDueDate}</f:facet>
+													<h:outputText value="#{reportDetail.promotionDueDateString}" />
+												</rich:column>
+												<rich:column style="width:8%">
+													<f:facet name="header">#{msgs.label_caseStandForPromotion}</f:facet>
+													<h:outputText rendered="#{reportDetail.status == 5}" value="#{msgs.label_unCandidateStatus}" />
+													<h:outputText rendered="#{reportDetail.status == 10}" value="#{msgs.label_candidateStatus}" />
+													<h:outputText rendered="#{reportDetail.status == 15}" value="#{msgs.label_candidateSequentially}" />
+													<h:outputText rendered="#{reportDetail.status == 25}" value="#{msgs.label_unprecedentedPoints}" />
+													<h:outputText rendered="#{reportDetail.status == 30}" value="#{msgs.label_promotedDone}" />
+												</rich:column>
+												<rich:column style="width : 5%;" rendered="#{(promotionCiviliansReport.role == 'Requester' or promotionCiviliansReport.role == 'ReviewerEmp') and promotionCiviliansReport.promotionReportData.status != 20}">
+													<f:facet name="header">
+														<h:outputText value="#{msgs.label_delete}" />
+													</f:facet>
+													<h:commandButton id="deleteRecordBtnId" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="if(confirm('#{msgs.q_deleteFromReport}') == false) return false;" action="#{promotionCiviliansReport.deletePromotionReportDetailData(reportDetail)}">
+														<f:ajax execute="promotionCiviliansReportFormId:reportDetailsTableId promotionCiviliansReportFormId:jobDataPanelId promotionCiviliansReportFormId:promotionDataPanelId" render="promotionCiviliansReportFormId:reportDetailsTableId promotionCiviliansReportFormId:jobDataPanelId promotionCiviliansReportFormId:promotionDataPanelId   promotionCiviliansReportFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+													</h:commandButton>
+												</rich:column>
+												<f:facet name="footer">
+													<rich:dataScroller oncomplete="#{rich:component('reload')}.hide()" maxPages="5" fastControls="hide">
+														<f:facet name="first">#{msgs.label_first}</f:facet>
+														<f:facet name="last">#{msgs.label_last}</f:facet>
+														<f:facet name="next">#{msgs.label_next}</f:facet>
+														<f:facet name="previous">#{msgs.label_previous}</f:facet>
+													</rich:dataScroller>
+												</f:facet>
+											</rich:dataTable>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<!--  start -->
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="jobDataPanelId">
+							<h:panelGroup rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{msgs.label_jobData}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_name}" />
+													</th>
+													<td width="85%" colspan="3">
+														<h:outputText id="selectedEmpNameID" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.empName}" />
+													</td>
+												</tr>
+
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_caseStandForPromotion}" />
+													</th>
+													<td width="85%" colspan="3">
+														<h:selectOneMenu id="statusId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.status}" disabled="#{(promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp')}" rendered="#{promotionCiviliansReport.promotionReportData.status != 20}">
+															<f:selectItem itemLabel="#{msgs.label_unCandidateStatus}" itemValue="5" />
+															<f:selectItem itemLabel="#{msgs.label_candidateStatus}" itemValue="10" />
+															<f:selectItem itemLabel="#{msgs.label_candidateSequentially}" itemValue="15" />
+															<f:selectItem itemLabel="#{msgs.label_unprecedentedPoints}" itemValue="25" />
+															<f:ajax event="change" execute="promotionCiviliansReportFormId:jobDataPanelId" render="promotionCiviliansReportFormId:jobDataPanelId notifyMessagesId promotionCiviliansReportFormId:promotionDataPanelId" listener="#{promotionCiviliansReport.changeStatus()}" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:selectOneMenu>
+														<h:outputText value="#{msgs.label_unCandidateStatus}" rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData.status == 5 and promotionCiviliansReport.promotionReportData.status == 20}" />
+														<h:outputText value="#{msgs.label_candidateStatus}" rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData.status == 10 and promotionCiviliansReport.promotionReportData.status == 20}" />
+														<h:outputText value="#{msgs.label_candidateSequentially}" rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData.status == 15 and promotionCiviliansReport.promotionReportData.status == 20}" />
+														<h:outputText value="#{msgs.label_unprecedentedPoints}" rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData.status == 25 and promotionCiviliansReport.promotionReportData.status == 20}" />
+														<h:outputText value="#{msgs.label_promotedDone}" rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData.status == 30 and promotionCiviliansReport.promotionReportData.status == 20}" />
+														<h:outputText value=" | " />
+														<h:inputText value="#{promotionCiviliansReport.selectedPromotionReportDetailData.promotionCommitteeOpinion}" disabled="#{(promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp') or promotionCiviliansReport.promotionReportData.status == 20}" styleClass="inputDataNormal" maxlength="100" />
+														<h:outputText value="  #{msgs.label_promotionCommitteeOpinion}" style="color: red;" />
+													</td>
+												</tr>
+
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_jobInstaller}" />
+													</th>
+													<td width="35%">
+														<h:outputText id="selectedoldJobDescId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.oldJobDesc}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_newJob}" />
+														<h:outputText value="*" style="color: red;" rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData.status != 5}" />
+													</th>
+													<td width="35%">
+														<table>
+															<tr>
+																<td>
+																	<h:outputText id="selectedNewJobDescId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.newJobDesc}" />
+																	<h:inputHidden id="selectedNewJobDescHId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.newJobDesc}" />
+																	<h:inputHidden id="selectedNewJobIDHId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.newJobId}" />
+																	<h:inputHidden id="selectedNewJobCodeHId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.newJobCode}" />
+																	<h:inputHidden id="selectedNewJobClassCodeHId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.newJobClassCode}" />
+																	<h:inputHidden id="selectedNewJobClassDescHId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.newJobClassDesc}" />
+																	<h:inputHidden id="selectedNewJobRankIdHId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.newRankId}" />
+																	<h:panelGroup rendered="#{(promotionCiviliansReport.role == 'Requester' or promotionCiviliansReport.role == 'ReviewerEmp') and promotionCiviliansReport.promotionReportData.status != 20}">
+																		<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_name}" onclick="getNewJob('#{request.contextPath}'); return false;" styleClass="btn_icon" disabled="#{promotionCiviliansReport.selectedPromotionReportDetailData.status == 5}" />
+																	</h:panelGroup>
+																</td>
+																<td></td>
+																<th>
+																	<h:outputText value="#{msgs.label_asManager}" />
+																</th>
+																<td>
+																	<h:selectBooleanCheckbox id="managerFlagId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.managerFlagBoolean}" disabled="#{(promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp') or promotionCiviliansReport.promotionReportData.status == 20 or promotionCiviliansReport.selectedPromotionReportDetailData.status == 5}" />
+																</td>
+															</tr>
+														</table>
+													</td>
+
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_currentRanking}" />
+													</th>
+													<td width="35%">
+														<h:outputText id="selectedOldRankDescId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.oldRankDesc}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_newRanking}" />
+													</th>
+													<td width="35%">
+														<h:inputHidden id="selectedNewRankDescHId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.newRankDesc}" />
+														<h:outputText id="selectedNewRankDescId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.newRankDesc}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_currentDegree}" />
+													</th>
+													<td width="85%" colspan="3">
+														<h:outputText id="selectedOldRankDegree" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.oldDegreeDesc}" />
+													</td>
+
+												</tr>
+												<tr style="display: #{promotionCiviliansReport.selectedPromotionReportDetailData.status == 5 ? '' : 'none'} ">
+													<th width="15%">
+														<h:outputText value="#{msgs.label_noVacation}" />
+														<h:outputText style="color: red;" value="*" />
+													</th>
+													<td width="35%">
+														<h:selectBooleanCheckbox value="#{promotionCiviliansReport.selectedPromotionReportDetailData.noVacantFlagBoolean}" disabled="#{promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp'}">
+															<f:ajax event="change" listener="#{promotionCiviliansReport.checkNoVacant()}" execute="promotionCiviliansReportFormId:jobDataPanelId" render="promotionCiviliansReportFormId:jobDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"></f:ajax>
+														</h:selectBooleanCheckbox>
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_otherExcludeReasons}" />
+														<h:outputText style="color: red;" value="*" />
+													</th>
+													<td width="35%">
+														<h:inputText id="nonCandidateReasonsId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.nonCandidateReasons}" rendered="#{promotionCiviliansReport.role == 'Requester' or promotionCiviliansReport.role == 'ReviewerEmp'}" disabled="#{promotionCiviliansReport.selectedPromotionReportDetailData.noVacantFlagBoolean}" styleClass="inputDataLarge" />
+														<h:outputText value="#{promotionCiviliansReport.selectedPromotionReportDetailData.nonCandidateReasons}" rendered="#{promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp'}" />
+													</td>
+												</tr>
+
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<!-- ah -->
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<!-- start 2 -->
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="promotionDataPanelId">
+							<h:panelGroup rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData != null}">
+								<table  border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{msgs.label_promotionData}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_totalService}" />
+														<h:outputText value="*" style="color: red;" rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData.status != 5}" />
+													</th>
+													<td width="35%">
+														<h:inputText id="selectedServiceDegreeDayId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.serviceDegreeDay}" styleClass="inputDataSmall" onkeypress="return isDigit(event);" maxlength="2" disabled="#{(promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp') or promotionCiviliansReport.promotionReportData.status == 20}" />
+														<h:outputText value=" #{msgs.label_day} " />
+														<h:inputText id="selectedServiceDegreeMonthId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.serviceDegreeMonth}" styleClass="inputDataSmall" onkeypress="return isDigit(event);" maxlength="2" disabled="#{(promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp') or promotionCiviliansReport.promotionReportData.status == 20}" />
+														<h:outputText value=" #{msgs.label_month} " />
+														<h:inputText id="selectedServiceDegreeYearId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.serviceDegreeYear}" styleClass="inputDataSmall" onkeypress="return isDigit(event);" maxlength="2" disabled="#{(promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp') or promotionCiviliansReport.promotionReportData.status == 20}" />
+														<h:outputText value=" #{msgs.label_year}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_qualification}" />
+														<h:outputText value="*" style="color: red;" rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData.status != 5}" />
+													</th>
+													<td width="35%">
+														<h:inputText id="selectedQualificationDegreeId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.qualificationPersonDegree}" readonly="#{(promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp') or promotionCiviliansReport.promotionReportData.status == 20}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_experinceYears}" />
+														<h:outputText value="*" style="color: red;" rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData.status != 5}" />
+													</th>
+													<td width="35%">
+														<h:inputText id="selectedExperinceDayId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.experincePresonsDay}" styleClass="inputDataSmall" onkeypress="return isDigit(event);" maxlength="2" disabled="#{(promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp') or promotionCiviliansReport.promotionReportData.status == 20}" />
+														<h:outputText value=" #{msgs.label_day} " />
+														<h:inputText id="selectedExperinceMonthId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.experincePresonsMonth}" styleClass="inputDataSmall" onkeypress="return isDigit(event);" maxlength="2" disabled="#{(promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp') or promotionCiviliansReport.promotionReportData.status == 20}" />
+														<h:outputText value=" #{msgs.label_month} " />
+														<h:inputText id="selectedExperinceYearId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.experincePresonsYear}" styleClass="inputDataSmall" onkeypress="return isDigit(event);" maxlength="2" disabled="#{(promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp') or promotionCiviliansReport.promotionReportData.status == 20}" />
+														<h:outputText value=" #{msgs.label_year}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_pointsSeniority}" />
+														<h:outputText value="*" style="color: red;" rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData.status != 5}" />
+													</th>
+													<td width="35%">
+														<h:outputText id="selectedFieldSeniortyDegreeId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.seniorityDegree}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_pointsTraining}" />
+														<h:outputText value="*" style="color: red;" rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData.status != 5}" />
+													</th>
+													<td width="35%">
+														<h:inputText id="selectedTrainingDegreeId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.trainingDegree}" onkeypress="return isFloat(event,this.value,false);" maxlength="6" readonly="#{(promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp') or promotionCiviliansReport.promotionReportData.status == 20}">
+															<f:ajax event="change" execute="@this" render="@this promotionCiviliansReportFormId:selectedtotalDegreeId notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:inputText>
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_pointsPerformanceEvaluation}" />
+														<h:outputText value="*" style="color: red;" rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData.status != 5}" />
+													</th>
+													<td width="35%">
+														<h:inputText id="selectedEvaluationDegreeId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.evaluationDegree}" onkeypress="return isFloat(event,this.value,false);" maxlength="6" readonly="#{(promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp') or promotionCiviliansReport.promotionReportData.status == 20}">
+															<f:ajax event="change" execute="@this" render="@this promotionCiviliansReportFormId:selectedtotalDegreeId notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:inputText>
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_pointsEducation}" />
+														<h:outputText value="*" style="color: red;" rendered="#{promotionCiviliansReport.selectedPromotionReportDetailData.status != 5}" />
+													</th>
+													<td width="35%">
+														<h:inputText id="selectedEducationDegreeId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.educationDegree}" onkeypress="return isFloat(event,this.value,false);" maxlength="6" readonly="#{(promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp') or promotionCiviliansReport.promotionReportData.status == 20}">
+															<f:ajax event="change" execute="@this" render="@this promotionCiviliansReportFormId:selectedtotalDegreeId notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:inputText>
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_totalGrades}" />
+													</th>
+													<td width="35%">
+														<h:outputText id="selectedtotalDegreeId" value="#{promotionCiviliansReport.selectedPromotionReportDetailData.totalDegree}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_prsBonus}" />
+													</th>
+													<td width="35%">
+														<h:selectBooleanCheckbox value="#{promotionCiviliansReport.selectedPromotionReportDetailData.bonusFlagBoolean}" disabled="#{(promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp') or promotionCiviliansReport.promotionReportData.status == 20}">
+															<f:ajax event="change" listener="#{promotionCiviliansReport.handleBonus()}" execute="@this" render="@this notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:selectBooleanCheckbox>
+													</td>
+												</tr>
+												<tr>
+													<td colspan="4" style="">
+														<table align="center">
+															<tr>
+																<td width="100%" align="center">
+																	<h:commandButton style="width:150px" onclick="return validatePromotionDetailsData();" action="#{promotionCiviliansReport.savePromotionReportDetail()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{(promotionCiviliansReport.role == 'Requester' or promotionCiviliansReport.role == 'ReviewerEmp') and promotionCiviliansReport.promotionReportData.status != 20}">
+																		<f:ajax execute="promotionCiviliansReportFormId:jobDataPanelId  promotionCiviliansReportFormId:promotionDataPanelId" render="promotionCiviliansReportFormId:reportDetailsTableId promotionCiviliansReportFormId:jobDataPanelId  promotionCiviliansReportFormId:promotionDataPanelId promotionCiviliansReportFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																	</h:commandButton>
+																</td>
+															</tr>
+														</table>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<!-- end 2 -->
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="decisionCopiesPanelId">
+							<h:panelGroup rendered="#{promotionCiviliansReport.promotionReportData != null and promotionCiviliansReport.promotionReportData.id != null}">
+
+								<code:decisionCopies external="#{promotionCiviliansReport.promotionReportData.externalCopies}" internal="#{promotionCiviliansReport.internalCopies}" viewOnly="#{( promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'ReviewerEmp' ) or promotionCiviliansReport.promotionReportData.status == 20}" />
+
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<code:prevTasks rendered="#{promotionCiviliansReport.role != 'Requester'}" value="#{promotionCiviliansReport.prevTasks}" refuseRoles="SignManager," />
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{promotionCiviliansReport.currentEmployee}" rendered="#{promotionCiviliansReport.role != 'Requester' and promotionCiviliansReport.role != 'Notification' and promotionCiviliansReport.role != 'History'}">
+
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{promotionCiviliansReport.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+
+							<h:panelGroup rendered="#{promotionCiviliansReport.role == 'SignManager' or promotionCiviliansReport.role == 'ReviewerEmp'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{promotionCiviliansReport.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+
+						</code:curTask>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{promotionCiviliansReport.role == 'Notification' or promotionCiviliansReport.role == 'History'}" value="#{promotionCiviliansReport.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsSectionId">
+							<h:panelGroup rendered="#{promotionCiviliansReport.promotionReportData.id != null}">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<h:panelGroup rendered="#{promotionCiviliansReport.role == 'Requester' and promotionCiviliansReport.promotionReportData.status != 20}">
+												<h:commandButton id="sendBtnId" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" onclick="return handleOnAction('#{msgs.q_send}', 'validatePromotionData()');" action="#{promotionCiviliansReport.initProcess()}" styleClass="btn_normal_icon" >
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{promotionCiviliansReport.role == 'ReviewerEmp'}">
+												<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}', 'validatePromotionData()');" action="#{promotionCiviliansReport.approveRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton  onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;promotionCiviliansReportFormId:curTaskId:refuseReasonsId&quot;)');" action="#{promotionCiviliansReport.rejectRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{promotionCiviliansReport.role == 'SignManager'}">
+												<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;promotionCiviliansReportFormId:curTaskId:refuseReasonsId&quot;)');" action="#{promotionCiviliansReport.signSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="modifySmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;promotionCiviliansReportFormId:curTaskId:refuseReasonsId&quot;, &quot;promotionCiviliansReportFormId:curTaskId:notesId&quot;)');" action="#{promotionCiviliansReport.modifySM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;promotionCiviliansReportFormId:curTaskId:refuseReasonsId&quot;)');" action="#{promotionCiviliansReport.rejectSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{promotionCiviliansReport.role == 'Notification'}">
+												<h:commandButton id="nBtnId" action="#{promotionCiviliansReport.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

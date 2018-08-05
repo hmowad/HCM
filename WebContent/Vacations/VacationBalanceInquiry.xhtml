@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">    
+            function getEmp(contextPath){
+                openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{vacationBalanceInquiry.getLoginEmpPhysicalRegionFlag(vacationBalanceInquiry.employeeMenuActions.size() > 0)});
+             }
+            
+            function handleEmpMiniSearchResult(ret){ 
+            	 if(ret != null){
+                     document.getElementById('vacationBalanceForm:searchEmpIDId').value = ret[0];
+                     document.getElementById('vacationBalanceForm:searchNameId').value = ret[1];
+                     document.getElementById('vacationBalanceForm:searchNameId').innerHTML = ret[1];
+                     document.getElementById('vacationBalanceForm:searchCategoryId').value = ret[2];
+
+                     document.getElementById('vacationBalanceForm:searchEmpBtnId').click();
+                  }
+            }
+        </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="vacationBalanceForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{vacationBalanceInquiry.screenTitle}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_selectEmp}" />
+								</th>
+								<td width="35%">
+									<h:outputText id="searchNameId" value="#{vacationBalanceInquiry.selectedEmployee.name}" />
+									<h:inputHidden id="searchEmpIDId" value="#{vacationBalanceInquiry.selectedEmployee.empId}" />
+									<h:inputHidden id="searchCategoryId" value="#{vacationBalanceInquiry.selectedEmployee.categoryId}" />
+									<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+									<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{vacationBalanceInquiry.setVacationTypes()}">
+										<f:ajax execute="vacationBalanceForm:searchCategoryId" render="vacationBalanceForm:vacTypeId" />
+									</h:commandButton>
+								</td>
+							</tr>
+
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_vacType}" />
+								</th>
+								<td width="35%">
+									<h:selectOneMenu id="vacTypeId" value="#{vacationBalanceInquiry.selectedVacationType}">
+										<f:selectItems value="#{vacationBalanceInquiry.vacationTypes}" var="vacType" itemLabel="#{(vacationBalanceInquiry.selectedEmployee.categoryId == 1 or vacationBalanceInquiry.selectedEmployee.categoryId == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
+									</h:selectOneMenu>
+								</td>
+
+								<th width="20%">
+									<h:outputText value="#{msgs.label_balanceDate}" />
+								</th>
+								<td width="30%">
+									<util:hijri value="#{vacationBalanceInquiry.balanceInquiryDate}" viewOldRange="true" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_vacationBalance}" />
+								</th>
+								<td width="35%">
+									<h:outputText id="vacationBalanceId" value="#{vacationBalanceInquiry.vacationBalance}" escape="false" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton action="#{vacationBalanceInquiry.inquiryBalance}" value="#{msgs.label_inquiryBalance} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon">
+										<f:ajax execute="@form" render="vacationBalanceId notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

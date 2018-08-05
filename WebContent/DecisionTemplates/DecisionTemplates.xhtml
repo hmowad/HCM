@@ -1,0 +1,484 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function validateNotification() {
+			var decisionTitleId = document.getElementById('decisionTemplatesFormId:decisionTitleId').value;
+			var decisionDescId = document.getElementById('decisionTemplatesFormId:decisionDescId').value;
+			var introductionTitleId = document.getElementById('decisionTemplatesFormId:introductionTitleId').value;
+			var introductionId = document.getElementById('decisionTemplatesFormId:introductionId').value;
+			var clausesId = document.getElementById('decisionTemplatesFormId:clausesId').value;
+			var riyadhRegionHeaderId = document.getElementById('decisionTemplatesFormId:riyadhRegionHeaderId').value;
+
+			if (decisionTitleId == null || decisionTitleId.trim() == ''
+					|| decisionDescId == null || decisionDescId.trim() == ''
+					|| introductionTitleId == null || introductionTitleId.trim() == ''
+					|| introductionId == null || introductionId.trim() == ''
+					|| clausesId == null || clausesId.trim() == ''
+					|| riyadhRegionHeaderId == null || riyadhRegionHeaderId.trim() == '') {
+
+				alert('#{msgs.error_mandatoryFieldsRequired}');
+				return false;
+			}
+
+			return true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="decisionTemplatesFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_decisionTemplates}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_system}</th>
+									<td width="35%">
+										<h:selectOneMenu value="#{decisionTemplates.transactionClass}">
+											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />											
+											<f:selectItem itemLabel="#{msgs.title_vacations}" itemValue="60" />											
+											<f:selectItem itemLabel="#{msgs.label_recruitments}" itemValue="30" />
+											<f:selectItem itemLabel="#{msgs.title_movements}" itemValue="40" />
+											<f:selectItem itemLabel="#{msgs.title_missions}" itemValue="70" />
+											<f:selectItem itemLabel="#{msgs.title_promotions}" itemValue="50" />
+											<f:selectItem itemLabel="#{msgs.title_terminations}" itemValue="80" />
+											<f:selectItem itemLabel="#{msgs.title_trainingAndScholarship}" itemValue="90" />
+											<f:selectItem itemLabel="#{msgs.title_jobFormations}" itemValue="20" />
+										</h:selectOneMenu>
+									</td>
+									<th width="15%">#{msgs.label_category}</th>
+									<td width="35%">
+										<h:selectOneMenu value="#{decisionTemplates.categoryId}">
+											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+											<f:selectItems value="#{decisionTemplates.categories}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+								<tr>
+
+									<th width="15%">#{msgs.label_transactionType}</th>
+									<td width="35%">
+										<h:inputText value="#{decisionTemplates.transactionBussinessType}" onkeypress="return isDigit();" />
+									</td>
+									<th width="15%">#{msgs.label_templateIdentifier}</th>
+									<td width="35%">
+										<h:inputText value="#{decisionTemplates.reportClass}" onkeypress="return isDigit();" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_templateDesc}</th>
+									<td width="85%" colspan="3">
+										<h:inputText styleClass="inputDataSuperLarge" value="#{decisionTemplates.decisionDesc}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_templateValidityFrom}</th>
+									<td width="35%">
+										<util:hijri value="#{decisionTemplates.validFromDate}" nullable="true" viewOldRange="true" />
+									</td>
+									<th width="15%">#{msgs.label_to}</th>
+									<td width="35%">
+										<util:hijri value="#{decisionTemplates.validToDate}" nullable="true" viewFutureRange="true" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{decisionTemplates.search()}" title="#{msgs.label_searchByRoot}" styleClass="btn_normal_icon">
+										<f:ajax execute="decisionTemplatesFormId:searchPanelId" render="decisionTemplatesFormId:templatesTableId decisionTemplatesFormId:templateDetailsPanelId decisionTemplatesFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton action="#{decisionTemplates.resetSearch()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="decisionTemplatesFormId:searchPanelId decisionTemplatesFormId:templatesTableId decisionTemplatesFormId:templateDetailsPanelId decisionTemplatesFormId:notifyMessagesId " />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_searchResults}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="templatesTableId" rowKeyVar="index" var="template" value="#{decisionTemplates.templates}" rows="#{decisionTemplates.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 5%">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                         </rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_select}</f:facet>
+								<h:commandButton onclick="location.href='#detailPanelLocationId'" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon" action="#{decisionTemplates.selectTemplate(template)}">
+									<f:ajax render="decisionTemplatesFormId:templateDetailsPanelId decisionTemplatesFormId:notifyMessagesId" />
+								</h:commandButton>
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_system}</f:facet>
+								<h:outputText value="#{msgs.title_organizationHierarchy}" rendered="#{template.transactionClass == 10}" />
+								<h:outputText value="#{msgs.title_jobFormations}" rendered="#{template.transactionClass == 20}" />
+								<h:outputText value="#{msgs.label_recruitments}" rendered="#{template.transactionClass == 30}" />
+								<h:outputText value="#{msgs.title_movements}" rendered="#{template.transactionClass == 40}" />
+								<h:outputText value="#{msgs.title_promotions}" rendered="#{template.transactionClass == 50}" />
+								<h:outputText value="#{msgs.title_vacations}" rendered="#{template.transactionClass == 60}" />
+								<h:outputText value="#{msgs.title_missions}" rendered="#{template.transactionClass == 70}" />
+								<h:outputText value="#{msgs.title_terminations}" rendered="#{template.transactionClass == 80}" />
+								<h:outputText value="#{msgs.title_trainingAndScholarship}" rendered="#{template.transactionClass == 90}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_category}</f:facet>
+								<h:selectOneMenu disabled="true" value="#{template.categoryId}">
+									<f:selectItems value="#{decisionTemplates.categories}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+								</h:selectOneMenu>
+							</rich:column>
+							<rich:column style="width : 35%">
+								<f:facet name="header">#{msgs.label_templateDesc}</f:facet>
+								<h:outputText value="#{template.decisionDesc}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_decisionTitle}</f:facet>
+								<h:outputText value="#{template.decisionTitle}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_templateValidityFrom}</f:facet>
+								<h:outputText value="#{template.validFromDateString}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_to}</f:facet>
+								<h:outputText value="#{template.validToDateString}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_showOrPrint}" />
+								</f:facet>
+								<h:commandButton rendered="#{template.sampleTransactionId != null}" value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" styleClass="btn_icon" action="#{decisionTemplates.print(template)}" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<a href="#" id="detailPanelLocationId" />
+						<h:panelGroup id="templateDetailsPanelId">
+							<h:panelGroup rendered="#{decisionTemplates.selectedTemplate != null }">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{msgs.label_templateDetails}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:panelGroup id="templatePanelId">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<th width="15%">
+															#{msgs.label_system}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="35%">
+															<h:outputText value="#{msgs.title_organizationHierarchy}" rendered="#{decisionTemplates.selectedTemplate.transactionClass == 10}" />
+															<h:outputText value="#{msgs.title_jobFormations}" rendered="#{decisionTemplates.selectedTemplate.transactionClass == 20}" />
+															<h:outputText value="#{msgs.label_recruitments}" rendered="#{decisionTemplates.selectedTemplate.transactionClass == 30}" />
+															<h:outputText value="#{msgs.title_movements}" rendered="#{decisionTemplates.selectedTemplate.transactionClass == 40}" />
+															<h:outputText value="#{msgs.title_promotions}" rendered="#{decisionTemplates.selectedTemplate.transactionClass == 50}" />
+															<h:outputText value="#{msgs.title_vacations}" rendered="#{decisionTemplates.selectedTemplate.transactionClass == 60}" />
+															<h:outputText value="#{msgs.title_missions}" rendered="#{decisionTemplates.selectedTemplate.transactionClass == 70}" />
+															<h:outputText value="#{msgs.title_terminations}" rendered="#{decisionTemplates.selectedTemplate.transactionClass == 80}" />
+															<h:outputText value="#{msgs.title_trainingAndScholarship}" rendered="#{decisionTemplates.selectedTemplate.transactionClass == 90}" />
+														</td>
+														<th width="15%">
+															#{msgs.label_category}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="35%">
+															<h:selectOneMenu disabled="true" value="#{decisionTemplates.selectedTemplate.categoryId}">
+																<f:selectItems value="#{decisionTemplates.categories}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+															</h:selectOneMenu>
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_transactionType}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="35%">
+															<h:outputText id="transactionBusinessTypeId" value="#{decisionTemplates.selectedTemplate.transactionBusinessType}" />
+														</td>
+														<th width="15%">
+															#{msgs.label_transactionClassType}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="35%">
+															<h:outputText id="transactionClassTypeId" value="#{decisionTemplates.selectedTemplate.transactionClassType}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_templateIdentifier}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="35%">
+															<h:outputText id="reportClassId" value="#{decisionTemplates.selectedTemplate.reportClass}" />
+														</td>
+														<th width="15%">#{msgs.label_sampleTransaction}</th>
+														<td width="35%">
+															<h:inputText value="#{decisionTemplates.selectedTemplate.sampleTransactionId}" onkeypress="return isDigit()" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_templateValidityFrom}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="35%">
+															<util:hijri value="#{decisionTemplates.selectedTemplate.validFromDate}" viewOldRange="true" />
+														</td>
+														<th width="15%">
+															#{msgs.label_to}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="35%">
+															<util:hijri value="#{decisionTemplates.selectedTemplate.validToDate}" viewFutureRange="true" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_templateDesc}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputText id="decisionDescId" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.decisionDesc}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_decisionTitle}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputText id="decisionTitleId" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.decisionTitle}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_introductionTitle}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="3" id="introductionTitleId" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.introductionTitle}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_introduction}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="3" id="introductionId" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.introduction}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">#{msgs.label_alternativeIntroduction}</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="3" id="alternativeIntroductionId" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.alternativeIntroduction}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_clauses}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="5" id="clausesId" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.clauses}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_riyadhRegionHeader}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="3" id="riyadhRegionHeaderId" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.riyadhRegionHeader}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_easternRegionHeader}
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="3" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.easternRegionHeader}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_northernBordersRegionHeader}
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="3" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.northernBordersRegionHeader}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_jawfRegionHeader}
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="3" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.jawfRegionHeader}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_tabukRegionHeader}
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="3" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.tabukRegionHeader}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_makkahRegionHeader}
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="3" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.makkahRegionHeader}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_jazanRegionHeader}
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="3" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.jazanRegionHeader}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_asirRegionHeader}
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="3" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.asirRegionHeader}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_najranRegionHeader}
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="3" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.najranRegionHeader}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_madinahRegionHeader}
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="3" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.madinahRegionHeader}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_academyRegionHeader}
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputTextarea rows="3" styleClass="inputDataSuperLarge" value="#{decisionTemplates.selectedTemplate.academyRegionHeader}" />
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td>
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+														<h:commandButton rendered="#{decisionTemplates.admin}" action="#{decisionTemplates.saveTemplate()}" onclick="return validateNotification();" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
+															<f:ajax execute="decisionTemplatesFormId:templateDetailsPanelId" render="decisionTemplatesFormId:notifyMessagesId" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

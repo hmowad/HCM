@@ -1,0 +1,577 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+	//<![CDATA[
+
+	function changeCategory() {
+		var confirmedFlag = confirm('#{msgs.q_confirmChangeCategoryClass}');
+		var oldCategoryClass = document.getElementById('organizationTableModificationFormId:oldCategoryClassHId').value;
+
+		if(! confirmedFlag) {
+ 			document.getElementById('organizationTableModificationFormId:categoryClassId').value = oldCategoryClass;
+ 			return false;
+		} else {
+			document.getElementById('organizationTableModificationFormId:oldCategoryClassHId').value = document.getElementById('organizationTableModificationFormId:categoryClassId').value;
+			return true;
+		}
+	}
+	function getBasicJobsName(contextPath) {
+		var categoryClass = document.getElementById('organizationTableModificationFormId:categoryClassId').value;
+
+		openBasicJobsNamesMiniSearch(contextPath, 'handleBasicJobsNamesMiniSearchResult(ret)', 2, categoryClass, 1);
+	}
+	
+	function handleBasicJobsNamesMiniSearchResult(ret){
+		if (ret != null) {
+			document.getElementById('organizationTableModificationFormId:returnedBasicJobsNamesIdsHId').value = ret[0];
+			document.getElementById('organizationTableModificationFormId:returnedBasicJobsNamesHId').value = ret[1];
+			document.getElementById('organizationTableModificationFormId:returnedCategoryIdsHId').value = ret[2];
+
+			// Click add details button
+			document.getElementById('organizationTableModificationFormId:addDetailBtnId').click();
+		}
+	}
+	
+	function getMinorSpec(contextPath) {
+		var categoryClass = document.getElementById('organizationTableModificationFormId:categoryClassId').value;
+		if (categoryClass == 1)
+			minorSpecializationsMiniSearch(contextPath,'handleMinorSpecializationMiniSearchResult(ret)', 1, 0);
+		else
+			minorSpecializationsMiniSearch(contextPath,'handleMinorSpecializationMiniSearchResult(ret)', 2, 0);
+	}
+	
+	function handleMinorSpecializationMiniSearchResult(ret){
+		if (ret != null) {
+			document.getElementById('organizationTableModificationFormId:jobMinorSpecializationIDHId').value = ret[0];
+			document.getElementById('organizationTableModificationFormId:jobMinorSpecializationDescriptionHId').value = ret[2];
+			document.getElementById('organizationTableModificationFormId:jobMinorSpecializationDescriptionId').innerHTML = ret[2];
+			document.getElementById('organizationTableModificationFormId:jobGeneralSpecializationHId').value = ret[6];
+			document.getElementById('organizationTableModificationFormId:jobGeneralTypeHId').value = ret[7];
+			document.getElementById('organizationTableModificationFormId:jobMinorSpecializationBtnId').click();
+		}
+	}
+	
+	function getJobClassification(contextPath) {
+		var rankCode = document.getElementById('organizationTableModificationFormId:jobRankCodeId').value;
+		if (rankCode == null || rankCode == '' || rankCode == -1) {
+			alert('#{msgs.error_insertJobRankFirst}');
+			return;
+		}
+		openJobClassificationsMiniSearch(contextPath,'handleJobClassificationMiniSearchResult(ret)', rankCode);
+	}
+	
+	function handleJobClassificationMiniSearchResult(ret){
+		if (ret != null) {
+			document.getElementById('organizationTableModificationFormId:jobClassificationIDHId').value = ret[0];
+			document.getElementById('organizationTableModificationFormId:jobClassificationCodeHId').value = ret[1];
+			document.getElementById('organizationTableModificationFormId:jobClassificationCodeId').innerHTML = ret[1];
+			document.getElementById('organizationTableModificationFormId:jobClassificationDescriptionHId').value = ret[2];
+		}
+	}
+
+	function validateData(){
+
+		var unitsListSize = document.getElementById('organizationTableModificationFormId:unitsListSizeHId').value;
+		if(unitsListSize == 0){
+			alert('#{msgs.error_orgTableUnitsListEmpty}');
+            return false;
+		}
+
+		var decNumber = document.getElementById('organizationTableModificationFormId:decisionNumberId').value.trim();
+        if(decNumber == null || decNumber == ''){
+        	alert('#{msgs.error_decNumberMandatory}');
+            return false;
+        } 
+
+		var detailsListSize = document.getElementById('organizationTableModificationFormId:detailsListSizeHId').value;
+		if(detailsListSize == 0){
+			alert('#{msgs.error_orgTableDetailsListEmpty}');
+            return false;
+		}  
+
+        return true;
+    }
+
+	function validateDetailData(){
+
+		// Check details List size
+		var detailsListSize = document.getElementById('organizationTableModificationFormId:detailsListSizeHId').value;
+		if(detailsListSize == 0){
+			alert('#{msgs.error_orgTableDetailsListEmpty}');
+            return false;
+		}
+				
+		var jobRank = document.getElementById('organizationTableModificationFormId:jobRankCodeId').value.trim();
+        if(jobRank == null || jobRank == '' || jobRank == -1){
+        	alert('#{msgs.error_orgTableDetailEmpRankMandatory}');
+            return false;
+        }
+        
+        var jobsCount = document.getElementById('organizationTableModificationFormId:jobsCountId').value.trim();
+        if(jobsCount == null || jobsCount=='' || jobsCount <= 0 || jobsCount > 999){
+        	alert('#{msgs.error_jobsCountMandatory}');
+            return false;
+        }
+
+        var minorSpec = document.getElementById('organizationTableModificationFormId:jobMinorSpecializationDescriptionId').innerHTML.trim();
+        if(minorSpec == null || minorSpec=='' ){
+         	alert('#{msgs.error_orgTableDetailMinorSpecializationMandatory}');
+            return false;
+        }
+
+        var categoryClass = document.getElementById('organizationTableModificationFormId:categoryClassId').value.trim();
+ 		if(categoryClass == null || categoryClass == ''){
+			alert('#{msgs.error_categoryClassMandatory}');
+		}
+         
+		if(categoryClass == 3){
+			var classificationCode = document.getElementById('organizationTableModificationFormId:jobClassificationCodeId').innerHTML;
+			if(classificationCode == null || classificationCode=='' || classificationCode==0){
+		        alert('#{msgs.error_orgTableDetailClassificationIsMandatory}');
+		        return false;
+            }
+		}
+		
+        return true;
+    }
+	
+	// ]]>
+    </script>
+
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{organizationTableModification.initialize}" />
+	<h:form id="organizationTableModificationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_organizationTableModification}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="35%" valign="top">
+									<!-- tree -->
+									<table cellpadding="0" cellspacing="0" width="98%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsTree}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:inputText id="searchNameValue" value="#{organizationTableModification.searchName}" styleClass="inputDataLarge" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_search}" action="#{organizationTableModification.search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+																<f:ajax render="organizationTableModificationFormId:treePanelId organizationTableModificationFormId:notifyMessagesId" execute="searchNameValue" />
+															</h:commandButton>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<!-- toChange ids, value of tree, .... -->
+															<h:panelGroup id="treePanelId">
+																<rich:tree id="unitTreeId" toggleListener="#{organizationTableModification.treeToggleHandler(item)}" render="treePanelId" value="#{organizationTableModification.unitTree}" var="item" dir="#{msgs.dir}" nodeType="unitType">
+																	<rich:treeNode type="unitType" expanded="#{item.expanded}" iconExpanded="/resources/images/#{item.unitType}.png" iconCollapsed="/resources/images/#{item.unitType}.png" iconLeaf="/resources/images/#{item.unitType}.png" title="#{item.orderUnderParent}" ontoggle="unMaskScreen();">
+																		<h:commandLink value="#{item.unitName}" action="#{organizationTableModification.selectUnit(item)}">
+																			<f:ajax execute="organizationTableModificationFormId:decisionDataPanelId" render="organizationTableModificationFormId:unitsListId organizationTableModificationFormId:decisionDataPanelId organizationTableModificationFormId:detailsPanelId organizationTableModificationFormId:actionsBtnsId organizationTableModificationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandLink>
+																	</rich:treeNode>
+																</rich:tree>
+																<h:outputStylesheet library="css" name="tree.css" />
+															</h:panelGroup>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="65%" valign="top">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%" height="12" />
+										</tr>
+										<!-- Category chosen -->
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="categoryPanelId">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<th>
+																#{msgs.label_category}
+																<font style="color: red;">*</font>
+															</th>
+															<td>
+																<h:selectOneMenu id="categoryClassId" value="#{organizationTableModification.selectedCategoryClass}" onchange="return changeCategory()">
+																	<f:selectItems value="#{organizationTableModification.categoryClasses}" var="category" itemValue="#{category.id}" itemLabel="#{category.description}" />
+
+																	<f:ajax event="change" listener="#{organizationTableModification.reset()}" render="organizationTableModificationFormId:unitsListId organizationTableModificationFormId:decisionDataPanelId organizationTableModificationFormId:detailsPanelId organizationTableModificationFormId:actionsBtnsId organizationTableModificationFormId:notifyMessagesId" />
+
+																</h:selectOneMenu>
+																<h:inputHidden id="oldCategoryClassHId" value="#{organizationTableModification.selectedCategoryClass}" />
+															</td>
+															<th>#{msgs.label_categoryClassMessageForModification}</th>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+
+										<!-- Units selected -->
+										<tr>
+											<td width="100%">
+												<table border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td>
+															<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>#{msgs.label_organizationTableUnits}</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<!-- Org Table Units -->
+															<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>
+																		<rich:dataTable id="unitsListId" var="unit" rowKeyVar="index" value="#{organizationTableModification.selectedUnits}" rows="#{organizationTableModification.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+																			<rich:column>
+																				<f:facet name="header" style="width : 5%;">#</f:facet>
+																					#{index+1}
+																				</rich:column>
+																			<rich:column>
+																				<f:facet name="header">
+																					<h:outputText value="#{msgs.label_organizationTableUnits}" />
+																				</f:facet>
+																				<h:outputText value="#{unit.fullName}" />
+																			</rich:column>
+																			<rich:column style="width : 5%;">
+																				<f:facet name="header">#{msgs.label_delete}</f:facet>
+																				<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{organizationTableModification.deleteUnit(unit)}" onclick="return confirm('#{msgs.q_delete}');">
+																					<f:ajax execute="organizationTableModificationFormId:decisionDataPanelId" render="organizationTableModificationFormId:treePanelId organizationTableModificationFormId:unitsListId organizationTableModificationFormId:decisionDataPanelId organizationTableModificationFormId:detailsPanelId organizationTableModificationFormId:actionsBtnsId organizationTableModificationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																				</h:commandButton>
+																			</rich:column>
+																			<f:facet name="footer">
+																				<rich:dataScroller oncomplete="unMaskScreen()" fastControls="hide">
+																					<f:facet name="first">#{msgs.label_first}</f:facet>
+																					<f:facet name="last">#{msgs.label_last}</f:facet>
+																					<f:facet name="next">#{msgs.label_next}</f:facet>
+																					<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																				</rich:dataScroller>
+																			</f:facet>
+																		</rich:dataTable>
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<!-- Decision number and date -->
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="decisionDataPanelId">
+													<table border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<td>
+																<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<td>#{msgs.label_decisionData}</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<!-- Decision info -->
+																<table class="sectionContent" cellpadding="0" cellspacing="0" width="100%">
+																	<tr>
+																		<td width="100%">
+																			<table cellpadding="0" cellspacing="0">
+																				<tr>
+																					<th width="20%">
+																						#{msgs.label_decisionNumber}
+																						<h:outputText value=" " />
+																						<font style="color: red;">*</font>
+																					</th>
+																					<td width="30%">
+																						<h:inputText id="decisionNumberId" value="#{organizationTableModification.decisionNumber}" />
+																					</td>
+																					<th width="20%">
+																						#{msgs.label_decisionDate}
+																						<font style="color: red;">*</font>
+																					</th>
+																					<td width="30%">
+																						<util:hijri value="#{organizationTableModification.decisionDate}" />
+																					</td>
+																				</tr>
+																			</table>
+																		</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+
+										<!-- Details panel -->
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="detailsPanelId">
+													<!-- organizationTable Details -->
+													<table border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<td colspan="2">
+																<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<td>#{msgs.label_organizationalDetails}</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<table border="0" cellpadding="0" cellspacing="0" width="100%">
+																	<tr>
+																		<td width="54%" valign="top">
+																			<table class="sectionContent" cellpadding="0" cellspacing="0">
+																				<tr>
+																					<td>
+																						<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getBasicJobsName('#{request.contextPath}'); return false;" disabled="#{organizationTableModification.selectedUnits.size() == 0}" />
+																						<h:commandButton id="addDetailBtnId" action="#{organizationTableModification.addOrganizationTableDetail()}" style="display: none;">
+																							<f:ajax execute="organizationTableModificationFormId:returnedBasicJobsNamesIdsHId organizationTableModificationFormId:returnedBasicJobsNamesHId organizationTableModificationFormId:returnedCategoryIdsHId" render="organizationTableModificationFormId:detailsPanelId organizationTableModificationFormId:actionsBtnsId organizationTableModificationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																						</h:commandButton>
+																						<h:inputHidden id="returnedBasicJobsNamesIdsHId" value="#{organizationTableModification.selectedBasicJobsNamesIds}" />
+																						<h:inputHidden id="returnedBasicJobsNamesHId" value="#{organizationTableModification.selectedBasicJobsNamesNames}" />
+																						<h:inputHidden id="returnedCategoryIdsHId" value="#{organizationTableModification.selectedBasicJobNamesCategoriesIds}" />
+
+																					</td>
+																				</tr>
+																				<tr>
+																					<td>
+																						<rich:dataTable id="detailsTableId" var="detail" rowKeyVar="index" value="#{organizationTableModification.organizationTableDetails}" rows="#{organizationTableModification.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+																							<rich:column style="width : 6%;">
+																								<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_select}" onclick="changeSelectedRowStyle(this.parentElement.parentElement);" action="#{organizationTableModification.selectOrganizationTableDetail(detail)}" styleClass="btn_icon">
+																									<f:ajax render="organizationTableModificationFormId:detailsDataId organizationTableModificationFormId:notifyMessagesId" />
+																								</h:commandButton>
+																							</rich:column>
+																							<rich:column>
+																								<f:facet name="header">
+																									<h:outputText value="#{msgs.label_basicJobName}" />
+																								</f:facet>
+																								<h:outputText value="#{detail.basicJobName}" />
+																							</rich:column>
+																							<rich:column>
+																								<f:facet name="header">
+																									<h:outputText value="#{organizationTableModification.selectedCategoryClass == 1 ? msgs.label_rank : msgs.label_personRank}" />
+																								</f:facet>
+																								<h:outputText value="#{detail.rankDescription}" />
+																							</rich:column>
+																							<rich:column>
+																								<f:facet name="header">
+																									<h:outputText value="#{msgs.label_count}" />
+																								</f:facet>
+																								<h:outputText value="#{detail.jobsCount}" />
+																							</rich:column>
+																							<rich:column style="width : 5%;">
+																								<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{organizationTableModification.deleteOrganizationTableDetail(detail)}" onclick="return confirm('#{msgs.q_delete}');">
+																									<f:ajax render="organizationTableModificationFormId:detailsPanelId organizationTableModificationFormId:actionsBtnsId organizationTableModificationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																								</h:commandButton>
+																							</rich:column>
+																							<f:facet name="footer">
+																								<rich:dataScroller oncomplete="unMaskScreen()" fastControls="hide">
+																									<f:facet name="first">#{msgs.label_first}</f:facet>
+																									<f:facet name="last">#{msgs.label_last}</f:facet>
+																									<f:facet name="next">#{msgs.label_next}</f:facet>
+																									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																								</rich:dataScroller>
+																							</f:facet>
+																						</rich:dataTable>
+																					</td>
+																				</tr>
+																			</table>
+																		</td>
+																		<td width="1%" valign="top"></td>
+																		<td width="45%" valign="top">
+																			<h:panelGroup id="detailsDataId">
+																				<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																					<tr>
+																						<th colspan="2">#{msgs.label_extraDataForJobsGeneration}</th>
+																					</tr>
+																					<tr>
+																						<th>
+																							#{organizationTableModification.selectedCategoryClass == 1 ? msgs.label_rank : msgs.label_personRank}
+																							<font style="color: red;">*</font>
+																						</th>
+																						<td>
+																							<h:selectOneMenu id="jobRankCodeId" value="#{organizationTableModification.selectedOrganizationTableDetail.rankId}">
+																								<f:selectItem itemValue="-1" itemLabel="" />
+																								<f:selectItems value="#{organizationTableModification.ranks}" var="rank" itemValue="#{rank.id}" itemLabel="#{rank.description}" />
+																							</h:selectOneMenu>
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>
+																							#{msgs.label_count}
+																							<font style="color: red;">*</font>
+																						</th>
+																						<td>
+																							<h:inputText id="jobsCountId" value="#{organizationTableModification.selectedOrganizationTableDetail.jobsCount}" styleClass="inputDataNormal" onkeypress="return isDigit(event);" maxlength="3" />
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>
+																							#{msgs.label_jobMinorSpec}
+																							<font style="color: red;">*</font>
+																						</th>
+																						<td>
+																							<h:outputText id="jobMinorSpecializationDescriptionId" value="#{organizationTableModification.selectedOrganizationTableDetail.minorSpecializationDescription}" />
+																							<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getMinorSpec('#{request.contextPath}');return false;" />
+																							<h:inputHidden id="jobMinorSpecializationIDHId" value="#{organizationTableModification.selectedOrganizationTableDetail.minorSpecializationId}" />
+																							<h:inputHidden id="jobMinorSpecializationDescriptionHId" value="#{organizationTableModification.selectedOrganizationTableDetail.minorSpecializationDescription}" />
+																							<h:inputHidden id="jobGeneralSpecializationHId" value="#{organizationTableModification.selectedOrganizationTableDetail.generalSpecialization}" />
+																							<h:inputHidden id="jobGeneralTypeHId" value="#{organizationTableModification.selectedOrganizationTableDetail.generalType}" />
+																							<h:commandButton id="jobMinorSpecializationBtnId" style="display: none;">
+																								<f:ajax execute="organizationTableModificationFormId:jobGeneralSpecializationHId organizationTableModificationFormId:jobGeneralTypeHId" 
+																										render="organizationTableModificationFormId:generalSpecializationPanelId organizationTableModificationFormId:generalTypePanelId organizationTableModificationFormId:notifyMessagesId" />
+																							</h:commandButton>
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>
+																							#{msgs.label_generalSpec}
+																							<font style="color: red;">*</font>
+																						</th>
+																						<td>
+																							<h:panelGroup id="generalSpecializationPanelId">
+																								<h:outputText rendered="#{organizationTableModification.selectedOrganizationTableDetail.generalSpecialization == 1}" value="#{msgs.label_overland}" />
+																								<h:outputText rendered="#{organizationTableModification.selectedOrganizationTableDetail.generalSpecialization == 2}" value="#{msgs.label_naval}" />
+																								<h:outputText rendered="#{organizationTableModification.selectedOrganizationTableDetail.generalSpecialization == 3}" value="#{msgs.label_aerial}" />
+																							</h:panelGroup>
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>
+																							#{msgs.label_generalType}
+																							<font style="color: red;">*</font>
+																						</th>
+																						<td>
+																							<h:panelGroup id="generalTypePanelId">
+																								<h:outputText rendered="#{organizationTableModification.selectedOrganizationTableDetail.generalType == 1}" value="#{msgs.label_jobTypeNormal}" />
+																								<h:outputText rendered="#{organizationTableModification.selectedOrganizationTableDetail.generalType == 2}" value="#{msgs.label_jobTypeTechnical}" />
+																								<h:outputText rendered="#{organizationTableModification.selectedOrganizationTableDetail.generalType == 3}" value="#{msgs.label_jobTypeField}" />
+																							</h:panelGroup>
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>
+																							#{msgs.label_approved}
+																							<font style="color: red;">*</font>
+																						</th>
+																						<td>
+																							<h:selectOneRadio value="#{organizationTableModification.selectedOrganizationTableDetail.approvedFlag}" disabled="#{organizationTableModification.selectedOrganizationTableDetail.categoryId.longValue() != 2}">
+																								<f:selectItem itemValue="1" itemLabel="#{msgs.label_approved}" />
+																								<f:selectItem itemValue="0" itemLabel="#{msgs.label_notApproved}" />
+																							</h:selectOneRadio>
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>
+																							#{msgs.label_jobClass}
+																							<font style="color: red;">*</font>
+																						</th>
+																						<td>
+																							<h:outputText id="jobClassificationCodeId" value="#{organizationTableModification.selectedOrganizationTableDetail.classificationJobCode}" />
+																							<h:commandButton id="jobClassificationBtnId" title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getJobClassification('#{request.contextPath}'); return false;" disabled="#{organizationTableModification.selectedOrganizationTableDetail.categoryId != 3}" />
+																							<h:inputHidden id="jobClassificationIDHId" value="#{organizationTableModification.selectedOrganizationTableDetail.classificationId}" />
+																							<h:inputHidden id="jobClassificationCodeHId" value="#{organizationTableModification.selectedOrganizationTableDetail.classificationJobCode}" />
+																							<h:inputHidden id="jobClassificationDescriptionHId" value="#{organizationTableModification.selectedOrganizationTableDetail.classificationDescription}" />
+																						</td>
+																					</tr>
+																					<tr>
+																						<td colspan="2" width="100%" height="5" />
+																					</tr>
+																					<tr>
+																						<td colspan="2">
+																							<h:commandButton action="#{organizationTableModification.saveDetail()}" styleClass="btn_normal_icon" value="#{msgs.label_saveData} &nbsp; #{msgs.fa_floppy_o}" onclick="return handleOnAction('#{msgs.q_save}', 'validateDetailData()');" style="float:left">
+																								<f:ajax execute="organizationTableModificationFormId:detailsPanelId" render="organizationTableModificationFormId:detailsTableId organizationTableModificationFormId:notifyMessagesId" />
+																							</h:commandButton>
+																						</td>
+																					</tr>
+																				</table>
+																			</h:panelGroup>
+																		</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="actionsBtnsId">
+													<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="100%">
+																<h:commandButton action="#{organizationTableModification.save()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');" disabled="#{organizationTableModification.selectedUnits.size() == 0}" rendered="#{! organizationTableModification.done}">
+																	<f:ajax execute="organizationTableModificationFormId:categoryClassId organizationTableModificationFormId:unitsListId organizationTableModificationFormId:decisionDataPanelId" render="organizationTableModificationFormId:actionsBtnsId organizationTableModificationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+																</h:commandButton>
+																<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{organizationTableModification.reset()}">
+																	<f:ajax render="organizationTableModificationFormId:treePanelId organizationTableModificationFormId:unitsListId organizationTableModificationFormId:decisionDataPanelId organizationTableModificationFormId:detailsPanelId organizationTableModificationFormId:actionsBtnsId organizationTableModificationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+																</h:commandButton>
+																<h:inputHidden id="detailsListSizeHId" value="#{organizationTableModification.organizationTableDetails.size()}" />
+																<h:inputHidden id="unitsListSizeHId" value="#{organizationTableModification.selectedUnits.size()}" />
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+	function getEmployee(contextPath) {
+		if(#{employeesTrainingDecisionsInquiry.mode} == 1){
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{employeesTrainingDecisionsInquiry.getLoginEmpPhysicalRegionFlag(true)});
+		} else if(#{employeesTrainingDecisionsInquiry.mode} == 2){
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, -1);
+		} else {
+			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 9, -1, -1, -1, -1, -1, #{employeesTrainingDecisionsInquiry.loginEmpData.physicalUnitHKey});
+		}
+	}
+	
+	function handleEmpMiniSearchResult(ret) {
+		if(ret!=null) { 
+	         document.getElementById('employeesTrainingDecisionsInquiryFormId:employeeIDId').value=ret[0];
+	         document.getElementById('employeesTrainingDecisionsInquiryFormId:employeeNameId').innerHTML=ret[1];
+		}
+	}
+
+	function searchValidation() {
+		 var empId = document.getElementById('employeesTrainingDecisionsInquiryFormId:employeeIDId').value;
+		 if(empId == null || empId == '' || empId == -1) {
+			 alert("#{msgs.error_employeeMandatory}");
+			 return false;
+		}
+		return true;
+	}
+		//]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="employeesTrainingDecisionsInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_employeesTrainingDecisionsInquiry}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="10%">
+										<h:outputText value="#{msgs.label_emp}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="40%">
+										<h:outputText id="employeeNameId" value="#{employeesTrainingDecisionsInquiry.empName}"/>
+										<h:outputText value=" " />
+										<h:inputHidden id="employeeIDId" value="#{employeesTrainingDecisionsInquiry.empId}" />
+										<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" rendered="#{!(employeesTrainingDecisionsInquiry.mode == 3 and employeesTrainingDecisionsInquiry.loginEmpData.isManager == 0)}"/>
+									</td>
+									<th>
+										<h:outputText value="#{msgs.label_decisionType}" />
+									</th>
+									<td>
+										<h:selectOneMenu value="#{employeesTrainingDecisionsInquiry.transactionTypeId}">
+											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+											<f:selectItem itemValue="50" itemLabel="#{msgs.label_electronicCertificateIssue}" />
+											<f:selectItem itemValue="51" itemLabel="#{msgs.label_traineeCourseCancellation}" />
+										</h:selectOneMenu>
+									</td>
+
+								</tr>
+								<tr>
+									<th width="10%">#{msgs.label_courseStartDateFrom}</th>
+									<td width="40%">
+										<util:hijri value="#{employeesTrainingDecisionsInquiry.fromDate}" nullable="true" />
+									</td>
+									<th width="10%">#{msgs.label_courseStartDateTo}</th>
+									<td width="40%">
+										<util:hijri value="#{employeesTrainingDecisionsInquiry.toDate}" nullable="true" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+						<td>
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton id="searchBtnID" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{employeesTrainingDecisionsInquiry.search()}" onclick="return searchValidation();" title="#{msgs.label_searchByRoot}" styleClass="btn_normal_icon">
+											<f:ajax execute="employeesTrainingDecisionsInquiryFormId:searchPanelId" render="employeesTrainingDecisionsInquiryFormId:transactionsTableId employeesTrainingDecisionsInquiryFormId:notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{employeesTrainingDecisionsInquiry.reset()}" styleClass="btn_normal_icon">
+											<f:ajax render="employeesTrainingDecisionsInquiryFormId:searchPanelId employeesTrainingDecisionsInquiryFormId:transactionsTableId employeesTrainingDecisionsInquiryFormId:notifyMessagesId" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				
+				<tr>
+					<td width="100%">
+						<rich:dataTable id="transactionsTableId" value="#{employeesTrainingDecisionsInquiry.transactionDetails}" var="transaction" rows="#{employeesTrainingDecisionsInquiry.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+							<rich:column style="width : 5%">
+								<f:facet name="header">#</f:facet>
+                                                #{index + 1}
+                                            </rich:column>
+							<rich:column style="width:16%">
+								<f:facet name="header">#{msgs.label_trainingCourseName}</f:facet>
+								<h:outputText value="#{transaction.courseName}" />
+							</rich:column>
+							<rich:column style="width:12%">
+								<f:facet name="header">#{msgs.label_decisionType}</f:facet>
+								<h:outputText value="#{transaction.transactionTypeId == 50 ? msgs.label_electronicCertificateIssue : msgs.label_traineeCourseCancellation}" />
+							</rich:column>
+							<rich:column style="width:12%">
+								<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+								<h:outputText value="#{transaction.decisionNumber}" />
+							</rich:column>
+							<rich:column style="width:12%">
+								<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+								<h:outputText value="#{transaction.decisionDate}" />
+							</rich:column>
+							<rich:column style="width:12%">
+								<f:facet name="header">#{msgs.label_trainingUnit}</f:facet>
+								<h:outputText value="#{transaction.trainingUnitName}" />
+							</rich:column>
+							<rich:column style="width:5%">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_print}" />
+								</f:facet>
+								<h:commandButton value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" action="#{employeesTrainingDecisionsInquiry.print(transaction)}" styleClass="btn_icon" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+									<f:facet name="first">
+														#{msgs.label_first}
+	                                            	</f:facet>
+									<f:facet name="last">
+                                                		#{msgs.label_last}
+                                            		</f:facet>
+									<f:facet name="next">
+	                                              		#{msgs.label_next}
+	                                        	    </f:facet>
+									<f:facet name="previous">
+	                                                	#{msgs.label_previous}
+	                                            	</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

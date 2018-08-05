@@ -1,0 +1,364 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+		function getEmployee(contextPath) {
+			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 9, -1, -1, -1, -1, -1, '#{morningTrainingRequest.privilegeUnitHkey}');
+		}
+
+		function handleEmpMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('morningTrainingRequestFormId:beneficiaryEmployeeHId').value = ret[0];
+				document.getElementById('morningTrainingRequestFormId:beneficiaryEmployeeCategoryId').value = ret[2];
+				document.getElementById('morningTrainingRequestFormId:searchEmpBtnId').click();
+			}
+		}
+		function getCourseEvents() {
+			openTrainingCivilCourseEventsMiniSearch('#{request.contextPath}','handleCourseEventsMiniSearchResult(ret)', 5, -1);
+		}
+
+		function handleCourseEventsMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('morningTrainingRequestFormId:trainingCourseEventIdHId').value = ret[0];
+				document.getElementById('morningTrainingRequestFormId:selectTrainingCourseEventBtnId').click();
+			}
+		}
+
+
+
+		function validateRequest() {
+
+			var courseEventId = document.getElementById('morningTrainingRequestFormId:trainingCourseEventIdHId').value;
+
+			if (courseEventId == null || courseEventId == '-1') {
+				alert('#{msgs.error_trainingCourseIsMandatory}');
+				return false;
+			}
+			return true;
+		}
+		// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="morningTrainingRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{morningTrainingRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_trainingCourseData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="courseDetailsPanelId">
+
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_trainingCourseName}" />
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText value="#{morningTrainingRequest.selectedCourseEvent.courseName}" />
+										<h:commandButton rendered="#{morningTrainingRequest.modify}" value="#{msgs.fa_external_link}" onclick="getCourseEvents(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										<h:commandButton id="selectTrainingCourseEventBtnId" style="display:none;" action="#{morningTrainingRequest.selectCourseEvent()}">
+											<f:ajax execute="morningTrainingRequestFormId:trainingCourseEventIdHId" render="morningTrainingRequestFormId:courseDetailsPanelId morningTrainingRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+										<h:inputHidden id="trainingCourseEventIdHId" value="#{morningTrainingRequest.selectedCourseEventId}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_courseExecutionParty}" />
+									</th>
+									<td width="35%">
+										<h:outputText id="externalPartyNameId" value="#{morningTrainingRequest.selectedCourseEvent.externalPartyDesc}" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_courseExecutionAddress}" />
+									</th>
+									<td width="35%">
+										<h:outputText id="externalPartyAddressId" value="#{morningTrainingRequest.selectedCourseEvent.externalPartyAddress}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_courseStartDate}</th>
+									<td width="35%">
+										<h:outputText value="#{morningTrainingRequest.selectedCourseEvent.actualStartDateString}" />
+									</td>
+									<th width="15%">#{msgs.label_courseEndDate}</th>
+									<td width="35%">
+										<h:outputText value="#{morningTrainingRequest.selectedCourseEvent.actualEndDateString}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_justifications}</th>
+									<td width="85%" colspan="3">
+										<h:inputTextarea styleClass="inputDataSuperLarge" value="#{morningTrainingRequest.reasons}" rows="1" disabled="#{!morningTrainingRequest.modify}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_attachments}</th>
+									<td width="85%" colspan="3">
+										<code:attachments loginEmpId="#{morningTrainingRequest.loginEmpData.empId}" attachmentId="#{morningTrainingRequest.attachments}" viewEnableFlag="true" addEnableFlag="#{morningTrainingRequest.modify}" deleteEnableFlag="#{morningTrainingRequest.modify}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_nominatedCourseEmployeesData}" />
+									<h:panelGroup rendered="#{morningTrainingRequest.modify}">
+										<h:outputText value=" " />
+										<h:commandButton value="#{msgs.label_add}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+										<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{morningTrainingRequest.constructWFTraining()}">
+											<f:ajax execute="morningTrainingRequestFormId:courseDetailsPanelId morningTrainingRequestFormId:beneficiaryEmployeeCategoryId morningTrainingRequestFormId:beneficiaryEmployeeHId" render="morningTrainingRequestFormId:empsTableId morningTrainingRequestFormId:actionPanelId morningTrainingRequestFormId:notifyMessagesId" />
+										</h:commandButton>
+										<h:inputHidden id="beneficiaryEmployeeHId" value="#{morningTrainingRequest.selectedEmployeeId}" />
+										<h:inputHidden id="beneficiaryEmployeeCategoryId" value="#{morningTrainingRequest.selectedEmpCategoryId}" />
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+
+						<rich:dataTable id="empsTableId" rowKeyVar="index" var="employee" value="#{morningTrainingRequest.wfTrainingList}" rows="#{morningTrainingRequest.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+
+							<rich:column style="width : 5%">
+								<f:facet name="header">#</f:facet>
+	                        	#{index + 1}
+	                        </rich:column>
+							<rich:column style="width : 25%">
+								<f:facet name="header"> #{msgs.label_name} </f:facet>
+								<h:outputText value="#{employee.employeeName}" />
+							</rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header"> #{msgs.label_rank} </f:facet>
+								<h:outputText value="#{employee.employeeRankDesc}" />
+							</rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header"> #{msgs.label_empNo} </f:facet>
+								<h:outputText value="#{employee.employeeNumber}" />
+
+							</rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header"> #{msgs.label_empJob} </f:facet>
+								<h:outputText value="#{employee.employeeJobName}" />
+							</rich:column>
+							<rich:column style="width : #{morningTrainingRequest.modify?20:25}%">
+								<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+								<h:outputText value="#{employee.employeePhysicalUnitFullname}" />
+							</rich:column>
+							<rich:column rendered="#{morningTrainingRequest.modify}" style="width : 5%">
+								<f:facet name="header">#{msgs.label_delete}</f:facet>
+								<h:commandButton value="#{msgs.fa_times}" styleClass="btn_icon" title="#{msgs.label_delete}" action="#{morningTrainingRequest.deleteWFTraining(employee)}" onclick="return confirm('#{msgs.q_delete}');">
+									<f:ajax render="morningTrainingRequestFormId:empsTableId morningTrainingRequestFormId:actionPanelId morningTrainingRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+								</h:commandButton>
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{morningTrainingRequest.role != 'Requester'}" value="#{morningTrainingRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp,SecondarySignManager,SecondaryReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+
+
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{morningTrainingRequest.currentEmployee}" rendered="#{morningTrainingRequest.role == 'DirectManager' or morningTrainingRequest.role == 'ManagerRedirect' or morningTrainingRequest.role == 'ReviewerEmp' or morningTrainingRequest.role == 'SignManager' or morningTrainingRequest.role == 'SecondaryReviewerEmp' or morningTrainingRequest.role == 'SecondarySignManager' or morningTrainingRequest.role == 'SecondaryManagerRedirect'}">
+							<h:panelGroup rendered="#{morningTrainingRequest.role == 'ManagerRedirect' or morningTrainingRequest.role == 'SecondaryManagerRedirect' }">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{morningTrainingRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{morningTrainingRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{morningTrainingRequest.currentTask.notes}" styleClass="inputDataSuperLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{ morningTrainingRequest.role != 'ManagerRedirect' and morningTrainingRequest.role != 'SecondaryManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{morningTrainingRequest.currentTask.refuseReasons}" styleClass="inputDataSuperLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+
+
+
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{morningTrainingRequest.role == 'Notification' or morningTrainingRequest.role == 'History'}" value="#{morningTrainingRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionPanelId">
+							<h:panelGroup rendered="#{morningTrainingRequest.wfTrainingList.size() > 0}">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<!-- Requester -->
+											<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()', null);" action="#{morningTrainingRequest.initWorkFlow()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'Requester'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+
+											<!-- Direct Manager -->
+											<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;morningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{morningTrainingRequest.approveNominationDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'DirectManager'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;morningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{morningTrainingRequest.rejectNominationDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'DirectManager'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+
+											<!-- Manager Redirect -->
+											<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;morningTrainingRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{morningTrainingRequest.redirectNominationMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'ManagerRedirect'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+
+											<!-- secondary manager redirect  -->
+											<h:commandButton id="smrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;morningTrainingRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{morningTrainingRequest.redirectNominationSMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'SecondaryManagerRedirect'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+
+											<!-- Reviewer  -->
+											<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateReview()',null);" action="#{morningTrainingRequest.reviewWorkFlowRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'ReviewerEmp'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;morningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{morningTrainingRequest.rejectNominationRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'ReviewerEmp'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+
+											<!-- secondary Reviewer  -->
+											<h:commandButton id="approveSreBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateReview()',null);" action="#{morningTrainingRequest.reviewWorkFlowSRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'SecondaryReviewerEmp'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectSreBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;morningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{morningTrainingRequest.rejectNominationSRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'SecondaryReviewerEmp'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+
+											<!-- Sign manager -->
+											<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;morningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{morningTrainingRequest.approveNominationSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'SignManager'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;morningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;morningTrainingRequestFormId:curTaskId:notesId&quot;)',null);" action="#{morningTrainingRequest.returnNominationSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'SignManager'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;morningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{morningTrainingRequest.rejectNominationSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'SignManager'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+
+											<!-- Secondary sign manager -->
+											<h:commandButton id="approveSsmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;morningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{morningTrainingRequest.approveNominationSSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'SecondarySignManager'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="retSsmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;morningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;morningTrainingRequestFormId:curTaskId:notesId&quot;)',null);" action="#{morningTrainingRequest.returnNominationSSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'SecondarySignManager'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;morningTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{morningTrainingRequest.rejectNominationSSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'SecondarySignManager'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+
+
+
+											<!-- Notification -->
+											<h:commandButton id="nBtnId" action="#{morningTrainingRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{morningTrainingRequest.role == 'Notification'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

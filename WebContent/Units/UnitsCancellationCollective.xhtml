@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:rich="http://richfaces.org/rich" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:h="http://java.sun.com/jsf/html" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+		function validateUnitsCancellationCollectiveData(){
+	   		var decisionNumber = document.getElementById('unitsCancellationCollectiveFormId:decisionNumberId').value.trim();
+	   	 	if(decisionNumber == null || decisionNumber == ''){
+	        	alert('#{msgs.error_decNumberMandatory}');
+	         	return false;
+	     	}
+	     return true;
+		}
+    </script>
+
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{unitsCancellationCollective.init()}" />
+	<h:form id="unitsCancellationCollectiveFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_unitsCancellationCollective}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="35%" valign="top">
+									<!-- tree -->
+									<table cellpadding="0" cellspacing="0" width="98%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsTree}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:inputText id="searchNameValue" value="#{unitsCancellationCollective.searchName}" styleClass="inputDataLarge" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_search}" action="#{unitsCancellationCollective.search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+																<f:ajax render="unitsCancellationCollectiveFormId:treePanelId" execute="searchNameValue" />
+
+															</h:commandButton>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<h:panelGroup id="treePanelId">
+																<rich:tree id="unitTreeId" toggleListener="#{unitsCancellationCollective.treeToggleHandler(item)}" render="treePanelId" value="#{unitsCancellationCollective.unitTree}" var="item" dir="#{msgs.dir}" nodeType="unitType">
+																	<rich:treeNode type="unitType" expanded="#{item.expanded}" iconExpanded="/resources/images/#{item.unitType}.png" iconCollapsed="/resources/images/#{item.unitType}.png" iconLeaf="/resources/images/#{item.unitType}.png" title="#{item.orderUnderParent}" ontoggle="unMaskScreen()">
+																		<h:commandLink value="#{item.unitName}" action="#{unitsCancellationCollective.click(item)}">
+																			<f:ajax render="unitsCancellationCollectiveFormId:unitsTableId unitsCancellationCollectiveFormId:unitTypeId unitsCancellationCollectiveFormId:notifyMessagesId" />
+																		</h:commandLink>
+																	</rich:treeNode>
+																</rich:tree>
+																<h:outputStylesheet library="css" name="tree.css" />
+															</h:panelGroup>
+														</td>
+													</tr>
+
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="65%" valign="top">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsList}</td>
+													</tr>
+												</table>
+												<table border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td align="center" width="100%">
+															<rich:dataTable id="unitsTableId" rowKeyVar="index" var="unit" value="#{unitsCancellationCollective.selectedUnits}" rows="#{unitsCancellationCollective.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+																<rich:column style="width : 5%">
+																	<f:facet name="header">#</f:facet>
+	                                          						#{index + 1}
+	                    										</rich:column>
+																<rich:column style="width : 90%">
+																	<f:facet name="header">#{msgs.label_unitsList}</f:facet>
+																	<h:outputText value="#{unit.fullName}" />
+																</rich:column>
+																<rich:column style="width : 5%;">
+																	<f:facet name="header">#{msgs.label_delete}</f:facet>
+																	<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" action="#{unitsCancellationCollective.deleteUnit(unit)}" styleClass="btn_icon" onclick="if(confirm('#{msgs.q_delete}') == false) return false;">
+																		<f:ajax execute="unitsCancellationCollectiveFormId:cancellationDataPanelId" render="unitsCancellationCollectiveFormId:unitsTableId unitsCancellationCollectiveFormId:treePanelId unitsCancellationCollectiveFormId:cancellationDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																	</h:commandButton>
+																</rich:column>
+																<f:facet name="footer">
+																	<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+																		<f:facet name="first">#{msgs.label_first}</f:facet>
+																		<f:facet name="last">#{msgs.label_last}</f:facet>
+																		<f:facet name="next">#{msgs.label_next}</f:facet>
+																		<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																	</rich:dataScroller>
+																</f:facet>
+															</rich:dataTable>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+
+													<tr>
+														<td width="100%">
+															<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>#{msgs.label_cancellationData}</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+
+													<tr>
+														<td width="100%">
+															<h:panelGroup id="cancellationDataPanelId">
+																<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<th width="20%">
+																			#{msgs.label_decNumber}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<h:inputText id="decisionNumberId" value="#{unitsCancellationCollective.decisionNumber}" maxlength="50" />
+																		</td>
+																		<th width="20%">
+																			#{msgs.label_decisionDate}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<util:hijri id="decisionDateId" value="#{unitsCancellationCollective.decisionDate}" />
+																		</td>
+																	</tr>
+																	<tr>
+																		<th width="20%">#{msgs.label_unitType}</th>
+																		<td width="30%">
+																			<h:outputText id="unitTypeId" value="#{unitsCancellationCollective.unitTypeDescription}" />
+																		</td>
+																		<td width="50%" colspan="2" />
+																	</tr>
+																</table>
+															</h:panelGroup>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:commandButton action="#{unitsCancellationCollective.save()}" onclick="return handleOnAction('#{msgs.q_save}', 'validateUnitsCancellationCollectiveData()');" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon">
+																<f:ajax render="unitsCancellationCollectiveFormId:unitsTableId unitsCancellationCollectiveFormId:treePanelId unitsCancellationCollectiveFormId:cancellationDataPanelId unitsCancellationCollectiveFormId:notifyMessagesId" execute="unitsCancellationCollectiveFormId:cancellationDataPanelId" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

@@ -1,0 +1,277 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+		function getCourseEvents() {
+			openTrainingCivilCourseEventsMiniSearch('#{request.contextPath}',
+					'handleCourseEventsMiniSearchResult(ret)', 5, -1);
+		}
+
+		function handleCourseEventsMiniSearchResult(ret) {
+			if (ret != null) {
+				document
+						.getElementById('morningTrainingResultsRegisterationFormId:trainingCourseEventIdHId').value = ret[0];
+				document
+						.getElementById('morningTrainingResultsRegisterationFormId:trainingCourseNameId').innerHTML = ret[1];
+
+				document
+						.getElementById(
+								'morningTrainingResultsRegisterationFormId:selectTrainingCourseEventBtnId')
+						.click();
+			}
+		}
+
+		function validateRequest() {
+			var beneficiaryEmployeeHId = document
+					.getElementById('morningTrainingResultsRegisterationFormId:employeeIdHId').value;
+			var courseEventId = document
+					.getElementById('morningTrainingResultsRegisterationFormId:trainingCourseEventIdHId').value;
+
+			if (beneficiaryEmployeeHId == null || beneficiaryEmployeeHId == '') {
+				alert('#{msgs.error_employeeMandatory}');
+				return false;
+			}
+
+			if (courseEventId == null || courseEventId == '-1') {
+				alert('#{msgs.error_trainingCourseIsMandatory}');
+				return false;
+			}
+			if (!validResultsComponent()) {
+				return false
+			}
+			if (!confirm('#{msgs.q_save}'))
+				return false;
+			return true;
+		}
+		// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="morningTrainingResultsRegisterationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{morningTrainingResultsRegisteration.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_trainingCourseData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="courseDetailsPanelId">
+
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_trainingCourseName}" />
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText id="trainingCourseNameId" value="#{morningTrainingResultsRegisteration.selectedCourseEvent.courseName}" />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getCourseEvents(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										<h:commandButton id="selectTrainingCourseEventBtnId" style="display:none;" action="#{morningTrainingResultsRegisteration.selectCourse()}">
+											<f:ajax execute="morningTrainingResultsRegisterationFormId:trainingCourseEventIdHId"
+												render="morningTrainingResultsRegisterationFormId:courseDetailsPanelId morningTrainingResultsRegisterationFormId:courseEmployeesTitleId morningTrainingResultsRegisterationFormId:courseEmployeesTableId morningTrainingResultsRegisterationFormId:courseResultsPanelTitleId morningTrainingResultsRegisterationFormId:courseResultsPanelId morningTrainingResultsRegisterationFormId:actionPanelId morningTrainingResultsRegisterationFormId:notifyMessagesId"
+												onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+										<h:inputHidden id="trainingCourseEventIdHId" value="#{morningTrainingResultsRegisteration.selectedCourseEventId}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_courseExecutionParty}" />
+
+									</th>
+									<td width="35%">
+										<h:outputText id="externalPartyNameId" value="#{morningTrainingResultsRegisteration.selectedCourseEvent.externalPartyDesc}" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_courseExecutionAddress}" />
+									</th>
+									<td width="35%">
+										<h:outputText id="externalPartyAddressId" value="#{morningTrainingResultsRegisteration.selectedCourseEvent.externalPartyAddress}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_courseStartDate}</th>
+									<td width="35%">
+										<h:outputText value="#{morningTrainingResultsRegisteration.selectedCourseEvent.actualStartDateString}" />
+									</td>
+									<th width="15%">#{msgs.label_courseEndDate}</th>
+									<td width="35%">
+										<h:outputText value="#{morningTrainingResultsRegisteration.selectedCourseEvent.actualEndDateString}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_attachments}</th>
+									<td width="85%" colspan="3">
+										<code:attachments loginEmpId="#{morningTrainingResultsRegisteration.loginEmpData.empId}" attachmentId="#{morningTrainingResultsRegisteration.selectedCourseEvent.attachments}" viewEnableFlag="true" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+
+					<td width="100%">
+						<h:panelGroup id="courseEmployeesTitleId">
+							<h:panelGroup rendered="#{morningTrainingResultsRegisteration.selectedCourseEvent != null}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>#{msgs.label_courseEventEmployeesData}</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<h:panelGroup id="courseEmployeesTableId">
+							<h:panelGroup rendered="#{morningTrainingResultsRegisteration.selectedCourseEvent != null}">
+
+								<rich:dataTable id="empsTransactionsTablelId" rowKeyVar="index" var="transaction" value="#{morningTrainingResultsRegisteration.trainingTransactions}" rows="#{morningTrainingResultsRegisteration.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+									<rich:column style="width : 5%">
+										<f:facet name="header">#{msgs.label_select}</f:facet>
+										<h:commandButton action="#{morningTrainingResultsRegisteration.selectTransaction(transaction)}" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon">
+											<f:ajax render="morningTrainingResultsRegisterationFormId:courseResultsPanelTitleId morningTrainingResultsRegisterationFormId:courseResultsPanelId morningTrainingResultsRegisterationFormId:actionPanelId morningTrainingResultsRegisterationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</rich:column>
+									<rich:column style="width : 5%">
+										<f:facet name="header">#</f:facet>
+	                               				 #{index + 1}
+	                        					</rich:column>
+									<rich:column style="width : 25%">
+										<f:facet name="header"> #{msgs.label_name} </f:facet>
+										<h:outputText value="#{transaction.employeeName}" />
+									</rich:column>
+									<rich:column style="width : 15%">
+										<f:facet name="header"> #{msgs.label_rank} </f:facet>
+										<h:outputText value="#{transaction.employeeRankDesc}" />
+									</rich:column>
+									<rich:column style="width : 15%">
+										<f:facet name="header"> #{msgs.label_empNo} </f:facet>
+										<h:outputText value="#{transaction.employeeNumber}" />
+									</rich:column>
+									<rich:column style="width : 15%">
+										<f:facet name="header"> #{msgs.label_empJob} </f:facet>
+										<h:outputText value="#{transaction.employeeJobName}" />
+									</rich:column>
+									<rich:column style="width : 20%">
+										<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+										<h:outputText value="#{transaction.employeePhysicalUnitFullname}" />
+									</rich:column>
+
+									<f:facet name="footer">
+										<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+											<f:facet name="first">#{msgs.label_first}</f:facet>
+											<f:facet name="last">#{msgs.label_last}</f:facet>
+											<f:facet name="next">#{msgs.label_next}</f:facet>
+											<f:facet name="previous">#{msgs.label_previous}</f:facet>
+										</rich:dataScroller>
+									</f:facet>
+								</rich:dataTable>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+
+					<td width="100%">
+						<h:panelGroup id="courseResultsPanelTitleId">
+							<h:panelGroup rendered="#{morningTrainingResultsRegisteration.selectedTrainingTransaction != null}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>#{msgs.label_trnCourseResultsData}</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+
+				</tr>
+				<tr>
+
+					<td width="100%">
+						<h:panelGroup id="courseResultsPanelId">
+							<h:panelGroup rendered="#{morningTrainingResultsRegisteration.selectedTrainingTransaction != null}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">#{msgs.label_trainingEmpName}</th>
+										<td width="85%" colspan="3">
+											<h:outputText value="#{morningTrainingResultsRegisteration.selectedTrainingTransaction.employeeName}" />
+											<h:inputHidden id="employeeIdHId" value="#{morningTrainingResultsRegisteration.selectedTrainingTransaction.employeeId}" />
+										</td>
+									</tr>
+									<code:courseResults trainingObject="#{morningTrainingResultsRegisteration.selectedTrainingTransaction}" loginEmpId="#{morningTrainingResultsRegisteration.loginEmpData.empId}" military="false" showGraduationDate="false" claim="false" successFlagChangeListener="#{morningTrainingResultsRegisteration.successFlagChangeListener()}"></code:courseResults>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:panelGroup id="actionPanelId">
+										<h:panelGroup rendered="#{morningTrainingResultsRegisteration.selectedTrainingTransaction != null}">
+											<h:commandButton onclick="return validateRequest();" action="#{morningTrainingResultsRegisteration.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon">
+												<f:ajax execute="@form" render="morningTrainingResultsRegisterationFormId:courseResultsPanelId morningTrainingResultsRegisterationFormId:courseDetailsPanelId morningTrainingResultsRegisterationFormId:notifyMessagesId" />
+											</h:commandButton>
+										</h:panelGroup>
+									</h:panelGroup>
+
+								</td>
+
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+
+</h:body>
+</html>

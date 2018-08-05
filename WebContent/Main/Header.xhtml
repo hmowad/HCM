@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head></h:head>
+<h:body>
+	<ui:composition>
+		<table border="0" cellpadding="0" cellspacing="0" width="100%" class="headerImglogo">
+			<tr>
+				<td>
+					<table class="yellow-header-strip-top fleft" border="0" cellpadding="0" cellspacing="0" width="90%">
+						<tr>
+							<th width="68%" class="textright headertop-link">
+								#{msgs.label_welcome}
+								<h:outputText value="#{home.welcomeMessage}" />
+								|
+								<a href="#{home.notificationLink}">
+									<h:outputText value="#{msgs.label_notificationsInbox}" styleClass="headertop-link-text" />
+									<h:outputText id="headerNotificationsCountId" value="#{home.notificationsCount}" styleClass="headertop-number-nofocus" />
+								</a>
+								|
+								<a href="#{home.inboxLink}" title="#{msgs.label_proceduresElements}">
+									<h:outputText value="#{msgs.label_proceduresInbox}" styleClass="headertop-link-text" />
+									<h:outputText id="headerInboxProceduresCountId" value="#{home.inboxCount}" styleClass="headertop-number-focus" />
+								</a>
+
+							</th>
+							<td width="10%">
+								<h:panelGroup rendered="#{request.contextPath != msgs.module_hcm}">
+									<a href="#{home.medicalCenterURL}" target="_blank" class="btn btn-link-header">
+										<i class="fa fa-hospital-o"></i>
+										#{msgs.label_bnNaif}
+									</a>
+								</h:panelGroup>
+							</td>
+							<td width="10%">
+								<a href="#{request.contextPath}/Main/Help.jsf" target="_blank" class="btn btn-link-header">
+									<i class="fa fa-question-circle"></i>
+									#{msgs.label_help}
+								</a>
+							</td>
+							<td width="10%">
+								<h:commandLink action="#{logout.logout()}" styleClass="btn btn-link-header logout-style">
+									<i class="fa fa-sign-out icon-rotation"></i>#{msgs.label_exit}
+								</h:commandLink>
+							</td>
+							<td width="2%" />
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table border="0" cellpadding="0" cellspacing="0" width="100%">
+						<tr>
+							<td class="height-header-tabs">
+								<h3 class="textlogo-inner">
+									<h:outputText value="#{msgs.title_etrTitle}" rendered="#{request.contextPath != msgs.module_hcm}" />
+									<h:outputText value="#{msgs.title_hcmTitle}" rendered="#{request.contextPath == msgs.module_hcm}" />
+								</h3>
+
+								<div class="header-main-tabs">
+									<ul class="header-main-menu-tabs">
+										<li id="headerImg1Id">
+											<a href="#{request.contextPath}/Main/Welcome.jsf?menuType=1">
+												<div class="ca-content">
+													<h2 class="ca-main">
+														#{msgs.label_mainPage}
+														<i class="fa fa-home"></i>
+													</h2>
+
+												</div>
+											</a>
+										</li>
+										<li id="headerImg2Id">
+											<a href="#{home.inboxLink}">
+
+												<div class="ca-content">
+													<h2 class="ca-main">
+														#{msgs.label_instanceManagement}
+														<i class="fa fa-cog"></i>
+													</h2>
+												</div>
+											</a>
+										</li>
+										<li id="headerImg3Id">
+											<a href="#{request.contextPath}/Main/Welcome.jsf?menuType=3">
+
+												<div class="ca-content">
+													<h2 class="ca-main">
+														#{msgs.label_decisionPrinting}
+														<i class="fa fa-print"></i>
+													</h2>
+												</div>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</ui:composition>
+</h:body>
+</html>

@@ -1,0 +1,552 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+		function openAddAttachmentPopup(){
+        	document.getElementById('organizationHierarchyFormId:attachmentComponentId:attachmentsAddButtonId').click();
+        }
+        
+		function validateData(){
+	        var unitOrder = document.getElementById('organizationHierarchyFormId:unitOrderId').value;
+	        if(unitOrder == null || unitOrder == ''){
+	            alert('#{msgs.error_unitOrderMandatory}');
+	            return false;
+	        }
+	        return true;
+	      }
+    </script>
+
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{organizationHierarchy.init}" />
+	<h:form id="organizationHierarchyFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<a4j:status onstart="#{rich:component('reload')}.hide()" />
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_organizationHierarchy}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="35%" valign="top">
+									<!-- tree -->
+									<table cellpadding="0" cellspacing="0" width="98%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsTree}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:inputText id="searchNameValue" value="#{organizationHierarchy.searchName}" styleClass="inputDataLarge" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_search}" action="#{organizationHierarchy.search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+																<f:ajax render="organizationHierarchyFormId:treePanelId organizationHierarchyFormId:unitInformationFormId organizationHierarchyFormId:jobsListId organizationHierarchyFormId:physicalEmployeesListId organizationHierarchyFormId:officialEmployeesListId organizationHierarchyFormId:TransactionListId organizationHierarchyFormId:notifyMessagesId" execute="searchNameValue" />
+															</h:commandButton>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<h:panelGroup id="treePanelId">
+																<rich:tree id="unitTreeId" toggleListener="#{organizationHierarchy.treeToggleHandler(item)}" render="treePanelId" value="#{organizationHierarchy.unitTree}" var="item" dir="#{msgs.dir}" nodeType="unitType">
+																	<rich:treeNode type="unitType" expanded="#{item.expanded}" iconExpanded="/resources/images/#{item.unitType}.png" iconCollapsed="/resources/images/#{item.unitType}.png" iconLeaf="/resources/images/#{item.unitType}.png" title="#{item.orderUnderParent}">
+																		<h:commandLink value="#{item.unitName}" action="#{organizationHierarchy.click(item)}">
+																			<f:ajax render="organizationHierarchyFormId:unitInformationFormId organizationHierarchyFormId:jobsListId organizationHierarchyFormId:physicalEmployeesListId organizationHierarchyFormId:officialEmployeesListId organizationHierarchyFormId:TransactionListId" />
+																		</h:commandLink>
+																	</rich:treeNode>
+																</rich:tree>
+																<h:outputStylesheet library="css" name="tree.css" />
+															</h:panelGroup>
+														</td>
+													</tr>
+
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="65%" valign="top">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitDetails}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="unitInformationFormId">
+
+													<table border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<td width="100%">
+																<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<th width="20%">#{msgs.label_unitType}</th>
+																		<td width="30%">
+																			<h:outputText id="unitTypeId" value="#{organizationHierarchy.selectedUnitData.unitTypeDesc}" />
+																		</td>
+
+																		<th width="20%">#{msgs.label_region}</th>
+																		<td width="30%">
+																			<h:outputText id="unitRegionId" value="#{organizationHierarchy.selectedUnitData.regionDesc}" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_unitName}</th>
+																		<td width="30%">
+																			<h:outputText id="unitNameId" value="#{organizationHierarchy.selectedUnitData.name}" />
+																		</td>
+
+																		<th width="20%">#{msgs.label_parentUnit}</th>
+																		<td width="30%">
+																			<h:outputText id="parentUnitId" value="#{organizationHierarchy.selectedUnitData.parentUnitName}" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_officialManager}</th>
+																		<td width="80%" colspan="3">
+																			<h:outputText id="officialManagerId" value="#{organizationHierarchy.selectedUnitData.officialManagerName}" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_physicalManager}</th>
+																		<td width="80%" colspan="3">
+																			<h:outputText id="physicalManagerId" value="#{organizationHierarchy.selectedUnitData.physicalManagerName}" />
+																		</td>
+																	</tr>
+
+																</table>
+															</td>
+														</tr>
+
+														<tr>
+															<td width="100%" height="5" />
+														</tr>
+
+														<tr>
+															<td width="100%">
+																<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<th width="20%">
+																			#{msgs.label_unitOrderUnderParent}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<h:inputText id="unitOrderId" value="#{organizationHierarchy.selectedUnitData.orderUnderParent}" onkeypress="return isDigit(event);" maxlength="2" />
+																		</td>
+
+																		<th width="20%">#{msgs.label_unitTransactionRequiredFlag}</th>
+																		<td width="30%">
+																			<h:selectBooleanCheckbox id="unitTransactionRequiredFlagId" value="#{organizationHierarchy.selectedUnitData.transactionRequiredFlagBoolean}" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_orgRemarks}</th>
+																		<td width="80%" colspan="3">
+																			<h:inputText id="remarksId" styleClass="inputDataLarge" value="#{organizationHierarchy.selectedUnitData.remarks}" maxlength="500" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%" rowspan="5">#{msgs.label_attachments}</th>
+																		<td width="30%" rowspan="5">
+																			<h:panelGroup id="addNewAttachmentsPanelId">
+																				<h:commandButton rendered="#{organizationHierarchy.selectedUnitData.attachments == null}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{organizationHierarchy.addUnitAttachmentsId}">
+																					<f:ajax render="organizationHierarchyFormId:addNewAttachmentsPanelId organizationHierarchyFormId:attachmentComponentPanelId organizationHierarchyFormId:notifyMessagesId" onevent="function(data) { if (data.status == 'success') openAddAttachmentPopup();}" />
+																				</h:commandButton>
+																			</h:panelGroup>
+																			<h:panelGroup id="attachmentComponentPanelId">
+																				<code:attachments id="attachmentComponentId" rendered="#{organizationHierarchy.selectedUnitData.attachments != null}" loginEmpId="#{organizationHierarchy.loginEmpData.empId}" attachmentId="#{organizationHierarchy.selectedUnitData.attachments}" addEnableFlag="true" viewEnableFlag="true" deleteEnableFlag="true" />
+																			</h:panelGroup>
+																		</td>
+																		<th width="20%">#{msgs.label_unitTargets}</th>
+																		<td width="30%">
+																			<h:selectOneRadio id="targetsArchivedId" value="#{organizationHierarchy.selectedUnitData.targetsArchivedFlag}">
+																				<f:selectItem itemLabel="#{msgs.label_archived}" itemValue="1" />
+																				<f:selectItem itemLabel="#{msgs.label_notArchived}" itemValue="0" />
+																			</h:selectOneRadio>
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_unitDuties}</th>
+																		<td width="30%">
+																			<h:selectOneRadio id="dutiesArchivedId" value="#{organizationHierarchy.selectedUnitData.dutiesArchivedFlag}">
+																				<f:selectItem itemLabel="#{msgs.label_archived}" itemValue="1" />
+																				<f:selectItem itemLabel="#{msgs.label_notArchived}" itemValue="0" />
+																			</h:selectOneRadio>
+																		</td>
+																	</tr>
+																	<tr>
+																		<th width="20%">#{msgs.label_jobDesc}</th>
+																		<td width="30%">
+																			<h:selectOneRadio id="jobsArchivedId" value="#{organizationHierarchy.selectedUnitData.jobsArchivedFlag}">
+																				<f:selectItem itemLabel="#{msgs.label_archived}" itemValue="1" />
+																				<f:selectItem itemLabel="#{msgs.label_notArchived}" itemValue="0" />
+																			</h:selectOneRadio>
+																		</td>
+																	</tr>
+																	<tr>
+																		<th width="20%">#{msgs.label_organizationalDesc}</th>
+																		<td width="30%">
+																			<h:selectOneRadio id="organizationalArchivedId" value="#{organizationHierarchy.selectedUnitData.organizationalArchivedFlag}">
+																				<f:selectItem itemLabel="#{msgs.label_archived}" itemValue="1" />
+																				<f:selectItem itemLabel="#{msgs.label_notArchived}" itemValue="0" />
+																			</h:selectOneRadio>
+																		</td>
+																	</tr>
+																	<tr>
+																		<th width="20%">#{msgs.label_equipmentDesc}</th>
+																		<td width="30%">
+																			<h:selectOneRadio id="equipmentsArchivedId" value="#{organizationHierarchy.selectedUnitData.equipmentsArchivedFlag}">
+																				<f:selectItem itemLabel="#{msgs.label_archived}" itemValue="1" />
+																				<f:selectItem itemLabel="#{msgs.label_notArchived}" itemValue="0" />
+																			</h:selectOneRadio>
+																		</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+													</table>
+
+
+												</h:panelGroup>
+											</td>
+										</tr>
+
+										<tr>
+											<td width="100%" height="15" />
+										</tr>
+
+										<tr>
+											<td width="100%">
+												<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:commandButton action="#{organizationHierarchy.update}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');" styleClass="btn_normal_icon">
+																<f:ajax render="organizationHierarchyFormId:notifyMessagesId organizationHierarchyFormId:treePanelId" execute="unitInformationFormId" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+
+										<tr>
+											<td width="100%" height="15" />
+										</tr>
+
+										<tr>
+											<td align="center" width="100%">
+												<!-- Jobs Grid -->
+												<rich:collapsiblePanel header="#{msgs.label_jobStatusTitle}" switchType="client" expanded="false">
+													<rich:dataTable id="jobsListId" var="job" rowKeyVar="index" value="#{organizationHierarchy.jobDataList}" rows="#{organizationHierarchy.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+														<rich:column>
+															<f:facet name="header">#</f:facet>
+						                                    #{index + 1}
+						                                </rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_jobCode}" />
+															</f:facet>
+															<h:outputText value="#{job.code}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_jobName}" />
+															</f:facet>
+															<h:outputText value="#{job.name}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_jobRank}" />
+															</f:facet>
+															<h:outputText value="#{job.rankDescription}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_empSpecialization}" />
+															</f:facet>
+															<h:outputText value="#{job.minorSpecializationDescription}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_jobStatus}" />
+															</f:facet>
+															<h:outputText value="#{msgs.label_vacant}" rendered="#{job.status == 1}" />
+															<h:outputText value="#{msgs.label_occupied}" rendered="#{job.status == 2}" />
+															<h:outputText value="#{msgs.label_frozen}" rendered="#{job.status == 3}" />
+															<h:outputText value="#{msgs.label_canceled}" rendered="#{job.status == 4}" />
+														</rich:column>
+
+														<f:facet name="footer">
+															<rich:dataScroller>
+																<f:facet name="first">
+						                                            #{msgs.label_first}
+						                                    </f:facet>
+																<f:facet name="last">
+						                                            #{msgs.label_last}
+						                                    </f:facet>
+																<f:facet name="next">
+						                                            #{msgs.label_next}
+						                                    </f:facet>
+																<f:facet name="previous">
+						                                           #{msgs.label_previous}
+						                                   </f:facet>
+															</rich:dataScroller>
+														</f:facet>
+													</rich:dataTable>
+												</rich:collapsiblePanel>
+											</td>
+										</tr>
+
+										<tr>
+											<td width="100%" height="15" />
+										</tr>
+
+										<tr>
+											<td align="center" width="100%">
+												<!-- Official Employees Grid -->
+												<rich:collapsiblePanel header="#{msgs.label_officialEmployeesTitle}" switchType="client" expanded="false">
+													<rich:dataTable id="officialEmployeesListId" var="emp" rowKeyVar="index" value="#{organizationHierarchy.officialEmployeeDataList}" rows="#{organizationHierarchy.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+														<rich:column>
+															<f:facet name="header">#</f:facet>
+						                                    #{index + 1}
+						                                </rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_empNo}" />
+															</f:facet>
+															<h:outputText value="#{emp.categoryId == 1 ? emp.militaryNumber : emp.jobCode}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_empName}" />
+															</f:facet>
+															<h:outputText value="#{emp.name}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_empRank}" />
+															</f:facet>
+															<h:outputText value="#{emp.rankDesc}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_empJob}" />
+															</f:facet>
+															<h:outputText value="#{emp.jobDesc}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_empSpecialization}" />
+															</f:facet>
+															<h:outputText value="#{emp.minorSpecDesc}" />
+														</rich:column>
+
+														<f:facet name="footer">
+															<rich:dataScroller>
+																<f:facet name="first">
+						                                            #{msgs.label_first}
+						                                    </f:facet>
+																<f:facet name="last">
+						                                            #{msgs.label_last}
+						                                    </f:facet>
+																<f:facet name="next">
+						                                            #{msgs.label_next}
+						                                    </f:facet>
+																<f:facet name="previous">
+						                                           #{msgs.label_previous}
+						                                   </f:facet>
+															</rich:dataScroller>
+														</f:facet>
+													</rich:dataTable>
+												</rich:collapsiblePanel>
+											</td>
+										</tr>
+
+										<tr>
+											<td width="100%" height="15" />
+										</tr>
+
+										<tr>
+											<td align="center" width="100%">
+												<!-- Physical Employees Grid -->
+												<rich:collapsiblePanel header="#{msgs.label_physicalEmployeesTitle}" switchType="client" expanded="false">
+													<rich:dataTable id="physicalEmployeesListId" var="emp" rowKeyVar="index" value="#{organizationHierarchy.physicalEmployeeDataList}" rows="#{organizationHierarchy.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+														<rich:column>
+															<f:facet name="header">#</f:facet>
+						                                    #{index + 1}
+						                                </rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_empNo}" />
+															</f:facet>
+															<h:outputText value="#{emp.categoryId == 1 ? emp.militaryNumber : emp.jobCode}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_empName}" />
+															</f:facet>
+															<h:outputText value="#{emp.name}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_empRank}" />
+															</f:facet>
+															<h:outputText value="#{emp.rankDesc}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_empJob}" />
+															</f:facet>
+															<h:outputText value="#{emp.jobDesc}" />
+															<h:outputText value="*" styleClass="remarkMessage" rendered="#{emp.physicalUnitId != emp.officialUnitId}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_empSpecialization}" />
+															</f:facet>
+															<h:outputText value="#{emp.minorSpecDesc}" />
+														</rich:column>
+
+														<f:facet name="footer">
+															<rich:dataScroller>
+																<f:facet name="first">
+						                                            #{msgs.label_first}
+						                                    </f:facet>
+																<f:facet name="last">
+						                                            #{msgs.label_last}
+						                                    </f:facet>
+																<f:facet name="next">
+						                                            #{msgs.label_next}
+						                                    </f:facet>
+																<f:facet name="previous">
+						                                           #{msgs.label_previous}
+						                                   </f:facet>
+															</rich:dataScroller>
+														</f:facet>
+													</rich:dataTable>
+													<h:outputText value="#{msgs.label_orgHierarchyPhysicalEmployeesRemark}" styleClass="remarkMessage" />
+												</rich:collapsiblePanel>
+											</td>
+										</tr>
+
+										<tr>
+											<td width="100%" height="15" />
+										</tr>
+
+										<tr>
+											<td align="center" width="100%">
+												<!-- Transactions Grid -->
+												<rich:collapsiblePanel header="#{msgs.label_transactionDataTitle}" switchType="client" expanded="false">
+													<rich:dataTable id="TransactionListId" var="trans" rowKeyVar="index" value="#{organizationHierarchy.unitTransactionDataList}" rows="#{organizationHierarchy.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+														<rich:column>
+															<f:facet name="header">#</f:facet>
+						                                    #{index + 1}
+						                                </rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_decisionNumber}" />
+															</f:facet>
+															<h:outputText value="#{trans.decisionNumber}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_decisionDate}" />
+															</f:facet>
+															<h:outputText value="#{trans.decisionDateString}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_transactionType}" />
+															</f:facet>
+															<h:outputText value="#{trans.transactionTypeDesc}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_unitType}" />
+															</f:facet>
+															<h:outputText value="#{trans.unitTypeDesc}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_unitName}" />
+															</f:facet>
+															<h:outputText value="#{trans.fullName}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_transMovedToName}" />
+															</f:facet>
+															<h:outputText value="#{trans.movedToUnitFullName}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_transactionUserFullName}" />
+															</f:facet>
+															<h:outputText value="#{trans.transactionUserFullName}" />
+														</rich:column>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="#{msgs.label_transactionHijriDate}" />
+															</f:facet>
+															<h:outputText value="#{trans.transactionDateString}" />
+														</rich:column>
+														<f:facet name="footer">
+															<rich:dataScroller>
+																<f:facet name="first"> #{msgs.label_first} </f:facet>
+																<f:facet name="last"> #{msgs.label_last} </f:facet>
+																<f:facet name="next"> #{msgs.label_next} </f:facet>
+																<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+															</rich:dataScroller>
+														</f:facet>
+													</rich:dataTable>
+												</rich:collapsiblePanel>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

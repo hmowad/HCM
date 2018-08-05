@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:rich="http://richfaces.org/rich" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:h="http://java.sun.com/jsf/html" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+	function validateOrganizationTargetTaskCancellationData(){
+   	 	var decisionNumber = document.getElementById('organizationTargetsTasksCancellationFormId:decisionNumberId').value.trim();
+   	 	if(decisionNumber == null || decisionNumber == '') {
+         	alert('#{msgs.error_decNumberMandatory}');
+         	return false;
+   	 	} else if (decisionNumber.indexOf("*") > -1 || decisionNumber.indexOf("#") > -1) {
+	     	alert('#{msgs.error_decNumberContainsProhibitedCharacter}');
+	         return false;
+	    }
+     	return true;
+	}
+
+    </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{organizationTargetsTasksCancellation.initialize}" />
+	<h:form id="organizationTargetsTasksCancellationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_organizationTargetsTasksCancellation}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="35%" valign="top">
+									<!-- tree -->
+									<table cellpadding="0" cellspacing="0" width="98%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsTree}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:inputText id="searchNameValue" value="#{organizationTargetsTasksCancellation.searchName}" styleClass="inputDataLarge" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_search}" action="#{organizationTargetsTasksCancellation.search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+																<f:ajax render="organizationTargetsTasksCancellationFormId:treePanelId organizationTargetsTasksCancellationFormId:notifyMessagesId" execute="searchNameValue" />
+															</h:commandButton>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<h:panelGroup id="treePanelId">
+																<rich:tree id="unitTreeId" toggleListener="#{organizationTargetsTasksCancellation.treeToggleHandler(item)}" render="treePanelId" value="#{organizationTargetsTasksCancellation.unitTree}" var="item" dir="#{msgs.dir}" nodeType="unitType">
+																	<rich:treeNode type="unitType" expanded="#{item.expanded}" iconExpanded="/resources/images/#{item.unitType}.png" iconCollapsed="/resources/images/#{item.unitType}.png" iconLeaf="/resources/images/#{item.unitType}.png" title="#{item.orderUnderParent}" ontoggle="unMaskScreen()">
+																		<h:commandLink value="#{item.unitName}" action="#{organizationTargetsTasksCancellation.selectUnit(item)}">
+																			<f:ajax execute="organizationTargetsTasksCancellationFormId:decisionPanelId"
+																					render="organizationTargetsTasksCancellationFormId:unitsTableId organizationTargetsTasksCancellationFormId:targetsTableId organizationTargetsTasksCancellationFormId:tasksTableId organizationTargetsTasksCancellationFormId:notifyMessagesId"
+																					onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandLink>
+																	</rich:treeNode>
+																</rich:tree>
+																<h:outputStylesheet library="css" name="tree.css" />
+															</h:panelGroup>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="65%" valign="top">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsList}</td>
+													</tr>
+												</table>
+												<table border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td align="center" width="100%">
+															<rich:dataTable id="unitsTableId" rowKeyVar="index" var="unit" value="#{organizationTargetsTasksCancellation.selectedUnits}" rows="#{organizationTargetsTasksCancellation.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+																<rich:column style="width : 5%">
+																	<f:facet name="header">#</f:facet>
+	                                         							 #{index + 1}
+                    											</rich:column>
+																<rich:column style="width : 90%">
+																	<f:facet name="header">#{msgs.label_unitsList}</f:facet>
+																	<h:outputText value="#{unit.fullName}" />
+																</rich:column>
+																<rich:column style="width : 5%;">
+																	<f:facet name="header">#{msgs.label_delete}</f:facet>
+																	<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{organizationTargetsTasksCancellation.deleteUnit(unit)}" onclick="return confirm('#{msgs.q_delete}');">
+																		<f:ajax execute="organizationTargetsTasksCancellationFormId:decisionPanelId" render="organizationTargetsTasksCancellationFormId:treePanelId organizationTargetsTasksCancellationFormId:unitsTableId organizationTargetsTasksCancellationFormId:decisionPanelId organizationTargetsTasksCancellationFormId:targetsTableId organizationTargetsTasksCancellationFormId:tasksTableId organizationTargetsTasksCancellationFormId:notifyMessagesId"
+																			onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																	</h:commandButton>
+																</rich:column>
+																<f:facet name="footer">
+																	<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+																		<f:facet name="first">#{msgs.label_first}</f:facet>
+																		<f:facet name="last">#{msgs.label_last}</f:facet>
+																		<f:facet name="next">#{msgs.label_next}</f:facet>
+																		<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																	</rich:dataScroller>
+																</f:facet>
+															</rich:dataTable>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td width="100%">
+															<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>#{msgs.label_decisionData}</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<h:panelGroup id="decisionPanelId">
+																<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<th width="20%">
+																			#{msgs.label_decisionNumber}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<h:inputText id="decisionNumberId" value="#{organizationTargetsTasksCancellation.decisionNumber}" maxlength="50" />
+																		</td>
+																		<th width="20%">
+																			#{msgs.label_decisionDate}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<util:hijri value="#{organizationTargetsTasksCancellation.decisionDate}" />
+																		</td>
+																	</tr>
+																</table>
+															</h:panelGroup>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_targets}">
+													<table class="sectionContent" cellpadding="0" cellspacing="0">
+														<tr>
+															<td align="center" width="100%">
+																<rich:dataTable id="targetsTableId" rowKeyVar="index" var="target" value="#{organizationTargetsTasksCancellation.targets}" rows="#{organizationTargetsTasksCancellation.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+																	<rich:column style="width : 5%">
+																		<f:facet name="header">#</f:facet>
+	                                          								#{index + 1}
+	                    												</rich:column>
+																	<rich:column style="width : 95%">
+																		<f:facet name="header">#{msgs.label_targets}</f:facet>
+																		<h:inputTextarea value="#{target.description}" styleClass="inputDataSuperLarge" rows="2" disabled="true" />
+																	</rich:column>
+																	<f:facet name="footer">
+																		<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+																			<f:facet name="first">#{msgs.label_first}</f:facet>
+																			<f:facet name="last">#{msgs.label_last}</f:facet>
+																			<f:facet name="next">#{msgs.label_next}</f:facet>
+																			<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																		</rich:dataScroller>
+																	</f:facet>
+																</rich:dataTable>
+															</td>
+														</tr>
+													</table>
+												</rich:collapsiblePanel>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_tasks}">
+													<table class="sectionContent" cellpadding="0" cellspacing="0">
+														<tr>
+															<td align="center" width="100%">
+																<rich:dataTable id="tasksTableId" rowKeyVar="index" var="task" value="#{organizationTargetsTasksCancellation.tasks}" rows="#{organizationTargetsTasksCancellation.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+																	<rich:column style="width : 5%">
+																		<f:facet name="header">#</f:facet>
+								                                          #{index + 1}
+								                    					</rich:column>
+																	<rich:column style="width : 95%">
+																		<f:facet name="header">#{msgs.label_tasks}</f:facet>
+																		<h:inputTextarea value="#{task.description}" styleClass="inputDataSuperLarge" rows="2" disabled="true" />
+																	</rich:column>
+																	<f:facet name="footer">
+																		<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+																			<f:facet name="first">#{msgs.label_first}</f:facet>
+																			<f:facet name="last">#{msgs.label_last}</f:facet>
+																			<f:facet name="next">#{msgs.label_next}</f:facet>
+																			<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																		</rich:dataScroller>
+																	</f:facet>
+																</rich:dataTable>
+															</td>
+														</tr>
+													</table>
+												</rich:collapsiblePanel>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="actionsBtnsId">
+													<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="100%">
+																<h:commandButton action="#{organizationTargetsTasksCancellation.save()}" onclick="return handleOnAction('#{msgs.q_save}', 'validateOrganizationTargetTaskCancellationData()');" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{!organizationTargetsTasksCancellation.done}">
+																	<f:ajax execute="organizationTargetsTasksCancellationFormId:decisionPanelId" render="organizationTargetsTasksCancellationFormId:actionsBtnsId organizationTargetsTasksCancellationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																</h:commandButton>
+																<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{organizationTargetsTasksCancellation.init()}">
+																	<f:ajax render="organizationTargetsTasksCancellationFormId:treePanelId organizationTargetsTasksCancellationFormId:unitsTableId organizationTargetsTasksCancellationFormId:decisionPanelId organizationTargetsTasksCancellationFormId:targetsTableId organizationTargetsTasksCancellationFormId:tasksTableId organizationTargetsTasksCancellationFormId:actionsBtnsId organizationTargetsTasksCancellationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																</h:commandButton>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

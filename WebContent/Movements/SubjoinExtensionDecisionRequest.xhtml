@@ -1,0 +1,445 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">		  
+		function validateSearch() {
+			decisionNumberValue = document.getElementById('subjoinExtensionDecisionRequestFormId:decisionNumberId').value;
+			if(decisionNumberValue == null || decisionNumberValue == '') {
+				alert("#{msgs.error_transactionSearchFieldsMandatory}");
+				return false;	
+			}
+			return true;
+		}
+	
+		function validateSend() {
+
+			if(document.getElementById('subjoinExtensionDecisionRequestFormId:subjoinListPanelId') != null) { 
+				if(document.getElementById('subjoinExtensionDecisionRequestFormId:basedOnId') != null) {
+	
+					basedOnValue = document.getElementById('subjoinExtensionDecisionRequestFormId:basedOnId').value;
+					basedOnOrderNumberValue = document.getElementById('subjoinExtensionDecisionRequestFormId:basedOnOrderNumberId').value;
+					
+					if((basedOnValue == null || basedOnValue == '') || (basedOnOrderNumberValue == null || basedOnOrderNumberValue == '')) {
+						alert("#{msgs.error_subjoinDecisionFieldsMandatory}");
+						return false;
+					}
+				}
+	
+				if(document.getElementById('subjoinExtensionDecisionRequestFormId:subjoinListSizeId').innerHTML == 0) {
+					if(#{subjoinExtensionDecisionRequest.mode == 3})
+						alert("#{msgs.error_assignmentListEmpty}");
+					else
+						alert("#{msgs.error_subjoinListEmpty}");
+					return false;
+				}
+			} else {
+				return false;
+			}
+
+			if(document.getElementById('subjoinExtensionDecisionRequestFormId:ministryApprovalNumberId') != null) {
+		    	ministryApprovalNumberValue = document.getElementById('subjoinExtensionDecisionRequestFormId:ministryApprovalNumberId').value;
+		    	if(ministryApprovalNumberValue == null || ministryApprovalNumberValue == '') {
+					alert('#{msgs.error_ministryAgreementDataIsRequired}');
+					return false;
+		        }
+			}
+			
+			return #{subjoinExtensionDecisionRequest.role == 'ReviewerEmp'} ? validateRefuseAndNotes(1, &quot;subjoinExtensionDecisionRequestFormId:curTaskId:refuseReasonsId&quot;) : true;
+		}
+
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="subjoinExtensionDecisionRequestFormId" dir="#{msgs.dir}">
+		<ui:debug />
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{subjoinExtensionDecisionRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_basedOnDecision}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="10%">#{msgs.label_decisionNumber}</th>
+								<td width="15%">
+									<h:inputText id="decisionNumberId" value="#{subjoinExtensionDecisionRequest.decisionData.basedOnDecisionNumber}" readonly="#{subjoinExtensionDecisionRequest.role != 'Requester' and subjoinExtensionDecisionRequest.role != 'ReviewerEmp'}" maxlength="50" />
+								</td>
+								<th width="10%">#{msgs.label_decisionDate}</th>
+								<td width="15%">
+									<util:hijri id="decisionDateId" value="#{subjoinExtensionDecisionRequest.decisionData.basedOnDecisionDate}" rendered="#{subjoinExtensionDecisionRequest.role == 'Requester' or subjoinExtensionDecisionRequest.role == 'ReviewerEmp'}" />
+									<h:outputText value="#{subjoinExtensionDecisionRequest.decisionData.basedOnDecisionDateString}" rendered="#{subjoinExtensionDecisionRequest.role != 'Requester' and subjoinExtensionDecisionRequest.role != 'ReviewerEmp'}" />
+								</td>
+								<td width="50%">
+									<h:commandButton onclick="return validateSearch();" action="#{subjoinExtensionDecisionRequest.getSubjoinByDecisionInfo}" rendered="#{subjoinExtensionDecisionRequest.role == 'Requester'}" styleClass="btn_normal_icon" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}">
+										<f:ajax execute="subjoinExtensionDecisionRequestFormId:decisionNumberId subjoinExtensionDecisionRequestFormId:decisionDateId" render="subjoinExtensionDecisionRequestFormId:requestDataPanelId subjoinExtensionDecisionRequestFormId:warningPanelId subjoinExtensionDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requestDataPanelId">
+							<h:panelGroup rendered="#{subjoinExtensionDecisionRequest.wfMovementsList.size() > 0}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{subjoinExtensionDecisionRequest.mode != 3 ? msgs.label_subjoinData : msgs.label_assignmentData }" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:panelGroup id="commonDataPanelId">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<th width="16%">
+															#{msgs.label_basedOn}
+															<h:outputText value=" " />
+															<font style="color: red;">*</font>
+														</th>
+														<td width="84%" colspan="3">
+															<h:selectOneRadio value="#{subjoinExtensionDecisionRequest.decisionData.verbalOrderFlag}" disabled="#{subjoinExtensionDecisionRequest.role != 'Requester' and subjoinExtensionDecisionRequest.role != 'ReviewerEmp'}">
+																<f:selectItem itemValue="0" itemLabel="#{msgs.label_letterDispatchEtc}" />
+																<f:selectItem itemValue="1" itemLabel="#{msgs.label_verbalOrder}" />
+																<f:ajax execute="subjoinExtensionDecisionRequestFormId:commonDataPanelId" listener="#{subjoinExtensionDecisionRequest.verbalOrderFlagListener()}" render="subjoinExtensionDecisionRequestFormId:commonDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															</h:selectOneRadio>
+														</td>
+													</tr>
+													<h:panelGroup rendered="#{subjoinExtensionDecisionRequest.decisionData.verbalOrderFlag == 0}">
+														<tr>
+															<td width="100%" colspan="4">
+																<h:outputText value="#{msgs.label_movementsDecisionsWarning}" style="color: red; font-weight: bold;" />
+															</td>
+														</tr>
+														<tr>
+															<th>
+																#{msgs.label_basedOnLetterDispatchEtc}
+																<h:outputText value=" " />
+																<font style="color: red;">*</font>
+															</th>
+															<td colspan="3">
+																<h:inputText id="basedOnId" readonly="#{subjoinExtensionDecisionRequest.role != 'Requester' and subjoinExtensionDecisionRequest.role != 'ReviewerEmp'}" value="#{subjoinExtensionDecisionRequest.decisionData.basedOn}" styleClass="inputDataSuperLarge" maxlength="400" />
+															</td>
+														</tr>
+														<tr>
+															<th width="15%">
+																<h:outputText value="#{msgs.label_number}" />
+																<h:outputText value=" " />
+																<font style="color: red;">*</font>
+															</th>
+															<td width="20%">
+																<h:inputText id="basedOnOrderNumberId" readonly="#{subjoinExtensionDecisionRequest.role != 'Requester' and subjoinExtensionDecisionRequest.role != 'ReviewerEmp'}" value="#{subjoinExtensionDecisionRequest.decisionData.basedOnOrderNumber}" maxlength="50" />
+															</td>
+															<th width="15%">
+																<h:outputText value="#{msgs.label_date}" />
+																<h:outputText value=" " />
+																<font style="color: red;">*</font>
+															</th>
+															<td width="50%">
+																<util:hijri value="#{subjoinExtensionDecisionRequest.decisionData.basedOnOrderDate}" rendered="#{subjoinExtensionDecisionRequest.role == 'Requester' or subjoinExtensionDecisionRequest.role == 'ReviewerEmp'}" />
+																<h:outputText value="#{subjoinExtensionDecisionRequest.decisionData.basedOnOrderDateString}" rendered="#{subjoinExtensionDecisionRequest.role != 'Requester' and subjoinExtensionDecisionRequest.role != 'ReviewerEmp'}" />
+															</td>
+														</tr>
+													</h:panelGroup>
+													<tr>
+														<th>#{msgs.label_requiredAttachments}</th>
+														<td colspan="3">
+															<code:attachments loginEmpId="#{subjoinExtensionDecisionRequest.loginEmpData.empId}" attachmentId="#{subjoinExtensionDecisionRequest.attachments}" addEnableFlag="#{subjoinExtensionDecisionRequest.role == 'Requester' or subjoinExtensionDecisionRequest.role == 'ReviewerEmp'}" viewEnableFlag="true" deleteEnableFlag="#{subjoinExtensionDecisionRequest.role == 'Requester' or subjoinExtensionDecisionRequest.role == 'ReviewerEmp'}" />
+														</td>
+													</tr>
+													<tr>
+														<th>#{msgs.label_notes}</th>
+														<td colspan="3">
+															<h:inputText readonly="#{subjoinExtensionDecisionRequest.role != 'Requester' and subjoinExtensionDecisionRequest.role != 'ReviewerEmp'}" value="#{subjoinExtensionDecisionRequest.decisionData.remarks}" styleClass="inputDataSuperLarge" maxlength="500" />
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<h:panelGroup rendered="#{subjoinExtensionDecisionRequest.decisionData.locationFlag == 1}">
+												<table border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+
+													<tr>
+														<td width="100%">
+															<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>#{msgs.label_dataFilledBySpecializedEmployee}</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td width="100%">
+															<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<th>
+																		#{msgs.label_interiorMinisteryAgreementNumber}
+																		<h:outputText value=" " />
+																		<font style="color: red;">*</font>
+																	</th>
+																	<td>
+																		<h:inputText id="ministryApprovalNumberId" value="#{subjoinExtensionDecisionRequest.decisionData.ministryApprovalNumber}" readonly="#{subjoinExtensionDecisionRequest.role != 'Requester' and subjoinExtensionDecisionRequest.role != 'ReviewerEmp'}" maxlength="50" />
+																	</td>
+																	<th>
+																		#{msgs.label_interiorMinisteryAgreementDate}
+																		<h:outputText value=" " />
+																		<font style="color: red;">*</font>
+																	</th>
+																	<td>
+																		<util:hijri value="#{subjoinExtensionDecisionRequest.decisionData.ministryApprovalDate}" rendered="#{subjoinExtensionDecisionRequest.role == 'Requester' or subjoinExtensionDecisionRequest.role == 'ReviewerEmp'}" />
+																		<h:outputText value="#{subjoinExtensionDecisionRequest.decisionData.ministryApprovalDateString}" rendered="#{subjoinExtensionDecisionRequest.role != 'Requester' and subjoinExtensionDecisionRequest.role != 'ReviewerEmp'}" />
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+
+									<code:specialAuthorityData id="specialAuthorityDataId" loginEmpId="#{subjoinExtensionDecisionRequest.loginEmpData.empId}" wfMovement="#{subjoinExtensionDecisionRequest.decisionData}" role="#{subjoinExtensionDecisionRequest.role}" requestFlag="#{false}" rendered="#{subjoinExtensionDecisionRequest.role == 'Requester' or subjoinExtensionDecisionRequest.role == 'ReviewerEmp' or subjoinExtensionDecisionRequest.role == 'SignManager'}" />
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+														<h:outputText value="#{subjoinExtensionDecisionRequest.mode == 1 ? msgs.label_officersData : (subjoinExtensionDecisionRequest.mode == 2 ? msgs.label_soldiersData : msgs.label_personsData)}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td align="center" width="100%">
+											<h:panelGroup id="subjoinListPanelId">
+												<h:outputText id="subjoinListSizeId" style="display:none" value="#{subjoinExtensionDecisionRequest.wfMovementsList.size()}" />
+												<rich:dataTable id="subjoinListId" rowKeyVar="index" var="subjoin" value="#{subjoinExtensionDecisionRequest.wfMovementsList}" rows="#{subjoinExtensionDecisionRequest.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+													<rich:column style="width : 14%">
+														<f:facet name="header">#{msgs.label_name}</f:facet>
+														<h:outputText value="#{subjoin.employeeName}" />
+													</rich:column>
+													<rich:column style="width : 5%">
+														<f:facet name="header">
+															<h:outputText value="#{(subjoinExtensionDecisionRequest.mode == 1 or subjoinExtensionDecisionRequest.mode == 2)?(msgs.label_rank):(msgs.label_personRank)}" />
+														</f:facet>
+														<h:outputText value="#{subjoin.employeeRankDesc}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header">#{msgs.label_currentUnit}</f:facet>
+														<h:outputText value="#{subjoin.employeeUnitName}" />
+													</rich:column>
+													<rich:column style="width : 5%">
+														<f:facet name="header">#{msgs.label_currentJobCode}</f:facet>
+														<h:outputText value="#{subjoin.employeeJobCode}" />
+													</rich:column>
+													<rich:column style="width : 5%">
+														<f:facet name="header">#{msgs.label_currentJob}</f:facet>
+														<h:outputText value="#{subjoin.employeeJobName}" />
+													</rich:column>
+													<rich:column style="width : 14%">
+														<f:facet name="header">
+															<h:outputText value="#{subjoinExtensionDecisionRequest.decisionData.locationFlag == 0 or subjoinExtensionDecisionRequest.decisionData.locationFlag == null ? (subjoinExtensionDecisionRequest.mode == 3 ? msgs.label_assignmentUnit : msgs.label_subjoinUnit) : msgs.label_requestedExternalUnitToMoveTo}" />
+														</f:facet>
+														<h:outputText value="#{subjoin.unitFullName}" rendered="#{subjoinExtensionDecisionRequest.decisionData.locationFlag == 0}" />
+														<h:outputText value="#{subjoin.location}" rendered="#{subjoinExtensionDecisionRequest.decisionData.locationFlag == 1}" />
+													</rich:column>
+													<rich:column style="width : 14%">
+														<f:facet name="header">
+														#{msgs.label_period}
+														<h:outputText value=" " />
+															<font style="color: red;">*</font>
+														</f:facet>
+														<h:panelGroup rendered="#{subjoinExtensionDecisionRequest.role == 'Requester' or subjoinExtensionDecisionRequest.role == 'ReviewerEmp'}">
+															<h:inputText value="#{subjoin.periodMonths}" maxlength="2" onkeypress="return isDigit(event);" style="width : 25%">
+																<f:ajax event="change" execute="@this" listener="#{subjoinExtensionDecisionRequest.manipulateEndDate(subjoin)}" render="subjoinExtensionDecisionRequestFormId:subjoinListId subjoinExtensionDecisionRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															</h:inputText>
+															<h:outputText value=" #{msgs.label_month} " />
+															<h:inputText id="periodDaysId" value="#{subjoin.periodDays}" maxlength="2" onkeypress="return isLessOrEqualNumber(event, this.value, 29);" style="width : 25%">
+																<f:ajax event="change" execute="@this" listener="#{subjoinExtensionDecisionRequest.manipulateEndDate(subjoin)}" render="subjoinExtensionDecisionRequestFormId:subjoinListId subjoinExtensionDecisionRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															</h:inputText>
+															<h:outputText value=" #{msgs.label_day}" />
+														</h:panelGroup>
+														<h:outputText rendered="#{subjoinExtensionDecisionRequest.role != 'Requester' and subjoinExtensionDecisionRequest.role != 'ReviewerEmp'}" value="#{subjoinExtensionDecisionRequest.getConcatenatedPeriod(subjoin)}" />
+													</rich:column>
+													<rich:column style="width : 5%">
+														<f:facet name="header">#{msgs.label_endDate}</f:facet>
+														<h:outputText value="#{subjoin.endDateString}" />
+													</rich:column>
+													<rich:column rendered="#{subjoinExtensionDecisionRequest.role == 'Requester' or subjoinExtensionDecisionRequest.role == 'ReviewerEmp'}" style="width : 5%">
+														<f:facet name="header">#{msgs.label_delete}</f:facet>
+														<h:commandButton value="#{msgs.fa_times}" styleClass="btn_icon" title="#{msgs.label_delete}" action="#{subjoinExtensionDecisionRequest.deleteSubjoin(subjoin)}" onclick="return confirm('#{msgs.q_delete}');">
+															<f:ajax execute="subjoinExtensionDecisionRequestFormId:requestDataPanelId" render="subjoinExtensionDecisionRequestFormId:requestDataPanelId subjoinExtensionDecisionRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</rich:column>
+													<f:facet name="footer">
+														<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" execute="subjoinExtensionDecisionRequestFormId:subjoinListPanelId">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+											</h:panelGroup>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:decisionCopies external="#{subjoinExtensionDecisionRequest.externalCopies}" internal="#{subjoinExtensionDecisionRequest.internalCopies}" viewOnly="#{subjoinExtensionDecisionRequest.role != 'Requester' and subjoinExtensionDecisionRequest.role != 'ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:prevTasks rendered="#{subjoinExtensionDecisionRequest.role != 'Requester'}" value="#{subjoinExtensionDecisionRequest.prevTasks}" refuseRoles="SignManager,ReviewerEmp," />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:curTask id="curTaskId" value="#{subjoinExtensionDecisionRequest.currentEmployee}" rendered="#{subjoinExtensionDecisionRequest.role == 'SignManager' or subjoinExtensionDecisionRequest.role == 'ReviewerEmp'}">
+												<tr>
+													<th width="15%">#{msgs.label_notes}</th>
+													<td width="85%" colspan="3">
+														<h:inputText id="notesId" value="#{subjoinExtensionDecisionRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+													</td>
+												</tr>
+												<h:panelGroup rendered="#{subjoinExtensionDecisionRequest.role == 'SignManager' or subjoinExtensionDecisionRequest.role == 'ReviewerEmp'}">
+													<tr>
+														<th width="15%">#{msgs.label_refuseReasons}</th>
+														<td width="85%" colspan="3">
+															<h:inputText id="refuseReasonsId" value="#{subjoinExtensionDecisionRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+														</td>
+													</tr>
+												</h:panelGroup>
+											</code:curTask>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:outputText rendered="#{subjoinExtensionDecisionRequest.role == 'Notification' or subjoinExtensionDecisionRequest.role == 'History'}" value="#{subjoinExtensionDecisionRequest.notificationMessage}" styleClass="successMessage" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+
+														<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateSend(#{subjoinExtensionDecisionRequest.mode})');" action="#{subjoinExtensionDecisionRequest.initMovement()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionDecisionRequest.role == 'Requester'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveReBtnId" action="#{subjoinExtensionDecisionRequest.approveMovementRE()}" onclick="return handleOnAction('#{msgs.q_reviewForMovements}', 'validateSend(#{subjoinExtensionDecisionRequest.mode})');" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionDecisionRequest.role == 'ReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinExtensionDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinExtensionDecisionRequest.rejectMovementRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionDecisionRequest.role == 'ReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;subjoinExtensionDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinExtensionDecisionRequest.approveMovementSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionDecisionRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateDecisionApprovalNotes(&quot;subjoinExtensionDecisionRequestFormId:specialAuthorityDataId:decisionApprovalRemarksId&quot;, &quot;subjoinExtensionDecisionRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;subjoinExtensionDecisionRequestFormId:curTaskId:notesId&quot;)');" action="#{subjoinExtensionDecisionRequest.returnMovementSM()}"
+															value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionDecisionRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinExtensionDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinExtensionDecisionRequest.rejectMovementSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionDecisionRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="printBtnId" action="#{subjoinExtensionDecisionRequest.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionDecisionRequest.role == 'Notification' and subjoinExtensionDecisionRequest.instanceApproved == 1}" />
+
+														<h:commandButton id="nBtnId" action="#{subjoinExtensionDecisionRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionDecisionRequest.role == 'Notification'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="warningPanelId">
+							<h:panelGroup rendered="#{subjoinExtensionDecisionRequest.decisionData.basedOnDecisionNumber != null and subjoinExtensionDecisionRequest.wfMovementsList.size() == 0}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.error_thereIsNoLastValidTrans}" styleClass="remarkMessage" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

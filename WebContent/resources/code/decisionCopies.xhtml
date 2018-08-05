@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:f="http://java.sun.com/jsf/core" xmlns:composite="http://java.sun.com/jsf/composite">
+<composite:interface componentType="com.code.ui.components.util.UIDecisionCopies">
+	<composite:attribute name="internal" required="true" type="java.util.List" />
+	<composite:attribute name="external" required="true" />
+	<composite:attribute name="viewOnly" default="false" type="java.lang.Boolean" />
+</composite:interface>
+<composite:implementation>
+	<script type="text/javascript">
+		function getInternalCopyEmployee(){
+			openEmployeesMiniSearchForDecisionCopies('#{request.contextPath}', 'handleEmpMiniSearchResultCC(ret)', 6)
+		}
+		
+		function handleEmpMiniSearchResultCC(ret){ 
+			if(ret!=null){
+				var selectedEmpIDsId='#{cc.clientId}'+':selectedEmpIDsId';
+				var searcEmpBtnId='#{cc.clientId}'+':searchEmpBtnCCId';
+				document.getElementById(selectedEmpIDsId).value=ret[0];
+				document.getElementById(searcEmpBtnId).click();
+			}
+		}
+	</script>
+	<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_decisionCopies}">
+		<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td width="49%">
+					<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+						<tr>
+							<td width="100%">#{msgs.label_internalDecisionCopies}</td>
+						</tr>
+					</table>
+				</td>
+				<td width="2%"></td>
+				<td width="49%">
+					<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+						<tr>
+							<td width="100%">#{msgs.label_externalDecisionCopies}</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td width="49%" style="vertical-align: top;">
+					<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+						<tr>
+							<td width="100%">
+								<h:commandButton rendered="#{not cc.attrs.viewOnly}" value="#{msgs.label_addInternalCopy}" styleClass="btn_normal" onclick="getInternalCopyEmployee();return false;" />
+								<h:commandButton id="searchEmpBtnCCId" style="display:none;" action="#{cc.addInternalCopy()}">
+									<f:ajax execute="#{cc.clientId}:selectedEmpIDsId" render="internalCopiesTableId" />
+								</h:commandButton>
+								<h:inputHidden id="selectedEmpIDsId" value="#{cc.selectedEmpsIds}" />
+							</td>
+						</tr>
+						<tr>
+							<td width="100%">
+								<rich:dataTable id="internalCopiesTableId" value="#{cc.attrs.internal}" rowKeyVar="index" var="emp" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+									<rich:column>
+										<f:facet name="header">#{msgs.label_name}</f:facet>
+										<h:outputText value="#{emp.name}" />
+									</rich:column>
+									<rich:column>
+										<f:facet name="header">#{msgs.label_rank}</f:facet>
+										<h:outputText value="#{emp.rankDesc}" />
+									</rich:column>
+									<rich:column>
+										<f:facet name="header">#{msgs.label_job}</f:facet>
+										<h:outputText value="#{emp.jobDesc}" />
+									</rich:column>
+									<rich:column>
+										<f:facet name="header">#{msgs.label_unit}</f:facet>
+										<h:outputText value="#{emp.physicalUnitFullName}" />
+									</rich:column>
+									<rich:column rendered="#{not cc.attrs.viewOnly}">
+										<h:commandButton value="#{msgs.fa_times}" action="#{cc.deleteInternalCopy(emp)}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="return confirm('#{msgs.q_delete}');">
+											<f:ajax render="internalCopiesTableId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+									</rich:column>
+								</rich:dataTable>
+							</td>
+						</tr>
+					</table>
+				</td>
+				<td width="2%"></td>
+				<td width="49%" style="vertical-align: top;">
+					<h:inputTextarea id="externalCopiesId" value="#{cc.attrs.external}" readonly="#{cc.attrs.viewOnly}" onkeypress="return enforceMaxLength(this, 500);" rows="5" styleClass="inputDataSuperLarge" style="width:100%; margin-top:5px;" />
+				</td>
+			</tr>
+		</table>
+	</rich:collapsiblePanel>
+</composite:implementation>
+</html>

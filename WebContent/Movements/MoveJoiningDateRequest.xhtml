@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function getEmployee(contextPath) {
+			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',
+					9, #{moveJoiningDateRequest.mode}, -1, -1, -1, -1,
+					'#{moveJoiningDateRequest.loginEmpData.physicalUnitHKey}');
+
+		}
+
+		function handleEmpMiniSearchResult(ret) {
+			if (ret != null) {
+				document
+						.getElementById('moveJoiningDateRequestFormId:beneficiaryEmployeeHId').value = ret[0];
+				document.getElementById(
+						'moveJoiningDateRequestFormId:searchEmpBtnId')
+						.click();
+			}
+		}
+		function validateRequest() {
+			var joiningDateValue =  document.getElementById('moveJoiningDateRequestFormId:mvtJoiningDateId:day').value;
+			 if(joiningDateValue == 0) {
+					alert('#{msgs.error_joiningDateMandatroy}');
+					return false;
+				}
+			 return true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="moveJoiningDateRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{moveJoiningDateRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_processRequester}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{moveJoiningDateRequest.requester}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiaryEmployee}" switchType="client" onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{moveJoiningDateRequest.beneficiary.empId == moveJoiningDateRequest.requester.empId})) { getEmployee('#{request.contextPath}'); return false;} else {return true;}" expanded="#{moveJoiningDateRequest.requester.empId != moveJoiningDateRequest.beneficiary.empId}"
+							rendered="#{(moveJoiningDateRequest.role == 'Requester' and (moveJoiningDateRequest.loginEmpData.isManager == 1)) or moveJoiningDateRequest.requester.empId != moveJoiningDateRequest.beneficiary.empId}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+								<h:panelGroup rendered="#{moveJoiningDateRequest.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+														<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{moveJoiningDateRequest.searchEmployees()}">
+															<f:ajax execute="moveJoiningDateRequestFormId:beneficiaryEmployeeHId" render="moveJoiningDateRequestFormId:beneficiaryPanelId moveJoiningDateRequestFormId:requestPanelId moveJoiningDateRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:inputHidden id="beneficiaryEmployeeHId" value="#{moveJoiningDateRequest.wfMovement.employeeId}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp id="beneficiaryId" value="#{moveJoiningDateRequest.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requestPanelId">
+							<h:panelGroup rendered="#{moveJoiningDateRequest.lastValidTran != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_moveDetails}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">#{msgs.label_decisionNumber}</th>
+													<td width="35%">
+														<h:outputText value="#{moveJoiningDateRequest.lastValidTran.decisionNumber}" />
+													</td>
+													<th width="15%">#{msgs.label_decisionDate}</th>
+													<td width="35%">
+														<h:outputText value="#{moveJoiningDateRequest.lastValidTran.decisionDateString}" />
+													</td>
+												</tr>
+
+												<tr>
+													<th width="15">#{msgs.label_jobMovedFrom}</th>
+													<td width="35%">
+														<h:outputText value="#{moveJoiningDateRequest.lastValidTran.transEmpJobCode}" />
+														<h:outputText value=" - " />
+														<h:outputText value="#{moveJoiningDateRequest.lastValidTran.transEmpJobName}" />
+													</td>
+													<th width="15">#{msgs.label_jobToBeMovedTo}</th>
+													<td width="35%">
+														<h:outputText value="#{moveJoiningDateRequest.lastValidTran.jobCode}" />
+														<h:outputText value=" - " />
+														<h:outputText value="#{moveJoiningDateRequest.lastValidTran.jobName}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">#{msgs.label_requestedUnitToMoveFrom}</th>
+													<td width="35%">
+														<h:outputText value="#{moveJoiningDateRequest.lastValidTran.transEmpUnitFullName}" />
+													</td>
+													<th width="15%">#{msgs.label_requestedUnitToMoveTo}</th>
+													<td width="35%">
+														<h:outputText value="#{moveJoiningDateRequest.lastValidTran.unitFullName}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">#{msgs.label_moveJustifications}</th>
+													<td width="35%">
+														<h:outputText value="#{moveJoiningDateRequest.lastValidTran.reasons}" />
+													</td>
+													<th width="15%">#{msgs.label_moveConsideredFrom}</th>
+													<td width="35%">
+														<h:outputText value="#{moveJoiningDateRequest.lastValidTran.executionDateString}" />
+													</td>
+												</tr>
+
+
+											</table>
+
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_requestData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_joiningDate}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="85%">
+														<util:hijri id="mvtJoiningDateId" value="#{moveJoiningDateRequest.wfMovement.joiningDate}" nullable="true" rendered="#{moveJoiningDateRequest.role == 'Requester'}" />
+														<h:outputText value="#{moveJoiningDateRequest.wfMovement.joiningDateString}" rendered="#{moveJoiningDateRequest.role != 'Requester'}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:prevTasks rendered="#{moveJoiningDateRequest.role != 'Requester'}" value="#{moveJoiningDateRequest.prevTasks}" refuseRoles="DirectManager," />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:curTask id="curTaskId" value="#{moveJoiningDateRequest.currentEmployee}" rendered="#{moveJoiningDateRequest.role == 'DirectManager'}">
+												<tr>
+													<th width="15%">#{msgs.label_notes}</th>
+													<td width="85%" colspan="3">
+														<h:inputText id="notesId" value="#{moveJoiningDateRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+													</td>
+												</tr>
+
+												<tr>
+													<th width="15%">#{msgs.label_refuseReasons}</th>
+													<td width="85%" colspan="3">
+														<h:inputText id="refuseReasonsId" value="#{moveJoiningDateRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+													</td>
+												</tr>
+
+											</code:curTask>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:outputText rendered="#{moveJoiningDateRequest.role == 'Notification' or moveJoiningDateRequest.role == 'History'}" value="#{moveJoiningDateRequest.notificationMessage}" styleClass="successMessage" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:commandButton id="rBtnId" action="#{moveJoiningDateRequest.initMovement()}" onclick="return handleOnAction('#{msgs.q_send}', 'validateRequest()');" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{moveJoiningDateRequest.role == 'Requester'}">
+															<f:ajax execute="@form" render="moveJoiningDateRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+														<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;moveJoiningDateRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveJoiningDateRequest.approveMovementDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveJoiningDateRequest.role == 'DirectManager'}">
+															<f:ajax execute="@form" render="moveJoiningDateRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+														<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveJoiningDateRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveJoiningDateRequest.rejectMovementDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveJoiningDateRequest.role == 'DirectManager'}">
+															<f:ajax execute="@form" render="moveJoiningDateRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+														<h:commandButton id="nBtnId" action="#{moveJoiningDateRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveJoiningDateRequest.role == 'Notification'}">
+															<f:ajax execute="@form" render="notifyMessagesId" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

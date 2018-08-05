@@ -1,0 +1,365 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+
+	function getCourseEvent(requestingRegionId) {
+		openTrainingIntCourseEventsMiniSearch('#{request.contextPath}', 'handleCourseEventsMiniSearchResult(ret)', '2', -1, '#{militaryIntCourseEventResults.trainingUnit.unitId}', -1, 0);
+	}
+	
+	function handleCourseEventsMiniSearchResult(ret){
+		if(ret != null){
+			document.getElementById('militaryIntCourseEventResultsFormId:selectedCourseEventIdHId').value = ret[0];
+			document.getElementById('militaryIntCourseEventResultsFormId:selectedCourseEventNameHId').innerHTML = ret[1];
+			document.getElementById('militaryIntCourseEventResultsFormId:selectCourseEventBtnId').click();
+		}
+	}
+
+	function validateTraininTransaction() {
+		if(!validResultsComponent())
+			return false
+
+		return true;
+	}
+	
+    function validateRequest() {
+        var trainingCourseId = document.getElementById('militaryIntCourseEventResultsFormId:selectedCourseEventIdHId').value;
+
+        if (trainingCourseId == null || trainingCourseId == '') {
+            alert("#{msgs.error_trainingCourseMandatory}");
+            return false;
+        }
+        return true;
+    }
+    
+    </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="militaryIntCourseEventResultsFormId" dir="#{msgs.dir}">
+		<ui:debug />
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{militaryIntCourseEventResults.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:panelGroup rendered="#{!militaryIntCourseEventResults.hasAccessPrivillege}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%">
+										<h:outputText value="#{msgs.error_trainingUnitsSpecialistsPrivilege}" />
+									</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{militaryIntCourseEventResults.hasAccessPrivillege}">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>
+										<h:outputText value="#{msgs.label_trainingCourseData}" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="trainingCourseDataPanelId">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td>
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_trainingCourseName}" />
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="35%" colspan="2">
+														<h:outputText id="selectedCourseEventNameHId" value="#{militaryIntCourseEventResults.selectedCourseEvent.courseName}" />
+														<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getCourseEvent(); return false;" rendered="#{militaryIntCourseEventResults.role  == 'Requester'}" />
+														<h:commandButton id="selectCourseEventBtnId" style="display:none;" action="#{militaryIntCourseEventResults.selectCourseEvent()}">
+															<f:ajax execute="militaryIntCourseEventResultsFormId:trainingCourseDataPanelId" render="militaryIntCourseEventResultsFormId:trainingCourseDataPanelId militaryIntCourseEventResultsFormId:joinedEmployeesPanelId militaryIntCourseEventResultsFormId:transactionPanelId militaryIntCourseEventResultsFormId:actionSectionPanelId militaryIntCourseEventResultsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:inputHidden id="selectedCourseEventIdHId" value="#{militaryIntCourseEventResults.selectedCourseEventId}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_trainingYear}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{militaryIntCourseEventResults.selectedCourseEvent.trainingYearName}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_theTrainingUnit}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{militaryIntCourseEventResults.selectedCourseEvent.trainingUnitName}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_trainingCourseNumber}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{militaryIntCourseEventResults.selectedCourseEvent.serial}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_weeksCount}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{militaryIntCourseEventResults.selectedCourseEvent.weeksCount}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_courseStartDate}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{militaryIntCourseEventResults.selectedCourseEvent.actualStartDateString}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_courseEndDate}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{militaryIntCourseEventResults.selectedCourseEvent.actualEndDateString}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="joinedEmployeesPanelId">
+								<h:panelGroup rendered="#{militaryIntCourseEventResults.selectedCourseEvent != null}">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:outputText value="#{msgs.label_courseEventEmployeesData}" />
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td align="center" width="100%">
+												<rich:dataTable id="trainingTransactionsListId" rowKeyVar="index" var="transaction" value="#{militaryIntCourseEventResults.trainingTransactionsList}" rows="#{militaryIntCourseEventResults.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+													<rich:column style="width : 5%">
+														<f:facet name="header">#</f:facet>
+	                                					#{index + 1}
+	                    							</rich:column>
+													<rich:column style="width : 5%">
+														<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon" action="#{militaryIntCourseEventResults.selectTrainingTransaction(transaction)}">
+															<f:ajax render="militaryIntCourseEventResultsFormId:transactionPanelId militaryIntCourseEventResultsFormId:notifyMessagesId" />
+														</h:commandButton>
+													</rich:column>
+													<rich:column style="width : 20%">
+														<f:facet name="header">#{msgs.label_name}</f:facet>
+														<h:outputText value="#{transaction.employeeName}" />
+													</rich:column>
+													<rich:column style="width : 15%">
+														<f:facet name="header">#{msgs.label_rank}</f:facet>
+														<h:outputText value="#{transaction.employeeRankDesc}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header">#{msgs.label_theNumber}</f:facet>
+														<h:outputText value="#{transaction.employeeNumber}" />
+													</rich:column>
+													<rich:column style="width : 15%">
+														<f:facet name="header">#{msgs.label_job}</f:facet>
+														<h:outputText value="#{transaction.employeeJobName}" />
+													</rich:column>
+													<rich:column style="width : 20%">
+														<f:facet name="header">#{msgs.label_orgUnit}</f:facet>
+														<h:outputText value="#{transaction.employeePhysicalUnitFullname}" />
+													</rich:column>
+													<rich:column style="width : 15%">
+														<f:facet name="header">#{msgs.label_joiningDate}</f:facet>
+														<h:outputText value="#{transaction.trainingJoiningDateString}" />
+													</rich:column>
+													<f:facet name="footer">
+														<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" execute="militaryIntCourseEventResultsFormId:trainingTransactionsListId">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="transactionPanelId">
+								<h:panelGroup rendered="#{militaryIntCourseEventResults.selectedTrainingTransaction != null}">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_employeeResults}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="dataPanelId">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<th>#{msgs.label_employeeResults}</th>
+															<td>
+																<h:outputText value="#{militaryIntCourseEventResults.selectedTrainingTransaction.employeeName}" />
+															</td>
+														</tr>
+														<code:courseResults trainingObject="#{militaryIntCourseEventResults.selectedTrainingTransaction}" loginEmpId="#{militaryIntCourseEventResults.loginEmpData.empId}" viewOnly="#{militaryIntCourseEventResults.role != 'Requester' and militaryIntCourseEventResults.role  != 'ReviewerEmp'}" military="true" claim="false" successFlagChangeListener="#{militaryIntCourseEventResults.successFlagChangeListener()}"></code:courseResults>
+
+														<tr>
+															<td width="100%" colspan="4">
+																<h:panelGroup rendered="#{militaryIntCourseEventResults.role == 'Requester' or militaryIntCourseEventResults.role == 'ReviewerEmp'}">
+																	<table align="center">
+																		<tr>
+																			<td width="100%">
+																				<h:commandButton action="#{militaryIntCourseEventResults.saveTrainingTransaction()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" style="width:150px" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validateTraininTransaction()');">
+																					<f:ajax execute="militaryIntCourseEventResultsFormId:dataPanelId" render="militaryIntCourseEventResultsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																				</h:commandButton>
+																			</td>
+																		</tr>
+																	</table>
+																</h:panelGroup>
+															</td>
+														</tr>
+
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+
+									</table>
+								</h:panelGroup>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%">
+							<code:prevTasks rendered="#{militaryIntCourseEventResults.role != 'Requester'}" value="#{militaryIntCourseEventResults.prevTasks}" refuseRoles="SignManager,ReviewerEmp," />
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<code:curTask id="curTaskId" value="#{militaryIntCourseEventResults.currentEmployee}" rendered="#{militaryIntCourseEventResults.role == 'SignManager' or militaryIntCourseEventResults.role == 'ReviewerEmp'}">
+								<tr>
+									<th width="15%">#{msgs.label_notes}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="notesId" value="#{militaryIntCourseEventResults.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{militaryIntCourseEventResults.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</code:curTask>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+						<h:panelGroup id="actionSectionPanelId">
+						<h:panelGroup rendered="#{militaryIntCourseEventResults.selectedCourseEvent != null}">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>
+										<!-- Requester -->
+										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()', null);" action="#{militaryIntCourseEventResults.initWFTrainingCourseEvent()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'Requester'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<!-- Reviewer  -->
+										<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRequest()',null);" action="#{militaryIntCourseEventResults.approveWFTrainingCourseEventRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'ReviewerEmp'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryIntCourseEventResultsFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{militaryIntCourseEventResults.rejectWFTrainingCourseEventRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'ReviewerEmp'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<!-- Sign manager -->
+										<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;militaryIntCourseEventResultsFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{militaryIntCourseEventResults.approveWFTrainingCourseEventSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'SignManager'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;militaryIntCourseEventResultsFormId:curTaskId:refuseReasonsId&quot;, &quot;militaryIntCourseEventResultsFormId:curTaskId:notesId&quot;)',null);" action="#{militaryIntCourseEventResults.returnWFTrainingCourseEventSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon"
+											rendered="#{militaryIntCourseEventResults.role == 'SignManager'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryIntCourseEventResultsFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{militaryIntCourseEventResults.rejectWFTrainingCourseEventSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'SignManager'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<!-- Notification -->
+										<h:commandButton id="nBtnId" action="#{militaryIntCourseEventResults.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'Notification'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+							</h:panelGroup>
+							</h:panelGroup>
+						</td>
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

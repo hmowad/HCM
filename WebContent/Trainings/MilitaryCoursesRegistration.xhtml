@@ -1,0 +1,380 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+		function validate() {
+			var trainingCourseQualificationMinorSpecId = document.getElementById('militaryCoursesRegistrationFormId:trainingCourseQualificationMinorSpecIdHId').value;
+			var categoryId = document.getElementById('militaryCoursesRegistrationFormId:cateogryId').value;
+			var fromRankId = parseInt(document.getElementById('militaryCoursesRegistrationFormId:fromRankId').value);
+			var toRankId = parseInt(document.getElementById('militaryCoursesRegistrationFormId:toRankId').value);
+			if( document.getElementById('militaryCoursesRegistrationFormId:trainingCourseNameId') != null) {
+				var trainingCourseName = document.getElementById('militaryCoursesRegistrationFormId:trainingCourseNameId').value;
+				if (trainingCourseName == null || trainingCourseName == '') {
+					alert('#{msgs.error_courseNameMandatory}');
+					return false;
+				}
+			} 
+			if (trainingCourseQualificationMinorSpecId == null || trainingCourseQualificationMinorSpecId == '') {
+				alert('#{msgs.error_qualificationMinorSpecMandatory}');
+				return false;
+			}
+			if(categoryId != null && categoryId !='' && toRankId != null && toRankId !='' && fromRankId != null && fromRankId !=''){
+				if(toRankId > fromRankId) {
+					alert('#{msgs.error_rankOrderMismatch}');
+					return false;
+				}
+			}
+			return true;
+		}
+
+		function getQualificationMinorSpec() {
+			openQualificationMinorSpecsMiniSearch('#{request.contextPath}', 'handleQualificationMinorSpecMiniSearchResult(ret)', 1);
+		}
+
+		function handleQualificationMinorSpecMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('militaryCoursesRegistrationFormId:trainingCourseQualificationMinorSpecIdHId').value = ret[0];
+				document.getElementById('militaryCoursesRegistrationFormId:trainingCourseQualificationMinorSpecId').innerHTML = ret[1];
+				document.getElementById('militaryCoursesRegistrationFormId:trainingCourseQualificationMinorSpecDescHId').value = ret[1];
+			}
+		}
+
+		function getMinorSpecialization() {
+			openMinorSpecializationsMiniSearch('#{request.contextPath}', 'handleMinorSpecializationMiniSearchResult(ret)', 1);
+		}
+
+		function handleMinorSpecializationMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('militaryCoursesRegistrationFormId:minorSpecializationIdHId').value = ret[0];
+				document.getElementById('militaryCoursesRegistrationFormId:minorSpecializationDescId').innerHTML = ret[1];
+				document.getElementById('militaryCoursesRegistrationFormId:minorSpecializationDescHId').value = ret[1];
+			}
+		}
+
+		function getQualificationLevels() {
+			openQualificationLevelsMiniSearch('#{request.contextPath}', 'handleQualificationLevelsMiniSearchResult(ret)');
+		}
+
+		function handleQualificationLevelsMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('militaryCoursesRegistrationFormId:qualificationLevelsIdsHId').value = ret[0];
+				document.getElementById('militaryCoursesRegistrationFormId:qualificationLevelsDescId').innerHTML = ret[1];
+				document.getElementById('militaryCoursesRegistrationFormId:qualificationLevelsDescHId').value = ret[1];
+			}
+		}
+		//]]>
+	</script>
+</h:head>
+
+<h:body styleClass="screenBg">
+	<h:form id="militaryCoursesRegistrationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{militaryCoursesRegistration.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:panelGroup rendered="#{!militaryCoursesRegistration.viewAdmin and !militaryCoursesRegistration.modifyAndInsertAdmin}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%">#{msgs.error_privilegeError}</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{militaryCoursesRegistration.viewAdmin or militaryCoursesRegistration.modifyAndInsertAdmin}">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_trainingCourseNameAndQualification}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="trainingCourseNameAndQualificationPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_trainingCourseName}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="trainingCourseNameId" value="#{militaryCoursesRegistration.trainingCourseData.name}" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" styleClass="inputDataSuperLarge" />
+											<h:outputText value="#{militaryCoursesRegistration.trainingCourseData.name}" rendered="#{militaryCoursesRegistration.viewAdmin}" />
+										</td>
+										<th width="15%">
+											#{msgs.label_trainingQualificationMinorSpec}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:outputText id="trainingCourseQualificationMinorSpecId" value="#{militaryCoursesRegistration.trainingCourseData.qualificationMinorSpecDesc}" rendered="#{militaryCoursesRegistration.viewAdmin or militaryCoursesRegistration.modifyAndInsertAdmin}" />
+											<h:inputHidden id="trainingCourseQualificationMinorSpecIdHId" value="#{militaryCoursesRegistration.trainingCourseData.qualificationMinorSpecId}" />
+											<h:inputHidden id="trainingCourseQualificationMinorSpecDescHId" value="#{militaryCoursesRegistration.trainingCourseData.qualificationMinorSpecDesc}" />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getQualificationMinorSpec(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_syllabusAttachments}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="syllabusAttachmentsDataPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">#{msgs.label_syllabusAttachments}</th>
+										<td width="85%">
+											<code:attachments loginEmpId="#{militaryCoursesRegistration.loginEmpData.empId}" attachmentId="#{militaryCoursesRegistration.trainingCourseData.syllabusAttachments}" addEnableFlag="#{militaryCoursesRegistration.modifySyllabusAttachmentsAdmin}" viewEnableFlag="true" deleteEnableFlag="#{militaryCoursesRegistration.modifySyllabusAttachmentsAdmin}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_historicalSyllabusAttachments}</th>
+										<td width="85%">
+											<code:attachments loginEmpId="#{militaryCoursesRegistration.loginEmpData.empId}" attachmentId="#{militaryCoursesRegistration.trainingCourseData.syllabusAttachmentsHistory}" addEnableFlag="#{militaryCoursesRegistration.modifyAndInsertAdmin}" viewEnableFlag="true" deleteEnableFlag="#{militaryCoursesRegistration.modifyAndInsertAdmin}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_extraData}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="extraDataPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">#{msgs.label_minimumCandidatesNumber}</th>
+										<td width="35%">
+											<h:inputText id="minimumCandidatesNumberId" value="#{militaryCoursesRegistration.trainingCourseData.candidatesMin}" onkeypress="return isDigit(event);" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" styleClass="inputDataSuperLarge" maxlength="2" />
+											<h:outputText value="#{militaryCoursesRegistration.trainingCourseData.candidatesMin}" rendered="#{militaryCoursesRegistration.viewAdmin}" />
+										</td>
+										<th width="15%">#{msgs.label_maximumCandidatesNumber}</th>
+										<td width="35%">
+											<h:inputText id="maximumCandidatesNumberId" value="#{militaryCoursesRegistration.trainingCourseData.candidatesMax}" onkeypress="return isDigit(event);" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" styleClass="inputDataSuperLarge" maxlength="2" />
+											<h:outputText value="#{militaryCoursesRegistration.trainingCourseData.candidatesMax}" rendered="#{militaryCoursesRegistration.viewAdmin}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_weeksCount}</th>
+										<td width="35%">
+											<h:inputText id="weeksCountId" value="#{militaryCoursesRegistration.trainingCourseData.weeksCount}" onkeypress="return isDigit(event);" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" styleClass="inputDataSuperLarge" maxlength="2" />
+											<h:outputText value="#{militaryCoursesRegistration.trainingCourseData.candidatesMax}" rendered="#{militaryCoursesRegistration.viewAdmin}" />
+										</td>
+
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_coursePrequisities}</th>
+										<td width="35%">
+											<h:inputTextarea id="trainingCoursePrequisitiesId" styleClass="inputDataSuperLarge" value="#{militaryCoursesRegistration.trainingCourseData.prerquisites}" rows="3" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin or militaryCoursesRegistration.viewAdmin}" disabled="#{militaryCoursesRegistration.viewAdmin}" />
+										</td>
+										<td width="50%" colspan="2"></td>
+									</tr>
+
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_courseNominationPrequisites}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="courseNominationPrequisitesPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">#{msgs.label_exclusiveCourse}</th>
+										<td width="35%">
+											<h:selectBooleanCheckbox id="exclusiveCourseFlagId" value="#{militaryCoursesRegistration.trainingCourseData.exclusiveFlagBoolean}" rendered="#{(militaryCoursesRegistration.viewAdmin and  militaryCoursesRegistration.trainingCourseData.id != null ) or militaryCoursesRegistration.modifyAndInsertAdmin}" disabled="#{militaryCoursesRegistration.viewAdmin}" />
+											<h:outputText value="#{msgs.label_exclusiveCourseForBorderGuard}" rendered="#{(militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.id != null )or militaryCoursesRegistration.modifyAndInsertAdmin}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_employeesCategory}</th>
+										<td width="35%">
+											<h:selectOneMenu id="cateogryId" value="#{militaryCoursesRegistration.trainingCourseData.categoryId}" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="" />
+												<f:selectItems value="#{militaryCoursesRegistration.employeesCategories}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+												<f:ajax event="change" execute="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId" render="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId" listener="#{militaryCoursesRegistration.categoryChangeListener()}" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneMenu>
+
+											<h:outputText value="#{msgs.label_all}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.categoryId == null}" />
+											<h:outputText value="#{msgs.label_officers}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.categoryId == 1}" />
+											<h:outputText value="#{msgs.label_soldiers}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.categoryId == 2}" />
+
+										</td>
+										<td width="50%" colspan="2"></td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_rankFrom}</th>
+										<td width="35%">
+											<h:selectOneMenu id="fromRankId" value="#{militaryCoursesRegistration.trainingCourseData.fromRankId}" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" disabled="#{militaryCoursesRegistration.trainingCourseData.categoryId == null}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="" />
+												<f:selectItems value="#{militaryCoursesRegistration.ranks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+												<f:ajax event="change" execute="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId" render="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId" listener="#{militaryCoursesRegistration.ranksChangeListener()}" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneMenu>
+											<h:outputText value="#{msgs.label_all}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.fromRankId == null}" />
+											<h:outputText value="#{militaryCoursesRegistration.trainingCourseData.fromRankDesc}" rendered="#{militaryCoursesRegistration.viewAdmin}" />
+										</td>
+										<th width="15%">#{msgs.label_rankTo}</th>
+										<td width="35%">
+											<h:selectOneMenu id="toRankId" value="#{militaryCoursesRegistration.trainingCourseData.toRankId}" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" disabled="#{militaryCoursesRegistration.trainingCourseData.categoryId == null}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="" />
+												<f:selectItems value="#{militaryCoursesRegistration.ranks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+												<f:ajax event="change" execute="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId" render="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId" listener="#{militaryCoursesRegistration.ranksChangeListener()}" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneMenu>
+											<h:outputText value="#{msgs.label_all}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.toRankId == null}" />
+											<h:outputText value="#{militaryCoursesRegistration.trainingCourseData.toRankDesc}" rendered="#{militaryCoursesRegistration.viewAdmin}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_generalSpec}</th>
+										<td width="35%">
+											<h:selectOneMenu value="#{militaryCoursesRegistration.trainingCourseData.generalSpecialization}" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_overland}" />
+												<f:selectItem itemValue="2" itemLabel="#{msgs.label_naval}" />
+												<f:selectItem itemValue="3" itemLabel="#{msgs.label_aerial}" />
+											</h:selectOneMenu>
+											<h:outputText value="#{msgs.label_all}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.generalSpecialization == null}" />
+											<h:outputText value="#{msgs.label_overland}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.generalSpecialization == 1}" />
+											<h:outputText value="#{msgs.label_naval}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.generalSpecialization == 2}" />
+											<h:outputText value="#{msgs.label_aerial}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.generalSpecialization == 3}" />
+										</td>
+										<td width="50%" colspan="2"></td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_minorSpecialization}</th>
+										<td width="35%" colspan="2">
+											<h:outputText id="minorSpecializationDescId" value="#{(militaryCoursesRegistration.trainingCourseData.minorSpecializationIds == null or militaryCoursesRegistration.trainingCourseData.minorSpecializationIds == '') ? msgs.label_all : militaryCoursesRegistration.minorSpecializationDesc}" rendered="#{militaryCoursesRegistration.viewAdmin or militaryCoursesRegistration.modifyAndInsertAdmin}" />
+											<h:inputHidden id="minorSpecializationIdHId" value="#{militaryCoursesRegistration.trainingCourseData.minorSpecializationIds}" />
+											<h:inputHidden id="minorSpecializationDescHId" value="#{militaryCoursesRegistration.minorSpecializationDesc}" />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getMinorSpecialization(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" />
+											<h:commandButton id="clearMinorSpecializationDescBtnId" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" action="#{militaryCoursesRegistration.clearMinorSpec()}" value="#{msgs.fa_times}" styleClass="btn_icon">
+												<f:ajax execute="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId" render="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_jobType}</th>
+										<td width="35%">
+											<h:selectOneMenu value="#{militaryCoursesRegistration.trainingCourseData.jobGeneralType}" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_jobTypeNormal}" />
+												<f:selectItem itemValue="2" itemLabel="#{msgs.label_jobTypeTechnical}" />
+												<f:selectItem itemValue="3" itemLabel="#{msgs.label_jobTypeField}" />
+											</h:selectOneMenu>
+											<h:outputText value="#{msgs.label_all}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.jobGeneralType == null}" />
+											<h:outputText value="#{msgs.label_jobTypeNormal}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.jobGeneralType == 1}" />
+											<h:outputText value="#{msgs.label_jobTypeTechnical}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.jobGeneralType == 2}" />
+											<h:outputText value="#{msgs.label_jobTypeField}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.jobGeneralType == 3}" />
+										</td>
+										<td width="50%" colspan="3"></td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_qualificationLevel}</th>
+										<td width="35%" colspan="2">
+											<h:outputText id="qualificationLevelsDescId" value="#{(militaryCoursesRegistration.trainingCourseData.qualificationLevelIds == null or militaryCoursesRegistration.trainingCourseData.qualificationLevelIds == '')?  msgs.label_all : militaryCoursesRegistration.qualificationLevelsDesc}" rendered="#{militaryCoursesRegistration.viewAdmin or militaryCoursesRegistration.modifyAndInsertAdmin}" />
+											<h:inputHidden id="qualificationLevelsIdsHId" value="#{militaryCoursesRegistration.trainingCourseData.qualificationLevelIds}" />
+											<h:inputHidden id="qualificationLevelsDescHId" value="#{militaryCoursesRegistration.qualificationLevelsDesc}" />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getQualificationLevels(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" />
+											<h:commandButton id="clearQualificationLevelBtnId" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" action="#{militaryCoursesRegistration.clearQualificationLevel()}" value="#{msgs.fa_times}" styleClass="btn_icon">
+												<f:ajax execute="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId" render="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_promotionDateWithin}</th>
+										<td width="35%" colspan="3">
+											<h:inputText id="promotionMonthsId" value="#{militaryCoursesRegistration.trainingCourseData.promotionWitninMonths}" onkeypress="return isDigit(event);" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" styleClass="inputDataSmall" maxlength="2" />
+											<h:outputText value="#{militaryCoursesRegistration.trainingCourseData.promotionWitninMonths}" rendered="#{militaryCoursesRegistration.viewAdmin}" />
+											<h:outputText value="#{msgs.label_numberOfMonths}" rendered="#{(militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.id != null)  or militaryCoursesRegistration.modifyAndInsertAdmin}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="actionsPanelId">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<h:commandButton id="saveBtnId" action="#{militaryCoursesRegistration.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validate()');" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}">
+												<f:ajax execute="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId militaryCoursesRegistrationFormId:trainingCourseNameAndQualificationPanelId militaryCoursesRegistrationFormId:extraDataPanelId militaryCoursesRegistrationFormId:syllabusAttachmentsDataPanelId militaryCoursesRegistrationFormId:notifyMessagesId" render="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId militaryCoursesRegistrationFormId:trainingCourseNameAndQualificationPanelId militaryCoursesRegistrationFormId:extraDataPanelId militaryCoursesRegistrationFormId:syllabusAttachmentsDataPanelId militaryCoursesRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{militaryCoursesRegistration.resetForm()}" styleClass="btn_normal_icon" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}">
+												<f:ajax render="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId militaryCoursesRegistrationFormId:trainingCourseNameAndQualificationPanelId militaryCoursesRegistrationFormId:extraDataPanelId militaryCoursesRegistrationFormId:syllabusAttachmentsDataPanelId militaryCoursesRegistrationFormId:notifyMessagesId" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

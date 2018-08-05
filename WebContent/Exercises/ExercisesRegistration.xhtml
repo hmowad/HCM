@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:rich="http://richfaces.org/rich">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+    //<![CDATA[
+        function validateData(){
+        	var name = document.getElementById('exercisesRegistrationFormId:nameId').value;
+            if(name == null || name.trim() == ''){
+            	alert('#{msgs.error_exerciseNameMandatory}');
+                return false;
+            }
+              
+	        var period = document.getElementById('exercisesRegistrationFormId:periodId').value;
+	        if(period == null || period == ''){
+	        	alert('#{msgs.error_periodMandatory}');
+	        	return false;
+	        } else if (period <= 0) {
+	         	alert('#{msgs.error_periodNotNegative}');
+	            return false;
+	        }
+              
+            return true;
+        }
+        // ]]>
+        </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="exercisesRegistrationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText id="screenTitleId" value="#{exercisesRegistration.screenTitle}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_exerciseInfo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="exercisePanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_exerciseName}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="nameId" value="#{exercisesRegistration.exerciseData.name}" maxlength="500" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_exercisePeriod}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%" >
+										<h:inputText id="periodId" value="#{exercisesRegistration.exerciseData.period}" maxlength="3" onkeypress="return isDigit(event);">
+											<f:ajax event="blur" execute="@this exercisesRegistrationFormId:startDateId" render="exercisesRegistrationFormId:endDateId exercisesRegistrationFormId:notifyMessagesId" />
+										</h:inputText>
+									</td>
+									
+									<th width="15%">
+										#{msgs.label_exerciseLocationFlag}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:selectOneRadio value="#{exercisesRegistration.exerciseData.locationFlag}">
+											<f:selectItem itemValue="0" itemLabel="#{msgs.label_locIn}" />
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_locOut}" />
+										</h:selectOneRadio>
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_exerciseStartDate}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<util:hijri id="startDateId" value="#{exercisesRegistration.exerciseData.startDate}" onChangeAjaxSubmit="true" reRenderIds="exercisesRegistrationFormId:endDateId exercisesRegistrationFormId:notifyMessagesId" />
+									</td>
+	
+									<th width="15%">
+										#{msgs.label_exerciseEndDate}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:outputText id="endDateId" value="#{exercisesRegistration.exerciseData.endDateString}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsBtnsId">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton action="#{exercisesRegistration.save}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');" rendered="#{!exercisesRegistration.done}" >
+											<f:ajax execute="exercisesRegistrationFormId:exercisePanelId" render="exercisesRegistrationFormId:exercisePanelId exercisesRegistrationFormId:actionsBtnsId exercisesRegistrationFormId:notifyMessagesId"
+												onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+										<h:commandButton action="#{exercisesRegistration.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" >
+											<f:ajax render="exercisesRegistrationFormId:exercisePanelId exercisesRegistrationFormId:actionsBtnsId exercisesRegistrationFormId:notifyMessagesId "
+												onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

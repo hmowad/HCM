@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:f="http://java.sun.com/jsf/core" xmlns:composite="http://java.sun.com/jsf/composite" >
+
+<composite:interface componentType="com.code.ui.components.util.UIAttachments">
+	<composite:attribute name="loginEmpId" required="true" />
+	<composite:attribute name="attachmentId" required="true" />
+	<composite:attribute name="addEnableFlag" default="false" type="java.lang.Boolean" />
+	<composite:attribute name="viewEnableFlag" default="false" type="java.lang.Boolean" />
+	<composite:attribute name="deleteEnableFlag" default="false" type="java.lang.Boolean" />
+	<composite:attribute name="compactModeFlag" default="false" type="java.lang.Boolean" />
+</composite:interface>
+
+<composite:implementation>
+	<h:commandButton id="attachmentsAddButtonId" rendered="#{cc.attrs.addEnableFlag}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" onclick="if(#{not cc.getAttachmentsIntegrationEnabled()}) {alert('#{msgs.error_attachmentsIntegrationDisabled}'); return false;}" action="#{cc.calculateAttachmentsId()}">
+		<f:ajax render="attachmentsAddURLId showAttachmentPanelId" onevent="function(data) { if (data.status == 'success') addAttachments(document.getElementById('#{cc.clientId}' +':attachmentsAddURLId').innerHTML); }" />
+	</h:commandButton>
+	<h:panelGroup id="showAttachmentPanelId">
+		<h:commandButton rendered="#{(cc.attrs.attachmentId != null) and (cc.attrs.viewEnableFlag or cc.attrs.deleteEnableFlag)}" value="#{cc.attrs.compactModeFlag ? msgs.fa_paperclip : msgs.label_showAttachment}" styleClass="#{cc.attrs.compactModeFlag ? 'btn_icon': 'btn_normal'}" onclick="if(#{not cc.getAttachmentsIntegrationEnabled()}) {alert('#{msgs.error_attachmentsIntegrationDisabled}'); return false;}" action="#{cc.calculateAttachmentsSecurityKey()}" title="#{cc.attrs.compactModeFlag ? msgs.label_showAttachment : ''}">
+			<f:ajax render="attachmentsViewURLId" onevent="function(data) { if (data.status == 'success') viewAttachments(document.getElementById('#{cc.clientId}' +':attachmentsViewURLId').innerHTML); }" />
+		</h:commandButton>
+	</h:panelGroup>
+	<h:outputText id="attachmentsAddURLId" value="#{cc.attachmentsAddURL}" style="display: none;" />
+	<h:outputText id="attachmentsViewURLId" value="#{cc.attachmentsViewURL}" style="display: none;" />
+</composite:implementation>
+</html>

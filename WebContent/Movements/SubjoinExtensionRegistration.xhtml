@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">	
+		function validateSearch() {
+			decisionNumberValue = document.getElementById('subjoinExtensionRegistrationFormId:decisionNumberId').value;
+			if(decisionNumberValue == null || decisionNumberValue == '') {
+				alert("#{msgs.error_transactionSearchFieldsMandatory}");
+				return false;	
+			}
+			return true;
+		}
+
+		function validateSend() {
+			ministerialDecisionNumberValue = document.getElementById('subjoinExtensionRegistrationFormId:ministerialDecisionNumberId').value;
+			if(ministerialDecisionNumberValue == null || ministerialDecisionNumberValue == '') {
+				alert("#{msgs.error_subjoinDecisionFieldsMandatory}");
+				return false;
+			}
+
+			if(document.getElementById('subjoinExtensionRegistrationFormId:subjoinListSizeId').innerHTML == 0) {
+				if(#{subjoinExtensionRegistration.mode == 3})
+					alert("#{msgs.error_assignmentListEmpty}");
+				else
+					alert("#{msgs.error_subjoinListEmpty}");
+				return false;
+			}
+			
+			return true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="subjoinExtensionRegistrationFormId" dir="#{msgs.dir}">
+		<ui:debug />
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{subjoinExtensionRegistration.screenTitle}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_basedOnDecision}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="10%">#{msgs.label_decisionNumber}</th>
+								<td width="15%">
+									<h:inputText id="decisionNumberId" value="#{subjoinExtensionRegistration.basedOnDecisionNumber}" maxlength="50" />
+								</td>
+
+								<th width="10%">#{msgs.label_decisionDate}</th>
+								<td width="15%">
+									<util:hijri id="decisionDateId" value="#{subjoinExtensionRegistration.basedOnDecisionDate}" />
+								</td>
+
+								<td width="50%">
+									<h:commandButton onclick="return validateSearch();" action="#{subjoinExtensionRegistration.getSubjoinByDecisionInfo}" styleClass="btn_normal_icon" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}">
+										<f:ajax execute="decisionNumberId decisionDateId" render="subjoinExtensionRegistrationFormId:requestDataPanelId subjoinExtensionRegistrationFormId:warningPanelId subjoinExtensionRegistrationFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requestDataPanelId">
+							<h:panelGroup rendered="#{subjoinExtensionRegistration.subjoinList.size() > 0}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{subjoinExtensionRegistration.mode == 1 ? msgs.label_subjoinData : msgs.label_assignmentData }" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_ministerialDecisionNumber}" />
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="20%">
+														<h:inputText id="ministerialDecisionNumberId" value="#{subjoinExtensionRegistration.commonSubjoinData.decisionNumber}" maxlength="50" />
+													</td>
+
+													<th width="15%">
+														<h:outputText value="#{msgs.label_ministerialDecisionDate}" />
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="50%">
+														<util:hijri value="#{subjoinExtensionRegistration.commonSubjoinData.decisionDate}" />
+													</td>
+												</tr>
+												<tr>
+													<th>#{msgs.label_requiredAttachments}</th>
+													<td colspan="3">
+														<code:attachments loginEmpId="#{subjoinExtensionRegistration.loginEmpData.empId}" attachmentId="#{subjoinExtensionRegistration.commonSubjoinData.attachments}" addEnableFlag="true" viewEnableFlag="true" deleteEnableFlag="true" />
+													</td>
+												</tr>
+												<tr>
+													<th>#{msgs.label_notes}</th>
+													<td colspan="3">
+														<h:inputText value="#{subjoinExtensionRegistration.commonSubjoinData.remarks}" styleClass="inputDataSuperLarge" maxlength="500" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+														<h:outputText value="#{subjoinExtensionRegistration.mode == 1 ? msgs.label_officersData : msgs.label_personsData}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<tr>
+										<td align="center" width="100%">
+											<h:panelGroup id="subjoinListPanelId">
+												<h:outputText id="subjoinListSizeId" style="display:none" value="#{subjoinExtensionRegistration.subjoinList.size()}" />
+												<rich:dataTable id="subjoinListId" rowKeyVar="index" var="subjoin" value="#{subjoinExtensionRegistration.subjoinList}" rows="#{subjoinExtensionRegistration.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+													<rich:column style="width : 15%">
+														<f:facet name="header">#{msgs.label_name}</f:facet>
+														<h:outputText value="#{subjoin.employeeName}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header">
+															<h:outputText value="#{subjoinExtensionRegistration.mode == 1 ? msgs.label_rank : msgs.label_personRank}" />
+														</f:facet>
+														<h:outputText value="#{subjoin.transEmpRankDesc}" />
+													</rich:column>
+													<rich:column style="width : 20%">
+														<f:facet name="header">#{msgs.label_currentUnit}</f:facet>
+														<h:outputText value="#{subjoin.transEmpUnitFullName}" />
+													</rich:column>
+													<rich:column style="width : 15%">
+														<f:facet name="header">#{msgs.label_currentJob}</f:facet>
+														<h:outputText value="#{subjoin.transEmpJobName}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header">
+															<h:outputText value="#{subjoinExtensionRegistration.mode == 3 ? msgs.label_assignmentDestination : msgs.label_subjoinDestination}" />
+														</f:facet>
+														<h:outputText value="#{subjoin.location}" />
+													</rich:column>
+													<rich:column style="width : 15%">
+														<f:facet name="header">
+														#{msgs.label_period}
+														<h:outputText value=" " />
+															<font style="color: red;">*</font>
+														</f:facet>
+														<h:inputText value="#{subjoin.periodMonths}" maxlength="2" onkeypress="return isDigit(event);" style="width : 25%">
+															<f:ajax event="change" execute="subjoinExtensionRegistrationFormId:subjoinListId" listener="#{subjoinExtensionRegistration.manipulateEndDate(subjoin)}" render="subjoinExtensionRegistrationFormId:subjoinListId subjoinExtensionRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:inputText>
+														<h:outputText value=" #{msgs.label_month} " />
+														<h:inputText id="periodDaysId" value="#{subjoin.periodDays}" maxlength="2" onkeypress="return isLessOrEqualNumber(event, this.value, 29);" style="width : 25%">
+															<f:ajax event="change" execute="subjoinExtensionRegistrationFormId:subjoinListId" listener="#{subjoinExtensionRegistration.manipulateEndDate(subjoin)}" render="subjoinExtensionRegistrationFormId:subjoinListId subjoinExtensionRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:inputText>
+														<h:outputText value=" #{msgs.label_day}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header">#{msgs.label_endDate}</f:facet>
+														<h:outputText value="#{subjoin.endDateString}" />
+														<h:inputHidden value="#{subjoin.endDateString}" />
+													</rich:column>
+													<rich:column style="width : 5%">
+														<f:facet name="header">#{msgs.label_delete}</f:facet>
+														<h:commandButton value="#{msgs.fa_times}" styleClass="btn_icon" title="#{msgs.label_delete}" action="#{subjoinExtensionRegistration.deleteSubjoin(subjoin)}" onclick="return confirm('#{msgs.q_delete}');">
+															<f:ajax execute="subjoinExtensionRegistrationFormId:requestDataPanelId" render="subjoinExtensionRegistrationFormId:requestDataPanelId subjoinExtensionRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</rich:column>
+													<f:facet name="footer">
+														<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" execute="subjoinExtensionRegistrationFormId:subjoinListPanelId">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+											</h:panelGroup>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+
+									<tr>
+										<td>
+											<h:panelGroup id="actionsBtnsId">
+												<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:panelGroup>
+																<h:commandButton action="#{subjoinExtensionRegistration.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validateSend()');" rendered="#{subjoinExtensionRegistration.subjoinList.size() == 0 or subjoinExtensionRegistration.subjoinList.get(0).id == null}">
+																	<f:ajax execute="subjoinExtensionRegistrationFormId:requestDataPanelId" render="subjoinExtensionRegistrationFormId:actionsBtnsId subjoinExtensionRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																</h:commandButton>
+															</h:panelGroup>
+															<h:commandButton action="#{subjoinExtensionRegistration.init()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+																<f:ajax render="subjoinExtensionRegistrationFormId:requestDataPanelId subjoinExtensionRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="warningPanelId">
+							<h:panelGroup rendered="#{subjoinExtensionRegistration.basedOnDecisionNumber != null and subjoinExtensionRegistration.subjoinList.size() == 0}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.error_thereIsNoLastValidTrans}" styleClass="remarkMessage" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

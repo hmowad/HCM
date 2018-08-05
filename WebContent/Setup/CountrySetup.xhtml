@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">  
+         function validateData(){
+            var countryDescription = document.getElementById('countryForm:countryDescriptionId').value;
+            if(countryDescription == null || countryDescription == ''){
+                alert(document.getElementById('countryDescriptionMandatoryId').value);
+                return false;
+            }
+
+            var countryLatinDescription = document.getElementById('countryForm:countryLatinDescriptionId').value;
+            if(countryLatinDescription == null || countryLatinDescription == ''){
+                alert(document.getElementById('countryLatinDescriptionMandatoryId').value);
+                return false;
+            }                       
+            
+            return true;
+          }
+        </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="countryForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="3" width="100%">
+				<tr valign="top" class="centerBody">
+					<td width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="100%" height="5" />
+							</tr>
+
+							<tr>
+								<td class="screenTitle">
+									<h:outputText value="#{msgs.title_countries}" />
+								</td>
+							</tr>
+
+							<tr>
+								<td width="100%" height="5" />
+							</tr>
+
+							<tr>
+								<td width="100%">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<th width="15%">
+												#{msgs.label_countryDesc}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="35%">
+												<h:inputText id="countryDescriptionId" value="#{countrySetup.country.name}" />
+												<h:commandButton value="#{msgs.fa_search}" action="#{countrySetup.searchCountry}" title="#{msgs.label_search}" styleClass="btn_icon">
+													<f:ajax render="countryForm:countryListId countryForm:notifyMessagesId" execute="countryDescriptionId" />
+												</h:commandButton>
+											</td>
+											<th width="15%">
+												#{msgs.label_countryLatinDesc}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="35%">
+												<h:inputText id="countryLatinDescriptionId" value="#{countrySetup.country.latinName}" />
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+
+							<tr>
+								<td width="100%" height="5" />
+							</tr>
+
+							<tr>
+								<td width="100%">
+									<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<td width="100%">
+												<h:commandButton value="#{msgs.label_add}" action="#{countrySetup.addCountry}" onclick="return validateData();" styleClass="btn_normal">
+													<f:ajax render="countryForm:countryListId countryForm:notifyMessagesId" execute="countryDescriptionId countryLatinDescriptionId" />
+												</h:commandButton>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+
+							<tr>
+								<td width="100%" height="5" />
+							</tr>
+
+							<tr>
+								<td align="center" width="100%">
+									<rich:dataTable id="countryListId" rows="#{countrySetup.rowsCount}" rowKeyVar="index" var="row" value="#{countrySetup.searchCountryList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+										<rich:column>
+											<f:facet name="header">#</f:facet>
+		                                                #{index + 1}
+		                                            </rich:column>
+										<rich:column>
+											<f:facet name="header">#{msgs.label_countryDesc}</f:facet>
+											<h:inputText value="#{row.name}" styleClass="inputDataLarge" rendered="#{row.countryFlag==0}" />
+											<h:outputText value="#{row.name}" rendered="#{row.countryFlag==1}" />
+										</rich:column>
+										<rich:column>
+											<f:facet name="header">#{msgs.label_countryLatinDesc}</f:facet>
+											<h:inputText value="#{row.latinName}" styleClass="inputDataLarge" rendered="#{row.countryFlag==0}" />
+											<h:outputText value="#{row.latinName}" rendered="#{row.countryFlag==1}" />
+										</rich:column>
+										<rich:column>
+											<f:facet name="header">#{msgs.label_blackListCountry}</f:facet>
+											<h:selectOneMenu value="#{row.blackListFlag}" styleClass="inputDataLarge">
+												<f:selectItem itemLabel="#{msgs.label_blackListCountryOption1}" itemValue="0" />
+												<f:selectItem itemLabel="#{msgs.label_blackListCountryOption2}" itemValue="1" />
+											</h:selectOneMenu>
+										</rich:column>
+										<rich:column>
+											<f:facet name="header">#{msgs.label_update}</f:facet>
+											<h:commandButton action="#{countrySetup.updateCountry(row)}" value="#{msgs.fa_floppy_o}" title="#{msgs.label_update}" styleClass="btn_icon">
+												<f:ajax execute="@form" render="countryForm:countryListId countryForm:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+											</h:commandButton>
+										</rich:column>
+										<rich:column>
+											<f:facet name="header">#{msgs.label_delete}</f:facet>
+											<h:panelGroup rendered="#{row.countryFlag==0}">
+												<h:commandButton value="#{msgs.fa_times}" action="#{countrySetup.removeCountry(row)}" onclick="return confirm('#{msgs.q_delete}');" title="#{msgs.label_delete}" styleClass="btn_icon">
+													<f:ajax render="countryForm:countryListId countryForm:notifyMessagesId" execute="countryListId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+												</h:commandButton>
+											</h:panelGroup>
+										</rich:column>
+										<f:facet name="footer">
+											<rich:dataScroller oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+												<f:facet name="first">#{msgs.label_first}</f:facet>
+												<f:facet name="last">#{msgs.label_last}</f:facet>
+												<f:facet name="next">#{msgs.label_next}</f:facet>
+												<f:facet name="previous">#{msgs.label_previous}</f:facet>
+											</rich:dataScroller>
+										</f:facet>
+									</rich:dataTable>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="countryDescriptionMandatoryId" value="#{msgs.error_countryDescriptionMandatory}" />
+	<h:inputHidden id="countryLatinDescriptionMandatoryId" value="#{msgs.error_countryLatinDescriptionMandatory}" />
+</h:body>
+</html>

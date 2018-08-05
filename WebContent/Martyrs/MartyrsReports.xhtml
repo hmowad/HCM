@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:a4j="http://richfaces.org/a4j" xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="martyrsReportsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_martyrsReports}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.title_theReports}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:selectOneRadio value="#{martyrsReports.reportType}" layout="pageDirection">
+										<f:selectItem itemLabel="#{msgs.label_martyrsData}" itemValue="1" />
+									</h:selectOneRadio>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+
+
+								<tr>
+									<th width="15%">#{msgs.label_martyrdomType}</th>
+									<td width="35%">
+										<h:selectOneMenu value="#{martyrsReports.martyrdomTypeFlag}">
+											<f:selectItem itemLabel="#{msgs.label_martyrdom}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_death}" itemValue="2" />
+											<f:selectItem itemLabel="#{msgs.label_missing}" itemValue="3" />
+											<f:selectItem itemLabel="#{msgs.label_injured}" itemValue="4" />
+											<f:ajax event="change" execute="@this" render="martyrsReportsFormId:searchPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:selectOneMenu>
+									</td>
+									<th width="15%">#{msgs.label_martyrdomReason}</th>
+									<td width="35%">
+										<h:selectOneMenu value="#{martyrsReports.martyrReasonId}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItems value="#{martyrsReports.reasonsList}" var="reason" itemLabel="#{reason.description}" itemValue="#{reason.id}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">#{msgs.label_martyrdomRegion}</th>
+									<td width="35%">
+										<h:selectOneMenu value="#{martyrsReports.martyrRegionId}" disabled="#{martyrsReports.getLoginEmpPhysicalRegionFlag(true) != -1}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItems value="#{martyrsReports.regionsList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">#{msgs.label_category}</th>
+									<td width="35%">
+										<h:selectOneMenu value="#{martyrsReports.categoryId}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItem itemLabel="#{msgs.label_officers}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_soldiers}" itemValue="2" />
+											<f:ajax event="change" listener="#{martyrsReports.categoryChangedListener()}" execute="@this" render="martyrsReportsFormId:martyrRankIDId" />
+										</h:selectOneMenu>
+									</td>
+									<th width="15%">#{msgs.label_rank}</th>
+									<td width="35%">
+										<h:selectOneMenu id="martyrRankIDId" value="#{martyrsReports.martyrRankId}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItems value="#{martyrsReports.ranksList}" var="rank" itemValue="#{rank.id}" itemLabel="#{rank.description}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">#{msgs.label_fromDate}</th>
+									<td width="35%">
+										<util:hijri value="#{martyrsReports.martyrDateFrom}" nullable="true"/>
+									</td>
+									<th width="15%">#{msgs.label_toDate}</th>
+									<td width="35%">
+										<util:hijri value="#{martyrsReports.martyrDateTo}" nullable="true"/>
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">#{msgs.label_medicalDecisionFlag}</th>
+									<td width="35%">
+										<h:selectOneRadio value="#{martyrsReports.medicalDecisionFlag}">
+											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_yes}" />
+											<f:selectItem itemValue="0" itemLabel="#{msgs.label_no}" />
+										</h:selectOneRadio>
+									</td>
+									<th width="15%">#{msgs.label_terminationDecisionIssued}</th>
+									<td width="35%">
+										<h:selectOneRadio value="#{martyrsReports.terminationDecisionFlag}">
+											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_yes}" />
+											<f:selectItem itemValue="0" itemLabel="#{msgs.label_no}" />
+										</h:selectOneRadio>
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">#{msgs.label_retirementCompensation}</th>
+									<td width="35%">
+										<h:selectOneRadio id="retirementCompensationId" value="#{martyrsReports.retirementCompensationFlag}">
+											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_yes}" />
+											<f:selectItem itemValue="0" itemLabel="#{msgs.label_no}" />
+										</h:selectOneRadio>
+									</td>
+									<th width="15%">#{msgs.label_vacationsCompensation}</th>
+									<td width="35%">
+										<h:selectOneRadio id="vacationsCompensationId"  value="#{martyrsReports.vacationsCompensationFlag}">
+											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_yes}" />
+											<f:selectItem itemValue="0" itemLabel="#{msgs.label_no}" />
+										</h:selectOneRadio>
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">#{msgs.label_terminationCompensation}</th>
+									<td width="35%">
+										<h:selectOneRadio id="terminationCompensationId"  value="#{martyrsReports.terminationCompensationFlag}">
+											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_yes}" />
+											<f:selectItem itemValue="0" itemLabel="#{msgs.label_no}" />
+										</h:selectOneRadio>
+									</td>
+
+
+
+									<th width="15%">#{martyrsReports.martyrdomTypeFlag == 4 ? msgs.label_injuryCompensation : msgs.label_deathCompensation}</th>
+									<td width="35%">
+										<h:selectOneRadio id="deathCompensationId" rendered="#{martyrsReports.martyrdomTypeFlag != 4 }"  value="#{martyrsReports.deathCompensationFlag}">
+											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_yes}" />
+											<f:selectItem itemValue="0" itemLabel="#{msgs.label_no}" />
+										</h:selectOneRadio>
+										<h:selectOneRadio id="injuryCompensationId" rendered="#{martyrsReports.martyrdomTypeFlag == 4}" value="#{martyrsReports.injuryCompensationFlag}">
+											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_yes}" />
+											<f:selectItem itemValue="0" itemLabel="#{msgs.label_no}" />
+										</h:selectOneRadio>
+									</td>
+
+								</tr>
+
+								<tr>
+									<th width="15%">#{msgs.label_housingCompensation}</th>
+									<td width="35%">
+										<h:selectOneRadio id="housingCompensationId" value="#{martyrsReports.housingCompensationFlag}">
+											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_yes}" />
+											<f:selectItem itemValue="0" itemLabel="#{msgs.label_no}" />
+										</h:selectOneRadio>
+									</td>
+									<h:panelGroup rendered="#{martyrsReports.martyrdomTypeFlag != 4}">
+										<th>#{msgs.label_heirsCompensation}</th>
+										<td>
+											<h:selectOneRadio value="#{martyrsReports.heirsCompensationFlag}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_yes}" />
+												<f:selectItem itemValue="0" itemLabel="#{msgs.label_no}" />
+										  </h:selectOneRadio>
+										</td>
+									</h:panelGroup>
+
+								</tr>
+								<h:panelGroup rendered="#{martyrsReports.martyrdomTypeFlag == 4}">
+									<tr>
+										<th width="15%">#{msgs.label_injuryCompensationRate} #{msgs.label_from}</th>
+										<td width="35%">
+											<h:inputText id="compensationRateFromId"  value="#{martyrsReports.injuryCompensationFrom}" maxlength="3" onkeypress="return isDigit(event);" />
+										</td>
+
+										<th width="15%">#{msgs.label_injuryCompensationRate} #{msgs.label_to}</th>
+										<td width="35%">
+											<h:inputText id="compensationRateToId"  value="#{martyrsReports.injuryCompensationTo}" maxlength="3" onkeypress="return isDigit(event);" />
+										</td>
+									</tr>
+								</h:panelGroup>
+
+
+							</table>
+						</h:panelGroup>
+
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton action="#{martyrsReports.print()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon"/>
+									<h:commandButton action="#{martyrsReports.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="martyrsReportsFormId:searchPanelId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

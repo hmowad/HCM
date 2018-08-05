@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function getEmp(contextPath) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpsMiniSearchResult(ret)', 17, -1, -1, -1, -1, -1, -1, #{employeesPhotos.getLoginEmpPhysicalRegionFlag(true)});
+			
+		}
+
+		function handleEmpsMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('employeesPhotosFormId:selectedEmpId').value = ret[0];
+				document.getElementById('employeesPhotosFormId:getEmployeeBtnId').click();
+			}
+		}
+		function getImage(empId,isNew) {
+			openImageUpload(1, '#{request.contextPath}','handleImageUploadResult()', empId, isNew);
+		}
+
+		function handleImageUploadResult() {
+			 document.getElementById('employeesPhotosFormId:imageBtnId').click();
+ 		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="employeesPhotosFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{employeesPhotos.screenTitle}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="50%">
+									<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+									<h:inputHidden id="selectedEmpId" value="#{employeesPhotos.selectedEmpId}" />
+									<h:commandButton id="getEmployeeBtnId" style="display: none;" action="#{employeesPhotos.getEmployee()}">
+										<f:ajax execute="employeesPhotosFormId:selectedEmpId" render="employeesPhotosFormId:selectedEmpComponentId:data employeesPhotosFormId:photoPanelId  employeesPhotosFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="85%">
+									<code:emp id="selectedEmpComponentId" value="#{employeesPhotos.employeeData}" />
+								</td>
+								<td width="1%"></td>
+								<td width="14%">
+									<h:panelGroup id="photoPanelId">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%" style="text-align: center;">
+														<h:commandButton action="#{employeesPhotos.updatePhoto()}" id="imageBtnId" style="display:none;">
+															<f:ajax render="employeesPhotosFormId:photoPanelId employeesPhotosFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:panelGroup>
+															<h:graphicImage title="#{msgs.label_changeImage}" width="100px" height="138px" value="#{employeesPhotos.employeeData != null and employeesPhotos.hasPhoto ? '/image?mode=1&amp;objectId='.concat(employeesPhotos.employeeData.empId).concat('&amp;nonce=').concat(session.lastAccessedTime):'/resources/images/profile_no_pic.png' }" onclick="#{employeesPhotos.employeeData != null ? 'getImage('.concat(employeesPhotos.employeeData.empId).concat(',').concat(employeesPhotos.hasPhoto ? 0:1).concat(');') : 'return false;'}" styleClass="empProfileImage" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</table>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton action="#{employeesPhotos.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="employeesPhotosFormId:selectedEmpComponentId:data employeesPhotosFormId:photoPanelId  employeesPhotosFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

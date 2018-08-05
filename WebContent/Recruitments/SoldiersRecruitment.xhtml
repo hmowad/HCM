@@ -1,0 +1,601 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		var index;
+		
+	    function getUnit() {
+	        openUnitsMiniSearch(6,'#{request.contextPath}','handleUnitMiniSearchResult(ret)', -1, -1,-1);
+		}
+
+		function handleUnitMiniSearchResult(ret) {
+	        if(ret!=null){
+	        	document.getElementById('soldiersRecruitmentFormId:instituteOrTrainingCenterUnitIDId').value=ret[0];
+	        	document.getElementById('soldiersRecruitmentFormId:instituteOrTrainingCenterUnitFullNameId').innerHTML=ret[1];
+	        	document.getElementById('soldiersRecruitmentFormId:instituteOrTrainingCenterUnitFullNameHId').value=ret[1];
+	        	document.getElementById('soldiersRecruitmentFormId:instituteOrTrainingCenterUnitHKeyId').value=ret[3];
+	         }
+		}
+		
+	 	function getEmployee() {
+			if(getRecruitmentListSize() == 0) {
+				alert("#{msgs.error_addSoldiersRecruitmentsFirst}");
+				return;
+			}
+
+			rankIdValue = document.getElementById('soldiersRecruitmentFormId:rankIDId').value;
+			if(#{soldiersRecruitment.recruitmentMode == 0}) {
+				instituteOrTrainingCenterUnitIdValue = document.getElementById('soldiersRecruitmentFormId:instituteOrTrainingCenterUnitIDId').value;
+				openEmpsMiniSearchForRecruitmentModule('#{request.contextPath}', 'handleEmpMiniSearchResult(ret)', 2, 2, -1, -1 , -1, rankIdValue, instituteOrTrainingCenterUnitIdValue, 'M', 0, -1);
+			} else {
+				openEmpsMiniSearchForRecruitmentModule('#{request.contextPath}', 'handleEmpMiniSearchResult(ret)', 2, 2, -1, -1 , -1, rankIdValue, -1, 'M', 0, -1);
+			}
+	 	}
+
+	 	function handleEmpMiniSearchResult(ret) {
+			if(ret!=null) {
+			    document.getElementById('soldiersRecruitmentFormId:employeeIDId').value=ret[0];
+				document.getElementById('soldiersRecruitmentFormId:searchEmpBtnId').click();
+			}
+	 	}
+	 	
+		function getJob(i) {
+			 index = i;			
+	 		 var instituteOrTrainingCenterUnitHKeyValue = -1;
+	 	 	 var minorSpecIdValue = -1;
+	 	 	 var regionIdValue = -1;
+       		 
+			 if(#{soldiersRecruitment.recruitmentMode != 0}) {
+				 minorSpecIdValue = document.getElementById('soldiersRecruitmentFormId:recruitmentsListId:' + index + ':empRecMinorSpecIDId').value;
+				 regionIdValue = document.getElementById('soldiersRecruitmentFormId:regionIDId').value;
+			 } else
+				 instituteOrTrainingCenterUnitHKeyValue = document.getElementById('soldiersRecruitmentFormId:instituteOrTrainingCenterUnitHKeyId').value;
+				 
+	 		 rankIdValue = document.getElementById('soldiersRecruitmentFormId:rankIDId').value;;
+
+	         openJobsMiniSearch('#{request.contextPath}','handleJobsMiniSearchResult(ret)', 7, 2, instituteOrTrainingCenterUnitHKeyValue, rankIdValue, regionIdValue, minorSpecIdValue, 0);
+	    }
+
+		function handleJobsMiniSearchResult(ret) {
+	         if(ret != null){
+					document.getElementById('soldiersRecruitmentFormId:recruitmentsListId:' + index + ':jobIDId').value = ret[0];
+					document.getElementById('soldiersRecruitmentFormId:recruitmentsListId:' + index + ':jobCodeId').innerHTML = ret[1];
+					document.getElementById('soldiersRecruitmentFormId:recruitmentsListId:' + index + ':jobCodeHId').value = ret[1];
+					document.getElementById('soldiersRecruitmentFormId:recruitmentsListId:' + index + ':jobNameId').innerHTML = ret[2];
+					document.getElementById('soldiersRecruitmentFormId:recruitmentsListId:' + index + ':jobNameHId').value = ret[2];
+					document.getElementById('soldiersRecruitmentFormId:recruitmentsListId:' + index + ':unitFullNameId').innerHTML = ret[4];
+					document.getElementById('soldiersRecruitmentFormId:recruitmentsListId:' + index + ':unitFullNameHId').value = ret[4];
+					document.getElementById('soldiersRecruitmentFormId:recruitmentsListId:' + index + ':minorSpecIDId').value = ret[8];
+					document.getElementById('soldiersRecruitmentFormId:recruitmentsListId:' + index + ':minorSpecDescriptionId').innerHTML = ret[9];
+					document.getElementById('soldiersRecruitmentFormId:recruitmentsListId:' + index + ':minorSpecDescriptionHId').value = ret[9];
+					document.getElementById('soldiersRecruitmentFormId:recruitmentsListId:' + index + ':searchJobBtnId').click();
+		        }
+		}
+
+		function validateMandatoryFields() {
+			// only check based on number and date when they are enabled
+			if(document.getElementById('soldiersRecruitmentFormId:basedOnOrderDateId:day') != null) {
+
+				var basedOnOrderNumberValue, rankIdValue, instituteOrTrainingCenterUnitIdValue, degreeIdValue, jobsSeriesStartValue, regionIdValue;
+
+				basedOnOrderNumberValue = document.getElementById('soldiersRecruitmentFormId:basedOnOrderNumberId').value;
+				rankIdValue = document.getElementById('soldiersRecruitmentFormId:rankIDId').value;
+				if(document.getElementById('soldiersRecruitmentFormId:instituteOrTrainingCenterUnitIDId') != null)
+					instituteOrTrainingCenterUnitIdValue = document.getElementById('soldiersRecruitmentFormId:instituteOrTrainingCenterUnitIDId').value;
+				if(document.getElementById('soldiersRecruitmentFormId:degreeIDId') != null)
+					degreeIdValue = document.getElementById('soldiersRecruitmentFormId:degreeIDId').value;
+				if(document.getElementById('soldiersRecruitmentFormId:qualificationLevelRewardId') != null) 
+					qualificationLevelRewardValue = document.getElementById('soldiersRecruitmentFormId:qualificationLevelRewardId').value;
+				if(document.getElementById('soldiersRecruitmentFormId:regionIDId') != null)
+					regionIdValue = document.getElementById('soldiersRecruitmentFormId:regionIDId').value;
+
+				if(#{soldiersRecruitment.recruitmentMode == 0}) {
+					if((basedOnOrderNumberValue == null || basedOnOrderNumberValue == '')
+							|| (instituteOrTrainingCenterUnitIdValue == null || instituteOrTrainingCenterUnitIdValue == '')
+							|| (rankIdValue == -1)
+							|| (degreeIdValue == -1)
+							|| (qualificationLevelRewardValue == null || qualificationLevelRewardValue == '')) {
+						alert("#{msgs.error_soldiersAndFirstSoldiersRecruitmentDataMandatory}");
+						return false;
+					}
+				}
+
+				if(#{soldiersRecruitment.recruitmentMode == 1}) {
+					if((basedOnOrderNumberValue == null || basedOnOrderNumberValue == '')
+							|| (regionIdValue == -1)
+							|| (rankIdValue == -1)
+							|| (degreeIdValue == -1)
+							|| (qualificationLevelRewardValue == null || qualificationLevelRewardValue == '')) {
+						alert("#{msgs.error_corporalOrHigherSoldiersRecruitmentDataMandatory}");
+						return false;
+					}
+				}
+
+				if(#{soldiersRecruitment.recruitmentMode == 2}) {
+					if((basedOnOrderNumberValue == null || basedOnOrderNumberValue == '')
+							|| (regionIdValue == -1)
+							|| (rankIdValue == -1)) {
+						alert("#{msgs.error_soldiersGraduationLetterDataMandatory}");
+						return false;
+					}
+				}
+			}
+			return true; 
+		}
+	
+		function validateSend() {
+			if(getRecruitmentListSize() == 0) {
+				alert("#{msgs.error_recruitmentListEmpty}");
+				return false;
+			}
+			return true;
+		}
+
+		function getRecruitmentListSize() {
+			return document.getElementById('soldiersRecruitmentFormId:recruitmentListSizeId').innerHTML;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="soldiersRecruitmentFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{soldiersRecruitment.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_generalUnitLetter}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="basedOnPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+
+								<tr>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_generalUnitLetterNumber}" />
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="20%">
+										<h:inputText id="basedOnOrderNumberId" readonly="#{soldiersRecruitment.recruitmentsList.size() > 0}" value="#{soldiersRecruitment.basedOnOrderNumber}" maxlength="50" />
+									</td>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_generalUnitLetterDate}" />
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="40%">
+										<util:hijri id="basedOnOrderDateId" value="#{soldiersRecruitment.basedOnOrderDate}" rendered="#{soldiersRecruitment.recruitmentsList.size() == 0}" />
+										<h:outputText value="#{soldiersRecruitment.basedOnOrderDateString}" rendered="#{soldiersRecruitment.recruitmentsList.size() > 0}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15">
+										#{msgs.label_attachments}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="50%" colspan="3">
+										<code:attachments loginEmpId="#{soldiersRecruitment.loginEmpData.empId}" attachmentId="#{soldiersRecruitment.attachments}"  viewEnableFlag="true" deleteEnableFlag="#{soldiersRecruitment.role == 'Requester' or soldiersRecruitment.role == 'ReviewerEmp'}" addEnableFlag="#{soldiersRecruitment.role == 'Requester' or soldiersRecruitment.role == 'ReviewerEmp'}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{soldiersRecruitment.recruitmentMode != 2 ? msgs.label_soldiersData : msgs.label_distributionData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="dataPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<h:panelGroup rendered="#{soldiersRecruitment.recruitmentMode != 0}">
+										<th width="16%">
+											#{msgs.label_region}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="25%">
+											<h:selectOneMenu id="regionIDId" disabled="#{soldiersRecruitment.recruitmentsList.size() > 0}" value="#{soldiersRecruitment.selectedRegionId}">
+												<f:selectItem itemLabel="" itemValue="-1" />
+												<f:selectItems value="#{soldiersRecruitment.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+											</h:selectOneMenu>
+										</td>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{soldiersRecruitment.recruitmentMode == 0}">
+										<th width="16%">
+											#{msgs.label_instituteOrTrainingCenter}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="25%">
+											<h:outputText id="instituteOrTrainingCenterUnitFullNameId" value="#{soldiersRecruitment.trainingInstituteOrCenterUnitFullName}" />
+											<h:outputText value=" " />
+											<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" rendered="#{soldiersRecruitment.recruitmentsList.size() == 0}" onclick="getUnit(); return false;" />
+											<h:inputHidden id="instituteOrTrainingCenterUnitIDId" value="#{soldiersRecruitment.trainingInstituteOrCenterUnitId}" />
+											<h:inputHidden id="instituteOrTrainingCenterUnitFullNameHId" value="#{soldiersRecruitment.trainingInstituteOrCenterUnitFullName}" />
+											<h:inputHidden id="instituteOrTrainingCenterUnitHKeyId" value="#{soldiersRecruitment.trainingInstituteOrCenterUnitHKey}" />
+										</td>
+									</h:panelGroup>
+									<th width="16%">
+										#{msgs.label_rank}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="#{soldiersRecruitment.recruitmentMode == 2 ? 28 : 12}%" colspan="#{soldiersRecruitment.recruitmentMode == 2 ? 2 : 1}">
+										<h:selectOneMenu id="rankIDId" value="#{soldiersRecruitment.selectedRankId}" disabled="#{soldiersRecruitment.recruitmentsList.size() > 0}">
+											<f:selectItem itemLabel="" itemValue="-1" />
+											<f:selectItems value="#{soldiersRecruitment.ranks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+										</h:selectOneMenu>
+									</td>
+									<h:panelGroup rendered="#{soldiersRecruitment.recruitmentMode != 2}">
+										<th width="16%">
+											<h:outputText value="#{msgs.label_degree}" />
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="13%">
+											<h:selectOneMenu id="degreeIDId" value="#{soldiersRecruitment.selectedDegreeId}" disabled="#{soldiersRecruitment.recruitmentsList.size() > 0}">
+												<f:selectItem itemLabel="" itemValue="-1" />
+												<f:selectItems value="#{soldiersRecruitment.degrees}" var="degree" itemLabel="#{degree.description}" itemValue="#{degree.id}" />
+											</h:selectOneMenu>
+										</td>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{soldiersRecruitment.recruitmentMode == 2}">
+										<td>
+											<h:commandButton value="#{msgs.label_soldiersDistribution}" action="#{soldiersRecruitment.getDistributedSoldiers()}" disabled="#{soldiersRecruitment.recruitmentsList.size() > 0}" rendered="#{soldiersRecruitment.role == 'Requester' or soldiersRecruitment.role == 'ReviewerEmp'}" onclick="return validateMandatoryFields();" styleClass="btn_normal">
+												<f:ajax execute="soldiersRecruitmentFormId:basedOnPanelId soldiersRecruitmentFormId:dataPanelId" render="soldiersRecruitmentFormId:basedOnPanelId soldiersRecruitmentFormId:dataPanelId soldiersRecruitmentFormId:recruitmentsListPanelId soldiersRecruitmentFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</h:panelGroup>
+
+								</tr>
+								<h:panelGroup rendered="#{soldiersRecruitment.recruitmentMode != 2}">
+									<tr>
+										<h:panelGroup rendered="#{soldiersRecruitment.recruitmentMode == 1}">
+											<th>
+												#{msgs.label_graduationDate}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
+											<td>
+												<util:hijri value="#{soldiersRecruitment.recruitmentDate}" rendered="#{soldiersRecruitment.recruitmentsList.size() == 0}" />
+												<h:outputText value="#{soldiersRecruitment.recruitmentDateSring}" rendered="#{soldiersRecruitment.recruitmentsList.size() > 0}" />
+											</td>
+										</h:panelGroup>
+										<th>
+											#{msgs.label_qualificationLevelReward}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td colspan="#{soldiersRecruitment.recruitmentMode == 0 ? 4 : 2}">
+											<h:selectOneMenu id="qualificationLevelRewardId" value="#{soldiersRecruitment.qualificationLevelReward}" disabled="#{soldiersRecruitment.recruitmentsList.size() > 0}">
+												<f:selectItem itemLabel=" " />
+												<f:selectItem itemLabel="#{msgs.label_primarySchoolQualificationClause}" itemValue="1" />
+												<f:selectItem itemLabel="#{msgs.label_intermediateEducationQualificationClause}" itemValue="2" />
+												<f:selectItem itemLabel="#{msgs.label_secondarySchoolQualificationClause}" itemValue="3" />
+											</h:selectOneMenu>
+										</td>
+										<td>
+											<h:commandButton value="#{msgs.label_soldiersEnrollment}" action="#{soldiersRecruitment.getDistributedSoldiers()}" disabled="#{soldiersRecruitment.recruitmentsList.size() > 0}" rendered="#{soldiersRecruitment.role == 'Requester' or soldiersRecruitment.role == 'ReviewerEmp'}" onclick="return validateMandatoryFields();" styleClass="btn_normal">
+												<f:ajax execute="soldiersRecruitmentFormId:basedOnPanelId soldiersRecruitmentFormId:dataPanelId" render="soldiersRecruitmentFormId:basedOnPanelId soldiersRecruitmentFormId:dataPanelId soldiersRecruitmentFormId:recruitmentsListPanelId soldiersRecruitmentFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</h:panelGroup>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:inputHidden id="employeeIDId" value="#{soldiersRecruitment.selectedEmpId}" />
+									<h:outputText value="#{soldiersRecruitment.recruitmentMode != 2 ? msgs.label_soldiersData : msgs.label_soldiersDistribution}" />
+									<h:outputText value=" " />
+									<h:commandButton rendered="#{soldiersRecruitment.role == 'Requester' or soldiersRecruitment.role == 'ReviewerEmp'}" value="#{msgs.label_add}" onclick="getEmployee(); return false;" styleClass="btn_normal" />
+									<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{soldiersRecruitment.addNewRecruitment()}">
+										<f:ajax execute="soldiersRecruitmentFormId:basedOnPanelId soldiersRecruitmentFormId:dataPanelId soldiersRecruitmentFormId:employeeIDId" render="soldiersRecruitmentFormId:basedOnPanelId soldiersRecruitmentFormId:dataPanelId soldiersRecruitmentFormId:recruitmentsListPanelId soldiersRecruitmentFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<h:panelGroup id="recruitmentsListPanelId">
+							<h:outputText id="recruitmentListSizeId" style="display:none" value="#{soldiersRecruitment.recruitmentsList.size()}" />
+							<rich:dataTable id="recruitmentsListId" rowKeyVar="index" var="recruitment" value="#{soldiersRecruitment.recruitmentsList}" rows="#{soldiersRecruitment.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+								<rich:column style="width : 5%">
+									<f:facet name="header">#</f:facet>
+	                                          #{index + 1}
+	                    		</rich:column>
+								<rich:column style="width : 15%">
+									<f:facet name="header">#{msgs.label_name}</f:facet>
+									<h:outputText value="#{recruitment.employeeName}" />
+									<h:inputHidden id="empRecMinorSpecIDId" value="#{recruitment.empRecruitmentMinorSpecId}" />
+								</rich:column>
+
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_jobCode}</f:facet>
+									<h:outputText id="jobCodeId" value="#{recruitment.jobCode}" />
+									<h:inputHidden id="jobCodeHId" value="#{recruitment.jobCode}" />
+								</rich:column>
+
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_job}</f:facet>
+									<h:outputText id="jobNameId" value="#{recruitment.jobName}" />
+									<h:inputHidden id="jobNameHId" value="#{recruitment.jobName}" />
+									<h:inputHidden id="jobIDId" value="#{recruitment.jobId}" />
+									<h:outputText value=" " />
+									<h:commandButton value="#{msgs.fa_external_link}" onclick="getJob(#{index}); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{soldiersRecruitment.role == 'Requester' or soldiersRecruitment.role == 'ReviewerEmp'}" />
+									<h:commandButton id="searchJobBtnId" style="display:none;" action="#{soldiersRecruitment.addRecruitmentJob(recruitment)}">
+										<f:ajax execute="soldiersRecruitmentFormId:recruitmentsListPanelId" render="soldiersRecruitmentFormId:recruitmentsListPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_empSpecialization}</f:facet>
+									<h:outputText id="minorSpecDescriptionId" value="#{recruitment.minorSpecDescription}" />
+									<h:inputHidden id="minorSpecIDId" value="#{recruitment.minorSpecId}" />
+									<h:inputHidden id="minorSpecDescriptionHId" value="#{recruitment.minorSpecDescription}" />
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">#{msgs.label_unit}</f:facet>
+									<h:outputText id="unitFullNameId" value="#{recruitment.unitFullName}" />
+									<h:inputHidden id="unitFullNameHId" value="#{recruitment.unitFullName}" />
+								</rich:column>
+								<rich:column rendered="#{soldiersRecruitment.recruitmentMode != 2}" style="width : 10%">
+									<f:facet name="header">#{msgs.label_recruitmentDate}</f:facet>
+									<h:outputText value="#{recruitment.recruitmentDateString}" />
+								</rich:column>
+								<rich:column rendered="#{soldiersRecruitment.recruitmentMode != 2}" style="width : 5%">
+									<f:facet name="header">#{msgs.label_recruitmentPrerequisites}</f:facet>
+									<h:selectBooleanCheckbox disabled="#{true}" value="#{recruitment.recruitmentDocsFlagBoolean}" />
+								</rich:column>
+								<rich:column rendered="#{soldiersRecruitment.role == 'Requester' or soldiersRecruitment.role == 'ReviewerEmp'}" style="width : 5%">
+									<f:facet name="header">#{msgs.label_delete}</f:facet>
+									<h:commandButton value="#{msgs.fa_times}" styleClass="btn_icon" title="#{msgs.label_delete}" action="#{soldiersRecruitment.deleteRecruitment(recruitment)}" onclick="return confirm('#{msgs.q_delete}');">
+										<f:ajax execute="soldiersRecruitmentFormId:basedOnPanelId soldiersRecruitmentFormId:dataPanelId" render="soldiersRecruitmentFormId:basedOnPanelId soldiersRecruitmentFormId:dataPanelId soldiersRecruitmentFormId:recruitmentsListPanelId soldiersRecruitmentFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+										<f:facet name="first">#{msgs.label_first}</f:facet>
+										<f:facet name="last">#{msgs.label_last}</f:facet>
+										<f:facet name="next">#{msgs.label_next}</f:facet>
+										<f:facet name="previous">#{msgs.label_previous}</f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:decisionCopies external="#{soldiersRecruitment.externalCopies}" internal="#{soldiersRecruitment.internalCopies}" viewOnly="#{soldiersRecruitment.role != 'Requester' and soldiersRecruitment.role != 'ReviewerEmp'}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_recruitmentPrerequisites}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="50%">
+									<h:outputText value="#{msgs.label_prerequisite1}" />
+								</td>
+								<td width="50%">
+									<h:outputText value="#{msgs.label_prerequisite2}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite3}" />
+								</td>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite4}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite5}" />
+								</td>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite6}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite7}" />
+								</td>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite8}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite9}" />
+								</td>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite10}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite11}" />
+								</td>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite12}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<code:prevTasks rendered="#{soldiersRecruitment.role != 'Requester'}" value="#{soldiersRecruitment.prevTasks}" refuseRoles="SignManager," />
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{soldiersRecruitment.currentEmployee}" rendered="#{soldiersRecruitment.role != 'Requester' and soldiersRecruitment.role != 'Notification' and soldiersRecruitment.role != 'History'}">
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{soldiersRecruitment.currentTask.notes}" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{soldiersRecruitment.role == 'SignManager'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{soldiersRecruitment.currentTask.refuseReasons}" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+
+						<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th>#{msgs.label_warnings}</th>
+							</tr>
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_reviewSoldiersJobsWarning}" />
+								</td>
+							</tr>
+						</table>
+
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{soldiersRecruitment.role == 'Notification' or soldiersRecruitment.role == 'History'}" value="#{soldiersRecruitment.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+
+									<h:panelGroup rendered="#{soldiersRecruitment.role == 'Requester'}">
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_send}', 'validateSend()');" action="#{soldiersRecruitment.initProcess()}" value="#{msgs.label_send}  &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{soldiersRecruitment.role == 'ReviewerEmp'}">
+										<h:commandButton action="#{soldiersRecruitment.reviewRecruitments}" onclick="return handleOnAction('#{msgs.q_review}', 'validateSend()');" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{soldiersRecruitment.role == 'SignManager'}">
+										<h:commandButton onclick="return handleOnAction('#{(soldiersRecruitment.recruitmentMode == 0) ? msgs.q_superSignWithDeleteDistributionWarning : msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;soldiersRecruitmentFormId:curTaskId:refuseReasonsId&quot;)');" action="#{soldiersRecruitment.signRM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;soldiersRecruitmentFormId:curTaskId:refuseReasonsId&quot;, &quot;soldiersRecruitmentFormId:curTaskId:notesId&quot;)');" action="#{soldiersRecruitment.modifyRM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;soldiersRecruitmentFormId:curTaskId:refuseReasonsId&quot;)');" action="#{soldiersRecruitment.rejectRM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{soldiersRecruitment.role == 'Notification' and soldiersRecruitment.instanceApproved == 1}">
+										<h:commandButton action="#{soldiersRecruitment.print()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{soldiersRecruitment.role == 'Notification'}">
+										<h:commandButton action="#{soldiersRecruitment.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

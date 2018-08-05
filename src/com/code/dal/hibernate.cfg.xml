@@ -1,0 +1,274 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+
+		<!-- Data Source -->
+		<property name="connection.datasource">jdbc/BGETR</property>
+		<property name="transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</property>
+		<property name="transaction.manager_lookup_class">org.hibernate.transaction.WeblogicTransactionManagerLookup</property>
+		
+		<!-- Direct connection        
+		<property name="connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
+        <property name="connection.url">jdbc:oracle:thin:@FGO-TEST-SCAN.fg.gov.sa:2545/FGO_TEST_RAC</property>
+        <property name="connection.username">bgetr</property>
+        <property name="connection.password">QAGNZWErwjh9f3Pn</property>
+        <property name="connection.pool_size">1</property>
+		-->
+		
+		<!-- SQL dialect -->
+		<property name="dialect">org.hibernate.dialect.OracleDialect</property>
+
+		<!-- Disable the second-level cache -->
+		<property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+
+		<!-- Echo all executed SQL to standard output -->
+		<property name="show_sql">true</property>
+
+		<!-- Mapping domain objects -->
+		<mapping class="com.code.dal.orm.DecisionTemplate" />
+		
+		<mapping class="com.code.dal.orm.config.ETRConfig" />
+		<mapping class="com.code.dal.orm.hijri.HijriCalendar" />
+		<mapping class="com.code.dal.orm.setup.Country" />
+		
+		<mapping class="com.code.dal.orm.cor.ETRCor" />
+		<mapping class="com.code.dal.orm.cor.ETRCorOut" />
+		
+		<mapping class="com.code.dal.orm.signatures.Signature" />
+		
+		<mapping class="com.code.dal.orm.audit.AuditLog" />
+		<mapping class="com.code.dal.orm.security.Menu" />
+		<mapping class="com.code.dal.orm.security.EmployeeMenu" />
+		<mapping class="com.code.dal.orm.security.DecisionPrivilege" />
+		<mapping class="com.code.dal.orm.security.DecisionPrivilegeData" />
+		<mapping class="com.code.dal.orm.security.EmployeeDecisionPrivilege" />
+		<mapping class="com.code.dal.orm.security.EmployeeMenuAction" />
+		
+		<mapping class="com.code.dal.orm.attachments.SecurityKeyData" />
+		
+		<mapping class="com.code.dal.orm.workflow.WFInstance" />
+		<mapping class="com.code.dal.orm.workflow.WFInstanceData" />
+		<mapping class="com.code.dal.orm.workflow.WFInstanceBeneficiary" />
+		<mapping class="com.code.dal.orm.workflow.WFTask" />
+		<mapping class="com.code.dal.orm.workflow.WFTaskData" />
+		<mapping class="com.code.dal.orm.workflow.WFProcessGroup" />
+		<mapping class="com.code.dal.orm.workflow.WFProcess" />
+		<mapping class="com.code.dal.orm.workflow.WFDelegation" />
+		<mapping class="com.code.dal.orm.workflow.WFDelegationData" />
+		<mapping class="com.code.dal.orm.workflow.WFDelegationUnitData" />
+		<mapping class="com.code.dal.orm.workflow.WFPosition" />
+		<mapping class="com.code.dal.orm.workflow.WFNotificationsConfig" />
+		<mapping class="com.code.dal.orm.workflow.WFNotificationsConfigData" />
+		<mapping class="com.code.dal.orm.workflow.WFNotificationsConfigDetail" />
+		<mapping class="com.code.dal.orm.workflow.WFNotificationsConfigDetailData" />
+		<mapping class="com.code.dal.orm.workflow.WFNotificationsConfigDetailEmployeeData" />		
+		
+		<mapping class="com.code.dal.orm.hcm.Rank" />
+		<mapping class="com.code.dal.orm.hcm.RankTitle" />
+		<mapping class="com.code.dal.orm.hcm.Category" />
+		<mapping class="com.code.dal.orm.hcm.SocialIdIssuePlace" />
+		<mapping class="com.code.dal.orm.hcm.GraduationGroupPlace" />
+		<mapping class="com.code.dal.orm.hcm.TransactionType" />
+
+		<mapping class="com.code.dal.orm.hcm.specializations.MajorSpecialization" />
+		<mapping class="com.code.dal.orm.hcm.specializations.MinorSpecialization" />
+		<mapping class="com.code.dal.orm.hcm.specializations.MinorSpecializationData" />
+		<mapping class="com.code.dal.orm.hcm.specializations.MinorSpecializationDescription" />
+		<mapping class="com.code.dal.orm.hcm.specializations.MinorSpecializationDescriptionData" />
+		<mapping class="com.code.dal.orm.hcm.specializations.MinorSpecializationDescriptionDetail" />
+		<mapping class="com.code.dal.orm.hcm.specializations.MinorSpecializationDescriptionDetailData" />
+
+		<mapping class="com.code.dal.orm.hcm.additionalspecializations.AdditionalSpecialization" />
+		<mapping class="com.code.dal.orm.hcm.additionalspecializations.EmployeeAdditionalSpecialization" />
+		<mapping class="com.code.dal.orm.hcm.additionalspecializations.EmployeeAdditionalSpecializationData" />
+		
+		<mapping class="com.code.dal.orm.hcm.organization.Region" />
+		
+		<mapping class="com.code.dal.orm.hcm.organization.units.Unit" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.UnitTransaction" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.UnitType" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.UnitData" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.UnitTransactionData" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.OrganizationTable" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.OrganizationTableData" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.OrganizationTableDetail" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.OrganizationTableDetailData" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.OrganizationTableTransaction" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.OrganizationTableTransactionData" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.OrganizationTargetTask" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.OrganizationTargetTaskData" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.OrganizationTargetTaskDetail" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.OrganizationTargetTaskDetailData" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.OrganizationTargetTaskTransaction" />
+		<mapping class="com.code.dal.orm.hcm.organization.units.OrganizationTargetTaskTransactionData" />
+		
+		<mapping class="com.code.dal.orm.hcm.organization.jobs.Job" />
+		<mapping class="com.code.dal.orm.hcm.organization.jobs.JobTransaction" />
+		<mapping class="com.code.dal.orm.hcm.organization.jobs.JobClassification" />
+		<mapping class="com.code.dal.orm.hcm.organization.jobs.JobData" />
+		<mapping class="com.code.dal.orm.hcm.organization.jobs.JobTransactionData" />
+		<mapping class="com.code.dal.orm.hcm.organization.jobs.BasicJobName" />
+		<mapping class="com.code.dal.orm.hcm.organization.jobs.BasicJobNameData" />
+		<mapping class="com.code.dal.orm.hcm.organization.jobs.JobsBalance" />
+		<mapping class="com.code.dal.orm.hcm.organization.jobs.JobsBalanceData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.organization.jobs.WFJob" />
+		<mapping class="com.code.dal.orm.workflow.hcm.organization.jobs.WFJobData" />
+		
+		<mapping class="com.code.dal.orm.hcm.organization.jobs.ManpowerNeed" />
+		<mapping class="com.code.dal.orm.hcm.organization.jobs.ManpowerNeedData" />
+		<mapping class="com.code.dal.orm.hcm.organization.jobs.ManpowerNeedDetail" />
+		<mapping class="com.code.dal.orm.hcm.organization.jobs.ManpowerNeedDetailData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.organization.jobs.WFManpowerNeed" />
+
+		<mapping class="com.code.dal.orm.hcm.employees.Employee" />
+		<mapping class="com.code.dal.orm.hcm.employees.EmployeeData" />
+		<mapping class="com.code.dal.orm.hcm.employees.EmployeeStatus" />
+		<mapping class="com.code.dal.orm.hcm.employees.EmployeePhoto" />
+		<mapping class="com.code.dal.orm.hcm.employees.EmployeeQualifications" />
+		<mapping class="com.code.dal.orm.hcm.employees.EmployeeQualificationsData" />
+		
+		<mapping class="com.code.dal.orm.hcm.navyformations.NavyFormation" />
+		
+		<mapping class="com.code.dal.orm.hcm.martyrs.MartyrdomReason" />
+		<mapping class="com.code.dal.orm.hcm.martyrs.MartyrHonor" />
+		<mapping class="com.code.dal.orm.hcm.martyrs.MartyrTransaction" />
+		<mapping class="com.code.dal.orm.hcm.martyrs.MartyrTransactionData" />
+		
+		<mapping class="com.code.dal.orm.hcm.recruitments.RecruitmentDistribution" />
+		<mapping class="com.code.dal.orm.hcm.recruitments.RecruitmentDistributionData" />
+		<mapping class="com.code.dal.orm.hcm.recruitments.RecruitmentTransaction" />
+		<mapping class="com.code.dal.orm.hcm.recruitments.RecruitmentTransactionData" />
+		<mapping class="com.code.dal.orm.hcm.recruitments.RecruitmentWish" />
+		<mapping class="com.code.dal.orm.hcm.recruitments.RecruitmentWishData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.recruitments.WFRecruitment" />
+		<mapping class="com.code.dal.orm.workflow.hcm.recruitments.WFRecruitmentData" />
+		
+		<mapping class="com.code.dal.orm.hcm.movements.MovementTransaction" />
+		<mapping class="com.code.dal.orm.hcm.movements.MovementTransactionData" />
+		<mapping class="com.code.dal.orm.hcm.movements.MovementType" />
+		<mapping class="com.code.dal.orm.hcm.movements.MovementWishTransaction" />
+		<mapping class="com.code.dal.orm.workflow.hcm.movements.WFMovement" />
+		<mapping class="com.code.dal.orm.workflow.hcm.movements.WFMovementData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.movements.WFMovementWish" />
+		
+		<mapping class="com.code.dal.orm.hcm.promotions.RankPower" />
+		<mapping class="com.code.dal.orm.hcm.promotions.RankPowerData" />
+		<mapping class="com.code.dal.orm.hcm.promotions.PromotionTransaction" />
+		<mapping class="com.code.dal.orm.hcm.promotions.PromotionTransactionData" />
+		<mapping class="com.code.dal.orm.hcm.promotions.PromotionReport" />
+		<mapping class="com.code.dal.orm.hcm.promotions.PromotionReportData" />
+		<mapping class="com.code.dal.orm.hcm.promotions.PromotionReportDetail" />
+		<mapping class="com.code.dal.orm.hcm.promotions.PromotionReportDetailData" />
+		<mapping class="com.code.dal.orm.hcm.promotions.PromotionSeniortyPoints" />
+		<mapping class="com.code.dal.orm.hcm.promotions.PromotionEmployeeDegreeData" />
+		<mapping class="com.code.dal.orm.hcm.promotions.PromotionRankingData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.promotions.WFPromotion" />
+		
+		<mapping class="com.code.dal.orm.hcm.terminations.TerminationReason" />
+		<mapping class="com.code.dal.orm.hcm.terminations.TerminationRecord" />
+		<mapping class="com.code.dal.orm.hcm.terminations.TerminationRecordData" />
+		<mapping class="com.code.dal.orm.hcm.terminations.TerminationRecordDetail" />
+		<mapping class="com.code.dal.orm.hcm.terminations.TerminationRecordDetailData" />
+		<mapping class="com.code.dal.orm.hcm.terminations.TerminationTransaction" />
+		<mapping class="com.code.dal.orm.hcm.terminations.TerminationTransactionData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.terminations.WFTermination" />
+		<mapping class="com.code.dal.orm.workflow.hcm.terminations.WFTerminationData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.terminations.WFTerminationCancellationMovement" />
+		<mapping class="com.code.dal.orm.workflow.hcm.terminations.WFTerminationCancellationMovementData" />
+		
+		<mapping class="com.code.dal.orm.hcm.vacations.VacationType" />
+		<mapping class="com.code.dal.orm.hcm.vacations.Vacation" />
+		<mapping class="com.code.dal.orm.hcm.vacations.VacationLog" />
+		<mapping class="com.code.dal.orm.hcm.vacations.VacationData" />
+		<mapping class="com.code.dal.orm.hcm.vacations.VacationConfiguration" />
+		<mapping class="com.code.dal.orm.hcm.work.Work" />
+		<mapping class="com.code.dal.orm.workflow.hcm.vacations.WFVacation" />
+		<mapping class="com.code.dal.orm.workflow.hcm.vacations.WFVacationData" />
+
+		<mapping class="com.code.dal.orm.hcm.missions.Mission" />
+		<mapping class="com.code.dal.orm.hcm.missions.MissionData" />
+		<mapping class="com.code.dal.orm.hcm.missions.MissionDetail" />
+		<mapping class="com.code.dal.orm.hcm.missions.MissionDetailData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.missions.WFMission" />
+		<mapping class="com.code.dal.orm.workflow.hcm.missions.WFMissionData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.missions.WFMissionDetail" />
+		<mapping class="com.code.dal.orm.workflow.hcm.missions.WFMissionDetailData" />
+		
+		<mapping class="com.code.dal.orm.hcm.trainings.QualificationLevel" />
+		<mapping class="com.code.dal.orm.hcm.trainings.QualificationMajorSpec" />
+		<mapping class="com.code.dal.orm.hcm.trainings.QualificationMinorSpec" />
+		<mapping class="com.code.dal.orm.hcm.trainings.QualificationMinorSpecData" />
+		<mapping class="com.code.dal.orm.hcm.trainings.GraduationPlace" />
+		<mapping class="com.code.dal.orm.hcm.trainings.GraduationPlaceData" />
+		<mapping class="com.code.dal.orm.hcm.trainings.GraduationPlaceDetail" />
+		<mapping class="com.code.dal.orm.hcm.trainings.GraduationPlaceDetailData" />
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingUnit"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingUnitData"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingExternalParty"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingExternalPartyData"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingAnnualCourse"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingAnnualCourseData"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingAnnualParty"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingAnnualPartyData"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingCourseEventAllocation"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingCourseEventAllocationData"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingCourseEventAllocationEmployee"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingCourseEventAllocationEmployeeData"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingCourseEventDecision"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingCourseEventDecisionData"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingCourseEventDecisionEmployee"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingCourseEvent"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingCourseEventData"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingTransaction"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingTransactionData"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingTransactionDetail"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingTransactionDetailData"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingType"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingYear"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingCourse"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingCourseData"/>
+		<mapping class="com.code.dal.orm.hcm.trainings.TrainingCourseDecision"/>
+		<mapping class="com.code.dal.orm.workflow.hcm.trainings.WFTraining" />
+		<mapping class="com.code.dal.orm.workflow.hcm.trainings.WFTrainingData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.trainings.WFTrainingCourseEvent" />
+		<mapping class="com.code.dal.orm.workflow.hcm.trainings.WFTrainingCourseEventData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.trainings.WFTrainingPlan" />
+		<mapping class="com.code.dal.orm.workflow.hcm.trainings.WFTrainingPlanData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.trainings.WFTrainingPlanNeed" />
+		<mapping class="com.code.dal.orm.workflow.hcm.trainings.WFTrainingPlanNeedData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.trainings.WFTrainingCourse" />
+		<mapping class="com.code.dal.orm.workflow.hcm.trainings.WFTrainingCourseData" />
+		
+		<mapping class="com.code.dal.orm.hcm.exercises.Exercise"/>
+		<mapping class="com.code.dal.orm.hcm.exercises.ExerciseData"/>
+		<mapping class="com.code.dal.orm.hcm.exercises.EmployeeExercise"/>
+		<mapping class="com.code.dal.orm.hcm.exercises.EmployeeExerciseData"/>
+		
+		<mapping class="com.code.dal.orm.workflow.hcm.WFDefinitionLetter" />
+
+		<mapping class="com.code.dal.orm.hcm.payroll.EmployeePayrollDifferenceData" />
+		<mapping class="com.code.dal.orm.hcm.payroll.Degree" />
+		<mapping class="com.code.dal.orm.hcm.payroll.PayrollSalary" />
+		<mapping class="com.code.dal.orm.hcm.payroll.EmployeePenalitiesData" />
+		<mapping class="com.code.dal.orm.hcm.payroll.EmployeeBonusesData" />
+		<mapping class="com.code.dal.orm.hcm.payroll.EmployeeAllowancesData" />
+		
+		<mapping class="com.code.dal.orm.hcm.retirements.DisclaimerTransactionDetail" />
+		<mapping class="com.code.dal.orm.hcm.retirements.DisclaimerTransaction" />
+		<mapping class="com.code.dal.orm.hcm.retirements.DisclaimerTransactionData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.retirements.WFDisclaimer" />
+		<mapping class="com.code.dal.orm.workflow.hcm.retirements.WFDisclaimerData" />
+		<mapping class="com.code.dal.orm.workflow.hcm.retirements.WFDisclaimerDetail" />
+		
+		<mapping class="com.code.dal.orm.integration.security.WSSession" />
+		
+		<mapping class="com.code.dal.orm.integration.finance.PaidIssueOrderData" />
+		
+		<mapping class="com.code.dal.orm.hcm.generalNews.GeneralNews" />
+		
+		<mapping class="com.code.dal.orm.hcm.pushServer.PushServerLog" />
+		
+	</session-factory>
+</hibernate-configuration>

@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+</h:head>
+<h:body styleClass="screenBg">
+
+	<f:event type="preRenderView" listener="#{home.calculateDelegationsCount}" />
+
+	<h:form id="welcomeForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{msgs.label_mainPage}" rendered="#{request.getAttribute('privilegeError') == null and param['privilegeError'] == null}" />
+					</td>
+				</tr>
+
+				<h:panelGroup rendered="#{request.getAttribute('privilegeError') != null or param['privilegeError'] != null}">
+					<tr>
+						<td width="100%" height="40" />
+					</tr>
+
+					<tr>
+						<td>
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%" style="vertical-align: top;">#{msgs.error_privilegeError}</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{request.getAttribute('privilegeError') == null and param['privilegeError'] == null}">
+					<h:panelGroup rendered="#{(home.loginEmpData.statusId != null) and (home.loginEmpData.statusId lt 50 ) and (home.loginEmpData.managerId == null)}">
+						<tr>
+							<td width="100%" height="20" />
+						</tr>
+
+						<tr>
+							<td>
+								<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="100%">
+											<h:outputText value="#{msgs.notify_noPrivilegesMessage}" style="font-size: 15px !important;" styleClass="remarkMessage" />
+										</th>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</h:panelGroup>
+
+					<h:panelGroup rendered="#{employeesDataView.employee.socialIdCopy == null}">
+						<tr>
+							<td width="100%" height="20" />
+						</tr>
+						<tr>
+							<td>
+								<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="100%">
+											<a target="_blank" href="#{request.contextPath}/Employees/EmployeesDataView.jsf?employeeId=#{employeesDataView.loginEmpData.empId}" style="text-decoration: none;">
+												<h:outputText value="#{msgs.notify_attachYourSocialIdCopy}" style="font-size: 15px !important;" styleClass="remarkMessage" />
+											</a>
+										</th>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</h:panelGroup>
+
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_empInformation}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_name}</th>
+									<td width="35%">#{home.loginEmpData.name}</td>
+
+									<th width="15%">#{msgs.label_directManager}</th>
+									<td width="35%">#{home.loginEmpData.managerName}</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_officiallyOccupiedJob}</th>
+									<td width="35%">#{home.loginEmpData.jobDesc}</td>
+
+									<th width="15%">#{msgs.label_socialId}</th>
+									<td width="35%">#{home.loginEmpData.socialID}</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_physicalUnit}</th>
+									<td width="85%" colspan="3">#{home.loginEmpData.physicalUnitFullName}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td>
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_officialMobileNumber}</th>
+									<td width="35%">#{home.loginEmpData.officialMobileNumber}</td>
+									<th width="15%">#{msgs.label_directPhoneNumber}</th>
+									<td width="35%">#{home.loginEmpData.directPhoneNumber}</td>
+
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_privateMobileNumber}</th>
+									<td width="35%">#{home.loginEmpData.privateMobileNumber}</td>
+									<th width="15%">#{msgs.label_phoneExt}</th>
+									<td width="35%">#{home.loginEmpData.phoneExt}</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_shieldMobileNumber}</th>
+									<td width="35%">#{home.loginEmpData.shieldMobileNumber}</td>
+									<th width="15%">#{msgs.label_ipPhoneExt}</th>
+									<td width="35%">#{home.loginEmpData.ipPhoneExt}</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_email}</th>
+									<td width="85%" colspan="3">#{home.loginEmpData.email}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="10" />
+					</tr>
+
+					<tr>
+						<td>
+							<table class="homeStatisticsContainer" border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td width="50%" class="homeStatisticsContainerTD" valign="top">
+										<table width="99%" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%" colspan="2">
+													<table class="homeStatisticsTitle" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="12%">
+																<h:graphicImage value="/resources/images/delegations.png" />
+															</td>
+															<td width="88%">#{msgs.label_wfDelegations}</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+											<tr>
+												<td width="50%" style="padding-left: 5px;">
+													<table class="homeStatisticsContent" width="100%">
+														<tr>
+															<td width="20%" rowspan="2">
+																<h:graphicImage value="/resources/images/delegationsTo.png" />
+															</td>
+															<td>
+																<a class="homeLink" href="#{home.totalDelegationsToLink}">
+																	#{msgs.title_wfTotalDelegationManagement}
+																	<h:outputText value="#{home.delegationsCounts[1]}" />
+																</a>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<a class="homeLink" href="#{home.partialDelegationsToLink}">
+																	#{msgs.title_wfPartialDelegationManagement}
+																	<h:outputText value="#{home.delegationsCounts[3]}" />
+																</a>
+															</td>
+														</tr>
+													</table>
+												</td>
+												<td width="50%">
+													<table class="homeStatisticsContent" width="100%">
+														<tr>
+															<td width="20%" rowspan="2">
+																<h:graphicImage value="/resources/images/delegationsFrom.png" />
+															</td>
+															<td>
+																<a class="homeLink" href="#{home.totalDelegationsFromLink}">
+																	#{msgs.title_wfTotalDelegationManagement}
+																	<h:outputText value="#{home.delegationsCounts[0]}" />
+																</a>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<a class="homeLink" href="#{home.partialDelegationsFromLink}">
+																	#{msgs.title_wfPartialDelegationManagement}
+																	<h:outputText value="#{home.delegationsCounts[2]}" />
+																</a>
+															</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+										</table>
+									</td>
+									<td width="50%" class="homeStatisticsContainerTD">
+										<table width="99%" cellpadding="0" cellspacing="0" class="fleft">
+											<tr>
+												<td width="100%" colspan="2">
+													<table class="homeStatisticsTitle" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="14%">
+																<h:graphicImage value="/resources/images/tasksInstances.png" />
+															</td>
+															<td width="86%">#{msgs.label_wfTasksInstances}</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+											<tr>
+												<td width="50%" style="padding-left: 5px;">
+													<table class="homeStatisticsContent" width="100%">
+														<tr>
+															<td width="20%" rowspan="2">
+																<h:graphicImage value="/resources/images/tasks.png" />
+															</td>
+															<td>
+																<a class="homeLink homeLink-highlight-orange" href="#{home.inboxLink}">
+																	#{msgs.label_proceduresInbox}
+																	<h:outputText value="#{home.inboxCount}" />
+																</a>
+															</td>
+														</tr>
+														<tr>
+															<td>
+																<a class="homeLink" href="#{home.notificationLink}">
+																	#{msgs.label_notificationsInbox}
+																	<h:outputText value="#{home.notificationsCount}" />
+																</a>
+															</td>
+														</tr>
+													</table>
+												</td>
+												<td width="50%">
+													<table class="homeStatisticsContent" width="100%">
+														<tr>
+															<td width="20%">
+																<h:graphicImage value="/resources/images/instances.png" />
+															</td>
+															<td>
+																<a class="homeLink" href="#{home.outboxLink}">
+																	#{msgs.title_outbox}
+																	<h:outputText value="#{home.outboxCount}" />
+																</a>
+															</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="10" />
+					</tr>
+
+					<tr>
+						<td>
+							<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%">
+										<h:outputText value="#{msgs.notify_minimumBrowsersVersionsMessage}" style="font-size: 15px !important;" styleClass="remarkMessage" />
+									</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

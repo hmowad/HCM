@@ -1,0 +1,446 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">   
+		function getEmp(contextPath) {
+			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, 2, -1, -1, -1, -1, -1);
+			
+		}
+		
+		function handleEmpMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('soldiersExceptionalPromotionFormId:selectedSoldierId').value = ret[0];
+				document.getElementById('soldiersExceptionalPromotionFormId:searchEmpButton').click();
+			}
+		}
+	
+	    function getNewJob(contextPath){
+
+	    	newRankIdValue = document.getElementById('soldiersExceptionalPromotionFormId:newRankIDHId').value;
+	    	openJobsMiniSearch(contextPath, 'handleJobsMiniSearchResult(ret)',2,2,-1,newRankIdValue,-1,-1,0);
+	    }
+		
+		function handleJobsMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('soldiersExceptionalPromotionFormId:newJobIdHId').value = ret[0];
+				document.getElementById('soldiersExceptionalPromotionFormId:newJobCodeHId').value = ret[1];
+	            document.getElementById('soldiersExceptionalPromotionFormId:newJobDescHId').value = ret[2];
+	            document.getElementById('soldiersExceptionalPromotionFormId:newJobDescId').innerHTML = ret[2];
+			}
+		}
+
+		function getFreezedJob(contextPath) {
+			var newJobRankId  = document.getElementById('soldiersExceptionalPromotionFormId:newRankIDHId').value;
+			openJobsMiniSearch(contextPath, 'handleFreezedJobsMiniSearchResult(ret)', 12, 2, -1, newJobRankId, -1, -1, 0);
+		}
+		
+		function handleFreezedJobsMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('soldiersExceptionalPromotionFormId:freezedJobIdHId').value = ret[0];
+				document.getElementById('soldiersExceptionalPromotionFormId:freezedJobDescId').innerHTML = ret[2];
+				document.getElementById('soldiersExceptionalPromotionFormId:freezedJobDescHId').value = ret[2];
+			}
+		}
+		
+		function validateData(){
+			
+			var empId = document.getElementById('soldiersExceptionalPromotionFormId:selectedSoldierId').value;
+			var scaleUpFlag = document.getElementById('soldiersExceptionalPromotionFormId:scaleUpFlagId');
+			
+			if (empId == null || empId == ''){
+				 alert("#{msgs.error_soldierNameMustChosen}");
+				 return false;
+			}
+			if (!scaleUpFlag.checked){
+		        var jobId = document.getElementById('soldiersExceptionalPromotionFormId:newJobIdHId').value;
+		        if(jobId == null || jobId == ''){
+		            alert("#{msgs.error_promotionjobIsMandatory}");
+		            return false;
+		        }  
+			} else{
+				freezedJobId = document.getElementById('soldiersExceptionalPromotionFormId:freezedJobIdHId').value;
+				if (freezedJobId == null || freezedJobId == ''){
+					 alert("#{msgs.error_freezedJobIsMandatory}");
+					 return false;
+				}
+			}
+
+			var referring = document.getElementById('soldiersExceptionalPromotionFormId:referringId').value;
+			var exceptionalPromotionReason = document.getElementById('soldiersExceptionalPromotionFormId:exceptionalPromotionReasonId').value;
+			var exceptionalPromotionDate = document.getElementById('soldiersExceptionalPromotionFormId:exceptionalPromotionDateId:day').value;
+			var decisionNumber = document.getElementById('soldiersExceptionalPromotionFormId:decisionNumberId').value;
+			var decisionDate = document.getElementById('soldiersExceptionalPromotionFormId:decisionDateId:day').value;
+
+			if(referring == null || referring == '' || referring.trim() == ''){
+				alert("#{msgs.error_refferingToIsMandatory}");
+	            return false;
+			}
+			if(exceptionalPromotionReason == null || exceptionalPromotionReason == '' || exceptionalPromotionReason.trim() == ''){
+				alert("#{msgs.error_exceptionalPromotionReason}");
+	            return false;
+			}
+			if(exceptionalPromotionDate == null || exceptionalPromotionDate == '' || exceptionalPromotionDate == 0){
+				alert("#{msgs.error_exceptionalPromotionDate}");
+	            return false;
+			}
+			if(decisionNumber == null || decisionNumber == '' || decisionNumber.trim() == ''){
+				alert("#{msgs.error_ministerialDecisionMandatory}");
+	            return false;
+			}
+			if(decisionDate == null || decisionDate == '' || decisionDate == 0){
+				alert("#{msgs.error_ministryDecisionDateMandatory}");
+	            return false;
+			}
+				
+			return true;
+		}
+    </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="soldiersExceptionalPromotionFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{msgs.title_soldiersExceptionalPromotion}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<h:panelGroup rendered="#{soldiersExceptionalPromotion.role == 'Requester'}">
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="50%">
+													<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+													<h:inputHidden id="selectedSoldierId" value="#{soldiersExceptionalPromotion.selectedEmployeeId}" />
+
+													<h:commandButton id="searchEmpButton" style="display: none;" action="#{soldiersExceptionalPromotion.searchSelectedSoldier()}">
+														<f:ajax render="soldiersExceptionalPromotionFormId:sendBtnId soldiersExceptionalPromotionFormId:employeeDataId soldiersExceptionalPromotionFormId:jobRankInfoPanelId soldiersExceptionalPromotionFormId:promotionInfoPanelId soldiersExceptionalPromotionFormId:decisionCopiesPanelId soldiersExceptionalPromotionFormId:actionsSectionId soldiersExceptionalPromotionFormId:notifyMessagesId" execute="soldiersExceptionalPromotionFormId:selectedSoldierId" />
+													</h:commandButton>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<td width="100%">
+									<h:panelGroup id="employeeDataId">
+										<h:panelGroup rendered="#{soldiersExceptionalPromotion.promotionReportDetailData != null}">
+											<table border="0" cellpadding="0" cellspacing="0" width="100%">
+												<tr>
+													<td width="100%">
+														<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+															<tr>
+																<td width="70%">#{msgs.title_soldierData}</td>
+															</tr>
+														</table>
+													</td>
+												</tr>
+												<tr>
+													<td width="100%" height="5" />
+												</tr>
+												<tr>
+													<td width="100%">
+														<code:emp value="#{soldiersExceptionalPromotion.selectedEmployee}" />
+													</td>
+												</tr>
+											</table>
+										</h:panelGroup>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="jobRankInfoPanelId">
+							<h:panelGroup rendered="#{soldiersExceptionalPromotion.promotionReportDetailData != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="70%">#{msgs.label_jobDetails}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_scaleUpPromotion}" />
+										</th>
+										<td width="35%">
+											<h:selectBooleanCheckbox id="scaleUpFlagId" value="#{soldiersExceptionalPromotion.promotionReportData.scaleUpFlagBoolean}" disabled="#{soldiersExceptionalPromotion.role != 'Requester' and soldiersExceptionalPromotion.role != 'ReviewerEmp'}">
+												<f:ajax event="change" listener="#{soldiersExceptionalPromotion.scaleUpJob()}" execute="@this" render="soldiersExceptionalPromotionFormId:jobPanelId soldiersExceptionalPromotionFormId:jobRankInfoPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectBooleanCheckbox>
+										</td>
+
+										<th width="15%">
+											<h:outputText value="#{msgs.label_promotionJob}" />
+											<h:outputText value="*" style="color: red;" />
+										</th>
+										<td width="35%">
+											<h:panelGroup id="jobPanelId">
+												<h:inputHidden id="newJobIdHId" value="#{soldiersExceptionalPromotion.promotionReportDetailData.newJobId}" />
+												<h:inputHidden id="newRankIDHId" value="#{soldiersExceptionalPromotion.promotionReportDetailData.newRankId}" />
+												<h:inputHidden id="newJobCodeHId" value="#{soldiersExceptionalPromotion.promotionReportDetailData.newJobCode}" />
+												<h:inputHidden id="newJobDescHId" value="#{soldiersExceptionalPromotion.promotionReportDetailData.newJobDesc}" />
+												<h:outputText id="newJobDescId" value="#{soldiersExceptionalPromotion.promotionReportDetailData.newJobDesc}" rendered="#{!soldiersExceptionalPromotion.promotionReportData.scaleUpFlagBoolean}" />
+												<h:outputText value="#{soldiersExceptionalPromotion.promotionReportDetailData.oldJobDesc}" rendered="#{soldiersExceptionalPromotion.promotionReportData.scaleUpFlagBoolean}" />
+												<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_job}" onclick="getNewJob('#{request.contextPath}'); return false;" styleClass="btn_icon" rendered="#{!soldiersExceptionalPromotion.promotionReportData.scaleUpFlagBoolean}" disabled="#{soldiersExceptionalPromotion.role != 'Requester' and soldiersExceptionalPromotion.role != 'ReviewerEmp'}" />
+											</h:panelGroup>
+										</td>
+									</tr>
+									<h:panelGroup rendered="#{soldiersExceptionalPromotion.promotionReportData.scaleUpFlagBoolean}">
+										<tr>
+											<th width="15%">
+												<h:outputText value="#{msgs.label_promotionFreezedJob}" />
+												<h:outputText value="*" style="color:red;" rendered="#{soldiersExceptionalPromotion.role == 'Requester' or soldiersExceptionalPromotion.role == 'ReviewerEmp'}" />
+											</th>
+											<td width="85%" colspan="3">
+												<h:inputHidden id="freezedJobIdHId" value="#{soldiersExceptionalPromotion.promotionReportDetailData.freezedJobId}" />
+												<h:outputText id="freezedJobDescId" value="#{soldiersExceptionalPromotion.promotionReportDetailData.freezedJobName}" />
+												<h:inputHidden id="freezedJobDescHId" value="#{soldiersExceptionalPromotion.promotionReportDetailData.freezedJobName}" />
+												<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_promotionFreezedJob}" onclick="getFreezedJob('#{request.contextPath}'); return false;" styleClass="btn_icon" disabled="#{soldiersExceptionalPromotion.role != 'Requester' and soldiersExceptionalPromotion.role != 'ReviewerEmp'}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_currentRank}" />
+										</th>
+										<td width="35%">
+											<h:outputText id="currentRankId" value="#{soldiersExceptionalPromotion.promotionReportDetailData.oldRankDesc}" />
+										</td>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_newRank}" />
+										</th>
+										<td width="35%">
+											<h:outputText id="newRankId" value="#{soldiersExceptionalPromotion.promotionReportDetailData.newRankDesc}" />
+
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="100%" height="15"></td>
+				</tr>
+				
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="promotionInfoPanelId">
+							<h:panelGroup rendered="#{soldiersExceptionalPromotion.promotionReportDetailData != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="70%">#{msgs.label_promotionData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_refferingTo}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="85%" colspan="3">
+											<h:inputTextarea id="referringId" value="#{soldiersExceptionalPromotion.promotionReportDetailData.referring}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge" disabled="#{soldiersExceptionalPromotion.role != 'Requester' and soldiersExceptionalPromotion.role !='ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_exceptionalPromotionReason}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="85%" colspan="3">
+											<h:inputText id="exceptionalPromotionReasonId" value="#{soldiersExceptionalPromotion.promotionReportDetailData.exceptionalPromotionReason}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" styleClass="inputDataLarge" disabled="#{soldiersExceptionalPromotion.role != 'Requester' and soldiersExceptionalPromotion.role !='ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_exceptionalPromotionDate}" />
+											<h:outputText value="*" style="color: red;" />
+										</th>
+										<td width="85%" colspan="3">
+											<util:hijri id="exceptionalPromotionDateId" value="#{soldiersExceptionalPromotion.promotionReportData.promotionDate}" nullable="true" rendered="#{soldiersExceptionalPromotion.role == 'Requester' or soldiersExceptionalPromotion.role =='ReviewerEmp'}" />
+											<h:outputText value="#{soldiersExceptionalPromotion.promotionReportData.promotionDateString}" rendered="#{soldiersExceptionalPromotion.role != 'Requester' and soldiersExceptionalPromotion.role !='ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_ministerialDecisionNumber}" />
+											<h:outputText value="*" style="color: red;" />
+										</th>
+										<td width="35%">
+											<h:inputText id="decisionNumberId" value="#{soldiersExceptionalPromotion.promotionReportDetailData.externalDecisionNumber}" disabled="#{soldiersExceptionalPromotion.role != 'Requester' and soldiersExceptionalPromotion.role !='ReviewerEmp'}" maxlength="20" />
+										</td>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_ministerialDecisionDate}" />
+											<h:outputText value="*" style="color: red;" />
+										</th>
+										<td width="35%">
+											<util:hijri id="decisionDateId" value="#{soldiersExceptionalPromotion.promotionReportDetailData.externalDecisionDate}" rendered="#{soldiersExceptionalPromotion.role == 'Requester' or soldiersExceptionalPromotion.role =='ReviewerEmp'}" nullable="true"></util:hijri>
+											<h:outputText value="#{soldiersExceptionalPromotion.promotionReportDetailData.externalDecisionDateString}" rendered="#{soldiersExceptionalPromotion.role == 'Requester' or soldiersExceptionalPromotion.role !='ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_notes}" />
+										</th>
+										<td width="85%" colspan="3">
+											<h:inputText value="#{soldiersExceptionalPromotion.promotionReportDetailData.remarks}" styleClass="inputDataLarge" disabled="#{soldiersExceptionalPromotion.role != 'Requester' and soldiersExceptionalPromotion.role !='ReviewerEmp'}" maxlength="500" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_addAttachments}</th>
+										<td width="85%" colspan="3">
+											<code:attachments loginEmpId="#{soldiersExceptionalPromotion.loginEmpData.empId}" attachmentId="#{soldiersExceptionalPromotion.promotionReportDetailData.attachments}" addEnableFlag="#{soldiersExceptionalPromotion.role == 'ReviewerEmp' or soldiersExceptionalPromotion.role == 'Requester'}" viewEnableFlag="true"
+												deleteEnableFlag="#{soldiersExceptionalPromotion.role == 'ReviewerEmp' or soldiersExceptionalPromotion.role == 'Requester'}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="15"></td>
+				</tr>
+				
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="decisionCopiesPanelId">
+							<h:panelGroup rendered="#{soldiersExceptionalPromotion.promotionReportDetailData != null}">
+								<code:decisionCopies external="#{soldiersExceptionalPromotion.promotionReportData.externalCopies}" internal="#{soldiersExceptionalPromotion.internalCopies}" viewOnly="#{soldiersExceptionalPromotion.role != 'Requester' and soldiersExceptionalPromotion.role != 'ReviewerEmp'}" />
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<code:prevTasks rendered="#{soldiersExceptionalPromotion.role != 'Requester'}" value="#{soldiersExceptionalPromotion.prevTasks}" refuseRoles="SignManager," />
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{soldiersExceptionalPromotion.currentEmployee}" rendered="#{soldiersExceptionalPromotion.role != 'Requester' and soldiersExceptionalPromotion.role != 'Notification' and soldiersExceptionalPromotion.role != 'History'}">
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{soldiersExceptionalPromotion.currentTask.notes}" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{soldiersExceptionalPromotion.role == 'SignManager' or soldiersExceptionalPromotion.role == 'ReviewerEmp'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{soldiersExceptionalPromotion.currentTask.refuseReasons}" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{soldiersExceptionalPromotion.role == 'Notification' or soldiersExceptionalPromotion.role == 'History'}" value="#{soldiersExceptionalPromotion.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<h:panelGroup rendered="#{soldiersExceptionalPromotion.role != 'Requester'}">
+					<tr>
+						<td width="100%" height="10"></td>
+					</tr>
+				</h:panelGroup>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsSectionId">
+							<h:panelGroup rendered="#{ soldiersExceptionalPromotion.promotionReportDetailData != null}">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<h:panelGroup rendered="#{soldiersExceptionalPromotion.role == 'Requester'}">
+												<h:commandButton id="sendBtnId" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" onclick="return handleOnAction('#{msgs.q_send}', 'validateData()');" action="#{soldiersExceptionalPromotion.initProcess()}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{soldiersExceptionalPromotion.role == 'AdminstrativeOrganizationManger'}">
+												<h:commandButton id="approveAomBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;soldiersExceptionalPromotionFormId:curTaskId:refuseReasonsId&quot;)');" action="#{soldiersExceptionalPromotion.approveAOM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="modifyAomBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;soldiersExceptionalPromotionFormId:curTaskId:refuseReasonsId&quot;, &quot;soldiersExceptionalPromotionFormId:curTaskId:notesId&quot;)');" action="#{soldiersExceptionalPromotion.modifyAOM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{soldiersExceptionalPromotion.role == 'ReviewerEmp'}">
+												<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}', 'validateReportData()');" action="#{soldiersExceptionalPromotion.approveRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;soldiersExceptionalPromotionFormId:curTaskId:refuseReasonsId&quot;)');" action="#{soldiersExceptionalPromotion.rejectRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{soldiersExceptionalPromotion.role == 'SignManager'}">
+												<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;soldiersExceptionalPromotionFormId:curTaskId:refuseReasonsId&quot;)');" action="#{soldiersExceptionalPromotion.signSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="modifySMBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;soldiersExceptionalPromotionFormId:curTaskId:refuseReasonsId&quot;, &quot;soldiersExceptionalPromotionFormId:curTaskId:notesId&quot;)');" action="#{soldiersExceptionalPromotion.modifySM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;soldiersExceptionalPromotionFormId:curTaskId:refuseReasonsId&quot;)');" action="#{soldiersExceptionalPromotion.rejectSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{soldiersExceptionalPromotion.role == 'Notification' and soldiersExceptionalPromotion.instanceApproved == 1}">
+												<h:commandButton id="printBtnId" action="#{soldiersExceptionalPromotion.print()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{soldiersExceptionalPromotion.role == 'Notification'}">
+												<h:commandButton id="nBtnId" action="#{soldiersExceptionalPromotion.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

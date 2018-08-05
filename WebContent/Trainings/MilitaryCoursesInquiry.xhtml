@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		window.onkeypress = function(e) {
+			  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+		      if (keyCode == '13'){
+		    	  document.getElementById('militaryCoursesInquiryFormId:searchBtnId').click();
+		    	  return false;
+		      }
+		};
+		
+
+		function validateSearchPanel() {
+			var minorSpecId = document.getElementById('militaryCoursesInquiryFormId:searchMinorSpecID').value;
+			var majorSpecId = document.getElementById('militaryCoursesInquiryFormId:searchMajorSpecID').value;
+			var trainingCourseName = document.getElementById('militaryCoursesInquiryFormId:trainingCourseNameId').value;
+
+			if((trainingCourseName==null ||trainingCourseName=='' ) &amp;&amp; (minorSpecId==null || minorSpecId=='') &amp;&amp;(majorSpecId==null || majorSpecId=='') ){
+				alert('#{msgs.error_insertOneFieldAtLeast}');
+				return false;
+			}
+			return true;
+			
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="militaryCoursesInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{militaryCoursesInquiry.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="10%">#{msgs.label_trainingQualificationMajorSpec}</th>
+									<td width="20%">
+										<h:inputText id="searchMajorSpecID" value="#{militaryCoursesInquiry.searchMajorSpec}" styleClass="inputDataLarge" />
+									</td>
+									<th width="10%">#{msgs.label_trainingQualificationMinorSpec}</th>
+									<td width="20%">
+										<h:inputText id="searchMinorSpecID" value="#{militaryCoursesInquiry.searchMinorSpec}" styleClass="inputDataLarge" />
+									</td>
+									<th width="15%">#{msgs.label_trainingCourseName}</th>
+									<td width="25%">
+										<h:inputText id="trainingCourseNameId" value="#{militaryCoursesInquiry.trainingCourseName}" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{militaryCoursesInquiry.searchTrainingCourses()}" title="#{msgs.label_searchByRoot}" styleClass="btn_normal_icon" onclick="return validateSearchPanel();">
+										<f:ajax execute="militaryCoursesInquiryFormId:searchPanelId" render="militaryCoursesInquiryFormId:trainingCoursesTableId" />
+									</h:commandButton>
+									<h:commandButton action="#{militaryCoursesInquiry.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="militaryCoursesInquiryFormId:searchPanelId militaryCoursesInquiryFormId:trainingCoursesTableId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchResults}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="trainingCoursesTableId" rowKeyVar="index" var="trainingCourse" value="#{militaryCoursesInquiry.trainingCoursesList}" rows="#{militaryCoursesInquiry.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 5%">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                            </rich:column>
+							<rich:column style="width : 20%">
+								<f:facet name="header">#{msgs.label_trainingQualificationMajorSpec}</f:facet>
+								<h:outputText value="#{trainingCourse.qualificationMajorSpecDesc}" />
+							</rich:column>
+							<rich:column style="width : 20%">
+								<f:facet name="header">#{msgs.label_trainingQualificationMinorSpec}</f:facet>
+								<h:outputText value="#{trainingCourse.qualificationMinorSpecDesc}" />
+							</rich:column>
+							<rich:column style="width : 25%">
+								<f:facet name="header">#{msgs.label_trainingCourseName}</f:facet>
+								<h:outputText value="#{trainingCourse.name}" />
+							</rich:column>
+							<rich:column style="width : 25%">
+								<f:facet name="header">#{msgs.label_coursePrequisities}</f:facet>
+								<h:outputText value="#{trainingCourse.prerquisites}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_showAndUpdate}</f:facet>
+								<h:panelGroup>
+									<a target="_blank" href="#{request.contextPath}/Trainings/MilitaryCoursesRegistration.jsf?trainingCourseId=#{trainingCourse.id}" style="text-decoration: none;">
+										<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_showAndUpdate}"></i>
+									</a>
+								</h:panelGroup>
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

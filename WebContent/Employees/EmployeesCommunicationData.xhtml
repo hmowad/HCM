@@ -1,0 +1,386 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+	    function validateSearchPanel() {
+			nameValue = document.getElementById('employeesCommunicationDataFormId:nameId').value;
+			socialIdValue = document.getElementById('employeesCommunicationDataFormId:socialIDId').value;
+			jobDescIdValue = document.getElementById('employeesCommunicationDataFormId:jobDescId').value;
+			physicalUnitNameIdValue = document.getElementById('employeesCommunicationDataFormId:physicalUnitNameId').value;
+		    searchOfficialMobileNumberValue = document.getElementById('employeesCommunicationDataFormId:searchOfficialMobileNumberId').value;
+		    searchDirectPhoneNumberValue = document.getElementById('employeesCommunicationDataFormId:searchDirectPhoneNumberId').value;
+		    searchPrivateMobileNumberValue = document.getElementById('employeesCommunicationDataFormId:searchPrivateMobileNumberId').value;
+		    searchPhoneExtValue = document.getElementById('employeesCommunicationDataFormId:searchPhoneExtId').value;
+		    searchShieldMobileNumberValue = document.getElementById('employeesCommunicationDataFormId:searchShieldMobileNumberId').value;
+		    searchIpPhoneExtValue = document.getElementById('employeesCommunicationDataFormId:searchIpPhoneExtId').value;
+		    searchEmailValue = document.getElementById('employeesCommunicationDataFormId:searchEmailId').value;
+		    searchUserAccountValue = document.getElementById('employeesCommunicationDataFormId:searchUserAccountId').value;
+
+			if(!socialIdValue) {
+				if (!nameValue && !jobDescIdValue && !physicalUnitNameIdValue && !searchOfficialMobileNumberValue && !searchDirectPhoneNumberValue 
+						&& !searchPrivateMobileNumberValue && !searchPhoneExtValue && !searchShieldMobileNumberValue
+						&& !searchIpPhoneExtValue && !searchEmailValue && !searchUserAccountValue) {
+					alert("#{msgs.error_oneSearchFieldNeededAtLeast}");
+					return false;
+				}
+				else if (nameValue.length < 3 && jobDescIdValue.length < 3 && physicalUnitNameIdValue.length < 3 &&
+						searchOfficialMobileNumberValue.length < 3 && searchDirectPhoneNumberValue.length < 3 && searchPrivateMobileNumberValue.length < 3 && 
+						searchPhoneExtValue.length < 3 && searchShieldMobileNumberValue.length < 3 && 
+						searchIpPhoneExtValue.length < 3 && searchEmailValue.length < 3 && searchUserAccountValue.length < 3) {
+					alert("#{msgs.error_cannotSearchByLessThanThreeCharacters}");
+					return false;
+				}
+			}
+			else if ( socialIdValue.length != 10 ) {
+				alert("#{msgs.error_socialIdNotValid}");
+				return false;
+			}
+			return true;
+	    }
+
+	    window.onkeypress = function(e) {
+			  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+		      if (keyCode == '13'){
+		    	  document.getElementById('employeesCommunicationDataFormId:searchBtnId').click();
+		    	  return false;
+		      }
+		};
+	    
+	    function validateParameters() {
+	    	privateMobileNumberValue = document.getElementById('employeesCommunicationDataFormId:privateMobileNumberId').value;
+			emailValue = document.getElementById('employeesCommunicationDataFormId:emailId').value;
+
+			var emailRe = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			var mobileRe = /05\d{8}$/;	
+
+			if (!(privateMobileNumberValue == null || privateMobileNumberValue == '')) {
+				if(!mobileRe.test(privateMobileNumberValue)) {
+					alert("#{msgs.error_privateMobileNumberNotValid}");
+					return false;
+				}
+			}
+			
+			if(emailValue!=null && emailValue!='' && !emailRe.test(emailValue)) {
+				alert("#{msgs.error_emailNotValid}");
+				return false;
+			}
+
+			if(document.getElementById('employeesCommunicationDataFormId:officialMobileNumberId') != null) {
+				officialMobileNumberValue = document.getElementById('employeesCommunicationDataFormId:officialMobileNumberId').value;
+
+				if (!(officialMobileNumberValue == null || officialMobileNumberValue == '')) {
+					if(!mobileRe.test(officialMobileNumberValue)) {
+						alert("#{msgs.error_officialMobileNumberNotValid}");
+						return false;
+					}
+				}
+			}
+
+
+			if(document.getElementById('employeesCommunicationDataFormId:shieldMobileNumberId') != null) {
+				shieldMobileNumberValue = document.getElementById('employeesCommunicationDataFormId:shieldMobileNumberId').value;
+
+				if (!(shieldMobileNumberValue == null || shieldMobileNumberValue == '')) {
+					if(!mobileRe.test(shieldMobileNumberValue)) {
+						alert("#{msgs.error_shieldMobileNumberNotValid}");
+						return false;
+					}
+				}
+			}
+			
+			var privateMobileNumberValue = document.getElementById('employeesCommunicationDataFormId:privateMobileNumberId').value;
+	    	var shieldMobileNumberValue = document.getElementById('employeesCommunicationDataFormId:shieldMobileNumberId').value;
+	    	var officialMobileNumberValue = document.getElementById('employeesCommunicationDataFormId:officialMobileNumberId').value;
+	    	
+			if((privateMobileNumberValue && shieldMobileNumberValue&&privateMobileNumberValue==shieldMobileNumberValue)
+				|| (shieldMobileNumberValue && officialMobileNumberValue&&shieldMobileNumberValue==officialMobileNumberValue)
+				|| (privateMobileNumberValue && officialMobileNumberValue&&privateMobileNumberValue==officialMobileNumberValue))
+				{
+					alert("#{msgs.error_mobileNumbersShouldBeUnique}");
+					return false;
+				}
+			return true;
+		}
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="employeesCommunicationDataFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_employeesCommunicationData}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="10%">#{msgs.label_trainingEmpName}</th>
+									<td width="40%">
+										<h:inputText id="nameId" styleClass="inputDataLarge" value="#{employeesCommunicationData.empName}" />
+									</td>
+									<th width="10%">#{msgs.label_socialId}</th>
+									<td width="40%">
+										<h:inputText id="socialIDId" value="#{employeesCommunicationData.socialId}" maxlength="10" onkeypress="return isDigit(event);" />
+									</td>
+								</tr>
+								<tr>
+									<th width="10%">#{msgs.label_empJob}</th>
+									<td width="40%">
+										<h:inputText id="jobDescId" styleClass="inputDataLarge" value="#{employeesCommunicationData.jobDesc}" />
+									</td>
+									<th width="10%">#{msgs.label_physicalUnit}</th>
+									<td width="40%">
+										<h:inputText id="physicalUnitNameId" styleClass="inputDataLarge" value="#{employeesCommunicationData.physicalUnitName}" />
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{employeesCommunicationData.selectPrivilege or employeesCommunicationData.editPrivilege}">
+									<tr>
+										<th width="10%">#{msgs.label_officialMobileNumber}</th>
+										<td width="40%">
+											<h:inputText id="searchOfficialMobileNumberId" value="#{employeesCommunicationData.searchOfficialMobileNumber}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
+										</td>
+										<th width="10%">#{msgs.label_directPhoneNumber}</th>
+										<td width="40%" >
+											<h:inputText id="searchDirectPhoneNumberId" value="#{employeesCommunicationData.searchDirectPhoneNumber}" maxlength="12" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
+										</td>
+									</tr>
+									<tr>
+										<th width="10%">#{msgs.label_privateMobileNumber}</th>
+										<td width="40%">
+											<h:inputText id="searchPrivateMobileNumberId" value="#{employeesCommunicationData.searchPrivateMobileNumber}" maxlength="10" styleClass="inputDataLarge" onkeypress="return isDigit(event);"/>
+										</td>
+										<th width="10%">#{msgs.label_phoneExt}</th>
+										<td width="40%">
+											<h:inputText id="searchPhoneExtId" value="#{employeesCommunicationData.searchPhoneExt}" maxlength="8" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
+										</td>
+									</tr>
+									<tr>
+										<th width="10%">#{msgs.label_shieldMobileNumber}</th>
+										<td width="40%">
+											<h:inputText id="searchShieldMobileNumberId" value="#{employeesCommunicationData.searchShieldMobileNumber}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
+										</td>
+										<th width="10%">#{msgs.label_ipPhoneExt}</th>
+										<td width="40%">
+											<h:inputText id="searchIpPhoneExtId" value="#{employeesCommunicationData.searchIpPhoneExt}" maxlength="8" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
+										</td>
+									</tr>
+									<tr>
+										<th width="10%">#{msgs.label_email}</th>
+										<td width="40%">
+											<h:inputText id="searchEmailId" value="#{employeesCommunicationData.searchEmail}" maxlength="100" styleClass="inputDataLarge"/>
+										</td>
+										<th width="10%">#{msgs.label_userAccount}</th>
+										<td width="40%">
+											<h:inputText id="searchUserAccountId" value="#{employeesCommunicationData.searchUserAccount}" styleClass="inputDataLarge"/>
+										</td>
+									</tr>
+								</h:panelGroup>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{employeesCommunicationData.searchEmployees()}" title="#{msgs.label_searchByRoot}" styleClass="btn_normal_icon" onclick="return validateSearchPanel();" >
+										<f:ajax execute="employeesCommunicationDataFormId:searchPanelId" render="employeesCommunicationDataFormId:searchPanelId employeesCommunicationDataFormId:actionsPanelId employeesCommunicationDataFormId:employeesTableId employeesCommunicationDataFormId:communicationPanelId" />
+									</h:commandButton>
+									<h:commandButton action="#{employeesCommunicationData.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="employeesCommunicationDataFormId:searchPanelId employeesCommunicationDataFormId:actionsPanelId employeesCommunicationDataFormId:employeesTableId employeesCommunicationDataFormId:communicationPanelId" />
+									</h:commandButton>
+									<h:inputHidden id="employeeIDId" value="#{employeesCommunicationData.selectedEmpId}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchResults}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="employeesTableId" rowKeyVar="index" var="emp" value="#{employeesCommunicationData.employeesList}" rows="#{employeesCommunicationData.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column rendered="#{employeesCommunicationData.selectPrivilege or employeesCommunicationData.editPrivilege}" style="width : 5%">
+								<h:commandButton rendered="#{(employeesCommunicationData.selectPrivilege and (emp.physicalRegionId == employeesCommunicationData.loginEmpData.physicalRegionId or employeesCommunicationData.loginEmpData.physicalRegionId == 1)) or (employeesCommunicationData.editPrivilege and (emp.physicalRegionId == employeesCommunicationData.loginEmpData.physicalRegionId or employeesCommunicationData.loginEmpData.physicalRegionId == 1)) }" value="#{msgs.fa_check_square}" title="#{msgs.label_select}"
+									styleClass="btn_icon" action="#{employeesCommunicationData.selectEmployee(emp)}">
+									<f:ajax render="employeesCommunicationDataFormId:actionsPanelId employeesCommunicationDataFormId:communicationPanelId employeesCommunicationDataFormId:communicationDataPanelId employeesCommunicationDataFormId:employeeIDId employeesCommunicationDataFormId:notifyMessagesId" />
+								</h:commandButton>
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                            </rich:column>
+							<rich:column style="width : 20%">
+								<f:facet name="header">#{msgs.label_name}</f:facet>
+								<h:outputText value="#{emp.name}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_rank} / #{msgs.label_personRank}" />
+								</f:facet>
+								<h:outputText value="#{emp.rankDesc}" />
+							</rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header">#{msgs.label_job}</f:facet>
+								<h:outputText value="#{emp.jobDesc}" />
+							</rich:column>
+							<rich:column style="width : 25%">
+								<f:facet name="header">#{msgs.label_orgUnit}</f:facet>
+								<h:outputText value="#{emp.physicalUnitFullName}" />
+							</rich:column>
+
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_phoneExt}</f:facet>
+								<h:outputText value="#{emp.phoneExt}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_ipPhoneExt}</f:facet>
+								<h:outputText value="#{emp.ipPhoneExt}" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="communicationPanelId">
+							<h:panelGroup rendered="#{employeesCommunicationData.employeeData != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{msgs.label_communicationData}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:panelGroup id="communicationDataPanelId">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<th width="15%">#{msgs.label_officialMobileNumber}</th>
+														<td width="20%">
+															<h:inputText readonly="#{!(employeesCommunicationData.editPrivilege and (employeesCommunicationData.employeeData.physicalRegionId == employeesCommunicationData.loginEmpData.physicalRegionId or employeesCommunicationData.loginEmpData.physicalRegionId == 1))}" id="officialMobileNumberId" value="#{employeesCommunicationData.employeeData.officialMobileNumber}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
+														</td>
+														<th width="15%">#{msgs.label_directPhoneNumber}</th>
+														<td width="20%" colspan="2">
+															<h:inputText readonly="#{!(employeesCommunicationData.editPrivilege and (employeesCommunicationData.employeeData.physicalRegionId == employeesCommunicationData.loginEmpData.physicalRegionId or employeesCommunicationData.loginEmpData.physicalRegionId == 1))}" value="#{employeesCommunicationData.employeeData.directPhoneNumber}" maxlength="12" styleClass="inputDataLarge" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">#{msgs.label_privateMobileNumber}</th>
+														<td width="20%">
+															<h:inputText readonly="#{!(employeesCommunicationData.editPrivilege and (employeesCommunicationData.employeeData.physicalRegionId == employeesCommunicationData.loginEmpData.physicalRegionId or employeesCommunicationData.loginEmpData.physicalRegionId == 1))}" id="privateMobileNumberId" value="#{employeesCommunicationData.employeeData.privateMobileNumber}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
+														</td>
+														<th width="15%">#{msgs.label_phoneExt}</th>
+														<td width="20%">
+															<h:inputText readonly="#{!(employeesCommunicationData.editPrivilege and (employeesCommunicationData.employeeData.physicalRegionId == employeesCommunicationData.loginEmpData.physicalRegionId or employeesCommunicationData.loginEmpData.physicalRegionId == 1))}" value="#{employeesCommunicationData.employeeData.phoneExt}" maxlength="8" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">#{msgs.label_shieldMobileNumber}</th>
+														<td width="20%">
+															<h:inputText readonly="#{!(employeesCommunicationData.editPrivilege and (employeesCommunicationData.employeeData.physicalRegionId == employeesCommunicationData.loginEmpData.physicalRegionId or employeesCommunicationData.loginEmpData.physicalRegionId == 1))}" id="shieldMobileNumberId" value="#{employeesCommunicationData.employeeData.shieldMobileNumber}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
+														</td>
+														<th width="15%">#{msgs.label_ipPhoneExt}</th>
+														<td width="20%" colspan="2">
+															<h:inputText readonly="#{!(employeesCommunicationData.editPrivilege and (employeesCommunicationData.employeeData.physicalRegionId == employeesCommunicationData.loginEmpData.physicalRegionId or employeesCommunicationData.loginEmpData.physicalRegionId == 1))}" value="#{employeesCommunicationData.employeeData.ipPhoneExt}" maxlength="8" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">#{msgs.label_email}</th>
+														<td width="20%">
+															<h:inputText readonly="#{!(employeesCommunicationData.editPrivilege and (employeesCommunicationData.employeeData.physicalRegionId == employeesCommunicationData.loginEmpData.physicalRegionId or employeesCommunicationData.loginEmpData.physicalRegionId == 1))}" id="emailId" value="#{employeesCommunicationData.employeeData.email}" maxlength="100" styleClass="inputDataLarge" />
+														</td>
+														<th width="15%">#{msgs.label_userAccount}</th>
+														<td width="20%" colspan="2">
+															<h:outputText id="userAccountId" value="#{employeesCommunicationData.employeeData.userAccount}" />
+															<h:commandButton id="clearUserAccountBtnId" disabled="#{!(employeesCommunicationData.editPrivilege and (employeesCommunicationData.employeeData.physicalRegionId == employeesCommunicationData.loginEmpData.physicalRegionId or employeesCommunicationData.loginEmpData.physicalRegionId == 1))||employeesCommunicationData.employeeData.userAccount == null}" action="#{employeesCommunicationData.clearUserAccount()}" value="#{msgs.fa_times}" styleClass="btn_icon">
+																<f:ajax execute="employeesCommunicationDataFormId:communicationPanelId" render="employeesCommunicationDataFormId:userAccountId employeesCommunicationDataFormId:clearUserAccountBtnId" oncomplete="#{rich:component('reload')}.hide()" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsPanelId">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton id="saveBtnId" action="#{employeesCommunicationData.save()}" rendered="#{employeesCommunicationData.employeeData != null and (employeesCommunicationData.editPrivilege and (employeesCommunicationData.employeeData.physicalRegionId == employeesCommunicationData.loginEmpData.physicalRegionId or employeesCommunicationData.loginEmpData.physicalRegionId == 1))}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon"
+											onclick="return handleOnAction('#{msgs.q_save}', 'validateParameters()');">
+											<f:ajax execute="employeesCommunicationDataFormId:communicationPanelId" render="employeesCommunicationDataFormId:actionsPanelId employeesCommunicationDataFormId:employeesTableId employeesCommunicationDataFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

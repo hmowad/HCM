@@ -1,0 +1,681 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+    window.onkeypress = function(e) {
+		  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+		  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+	      if (keyCode == '13') {
+	    	  return false;
+	      }
+	  };
+	  
+	function getEmployee(contextPath){
+		if(#{militaryTrainingRequest.regionAdmin}) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{militaryTrainingRequest.loginEmpData.physicalRegionId});
+		} else {
+			openEmpsMiniSearch(contextPath,'handleEmpMiniSearchResult(ret)', 9, -1, -1, -1, -1, -1, '#{militaryTrainingRequest.privilegeUnitHkey}');
+		}
+    }
+  
+    function handleEmpMiniSearchResult(ret){
+    	if(ret != null){
+			document.getElementById('militaryTrainingRequestFormId:beneficiaryEmployeeHId').value = ret[0];
+			document.getElementById('militaryTrainingRequestFormId:beneficiaryEmployeeCategoryId').value = ret[2];
+			document.getElementById('militaryTrainingRequestFormId:searchEmpBtnId').click();
+        }
+    } 
+
+	function getCourseEvents() {
+		if(#{militaryTrainingRequest.mode} == 0)
+			openTrainingIntCourseEventsMiniSearch('#{request.contextPath}', 'handleCourseEventsMiniSearchResult(ret)', '1,2,3', -1, -1, '#{militaryTrainingRequest.loginEmpData.physicalRegionId}', 1);
+		else
+			openTrainingExtCourseEventsMiniSearch('#{request.contextPath}', 'handleCourseEventsMiniSearchResult(ret)','1',-1); 
+	}
+	
+	function handleCourseEventsMiniSearchResult(ret){
+		if(ret != null){
+			document.getElementById('militaryTrainingRequestFormId:courseEventIDHId').value = ret[0];
+			document.getElementById('militaryTrainingRequestFormId:courseEventBtnId').click();
+		}
+	}
+
+    function validateRequest() {
+    	var courseEventIdValue = document.getElementById('militaryTrainingRequestFormId:courseEventIDHId').value;            
+ 	    if (courseEventIdValue == null || courseEventIdValue == '') {
+	        alert("#{msgs.error_trainingCourseMandatory}");
+	        return false;
+	    } 
+ 	    
+        if(document.getElementById('militaryTrainingRequestFormId:wfTrainingsListSizeId')==null||document.getElementById('militaryTrainingRequestFormId:wfTrainingsListSizeId').innerHTML == 0) {
+	        alert("#{msgs.error_addAtLeastOneNominatedEmployee}");
+	        return false;
+        }   
+
+	    return true;
+     }
+
+	function validateReview() {
+	    if(validateRefuseAndNotes(1, 'militaryTrainingRequestFormId:curTaskId:refuseReasonsId')) {
+	    	return validateRequest();
+	    } else
+	    	return false;
+	}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="militaryTrainingRequestFormId" dir="#{msgs.dir}">
+		<ui:debug />
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{militaryTrainingRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>
+										<h:outputText value="#{msgs.label_trainingCourseData}" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="trainingCourseDataPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_trainingCourse}" />
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="#{militaryTrainingRequest.mode == 0 ? 85 : 35}%" colspan="#{militaryTrainingRequest.mode == 0 ? 3 : 1}">
+											<h:outputText value="#{militaryTrainingRequest.selectedCourseEvent.courseName}" />
+											<h:commandButton id="openCourseEventBtnId" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getCourseEvents(); return false;" rendered="#{militaryTrainingRequest.role == 'Requester' or militaryTrainingRequest.role == 'ReviewerEmp' or militaryTrainingRequest.role == 'SecondaryReviewerEmp'}" />
+											<h:commandButton id="courseEventBtnId" action="#{militaryTrainingRequest.selectCourseEventHandling()}" style="display:none;">
+												<f:ajax execute="militaryTrainingRequestFormId:courseEventIDHId" render="militaryTrainingRequestFormId:trainingCourseDataPanelId militaryTrainingRequestFormId:addEmployeePanelId militaryTrainingRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:inputHidden id="courseEventIDHId" value="#{militaryTrainingRequest.selectedCourseEventId}" />
+										</td>
+
+										<h:panelGroup rendered="#{militaryTrainingRequest.mode == 1}">
+											<th width="15%">
+												<h:outputText value="#{msgs.label_theTrainingUnit}" />
+											</th>
+											<td width="35%">
+												<h:outputText value="#{militaryTrainingRequest.selectedCourseEvent.externalPartyDesc}" />
+											</td>
+										</h:panelGroup>
+									</tr>
+									<h:panelGroup rendered="#{militaryTrainingRequest.mode == 0}">
+										<tr>
+											<th width="15%">
+												<h:outputText value="#{msgs.label_trainingYear}" />
+											</th>
+											<td width="35%">
+												<h:outputText value="#{militaryTrainingRequest.selectedCourseEvent.trainingYearName}" />
+											</td>
+											<th width="15%">
+												<h:outputText value="#{msgs.label_theTrainingUnit}" />
+											</th>
+											<td width="35%">
+												<h:outputText value="#{militaryTrainingRequest.selectedCourseEvent.trainingUnitName}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<th width="15%">#{msgs.label_courseStartDate}</th>
+										<td width="35%">
+											<h:outputText value="#{militaryTrainingRequest.selectedCourseEvent.actualStartDateString}" />
+										</td>
+										<th width="15%">#{msgs.label_courseEndDate}</th>
+										<td width="35%">
+											<h:outputText value="#{militaryTrainingRequest.selectedCourseEvent.actualEndDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_syllabusAttachments}</th>
+										<td width="85%" colspan="3">
+											<code:attachments loginEmpId="#{militaryTrainingRequest.loginEmpData.empId}" attachmentId="#{militaryTrainingRequest.selectedCourseEvent.attachments}" viewEnableFlag="true" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="addEmployeePanelId">
+								<h:panelGroup rendered="#{militaryTrainingRequest.selectedCourseEventId != null}">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:outputText value="#{msgs.label_nominatedCourseEmployeesData}" />
+															<h:panelGroup rendered="#{(militaryTrainingRequest.role == 'Requester' or militaryTrainingRequest.role == 'ReviewerEmp' or militaryTrainingRequest.role == 'SecondaryReviewerEmp')}">
+																<h:outputText value=" " />
+																<h:commandButton value="#{msgs.label_add}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+																<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{militaryTrainingRequest.constructWFTraining()}">
+																	<f:ajax execute="militaryTrainingRequestFormId:beneficiaryEmployeeHId militaryTrainingRequestFormId:beneficiaryEmployeeCategoryId militaryTrainingRequestFormId:trainingPurposesPanelId" render="militaryTrainingRequestFormId:wfTrainingsPanelId militaryTrainingRequestFormId:employeePanelId militaryTrainingRequestFormId:notifyMessagesId" />
+																</h:commandButton>
+																<h:inputHidden id="beneficiaryEmployeeHId" value="#{militaryTrainingRequest.selectedEmployeeId}" />
+																<h:inputHidden id="beneficiaryEmployeeCategoryId" value="#{militaryTrainingRequest.selectedEmpCategoryId}" />
+															</h:panelGroup>
+														</td>
+													</tr>
+												</table>
+
+											</td>
+										</tr>
+										<tr>
+											<td align="center" width="100%">
+												<h:panelGroup id="wfTrainingsPanelId">
+													<h:outputText id="wfTrainingsListSizeId" style="display:none" value="#{militaryTrainingRequest.wfTrainingList.size()}" />
+													<rich:dataTable rowKeyVar="index" var="wfTraining" value="#{militaryTrainingRequest.wfTrainingList}" rows="#{militaryTrainingRequest.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+														<rich:column style="width : 5%">
+															<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon" action="#{militaryTrainingRequest.selectWFTraining(wfTraining.employeeId)}">
+																<f:ajax execute="militaryTrainingRequestFormId:trainingPurposesPanelId" render="militaryTrainingRequestFormId:employeePanelId militaryTrainingRequestFormId:notifyMessagesId" />
+															</h:commandButton>
+														</rich:column>
+														<rich:column style="width : 5%">
+															<f:facet name="header">#</f:facet>
+								                                #{index + 1}
+								                    		</rich:column>
+														<rich:column style="width : 20%">
+															<f:facet name="header">#{msgs.label_name}</f:facet>
+															<h:outputText value="#{wfTraining.employeeName}" />
+														</rich:column>
+														<rich:column style="width : 15%">
+															<f:facet name="header">#{msgs.label_rank}</f:facet>
+															<h:outputText value="#{wfTraining.employeeRankDesc}" />
+														</rich:column>
+														<rich:column style="width : 10%">
+															<f:facet name="header">#{msgs.label_theNumber}</f:facet>
+															<h:outputText value="#{wfTraining.employeeNumber}" />
+														</rich:column>
+														<rich:column style="width : 20%">
+															<f:facet name="header">#{msgs.label_job}</f:facet>
+															<h:outputText value="#{wfTraining.employeeJobName}" />
+														</rich:column>
+														<rich:column style="width : 20%">
+															<f:facet name="header">#{msgs.label_orgUnit}</f:facet>
+															<h:outputText value="#{wfTraining.employeePhysicalUnitFullname}" />
+														</rich:column>
+														<rich:column rendered="#{militaryTrainingRequest.role == 'Requester' or militaryTrainingRequest.role == 'ReviewerEmp' or militaryTrainingRequest.role == 'SecondaryReviewerEmp'}" style="width : 5%">
+															<f:facet name="header">#{msgs.label_delete}</f:facet>
+															<h:commandButton value="#{msgs.fa_times}" styleClass="btn_icon" title="#{msgs.label_delete}" action="#{militaryTrainingRequest.deleteWFTraining(wfTraining)}" onclick="return confirm('#{msgs.q_delete}');">
+																<f:ajax render="militaryTrainingRequestFormId:employeePanelId militaryTrainingRequestFormId:qualificationDataPanelId militaryTrainingRequestFormId:wfTrainingsPanelId militaryTrainingRequestFormId:currentAndFutureTrainingCoursesPanelId militaryTrainingRequestFormId:pastInsideAndOutsideCoursesPanelId militaryTrainingRequestFormId:trainingPurposesPanelId militaryTrainingRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															</h:commandButton>
+														</rich:column>
+														<f:facet name="footer">
+															<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" execute="subjoinDecisionRequestFormId:subjoinListId">
+																<f:facet name="first">#{msgs.label_first}</f:facet>
+																<f:facet name="last">#{msgs.label_last}</f:facet>
+																<f:facet name="next">#{msgs.label_next}</f:facet>
+																<f:facet name="previous">#{msgs.label_previous}</f:facet>
+															</rich:dataScroller>
+														</f:facet>
+													</rich:dataTable>
+												</h:panelGroup>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="employeePanelId">
+								<h:panelGroup rendered="#{militaryTrainingRequest.beneficiary != null}">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="employeeDataPanelId">
+													<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_nominatedEmployeeData}">
+														<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+															<tr>
+																<th width="15%">
+																	<h:outputText value="#{msgs.label_name}" />
+																</th>
+																<td width="35%">
+																	<h:outputText value="#{militaryTrainingRequest.beneficiary.name}" />
+																</td>
+																<th width="15%">
+																	<h:outputText value="#{msgs.label_socialId}" />
+																</th>
+																<td width="35%">
+																	<h:outputText value="#{militaryTrainingRequest.beneficiary.socialID}" />
+																</td>
+															</tr>
+															<tr>
+																<th width="15%">
+																	<h:outputText value="#{msgs.label_rank}" />
+																</th>
+																<td width="35%">
+																	<h:outputText value="#{militaryTrainingRequest.beneficiary.rankDesc}" />
+																</td>
+																<th width="15%">
+																	<h:outputText value="#{msgs.label_promotionDueDate}" />
+																</th>
+																<td width="35%">
+																	<h:outputText value="#{militaryTrainingRequest.beneficiary.promotionDueDateString}" />
+																</td>
+															</tr>
+															<tr>
+																<th width="15%">#{msgs.label_jobCode}</th>
+																<td width="35%">
+																	<h:outputText value="#{militaryTrainingRequest.beneficiary.jobCode}" />
+																</td>
+																<th width="15%">#{msgs.label_job}</th>
+																<td width="35%">
+																	<h:outputText value="#{militaryTrainingRequest.beneficiary.jobDesc}" />
+																</td>
+															</tr>
+															<tr>
+																<th width="15%">#{msgs.label_generalSpec}</th>
+																<td width="35%">
+																	<h:outputText value="#{militaryTrainingRequest.beneficiary.majorSpecDesc}" />
+																</td>
+																<th width="15%">#{msgs.label_empJobMinorSpec}</th>
+																<td width="35%">
+																	<h:outputText value="#{militaryTrainingRequest.beneficiary.minorSpecDesc}" />
+																</td>
+															</tr>
+															<tr>
+																<th width="15%">#{msgs.label_physicalUnit}</th>
+																<td width="33%">
+																	<h:outputText value="#{militaryTrainingRequest.beneficiary.physicalUnitFullName}" />
+																</td>
+																<td width="50%" colspan="3"></td>
+															</tr>
+														</table>
+													</rich:collapsiblePanel>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="qualificationDataPanelId">
+													<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_currentQualification}">
+														<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+															<tr>
+																<th width="15%">#{msgs.label_qualificationLevel}</th>
+																<td width="20%">
+																	<h:outputText value="#{militaryTrainingRequest.employeeQualificationsData.curQualLevelDesc}" />
+																</td>
+																<th width="15%">#{msgs.label_majorQualificationSpecialization}</th>
+																<td width="15%">
+																	<h:outputText value="#{militaryTrainingRequest.employeeQualificationsData.curQualMajorSpecDesc}" />
+																</td>
+																<th width="15%">#{msgs.label_minorQualificationSpecialization}</th>
+																<td width="20%">
+																	<h:outputText value="#{militaryTrainingRequest.employeeQualificationsData.curQualMinorSpecDesc}" />
+																</td>
+															</tr>
+															<tr>
+																<th width="15%">#{msgs.label_graduationYear}</th>
+																<td width="20%">
+																	<h:outputText value="#{militaryTrainingRequest.employeeQualificationsData.curGraduationYear}" />
+																</td>
+																<th width="15%">#{msgs.label_graduationPlace}</th>
+																<td width="50%" colspan="3">
+																	<h:outputText value="#{militaryTrainingRequest.graduationPlaceFullDesc}" />
+																</td>
+															</tr>
+															<tr>
+																<th width="15%">#{msgs.label_qualificationPercentage}</th>
+																<td width="15%">
+																	<h:outputText value="#{militaryTrainingRequest.employeeQualificationsData.curQualPercentage}" />
+																</td>
+																<th width="15">#{msgs.label_attachments}</th>
+																<td width="55%" colspan="3">
+																	<code:attachments loginEmpId="#{militaryTrainingRequest.loginEmpData.empId}" attachmentId="#{militaryTrainingRequest.employeeQualificationsData.curQualAttachments}" addEnableFlag="false" viewEnableFlag="true" deleteEnableFlag="false" />
+																</td>
+															</tr>
+														</table>
+													</rich:collapsiblePanel>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="currentAndFutureTrainingCoursesPanelId">
+													<table border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<td width="100%">
+																<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_currentAndFutureTrainingCourses}">
+																	<rich:dataTable value="#{militaryTrainingRequest.employeeNominatedOrJoinedTransactionsList}" var="course" rowKeyVar="index" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{militaryTrainingRequest.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+																		<rich:column style="width : 5%">
+																			<f:facet name="header"> # </f:facet>
+																			<h:outputText value=" #{index + 1}" />
+																		</rich:column>
+																		<rich:column style="width : 35%">
+																			<f:facet name="header"> #{msgs.label_trainingCourseName} </f:facet>
+																			<h:outputText value="#{course.courseName}" />
+																		</rich:column>
+																		<rich:column style="width : 40%">
+																			<f:facet name="header"> #{msgs.label_courseLocation} </f:facet>
+																			<h:outputText value="#{course.trainingTypeId == 1 ? course.trainingUnitName : course.externalPartyDesc}" />
+																		</rich:column>
+																		<rich:column style="width : 10%">
+																			<f:facet name="header"> #{msgs.label_courseStartDate} </f:facet>
+																			<h:outputText value="#{course.actualStartDateString}" />
+																		</rich:column>
+																		<rich:column style="width : 10%">
+																			<f:facet name="header"> #{msgs.label_courseEndDate} </f:facet>
+																			<h:outputText value="#{course.actualEndDateString}" />
+																		</rich:column>
+																		<f:facet name="footer">
+																			<rich:dataScroller oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+																				<f:facet name="first">#{msgs.label_first}</f:facet>
+																				<f:facet name="last">#{msgs.label_last}</f:facet>
+																				<f:facet name="next">#{msgs.label_next}</f:facet>
+																				<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																			</rich:dataScroller>
+																		</f:facet>
+																	</rich:dataTable>
+																</rich:collapsiblePanel>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="pastInsideAndOutsideCoursesPanelId">
+													<table border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<td width="100%">
+																<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_pastInsideAndOutsideCourses}">
+																	<rich:dataTable value="#{militaryTrainingRequest.employeeFinishedTransactionsList}" var="course" rowKeyVar="index" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{militaryTrainingRequest.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+																		<rich:column style="width : 5%">
+																			<f:facet name="header"> # </f:facet>
+																			<h:outputText value=" #{index + 1}" />
+																		</rich:column>
+																		<rich:column style="width : 35%">
+																			<f:facet name="header"> #{msgs.label_trainingCourseName} </f:facet>
+																			<h:outputText value="#{course.courseName}" />
+																		</rich:column>
+																		<rich:column style="width : 40%">
+																			<f:facet name="header"> #{msgs.label_courseLocation} </f:facet>
+																			<h:outputText value="#{course.trainingTypeId == 1 ? course.trainingUnitName : course.externalPartyDesc}" />
+																		</rich:column>
+																		<rich:column style="width : 10%">
+																			<f:facet name="header"> #{msgs.label_courseStartDate} </f:facet>
+																			<h:outputText value="#{course.actualStartDateString}" />
+																		</rich:column>
+																		<rich:column style="width : 10%">
+																			<f:facet name="header"> #{msgs.label_courseEndDate} </f:facet>
+																			<h:outputText value="#{course.actualEndDateString}" />
+																		</rich:column>
+																		<rich:column style="width : 10%">
+																			<f:facet name="header"> #{msgs.label_courseGrade} </f:facet>
+																			<h:outputText value="#{course.qualificationGrade == 1 ? msgs.label_excellent : (course.qualificationGrade == 2 ? msgs.label_veryGood : (course.qualificationGrade == 3 ? msgs.label_good : msgs.label_accepted))}" />
+																		</rich:column>
+																		<f:facet name="footer">
+																			<rich:dataScroller oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+																				<f:facet name="first">#{msgs.label_first}</f:facet>
+																				<f:facet name="last">#{msgs.label_last}</f:facet>
+																				<f:facet name="next">#{msgs.label_next}</f:facet>
+																				<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																			</rich:dataScroller>
+																		</f:facet>
+																	</rich:dataTable>
+																</rich:collapsiblePanel>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+															<h:outputText value="#{msgs.label_trainingPurposes}" />
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="trainingPurposesPanelId">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="100%" colspan="2">
+																<h:selectManyCheckbox value="#{militaryTrainingRequest.trainingPurposesArray}" disabled="#{militaryTrainingRequest.role != 'Requester' and militaryTrainingRequest.role != 'ReviewerEmp' and militaryTrainingRequest.role != 'SecondaryReviewerEmp'}" layout="pageDirection">
+																	<f:selectItem itemValue="1" itemLabel="#{msgs.label_preparingForAcuiringVacantJob}" />
+																	<f:selectItem itemValue="2" itemLabel="#{msgs.label_preparingForAcuiringOccupiedContractorJob}" />
+																	<f:selectItem itemValue="3" itemLabel="#{msgs.label_forTrainingPurposes}" />
+																	<f:selectItem itemValue="4" itemLabel="#{msgs.label_preparingForNewTechniqueOrMachine}" />
+																	<f:selectItem itemValue="5" itemLabel="#{msgs.label_increasingKnowledgeOrSkills}" />
+																</h:selectManyCheckbox>
+															</td>
+														</tr>
+														<tr>
+															<th width="15%">#{msgs.label_otherPurposes}</th>
+															<td width="85%">
+																<h:inputTextarea value="#{militaryTrainingRequest.selectedWFTraining.otherPurpose}" styleClass="inputDataSuperLarge" maxlength="250" rows="2" disabled="#{militaryTrainingRequest.role != 'Requester' and militaryTrainingRequest.role != 'ReviewerEmp' and militaryTrainingRequest.role != 'SecondaryReviewerEmp'}" />
+															</td>
+														</tr>
+														<tr>
+															<th width="15%">#{msgs.label_attachments}</th>
+															<td width="85%">
+																<code:attachments loginEmpId="#{militaryTrainingRequest.loginEmpData.empId}" attachmentId="#{militaryTrainingRequest.selectedWFTraining.attachments}" addEnableFlag="#{militaryTrainingRequest.role == 'Requester' or militaryTrainingRequest.role == 'ReviewerEmp' or militaryTrainingRequest.role == 'SecondaryReviewerEmp'}" viewEnableFlag="true"
+																	deleteEnableFlag="#{militaryTrainingRequest.role == 'Requester' or militaryTrainingRequest.role == 'ReviewerEmp' or militaryTrainingRequest.role == 'SecondaryReviewerEmp'}" />
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+									</table>
+								</h:panelGroup>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%">
+							<code:prevTasks rendered="#{militaryTrainingRequest.role != 'Requester'}" value="#{militaryTrainingRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp,SecondarySignManager,SecondaryReviewerEmp,ExtraSecondaryReviewerEmp,ExtraSecondarySignManager," />
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<code:curTask id="curTaskId" value="#{militaryTrainingRequest.currentEmployee}"
+								rendered="#{militaryTrainingRequest.role == 'DirectManager' or militaryTrainingRequest.role == 'ManagerRedirect' or militaryTrainingRequest.role == 'ManagerRedirectToSpecialist' or militaryTrainingRequest.role == 'ReviewerEmp' or militaryTrainingRequest.role == 'SignManager' or militaryTrainingRequest.role == 'SecondaryReviewerEmp' or militaryTrainingRequest.role == 'SecondarySignManager' or militaryTrainingRequest.role == 'SecondaryManagerRedirect' or militaryTrainingRequest.role == 'ExtraSecondaryReviewerEmp' or militaryTrainingRequest.role == 'ExtraSecondarySignManager' or militaryTrainingRequest.role == 'ExtraSecondaryManagerRedirect'}">
+								<h:panelGroup rendered="#{militaryTrainingRequest.role == 'ManagerRedirect' or militaryTrainingRequest.role == 'SecondaryManagerRedirect' or militaryTrainingRequest.role == 'ExtraSecondaryManagerRedirect'}">
+									<tr>
+										<th width="15%">#{msgs.label_selectEmp}</th>
+										<td width="40%" colspan="2">
+											<h:selectOneMenu id="reviewersId" value="#{militaryTrainingRequest.selectedReviewerEmpId}">
+												<f:selectItem itemLabel="" itemValue="0" />
+												<f:selectItems value="#{militaryTrainingRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+											</h:selectOneMenu>
+										</td>
+										<td width="45%" />
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th width="15%">#{msgs.label_notes}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="notesId" value="#{militaryTrainingRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{militaryTrainingRequest.role != 'ManagerRedirect' and militaryTrainingRequest.role != 'SecondaryManagerRedirect' and militaryTrainingRequest.role != 'ManagerRedirectToSpecialist' and militaryTrainingRequest.role != 'ExtraSecondaryManagerRedirect'}">
+									<tr>
+										<th width="15%">#{msgs.label_refuseReasons}</th>
+										<td width="85%" colspan="3">
+											<h:inputText id="refuseReasonsId" value="#{militaryTrainingRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+										</td>
+									</tr>
+								</h:panelGroup>
+							</code:curTask>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:outputText rendered="#{militaryTrainingRequest.role == 'Notification' or militaryTrainingRequest.role == 'History'}" value="#{militaryTrainingRequest.notificationMessage}" styleClass="successMessage" />
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>
+										<!-- Requester -->
+										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()', null);" action="#{militaryTrainingRequest.initNomination()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'Requester'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<!-- Direct Manager -->
+										<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{militaryTrainingRequest.approveNominationDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'DirectManager'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{militaryTrainingRequest.rejectNominationDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'DirectManager'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<!-- Manager Redirect -->
+										<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;militaryTrainingRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{militaryTrainingRequest.redirectNominationMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'ManagerRedirect'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<!-- secondary manager redirect  -->
+										<h:commandButton id="smrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;militaryTrainingRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{militaryTrainingRequest.redirectNominationSMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'SecondaryManagerRedirect'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<h:commandButton id="esmrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;militaryTrainingRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{militaryTrainingRequest.redirectNominationESMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'ExtraSecondaryManagerRedirect'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<!-- Manager redirect to specialist -->
+										<h:commandButton id="mrtsBtnId" onclick="return handleOnAction('#{msgs.q_redirectToTrainingUnitSpecialist}','validateEmpSelection(&quot;militaryTrainingRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{militaryTrainingRequest.redirectNominationMRTS()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'ManagerRedirectToSpecialist'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<!-- Reviewer  -->
+										<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateReview()',null);" action="#{militaryTrainingRequest.approveNominationRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'ReviewerEmp'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{militaryTrainingRequest.rejectNominationRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'ReviewerEmp'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<!-- secondary Reviewer  -->
+										<h:commandButton id="approveSreBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateReview()',null);" action="#{militaryTrainingRequest.approveNominationSRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'SecondaryReviewerEmp'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="rejectSreBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{militaryTrainingRequest.rejectNominationSRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'SecondaryReviewerEmp'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<h:commandButton id="approveESreBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRefuseAndNotes(1, &quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)',null);" action="#{militaryTrainingRequest.approveNominationESRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'ExtraSecondaryReviewerEmp'}">
+											<f:ajax execute="@form" render="militaryTrainingRequestFormId:notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="rejectESreBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{militaryTrainingRequest.rejectNominationESRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'ExtraSecondaryReviewerEmp'}">
+											<f:ajax execute="@form" render="militaryTrainingRequestFormId:notifyMessagesId" />
+										</h:commandButton>
+
+
+										<!-- Sign manager -->
+										<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{militaryTrainingRequest.approveNominationSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'SignManager'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;militaryTrainingRequestFormId:curTaskId:notesId&quot;)',null);" action="#{militaryTrainingRequest.returnNominationSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'SignManager'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{militaryTrainingRequest.rejectNominationSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'SignManager'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<!-- Secondary sign manager -->
+										<h:commandButton id="approveSsmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{militaryTrainingRequest.approveNominationSSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'SecondarySignManager'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="retSsmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;militaryTrainingRequestFormId:curTaskId:notesId&quot;)',null);" action="#{militaryTrainingRequest.returnNominationSSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'SecondarySignManager'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{militaryTrainingRequest.rejectNominationSSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'SecondarySignManager'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<!-- Extra Secondary Sign Manager -->
+										<h:commandButton id="approveEssmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{militaryTrainingRequest.approveNominationESSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'ExtraSecondarySignManager'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="retEssmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;militaryTrainingRequestFormId:curTaskId:notesId&quot;)',null);" action="#{militaryTrainingRequest.returnNominationESSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'ExtraSecondarySignManager'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton id="rejectEssmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{militaryTrainingRequest.rejectNominationESSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'ExtraSecondarySignManager'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+
+										<!-- Notification -->
+										<h:commandButton id="nBtnId" action="#{militaryTrainingRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingRequest.role == 'Notification'}">
+											<f:ajax execute="@form" render="notifyMessagesId" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

@@ -1,0 +1,281 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+	function getEmployee(contextPath) {
+		if(#{moveWishCancellationRequest.adminRequest}) {
+			openEmployeesMiniSearchByOfficialRegionId(contextPath, 'handleEmpMiniSearchResult(ret)', 15, 2, #{moveWishCancellationRequest.getLoginEmpPhysicalRegionFlag(true)});
+		} else {
+			openEmpsMiniSearch(contextPath,'handleEmpMiniSearchResult(ret)', 15, 2, -1, -1, -1, -1, '#{moveWishCancellationRequest.loginEmpData.physicalUnitHKey}');
+		}
+	}
+	
+	function handleEmpMiniSearchResult(ret) { 
+		if(ret != null) {
+			document.getElementById('moveWishCancellationRequestFormId:beneficiaryEmployeeHId').value = ret[0];
+			document.getElementById('moveWishCancellationRequestFormId:searchEmpBtnId').click();
+		}
+	}
+
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="moveWishCancellationRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{moveWishCancellationRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:panelGroup rendered="#{!moveWishCancellationRequest.movementWishOpenFlag}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%">
+										<h:outputText value="#{msgs.error_movementWishOpenFlagClosed}" />
+									</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{moveWishCancellationRequest.movementWishOpenFlag}">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_processRequester}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<code:emp value="#{moveWishCancellationRequest.requester}" />
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiaryEmployee}" switchType="client" onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{moveWishCancellationRequest.beneficiary.empId == moveWishCancellationRequest.requester.empId})) { getEmployee('#{request.contextPath}'); return false;} else {return true;}"
+								expanded="#{moveWishCancellationRequest.requester.empId != moveWishCancellationRequest.beneficiary.empId}" rendered="#{(moveWishCancellationRequest.role == 'Requester' and (moveWishCancellationRequest.adminRequest or moveWishCancellationRequest.loginEmpData.isManager == 1)) or moveWishCancellationRequest.requester.empId != moveWishCancellationRequest.beneficiary.empId}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<h:panelGroup rendered="#{moveWishCancellationRequest.role == 'Requester'}">
+										<tr>
+											<td width="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="50%">
+															<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+															<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{moveWishCancellationRequest.selectEmployee()}">
+																<f:ajax execute="moveWishCancellationRequestFormId:beneficiaryEmployeeHId" render="moveWishCancellationRequestFormId:beneficiaryPanelId moveWishCancellationRequestFormId:dataPanelId moveWishCancellationRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															</h:commandButton>
+															<h:inputHidden id="beneficiaryEmployeeHId" value="#{moveWishCancellationRequest.selectedEmployeeId}" />
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<td width="100%">
+											<code:emp id="beneficiaryId" value="#{moveWishCancellationRequest.beneficiary}" />
+										</td>
+									</tr>
+								</table>
+							</rich:collapsiblePanel>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<h:panelGroup id="dataPanelId">
+								<h:panelGroup rendered="#{moveWishCancellationRequest.wfMovementWish != null}">
+									<table width="100%" border="0" cellpadding="0" cellspacing="0">
+
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<table width="100%" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>#{msgs.label_movmentWishData}</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td width="100%">
+															<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<th width="15%">#{msgs.label_moveRegionFrom}</th>
+																	<td width="35%">
+																		<h:outputText value="#{moveWishCancellationRequest.regionFromDesc}" />
+																	</td>
+																</tr>
+																<tr>
+																	<th width="15%">#{msgs.label_moveRegionTo}</th>
+																	<td width="35%">
+																		<h:outputText value="#{moveWishCancellationRequest.regionToDesc}" />
+																	</td>
+																</tr>
+																<tr>
+																	<th width="15%">#{msgs.label_reasons}</th>
+																	<td width="85%">
+																		<h:inputText value="#{moveWishCancellationRequest.wfMovementWish.reasons}" styleClass="inputDataSuperLarge" maxlength="500" rendered="#{moveWishCancellationRequest.canChangeRequestData()}" />
+																		<h:outputText value="#{moveWishCancellationRequest.wfMovementWish.reasons}" rendered="#{!moveWishCancellationRequest.canChangeRequestData()}" />
+																	</td>
+																</tr>
+																<tr>
+																	<th width="15">#{msgs.label_attachments}</th>
+																	<td width="85%">
+																		<code:attachments loginEmpId="#{moveWishCancellationRequest.loginEmpData.empId}" attachmentId="#{moveWishCancellationRequest.attachments}" addEnableFlag="#{moveWishCancellationRequest.canChangeRequestData()}" viewEnableFlag="true" deleteEnableFlag="#{moveWishCancellationRequest.canChangeRequestData()}" />
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<code:prevTasks rendered="#{moveWishCancellationRequest.role != 'Requester'}" value="#{moveWishCancellationRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp," />
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<code:curTask id="curTaskId" value="#{moveWishCancellationRequest.currentEmployee}" rendered="#{moveWishCancellationRequest.role == 'DirectManager'or moveWishCancellationRequest.role == 'ManagerRedirect'  or moveWishCancellationRequest.role == 'SignManager' or moveWishCancellationRequest.role == 'ReviewerEmp'}">
+													<h:panelGroup rendered="#{moveWishCancellationRequest.role == 'ManagerRedirect'}">
+														<tr>
+															<th width="15%">#{msgs.label_selectEmp}</th>
+															<td width="40%" colspan="2">
+																<h:selectOneMenu id="reviewersId" value="#{moveWishCancellationRequest.selectedReviewerEmpId}">
+																	<f:selectItem itemLabel="" itemValue="0" />
+																	<f:selectItems value="#{moveWishCancellationRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+																</h:selectOneMenu>
+															</td>
+															<td width="45%" />
+														</tr>
+													</h:panelGroup>
+													<tr>
+														<th width="15%">#{msgs.label_notes}</th>
+														<td width="85%" colspan="3">
+															<h:inputText id="notesId" value="#{moveWishCancellationRequest.currentTask.notes}" styleClass="inputDataSuperLarge" maxlength="500" />
+														</td>
+													</tr>
+													<h:panelGroup rendered="#{moveWishCancellationRequest.role != 'ManagerRedirect'}">
+														<tr>
+															<th width="15%">#{msgs.label_refuseReasons}</th>
+															<td width="85%" colspan="3">
+																<h:inputText id="refuseReasonsId" value="#{moveWishCancellationRequest.currentTask.refuseReasons}" styleClass="inputDataSuperLarge" maxlength="500" />
+															</td>
+														</tr>
+													</h:panelGroup>
+												</code:curTask>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:outputText rendered="#{moveWishCancellationRequest.role == 'Notification' or moveWishCancellationRequest.role == 'History'}" value="#{moveWishCancellationRequest.notificationMessage}" styleClass="successMessage" />
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+															<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}',null,null);" action="#{moveWishCancellationRequest.initWFMovementWish()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{moveWishCancellationRequest.role == 'Requester'}">
+																<f:ajax execute="@form" render="moveWishCancellationRequestFormId:notifyMessagesId" />
+															</h:commandButton>
+
+															<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;moveWishCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveWishCancellationRequest.approveWFMovementWishDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveWishCancellationRequest.role == 'DirectManager'}">
+																<f:ajax execute="@form" render="moveWishCancellationRequestFormId:notifyMessagesId" />
+															</h:commandButton>
+															<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveWishCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveWishCancellationRequest.rejectWFMovementWishDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveWishCancellationRequest.role == 'DirectManager'}">
+																<f:ajax execute="@form" render="moveWishCancellationRequestFormId:notifyMessagesId" />
+															</h:commandButton>
+
+															<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;moveWishCancellationRequestFormId:curTaskId:reviewersId&quot;)');" action="#{moveWishCancellationRequest.redirectWFMovementWishMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{moveWishCancellationRequest.role == 'ManagerRedirect'}">
+																<f:ajax execute="@form" render="moveWishCancellationRequestFormId:notifyMessagesId" />
+															</h:commandButton>
+
+															<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRefuseAndNotes(1, &quot;moveWishCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveWishCancellationRequest.approveWFMovementWishRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveWishCancellationRequest.role == 'ReviewerEmp'}">
+																<f:ajax execute="@form" render="moveWishCancellationRequestFormId:notifyMessagesId" />
+															</h:commandButton>
+															<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveWishCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveWishCancellationRequest.rejectWFMovementWishRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveWishCancellationRequest.role == 'ReviewerEmp'}">
+																<f:ajax execute="@form" render="moveWishCancellationRequestFormId:notifyMessagesId" />
+															</h:commandButton>
+
+															<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;moveWishCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveWishCancellationRequest.approveWFMovementWishSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveWishCancellationRequest.role == 'SignManager'}">
+																<f:ajax execute="@form" render="moveWishCancellationRequestFormId:notifyMessagesId" />
+															</h:commandButton>
+															<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;moveWishCancellationRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;moveWishCancellationRequestFormId:curTaskId:notesId&quot;)');" action="#{moveWishCancellationRequest.returnWFMovementWishSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{moveWishCancellationRequest.role == 'SignManager'}">
+																<f:ajax execute="@form" render="moveWishCancellationRequestFormId:notifyMessagesId" />
+															</h:commandButton>
+															<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveWishCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveWishCancellationRequest.rejectWFMovementWishSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveWishCancellationRequest.role == 'SignManager'}">
+																<f:ajax execute="@form" render="moveWishCancellationRequestFormId:notifyMessagesId" />
+															</h:commandButton>
+
+															<h:commandButton id="nBtnId" action="#{moveWishCancellationRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveWishCancellationRequest.role == 'Notification'}">
+																<f:ajax execute="@form" render="moveWishCancellationRequestFormId:notifyMessagesId" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
+							</h:panelGroup>
+						</td>
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

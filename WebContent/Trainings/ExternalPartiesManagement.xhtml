@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	var callerId;
+		window.onkeypress = function(e) {
+			  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+		      if (keyCode == '13'){
+		    	  document.getElementById("externalPartiesManagementFormId:searchBtnId").click();
+		    	  return false;
+		      }
+		}; 
+
+		function confirmAddingNewExternalParty(cId)
+		{
+			var confirmed = confirm('#{msgs.q_save}');
+			if(confirmed)
+			{
+				if(validateNewExternalParty(cId))
+					return true;
+			}
+			return false;
+		}
+
+		
+		function validateNewExternalParty(cId)
+		{
+			var idTokens = cId.split(':');
+			var externalPartyDescription = document.getElementById('externalPartiesManagementFormId:externalPartiesTableId:' + idTokens[2] + ':externalPartyDescriptionId').value;
+			var externalPartyAddress =document.getElementById('externalPartiesManagementFormId:externalPartiesTableId:' + idTokens[2] + ':externalPartyAddressId').value;
+			var externalPartyCountryId = document.getElementById('externalPartiesManagementFormId:externalPartiesTableId:' + idTokens[2] + ':externalPartyCountryIDId').value;
+			if(externalPartyDescription == null || externalPartyDescription =='')
+			{
+				alert('#{msgs.error_externalPartyDescriptionMandatory}');
+				return false;
+			}
+			else if(externalPartyAddress == null || externalPartyAddress == '')
+			{
+				alert('#{msgs.error_externalPartyAddressMandatory}');				
+				return false;
+			}
+			else if(externalPartyCountryId ==null || externalPartyCountryId=='')
+			{
+				alert('#{msgs.error_externalPartyCountryMandatory}');	
+				return false;
+			}
+			return true;
+		}
+
+		function validateSearchPanel() {
+			var externalPartyName = document.getElementById("externalPartiesManagementFormId:searchExternalPartyByDescriptionId").value;
+			var externalPartyAddress = document.getElementById("externalPartiesManagementFormId:searchExternalPartyByAddressId").value;
+			if((externalPartyName == null || externalPartyName =='') &amp;&amp; (externalPartyAddress == null || externalPartyAddress == '')) {
+				alert("#{msgs.error_insertOneFieldAtLeast}");
+				return false;
+			}			
+			return true;
+		}		
+		
+		function getExternalPartyCountry(cId) {
+			callerId = cId;
+			openSelectCountries(2, '#{request.contextPath}','handleExternalPartyCountryMiniSearchResult(ret)');
+		}
+		
+		function handleExternalPartyCountryMiniSearchResult(ret){
+			if(ret != null){
+				var idTokens = callerId.split(':');
+				document.getElementById('externalPartiesManagementFormId:externalPartiesTableId:' + idTokens[2] + ':externalPartyCountryIDId').value = ret[0];
+				document.getElementById('externalPartiesManagementFormId:externalPartiesTableId:' + idTokens[2] + ':externalPartyCountryNameId').innerHTML = ret[1];
+				document.getElementById('externalPartiesManagementFormId:externalPartiesTableId:' + idTokens[2] + ':externalPartyCountryNameHId').value = ret[1];
+			}
+		}
+	</script>
+</h:head>
+
+<h:body styleClass="screenBg">
+	<h:form id="externalPartiesManagementFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{externalPartiesMangement.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_partyDescription}</th>
+									<td width="35%">
+										<h:inputText id="searchExternalPartyByDescriptionId" value="#{externalPartiesMangement.externalPartyDescription}" styleClass="inputDataSuperLarge"/>
+									</td>
+									<th width="15%">#{msgs.label_externalPartyAddress}</th>
+									<td width="35%">
+										<h:inputText id="searchExternalPartyByAddressId" value="#{externalPartiesMangement.externalPartyAddress}" styleClass="inputDataSuperLarge" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{externalPartiesMangement.searchExternalParties()}" styleClass="btn_normal_icon" onclick="return validateSearchPanel();" title="#{msgs.label_searchByRoot}">
+										<f:ajax execute="externalPartiesManagementFormId:searchPanelId" render="externalPartiesManagementFormId:externalPartiesPanelId" />
+									</h:commandButton>
+									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{externalPartiesMangement.resetForm()}" styleClass="btn_normal_icon">
+										<f:ajax render="externalPartiesManagementFormId:searchPanelId externalPartiesManagementFormId:externalPartiesPanelId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_externalParties}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="externalPartiesPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+											<tr>
+												<td width="100%">
+													<h:commandButton id="addExternalPartyBtnId" value="#{msgs.label_add}" styleClass="btn_normal" action="#{externalPartiesMangement.addExternalParty()}">
+														<f:ajax execute="externalPartiesManagementFormId:externalPartiesTableId" render="externalPartiesManagementFormId:externalPartiesTableId externalPartiesManagementFormId:notifyMessagesId" />
+													</h:commandButton>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+
+								<tr>
+									<td width="100%">
+										<rich:dataTable id="externalPartiesTableId" value="#{externalPartiesMangement.externalPartiesList}" var="externalParty" rowKeyVar="index" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{externalPartiesMangement.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width : 5%">
+												<f:facet name="header"> # </f:facet>
+												<h:outputText value=" #{index + 1}" />
+											</rich:column>
+											<rich:column style="width : 30%">
+												<f:facet name="header"> 
+												#{msgs.label_externalPartyDescription}
+												<font style="color: red;"> *</font>
+												</f:facet>
+												<h:inputText id="externalPartyDescriptionId" value="#{externalParty.description}" styleClass="inputDataSuperLarge" />
+											</rich:column>
+											<rich:column style="width : 25%">
+												<f:facet name="header"> #{msgs.label_country}<font style="color: red;"> *</font> </f:facet>
+												<h:outputText id="externalPartyCountryNameId" value="#{externalParty.countryName}" />
+												<h:inputHidden id="externalPartyCountryNameHId" value="#{externalParty.countryName}" />
+												<h:inputHidden id="externalPartyCountryIDId" value="#{externalParty.countryId}" />
+												<h:outputText value=" " />
+												<h:commandButton value="#{msgs.fa_external_link}" onclick="getExternalPartyCountry(this.id); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											</rich:column>
+											<rich:column style="width : 30%">
+												<f:facet name="header"> #{msgs.label_externalPartyAddress}<font style="color: red;"> *</font> </f:facet>
+												<h:inputText id="externalPartyAddressId" value="#{externalParty.address}" styleClass="inputDataSuperLarge"/>
+											</rich:column>
+											<rich:column style="width : 5%">
+												<f:facet name="header">#{msgs.label_save} </f:facet>
+												<h:commandButton value="#{msgs.fa_floppy_o}" title="#{msgs.label_save}" action="#{externalPartiesMangement.saveExternalParty(externalParty)}" onclick="return confirmAddingNewExternalParty(this.id);" styleClass="btn_icon">
+													<f:ajax execute="externalPartiesManagementFormId:externalPartiesTableId" render="externalPartiesManagementFormId:externalPartiesPanelId externalPartiesManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<rich:column style="width : 5%">
+												<f:facet name="header">#{msgs.label_delete}</f:facet>
+												<h:commandButton action="#{externalPartiesMangement.deleteExternalParty(externalParty)}" value="#{msgs.fa_times}" onclick="return confirm('#{msgs.q_delete}');" title="#{msgs.label_delete}" styleClass="btn_icon">
+													<f:ajax render="externalPartiesManagementFormId:externalPartiesPanelId externalPartiesManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller page="#{externalPartiesMangement.pageNum}" execute="externalPartiesManagementFormId:externalPartiesTableId" oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+													<f:facet name="first">#{msgs.label_first}</f:facet>
+													<f:facet name="last">#{msgs.label_last}</f:facet>
+													<f:facet name="next">#{msgs.label_next}</f:facet>
+													<f:facet name="previous">#{msgs.label_previous}</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

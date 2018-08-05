@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+	       window.onkeypress = function(e) {
+				// window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+				var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+			    if (keyCode == '13') {
+			    	document.getElementById('searchjobClassificationForm:searchBtnID').click();
+			    	return false;
+			    }
+			};
+	       
+	       function selectJobClassification(index){
+	           var jobClassificationId = document.getElementById('searchjobClassificationForm:jobClassificationsListId:'+index+':idID').innerHTML;
+	           var jobClassificationJobCode = document.getElementById('searchjobClassificationForm:jobClassificationsListId:'+index+':jobCodeID').innerHTML;
+	           var jobClassificationJobDesc = document.getElementById('searchjobClassificationForm:jobClassificationsListId:'+index+':jobCodeDesc').innerHTML;
+		       ret = new Array();
+		       ret[0] = jobClassificationId;
+		       ret[1] = jobClassificationJobCode;
+		       ret[2] = jobClassificationJobDesc
+	           window.close();
+	     	   eval('(' + window.opener.#{param['miniSearchReturnHandler']} + ')');
+
+	         }
+        </script>
+</h:head>
+<h:body onload="document.getElementById('searchjobClassificationForm:majorGroupDescID').focus();" onunload="window.opener.unMaskOpenerScreen();">
+	<h:form id="searchjobClassificationForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/PlainTemplate.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{msgs.title_jobClassificationMiniSearch}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="20%">#{msgs.label_majorGroupDesc}</th>
+								<td width="80%">
+									<h:selectOneMenu id="majorGroupDescID" value="#{jobClassificationsMiniSearch.searchMajorGroupDescription}">
+										<f:selectItem itemLabel="" itemValue="" />
+										<f:selectItems value="#{jobClassificationsMiniSearch.majorGroupDescriptionList}" />
+										<f:ajax event="change" listener="#{jobClassificationsMiniSearch.majorGroupChanged}" render="minorGroupDescID seriesDescID searchjobClassificationForm:notifyMessagesId" />
+									</h:selectOneMenu>
+								</td>
+							</tr>
+							<tr>
+								<th>#{msgs.label_minorGroupDesc}</th>
+								<td>
+									<h:selectOneMenu id="minorGroupDescID" value="#{jobClassificationsMiniSearch.searchMinorGroupDescription}">
+										<f:selectItem itemLabel="" itemValue="" />
+										<f:selectItems value="#{jobClassificationsMiniSearch.minorGroupDescriptionList}" />
+										<f:ajax event="change" listener="#{jobClassificationsMiniSearch.minorGroupChanged}" render="seriesDescID searchjobClassificationForm:notifyMessagesId" />
+									</h:selectOneMenu>
+								</td>
+							</tr>
+							<tr>
+								<th>#{msgs.label_seriesDesc}</th>
+								<td>
+									<h:selectOneMenu id="seriesDescID" value="#{jobClassificationsMiniSearch.searchSeriesDescription}">
+										<f:selectItem itemLabel="" itemValue="" />
+										<f:selectItems value="#{jobClassificationsMiniSearch.seriesDescriptionList}" />
+									</h:selectOneMenu>
+								</td>
+							</tr>
+							<tr>
+								<th>#{msgs.label_jobClassificationDesc}</th>
+								<td>
+									<h:inputText id="jobDescID" styleClass="inputDataLarge" value="#{jobClassificationsMiniSearch.searchJobDescription}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnID" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{jobClassificationsMiniSearch.searchJobClassification()}" styleClass="btn_normal_icon" title="#{msgs.label_searchByRoot}">
+										<f:ajax render="searchjobClassificationForm:jobClassificationsListId searchjobClassificationForm:notifyMessagesId" execute="majorGroupDescID minorGroupDescID seriesDescID jobDescID" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="jobClassificationsListId" rows="#{jobClassificationsMiniSearch.rowsCount}" rowKeyVar="index" var="row" value="#{jobClassificationsMiniSearch.jobClassificationsList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+							<rich:column style="width:5%">
+								<f:facet name="header">#</f:facet>
+								<h:outputText value="#{index + 1}" />
+								<h:outputText id="idID" style="display: none;" value="#{row.id}" />
+							</rich:column>
+							<rich:column style="width:5%">
+								<f:facet name="header">#{msgs.label_majorGroupCode}</f:facet>
+								<h:outputText value="#{row.majorGroupCode}" />
+							</rich:column>
+							<rich:column style="width:10%">
+								<f:facet name="header">#{msgs.label_majorGroupDesc}</f:facet>
+								<h:outputText value="#{row.majorGroupDesc}" />
+							</rich:column>
+							<rich:column style="width:10%">
+								<f:facet name="header">#{msgs.label_minorGroupCode}</f:facet>
+								<h:outputText value="#{row.minorGroupCode}" />
+							</rich:column>
+							<rich:column style="width:15%">
+								<f:facet name="header">#{msgs.label_minorGroupDesc}</f:facet>
+								<h:outputText value="#{row.minorGroupDesc}" />
+							</rich:column>
+							<rich:column style="width:10%">
+								<f:facet name="header">#{msgs.label_seriesCode}</f:facet>
+								<h:outputText value="#{row.seriesCode}" />
+							</rich:column>
+							<rich:column style="width:15%">
+								<f:facet name="header">#{msgs.label_seriesDesc}</f:facet>
+								<h:outputText value="#{row.seriesDesc}" />
+							</rich:column>
+							<rich:column style="width:10%">
+								<f:facet name="header">#{msgs.label_jobClass}</f:facet>
+								<h:outputText id="jobCodeID" value="#{row.jobCode}" />
+							</rich:column>
+							<rich:column style="width:15%">
+								<f:facet name="header">#{msgs.label_jobClassificationDesc}</f:facet>
+								<h:outputText id="jobCodeDesc" value="#{row.jobDesc}" />
+							</rich:column>
+							<rich:column style="width:5%">
+								<f:facet name="header">#{msgs.label_select}</f:facet>
+								<h:commandButton value="#{msgs.fa_check_square}" onclick="selectJobClassification(#{index}); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+									<f:facet name="first">
+                                                                #{msgs.label_first}
+                                                        </f:facet>
+									<f:facet name="last">
+                                                                #{msgs.label_last}
+                                                        </f:facet>
+									<f:facet name="next">
+                                                                #{msgs.label_next}
+                                                        </f:facet>
+									<f:facet name="previous">
+                                                                #{msgs.label_previous}
+                                                        </f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

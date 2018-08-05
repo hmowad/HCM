@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+		function getUnit() {
+			openUnitsMiniSearch(2, '#{request.contextPath}', 'handleUnitMiniSearchResult(ret)', -1, -1, -1);
+		}
+	
+		function handleUnitMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('unitsReportsForm:selectedUnitFullNameId').innerHTML = ret[1];
+				document.getElementById('unitsReportsForm:selectedUnitFullNameHId').value = ret[1];
+				document.getElementById('unitsReportsForm:selectedUnitHKeyId').value = ret[3];
+				document.getElementById('unitsReportsForm:selectedUnitHID').value = ret[0];
+			}
+		}
+	</script>
+
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="unitsReportsForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_theReports}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.title_theReports}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:selectOneRadio id="reportSelectTypeId" value="#{unitsReports.reportType}" layout="pageDirection">
+										<f:selectItem itemLabel="#{msgs.label_reportOrganizationHierarchy}" itemValue="10" />
+										<f:selectItem itemLabel="#{msgs.label_reportUnitsTransactionsDetails}" itemValue="20" />
+										<f:selectItem itemLabel="#{msgs.label_reportUnitsTransactionsStatistics}" itemValue="30" />
+										<f:selectItem itemLabel="#{msgs.label_reportUnitTransactions}" itemValue="40" />
+										<f:selectItem itemLabel="#{msgs.label_reportUnitsTransactionsRequired}" itemValue="50" />
+										<f:ajax event="change" execute="@this" render="unitsReportsForm:reportPanelGroupId" />
+									</h:selectOneRadio>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<h:panelGroup id="reportFieldsPanelGroupId">
+
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_searchData}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="reportPanelGroupId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="10%">
+											#{msgs.label_unit}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="90%" colspan="3">
+											<h:outputText id="selectedUnitFullNameId" value="#{unitsReports.selectedUnitFullName}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit();return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											<h:inputHidden id="selectedUnitHKeyId" value="#{unitsReports.selectedUnitHKey}" />
+											<h:inputHidden id="selectedUnitFullNameHId" value="#{unitsReports.selectedUnitFullName}" />
+											<h:inputHidden id="selectedUnitHID" value="#{unitsReports.selectedUnitId}" />
+										</td>
+									</tr>
+									<h:panelGroup rendered="#{unitsReports.reportType=='20' or unitsReports.reportType=='30'}">
+										<tr>
+											<th width="10%">
+												#{msgs.label_fromDate}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="40%">
+												<util:hijri value="#{unitsReports.fromDate}" />
+											</td>
+
+											<th width="10%">
+												#{msgs.label_toDate}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="40%">
+												<util:hijri value="#{unitsReports.toDate}" />
+											</td>
+										</tr>
+										<tr>
+											<th width="10%">
+												#{msgs.label_transactionType}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="90%" colspan="3">
+												<h:selectOneMenu value="#{unitsReports.unitTransactionType}">
+													<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+													<f:selectItem itemLabel="#{msgs.title_unitCreation}" itemValue="10" />
+													<f:selectItem itemLabel="#{msgs.title_unitRenaming}" itemValue="20" />
+													<f:selectItem itemLabel="#{msgs.title_unitMoving}" itemValue="30" />
+													<f:selectItem itemLabel="#{msgs.title_unitMerge}" itemValue="40" />
+													<f:selectItem itemLabel="#{msgs.title_unitSeparation}" itemValue="50" />
+													<f:selectItem itemLabel="#{msgs.title_unitScaleUp}" itemValue="60" />
+													<f:selectItem itemLabel="#{msgs.title_unitScaleDown}" itemValue="70" />
+													<f:selectItem itemLabel="#{msgs.title_unitCancel}" itemValue="80" />
+												</h:selectOneMenu>
+											</td>
+										</tr>
+									</h:panelGroup>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="15" />
+					</tr>
+				</h:panelGroup>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton action="#{unitsReports.print()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									<h:commandButton action="#{unitsReports.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="unitsReportsForm:reportPanelGroupId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

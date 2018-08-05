@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="qualSpecsManagementFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{qualificationsSpecsManagement.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th>#{msgs.label_majorClassification}</th>
+								<td>
+									<h:inputText id="searchMajorId" value="#{qualificationsSpecsManagement.searchMajorClassification}"></h:inputText>
+								</td>
+								<th>#{msgs.label_minorClassification}</th>
+								<td>
+									<h:inputText id="searchMinorId" value="#{qualificationsSpecsManagement.searchMinorClassification}"></h:inputText>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton action="#{qualificationsSpecsManagement.search()}" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon">
+										<f:ajax execute="qualSpecsManagementFormId:searchMajorId qualSpecsManagementFormId:searchMinorId" render="qualSpecsManagementFormId:majorSpecsPanelId qualSpecsManagementFormId:minorSpecsPanelId qualSpecsManagementFormId:minorSpecsTitleId qualSpecsManagementFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton action="#{qualificationsSpecsManagement.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="qualSpecsManagementFormId:searchMajorId qualSpecsManagementFormId:searchMinorId qualSpecsManagementFormId:majorSpecsPanelId qualSpecsManagementFormId:minorSpecsPanelId qualSpecsManagementFormId:minorSpecsTitleId qualSpecsManagementFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">#{msgs.label_coursesMajorClassification}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="majorSpecsPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton action="#{qualificationsSpecsManagement.addMajorClassification()}" value="#{msgs.label_add}" styleClass="btn_normal">
+											<f:ajax execute="qualSpecsManagementFormId:majorSpecsPanelId" render="qualSpecsManagementFormId:majorSpecsPanelId qualSpecsManagementFormId:minorSpecsPanelId qualSpecsManagementFormId:minorSpecsTitleId qualSpecsManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+								<tr>
+									<td align="center" width="100%">
+										<rich:dataTable id="majorSpecsTableId" rows="#{qualificationsSpecsManagement.pageSize}" rowKeyVar="index" var="majorSpec" value="#{qualificationsSpecsManagement.majorClassifications}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width:5%">
+												<f:facet name="header">#</f:facet> #{index + 1}
+                                        </rich:column>
+
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_select}</f:facet>
+												<h:commandButton rendered="#{majorSpec.id != null}" action="#{qualificationsSpecsManagement.selectMajorSpec(majorSpec)}" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon">
+													<f:ajax execute="qualSpecsManagementFormId:majorSpecsPanelId" render="qualSpecsManagementFormId:majorSpecsPanelId qualSpecsManagementFormId:minorSpecsPanelId qualSpecsManagementFormId:minorSpecsTitleId qualSpecsManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+
+											</rich:column>
+											<rich:column style="width:80%">
+												<f:facet name="header">#{msgs.label_majorClassificationName}</f:facet>
+
+												<h:inputText value="#{majorSpec.description}" styleClass="inputDataSuperLarge" maxlength="200" />
+
+											</rich:column>
+
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_save}</f:facet>
+
+												<h:commandButton action="#{qualificationsSpecsManagement.saveMajorSpec(majorSpec)}" value="#{msgs.fa_floppy_o}" styleClass="btn_icon" title="#{msgs.label_save}">
+													<f:ajax execute="qualSpecsManagementFormId:majorSpecsPanelId" render="qualSpecsManagementFormId:majorSpecsPanelId qualSpecsManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_delete}</f:facet>
+
+												<h:commandButton action="#{qualificationsSpecsManagement.deleteMajorClassification(majorSpec)}" value="#{msgs.fa_times}" onclick="return confirm('#{msgs.q_delete}');" title="#{msgs.label_delete}" styleClass="btn_icon">
+													<f:ajax execute="qualSpecsManagementFormId:majorSpecsPanelId qualSpecsManagementFormId:minorSpecsPanelId" render="qualSpecsManagementFormId:majorSpecsPanelId qualSpecsManagementFormId:minorSpecsPanelId qualSpecsManagementFormId:minorSpecsTitleId qualSpecsManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+
+											</rich:column>
+
+											<f:facet name="footer">
+												<rich:dataScroller page="#{qualificationsSpecsManagement.majorPageNum}" execute="qualSpecsManagementFormId:majorSpecsPanelId" fastControls="hide" oncomplete="unMaskScreen()" maxPages="5">
+													<f:facet name="first"> #{msgs.label_first} </f:facet>
+													<f:facet name="last"> #{msgs.label_last} </f:facet>
+													<f:facet name="next"> #{msgs.label_next} </f:facet>
+													<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:outputText id="minorSpecsTitleId" value="#{qualificationsSpecsManagement.selectedMajorSpec != null and qualificationsSpecsManagement.selectedMajorSpec.description != null ? msgs.label_minorClassifications.concat('(').concat(qualificationsSpecsManagement.selectedMajorSpec.description).concat(')') : msgs.label_coursesMinorClassification }" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="minorSpecsPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton action="#{qualificationsSpecsManagement.addMinorClassification()}" rendered="#{qualificationsSpecsManagement.selectedMajorSpec != null and qualificationsSpecsManagement.selectedMajorSpec.id != null}" value="#{msgs.label_add}" styleClass="btn_normal">
+											<f:ajax execute="qualSpecsManagementFormId:minorSpecsPanelId" render="qualSpecsManagementFormId:minorSpecsPanelId qualSpecsManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+								<tr>
+									<td align="center" width="100%">
+										<rich:dataTable id="minorSpecsTableId" rows="#{qualificationsSpecsManagement.pageSize}" rowKeyVar="index" var="minorSpec" value="#{qualificationsSpecsManagement.minorClassifications}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width:5%">
+												<f:facet name="header">#</f:facet> #{index + 1}
+                                        </rich:column>
+											<rich:column style="width:40%">
+												<f:facet name="header">#{msgs.label_majorClassificationName}</f:facet>
+
+												<h:outputText value="#{minorSpec.qualificationMajorSpecDesc}" styleClass="inputDataSuperLarge" />
+
+											</rich:column>
+											<rich:column style="width:40%">
+												<f:facet name="header">#{msgs.label_minorClassificationName}</f:facet>
+
+												<h:inputText value="#{minorSpec.description}" styleClass="inputDataSuperLarge" maxlength="200" />
+
+											</rich:column>
+
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_save}</f:facet>
+
+												<h:commandButton action="#{qualificationsSpecsManagement.saveMinorSpec(minorSpec)}" value="#{msgs.fa_floppy_o}" styleClass="btn_icon" title="#{msgs.label_save}">
+													<f:ajax execute="qualSpecsManagementFormId:minorSpecsPanelId" render="qualSpecsManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_delete}</f:facet>
+
+												<h:commandButton action="#{qualificationsSpecsManagement.deleteMinorClassification(minorSpec)}" onclick="return confirm('#{msgs.q_delete}');" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon">
+													<f:ajax execute="qualSpecsManagementFormId:minorSpecsPanelId" render="qualSpecsManagementFormId:minorSpecsPanelId qualSpecsManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+
+											</rich:column>
+
+											<f:facet name="footer">
+												<rich:dataScroller page="#{qualificationsSpecsManagement.minorPageNum}" execute="qualSpecsManagementFormId:minorSpecsPanelId"  fastControls="hide" oncomplete="unMaskScreen()" maxPages="5">
+													<f:facet name="first"> #{msgs.label_first} </f:facet>
+													<f:facet name="last"> #{msgs.label_last} </f:facet>
+													<f:facet name="next"> #{msgs.label_next} </f:facet>
+													<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="javascript/utilities.js" target="head" />
+	<script type="text/javascript">  
+	function getUnit(contextPath, unitTypeCode, unitRegionId){
+         openUnitsMiniSearch(1, contextPath, 'handleUnitMiniSearchResult(ret)', unitTypeCode, unitRegionId, -1);
+      }
+
+	function handleUnitMiniSearchResult(ret){
+	    if(ret != null){
+            if(document.getElementById('unitMovingFormId:parentUnitId').value == ret[0]){
+            	alert('#{msgs.error_unitSameParentConsistency}');
+            	return;
+            }
+            document.getElementById('unitMovingFormId:newParentUnitId').value = ret[0];
+            document.getElementById('unitMovingFormId:newParentUnitFullNameId').value = ret[1];
+            document.getElementById('unitMovingFormId:parentUnitName').innerHTML = ret[1];
+        }
+	}
+	
+	function validateData(){
+        var unitNewName = document.getElementById('unitMovingFormId:unitNewNameId').value;
+        if(unitNewName == null || unitNewName == ''){
+            alert('#{msgs.error_unitNameMandatory}');
+            return false;
+        }
+
+        var decNumber = document.getElementById('unitMovingFormId:decNumberId').value;
+        if(decNumber == null || decNumber == ''){
+            alert('#{msgs.error_decNumberMandatory}');
+            return false;
+        }   
+
+        var unitNewParent = document.getElementById('unitMovingFormId:parentUnitName').innerHTML;
+        if(unitNewParent == null || unitNewParent == ''){
+            alert('#{msgs.error_newParentMandatory}');
+            return false;
+        }   
+
+        var orderUnderParent = document.getElementById('unitMovingFormId:unitOrderId').value;
+        if(orderUnderParent == null || orderUnderParent == ''){
+            alert('#{msgs.error_unitOrderMandatory}');
+            return false;
+        }
+
+        var atatchmentsDoneFlag = document.getElementById('unitMovingFormId:attachmentsDoneFlagId').checked;
+        if(! atatchmentsDoneFlag){
+            alert('#{msgs.error_attachmentsMandatory}');
+            return false;
+        }
+
+        document.getElementById('unitMovingFormId:attachmentsDoneFlagId').checked = false;
+        return true;
+      }
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{unitMoving.init}" />
+	<h:form id="unitMovingFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<a4j:status onstart="#{rich:component('reload')}.hide()" />
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_unitMoving}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="35%" valign="top">
+									<!-- tree -->
+									<table cellpadding="0" cellspacing="0" width="98%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsTree}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:inputText id="searchNameValue" value="#{unitMoving.searchName}" styleClass="inputDataLarge" onkeypress="return pressEnter(event);" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_search}" action="#{unitMoving.search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+																<f:ajax render="unitMovingFormId:treePanelId unitMovingFormId:unitInformationPanelId unitMovingFormId:notifyMessagesId" execute="searchNameValue" />
+															</h:commandButton>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" colspan="2">
+															<h:panelGroup id="treePanelId">
+																<rich:tree id="unitTreeId" toggleListener="#{unitMoving.treeToggleHandler(item)}" render="treePanelId" value="#{unitMoving.unitTree}" var="item" dir="#{msgs.dir}" nodeType="unitType">
+																	<rich:treeNode type="unitType" expanded="#{item.expanded}" iconExpanded="/resources/images/#{item.unitType}.png" iconCollapsed="/resources/images/#{item.unitType}.png" iconLeaf="/resources/images/#{item.unitType}.png">
+																		<h:commandLink value="#{item.unitName}" action="#{unitMoving.click(item)}">
+																			<f:ajax render="unitMovingFormId:unitInformationPanelId" />
+																		</h:commandLink>
+																	</rich:treeNode>
+																</rich:tree>
+																<h:outputStylesheet library="css" name="tree.css" />
+															</h:panelGroup>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="65%" valign="top">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+
+												<h:panelGroup id="unitInformationPanelId">
+													<!-- tree from -->
+													<table border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<td>
+																<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<td>#{msgs.label_unitDetails}</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+														<tr>
+															<td width="100%">
+																<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<th width="20%">
+																			#{msgs.label_decNumber}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<h:inputText id="decNumberId" value="#{unitMoving.decNumber}" maxlength="50" />
+																		</td>
+																		<th width="20%">#{msgs.label_decisionDate}</th>
+																		<td width="30%">
+																			<util:hijri value="#{unitMoving.decDate}" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_unitType}</th>
+																		<td width="30%">
+																			<h:outputText id="unitTypeId" value="#{unitMoving.selectedUnitData.unitTypeDesc}" />
+																		</td>
+																		<th width="20%">#{msgs.label_region}</th>
+																		<td width="30%">
+																			<h:outputText id="unitRegionId" value="#{unitMoving.selectedUnitData.regionDesc}" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_parentUnit}</th>
+																		<td width="80%" colspan="3">
+																			<h:outputText id="parentUnitNameId" value="#{unitMoving.selectedUnitData.parentUnitName}" />
+																			<h:inputHidden id="parentUnitId" value="#{unitMoving.selectedUnitData.parentUnitId}" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">
+																			#{msgs.label_newParentUnit}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="80%" colspan="3">
+																			<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit('#{request.contextPath}', #{unitMoving.selectedUnitData.unitTypeCode}, #{unitMoving.selectedUnitData.regionId}); return false;" title="#{msgs.label_search}" styleClass="btn_icon" />
+																			<h:outputText id="parentUnitName" value="#{unitMoving.selectedUnitData.moveToUnitFullName}" />
+																			<h:inputHidden id="newParentUnitId" value="#{unitMoving.selectedUnitData.moveToUnitId}" />
+																			<h:inputHidden id="newParentUnitFullNameId" value="#{unitMoving.selectedUnitData.moveToUnitFullName}" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">
+																			#{msgs.label_unitOrderUnderParent}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="80%" colspan="3">
+																			<h:inputText id="unitOrderId" value="#{unitMoving.selectedUnitData.orderUnderParent}" onkeypress="return isDigit(event);" maxlength="2" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_unitName}</th>
+																		<td width="80%" colspan="3">
+																			<h:outputText id="unitNameId" value="#{unitMoving.selectedUnitData.name}" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">
+																			#{msgs.label_unitNewName}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="80%" colspan="3">
+																			<h:inputText id="unitNewNameId" value="#{unitMoving.selectedUnitData.newName}" styleClass="inputDataLarge" maxlength="200" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_orgRemarks}</th>
+																		<td width="80%" colspan="3">
+																			<h:inputText id="remarksId" styleClass="inputDataLarge" value="#{unitMoving.selectedUnitData.remarks}" maxlength="500" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_attachments}</th>
+																		<td width="30%">
+																			<h:panelGroup id="attachmentComponentPanelId">
+																				<code:attachments id="attachmentComponentId" loginEmpId="#{unitMoving.loginEmpData.empId}" attachmentId="#{unitMoving.selectedUnitData.attachments}" addEnableFlag="true" viewEnableFlag="true" deleteEnableFlag="true" />
+																			</h:panelGroup>
+																		</td>
+																		<th width="20%">#{msgs.label_attachmentsDoneFlag}</th>
+																		<td width="30%">
+																			<h:selectBooleanCheckbox id="attachmentsDoneFlagId" />
+																		</td>
+																	</tr>
+
+																</table>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+
+											</td>
+										</tr>
+
+										<tr>
+											<td width="100%" height="15" />
+										</tr>
+
+										<tr>
+											<td width="100%">
+												<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:commandButton action="#{unitMoving.moveUnit}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');" styleClass="btn_normal_icon">
+																<f:ajax render="unitMovingFormId:notifyMessagesId unitMovingFormId:treePanelId unitMovingFormId:unitInformationPanelId" execute="unitInformationPanelId" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

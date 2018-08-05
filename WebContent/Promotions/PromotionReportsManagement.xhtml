@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">   
+	//<![CDATA[
+	
+	window.onkeypress = function(e) {
+		  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+		  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+	      if (keyCode == '13'){
+	    	  document.getElementById('promotionReportsFormId:searchBtnId').click();
+	    	  return false;
+	      }
+	};
+		function getEmp(contextPath){
+	        openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, #{promotionReportsManagement.mode}, -1, -1, -1, -1, -1);
+	     }
+		
+		function handleEmpMiniSearchResult(ret){
+			if(ret != null){
+		           document.getElementById('promotionReportsFormId:empIDHId').value = ret[0];
+		           document.getElementById('promotionReportsFormId:empNameId').innerHTML = ret[1];
+		    }
+		}
+		
+		// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="promotionReportsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{promotionReportsManagement.screenTitle}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="70%">#{msgs.label_reportData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="promotionReportDataId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_reportDate}" />
+									</th>
+									<td width="35%">
+										<util:hijri id="reportDateId" value="#{promotionReportsManagement.reportDate}" nullable="true" />
+									</td>
+									<th width="10%">
+										<h:outputText value="#{msgs.label_reportNumber}" />
+									</th>
+									<td width="40%">
+										<h:inputText id="reportNumberId" value="#{promotionReportsManagement.reportNumber}" maxlength="50" styleClass="inputDataSuperLarge" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_promotionDueDate}" />
+									</th>
+									<td width="35%">
+										<util:hijri id="dueDateId" value="#{promotionReportsManagement.dueDate}" nullable="true" />
+									</td>
+									<th width="10%">
+										<h:outputText rendered="#{promotionReportsManagement.mode!=3}" value="#{msgs.label_rank}" />
+										<h:outputText rendered="#{promotionReportsManagement.mode ==3}" value="#{msgs.label_personRank}" />
+									</th>
+									<td width="40%">
+										<h:selectOneMenu id="ranksId" value="#{promotionReportsManagement.rankId}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItems value="#{promotionReportsManagement.ranks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+								<tr style="display: #{promotionReportsManagement.mode == 2 ? '' : 'none'}">
+									<th width="15%">
+										<h:outputText value="#{msgs.label_region}" />
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="regionId" value="#{promotionReportsManagement.regionId}" disabled="#{promotionReportsManagement.loginEmpData.physicalRegionId != 1}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItems value="#{promotionReportsManagement.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_reportStatus}" />
+									</th>
+									<td width="35%">
+										<h:panelGroup rendered="#{promotionReportsManagement.mode==1}">
+											<h:selectOneMenu id="officerReportStatus" value="#{promotionReportsManagement.status}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+												<f:selectItem itemLabel="#{msgs.label_current}" itemValue="5" />
+												<f:selectItem itemLabel="#{msgs.label_closed}" itemValue="20" />
+											</h:selectOneMenu>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{promotionReportsManagement.mode==2}">
+											<h:selectOneMenu id="soldierReportStatus" value="#{promotionReportsManagement.status}" >
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+												<f:selectItem itemLabel="#{msgs.label_current}" itemValue="5" />
+												<f:selectItem itemLabel="#{msgs.label_underApproved}" itemValue="15" />
+ 												<f:selectItem itemLabel="#{msgs.label_closed}" itemValue="20" />
+											</h:selectOneMenu>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{promotionReportsManagement.mode==3}">
+											<h:selectOneMenu id="personReportStatus" value="#{promotionReportsManagement.status}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+												<f:selectItem itemLabel="#{msgs.label_current}" itemValue="5" />
+												<f:selectItem itemLabel="#{msgs.label_underApproved}" itemValue="15" />
+												<f:selectItem itemLabel="#{msgs.label_closed}" itemValue="20" />
+											</h:selectOneMenu>
+										</h:panelGroup>
+									</td>
+									<th width="10%">
+										<h:outputText value="#{promotionReportsManagement.mode==1 ? msgs.label_officerName : (promotionReportsManagement.mode==2 ? msgs.label_soliderName : msgs.label_employeeName)}" />
+									</th>
+									<td width="40%">
+										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_missionEmpName}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+										<h:inputHidden id="empIDHId" value="#{promotionReportsManagement.empId}" />
+										<h:outputText id="empNameId" value="#{promotionReportsManagement.empName}" />
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{promotionReportsManagement.mode==2}">
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_decisionDate}" />
+										</th>
+										<td width="30%">
+											<util:hijri id="decisionDateId" value="#{promotionReportsManagement.decisionDate}" nullable="true" />
+										</td>
+										<th width="10%">
+											<h:outputText value="#{msgs.label_decisionNumber}" rendered="#{promotionReportsManagement.mode!=1}" />
+										</th>
+										<td width="40%">
+											<h:inputText id="decisionNumberId" value="#{promotionReportsManagement.decisionNumber}" onkeypress="return isDigit(event);" styleClass="inputDataSuperLarge"/>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{promotionReportsManagement.mode==1}">
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_scaleUpFlag}" />
+										</th>
+										<td width="30%">
+											<h:selectBooleanCheckbox value="#{promotionReportsManagement.allSubmittedOfficersFlag}" id="scaleUpId" />
+										</td>
+									</tr>
+								</h:panelGroup>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" action="#{promotionReportsManagement.search()}" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon">
+										<f:ajax execute="promotionReportsFormId:promotionReportDataId" render="promotionReportsFormId:promotionReportsTableId" />
+									</h:commandButton>
+									<h:commandButton id="preSearchBtnId" action="#{promotionReportsManagement.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="promotionReportsFormId:promotionReportDataId promotionReportsFormId:promotionReportsTableId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="promotionReportsTableId" rowKeyVar="index" var="promotion" rows="#{promotionReportsManagement.pageSize}" value="#{promotionReportsManagement.promotionsReports}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 3%">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                            </rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_reportNumber}</f:facet>
+								<h:outputText value="#{promotion.reportNumber}" />
+							</rich:column>
+							<rich:column style="width : 6%">
+								<f:facet name="header">#{msgs.label_reportDate}</f:facet>
+								<h:outputText value="#{promotion.reportDateString}" />
+							</rich:column>
+							<rich:column style="width : 10%" rendered="#{promotionReportsManagement.mode != 3}">
+								<f:facet name="header">#{msgs.label_rank}</f:facet>
+								<h:outputText value="#{promotion.rankDesc}" />
+							</rich:column>
+							<rich:column style="width : 10%" rendered="#{promotionReportsManagement.mode == 3}">
+								<f:facet name="header">#{msgs.label_personRank}</f:facet>
+								<h:outputText value="#{promotion.rankId == 306 ? msgs.label_theHigherRanks : (promotion.rankId == 311 ? msgs.label_fromTheFifthToTheNinth : msgs.label_fromFirstToFourth)}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_promotionDueDate}</f:facet>
+								<h:outputText value="#{promotion.dueDateString}" />
+							</rich:column>
+							<rich:column style="width : 8%">
+								<f:facet name="header">#{msgs.label_reportStatus}</f:facet>
+								<h:outputText value="#{promotion.status==5 ? msgs.label_current : (promotion.status==10 ? msgs.label_underReview : (promotion.status==15 ? msgs.label_underApproved : msgs.label_closed  ))}" />
+							</rich:column>
+							<rich:column style="width : 7%">
+								<f:facet name="header">#{msgs.label_details}</f:facet>
+								<h:panelGroup rendered="#{promotionReportsManagement.mode == 1}">
+									<a target="_blank" href="#{request.contextPath}/Promotions/PromotionOfficersReport.jsf?reportId=#{promotion.id}" style="text-decoration: none;">
+										<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_showAndUpdate}"></i>
+									</a>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{promotionReportsManagement.mode == 2 and promotion.status != 15}">
+									<a target="_blank" href="#{request.contextPath}/Promotions/PromotionSoldiersReport.jsf?reportId=#{promotion.id}" style="text-decoration: none;">
+										<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_showAndUpdate}"></i>
+									</a>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{promotionReportsManagement.mode == 3 and promotion.status != 15}">
+									<a target="_blank" href="#{request.contextPath}/Promotions/PromotionCiviliansReport.jsf?reportId=#{promotion.id}" style="text-decoration: none;">
+										<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_showAndUpdate}"></i>
+									</a>
+								</h:panelGroup>
+							</rich:column>
+							<rich:column style="width : 7%" rendered="#{promotionReportsManagement.mode ==3  or promotionReportsManagement.mode == 1}">
+								<f:facet name="header">#{msgs.label_reportDraftPrint}</f:facet>
+								<h:commandButton value="#{msgs.fa_print}" disabled="#{promotion.status == 20}" title="#{promotionReportsManagement.mode ==3 ? msgs.label_reportDraftPrint : msgs.label_printCandidateOfficers}" styleClass="btn_icon" action="#{promotionReportsManagement.printPromotionReport(promotion)}" />
+							</rich:column>
+							<rich:column style="width : 3%;">
+								<f:facet name="header">#{msgs.label_delete}</f:facet>
+								<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{promotionReportsManagement.deletePromotionReport(promotion)}" disabled="#{promotion.status == 10 or promotion.status == 15}" onclick="return confirm('#{msgs.q_delete}');">
+									<f:ajax render="promotionReportsFormId:promotionReportsTableId promotionReportsFormId:notifyMessagesId" execute="promotionReportsFormId:promotionReportsTableId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+								</h:commandButton>
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

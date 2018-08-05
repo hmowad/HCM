@@ -1,0 +1,412 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function validateSend() {
+			destinationValue = document.getElementById('subjoinExtensionRequestFormId:destinationId').innerHTML;
+			if (destinationValue == null || destinationValue == '') {
+				alert("#{msgs.error_thereIsNoLastValidTrans}");
+				return false;
+			}
+
+			endDateValue = document.getElementById('subjoinExtensionRequestFormId:endDateId').innerHTML;
+			if (endDateValue == null || endDateValue == '') {
+				alert("#{msgs.error_subjoinExtensionFieldsMandatory}");
+				return false;
+			}
+
+			periodDaysValue = document
+					.getElementById('subjoinExtensionRequestFormId:periodDaysId').value;
+			if (periodDaysValue > 29) {
+				alert('#{msgs.error_periodDaysMustNotExceed29Days}');
+				return false;
+			}
+
+			if(document.getElementById('subjoinExtensionRequestFormId:ministryApprovalNumberId') != null) {
+				ministryApprovalNumberValue = document.getElementById('subjoinExtensionRequestFormId:ministryApprovalNumberId').value;
+				if (ministryApprovalNumberValue == null || ministryApprovalNumberValue == '') {
+					alert('#{msgs.error_ministryAgreementDataIsRequired}');
+					return false;
+				}
+			}
+			
+			return #{subjoinExtensionRequest.role == 'ReviewerEmp'} ? validateRefuseAndNotes(1, &quot;subjoinExtensionRequestFormId:curTaskId:refuseReasonsId&quot;) : true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="subjoinExtensionRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{subjoinExtensionRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_applicantData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{subjoinExtensionRequest.requester}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requestPanelId">
+							<h:panelGroup rendered="#{subjoinExtensionRequest.lastValidTran != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{subjoinExtensionRequest.mode == 3 ? msgs.label_lastInternalAssignmentData : msgs.label_lastSubjoinData}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{subjoinExtensionRequest.mode == 3 ? msgs.label_assignmentDestination : msgs.label_subjoinDestination}" />
+													</th>
+													<td width="35%">
+														<h:outputText id="destinationId" value="#{subjoinExtensionRequest.lastValidTran.locationFlag == 1 ? subjoinExtensionRequest.lastValidTran.location : subjoinExtensionRequest.lastValidTran.unitFullName}" />
+													</td>
+													<th width="10%">#{msgs.label_period}</th>
+													<td width="15%">
+														<h:outputText rendered="#{subjoinExtensionRequest.lastValidTran.periodMonths != null and subjoinExtensionRequest.lastValidTran.periodMonths != 0}" value="#{subjoinExtensionRequest.lastValidTran.periodMonths} #{msgs.label_month} " />
+														<h:outputText rendered="#{subjoinExtensionRequest.lastValidTran.periodDays != null and subjoinExtensionRequest.lastValidTran.periodDays != 0}" value="#{subjoinExtensionRequest.lastValidTran.periodDays} #{msgs.label_day}" />
+													</td>
+													<th width="10%">#{msgs.label_endDate}</th>
+													<td width="15%">
+														<h:outputText value="#{subjoinExtensionRequest.lastValidTran.endDateString}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_requestData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														#{msgs.label_extensionPeriod}
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="35%">
+														<h:panelGroup rendered="#{subjoinExtensionRequest.role == 'Requester' or subjoinExtensionRequest.role == 'ReviewerEmp'}">
+															<h:inputText id="periodMonthsId" value="#{subjoinExtensionRequest.wfMovement.periodMonths}" maxlength="2" onkeypress="return isDigit(event);" styleClass="inputDataSmall">
+																<f:ajax event="change" execute="@this subjoinExtensionRequestFormId:periodDaysId" listener="#{subjoinExtensionRequest.manipulateEndDate()}" render="subjoinExtensionRequestFormId:endDateId subjoinExtensionRequestFormId:notifyMessagesId" />
+															</h:inputText>
+															<h:outputText value=" #{msgs.label_month} " />
+															<h:inputText id="periodDaysId" value="#{subjoinExtensionRequest.wfMovement.periodDays}" maxlength="2" onkeypress="return isLessOrEqualNumber(event, this.value, 29);" styleClass="inputDataSmall">
+																<f:ajax event="change" execute="@this subjoinExtensionRequestFormId:periodMonthsId" listener="#{subjoinExtensionRequest.manipulateEndDate()}" render="subjoinExtensionRequestFormId:endDateId subjoinExtensionRequestFormId:notifyMessagesId" />
+															</h:inputText>
+															<h:outputText value=" #{msgs.label_day}" />
+														</h:panelGroup>
+														<h:outputText rendered="#{subjoinExtensionRequest.role != 'Requester' and subjoinExtensionRequest.role != 'ReviewerEmp'}" value="#{subjoinExtensionRequest.getConcatenatedPeriod(subjoinExtensionRequest.wfMovement)}" />
+													</td>
+													<th width="10%">#{msgs.label_endDate}</th>
+													<td width="40%">
+														<h:outputText id="endDateId" value="#{subjoinExtensionRequest.wfMovement.endDateString}" />
+													</td>
+												</tr>
+												<tr>
+													<th>#{msgs.label_requiredAttachments}</th>
+													<td colspan="3">
+														<code:attachments loginEmpId="#{subjoinExtensionRequest.loginEmpData.empId}" attachmentId="#{subjoinExtensionRequest.attachments}" addEnableFlag="#{subjoinExtensionRequest.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{subjoinExtensionRequest.role == 'Requester'}" />
+													</td>
+												</tr>
+												<tr>
+													<th>#{msgs.label_justifications}</th>
+													<td colspan="3">
+														<h:inputText readonly="#{subjoinExtensionRequest.role != 'Requester' and subjoinExtensionRequest.role != 'ReviewerEmp'}" value="#{subjoinExtensionRequest.wfMovement.reasons}" styleClass="inputDataSuperLarge" maxlength="200" />
+													</td>
+												</tr>
+												<tr>
+													<th>#{msgs.label_notes}</th>
+													<td colspan="3">
+														<h:inputText readonly="#{subjoinExtensionRequest.role != 'Requester'}" value="#{subjoinExtensionRequest.wfMovement.remarks}" styleClass="inputDataSuperLarge" maxlength="500" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<h:panelGroup
+												rendered="#{subjoinExtensionRequest.role != 'Requester' and subjoinExtensionRequest.role != 'DirectManager' and subjoinExtensionRequest.role != 'ManagerRedirect'  and subjoinExtensionRequest.role != 'ManagerRedirectToSecurity' and subjoinExtensionRequest.role != 'SecurityEmp' and subjoinExtensionRequest.role != 'SecondaryReviewerEmp' and subjoinExtensionRequest.role != 'SecondaryManagerRedirect' and subjoinExtensionRequest.role != 'SecondarySignManager' and subjoinExtensionRequest.wfMovement.locationFlag == 1}">
+												<table border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td width="100%">
+															<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>#{msgs.label_dataFilledBySpecializedEmployee}</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td width="100%">
+															<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<th>
+																		#{msgs.label_interiorMinisteryAgreementNumber}
+																		<h:outputText value=" " />
+																		<font style="color: red;">*</font>
+																	</th>
+																	<td>
+																		<h:inputText id="ministryApprovalNumberId" value="#{subjoinExtensionRequest.wfMovement.ministryApprovalNumber}" readonly="#{subjoinExtensionRequest.role != 'ReviewerEmp'}" maxlength="50" />
+																	</td>
+																	<th>
+																		#{msgs.label_interiorMinisteryAgreementDate}
+																		<h:outputText value=" " />
+																		<font style="color: red;">*</font>
+																	</th>
+																	<td>
+																		<util:hijri value="#{subjoinExtensionRequest.wfMovement.ministryApprovalDate}" rendered="#{subjoinExtensionRequest.role == 'ReviewerEmp'}" />
+																		<h:outputText value="#{subjoinExtensionRequest.wfMovement.ministryApprovalDateString}" rendered="#{subjoinExtensionRequest.role != 'ReviewerEmp'}" />
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+
+									<code:specialAuthorityData id="specialAuthorityDataId" loginEmpId="#{subjoinExtensionRequest.loginEmpData.empId}" wfMovement="#{subjoinExtensionRequest.wfMovement}" role="#{subjoinExtensionRequest.role}" requestFlag="#{true}" rendered="#{subjoinExtensionRequest.role == 'ReviewerEmp' or subjoinExtensionRequest.role  == 'SignManager' or subjoinExtensionRequest.role == 'SecondaryReviewerEmp' or subjoinExtensionRequest.role == 'SecondarySignManager'}" />
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<h:panelGroup rendered="#{subjoinExtensionRequest.role != 'Requester' and subjoinExtensionRequest.role != 'DirectManager' and subjoinExtensionRequest.role != 'ManagerRedirect' and subjoinExtensionRequest.role != 'ManagerRedirectToSecurity' and subjoinExtensionRequest.role != 'SecurityEmp' and subjoinExtensionRequest.role != 'SecondaryManagerRedirect' and subjoinExtensionRequest.role != 'SecondarySignManager' and subjoinExtensionRequest.role != 'SecondaryReviewerEmp'}">
+										<tr>
+											<td width="100%">
+												<code:decisionCopies external="#{subjoinExtensionRequest.externalCopies}" internal="#{subjoinExtensionRequest.internalCopies}" viewOnly="#{subjoinExtensionRequest.role != 'ReviewerEmp'}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<td width="100%">
+											<code:prevTasks rendered="#{subjoinExtensionRequest.role != 'Requester'}" value="#{subjoinExtensionRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp,SecondaryReviewerEmp,SecondarySignManager," />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:curTask id="curTaskId" value="#{subjoinExtensionRequest.currentEmployee}"
+												rendered="#{subjoinExtensionRequest.role == 'DirectManager' or subjoinExtensionRequest.role == 'ManagerRedirect' or subjoinExtensionRequest.role == 'ManagerRedirectToSecurity' or subjoinExtensionRequest.role == 'SecurityEmp' or subjoinExtensionRequest.role == 'ReviewerEmp' or subjoinExtensionRequest.role == 'SignManager' or subjoinExtensionRequest.role == 'SecondaryManagerRedirect' or subjoinExtensionRequest.role == 'SecondaryReviewerEmp' or subjoinExtensionRequest.role == 'SecondarySignManager'}">
+												<h:panelGroup rendered="#{subjoinExtensionRequest.role == 'ManagerRedirect' or subjoinExtensionRequest.role == 'SecondaryManagerRedirect'}">
+													<tr>
+														<th width="15%">
+															#{msgs.label_selectEmp}
+															<h:outputText itemLabel="" itemValue="0" />
+															<font style="color: red;">*</font>
+														</th>
+														<td width="85%" colspan="3">
+															<h:selectOneMenu id="reviewersId" value="#{subjoinExtensionRequest.selectedReviewerEmpId}">
+																<f:selectItem itemLabel="" />
+																<f:selectItems value="#{subjoinExtensionRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+															</h:selectOneMenu>
+														</td>
+													</tr>
+												</h:panelGroup>
+												<tr>
+													<th width="15%">#{msgs.label_notes}</th>
+													<td width="85%" colspan="3">
+														<h:inputText id="notesId" value="#{subjoinExtensionRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+													</td>
+												</tr>
+												<h:panelGroup rendered="#{subjoinExtensionRequest.role != 'ManagerRedirect' and subjoinExtensionRequest.role != 'SecondaryManagerRedirect' and subjoinExtensionRequest.role != 'ManagerRedirectToSecurity' and subjoinExtensionRequest.role != 'SecurityEmp'}">
+													<tr>
+														<th width="15%">#{msgs.label_refuseReasons}</th>
+														<td width="85%" colspan="3">
+															<h:inputText id="refuseReasonsId" value="#{subjoinExtensionRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+														</td>
+													</tr>
+												</h:panelGroup>
+											</code:curTask>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:outputText rendered="#{subjoinExtensionRequest.role == 'Notification' or subjoinExtensionRequest.role == 'History'}" value="#{subjoinExtensionRequest.notificationMessage}" styleClass="successMessage" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+
+														<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateSend(#{subjoinExtensionRequest.mode})');" action="#{subjoinExtensionRequest.initMovement()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'Requester'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;subjoinExtensionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinExtensionRequest.approveMovementDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'DirectManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinExtensionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinExtensionRequest.rejectMovementDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'DirectManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="redirectMrtsBtnId" onclick="return handleOnAction('#{msgs.q_redirectToSecurity}', 'validateRefuseAndNotes(1, &quot;subjoinExtensionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinExtensionRequest.redirectMovementMRTS()}" value="#{msgs.label_redirectToSecurity} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'ManagerRedirectToSecurity'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectMrtsBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinExtensionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinExtensionRequest.rejectMovementMRTS()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'ManagerRedirectToSecurity'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSeBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;subjoinExtensionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinExtensionRequest.approveMovementSE()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'SecurityEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectSeBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{subjoinExtensionRequest.rejectMovementSE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'SecurityEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinExtensionRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinExtensionRequest.redirectMovementMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'ManagerRedirect'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="smrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinExtensionRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinExtensionRequest.redirectMovementSMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'SecondaryManagerRedirect'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveReBtnId" action="#{subjoinExtensionRequest.approveMovementRE()}" onclick="return handleOnAction('#{msgs.q_reviewForMovements}', 'validateSend(#{subjoinExtensionRequest.mode})');" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'ReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinExtensionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinExtensionRequest.rejectMovementRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'ReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSreBtnId" action="#{subjoinExtensionRequest.approveMovementSRE()}" onclick="return handleOnAction('#{msgs.q_reviewForMovements}');" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'SecondaryReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectSreBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinExtensionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinExtensionRequest.rejectMovementSRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'SecondaryReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;subjoinExtensionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinExtensionRequest.approveMovementSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateDecisionApprovalNotes(&quot;subjoinExtensionRequestFormId:specialAuthorityDataId:decisionApprovalRemarksId&quot;, &quot;subjoinExtensionRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;subjoinExtensionRequestFormId:curTaskId:notesId&quot;)');" action="#{subjoinExtensionRequest.returnMovementSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}"
+															styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinExtensionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinExtensionRequest.rejectMovementSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSsmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;subjoinExtensionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinExtensionRequest.approveMovementSSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'SecondarySignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="retSsmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;subjoinExtensionRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;subjoinExtensionRequestFormId:curTaskId:notesId&quot;)');" action="#{subjoinExtensionRequest.returnMovementSSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'SecondarySignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinExtensionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinExtensionRequest.rejectMovementSSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'SecondarySignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="printBtnId" action="#{subjoinExtensionRequest.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'Notification' and subjoinExtensionRequest.instanceApproved == 1}" />
+
+														<h:commandButton id="nBtnId" action="#{subjoinExtensionRequest.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'Notification'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup rendered="#{subjoinExtensionRequest.lastValidTran == null}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>
+										<h:outputText value="#{msgs.error_thereIsNoLastValidTrans}" styleClass="remarkMessage" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	function getEmployee(contextPath){
+		openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, -1);
+	}
+	
+	function handleEmpMiniSearchResult(ret){
+		if(ret!=null){ 
+	         document.getElementById('employeeFileReportFormId:employeeIDId').value=ret[0];
+	         document.getElementById('employeeFileReportFormId:searchEmpBtnId').click();
+		}
+	}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<ui:debug />
+	<h:form id="employeeFileReportFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{employeeFileReport.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_emp}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="100%">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<th width="15%">
+												<h:outputText value="#{msgs.label_selectEmp}" />
+											</th>
+											<td width="85%">
+												<h:inputHidden id="employeeIDId" value="#{employeeFileReport.employeeId}" />
+												<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+												<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{employeeFileReport.searchEmployee()}">
+													<f:ajax execute="employeeFileReportFormId:employeeIDId" render="employeeFileReportFormId:employeeDataPanelId employeeFileReportFormId:printOptionsPanelId employeeFileReportFormId:printEmployeeFileReportBtnId employeeFileReportFormId:notifyMessagesId" />
+												</h:commandButton>
+											</td>
+										</tr>
+
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="employeeDataPanelId">
+							<h:panelGroup rendered="#{employeeFileReport.selectedEmployee != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<code:emp value="#{employeeFileReport.selectedEmployee}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_printOptions}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="printOptionsPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="12%">#{msgs.title_Recruitments}</th>
+									<td width="20%">
+										<h:commandButton value="#{employeeFileReport.printRecruitments ? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printRecruitmentsListener()}" styleClass="#{employeeFileReport.printRecruitments ? 'btn_toggleOn' :  'btn_toggleOff'}">
+											<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+									<th width="12%">#{msgs.title_promotions}</th>
+									<td width="20%">
+										<h:commandButton value="#{employeeFileReport.printPromotions? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printPromotionsListener()}" styleClass="#{employeeFileReport.printPromotions ? 'btn_toggleOn' :  'btn_toggleOff'}">
+											<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+									<th width="12%">#{msgs.title_vacations}</th>
+									<td width="24%">
+										<h:commandButton value="#{employeeFileReport.printVacations ? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printVacationsListener()}" styleClass="#{employeeFileReport.printVacations ? 'btn_toggleOn' :  'btn_toggleOff'}">
+											<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+								<tr>
+									<th width="12%">#{msgs.title_movements}</th>
+									<td width="20%">
+										<h:commandButton value="#{employeeFileReport.printMovements ? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printMovementsListener()}" styleClass="#{employeeFileReport.printMovements ? 'btn_toggleOn' :  'btn_toggleOff'}">
+											<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+									<th width="12%">#{msgs.label_penalities}</th>
+									<td width="20%">
+										<h:commandButton disabled="true" value="#{employeeFileReport.printPenalities? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printPenalitiesListener()}" styleClass="#{employeeFileReport.printPenalities ? 'btn_toggleOn' :  'btn_toggleOff'}">
+											<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+									<th width="12%">#{msgs.label_bounses}</th>
+									<td width="24%">
+										<h:commandButton value="#{employeeFileReport.printBonuses? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printBonusesListener()}" styleClass="#{employeeFileReport.printBonuses ? 'btn_toggleOn' :  'btn_toggleOff'}">
+											<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+								<tr>
+									<th width="12%">#{msgs.label_scholarshipsAndTrainings}</th>
+									<td width="20%">
+										<h:commandButton value="#{employeeFileReport.printTraining? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printTrainingListener()}" styleClass="#{employeeFileReport.printTraining ? 'btn_toggleOn' :  'btn_toggleOff'}">
+											<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+									<th width="12%">#{msgs.label_studies}</th>
+									<td width="20%">
+										<h:commandButton value="#{employeeFileReport.printEducations ? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printEducationsListener()}" styleClass="#{employeeFileReport.printEducations ? 'btn_toggleOn' :  'btn_toggleOff'}">
+											<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+									<th width="12%">#{msgs.label_allowances}</th>
+									<td width="24%">
+										<h:commandButton value="#{employeeFileReport.printAllowances ? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printAllowancesListener()}" styleClass="#{employeeFileReport.printAllowances ? 'btn_toggleOn' :  'btn_toggleOff'}">
+											<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+
+								<tr>
+									<th width="12%">#{msgs.label_terminationRedo}</th>
+									<td width="20%">
+										<h:commandButton value="#{employeeFileReport.printServiceTermination? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printServiceTerminationListener()}" styleClass="#{employeeFileReport.printServiceTermination ? 'btn_toggleOn' :  'btn_toggleOff'}">
+											<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+									<th width="12%">#{msgs.label_extension}</th>
+									<td width="20%">
+										<h:commandButton value="#{employeeFileReport.printServiceExtension ? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printServiceExtensionListener()}" styleClass="#{employeeFileReport.printServiceExtension ? 'btn_toggleOn' :  'btn_toggleOff'}">
+											<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+									
+									<h:panelGroup rendered="#{employeeFileReport.selectedEmployee.categoryId != 2}">
+										<th width="12%">#{msgs.label_seniorityAndRankPostponement}</th>
+										<td width="24%">
+											<h:commandButton value="#{employeeFileReport.printSeniortiy? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printSeniortiyListener()}" styleClass="#{employeeFileReport.printSeniortiy ? 'btn_toggleOn' :  'btn_toggleOff'}">
+												<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{employeeFileReport.selectedEmployee.categoryId == 2}">
+											<th width="12%">#{msgs.label_exercises}</th>
+											<td width="24%">
+												<h:commandButton value="#{employeeFileReport.printExercises? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printExercisesListener()}" styleClass="#{employeeFileReport.printExercises ? 'btn_toggleOn' :  'btn_toggleOff'}">
+													<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</td>
+									</h:panelGroup>
+								</tr>
+								<tr>
+									<h:panelGroup rendered="#{employeeFileReport.selectedEmployee.categoryId == 1}">
+										<th width="12%">#{msgs.label_exercises}</th>
+										<td width="24%">
+											<h:commandButton value="#{employeeFileReport.printExercises? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printExercisesListener()}" styleClass="#{employeeFileReport.printExercises ? 'btn_toggleOn' :  'btn_toggleOff'}">
+												<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</h:panelGroup>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="printEmployeeFileReportBtnId" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" disabled="#{employeeFileReport.selectedEmployee == null}" action="#{employeeFileReport.printEmployeeFileReport()}" />
+									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{employeeFileReport.reset()}">
+										<f:ajax render="employeeFileReportFormId:employeeDataPanelId employeeFileReportFormId:employeeIDId employeeFileReportFormId:printEmployeeFileReportBtnId employeeFileReportFormId:printOptionsPanelId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

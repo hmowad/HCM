@@ -1,0 +1,528 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:rich="http://richfaces.org/rich">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+    //<![CDATA[  
+		function getEmp(contextPath){
+        	openEmployeesMiniSearch(contextPath, 'handleEmpsMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{exceptionalVacation.getLoginEmpPhysicalRegionFlag(false)});
+        }
+            
+        function handleEmpsMiniSearchResult(ret){
+       		if(ret != null){
+       			document.getElementById('exceptionalVacationForm:beneficiarySearchId').value = ret[0];
+                document.getElementById('exceptionalVacationForm:searchEmpButton').click();
+            }
+        }
+
+        function getCountries(contextPath){
+        	openSelectCountries(1, contextPath, 'handleCountryMiniSearchResult(ret)');
+        }
+          
+        function handleCountryMiniSearchResult(ret){
+        	if(ret != null){
+        		document.getElementById('exceptionalVacationForm:locationId').innerHTML = ret[0];
+        		document.getElementById('exceptionalVacationForm:countriesNamesId').value = ret[0];
+        	}
+        }
+
+        function validateData(){
+            var period = document.getElementById('exceptionalVacationForm:periodId').value;
+            if(period == null || period == ''){
+            	alert('#{msgs.error_periodMandatory}');
+                return false;
+            } else if (period <= 0) {
+            	alert('#{msgs.error_periodNotNegative}');
+                return false;
+            }
+                                    
+            var locFlag = getSelectOneRadioValue('exceptionalVacationForm:locationFlagId');
+            if(locFlag == 1){
+                var location = document.getElementById('exceptionalVacationForm:locationId').innerHTML;
+                if(location == null || location == ''){
+                	alert('#{msgs.error_locationMandatory}');
+                    return false;
+                }
+            }            
+            
+            var contactNumber = document.getElementById('exceptionalVacationForm:contactNumberId').value;
+            if(contactNumber == null || contactNumber == ''){
+            	alert('#{msgs.error_contactNumberMandatory}');
+                return false;
+            }
+
+            var contactAdd = document.getElementById('exceptionalVacationForm:contactAddressId').value;
+            if(contactAdd == null || contactAdd == ''){
+            	alert('#{msgs.error_contactAddressMandatory}');
+                return false;
+            }   
+            
+            return true;
+          }
+
+        function validateReferring(){
+        	if (#{exceptionalVacation.vacationMode} == 31 || #{exceptionalVacation.vacationMode} == 32) {
+				var referring = document.getElementById('exceptionalVacationForm:referringId').value;
+				if(referring == null || referring == ''){
+					alert('#{msgs.error_referringMandatory}');
+					return false;
+				}
+        	}
+			return true;
+		}
+    // ]]>
+    </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="exceptionalVacationForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText id="screenTitleId" value="#{exceptionalVacation.screenTitle}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requester}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:emp value="#{exceptionalVacation.requester}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiary}" switchType="client"
+							onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{exceptionalVacation.beneficiary.empId == exceptionalVacation.requester.empId}) &amp;&amp; (#{exceptionalVacation.role == 'Requester'})) { getEmp('#{request.contextPath}'); return false;} else {return true;}"
+							expanded="#{exceptionalVacation.requester.empId != exceptionalVacation.beneficiary.empId}" rendered="#{exceptionalVacation.role == 'Requester' or exceptionalVacation.requester.empId != exceptionalVacation.beneficiary.empId}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+								<h:panelGroup rendered="#{exceptionalVacation.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+														<h:inputHidden id="beneficiarySearchId" value="#{exceptionalVacation.beneficiarySearchId}" />
+														<h:commandButton id="searchEmpButton" style="display: none;" action="#{exceptionalVacation.searchBeneficiary}">
+															<f:ajax render="exceptionalVacationForm:beneficiaryPanelId exceptionalVacationForm:lastVacId:data exceptionalVacationForm:screenTitleId exceptionalVacationForm:requestInfoPanelId exceptionalVacationForm:vacationsPercentagePanelId exceptionalVacationForm:notifyMessagesId"
+																	execute="beneficiarySearchId"
+																	onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp id="beneficiaryId" value="#{exceptionalVacation.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_lastVacInfo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:vac id="lastVacId" value="#{exceptionalVacation.lastVacation}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requestInfo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requestInfoPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_period}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%" colspan="#{exceptionalVacation.role == 'Requester' ? 1 : 3}">
+										<h:inputText id="periodId" value="#{exceptionalVacation.vacRequest.period}" readonly="#{exceptionalVacation.role != 'Requester'}" maxlength="4" onkeypress="return isDigit(event);">
+											<f:ajax event="blur" execute="@this startDateId" render="endDateId notifyMessagesId" />
+										</h:inputText>
+									</td>
+									<h:panelGroup rendered="#{exceptionalVacation.role == 'Requester'}">
+										<th width="15%">
+											<h:outputText value="#{msgs.label_vacationBalance}" />
+										</th>
+										<td width="35%">
+											<h:outputText id="vacationBalanceId" value="#{exceptionalVacation.vacationBalance}" />
+										</td>
+									</h:panelGroup>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_startDate}</th>
+									<td width="35%">
+										<util:hijri rendered="#{exceptionalVacation.role == 'Requester'}" id="startDateId" value="#{exceptionalVacation.vacRequest.startDate}" onChangeAjaxSubmit="true" listenerMethod="#{exceptionalVacation.startDateChangeListener}" reRenderIds="exceptionalVacationForm:vacationBalanceId exceptionalVacationForm:endDateId exceptionalVacationForm:warningsPanelId exceptionalVacationForm:notifyMessagesId" />
+										<h:outputText rendered="#{exceptionalVacation.role != 'Requester'}" value="#{exceptionalVacation.vacRequest.startDateString}" />
+									</td>
+
+									<th width="15%">#{msgs.label_endDate}</th>
+									<td width="35%">
+										<h:outputText id="endDateId" value="#{exceptionalVacation.vacRequest.endDateString}" />
+									</td>
+								</tr>
+
+								<h:panelGroup rendered="#{exceptionalVacation.vacationMode == 1 or exceptionalVacation.vacationMode == 2}">
+									<tr>
+										<th width="15%">#{msgs.label_location}</th>
+										<td width="35%">
+											<h:selectOneRadio id="locationFlagId" value="#{exceptionalVacation.vacRequest.locationFlag}" disabled="#{exceptionalVacation.role != 'Requester'}">
+												<f:selectItem itemValue="0" itemLabel="#{msgs.label_locIn}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_locOut}" />
+
+												<f:ajax event="click" listener="#{exceptionalVacation.locationFlagChangeListner}" execute="@this" render="countriesNamesId locationId locationBtnId notifyMessagesId" />
+											</h:selectOneRadio>
+										</td>
+
+										<th width="15%">
+											<h:commandButton id="locationBtnId" value="#{msgs.label_selectCountries}" onclick="getCountries('#{request.contextPath}'); return false;" rendered="#{exceptionalVacation.role == 'Requester'}" disabled="#{exceptionalVacation.role == 'Requester' and exceptionalVacation.vacRequest.locationFlag != 1}" styleClass="btn_normal" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:outputText id="locationId" value="#{exceptionalVacation.vacRequest.location}" />
+											<h:inputHidden id="countriesNamesId" value="#{exceptionalVacation.vacRequest.location}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+
+								<tr>
+									<th width="15%">
+										#{msgs.label_contactNumber}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:inputText id="contactNumberId" value="#{exceptionalVacation.vacRequest.contactNumber}" readonly="#{exceptionalVacation.role != 'Requester'}" maxlength="14" onkeypress="return isDigit(event);" />
+									</td>
+									<td width="50%" colspan="2" />
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_contactAddress}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="contactAddressId" value="#{exceptionalVacation.vacRequest.contactAddress}" readonly="#{exceptionalVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{exceptionalVacation.vacationMode == 2}">
+									<tr>
+										<th width="15%">#{msgs.label_requestJustifications}</th>
+										<td width="85%" colspan="3">
+											<h:inputText value="#{exceptionalVacation.vacRequest.reasons}" readonly="#{exceptionalVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th width="15%">#{msgs.label_notes}</th>
+									<td width="85%" colspan="3">
+										<h:inputText value="#{exceptionalVacation.vacRequest.notes}" readonly="#{exceptionalVacation.role != 'Requester'}" maxlength="100" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_attachments}</th>
+									<td width="85%" colspan="3">
+										<code:attachments loginEmpId="#{exceptionalVacation.loginEmpData.empId}" attachmentId="#{exceptionalVacation.attachments}" addEnableFlag="#{exceptionalVacation.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{exceptionalVacation.role == 'Requester'}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<h:panelGroup rendered="#{(exceptionalVacation.role == 'ReviewerEmp' or exceptionalVacation.role == 'SignManager') and (exceptionalVacation.vacationMode == 31 or exceptionalVacation.vacationMode == 32)}">
+					<tr>
+						<td width="100%" height="15" />
+					</tr>
+					
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_referringInfo}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_refferingTo}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%">
+										<h:inputText id="referringId" value="#{exceptionalVacation.vacRequest.referring}" readonly="#{exceptionalVacation.role != 'ReviewerEmp'}" maxlength="250" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="vacationsPercentagePanelId">
+							<h:panelGroup rendered="#{exceptionalVacation.role != 'Notification' and exceptionalVacation.role != 'History'}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%" height="15" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_vacationsRatios}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td style="font-weight: bold;">
+														#{msgs.label_showVacationsRatios}
+														<a href="#{request.contextPath}/Vacations/VacationsSearch.jsf?mode=#{exceptionalVacation.getNormalizedModeFromVacationMode()}" target="_blank">#{msgs.label_here}</a>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="warningsPanelId">
+							<h:panelGroup rendered="#{exceptionalVacation.hasEarlierStartDateWarning() or exceptionalVacation.hasContinousPreviousVacationWarning()}">
+								<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th>#{msgs.label_warnings}</th>
+									</tr>
+									<h:panelGroup rendered="#{exceptionalVacation.hasEarlierStartDateWarning()}">
+										<tr>
+											<td>
+												<h:outputText value="#{msgs.label_warningsEarlierStartDateForVacation}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{exceptionalVacation.hasContinousPreviousVacationWarning()}">
+										<tr>
+											<td>
+												<h:outputText value="#{msgs.label_warningsValidPreviousVacationJoiningDate}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<code:prevTasks rendered="#{exceptionalVacation.role != 'Requester'}" value="#{exceptionalVacation.prevTasks}" refuseRoles="DirectManager,ReviewerEmp,ReviewerEmpRedirect,SignManager," />
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{exceptionalVacation.currentEmployee}" rendered="#{exceptionalVacation.role != 'Requester' and exceptionalVacation.role != 'Notification' and exceptionalVacation.role != 'History'}">
+							<h:panelGroup rendered="#{exceptionalVacation.role == 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{exceptionalVacation.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{exceptionalVacation.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{exceptionalVacation.currentTask.notes}" maxlength="500" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{exceptionalVacation.role != 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{exceptionalVacation.currentTask.refuseReasons}" maxlength="500" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{exceptionalVacation.role == 'Notification' or exceptionalVacation.role == 'History'}" value="#{exceptionalVacation.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:panelGroup rendered="#{exceptionalVacation.role == 'Requester'}">
+										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateData()');" action="#{exceptionalVacation.initProcess}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{exceptionalVacation.role == 'DirectManager'}">
+										<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;exceptionalVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{exceptionalVacation.approveDM}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;exceptionalVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{exceptionalVacation.rejectDM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{exceptionalVacation.role == 'ManagerRedirect'}">
+										<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;exceptionalVacationForm:curTaskId:reviewersId&quot;)');" action="#{exceptionalVacation.redirectMR}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{exceptionalVacation.role == 'ReviewerEmp'}">
+										<h:commandButton id="approveReBtnId" onclick="if (validateReferring()) { return handleOnAction('#{msgs.q_review}', 'validateRefuseAndNotes(1, &quot;exceptionalVacationForm:curTaskId:refuseReasonsId&quot;)'); } else { return false; }" action="#{exceptionalVacation.approveRE}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;exceptionalVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{exceptionalVacation.rejectRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{exceptionalVacation.role == 'ReviewerEmpRedirect'}">
+										<h:commandButton id="rerBtnId" onclick="return handleOnAction('#{msgs.q_redirectToSecurity}');" action="#{exceptionalVacation.redirectRER}" value="#{msgs.label_redirectToSecurity} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectRerBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;exceptionalVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{exceptionalVacation.rejectRER}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{exceptionalVacation.role == 'SecurityEmp'}">
+										<h:commandButton id="approveSeBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;exceptionalVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{exceptionalVacation.approveSE}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectSeBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{exceptionalVacation.rejectSE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{exceptionalVacation.role == 'SignManager'}">
+										<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;exceptionalVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{exceptionalVacation.signSM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="modifySmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;exceptionalVacationForm:curTaskId:refuseReasonsId&quot;, &quot;exceptionalVacationForm:curTaskId:notesId&quot;)');" action="#{exceptionalVacation.modifySM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;exceptionalVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{exceptionalVacation.rejectSM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{exceptionalVacation.role == 'Notification' and exceptionalVacation.instanceApproved == 1}">
+										<h:commandButton id="printBtnId" action="#{exceptionalVacation.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{exceptionalVacation.role == 'Notification'}">
+										<h:commandButton id="nBtnId" action="#{exceptionalVacation.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	    window.onkeypress = function(e) {
+			  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+		      if (keyCode == '13') {
+		    	  document.getElementById('movementsDataReportsFormId:printBtnId').click();
+		    	  return false;
+		      }
+		  };
+
+		function getMovementUnit() {
+			openUnitsMiniSearch(2, '#{request.contextPath}', 'handleMovementUnitMiniSearchResult(ret)', -1, document.getElementById('movementsDataReportsFormId:movementRegionId').value, -1);
+		}
+
+		function handleMovementUnitMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('movementsDataReportsFormId:movementUnitFullNameId').innerHTML = ret[1];
+				document.getElementById('movementsDataReportsFormId:movementUnitFullNameHId').value = ret[1];
+			}
+		}
+
+		function getEmployeeUnit() {
+			openUnitsMiniSearch(2, '#{request.contextPath}', 'handleEmployeeUnitMiniSearchResult(ret)', -1, document.getElementById('movementsDataReportsFormId:employeeRegionId').value, -1);
+		}
+
+		function handleEmployeeUnitMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('movementsDataReportsFormId:employeeUnitFullNameId').innerHTML = ret[1];
+				document.getElementById('movementsDataReportsFormId:employeeUnitFullNameHId').value = ret[1];
+			}
+		}
+		
+		function getMinorSpecialization(contextPath) {
+			openMinorSpecializationsMiniSearch(contextPath, 'handleMinorSpecializationsMiniSearchResult(ret)');
+		}
+
+		function handleMinorSpecializationsMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('movementsDataReportsFormId:employeeMinorSpecDescId').innerHTML = ret[2];
+				document.getElementById('movementsDataReportsFormId:employeeMinorSpecDescHId').value = ret[2];
+			}
+		}
+		
+		function getEmployee(contextPath) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, #{movementsDataReports.mode}, -1, -1, -1, -1, -1, #{movementsDataReports.getLoginEmpPhysicalRegionFlag(true)});
+		}
+		
+		function handleEmpMiniSearchResult(ret) {
+			if(ret!=null) { 
+		         document.getElementById('movementsDataReportsFormId:employeeIDId').value=ret[0];
+		         document.getElementById('movementsDataReportsFormId:employeeNameId').innerHTML=ret[1];
+			}
+		}
+		
+		function validateSearch(){
+			var reportType = document.getElementById('movementsDataReportsFormId:reportTypeId').value;
+			if (reportType == 6){
+				var empId = document.getElementById('movementsDataReportsFormId:employeeIDId').value;
+				var decisionNumber = document.getElementById('movementsDataReportsFormId:decisionNumberId').value;
+				var decisionDate = document.getElementById('movementsDataReportsFormId:decisionDateId:day').value;
+				if (empId == null || empId == -1){
+					alert('#{msgs.error_employeeMandatory}');
+					return false;
+				}
+				if(decisionNumber == null || decisionNumber == ''){
+					alert('#{msgs.error_decNumberMandatory}');
+					return false;
+				}
+				if(decisionDate == null || decisionDate == '' || decisionDate == 0 ){
+					alert('#{msgs.error_decDateMandatory}');
+					return false;
+				}
+			}
+			return true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="movementsDataReportsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{movementsDataReports.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.title_theReports}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:selectOneRadio rendered="#{movementsDataReports.mode == 3}" value="#{movementsDataReports.reportType}" layout="pageDirection">
+										<f:selectItem itemLabel="#{msgs.label_moveDecisions}" itemValue="1" />
+										<f:selectItem itemLabel="#{msgs.label_statisticalMoveReport}" itemValue="2" />
+										<f:selectItem itemLabel="#{msgs.label_assignmentDecisions}" itemValue="3" />
+										<f:selectItem itemLabel="#{msgs.label_statisticalAssignmentReport}" itemValue="4" />
+										<f:selectItem itemLabel="#{msgs.label_externalMovementReports}" itemValue="5" />
+										<f:ajax event="change" execute="@this" listener="#{movementsDataReports.resetForm()}" render="movementsDataReportsFormId:searchPanelId movementsDataReportsFormId:reportTypeId" />
+									</h:selectOneRadio>
+									<h:selectOneRadio rendered="#{movementsDataReports.mode != 3}" value="#{movementsDataReports.reportType}" layout="pageDirection">
+										<f:selectItem itemLabel="#{msgs.label_moveDecisions}" itemValue="1" />
+										<f:selectItem itemLabel="#{msgs.label_statisticalMoveReport}" itemValue="2" />
+										<f:selectItem itemLabel="#{msgs.label_subjoinDecisions}" itemValue="3" />
+										<f:selectItem itemLabel="#{msgs.label_statisticalSubjoinReport}" itemValue="4" />
+										<f:selectItem itemLabel="#{msgs.label_externalMovementReports}" itemValue="5" />
+										<f:selectItem itemLabel="#{msgs.label_joiningDocument}" itemValue="6" />
+										<f:ajax event="change" execute="@this" listener="#{movementsDataReports.resetForm()}" render="movementsDataReportsFormId:searchPanelId movementsDataReportsFormId:reportTypeId" />
+									</h:selectOneRadio>
+									<h:inputHidden id="reportTypeId" value="#{movementsDataReports.reportType}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+
+								<h:panelGroup rendered="#{movementsDataReports.reportType != 5 and movementsDataReports.reportType != 6 }">
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{(movementsDataReports.reportType == 1 or movementsDataReports.reportType == 2) ? msgs.label_moveRegion :(movementsDataReports.mode == 3 ? msgs.label_personSubjoinRegion : msgs.label_subjoinRegion)}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="30%">
+											<h:selectOneMenu id="movementRegionId" value="#{movementsDataReports.movementRegionId}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+												<f:selectItems value="#{movementsDataReports.regionList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+												<f:ajax event="change" listener="#{movementsDataReports.resetMovementUnit()}" execute="@this" render="movementsDataReportsFormId:movementUnitPanelId" />
+											</h:selectOneMenu>
+										</td>
+
+										<th width="20%">
+											<h:outputText value="#{(movementsDataReports.reportType == 1 or movementsDataReports.reportType == 2)  ? (msgs.label_moveUnit) : (movementsDataReports.mode == 3 ? msgs.label_assignmentUnit : msgs.label_subjoinUnit)}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="30%">
+											<h:panelGroup id="movementUnitPanelId">
+												<h:outputText id="movementUnitFullNameId" value="#{movementsDataReports.movementUnitFullName}" />
+												<h:outputText value=" " />
+												<h:commandButton value="#{msgs.fa_external_link}" onclick="getMovementUnit(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+												<h:inputHidden id="movementUnitFullNameHId" value="#{movementsDataReports.movementUnitFullName}" />
+											</h:panelGroup>
+										</td>
+									</tr>
+								</h:panelGroup>
+
+								<h:panelGroup rendered="#{movementsDataReports.reportType == 5}">
+									<tr>
+										<th width="20%">#{msgs.label_externalUnit}</th>
+										<td width="80%" colspan="3">
+											<h:inputText value="#{movementsDataReports.location}" styleClass="inputDataLarge" maxlength="100" />
+										</td>
+									</tr>
+								</h:panelGroup>
+
+								<h:panelGroup rendered="#{movementsDataReports.reportType != 6}">
+
+									<tr>
+										<th width="20%">#{msgs.label_employeeRegionDuringDecisionIssuing}</th>
+										<td width="30%">
+											<h:selectOneMenu id="employeeRegionId" value="#{movementsDataReports.employeeRegionId}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+												<f:selectItems value="#{movementsDataReports.regionList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+												<f:ajax event="change" listener="#{movementsDataReports.resetEmployeeUnit()}" execute="@this" render="movementsDataReportsFormId:employeeUnitPanelId" />
+											</h:selectOneMenu>
+										</td>
+
+										<th width="20%">#{msgs.label_employeeUnitDuringDecisionIssuing}</th>
+										<td width="30%">
+											<h:panelGroup id="employeeUnitPanelId">
+												<h:outputText id="employeeUnitFullNameId" value="#{movementsDataReports.employeeUnitFullName}" />
+												<h:outputText value=" " />
+												<h:commandButton value="#{msgs.fa_external_link}" onclick="getEmployeeUnit(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+												<h:inputHidden id="employeeUnitFullNameHId" value="#{movementsDataReports.employeeUnitFullName}" />
+											</h:panelGroup>
+										</td>
+									</tr>
+								</h:panelGroup>
+
+								<h:panelGroup rendered="#{movementsDataReports.reportType != 5 and movementsDataReports.reportType != 6}">
+									<tr>
+										<th>
+											<h:outputText value="#{movementsDataReports.mode == 3 ? msgs.label_employeePersonRankDuringDecisionIssuing : msgs.label_employeeRankDuringDecisionIssuing}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<h:selectOneMenu value="#{movementsDataReports.employeeRankId}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItems value="#{movementsDataReports.ranks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+											</h:selectOneMenu>
+										</td>
+
+										<th>
+											#{msgs.label_employeeMinorSpecDuringDecisionIssuing}
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<h:outputText id="employeeMinorSpecDescId" value="#{movementsDataReports.employeeMinorSpecDesc}" />
+											<h:inputHidden id="employeeMinorSpecDescHId" value="#{movementsDataReports.employeeMinorSpecDesc}" />
+											<h:outputText value=" " />
+											<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getMinorSpecialization('#{request.contextPath}'); return false;" />
+										</td>
+									</tr>
+								</h:panelGroup>
+
+								<h:panelGroup rendered="#{movementsDataReports.reportType != 6}">
+
+									<tr>
+										<th>
+											#{msgs.label_fromDate}
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<util:hijri value="#{movementsDataReports.fromDate}" />
+										</td>
+
+										<th>
+											#{msgs.label_toDate}
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<util:hijri value="#{movementsDataReports.toDate}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+
+								<h:panelGroup rendered="#{movementsDataReports.reportType == 3 or movementsDataReports.reportType == 4}">
+									<tr>
+										<th>
+											#{msgs.label_decisionType}
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											#{movementsDataReports.mode !=3 ? msgs.label_subjoin : msgs.label_assignment}
+											<h:selectBooleanCheckbox value="#{movementsDataReports.newDecision}" />
+											#{msgs.label_extension}
+											<h:selectBooleanCheckbox value="#{movementsDataReports.extensionDecision}" />
+											#{movementsDataReports.mode !=2 ? msgs.label_finish : msgs.label_soldierTermination}
+											<h:selectBooleanCheckbox value="#{movementsDataReports.terminationDecision}" />
+											#{movementsDataReports.mode !=2 ? msgs.label_cancellation : msgs.label_soldierCancellation}
+											<h:selectBooleanCheckbox value="#{movementsDataReports.cancellationDecision}" />
+										</td>
+
+										<th>
+											<h:outputText value="#{movementsDataReports.mode == 3 ? msgs.label_assignmentReason : msgs.label_subjoinReason} " />
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<h:selectOneMenu rendered="#{movementsDataReports.mode != 2}" value="#{movementsDataReports.reasonType}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_personalReason}" />
+												<f:selectItem itemValue="2" itemLabel="#{msgs.label_workReason}" />
+											</h:selectOneMenu>
+											<h:selectOneMenu rendered="#{movementsDataReports.mode == 2}" value="#{movementsDataReports.reasonType}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_personalReason}" />
+												<f:selectItem itemValue="2" itemLabel="#{msgs.label_workReason}" />
+												<f:selectItem itemValue="3" itemLabel="#{msgs.label_generalReason}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+								</h:panelGroup>
+
+								<h:panelGroup rendered="#{movementsDataReports.reportType == 1 or movementsDataReports.reportType == 2}">
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_moveReason} " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="80%" colspan="3">
+											<h:selectOneMenu rendered="#{movementsDataReports.mode != 2}" value="#{movementsDataReports.reasonType}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_personalReason}" />
+												<f:selectItem itemValue="2" itemLabel="#{msgs.label_workReason}" />
+											</h:selectOneMenu>
+											<h:selectOneMenu rendered="#{movementsDataReports.mode == 2}" value="#{movementsDataReports.reasonType}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_personalReason}" />
+												<f:selectItem itemValue="2" itemLabel="#{msgs.label_workReason}" />
+												<f:selectItem itemValue="3" itemLabel="#{msgs.label_generalReason}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+								</h:panelGroup>
+
+								<h:panelGroup rendered="#{movementsDataReports.reportType == 5}">
+									<tr>
+										<th>
+											#{msgs.label_decisionType}
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											#{msgs.label_move}
+											<h:selectBooleanCheckbox value="#{movementsDataReports.moveDecision}" />
+											#{movementsDataReports.mode != 3 ? msgs.label_subjoin : msgs.label_assignment}
+											<h:selectBooleanCheckbox value="#{movementsDataReports.subjoinDecision}" />
+
+											<h:outputText value="#{msgs.label_assign}" rendered="#{movementsDataReports.mode == 1}" />
+											<h:selectBooleanCheckbox value="#{movementsDataReports.officersAssignmentDecision}" rendered="#{movementsDataReports.mode == 1}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+
+								<h:panelGroup rendered="#{movementsDataReports.reportType == 6}">
+									<tr>
+										<th>
+											#{msgs.label_emp}
+											<font style="color: red;">*</font>
+										</th>
+										<td colspan="3">
+											<h:outputText id="employeeNameId" value="#{movementsDataReports.empName}" />
+											<h:outputText value=" " />
+											<h:inputHidden id="employeeIDId" value="#{movementsDataReports.empId}" />
+											<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+										</td>
+									</tr>
+									<tr>
+										<th>
+											#{msgs.label_decisionNumber}
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<h:inputText id="decisionNumberId" value="#{movementsDataReports.decisionNumber}" />
+										</td>
+										<th>
+											#{msgs.label_decisionDate}
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<util:hijri id="decisionDateId" value="#{movementsDataReports.decisionDate}" nullable="true" />
+										</td>
+									</tr>
+								</h:panelGroup>
+
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="printBtnId" action="#{movementsDataReports.print()}" onclick="return validateSearch();" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									<h:commandButton action="#{movementsDataReports.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="movementsDataReportsFormId:searchPanelId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

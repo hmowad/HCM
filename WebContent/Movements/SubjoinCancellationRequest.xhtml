@@ -1,0 +1,377 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function validateSend() {
+			destinationValue = document
+					.getElementById('subjoinCancellationRequestFormId:destinationId').innerHTML;
+			if (destinationValue == null || destinationValue == '') {
+				alert("#{msgs.error_thereIsNoLastValidTrans}");
+				return false;
+			}
+
+			if(document.getElementById('subjoinCancellationRequestFormId:ministryApprovalNumberId') != null) {
+				ministryApprovalNumberValue = document.getElementById('subjoinCancellationRequestFormId:ministryApprovalNumberId').value;
+				if (ministryApprovalNumberValue == null || ministryApprovalNumberValue == '') {
+					alert('#{msgs.error_ministryAgreementDataIsRequired}');
+					return false;
+				}
+			}
+			
+			return #{subjoinCancellationRequest.role == 'ReviewerEmp'} ? validateRefuseAndNotes(1, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;) : true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="subjoinCancellationRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{subjoinCancellationRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_applicantData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{subjoinCancellationRequest.requester}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requestPanelId">
+							<h:panelGroup rendered="#{subjoinCancellationRequest.lastValidTran != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{subjoinCancellationRequest.mode == 3 ? msgs.label_lastInternalAssignmentData : msgs.label_lastSubjoinData}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{subjoinCancellationRequest.mode == 3 ? msgs.label_assignmentDestination : msgs.label_subjoinDestination}" />
+													</th>
+													<td width="35%">
+														<h:outputText id="destinationId" value="#{subjoinCancellationRequest.lastValidTran.locationFlag == 1 ? subjoinCancellationRequest.lastValidTran.location : subjoinCancellationRequest.lastValidTran.unitFullName}" />
+													</td>
+													<th width="10%">#{msgs.label_period}</th>
+													<td width="15%">
+														<h:outputText rendered="#{subjoinCancellationRequest.lastValidTran.periodMonths != null and subjoinCancellationRequest.lastValidTran.periodMonths != 0}" value="#{subjoinCancellationRequest.lastValidTran.periodMonths} #{msgs.label_month} " />
+														<h:outputText rendered="#{subjoinCancellationRequest.lastValidTran.periodDays != null and subjoinCancellationRequest.lastValidTran.periodDays != 0}" value="#{subjoinCancellationRequest.lastValidTran.periodDays} #{msgs.label_day}" />
+													</td>
+													<th width="10%">#{msgs.label_endDate}</th>
+													<td width="15%">
+														<h:outputText value="#{subjoinCancellationRequest.lastValidTran.endDateString}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_requestData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th>#{msgs.label_requiredAttachments}</th>
+													<td>
+														<code:attachments loginEmpId="#{subjoinCancellationRequest.loginEmpData.empId}" attachmentId="#{subjoinCancellationRequest.attachments}" addEnableFlag="#{subjoinCancellationRequest.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{subjoinCancellationRequest.role == 'Requester'}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">#{msgs.label_justifications}</th>
+													<td>
+														<h:inputText readonly="#{subjoinCancellationRequest.role != 'Requester'}" value="#{subjoinCancellationRequest.wfMovement.reasons}" styleClass="inputDataSuperLarge" maxlength="200" />
+													</td>
+												</tr>
+												<tr>
+													<th>#{msgs.label_notes}</th>
+													<td>
+														<h:inputText readonly="#{subjoinCancellationRequest.role != 'Requester'}" value="#{subjoinCancellationRequest.wfMovement.remarks}" styleClass="inputDataSuperLarge" maxlength="500" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<h:panelGroup
+												rendered="#{subjoinCancellationRequest.role != 'Requester' and subjoinCancellationRequest.role != 'DirectManager' and subjoinCancellationRequest.role != 'ManagerRedirect' and subjoinCancellationRequest.role != 'ManagerRedirectToSecurity' and subjoinCancellationRequest.role != 'SecurityEmp' and subjoinCancellationRequest.role != 'SecondaryReviewerEmp' and subjoinCancellationRequest.role != 'SecondaryReviewerEmp' and subjoinCancellationRequest.role != 'SecondaryManagerRedirect' and subjoinCancellationRequest.wfMovement.locationFlag == 1}">
+												<table border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td width="100%">
+															<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>#{msgs.label_dataFilledBySpecializedEmployee}</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td width="100%">
+															<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<th>
+																		#{msgs.label_interiorMinisteryAgreementNumber}
+																		<h:outputText value=" " />
+																		<font style="color: red;">*</font>
+																	</th>
+																	<td>
+																		<h:inputText id="ministryApprovalNumberId" value="#{subjoinCancellationRequest.wfMovement.ministryApprovalNumber}" readonly="#{subjoinCancellationRequest.role != 'ReviewerEmp'}" maxlength="50" />
+																	</td>
+																	<th>
+																		#{msgs.label_interiorMinisteryAgreementDate}
+																		<h:outputText value=" " />
+																		<font style="color: red;">*</font>
+																	</th>
+																	<td>
+																		<util:hijri value="#{subjoinCancellationRequest.wfMovement.ministryApprovalDate}" rendered="#{subjoinCancellationRequest.role == 'ReviewerEmp'}" />
+																		<h:outputText value="#{subjoinCancellationRequest.wfMovement.ministryApprovalDateString}" rendered="#{subjoinCancellationRequest.role != 'ReviewerEmp'}" />
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+
+									<code:specialAuthorityData id="specialAuthorityDataId" loginEmpId="#{subjoinCancellationRequest.loginEmpData.empId}" wfMovement="#{subjoinCancellationRequest.wfMovement}" role="#{subjoinCancellationRequest.role}" requestFlag="#{true}" rendered="#{subjoinCancellationRequest.role == 'ReviewerEmp' or subjoinCancellationRequest.role  == 'SignManager' or subjoinCancellationRequest.role == 'SecondaryReviewerEmp' or subjoinCancellationRequest.role == 'SecondarySignManager'}" />
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<h:panelGroup
+										rendered="#{subjoinCancellationRequest.role != 'Requester' and subjoinCancellationRequest.role != 'DirectManager' and subjoinCancellationRequest.role != 'ManagerRedirect' and subjoinCancellationRequest.role != 'ManagerRedirectToSecurity' and subjoinCancellationRequest.role != 'SecurityEmp' and subjoinCancellationRequest.role != 'SecondaryManagerRedirect' and subjoinCancellationRequest.role != 'SecondaryReviewerEmp' and subjoinCancellationRequest.role != 'SecondarySignManager'}">
+										<tr>
+											<td width="100%">
+												<code:decisionCopies external="#{subjoinCancellationRequest.externalCopies}" internal="#{subjoinCancellationRequest.internalCopies}" viewOnly="#{subjoinCancellationRequest.role != 'ReviewerEmp'}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<td width="100%">
+											<code:prevTasks rendered="#{subjoinCancellationRequest.role != 'Requester'}" value="#{subjoinCancellationRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp,SecondaryReviewerEmp,SecondarySignManager," />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:curTask id="curTaskId" value="#{subjoinCancellationRequest.currentEmployee}"
+												rendered="#{subjoinCancellationRequest.role == 'DirectManager' or subjoinCancellationRequest.role == 'ManagerRedirect' or subjoinCancellationRequest.role == 'ManagerRedirectToSecurity' or subjoinCancellationRequest.role == 'SecurityEmp' or subjoinCancellationRequest.role == 'ReviewerEmp' or subjoinCancellationRequest.role == 'SignManager' or subjoinCancellationRequest.role == 'SecondaryManagerRedirect' or subjoinCancellationRequest.role == 'SecondaryReviewerEmp' or subjoinCancellationRequest.role == 'SecondarySignManager'}">
+												<h:panelGroup rendered="#{subjoinCancellationRequest.role == 'ManagerRedirect' or subjoinCancellationRequest.role == 'SecondaryManagerRedirect'}">
+													<tr>
+														<th width="15%">
+															#{msgs.label_selectEmp}
+															<h:outputText itemLabel="" itemValue="0" />
+															<font style="color: red;">*</font>
+														</th>
+														<td width="85%" colspan="3">
+															<h:selectOneMenu id="reviewersId" value="#{subjoinCancellationRequest.selectedReviewerEmpId}">
+																<f:selectItem itemLabel="" />
+																<f:selectItems value="#{subjoinCancellationRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+															</h:selectOneMenu>
+														</td>
+													</tr>
+												</h:panelGroup>
+												<tr>
+													<th width="15%">#{msgs.label_notes}</th>
+													<td width="85%" colspan="3">
+														<h:inputText id="notesId" value="#{subjoinCancellationRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+													</td>
+												</tr>
+												<h:panelGroup rendered="#{subjoinCancellationRequest.role != 'ManagerRedirect' and subjoinCancellationRequest.role != 'ManagerRedirectToSecurity' and subjoinCancellationRequest.role != 'SecurityEmp' and subjoinCancellationRequest.role != 'SecondaryManagerRedirect'}">
+													<tr>
+														<th width="15%">#{msgs.label_refuseReasons}</th>
+														<td width="85%" colspan="3">
+															<h:inputText id="refuseReasonsId" value="#{subjoinCancellationRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+														</td>
+													</tr>
+												</h:panelGroup>
+											</code:curTask>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:outputText rendered="#{subjoinCancellationRequest.role == 'Notification' or subjoinCancellationRequest.role == 'History'}" value="#{subjoinCancellationRequest.notificationMessage}" styleClass="successMessage" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+
+														<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateSend(#{subjoinCancellationRequest.mode})');" action="#{subjoinCancellationRequest.initMovement()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'Requester'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinCancellationRequest.approveMovementDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'DirectManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinCancellationRequest.rejectMovementDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'DirectManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="redirectMrtsBtnId" onclick="return handleOnAction('#{msgs.q_redirectToSecurity}', 'validateRefuseAndNotes(1, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinCancellationRequest.redirectMovementMRTS()}" value="#{msgs.label_redirectToSecurity} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'ManagerRedirectToSecurity'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectMrtsBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinCancellationRequest.rejectMovementMRTS()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'ManagerRedirectToSecurity'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSeBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinCancellationRequest.approveMovementSE()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SecurityEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectSeBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{subjoinCancellationRequest.rejectMovementSE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SecurityEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinCancellationRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinCancellationRequest.redirectMovementMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'ManagerRedirect'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="smrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinCancellationRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinCancellationRequest.redirectMovementSMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SecondaryManagerRedirect'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveReBtnId" action="#{subjoinCancellationRequest.approveMovementRE()}" onclick="return handleOnAction('#{msgs.q_reviewForMovements}', 'validateSend(#{subjoinCancellationRequest.mode})');" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'ReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinCancellationRequest.rejectMovementRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'ReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSreBtnId" action="#{subjoinCancellationRequest.approveMovementSRE()}" onclick="return handleOnAction('#{msgs.q_reviewForMovements}');" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SecondaryReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectSreBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinCancellationRequest.rejectMovementSRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SecondaryReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinCancellationRequest.approveMovementSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateDecisionApprovalNotes(&quot;subjoinCancellationRequestFormId:specialAuthorityDataId:decisionApprovalRemarksId&quot;, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;subjoinCancellationRequestFormId:curTaskId:notesId&quot;)');" action="#{subjoinCancellationRequest.returnMovementSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}"
+															styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinCancellationRequest.rejectMovementSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSsmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinCancellationRequest.approveMovementSSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SecondarySignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="retSsmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;subjoinCancellationRequestFormId:curTaskId:notesId&quot;)');" action="#{subjoinCancellationRequest.returnMovementSSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SecondarySignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinCancellationRequest.rejectMovementSSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SecondarySignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="printBtnId" action="#{subjoinCancellationRequest.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'Notification' and subjoinCancellationRequest.instanceApproved == 1}" />
+
+														<h:commandButton id="nBtnId" action="#{subjoinCancellationRequest.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'Notification'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup rendered="#{subjoinCancellationRequest.lastValidTran == null}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>
+										<h:outputText value="#{msgs.error_thereIsNoLastValidTrans}" styleClass="remarkMessage" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

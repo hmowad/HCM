@@ -1,0 +1,1254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript"> 
+
+	function openAddAttachmentPopup(){
+     	document.getElementById('terminationsCiviliansRecordsFormId:attachmentComponentId:attachmentsAddButtonId').click();
+     }
+
+	function getEmp(contextPath) {
+		var regionId = document.getElementById('terminationsCiviliansRecordsFormId:regionsId').value;
+		var categoryId = document.getElementById('terminationsCiviliansRecordsFormId:civilianCategoryId').value;
+		openEmployeesMiniSearchByOfficialRegionId(contextPath, 'handleEmpMiniSearchResult(ret)', 14, categoryId, regionId);
+	}
+
+	function handleEmpMiniSearchResult(ret) {
+		if (ret != null) {
+			var reasonId = document.getElementById('terminationsCiviliansRecordsFormId:reasonsId').value;
+
+			if (reasonId == 105) {
+				document.getElementById('terminationsCiviliansRecordsFormId:empIDId').value = ret[0];
+				document.getElementById('terminationsCiviliansRecordsFormId:searchEmpBtnCollectiveId').click();
+			} else {
+				document.getElementById('terminationsCiviliansRecordsFormId:empSigularHId').value = ret[0];
+				document.getElementById('terminationsCiviliansRecordsFormId:searchEmpBtnId').click();
+			}
+		}
+	}
+
+	function terminationRequestValidation() {
+		var judgmentFlagBoolean = document.getElementById('terminationsCiviliansRecordsFormId:judgmentFlagBooleanId');
+		var desiredTerminationDateDay = document.getElementById('terminationsCiviliansRecordsFormId:desiredTerminationDateId:day').value;
+		
+
+		if (desiredTerminationDateDay == null || desiredTerminationDateDay == 0) {
+			alert('#{msgs.error_desiredTerminationDateIsMandatory}');
+			return false;
+	    }
+
+		return true;
+	}
+
+	function validateLackMedicalFitnessReason() {
+		var referringMidecalDisability = document.getElementById('terminationsCiviliansRecordsFormId:referringMidecalDisabilityId').value;
+		var medicalCaseDesc = document.getElementById('terminationsCiviliansRecordsFormId:medicalCaseDescId').value;
+		var medicalWorkDisability = document.getElementById('terminationsCiviliansRecordsFormId:medicalWorkDisabilityId').value;
+		var serviceTerminationDate = document.getElementById('terminationsCiviliansRecordsFormId:serviceTerminationDateId:day').value;
+				
+		if (referringMidecalDisability == null || referringMidecalDisability == '') {
+			alert("#{msgs.error_refferingToIsMandatory}");
+			return false;
+		}
+		if (medicalCaseDesc == null || medicalCaseDesc == '') {
+			alert("#{msgs.error_MedicalDiagnoasesIsMandatory}");
+			return false;
+		}
+		if (medicalWorkDisability == null || medicalWorkDisability == '') {
+			alert("#{msgs.error_medicalWorkDisability}");
+			return false;
+		}
+		if(serviceTerminationDate == null || serviceTerminationDate == 0){
+        	alert("#{msgs.error_serviceTerminationDateMandatory}");
+            return false;
+        }
+
+		return true;
+	}
+	function validateAbsenceReason() {
+		var referringAbsenceId = document.getElementById('terminationsCiviliansRecordsFormId:referringAbsenceId').value;
+		var absencePeriodDaysId = document.getElementById('terminationsCiviliansRecordsFormId:absencePeriodDaysId').value;
+		var absenceStartDate = document.getElementById('terminationsCiviliansRecordsFormId:absenceStartDateId:day').value;
+		var serviceTerminationDate = document.getElementById('terminationsCiviliansRecordsFormId:serviceTerminationDateId:day').value;
+		
+		if (referringAbsenceId == null || referringAbsenceId == '') {
+			alert("#{msgs.error_refferingToIsMandatory}");
+			return false;
+		}
+		if (absencePeriodDaysId == null || absencePeriodDaysId == '') {
+			alert("#{msgs.error_absencePeriodDaysId}");
+			return false;
+		}
+
+		if(absenceStartDate == null || absenceStartDate == 0){
+        	alert("#{msgs.error_absenceStartDateIsMandatory}");
+            return false;
+        }
+        
+		if(serviceTerminationDate == null || serviceTerminationDate == 0){
+        	alert("#{msgs.error_serviceTerminationDateMandatory}");
+            return false;
+        }
+        return true;
+	}
+
+	function validateJudgmentReason() {
+		var referringId = document.getElementById('terminationsCiviliansRecordsFormId:refferingDismissId').value;
+		var dismissDecisionNumber = document.getElementById('terminationsCiviliansRecordsFormId:dismissDecisionNumberId').value;
+		var dismissDecisionDate = document.getElementById('terminationsCiviliansRecordsFormId:dismissDecisionDateId:day').value;
+		var dismissJudgment = document.getElementById('terminationsCiviliansRecordsFormId:dismissJudgmentId').value;
+		
+		var serviceTerminationDate = document.getElementById('terminationsCiviliansRecordsFormId:serviceTerminationDateId:day').value;
+		
+		if (referringId == null || referringId == '') {
+			alert("#{msgs.error_refferingToIsMandatory}");
+			return false;
+		}
+		if (dismissDecisionNumber == null || dismissDecisionNumber == '') {
+			alert("#{msgs.error_dismissDecisionNumber}");
+			return false;
+		}
+		if(dismissDecisionDate == null || dismissDecisionDate == 0){
+        	alert("#{msgs.error_dismissDecisionDateCiviliansIsMandatory}");
+            return false;
+        }
+		if (dismissJudgment == null || dismissJudgment == '') {
+			alert("#{msgs.error_dismissJudgment}");
+			return false;
+		}
+		if(serviceTerminationDate == null || serviceTerminationDate == 0){
+        	alert("#{msgs.error_serviceTerminationDateMandatory}");
+            return false;
+        }
+
+        return true;
+	}
+
+	function validateDismissPublicInterestReason(){
+		var referringDismissPublicInterest = document.getElementById('terminationsCiviliansRecordsFormId:referringDismissPublicInterestId').value;
+		var serviceTerminationDate = document.getElementById('terminationsCiviliansRecordsFormId:serviceTerminationDateId:day').value;
+		
+		if (referringDismissPublicInterest == null || referringDismissPublicInterest == '') {
+			alert("#{msgs.error_refferingToIsMandatory}");
+			return false;
+		}
+		if(serviceTerminationDate == null || serviceTerminationDate == 0){
+        	alert("#{msgs.error_serviceTerminationDateMandatory}");
+            return false;
+        }		
+        return true;
+	}
+	function validateDisqualificationReason() {
+		var referringDisQualificationReason = document.getElementById('terminationsCiviliansRecordsFormId:referringDisQualificationReasonId').value;
+		var disQualificationReason = document.getElementById('terminationsCiviliansRecordsFormId:disQualificationReasonId').value;
+		var serviceTerminationDate = document.getElementById('terminationsCiviliansRecordsFormId:serviceTerminationDateId:day').value;
+		
+		if (referringDisQualificationReason == null || referringDisQualificationReason == '') {
+			alert("#{msgs.error_refferingToIsMandatory}");
+			return false;
+		}
+		if (disQualificationReason == null || disQualificationReason == '') {
+			alert("#{msgs.error_disqualificationReason}");
+			return false;
+		}
+		if(serviceTerminationDate == null || serviceTerminationDate == 0){
+        	alert("#{msgs.error_serviceTerminationDateMandatory}");
+            return false;
+        }
+        return true
+	}
+
+	function validateJobCancelReason() {
+		var referringJobCancel = document.getElementById('terminationsCiviliansRecordsFormId:referringJobCancelId').value;
+		
+		var jobCancelationDate = document.getElementById('terminationsCiviliansRecordsFormId:jobCancelationDateId:day').value;
+		var serviceTerminationDate = document.getElementById('terminationsCiviliansRecordsFormId:serviceTerminationDateId:day').value;
+		
+		if (referringJobCancel == null || referringJobCancel == '') {
+			alert("#{msgs.error_refferingToIsMandatory}");
+			return false;
+		}
+		if(jobCancelationDate == null || jobCancelationDate == 0){
+        	alert("#{msgs.error_jobCancelationDateMandatory}");
+            return false;
+        }
+		if(serviceTerminationDate == null || serviceTerminationDate == 0){
+        	alert("#{msgs.error_serviceTerminationDateMandatory}");
+            return false;
+        }
+        return true
+	}
+
+	function validateDeathReason() {
+		var deathCertIssuePlace = document.getElementById('terminationsCiviliansRecordsFormId:deathCertIssuePlaceId').value;
+		var deathCertNumber = document.getElementById('terminationsCiviliansRecordsFormId:deathCertNumberId').value;
+		var deathCertDateId = document.getElementById('terminationsCiviliansRecordsFormId:deathCertDateId:day').value;
+		var deathDateId = document.getElementById('terminationsCiviliansRecordsFormId:deathDateId:day').value;
+		
+		var serviceTerminationDate = document.getElementById('terminationsCiviliansRecordsFormId:serviceTerminationDateId:day').value;
+		
+		if (deathCertIssuePlace == null || deathCertIssuePlace == '') {
+			alert("#{msgs.error_deathCertIssuePlace}");
+			return false;
+		}
+		if (deathCertNumber == null || deathCertNumber == '') {
+			alert("#{msgs.error_deathCertNumber}");
+			return false;
+		}
+		if(deathCertDateId == null || deathCertDateId == 0){
+        	alert("#{msgs.error_deathCertDateIsMandatory}");
+            return false;
+        }
+		if(deathDateId == null || deathDateId == 0){
+        	alert("#{msgs.error_deathDateIsMandatory}");
+            return false;
+        }
+		if(serviceTerminationDate == null || serviceTerminationDate == 0){
+        	alert("#{msgs.error_serviceTerminationDateMandatory}");
+            return false;
+        }		
+        return true;
+	}
+	function validateNationaltyLossReason() {
+
+		var refeeringNationaltyLoss = document.getElementById('terminationsCiviliansRecordsFormId:refeeringNationaltyLossId').value;
+		var nationalityLossReason = document.getElementById('terminationsCiviliansRecordsFormId:nationalityLossReasonId').value;
+		var serviceTerminationDate = document.getElementById('terminationsCiviliansRecordsFormId:serviceTerminationDateId:day').value;
+		
+		if (refeeringNationaltyLoss == null || refeeringNationaltyLoss == '') {
+			alert("#{msgs.error_refferingToIsMandatory}");
+			return false;
+		}
+		if (nationalityLossReason == null || nationalityLossReason == '') {
+			alert("#{msgs.error_nationalityLossReason}");
+			return false;
+		}
+		if(serviceTerminationDate == null || serviceTerminationDate == 0){
+        	alert("#{msgs.error_serviceTerminationDateMandatory}");
+            return false;
+        }	
+        return true;	
+	}
+
+	function validateEndContract() {
+		var referringTermentionContractor = document.getElementById('terminationsCiviliansRecordsFormId:referringTermentionContractorId').value;
+		var terminationContractorReason = document.getElementById('terminationsCiviliansRecordsFormId:terminationContractorReasonId').value;
+		var serviceContractorTerminationDate = document.getElementById('terminationsCiviliansRecordsFormId:serviceContractorTerminationDateId:day').value;
+		
+		if (referringTermentionContractor == null || referringTermentionContractor == '') {
+			alert("#{msgs.error_refferingToIsMandatory}");
+			return false;
+		}
+		if (terminationContractorReason == null || terminationContractorReason == '') {
+			alert("#{msgs.error_terminationContractorReason}");
+			return false;
+		}
+		if(serviceContractorTerminationDate == null || serviceContractorTerminationDate == 0){
+        	alert("#{msgs.error_serviceContractorTerminationDateMandatory}");
+            return false;
+        }	
+        return true;	
+	}
+
+	function validateTerminationServiceDetailData() {
+
+		var reasonId = document.getElementById('terminationsCiviliansRecordsFormId:reasonsId').value;
+		if (reasonId == 110) {
+			return terminationRequestValidation();
+		}
+		else if (reasonId == 115) {
+			return validateLackMedicalFitnessReason();
+		}
+		else if (reasonId == 120) {
+			return validateAbsenceReason();
+		}
+		else if (reasonId == 125) {
+			return validateJudgmentReason();
+		}
+		else if (reasonId == 130) {
+			return validateDismissPublicInterestReason();
+		}
+		else if (reasonId == 135) {
+			return validateDisqualificationReason();
+		}
+		else if (reasonId == 140) {
+			return validateJobCancelReason();
+		}
+		else if (reasonId == 145) {
+			return validateDeathReason();
+		}
+		else if (reasonId == 150) {
+			return validateNationaltyLossReason();
+		}
+		else if (reasonId == 305) {
+			return validateEndContract();
+		}
+
+		return true;
+	}
+	function validateTerminationRecordData() {
+
+		var reasonId = document.getElementById('terminationsCiviliansRecordsFormId:civilianCategoryId').value;
+		if(reasonId == 0 || reasonId == -1 || reasonId == null){
+			alert("#{msgs.error_noPermissionForSave}");
+	        return false;
+    	}
+
+		return true;
+	}
+	</script>
+
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="terminationsCiviliansRecordsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{msgs.title_civiliansTerminationsRecords}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="terminationsEmpPrevilageId">
+							<h:panelGroup rendered="#{(terminationsCiviliansRecords.terminationRecordData.id == null and terminationsCiviliansRecords.privilegesFlag == false)}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="100%">
+											<h:outputText value="#{msgs.error_privilegeError}" />
+										</th>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{(terminationsCiviliansRecords.terminationRecordData.id == null and terminationsCiviliansRecords.privilegesFlag == true) || terminationsCiviliansRecords.terminationRecordData.id != null}">
+
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="70%">#{msgs.label_recordDetails}</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="terminationsRecordDataId">
+							<h:panelGroup rendered="#{(terminationsCiviliansRecords.terminationRecordData.id == null and terminationsCiviliansRecords.privilegesFlag == true) || terminationsCiviliansRecords.terminationRecordData.id != null}">
+
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_civilianCategory}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="80%" colspan="3">
+											<h:selectOneMenu id="civilianCategoryId" value="#{terminationsCiviliansRecords.terminationRecordData.categoryId}" disabled="#{terminationsCiviliansRecords.terminationRecordData.id != null}">
+												<f:selectItems value="#{terminationsCiviliansRecords.civilianCategories}" var="cat" itemLabel="#{cat.description}" itemValue="#{cat.id}" />
+												<f:ajax execute="@this" render="terminationsCiviliansRecordsFormId:terminationsRecordEnrollDataId" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_terminationReason}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="30%">
+											<h:selectOneMenu id="reasonsId" value="#{terminationsCiviliansRecords.terminationRecordData.reasonId}" disabled="#{terminationsCiviliansRecords.terminationRecordData.id != null}">
+												<f:selectItems value="#{terminationsCiviliansRecords.terminationReasons}" var="reason" itemLabel="#{reason.description}" itemValue="#{reason.id}" />
+												<f:ajax execute="@this" render="terminationsCiviliansRecordsFormId:terminationsRecordEnrollDataId" />
+											</h:selectOneMenu>
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_region}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="30%">
+											<h:selectOneMenu id="regionsId" value="#{terminationsCiviliansRecords.terminationRecordData.regionId}" disabled="#{terminationsCiviliansRecords.terminationRecordData.id != null}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItems value="#{terminationsCiviliansRecords.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_recordNumber}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationsCiviliansRecords.terminationRecordData.recordNumber}" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_transactionHijriDate}" />
+										</th>
+										<td width="30%">
+											<h:outputText id="recordDateStringId" value="#{terminationsCiviliansRecords.terminationRecordData.recordDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_recordStatus}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationsCiviliansRecords.terminationRecordData.status == 15 ? msgs.label_closed :(terminationsCiviliansRecords.terminationRecordData.status == 10 ? msgs.label_underApproved : msgs.label_current)}" />
+										</td>
+										<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.id != null }">
+											<th width="20%">
+												<h:outputText value="#{msgs.label_addAttachments}" />
+											</th>
+											<td width="30%">
+												<h:panelGroup id="addNewAttachmentsPanelId">
+													<h:commandButton rendered="#{terminationsCiviliansRecords.terminationRecordData.attachments == null and ((terminationsCiviliansRecords.terminationRecordData.status == 5 and terminationsCiviliansRecords.privilegesFlag) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role == 'ReviewerEmp'))}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{terminationsCiviliansRecords.addAttachmentsId()}">
+														<f:ajax render="terminationsCiviliansRecordsFormId:addNewAttachmentsPanelId terminationsCiviliansRecordsFormId:attachmentComponentPanelId terminationsCiviliansRecordsFormId:notifyMessagesId" onevent="function(data) {if (data.status == 'success') openAddAttachmentPopup();}" />
+													</h:commandButton>
+												</h:panelGroup>
+												<h:panelGroup id="attachmentComponentPanelId">
+													<code:attachments id="attachmentComponentId" loginEmpId="#{terminationsCiviliansRecords.loginEmpData.empId}" rendered="#{terminationsCiviliansRecords.terminationRecordData.attachments != null}" attachmentId="#{terminationsCiviliansRecords.terminationRecordData.attachments}" addEnableFlag="#{(terminationsCiviliansRecords.terminationRecordData.status == 5 and terminationsCiviliansRecords.privilegesFlag) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role == 'ReviewerEmp')}"
+														viewEnableFlag="true" deleteEnableFlag="#{(terminationsCiviliansRecords.terminationRecordData.status == 5 and terminationsCiviliansRecords.privilegesFlag) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role == 'ReviewerEmp')}" />
+												</h:panelGroup>
+											</td>
+										</h:panelGroup>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="terminationsRecordEnrollDataId">
+							<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.reasonId == 105 and terminationsCiviliansRecords.terminationRecordData.categoryId != 6 and terminationsCiviliansRecords.terminationRecordData.id == null and terminationsCiviliansRecords.privilegesFlag == true}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="70%">#{msgs.label_insertionDetails}</td>
+									</tr>
+								</table>
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_personRank}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="80%" colspan="3">
+											<h:selectOneMenu id="ranksId" value="#{terminationsCiviliansRecords.rankId}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItems value="#{terminationsCiviliansRecords.ranks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_terminationDueDateFrom}" />
+										</th>
+										<td width="30%">
+											<util:hijri id="dueDateFromId" value="#{terminationsCiviliansRecords.terminationDueDateFrom}" nullable="true" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_to}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="30%">
+											<util:hijri id="dueDatetoId" value="#{terminationsCiviliansRecords.terminationDueDateTo}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="saveSectionId">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_save}', 'validateTerminationRecordData()');" disabled="#{ terminationsCiviliansRecords.privilegesFlag == false }" action="#{terminationsCiviliansRecords.addModifyTerminationRecordAndTerminationDetails()}" value="#{msgs.label_saveRecordData} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon"
+											rendered="#{terminationsCiviliansRecords.terminationRecordData.id == null and terminationsCiviliansRecords.terminationRecordData.categoryId != null and terminationsCiviliansRecords.privilegesFlag == true }">
+											<f:ajax execute="terminationsCiviliansRecordsFormId:terminationsRecordDataId terminationsCiviliansRecordsFormId:terminationsRecordEnrollDataId"
+												render="terminationsCiviliansRecordsFormId:terminationsRecordDataId terminationsCiviliansRecordsFormId:terminationsRecordEnrollDataId terminationsCiviliansRecordsFormId:recordDetailsPanelId terminationsCiviliansRecordsFormId:terminationEmployeeDataPanelId terminationsCiviliansRecordsFormId:terminationExtensionDetailsPanelId terminationsCiviliansRecordsFormId:saveDetailSectionId terminationsCiviliansRecordsFormId:decisionCopiesPanelId terminationsCiviliansRecordsFormId:actionsSectionId terminationsCiviliansRecordsFormId:saveSectionId terminationsCiviliansRecordsFormId:notifyMessagesId"
+												onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="recordDetailsPanelId">
+							<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.id != null and terminationsCiviliansRecords.terminationRecordData.reasonId == 105 }">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="10%">
+											<h:inputHidden id="empIDId" value="#{terminationsCiviliansRecords.selectedEmployeeDataId}" />
+											<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" disabled="#{terminationsCiviliansRecords.privilegesFlag == false}" onclick="getEmp('#{request.contextPath}');return false;" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 5 ) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role == 'ReviewerEmp' )}" />
+											<h:commandButton id="searchEmpBtnCollectiveId" style="display:none;" action="#{terminationsCiviliansRecords.constructTerminationsDetailData()}">
+												<f:ajax execute="terminationsCiviliansRecordsFormId:empIDId" render="terminationsCiviliansRecordsFormId:recordDetailsPanelId terminationsCiviliansRecordsFormId:terminationEmployeeDataPanelId terminationsCiviliansRecordsFormId:terminationExtensionDetailsPanelId terminationsCiviliansRecordsFormId:terminationServiceDataPanelId terminationsCiviliansRecordsFormId:actionsSectionId terminationsCiviliansRecordsFormId:notifyMessagesId"
+													onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+										<td width="42%" />
+										<th width="7%">
+											<h:outputText value="#{msgs.label_searchBy}" />
+										</th>
+										<th width="5%">
+											<h:outputText value="#{msgs.label_name}" />
+										</th>
+										<td width="15%">
+											<h:inputText id="detailSearchEmpNameId" value="#{terminationsCiviliansRecords.detailSearchEmpName}" maxlength="70" />
+										</td>
+										<td width="20%" align="left">
+											<h:commandButton value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{terminationsCiviliansRecords.searchTerminationsDetails()}" title="#{msgs.label_search}" styleClass="btn_normal_icon">
+												<f:ajax execute="terminationsCiviliansRecordsFormId:detailSearchEmpNameId" render="terminationsCiviliansRecordsFormId:recordDetailsTableId terminationsCiviliansRecordsFormId:terminationEmployeeDataPanelId terminationsCiviliansRecordsFormId:terminationExtensionDetailsPanelId terminationsCiviliansRecordsFormId:terminationServiceDataPanelId terminationsCiviliansRecordsFormId:saveDetailSectionId terminationsCiviliansRecordsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:commandButton value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" action="#{terminationsCiviliansRecords.printTerminationsReport()}" title="#{msgs.label_print}" styleClass="btn_normal_icon" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.id != null and terminationsCiviliansRecords.terminationRecordData.reasonId == 105}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0" style="margin-top: 3px">
+									<tr>
+										<td width="100%">#{msgs.label_personsData}</td>
+									</tr>
+								</table>
+								<rich:dataTable id="recordDetailsTableId" value="#{terminationsCiviliansRecords.terminationRecordDetailDataList}" var="recordDetail" rows="#{terminationsCiviliansRecords.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+									<rich:column style="width : 5%;">
+										<f:facet name="header">
+											<h:outputText value="#{msgs.label_select}" />
+										</f:facet>
+										<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon" action="#{terminationsCiviliansRecords.selectTerminationsDetailData(recordDetail)}">
+											<f:ajax
+												render="terminationsCiviliansRecordsFormId:terminationsRecordDataId terminationsCiviliansRecordsFormId:terminationsRecordEnrollDataId terminationsCiviliansRecordsFormId:saveSectionId terminationsCiviliansRecordsFormId:recordDetailsPanelId terminationsCiviliansRecordsFormId:terminationEmployeeDataPanelId terminationsCiviliansRecordsFormId:terminationServiceDataPanelId terminationsCiviliansRecordsFormId:terminationExtensionDetailsPanelId terminationsCiviliansRecordsFormId:saveDetailSectionId terminationsCiviliansRecordsFormId:notifyMessagesId"
+												onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</rich:column>
+									<rich:column style="width : 5%">
+										<f:facet name="header">#</f:facet>
+							               #{index + 1}
+							        </rich:column>
+									<rich:column style="width : 15%">
+										<f:facet name="header">#{msgs.label_name}</f:facet>
+										<h:outputText value="#{recordDetail.empName}" />
+									</rich:column>
+									<rich:column style="width : 7%">
+										<f:facet name="header">#{msgs.label_personRank}</f:facet>
+										<h:outputText value="#{recordDetail.empRankDescription}" />
+									</rich:column>
+									<rich:column style="width : 7%">
+										<f:facet name="header">#{msgs.label_jobCode}</f:facet>
+										<h:outputText value="#{recordDetail.empJobCode}" />
+									</rich:column>
+									<rich:column style="width : 7%">
+										<f:facet name="header">#{msgs.label_birthDate}</f:facet>
+										<h:outputText value="#{recordDetail.empBirthDateString}" />
+									</rich:column>
+									<rich:column style="width : 10%">
+										<f:facet name="header">#{msgs.label_jobName}</f:facet>
+										<h:outputText value="#{recordDetail.empJobName}" />
+									</rich:column>
+									<rich:column style="width : 20%">
+										<f:facet name="header">#{msgs.label_officialUnit}</f:facet>
+										<h:outputText value="#{recordDetail.empOfficialUnitFullName}" />
+									</rich:column>
+									<rich:column style="width : 7%">
+										<f:facet name="header">#{msgs.label_terminationDueDate}</f:facet>
+										<h:outputText value="#{recordDetail.empTerminationDueDateString}" />
+									</rich:column>
+									<rich:column style="width : 7%">
+										<f:facet name="header">#{msgs.label_lastExtentionTerminationDate}</f:facet>
+										<h:outputText value="#{recordDetail.empLastExtensionEndDateString}" />
+									</rich:column>
+
+									<rich:column style="width : 5%;" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 5 ) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role == 'ReviewerEmp' )}">
+										<f:facet name="header">
+											<h:outputText value="#{msgs.label_delete}" />
+										</f:facet>
+										<h:commandButton id="deleteRecordBtnId" disabled="#{terminationsCiviliansRecords.privilegesFlag == false}" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="if(confirm('#{msgs.error_terminationDetailDeleteError}') == false) return false;" action="#{terminationsCiviliansRecords.deleteTerminationsDetailData(recordDetail)}">
+											<f:ajax execute="terminationsCiviliansRecordsFormId:recordDetailsPanelId"
+												render="terminationsCiviliansRecordsFormId:recordDetailsPanelId terminationsCiviliansRecordsFormId:terminationEmployeeDataPanelId terminationsCiviliansRecordsFormId:terminationServiceDataPanelId terminationsCiviliansRecordsFormId:terminationExtensionDetailsPanelId terminationsCiviliansRecordsFormId:saveDetailSectionId terminationsCiviliansRecordsFormId:actionsSectionId terminationsCiviliansRecordsFormId:notifyMessagesId"
+												onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</rich:column>
+									<rich:column style="width : 5%;" rendered="#{terminationsCiviliansRecords.role == 'Notification' and terminationsCiviliansRecords.instanceApproved == 1 and terminationsCiviliansRecords.terminationRecordData.reasonId == 105 }">
+										<f:facet name="header">
+											<h:outputText value="#{msgs.label_print}" />
+										</f:facet>
+										<h:commandButton value="#{msgs.fa_print}" styleClass="btn_icon" action="#{terminationsCiviliansRecords.printForNotification(recordDetail.id)}" />
+									</rich:column>
+									<f:facet name="footer">
+										<rich:dataScroller oncomplete="#{rich:component('reload')}.hide()" maxPages="5" fastControls="hide">
+											<f:facet name="first">#{msgs.label_first}</f:facet>
+											<f:facet name="last">#{msgs.label_last}</f:facet>
+											<f:facet name="next">#{msgs.label_next}</f:facet>
+											<f:facet name="previous">#{msgs.label_previous}</f:facet>
+										</rich:dataScroller>
+									</f:facet>
+								</rich:dataTable>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="terminationEmployeeDataPanelId">
+							<h:panelGroup rendered="#{(terminationsCiviliansRecords.terminationRecordData.id != null and terminationsCiviliansRecords.terminationRecordData.reasonId != 105) or (terminationsCiviliansRecords.selectedTerminationRecordDetailData != null and terminationsCiviliansRecords.terminationRecordData.reasonId == 105)}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0" style="margin-top: 3px">
+									<tr>
+										<td width="100%">#{msgs.title_personData}</td>
+									</tr>
+								</table>
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_empName}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.empName}" />
+											<h:inputHidden id="empSigularHId" value="#{terminationsCiviliansRecords.selectedEmployeeDataId}" />
+											<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmp('#{request.contextPath}');return false;" rendered="#{terminationsCiviliansRecords.terminationRecordData.reasonId != 105 and terminationsCiviliansRecords.selectedTerminationRecordDetailData.id == null and terminationsCiviliansRecords.privilegesFlag == true}"
+												disabled="#{terminationsCiviliansRecords.terminationRecordData.status == 15 or terminationsCiviliansRecords.privilegesFlag == false or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{terminationsCiviliansRecords.constructTerminationsDetailDataSingular()}">
+												<f:ajax execute="terminationsCiviliansRecordsFormId:terminationEmployeeDataPanelId"
+													render="terminationsCiviliansRecordsFormId:terminationsRecordDataId terminationsCiviliansRecordsFormId:terminationsRecordEnrollDataId terminationsCiviliansRecordsFormId:saveSectionId terminationsCiviliansRecordsFormId:terminationEmployeeDataPanelId terminationsCiviliansRecordsFormId:terminationExtensionDetailsPanelId terminationsCiviliansRecordsFormId:terminationServiceDataPanelId terminationsCiviliansRecordsFormId:saveDetailSectionId terminationsCiviliansRecordsFormId:decisionCopiesPanelId terminationsCiviliansRecordsFormId:actionsSectionId terminationsCiviliansRecordsFormId:notifyMessagesId"
+													onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_personRank}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.empRankDescription}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_jobCode}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.empJobCode}" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_jobName}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.empJobName}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_officialUnit}" />
+										</th>
+										<td width="80%" colspan="3">
+											<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.empOfficialUnitFullName}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_birthDate}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.empBirthDateString}" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_recruitmentDate}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.empRecruitmentDateString}" />
+										</td>
+									</tr>
+									<h:panelGroup rendered="#{terminationsCiviliansRecords.mode != 6}">
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_serviceTerminationDueDate}" />
+											</th>
+											<td width="30%">
+												<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.empTerminationDueDateString}" />
+											</td>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_lastExtensionEndDate}" />
+											</th>
+											<td width="30%">
+												<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.empLastExtensionEndDateString}" />
+											</td>
+
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_promotionDueDate}" />
+											</th>
+											<td width="30%">
+												<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.empPromotionDueDateString}" />
+											</td>
+											<th width="20%">
+												<h:outputText value="#{msgs.lable_lastPromotionDate}" />
+											</th>
+											<td width="30%">
+												<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.empLastPromotionDateString}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="terminationExtensionDetailsPanelId">
+							<rich:collapsiblePanel rendered="#{terminationsCiviliansRecords.terminationRecordData.categoryId != 6 and terminationsCiviliansRecords.selectedTerminationRecordDetailData != null}" switchType="client" expanded="false" header="#{msgs.title_previousExtensionPeriods}">
+								<rich:dataTable value="#{terminationsCiviliansRecords.terminationExtensionTransactionDataList}" var="extension" rows="#{terminationsCiviliansRecords.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+									<f:facet name="header">
+										<rich:columnGroup>
+											<rich:column rowspan="2">
+												<h:outputText value="#{msgs.label_decisionNumber}" />
+											</rich:column>
+											<rich:column rowspan="2">
+												<h:outputText value="#{msgs.label_decisionDate}" />
+											</rich:column>
+											<rich:column colspan="3">
+												<h:outputText value="#{msgs.label_terminationExtensionsDetails}" />
+											</rich:column>
+											<rich:column rowspan="2">
+												<h:outputText value="#{msgs.label_showAttachment}" />
+											</rich:column>
+
+											<rich:column breakRowBefore="true">
+												<h:outputText value="#{msgs.label_extensionPeriodByMonths}" />
+											</rich:column>
+											<rich:column>
+												<h:outputText value="#{msgs.label_extensionStartDate}" />
+											</rich:column>
+											<rich:column>
+												<h:outputText value="#{msgs.label_extensionEndDate}" />
+											</rich:column>
+										</rich:columnGroup>
+									</f:facet>
+									<rich:column style="width:20%">
+										<h:outputText value="#{extension.decisionNumber}" />
+									</rich:column>
+									<rich:column style="width:20%">
+										<h:outputText value="#{extension.decisionDateString}" />
+									</rich:column>
+									<rich:column style="width:15%">
+										<h:outputText value="#{extension.extensionPeriodMonths}" />
+									</rich:column>
+									<rich:column style="width:15%">
+										<h:outputText value="#{extension.extensionStartDateString}" />
+									</rich:column>
+									<rich:column style="width:15%">
+										<h:outputText value="#{extension.extensionEndDateString}" />
+									</rich:column>
+									<rich:column style="width:15%">
+										<code:attachments loginEmpId="#{terminationsCiviliansRecords.loginEmpData.empId}" attachmentId="#{extension.attachments}" addEnableFlag="false" viewEnableFlag="true" deleteEnableFlag="false" />
+									</rich:column>
+									<f:facet name="footer">
+										<rich:dataScroller oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+											<f:facet name="first">#{msgs.label_first}</f:facet>
+											<f:facet name="last">#{msgs.label_last}</f:facet>
+											<f:facet name="next">#{msgs.label_next}</f:facet>
+											<f:facet name="previous">#{msgs.label_previous}</f:facet>
+										</rich:dataScroller>
+									</f:facet>
+								</rich:dataTable>
+							</rich:collapsiblePanel>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="terminationServiceDataPanelId">
+							<h:panelGroup switchType="client" expanded="true" header="#{msgs.label_terminationData}" rendered="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData != null }">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0" style="margin-top: 3px">
+									<tr>
+										<td width="100%">#{msgs.label_terminationData}</td>
+									</tr>
+								</table>
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_remarks}" />
+										</th>
+										<td width="80%" colspan="3">
+											<h:inputTextarea value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.remarks}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge"
+												disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+										</td>
+									</tr>
+									<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.reasonId == 110}">
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_notJudgmentFlag}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:selectBooleanCheckbox id="judgmentFlagBooleanId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.judgmentFlagBoolean}" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_desiredTerminationDate}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="30%">
+												<util:hijri id="desiredTerminationDateId" nullable="true" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.desiredTerminationDate}" onChangeAjaxSubmit="true" listenerMethod="#{terminationsCiviliansRecords.desiredTerminationDateChange()}" reRenderIds="terminationsCiviliansRecordsFormId:terminationServiceDataPanelId"
+													rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 5) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role == 'ReviewerEmp')}" onAjaxEvent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.desiredTerminationDateString}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_terminationReason}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="30%">
+												<h:selectOneRadio id="terminationRequestTypeId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.terminationRequestType}" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp') or terminationsCiviliansRecords.resignation }">
+													<f:selectItem itemLabel="#{msgs.label_terminationTypeRetirement}" itemValue="1" />
+													<f:selectItem itemLabel="#{msgs.label_terminationTypeResignation}" itemValue="2" />
+												</h:selectOneRadio>
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.reasonId == 115}">
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_refferingTo}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:inputTextarea id="referringMidecalDisabilityId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.referring}"  onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}"/>
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_employeeSuffringFrom}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:inputText id="medicalCaseDescId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.medicalCaseDesc}" maxlength="400" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_medicalDisabilty}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:inputText id="medicalWorkDisabilityId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.medicalWorkDisability}" maxlength="400" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.reasonId == 120}">
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_refferingTo}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:inputTextarea id="referringAbsenceId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.referring}"  onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}"/>
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_absenceType}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:selectOneMenu id="absenceTypeId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.absenceType}" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}">
+													<f:selectItem itemLabel="#{msgs.label_continousAbsenceDays}" itemValue="1" />
+													<f:selectItem itemLabel="#{msgs.label_SperatedAbsceDays}" itemValue="2" />
+												</h:selectOneMenu>
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_absenceStartDate}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="30%">
+												<util:hijri id="absenceStartDateId" nullable="true" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.absenceStartDate}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 5) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role == 'ReviewerEmp')}" />
+												<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.absenceStartDateString}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_absenceDaysCount}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="30%"> 
+												<h:inputText id="absencePeriodDaysId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.absencePeriodDays}" maxlength="4" onkeypress="return isDigit(event);" styleClass="inputDataNormal" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.reasonId == 125}">
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_refferingTo}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:inputTextarea id="refferingDismissId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.referring}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}"/>
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_dismissDecisionNumber}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="30%">
+												<h:inputText id="dismissDecisionNumberId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.dismissDecisionNumber}" styleClass="inputDataLarge" maxlength="50" onkeypress="return isDigit(event);" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_dismissDecisionDate}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="30%">
+												<util:hijri id="dismissDecisionDateId" nullable="true" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.dismissDecisionDate}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 5) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role == 'ReviewerEmp')}" />
+												<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.dismissDecisionDateString}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_judmentDecision}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:inputText id="dismissJudgmentId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.dismissJudgment}" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.reasonId == 130}">
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_refferingTo}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:inputTextarea id="referringDismissPublicInterestId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.referring}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}"/>
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.reasonId == 135}">
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_refferingTo}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:inputTextarea id="referringDisQualificationReasonId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.referring}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}"/>
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_reason}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:inputText id="disQualificationReasonId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.disqualificationReason}" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.reasonId == 140}">
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_refferingTo}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:inputTextarea id="referringJobCancelId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.referring}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}"/>
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_jobCancelationDate}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<util:hijri id="jobCancelationDateId" nullable="true" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.jobCancelationDate}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 5) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role == 'ReviewerEmp')}" />
+												<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.jobCancelationDateString}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.reasonId == 145}">
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_deathCertIssuePlace}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:inputText id="deathCertIssuePlaceId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.deathCertIssuePlace}" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_deathCertNumber}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="30%">
+												<h:inputText id="deathCertNumberId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.deathCertNumber}" styleClass="inputDataLarge" maxlength="20" onkeypress="return isDigit(event);" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_deathCertDate}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="30%">
+												<util:hijri id="deathCertDateId" nullable="true" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.deathCertDate}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 5) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role == 'ReviewerEmp')}" />
+												<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.deathCertDateString}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_deathDate}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<util:hijri id="deathDateId" nullable="true" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.deathDate}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 5) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role == 'ReviewerEmp')}" />
+												<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.deathDateString}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.reasonId == 150}">
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_refferingTo}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:inputTextarea id="refeeringNationaltyLossId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.referring}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}"/>
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_nationaltyLossReason}" />
+											</th>
+											<td width="80%" colspan="3">
+												<h:selectOneRadio id="nationaltyLossTypeId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.nationalityLossType}" layout="lineDirection" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}">
+													<f:selectItem itemLabel="#{msgs.label_noOfficialyIssued}" itemValue="1" />
+													<f:selectItem itemLabel="#{msgs.label_nationaltyLoss}" itemValue="2" />
+													<f:ajax event="change" listener="#{terminationsCiviliansRecords.nationalityLossChanged()}" execute="terminationsCiviliansRecordsFormId:terminationServiceDataPanelId" render="terminationsCiviliansRecordsFormId:terminationServiceDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:selectOneRadio>
+											</td>
+										</tr>
+										<h:panelGroup rendered="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.nationalityLossType == 2}">
+											<tr>
+												<th width="20%">
+													<h:outputText value="#{msgs.label_reason}" />
+													<font style="color: red;">*</font>
+												</th>
+												<td width="80%" colspan="3">
+													<h:inputText id="nationalityLossReasonId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.nationalityLossReason}" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+												</td>
+
+											</tr>
+										</h:panelGroup>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.reasonId == 305}">
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_refferingTo}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:inputTextarea id="referringTermentionContractorId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.referring}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}"/>
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_termentionContractorDate}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<util:hijri id="serviceContractorTerminationDateId" nullable="true" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.serviceTerminationDate}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 5) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role == 'ReviewerEmp')}" />
+												<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.serviceTerminationDateString}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_contractorBasedOnType}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:selectOneMenu id="contractorBasedOnTypeId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.contractorBasedOnType}" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}">
+													<f:selectItem itemLabel="#{msgs.label_basedOnWorkingSystem}" itemValue="1" />
+													<f:selectItem itemLabel="#{msgs.label_basedOnEmploymentListNonSaudis}" itemValue="2" />
+												</h:selectOneMenu>
+											</td>
+										</tr>
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_TerminationContractorReason}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:inputText id="terminationContractorReasonId" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.contractorTerminationReason}" styleClass="inputDataSuperLarge" disabled="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.reasonId != 105 and terminationsCiviliansRecords.terminationRecordData.reasonId != 110 and terminationsCiviliansRecords.terminationRecordData.reasonId != 305}">
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_serviceTerminationDate}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<util:hijri id="serviceTerminationDateId" nullable="true" value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.serviceTerminationDate}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 5) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role == 'ReviewerEmp')}" />
+												<h:outputText value="#{terminationsCiviliansRecords.selectedTerminationRecordDetailData.serviceTerminationDateString}" rendered="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td colspan="4">
+						<table align="center">
+							<tr>
+								<td width="100%" align="center">
+									<h:panelGroup id="saveDetailSectionId">
+										<h:panelGroup rendered="#{((terminationsCiviliansRecords.terminationRecordData.status == 5) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role == 'ReviewerEmp')) and terminationsCiviliansRecords.terminationRecordData.id != null and terminationsCiviliansRecords.selectedTerminationRecordDetailData != null}">
+											<h:commandButton style="width:150px" action="#{terminationsCiviliansRecords.addModifyTerminationDetail()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{(terminationsCiviliansRecords.role == 'Requester' or  terminationsCiviliansRecords.role =='ReviewerEmp') and terminationsCiviliansRecords.terminationRecordData.status!=15 }" disabled="#{terminationsCiviliansRecords.privilegesFlag == false}">
+												<f:ajax execute="terminationsCiviliansRecordsFormId:terminationServiceDataPanelId" render="terminationsCiviliansRecordsFormId:terminationEmployeeDataPanelId terminationsCiviliansRecordsFormId:terminationServiceDataPanelId terminationsCiviliansRecordsFormId:actionsSectionId terminationsCiviliansRecordsFormId:decisionCopiesPanelId terminationsCiviliansRecordsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</h:panelGroup>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="decisionCopiesPanelId">
+							<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.id != null}">
+								<code:decisionCopies viewOnly="#{(terminationsCiviliansRecords.terminationRecordData.status == 15) or (terminationsCiviliansRecords.terminationRecordData.status == 10 and terminationsCiviliansRecords.role != 'ReviewerEmp')}" external="#{terminationsCiviliansRecords.terminationRecordData.externalCopies}" internal="#{terminationsCiviliansRecords.internalCopies}" />
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<h:panelGroup id="prevTasksPanelId" rendered="#{terminationsCiviliansRecords.terminationRecordData.id != null}">
+					<code:prevTasks rendered="#{terminationsCiviliansRecords.role != 'Requester'}" value="#{terminationsCiviliansRecords.prevTasks}" refuseRoles="SignManager," />
+				</h:panelGroup>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="curTaskPanelId" rendered="#{terminationsCiviliansRecords.terminationRecordData.id != null}">
+							<code:curTask id="curTaskId" value="#{terminationsCiviliansRecords.currentEmployee}" rendered="#{terminationsCiviliansRecords.role != 'Requester' and terminationsCiviliansRecords.role != 'Notification' and terminationsCiviliansRecords.role != 'History'}">
+
+								<tr>
+									<th width="20%">#{msgs.label_notes}</th>
+									<td width="80%" colspan="3">
+										<h:inputText id="notesId" value="#{terminationsCiviliansRecords.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+
+								<h:panelGroup rendered="#{terminationsCiviliansRecords.role == 'ReviewerEmp' or terminationsCiviliansRecords.role == 'SignManager'}">
+									<tr>
+										<th width="20%">#{msgs.label_refuseReasons}</th>
+										<td width="80%" colspan="3">
+											<h:inputText id="refuseReasonsId" value="#{terminationsCiviliansRecords.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+										</td>
+									</tr>
+								</h:panelGroup>
+
+							</code:curTask>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{terminationsCiviliansRecords.role == 'Notification' or terminationsCiviliansRecords.role == 'History'}" value="#{terminationsCiviliansRecords.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsSectionId">
+							<h:panelGroup rendered="#{terminationsCiviliansRecords.terminationRecordData.id != null and terminationsCiviliansRecords.originalTerminationRecordDetailDataList.size() != 0 and terminationsCiviliansRecords.originalTerminationRecordDetailDataList.get(0).id != null}">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<h:panelGroup rendered="#{terminationsCiviliansRecords.role == 'Requester' and terminationsCiviliansRecords.terminationRecordData.status == 5 }">
+												<h:commandButton id="sendBtnId" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" onclick="return handleOnAction('#{msgs.q_send}', 'validateTerminationServiceDetailData()');" disabled="#{terminationsCiviliansRecords.privilegesFlag == false}" action="#{terminationsCiviliansRecords.initProcess()}" styleClass="btn_normal_icon" >
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{terminationsCiviliansRecords.role == 'ReviewerEmp'}">
+												<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}', 'validateTerminationServiceDetailData()');" action="#{terminationsCiviliansRecords.approveRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;terminationsCiviliansRecordsFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationsCiviliansRecords.rejectRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{terminationsCiviliansRecords.role == 'SignManager'}">
+												<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;terminationsCiviliansRecordsFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationsCiviliansRecords.signSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="modifySmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;terminationsCiviliansRecordsFormId:curTaskId:refuseReasonsId&quot;, &quot;terminationsCiviliansRecordsFormId:curTaskId:notesId&quot;)');" action="#{terminationsCiviliansRecords.modifySM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;terminationsCiviliansRecordsFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationsCiviliansRecords.rejectSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{terminationsCiviliansRecords.role == 'Notification' and terminationsCiviliansRecords.instanceApproved == 1 and terminationsCiviliansRecords.terminationRecordData.reasonId != 105 }">
+												<h:commandButton action="#{terminationsCiviliansRecords.printForNotification(terminationsCiviliansRecords.terminationRecordDetailDataList.get(0).getId())}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{terminationsCiviliansRecords.role == 'Notification'}">
+												<h:commandButton id="nBtnId" action="#{terminationsCiviliansRecords.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

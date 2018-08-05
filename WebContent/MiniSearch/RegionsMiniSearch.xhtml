@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript"> 
+          function returnSelectedRegions(){
+            var regionsCodes = document.getElementById('regionsMiniSearchForm:totalRegionsCodesId').innerHTML;
+            var regionsNames = document.getElementById('regionsMiniSearchForm:totalRegionsNamesId').innerHTML;
+            if (regionsCodes.length > 0){
+            	ret = new Array();
+            	ret[0] = regionsCodes;
+            	ret[1] = regionsNames;
+                window.close();
+ 	       	    eval('(' + window.opener.#{param['miniSearchReturnHandler']} + ')');
+
+            }
+          }
+        </script>
+
+</h:head>
+<h:body onunload="window.opener.unMaskOpenerScreen();">
+	<h:form id="regionsMiniSearchForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/PlainTemplate.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{msgs.title_regionsInquiry}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="16" />
+				</tr>
+
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="regionsListId" rowKeyVar="index" var="row" value="#{regionsMiniSearch.regionsList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+							<rich:column>
+								<f:facet name="header">#</f:facet>
+                                                #{index + 1}
+                                                <h:inputHidden value="#{row.id}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">#{msgs.label_code}</f:facet>
+								<h:outputText id="nameID" value="#{row.code}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">#{msgs.label_name}</f:facet>
+								<h:outputText value="#{row.description}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">#{msgs.label_select}</f:facet>
+								<h:commandButton action="#{regionsMiniSearch.addSelectedRegion(row)}" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon">
+									<f:ajax render="regionsMiniSearchForm:regionsListId regionsMiniSearchForm:selectedRegionsListId regionsMiniSearchForm:notifyMessagesId regionsMiniSearchForm:totalRegionsCodesId  regionsMiniSearchForm:totalRegionsNamesId" execute="@form" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+								</h:commandButton>
+							</rich:column>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th>#{msgs.label_selectedRegions}</th>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="selectedRegionsListId" rowKeyVar="index" var="row" value="#{regionsMiniSearch.selectedRegionsList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column>
+								<f:facet name="header">#</f:facet>
+                                                #{index + 1}
+                                                <h:inputHidden value="#{row.id}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">#{msgs.label_code}</f:facet>
+								<h:outputText id="nameID" value="#{row.code}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">#{msgs.label_name}</f:facet>
+								<h:outputText value="#{row.description}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">#{msgs.label_delete}</f:facet>
+								<h:commandButton action="#{regionsMiniSearch.removeSelectedRegion(row)}" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon">
+									<f:ajax render="regionsMiniSearchForm:regionsListId regionsMiniSearchForm:selectedRegionsListId regionsMiniSearchForm:notifyMessagesId regionsMiniSearchForm:totalRegionsCodesId  regionsMiniSearchForm:totalRegionsNamesId" execute="@form" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+								</h:commandButton>
+							</rich:column>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr style="display: none;">
+					<td colspan="4">
+						<h:outputText id="totalRegionsCodesId" value="#{regionsMiniSearch.totalRegionsCodes}" />
+						<h:outputText id="totalRegionsNamesId" value="#{regionsMiniSearch.totalRegionsNames}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan="4">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton value="#{msgs.label_finish} &nbsp; #{msgs.fa_check}" onclick="returnSelectedRegions(); return false;" styleClass="btn_normal_icon" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

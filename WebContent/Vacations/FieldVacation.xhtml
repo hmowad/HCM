@@ -1,0 +1,478 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:rich="http://richfaces.org/rich">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+    //<![CDATA[  
+		   function getEmp(contextPath){
+            	openEmployeesMiniSearch(contextPath, 'handleEmpsMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{fieldVacation.getLoginEmpPhysicalRegionFlag(false)});
+             }
+            
+            function handleEmpsMiniSearchResult(ret){
+            	if(ret != null){
+                    document.getElementById('fieldVacationForm:beneficiarySearchId').value = ret[0];
+                    document.getElementById('fieldVacationForm:searchEmpButton').click();
+                 }
+            }
+
+          function getCountries(contextPath){
+              openSelectCountries(1, contextPath, 'handleCountryMiniSearchResult(ret)');
+          }
+          
+          function handleCountryMiniSearchResult(ret){
+        	  if(ret != null){
+                  document.getElementById('fieldVacationForm:locationId').innerHTML = ret[0];
+                  document.getElementById('fieldVacationForm:countriesNamesId').value = ret[0];
+              }
+          }
+
+          function validateData(){
+            var period = document.getElementById('fieldVacationForm:periodId').value;
+            if(period == null || period == ''){
+            	alert('#{msgs.error_periodMandatory}');
+                return false;
+            } else if (period <= 0) {
+            	alert('#{msgs.error_periodNotNegative}');
+                return false;
+            }
+                                    
+            var locFlag = getSelectOneRadioValue('fieldVacationForm:locationFlagId');
+            if(locFlag == 1){
+                var location = document.getElementById('fieldVacationForm:locationId').innerHTML;
+                if(location == null || location == ''){
+                	alert('#{msgs.error_locationMandatory}');
+                    return false;
+                }
+            }            
+            
+            var contactNumber = document.getElementById('fieldVacationForm:contactNumberId').value;
+            if(contactNumber == null || contactNumber == ''){
+            	alert('#{msgs.error_contactNumberMandatory}');
+                return false;
+            }
+
+            var contactAdd = document.getElementById('fieldVacationForm:contactAddressId').value;
+            if(contactAdd == null || contactAdd == ''){
+            	alert('#{msgs.error_contactAddressMandatory}');
+                return false;
+            }   
+            
+            return true;
+          }
+    // ]]>
+    </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="fieldVacationForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText id="screenTitleId" value="#{fieldVacation.screenTitle}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requester}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:emp value="#{fieldVacation.requester}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiary}" switchType="client"
+							onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{fieldVacation.beneficiary.empId == fieldVacation.requester.empId}) &amp;&amp; (#{fieldVacation.role == 'Requester'})) { getEmp('#{request.contextPath}'); return false;} else {return true;}"
+							expanded="#{fieldVacation.requester.empId != fieldVacation.beneficiary.empId}" rendered="#{fieldVacation.role == 'Requester' or fieldVacation.requester.empId != fieldVacation.beneficiary.empId}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+								<h:panelGroup rendered="#{fieldVacation.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+														<h:inputHidden id="beneficiarySearchId" value="#{fieldVacation.beneficiarySearchId}" />
+														<h:commandButton id="searchEmpButton" style="display: none;" action="#{fieldVacation.searchBeneficiary}">
+															<f:ajax render="fieldVacationForm:beneficiaryPanelId fieldVacationForm:lastVacId:data fieldVacationForm:screenTitleId fieldVacationForm:requestInfoPanelId fieldVacationForm:vacationsPercentagePanelId fieldVacationForm:notifyMessagesId"
+																	execute="beneficiarySearchId"
+																	onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp id="beneficiaryId" value="#{fieldVacation.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_lastVacInfo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:vac id="lastVacId" value="#{fieldVacation.lastVacation}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requestInfo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requestInfoPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_period}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%" colspan="#{fieldVacation.role == 'Requester' ? 1 : 3}">
+										<h:inputText id="periodId" value="#{fieldVacation.vacRequest.period}" readonly="#{fieldVacation.role != 'Requester'}" maxlength="3" onkeypress="return isDigit(event);">
+											<f:ajax event="blur" execute="@this startDateId" render="endDateId notifyMessagesId" />
+										</h:inputText>
+									</td>
+									<h:panelGroup rendered="#{fieldVacation.role == 'Requester'}">
+										<th width="15%">
+											<h:outputText value="#{msgs.label_vacationBalance}" />
+										</th>
+										<td width="35%">
+											<h:outputText id="vacationBalanceId" value="#{fieldVacation.vacationBalance}" />
+										</td>
+									</h:panelGroup>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_startDate}</th>
+									<td width="35%">
+										<util:hijri rendered="#{fieldVacation.role == 'Requester'}" id="startDateId" value="#{fieldVacation.vacRequest.startDate}" onChangeAjaxSubmit="true" listenerMethod="#{fieldVacation.startDateChangeListener}" reRenderIds="fieldVacationForm:vacationBalanceId fieldVacationForm:endDateId fieldVacationForm:warningsPanelId fieldVacationForm:notifyMessagesId" />
+										<h:outputText rendered="#{fieldVacation.role != 'Requester'}" value="#{fieldVacation.vacRequest.startDateString}" />
+									</td>
+
+									<th width="15%">#{msgs.label_endDate}</th>
+									<td width="35%">
+										<h:outputText id="endDateId" value="#{fieldVacation.vacRequest.endDateString}" />
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{fieldVacation.vacationMode == 1}">
+									<tr>
+										<th width="15%">#{msgs.label_location}</th>
+										<td width="35%">
+											<h:selectOneRadio id="locationFlagId" value="#{fieldVacation.vacRequest.locationFlag}" disabled="#{fieldVacation.role != 'Requester'}">
+												<f:selectItem itemValue="0" itemLabel="#{msgs.label_locIn}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_locOut}" />
+
+												<f:ajax event="click" listener="#{fieldVacation.locationFlagChangeListner}" execute="@this" render="countriesNamesId locationId locationBtnId notifyMessagesId" />
+											</h:selectOneRadio>
+										</td>
+
+										<th width="15%">
+											<h:commandButton id="locationBtnId" value="#{msgs.label_selectCountries}" onclick="getCountries('#{request.contextPath}'); return false;" rendered="#{fieldVacation.role == 'Requester'}" disabled="#{fieldVacation.role == 'Requester' and fieldVacation.vacRequest.locationFlag != 1}" styleClass="btn_normal" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:outputText id="locationId" value="#{fieldVacation.vacRequest.location}" />
+											<h:inputHidden id="countriesNamesId" value="#{fieldVacation.vacRequest.location}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{fieldVacation.vacationMode == 2}">
+									<tr>
+										<th width="15%">#{msgs.label_location}</th>
+										<td width="85%" colspan="3">
+											<h:outputText value="#{msgs.label_locIn}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+
+								<tr>
+									<th width="15%">
+										#{msgs.label_contactNumber}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:inputText id="contactNumberId" value="#{fieldVacation.vacRequest.contactNumber}" readonly="#{fieldVacation.role != 'Requester'}" maxlength="14" onkeypress="return isDigit(event);" />
+									</td>
+									<td width="50%" colspan="2" />
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_contactAddress}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="contactAddressId" value="#{fieldVacation.vacRequest.contactAddress}" readonly="#{fieldVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{fieldVacation.vacationMode == 2}">
+									<tr>
+										<th width="15%">#{msgs.label_requestJustifications}</th>
+										<td width="85%" colspan="3">
+											<h:inputText value="#{fieldVacation.vacRequest.reasons}" readonly="#{fieldVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th width="15%">#{msgs.label_notes}</th>
+									<td width="85%" colspan="3">
+										<h:inputText value="#{fieldVacation.vacRequest.notes}" readonly="#{fieldVacation.role != 'Requester'}" maxlength="100" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_attachments}</th>
+									<td width="85%" colspan="3">
+										<code:attachments loginEmpId="#{fieldVacation.loginEmpData.empId}" attachmentId="#{fieldVacation.attachments}" addEnableFlag="#{fieldVacation.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{fieldVacation.role == 'Requester'}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="vacationsPercentagePanelId">
+							<h:panelGroup rendered="#{fieldVacation.role != 'Notification' and fieldVacation.role != 'History'}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%" height="15" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_vacationsRatios}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td style="font-weight: bold;">
+														#{msgs.label_showVacationsRatios}
+														<a href="#{request.contextPath}/Vacations/VacationsSearch.jsf?mode=#{fieldVacation.vacationMode}" target="_blank">#{msgs.label_here}</a>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="warningsPanelId">
+							<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th>#{msgs.label_warnings}</th>
+								</tr>
+								<h:panelGroup rendered="#{fieldVacation.hasEarlierStartDateWarning()}">
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.label_warningsEarlierStartDateForVacation}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{fieldVacation.hasContinousPreviousVacationWarning()}">
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.label_warningsValidPreviousVacationJoiningDate}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td>
+										<h:outputText value="#{msgs.label_warningsDeservingForFieldVacation}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<code:prevTasks rendered="#{fieldVacation.role != 'Requester'}" value="#{fieldVacation.prevTasks}" refuseRoles="DirectManager,ReviewerEmp,SignManager," />
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{fieldVacation.currentEmployee}" rendered="#{fieldVacation.role != 'Requester' and fieldVacation.role != 'Notification' and fieldVacation.role != 'History'}">
+							<h:panelGroup rendered="#{fieldVacation.role == 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{fieldVacation.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{fieldVacation.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{fieldVacation.currentTask.notes}" maxlength="500" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{fieldVacation.role != 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{fieldVacation.currentTask.refuseReasons}" maxlength="500" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{fieldVacation.role == 'Notification' or fieldVacation.role == 'History'}" value="#{fieldVacation.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:panelGroup rendered="#{fieldVacation.role == 'Requester'}">
+										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateData()');" action="#{fieldVacation.initProcess}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{fieldVacation.role == 'DirectManager'}">
+										<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;fieldVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{fieldVacation.approveDM}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;fieldVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{fieldVacation.rejectDM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{fieldVacation.role == 'ManagerRedirect'}">
+										<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;fieldVacationForm:curTaskId:reviewersId&quot;)');" action="#{fieldVacation.redirectMR}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{fieldVacation.role == 'ReviewerEmp'}">
+										<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}', 'validateRefuseAndNotes(1, &quot;fieldVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{fieldVacation.approveRE}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;fieldVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{fieldVacation.rejectRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{fieldVacation.role == 'SignManager'}">
+										<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;fieldVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{fieldVacation.signSM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="modifySmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;fieldVacationForm:curTaskId:refuseReasonsId&quot;, &quot;fieldVacationForm:curTaskId:notesId&quot;)');" action="#{fieldVacation.modifySM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;fieldVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{fieldVacation.rejectSM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{fieldVacation.role == 'Notification' and fieldVacation.instanceApproved == 1}">
+										<h:commandButton id="printBtnId" action="#{fieldVacation.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{fieldVacation.role == 'Notification'}">
+										<h:commandButton id="nBtnId" action="#{fieldVacation.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>
