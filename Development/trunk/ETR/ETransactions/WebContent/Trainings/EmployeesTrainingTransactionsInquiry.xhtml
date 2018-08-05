@@ -1,0 +1,304 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+			window.onkeypress = function(e) {
+			// window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+			if (keyCode == '13') {
+				document.getElementById('employeesTrainingTransactionsInquiryFormId:searchBtnId').click();
+				return false;
+			}
+		};
+    function getUnit() {
+    	if(#{employeesTrainingTransactionsInquiry.employeeMenuActionGranted}){
+			openUnitsMiniSearch(2, '#{request.contextPath}','handleUnitMiniSearchResult(ret)', -1,  #{employeesTrainingTransactionsInquiry.getLoginEmpPhysicalRegionFlag(true)}, -1);		
+    	} else if (#{employeesTrainingTransactionsInquiry.loginEmpData.isManager == 1}) {
+        	openUnitsMiniSearch(4, '#{request.contextPath}','handleUnitMiniSearchResult(ret)', -1,  -1, #{employeesTrainingTransactionsInquiry.loginEmpData.physicalUnitId});
+   		}
+ 	}
+
+	function handleUnitMiniSearchResult(ret) {
+		if (ret != null) {
+			document.getElementById('employeesTrainingTransactionsInquiryFormId:unitNameHId').value = ret[1];
+			document.getElementById('employeesTrainingTransactionsInquiryFormId:unitNameId').innerHTML = ret[1];
+		}
+	}
+
+	function validateSearch() {
+			var internalMilitaryIsChecked = document.getElementById('employeesTrainingTransactionsInquiryFormId:trainingTransactionsTypes:0').checked;
+			var externalMilitaryIsChecked = document.getElementById('employeesTrainingTransactionsInquiryFormId:trainingTransactionsTypes:1').checked;
+			var scholarshipIsChecked = document.getElementById('employeesTrainingTransactionsInquiryFormId:trainingTransactionsTypes:2').checked;
+			var stuyEnrollementIsChecked = document.getElementById('employeesTrainingTransactionsInquiryFormId:trainingTransactionsTypes:3').checked;
+			var morningCourseIsChecked = document.getElementById('employeesTrainingTransactionsInquiryFormId:trainingTransactionsTypes:4').checked;
+			var eveniningCourseIsChecked = document.getElementById('employeesTrainingTransactionsInquiryFormId:trainingTransactionsTypes:5').checked;
+
+			if(!internalMilitaryIsChecked && !externalMilitaryIsChecked && !scholarshipIsChecked && !stuyEnrollementIsChecked && !morningCourseIsChecked &&  !eveniningCourseIsChecked) {
+				alert('#{msgs.error_transactionTypeMandatory}');
+				return false;
+			}
+			
+		return true;
+	}
+	
+		//]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="employeesTrainingTransactionsInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_employeesTrainingTransactionsInquiry}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:panelGroup rendered="#{!employeesTrainingTransactionsInquiry.employeeMenuActionGranted and employeesTrainingTransactionsInquiry.loginEmpData.isManager != 1}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%">
+										<h:outputText value="#{msgs.error_employeesTrainingTransactionsInquiryPrivilege}" />
+									</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{employeesTrainingTransactionsInquiry.employeeMenuActionGranted or employeesTrainingTransactionsInquiry.loginEmpData.isManager == 1}">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_searchData}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="searchPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_orgUnit}" />
+										</th>
+										<td width="35%">
+											<h:outputText id="unitNameId" value="#{employeesTrainingTransactionsInquiry.unitName}" />
+											<h:inputHidden id="unitNameHId" value="#{employeesTrainingTransactionsInquiry.unitName}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+										<th width="15%">#{msgs.label_employeesCategory}</th>
+										<td width="35%">
+											<h:selectOneMenu value="#{employeesTrainingTransactionsInquiry.categoryId}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+												<f:selectItem itemLabel="#{msgs.label_officers}" itemValue="1" />
+												<f:selectItem itemLabel="#{msgs.label_soldiers}" itemValue="2" />
+												<f:selectItem itemLabel="#{msgs.label_employees}" itemValue="3" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_trainingCourseName}</th>
+										<td width="35%">
+											<h:inputText id="trainingCourseNameId" value="#{employeesTrainingTransactionsInquiry.trainingCourseName}" />
+										</td>
+										<th width="15%">#{msgs.label_searchWithCandidateStatus}</th>
+										<td width="35%">
+											<h:selectOneMenu value="#{employeesTrainingTransactionsInquiry.traineeStatus}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+												<f:selectItem itemLabel="#{msgs.label_nominationAcceptedFromFG}" itemValue="1" />
+												<f:selectItem itemLabel="#{msgs.label_nominationRejecteFromParty}" itemValue="2" />
+												<f:selectItem itemLabel="#{msgs.label_nominationAccepted}" itemValue="3" />
+												<f:selectItem itemLabel="#{msgs.label_joinedTheCourse}" itemValue="4" />
+												<f:selectItem itemLabel="#{msgs.label_apologizedForTheCourse}" itemValue="5" />
+												<f:selectItem itemLabel="#{msgs.label_hasBeenReplaced}" itemValue="6" />
+												<f:selectItem itemLabel="#{msgs.label_courseCancelledForHim}" itemValue="7" />
+												<f:selectItem itemLabel="#{msgs.label_finishedTheCourse}" itemValue="8" />
+												<f:selectItem itemLabel="#{msgs.label_coursePostponed}" itemValue="9" />
+												<f:selectItem itemLabel="#{msgs.label_courseCancelled}" itemValue="10" />
+												<f:selectItem itemLabel="#{msgs.label_scholarshipIssued}" itemValue="11" />
+												<f:selectItem itemLabel="#{msgs.label_scholarshipExtended}" itemValue="12" />
+												<f:selectItem itemLabel="#{msgs.label_scholarshipTerminated}" itemValue="13" />
+												<f:selectItem itemLabel="#{msgs.label_scholarshipCanceled}" itemValue="14" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_from}</th>
+										<td width="35%">
+											<util:hijri value="#{employeesTrainingTransactionsInquiry.fromDate}" nullable="false" />
+										</td>
+										<th width="15%">#{msgs.label_to}</th>
+										<td width="35%">
+											<util:hijri value="#{employeesTrainingTransactionsInquiry.toDate}" nullable="false" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_transactionType}</th>
+										<td width="85%" colspan="3">
+											<h:selectManyCheckbox id="trainingTransactionsTypes" value="#{employeesTrainingTransactionsInquiry.checkedTrainingTransactionsTypes}">
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_internalMilitaryCourse}" />
+												<f:selectItem itemValue="2" itemLabel="#{msgs.label_externalMilitaryCourse}" />
+												<f:selectItem itemValue="3" itemLabel="#{msgs.label_scholarship}" />
+												<f:selectItem itemValue="4" itemLabel="#{msgs.label_studyEnrolment}" />
+												<f:selectItem itemValue="5" itemLabel="#{msgs.label_morningCourse}" />
+												<f:selectItem itemValue="6" itemLabel="#{msgs.label_eveningCourse}" />
+											</h:selectManyCheckbox>
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_successIndicator}/#{msgs.label_thePassing}</th>
+										<td width="85%" colspan="3">
+											<h:selectOneRadio value="#{employeesTrainingTransactionsInquiry.traineeSuccessFlag}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+												<f:selectItem itemLabel="#{msgs.label_successful}/#{msgs.label_passing}" itemValue="1" />
+												<f:selectItem itemLabel="#{msgs.label_residual}/#{msgs.label_noPassing}" itemValue="0" />
+											</h:selectOneRadio>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup>
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:commandButton id="searchBtnId" action="#{employeesTrainingTransactionsInquiry.search()}" onclick="return validateSearch();" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon">
+												<f:ajax execute="employeesTrainingTransactionsInquiryFormId:searchPanelId" render="employeesTrainingTransactionsInquiryFormId:trainingTransactionEmployeeTableId" />
+											</h:commandButton>
+											<h:commandButton action="#{employeesTrainingTransactionsInquiry.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+												<f:ajax render="employeesTrainingTransactionsInquiryFormId:searchPanelId employeesTrainingTransactionsInquiryFormId:trainingTransactionEmployeeTableId" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_employeesTransactionsDetails}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td align="center" width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<rich:dataTable id="trainingTransactionEmployeeTableId" rowKeyVar="index" var="trainingTransactionEmployee" value="#{employeesTrainingTransactionsInquiry.trainingTransactionEmployee}" rows="#{employeesTrainingTransactionsInquiry.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+											<rich:column style="width : 5%">
+												<f:facet name="header">#</f:facet>
+	                               				 #{index + 1}
+	                        				</rich:column>
+											<rich:column style="width : 10%">
+												<f:facet name="header"> #{msgs.label_employeeName} </f:facet>
+												<h:outputText value="#{trainingTransactionEmployee.employeeName}" />
+											</rich:column>
+											<rich:column style="width : 10%">
+												<f:facet name="header"> #{msgs.label_rank} </f:facet>
+												<h:outputText value="#{trainingTransactionEmployee.employeeRankDesc}" />
+											</rich:column>
+											<rich:column style="width : 10%">
+												<f:facet name="header"> #{msgs.label_socialId} </f:facet>
+												<h:outputText value="#{trainingTransactionEmployee.employeeSocialId}" />
+											</rich:column>
+											<rich:column style="width : 10%">
+												<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+												<h:outputText value="#{trainingTransactionEmployee.employeePhysicalUnitFullname}" />
+											</rich:column>
+											<rich:column style="width : 10%">
+												<f:facet name="header"> #{msgs.label_transactionType} </f:facet>
+												<h:outputText value="#{msgs.label_internalMilitaryCourse}" rendered="#{trainingTransactionEmployee.trainingTypeId == 1}" />
+												<h:outputText value="#{msgs.label_externalMilitaryCourse}" rendered="#{trainingTransactionEmployee.trainingTypeId == 2}" />
+												<h:outputText value="#{msgs.label_scholarship}" rendered="#{trainingTransactionEmployee.trainingTypeId == 3}" />
+												<h:outputText value="#{msgs.label_studyEnrolment}" rendered="#{trainingTransactionEmployee.trainingTypeId == 4}" />
+												<h:outputText value="#{msgs.label_morningCourse}" rendered="#{trainingTransactionEmployee.trainingTypeId == 5}" />
+												<h:outputText value="#{msgs.label_eveningCourse}" rendered="#{trainingTransactionEmployee.trainingTypeId == 6}" />
+											</rich:column>
+											<rich:column style="width : 10%">
+												<f:facet name="header"> #{msgs.label_description} </f:facet>
+												<h:outputText value="#{trainingTransactionEmployee.studySubject== null ? trainingTransactionEmployee.courseName : trainingTransactionEmployee.studySubject}" />
+											</rich:column>
+											<rich:column style="width : 10%">
+												<f:facet name="header"> #{msgs.label_fromDate} </f:facet>
+												<h:outputText value="#{trainingTransactionEmployee.studyStartDateString == null ? trainingTransactionEmployee.actualStartDateString : trainingTransactionEmployee.studyStartDateString}" />
+											</rich:column>
+											<rich:column style="width : 10%">
+												<f:facet name="header"> #{msgs.label_toDate} </f:facet>
+												<h:outputText value="#{trainingTransactionEmployee.studyEndDateString == null ? trainingTransactionEmployee.actualEndDateString : trainingTransactionEmployee.studyEndDateString}" />
+											</rich:column>
+											<rich:column style="width : 10%">
+												<f:facet name="header"> #{msgs.label_status} </f:facet>
+												<h:outputText value="#{msgs.label_nominationAcceptedFromFG}" rendered="#{trainingTransactionEmployee.status == 1}" />
+												<h:outputText value="#{msgs.label_nominationRejecteFromParty}" rendered="#{trainingTransactionEmployee.status == 2}" />
+												<h:outputText value="#{msgs.label_nominationAccepted}" rendered="#{trainingTransactionEmployee.status == 3}" />
+												<h:outputText value="#{msgs.label_joinedTheCourse}" rendered="#{trainingTransactionEmployee.status == 4}" />
+												<h:outputText value="#{msgs.label_apologizedForTheCourse}" rendered="#{trainingTransactionEmployee.status == 5}" />
+												<h:outputText value="#{msgs.label_hasBeenReplaced}" rendered="#{trainingTransactionEmployee.status == 6}" />
+												<h:outputText value="#{msgs.label_courseCancelledForHim}" rendered="#{trainingTransactionEmployee.status == 7}" />
+												<h:outputText value="#{msgs.label_finishedTheCourse}" rendered="#{trainingTransactionEmployee.status == 8}" />
+												<h:outputText value="#{msgs.label_coursePostponed}" rendered="#{trainingTransactionEmployee.status == 9}" />
+												<h:outputText value="#{msgs.label_courseCancelled}" rendered="#{trainingTransactionEmployee.status == 10}" />
+												<h:outputText value="#{msgs.label_scholarshipIssued}" rendered="#{trainingTransactionEmployee.status == 11}" />
+												<h:outputText value="#{msgs.label_scholarshipExtended}" rendered="#{trainingTransactionEmployee.status == 12}" />
+												<h:outputText value="#{msgs.label_scholarshipTerminated}" rendered="#{trainingTransactionEmployee.status == 13}" />
+												<h:outputText value="#{msgs.label_scholarshipCanceled}" rendered="#{trainingTransactionEmployee.status == 14}" />
+											</rich:column>
+											<rich:column style="width : 10%">
+												<f:facet name="header"> #{msgs.label_successIndicator} </f:facet>
+												<h:outputText value="#{trainingTransactionEmployee.trainingTypeId == 1 or trainingTransactionEmployee.trainingTypeId == 2 ?  msgs.label_residual : msgs.label_noPassing}" rendered="#{trainingTransactionEmployee.successFlag == 0}" />
+												<h:outputText value="#{trainingTransactionEmployee.trainingTypeId == 1 or trainingTransactionEmployee.trainingTypeId == 2 ?  msgs.label_successful : msgs.label_passing}" rendered="#{trainingTransactionEmployee.successFlag == 1}" />
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+													<f:facet name="first">#{msgs.label_first}</f:facet>
+													<f:facet name="last">#{msgs.label_last}</f:facet>
+													<f:facet name="next">#{msgs.label_next}</f:facet>
+													<f:facet name="previous">#{msgs.label_previous}</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

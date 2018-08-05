@@ -1,0 +1,343 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:rich="http://richfaces.org/rich" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:h="http://java.sun.com/jsf/html" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+	function getMinorSpecialization(contextPath) {
+		openMinorSpecializationsMiniSearch(contextPath,'handleMinorSpecializationMiniSearchResult(ret)');
+	}
+	
+	function handleMinorSpecializationMiniSearchResult(ret) {
+		if (ret != null) {
+			document.getElementById('minorSpecializationsDescriptionsFormId:jobMinorSpecializationIDHId').value = ret[0];
+			document.getElementById('minorSpecializationsDescriptionsFormId:jobMinorSpecializationDescriptionId').innerHTML = ret[2];
+
+			document.getElementById('minorSpecializationsDescriptionsFormId:jobMinorSpecializationHBtnId').click();
+		}
+	}
+
+	function validateMinorSpecializationDescription(){
+		 var minorSpecializationId = document.getElementById('minorSpecializationsDescriptionsFormId:jobMinorSpecializationIDHId').value;
+	   	 if(minorSpecializationId == null || minorSpecializationId == '') {
+	        alert('#{msgs.error_minorSpecializationIsMandatory}');
+	        return false;
+	     }
+	     
+		 var targetedUnits = document.getElementById('minorSpecializationsDescriptionsFormId:targetedUnitsId').value.trim();
+	   	 if(targetedUnits == null || targetedUnits == '') {
+	        alert('#{msgs.error_targetedUnitsRequired}');
+	        return false;
+	     }
+	     
+	   	var targetedRanks = document.getElementById('minorSpecializationsDescriptionsFormId:targetedRanksId').value.trim();
+   	 	if(targetedRanks == null || targetedRanks == '') {
+   	   	 	alert('#{msgs.error_targetedRanksRequired}');
+        	return false;
+     	}
+	     
+	   	var generalPurpose = document.getElementById('minorSpecializationsDescriptionsFormId:generalPurposeId').value.trim();
+	   	if(generalPurpose == null || generalPurpose == '') {
+	        alert('#{msgs.error_generalPurposeRequired}');
+	        return false;
+	     }
+	     
+	   	var requestedQualifications = document.getElementById('minorSpecializationsDescriptionsFormId:requestedQualificationsId').value.trim();
+	   	if(requestedQualifications == null || requestedQualifications == '') {
+	        alert('#{msgs.error_requestedQualificationsRequired}');
+	        return false;
+	    }
+	     
+	   	var requestedExperiences = document.getElementById('minorSpecializationsDescriptionsFormId:requestedExperiencesId').value.trim();
+	   	if(requestedExperiences == null || requestedExperiences == '') {
+	        alert('#{msgs.error_requestedExperiencesRequired}');
+	        return false;
+	    }
+	     
+	   	var requestedSkills = document.getElementById('minorSpecializationsDescriptionsFormId:requestedSkillsId').value.trim();
+	   	if(requestedSkills == null || requestedSkills == '') {
+	        alert('#{msgs.error_requestedSkillsRequired}');
+	        return false;
+	    }
+	    
+	   	var usedTools = document.getElementById('minorSpecializationsDescriptionsFormId:usedToolsId').value.trim();
+	   	if(usedTools == null || usedTools == '') {
+	        alert('#{msgs.error_usedToolsRequired}');
+	        return false;
+	    }
+	    
+	   	var requestedTrainings = document.getElementById('minorSpecializationsDescriptionsFormId:requestedTrainingsId').value.trim();
+	   	if(requestedTrainings == null || requestedTrainings == ''){
+	        alert('#{msgs.error_requestedTrainingsRequired}');
+	        return false;
+	    }
+	    
+	    return true;
+	}
+	
+	function validateMinorSpecializationDescriptionPrinting(){
+		var minorSpecializationId = document.getElementById('minorSpecializationsDescriptionsFormId:jobMinorSpecializationIDHId').value;
+		if(minorSpecializationId == null || minorSpecializationId == '') {
+	        alert('#{msgs.error_minorSpecializationIsMandatory}');
+	        return false;
+	    }
+		
+		var minorSpecializationDescriptionId = document.getElementById('minorSpecializationsDescriptionsFormId:minorSpecializationDescriptionIDHId').value;
+		if(minorSpecializationDescriptionId == null || minorSpecializationDescriptionId == '') {
+	        alert('#{msgs.error_missingMinorSpecializationDescription}');
+	        return false;
+	    }
+		
+		return true;
+	}
+	
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="minorSpecializationsDescriptionsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_minorSpecializationsDescriptions}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" valign="top">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="100%">
+									<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<td>#{msgs.label_searchData}</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+
+							<tr>
+								<td width="100%">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<th width="25%">
+												#{msgs.label_minorJobSpecialization}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="75%">
+												<h:outputText id="jobMinorSpecializationDescriptionId" />
+												<h:inputHidden id="jobMinorSpecializationIDHId" value="#{minorSpecializationsDescriptions.selectedMinorSpecializationId}" />
+												<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getMinorSpecialization('#{request.contextPath}');return false;" />
+												<h:commandButton id="jobMinorSpecializationHBtnId" action="#{minorSpecializationsDescriptions.loadMinorSpecializationDescription()}" style="display: none">
+													<f:ajax execute="minorSpecializationsDescriptionsFormId:jobMinorSpecializationIDHId" render="minorSpecializationsDescriptionsFormId:jobSpecializationDetailPanelId minorSpecializationsDescriptionsFormId:notifyMessagesId" />
+												</h:commandButton>
+											</td>
+
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td width="100%" height="5" />
+							</tr>
+							<tr>
+								<td>
+									<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<td width="100%">
+												<h:commandButton id="printBtnId" action="#{minorSpecializationsDescriptions.print()}" onclick="return validateMinorSpecializationDescriptionPrinting();" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" style="float:left" />
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" valign="top">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="100%">
+									<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<td>#{msgs.label_details}</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h:panelGroup id="jobSpecializationDetailPanelId">
+										<table border="0" cellpadding="0" cellspacing="0" width="100%">
+											<tr>
+												<td width="100%">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<th width="25%">
+																#{msgs.label_targetedUnits}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="75%">
+																<h:inputHidden id="minorSpecializationDescriptionIDHId" value="#{minorSpecializationsDescriptions.minorSpecializationDescription.id}" />
+																<h:inputText id="targetedUnitsId" value="#{minorSpecializationsDescriptions.minorSpecializationDescription.targetedUnits}" maxlength="220" styleClass="inputDataSuperLarge" />
+															</td>
+														</tr>
+														<tr>
+															<th width="25%">
+																#{msgs.label_targetedRanks}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="75%">
+																<h:inputText id="targetedRanksId" value="#{minorSpecializationsDescriptions.minorSpecializationDescription.targetedRanks}" maxlength="140" styleClass="inputDataSuperLarge" />
+															</td>
+														</tr>
+														<tr>
+															<th width="25%">
+																#{msgs.label_generalPurpose}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="75%">
+																<h:inputText id="generalPurposeId" value="#{minorSpecializationsDescriptions.minorSpecializationDescription.generalPurpose}" maxlength="220" styleClass="inputDataSuperLarge" />
+															</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+											<tr>
+												<td width="100%">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<th width="100%">#{msgs.label_dutyAndResponsibility}
+															<font style="color: red;">*</font>
+															</th>
+														</tr>
+														<tr>
+															<td width="100%">
+																<h:commandButton value="#{msgs.label_add}" action="#{minorSpecializationsDescriptions.addMinorSpecializationDescriptionDetail()}" styleClass="btn_normal">
+																	<f:ajax execute="minorSpecializationsDescriptionsFormId:dutyAndResponsibilityTableId" render="minorSpecializationsDescriptionsFormId:dutyAndResponsibilityTableId" />
+																</h:commandButton>
+
+															</td>
+														</tr>
+														<tr>
+															<td align="center" width="100%">
+																<rich:dataTable id="dutyAndResponsibilityTableId" value="#{minorSpecializationsDescriptions.minorSpecializationDescriptionDetails}" rowKeyVar="index" var="duty" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+																	<rich:column style="width : 5%">
+																		<f:facet name="header">#</f:facet>
+	                                          									#{index + 1}
+	                    													</rich:column>
+																	<rich:column style="width : 90%">
+																		<f:facet name="header">#{msgs.label_dutyAndResponsibility}<font style="color: red;">*</font></f:facet>
+																		<h:inputTextarea id="dutyDescId" value="#{duty.dutyDescription}" rows="2" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" styleClass="inputDataSuperLarge" />
+																	</rich:column>
+																	<rich:column style="width : 5%;">
+																		<f:facet name="header">#{msgs.label_delete}</f:facet>
+																		
+																		<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" action="#{minorSpecializationsDescriptions.deleteMinorSpecializationDescriptionDetail(duty)}" styleClass="btn_icon" onclick="if(confirm('#{msgs.q_delete}') == false) return false;">
+																			<f:ajax execute="minorSpecializationsDescriptionsFormId:dutyAndResponsibilityTableId" render="minorSpecializationsDescriptionsFormId:dutyAndResponsibilityTableId minorSpecializationsDescriptionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandButton>
+																	</rich:column>
+																	<f:facet name="footer">
+																		<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+																			<f:facet name="first">#{msgs.label_first}</f:facet>
+																			<f:facet name="last">#{msgs.label_last}</f:facet>
+																			<f:facet name="next">#{msgs.label_next}</f:facet>
+																			<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																		</rich:dataScroller>
+																	</f:facet>
+																</rich:dataTable>
+															</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+											<tr>
+												<td width="100%">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<th width="25%">
+																#{msgs.label_requestedQualifications}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="75%">
+																<h:inputText id="requestedQualificationsId" value="#{minorSpecializationsDescriptions.minorSpecializationDescription.requestedQualifications}" maxlength="140" styleClass="inputDataSuperLarge" />
+															</td>
+														</tr>
+														<tr>
+															<th width="25%">
+																#{msgs.label_requestedExperiences}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="75%">
+																<h:inputText id="requestedExperiencesId" value="#{minorSpecializationsDescriptions.minorSpecializationDescription.requestedExperiences}" maxlength="220" styleClass="inputDataSuperLarge" />
+															</td>
+														</tr>
+														<tr>
+															<th width="25%">
+																#{msgs.label_requestedSkills}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="75%">
+																<h:inputText id="requestedSkillsId" value="#{minorSpecializationsDescriptions.minorSpecializationDescription.requestedSkills}" maxlength="220" styleClass="inputDataSuperLarge" />
+															</td>
+														</tr>
+														<tr>
+															<th width="25%">
+																#{msgs.label_usedTools}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="75%">
+																<h:inputText id="usedToolsId" value="#{minorSpecializationsDescriptions.minorSpecializationDescription.usedTools}" maxlength="220" styleClass="inputDataSuperLarge" />
+															</td>
+														</tr>
+														<tr>
+															<th width="25%">
+																#{msgs.label_requestedTrainings}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="75%">
+																<h:inputText id="requestedTrainingsId" value="#{minorSpecializationsDescriptions.minorSpecializationDescription.requestedTrainings}" maxlength="220" styleClass="inputDataSuperLarge" />
+															</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+										</table>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="saveBtnId" action="#{minorSpecializationsDescriptions.save()}" onclick="return handleOnAction('#{msgs.q_save}', 'validateMinorSpecializationDescription()');" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon">
+										<f:ajax render="minorSpecializationsDescriptionsFormId:jobSpecializationDetailPanelId minorSpecializationsDescriptionsFormId:notifyMessagesId" execute="minorSpecializationsDescriptionsFormId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

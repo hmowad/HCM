@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        
+	<h:outputStylesheet library="css" name="styles.css"/>
+	<h:outputScript name="upload.js" library="javascript" target="head" />
+    </h:head>
+    <h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{fileUpload.init}"/>
+	<h:form id="fileUploadForm" dir="#{msgs.dir}">
+	   <table border="0" cellpadding="0" cellspacing="0" width="100%">                
+		<tr>
+		   <td>
+			 <table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+			     <tr>
+			       <th width="25%"><h:outputText value="#{msgs.label_attachments}"/></th>
+			       <td width="75%">
+				 <rich:fileUpload fileUploadListener="#{fileUpload.uploadListener}" maxFilesQuantity="5" immediateUpload="true">
+				      <a4j:ajax event="uploadcomplete" execute="@none" render="attachementsId"  />
+				 </rich:fileUpload>
+			       </td>
+			     </tr>
+			     <tr>
+			       <td width="100%" colspan="2">
+				 <a4j:commandButton id="finishId"  onclick="finishUploads();" value="#{msgs.label_finish}"/>
+			       </td>
+			     </tr>
+			 </table>
+		   </td>
+		</tr>                                  
+	    </table>
+	    <h:inputHidden id="attachementsId" value="#{fileUpload.attachements}"/>
+	</h:form>
+    </h:body>
+</html>

@@ -1,0 +1,537 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:composite="http://java.sun.com/jsf/composite">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+		function validateInput() {
+			if(#{militaryCoursesEventsFile.trainingTypeId} == 2){
+				var externalPartyId=document.getElementById('militaryCoursesEventsFileFormId:externalPartyIDHId').value;
+				if(externalPartyId==null||externalPartyId == ''||externalPartyId == -1){
+					alert("#{msgs.error_chooseTrainingUnitMandatory}")
+					return false;
+					}
+			}
+			
+			return true;
+		}
+
+		function getCourseEvents(trainingYearId, trainingUnitId) {
+			openTrainingIntCourseEventsMiniSearch('#{request.contextPath}','handleCourseEventsMiniSearchResult(ret)', -1, trainingYearId, trainingUnitId, -1, -1); 	
+		}
+
+		function getExternalCourseEvents(externalPartyId) {
+			if(externalPartyId == null||externalPartyId == ''||externalPartyId == -1){
+				alert("#{msgs.error_chooseTrainingUnitMandatory}")
+				return false;
+			}
+
+			openTrainingExtCourseEventsMiniSearch('#{request.contextPath}','handleCourseEventsMiniSearchResult(ret)','-1',externalPartyId); 
+		}
+
+		function handleCourseEventsMiniSearchResult(ret) {
+			if (ret != null) {
+				if(#{militaryCoursesEventsFile.trainingTypeId}==1){
+					document.getElementById('militaryCoursesEventsFileFormId:trainingCourseEventHId').value = ret[0];
+					document.getElementById('militaryCoursesEventsFileFormId:trainingCourseNameId').innerHTML = ret[1];
+				}
+				else
+					{
+					document.getElementById('militaryCoursesEventsFileFormId:trainingExtCourseEventHId').value = ret[0];
+					document.getElementById('militaryCoursesEventsFileFormId:trainingExtCourseNameId').innerHTML = ret[1];
+					}
+				}
+		}
+		
+
+		function getExternalParty() {
+			openExternalPartiesMiniSearch('#{request.contextPath}','handleExternalPartiesMiniSearchResult(ret)', 2, 0);
+		}
+
+		function handleExternalPartiesMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('militaryCoursesEventsFileFormId:externalPartyIDHId').value = ret[0];
+				document.getElementById('militaryCoursesEventsFileFormId:externalPartyNameId').innerHTML = ret[1];
+				document.getElementById('militaryCoursesEventsFileFormId:externalPartyBtnId').click();
+			}
+		}
+		
+		// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="militaryCoursesEventsFileFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{militaryCoursesEventsFile.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<h:panelGroup rendered="#{militaryCoursesEventsFile.trainingTypeId==1}">
+									<tr>
+										<th width="15%">
+											#{msgs.label_trainingYear}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:selectOneMenu id="trainingYearId" value="#{militaryCoursesEventsFile.trainingYearId}">
+												<f:selectItems value="#{militaryCoursesEventsFile.trainingYears}" var="year" itemLabel="#{year.name}" itemValue="#{year.id}" />
+												<f:ajax event="change" listener="#{militaryCoursesEventsFile.searchDataChangeListener()}" render="militaryCoursesEventsFileFormId:trainingCourseEventHId militaryCoursesEventsFileFormId:trainingCourseNameId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneMenu>
+										</td>
+										<th width="15%">
+											#{msgs.label_theTrainingUnit}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:selectOneMenu id="trainingUnitId" value="#{militaryCoursesEventsFile.trainingUnitId}" disabled="#{not militaryCoursesEventsFile.admin}">
+												<f:selectItems value="#{militaryCoursesEventsFile.trainingUnits}" var="unit" itemLabel="#{unit.name}" itemValue="#{unit.unitId}" />
+												<f:ajax event="change" listener="#{militaryCoursesEventsFile.searchDataChangeListener()}" render="militaryCoursesEventsFileFormId:trainingCourseEventHId militaryCoursesEventsFileFormId:trainingCourseNameId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+
+									<tr>
+										<th width="15%">#{msgs.label_trainingCourseName}</th>
+										<td width="35%">
+											<h:outputText value=" " />
+											<h:outputText id="trainingCourseNameId" />
+											<h:inputHidden id="trainingCourseEventHId" value="#{militaryCoursesEventsFile.courseEventId}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getCourseEvents(document.getElementById('militaryCoursesEventsFileFormId:trainingYearId').value,document.getElementById('militaryCoursesEventsFileFormId:trainingUnitId').value); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+										<th width="15%">
+											#{msgs.label_trainingCourseStatus}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:selectOneMenu value="#{militaryCoursesEventsFile.courseStatus}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+												<f:selectItem itemLabel="#{msgs.label_coursePlannedToBeHeld}" itemValue="1" />
+												<f:selectItem itemLabel="#{msgs.label_courseHoldingDecisionIssued}" itemValue="2" />
+												<f:selectItem itemLabel="#{msgs.label_coursePostponementDecisionIssued}" itemValue="3" />
+												<f:selectItem itemLabel="#{msgs.label_courseCancelDecisionIssued}" itemValue="4" />
+												<f:selectItem itemLabel="#{msgs.label_courseHeld}" itemValue="5" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{militaryCoursesEventsFile.trainingTypeId==2}">
+									<tr>
+										<th width="15%">
+											#{msgs.label_theTrainingUnit}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:outputText id="externalPartyNameId" />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getExternalParty(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											<h:commandButton id="externalPartyBtnId" style="display:none;" action="#{militaryCoursesEventsFile.searchDataChangeListener()}">
+												<f:ajax render="militaryCoursesEventsFileFormId:trainingExtCourseEventHId militaryCoursesEventsFileFormId:trainingExtCourseNameId militaryCoursesEventsFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:inputHidden id="externalPartyIDHId" value="#{militaryCoursesEventsFile.externalPartyId}" />
+										</td>
+										<th width="15%">#{msgs.label_trainingCourseName}</th>
+										<td width="35%">
+											<h:outputText id="trainingExtCourseNameId" />
+											<h:inputHidden id="trainingExtCourseEventHId" value="#{militaryCoursesEventsFile.courseEventId}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getExternalCourseEvents(document.getElementById('militaryCoursesEventsFileFormId:externalPartyIDHId').value); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th width="15%">#{msgs.label_courseStartDateFrom}</th>
+									<td width="35%">
+										<util:hijri value="#{militaryCoursesEventsFile.startDateFrom}" nullable="true" />
+									</td>
+									<th width="15%">#{msgs.label_courseStartDateTo}</th>
+									<td width="35%">
+										<util:hijri value="#{militaryCoursesEventsFile.startDateTo}" nullable="true" />
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{militaryCoursesEventsFile.trainingTypeId==2}">
+									<tr>
+										<th width="15%">
+											#{msgs.label_trainingCourseStatus}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:selectOneMenu value="#{militaryCoursesEventsFile.courseStatus}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+												<f:selectItem itemLabel="#{msgs.label_coursePlannedToBeHeld}" itemValue="1" />
+												<f:selectItem itemLabel="#{msgs.label_coursePostponementDecisionIssued}" itemValue="3" />
+												<f:selectItem itemLabel="#{msgs.label_courseCancelDecisionIssued}" itemValue="4" />
+												<f:selectItem itemLabel="#{msgs.label_courseHeld}" itemValue="5" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+								</h:panelGroup>
+							</table>
+
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{militaryCoursesEventsFile.searchCourses()}" onclick="return validateInput();" styleClass="btn_normal_icon">
+										<f:ajax execute="militaryCoursesEventsFileFormId:searchPanelId" render="militaryCoursesEventsFileFormId:courseEventsTableId militaryCoursesEventsFileFormId:courseDecisionsTitlePanelId militaryCoursesEventsFileFormId:courseDecisionsTableId militaryCoursesEventsFileFormId:reportsPanelId militaryCoursesEventsFileFormId:courseDetailsTitlePanelId militaryCoursesEventsFileFormId:empsTransactionsPanelId militaryCoursesEventsFileFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{militaryCoursesEventsFile.reset()}" styleClass="btn_normal_icon">
+										<f:ajax render="militaryCoursesEventsFileFormId:searchPanelId militaryCoursesEventsFileFormId:courseEventsTableId militaryCoursesEventsFileFormId:courseDecisionsTitlePanelId militaryCoursesEventsFileFormId:courseDecisionsTableId militaryCoursesEventsFileFormId:reportsPanelId militaryCoursesEventsFileFormId:courseDetailsTitlePanelId militaryCoursesEventsFileFormId:empsTransactionsPanelId militaryCoursesEventsFileFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_trainingCoursesDetails}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<rich:dataTable id="courseEventsTableId" rowKeyVar="index" var="course" value="#{militaryCoursesEventsFile.courseEvents}" rows="#{militaryCoursesEventsFile.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+										<rich:column style="width : 5%">
+											<f:facet name="header">#{msgs.label_select}</f:facet>
+											<h:commandButton action="#{militaryCoursesEventsFile.selectCourse(course)}" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon">
+												<f:ajax render="militaryCoursesEventsFileFormId:courseDecisionsTitlePanelId militaryCoursesEventsFileFormId:courseDecisionsTableId militaryCoursesEventsFileFormId:reportsPanelId militaryCoursesEventsFileFormId:courseDetailsTitlePanelId militaryCoursesEventsFileFormId:empsTransactionsPanelId militaryCoursesEventsFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</rich:column>
+										<rich:column style="width : 5%">
+											<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                        	</rich:column>
+										<rich:column style="width : 20%">
+											<f:facet name="header"> #{msgs.label_trainingCourseName} </f:facet>
+											<h:outputText value="#{course.courseName}" />
+										</rich:column>
+										<rich:column style="width : 10%">
+											<f:facet name="header"> #{msgs.label_startDate} </f:facet>
+											<h:outputText value="#{course.actualStartDateString}" />
+										</rich:column>
+										<rich:column style="width : 10%">
+											<f:facet name="header"> #{msgs.label_endDate} </f:facet>
+											<h:outputText value=" #{course.actualEndDateString}" />
+										</rich:column>
+										<rich:column style="width : 30%">
+											<f:facet name="header"> #{msgs.label_trainingCourseAdmissionPrequsites} </f:facet>
+											<h:outputText value=" #{course.prerquisites}" />
+										</rich:column>
+										<rich:column style="width : 20%">
+											<f:facet name="header"> #{msgs.label_trainingCourseStatus} </f:facet>
+											<h:outputText value="#{msgs.label_coursePlannedToBeHeld}" rendered="#{course.status == 1}" />
+											<h:outputText value="#{msgs.label_courseHoldingDecisionIssued}" rendered="#{course.status == 2}" />
+											<h:outputText value="#{msgs.label_coursePostponementDecisionIssued}" rendered="#{course.status == 3}" />
+											<h:outputText value="#{msgs.label_courseCancelDecisionIssued}" rendered="#{course.status == 4}" />
+											<h:outputText value="#{msgs.label_courseHeld}" rendered="#{course.status == 5}" />
+										</rich:column>
+										<f:facet name="footer">
+											<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+												<f:facet name="first">#{msgs.label_first}</f:facet>
+												<f:facet name="last">#{msgs.label_last}</f:facet>
+												<f:facet name="next">#{msgs.label_next}</f:facet>
+												<f:facet name="previous">#{msgs.label_previous}</f:facet>
+											</rich:dataScroller>
+										</f:facet>
+									</rich:dataTable>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="courseDetailsTitlePanelId">
+							<h:panelGroup rendered="#{militaryCoursesEventsFile.selectedCourse!=null}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>#{msgs.label_courseDetail} ( #{militaryCoursesEventsFile.selectedCourse.courseName} )</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="reportsPanelId">
+							<h:panelGroup rendered="#{militaryCoursesEventsFile.trainingTypeId == 1 and militaryCoursesEventsFile.selectedCourse != null }">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<table border="0" cellpadding="0" cellspacing="0" width="100%">
+												<tr>
+													<th width="15%">#{msgs.title_theReports}</th>
+													<td width="65%">
+														<h:selectOneRadio id="reportType" value="#{militaryCoursesEventsFile.reportType}">
+															<f:selectItem itemLabel="#{msgs.label_courseDetailsForTrainingPlan}" itemValue="1" />
+															<f:selectItem itemLabel="#{msgs.label_traineesJoiningReport}" itemValue="2" />
+															<f:selectItem itemLabel="#{msgs.label_traineesResultsReport}" itemValue="3" />
+														</h:selectOneRadio>
+													</td>
+
+													<td width="20%">
+														<h:commandButton style="float: left;" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" action="#{militaryCoursesEventsFile.print()}" onclick="return validatePrint();" styleClass="btn_normal_icon">
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+
+				<tr>
+					<td align="center" width="100%">
+						<h:panelGroup id="empsTransactionsPanelId">
+							<h:panelGroup rendered="#{militaryCoursesEventsFile.selectedCourse!=null}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<table border="0" cellpadding="0" cellspacing="0" width="100%">
+												<tr>
+													<th width="15%">#{msgs.label_searchBy} #{msgs.label_physicalUnit}</th>
+													<td width="25%">
+														<h:inputText id="searchPhysicalUnitID" value="#{militaryCoursesEventsFile.searchPhysicalUnit}" styleClass="inputDataLarge" onkeypress="if (event.keyCode == 13) { document.getElementById('militaryCoursesEventsFileFormId:searchEmpsId').click(); return false; }" />
+													</td>
+													<th width="15%">#{msgs.label_trainingCandidateStatus}</th>
+													<td width="25%">
+														<h:selectOneMenu rendered="#{militaryCoursesEventsFile.trainingTypeId==1}" value="#{militaryCoursesEventsFile.empStatusId}">
+															<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+															<f:selectItem itemLabel="#{msgs.label_nominationAccepted}" itemValue="3" />
+															<f:selectItem itemLabel="#{msgs.label_joinedTheCourse}" itemValue="4" />
+															<f:selectItem itemLabel="#{msgs.label_apologizedForTheCourse}" itemValue="5" />
+															<f:selectItem itemLabel="#{msgs.label_hasBeenReplaced}" itemValue="6" />
+															<f:selectItem itemLabel="#{msgs.label_courseCancelledForHim}" itemValue="7" />
+															<f:selectItem itemLabel="#{msgs.label_finishedTheCourse}" itemValue="8" />
+															<f:selectItem itemLabel="#{msgs.label_coursePostponed}" itemValue="9" />
+															<f:selectItem itemLabel="#{msgs.label_courseCancelled}" itemValue="10" />
+														</h:selectOneMenu>
+														<h:selectOneMenu rendered="#{militaryCoursesEventsFile.trainingTypeId==2}" value="#{militaryCoursesEventsFile.empStatusId}">
+															<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+															<f:selectItem itemLabel="#{msgs.label_nominationAcceptedFromFG}" itemValue="1" />
+															<f:selectItem itemLabel="#{msgs.label_nominationAccepted}" itemValue="3" />
+															<f:selectItem itemLabel="#{msgs.label_nominationRejecteFromParty}" itemValue="2" />
+															<f:selectItem itemLabel="#{msgs.label_joinedTheCourse}" itemValue="4" />
+															<f:selectItem itemLabel="#{msgs.label_apologizedForTheCourse}" itemValue="5" />
+															<f:selectItem itemLabel="#{msgs.label_hasBeenReplaced}" itemValue="6" />
+															<f:selectItem itemLabel="#{msgs.label_courseCancelledForHim}" itemValue="7" />
+															<f:selectItem itemLabel="#{msgs.label_finishedTheCourse}" itemValue="8" />
+															<f:selectItem itemLabel="#{msgs.label_coursePostponed}" itemValue="9" />
+															<f:selectItem itemLabel="#{msgs.label_courseCancelled}" itemValue="10" />
+														</h:selectOneMenu>
+													</td>
+													<td width="20%">
+														<h:commandButton id="searchEmpsId" style="float: left;" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{militaryCoursesEventsFile.searchEmpsTransactions()}" styleClass="btn_normal_icon">
+															<f:ajax execute="militaryCoursesEventsFileFormId:empsTransactionsPanelId" render="militaryCoursesEventsFileFormId:empsTransactionsTablelId militaryCoursesEventsFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<rich:dataTable id="empsTransactionsTablelId" rowKeyVar="index" var="transaction" value="#{militaryCoursesEventsFile.empsTransactions}" rows="#{militaryCoursesEventsFile.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+												<rich:column style="width : 5%">
+													<f:facet name="header">#</f:facet>
+	                               				 #{index + 1}
+	                        					</rich:column>
+												<rich:column style="width : 15%">
+													<f:facet name="header"> #{msgs.label_emp} </f:facet>
+													<h:outputText value="#{transaction.employeeName}" />
+												</rich:column>
+												<rich:column style="width : 10%">
+													<f:facet name="header"> #{msgs.label_rank} </f:facet>
+													<h:outputText value="#{transaction.employeeRankDesc}" />
+												</rich:column>
+												<rich:column style="width : 10%">
+													<f:facet name="header"> #{msgs.label_empNo} </f:facet>
+													<h:outputText value="#{transaction.employeeNumber}" />
+												</rich:column>
+												<rich:column style="width : 10%">
+													<f:facet name="header"> #{msgs.label_empJob} </f:facet>
+													<h:outputText value="#{transaction.employeeJobName}" />
+												</rich:column>
+												<rich:column style="width : 20%">
+													<f:facet name="header"> #{msgs.label_physicalUnit} </f:facet>
+													<h:outputText value="#{transaction.employeePhysicalUnitFullname}" />
+												</rich:column>
+												<rich:column style="width : 10%">
+													<f:facet name="header"> #{msgs.label_successIndicator} </f:facet>
+													<h:outputText value="#{msgs.label_successful}" rendered="#{transaction.successFlag == 1}" />
+													<h:outputText value="#{msgs.label_residual}" rendered="#{transaction.successFlag == 0}" />
+												</rich:column>
+												<rich:column style="width : 10%">
+													<f:facet name="header"> #{msgs.label_status} </f:facet>
+													<h:outputText value="#{msgs.label_nominationAcceptedFromFG}" rendered="#{transaction.status == 1}" />
+													<h:outputText value="#{msgs.label_nominationRejecteFromParty}" rendered="#{transaction.status == 2}" />
+													<h:outputText value="#{msgs.label_nominationAccepted}" rendered="#{transaction.status == 3}" />
+													<h:outputText value="#{msgs.label_joinedTheCourse}" rendered="#{transaction.status == 4}" />
+													<h:outputText value="#{msgs.label_apologizedForTheCourse}" rendered="#{transaction.status == 5}" />
+													<h:outputText value="#{msgs.label_hasBeenReplaced}" rendered="#{transaction.status == 6}" />
+													<h:outputText value="#{msgs.label_courseCancelledForHim}" rendered="#{transaction.status == 7}" />
+													<h:outputText value="#{msgs.label_finishedTheCourse}" rendered="#{transaction.status == 8}" />
+													<h:outputText value="#{msgs.label_coursePostponed}" rendered="#{transaction.status == 9}" />
+													<h:outputText value="#{msgs.label_courseCancelled}" rendered="#{transaction.status == 10}" />
+												</rich:column>
+												<rich:column rendered="#{militaryCoursesEventsFile.trainingTypeId == 1}" style="width : 10%">
+													<f:facet name="header"> #{msgs.label_eCertificate} </f:facet>
+													<h:commandButton value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" styleClass="btn_icon" action="#{militaryCoursesEventsFile.printCertificate(transaction.id)}" rendered="#{transaction.status == 8 and transaction.successFlag == 1}" />
+												</rich:column>
+												<rich:column rendered="#{militaryCoursesEventsFile.trainingTypeId == 2}" style="width : 10%">
+													<f:facet name="header"> #{msgs.label_showAttachment} </f:facet>
+													<code:attachments loginEmpId="#{militaryCoursesEventsFile.loginEmpData.empId}" attachmentId="#{transaction.attachments}" compactModeFlag="true" viewEnableFlag="true" />
+												</rich:column>
+												<f:facet name="footer">
+													<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+														<f:facet name="first">#{msgs.label_first}</f:facet>
+														<f:facet name="last">#{msgs.label_last}</f:facet>
+														<f:facet name="next">#{msgs.label_next}</f:facet>
+														<f:facet name="previous">#{msgs.label_previous}</f:facet>
+													</rich:dataScroller>
+												</f:facet>
+											</rich:dataTable>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="courseDecisionsTitlePanelId">
+							<h:panelGroup rendered="#{militaryCoursesEventsFile.trainingTypeId ==1 and militaryCoursesEventsFile.selectedCourse != null}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>#{msgs.label_courseDetailHistory} ( #{militaryCoursesEventsFile.selectedCourse.courseName} )</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="courseDecisionsTableId">
+							<rich:dataTable rendered="#{militaryCoursesEventsFile.trainingTypeId ==1 and militaryCoursesEventsFile.selectedCourse != null}" rowKeyVar="index" var="decision" value="#{militaryCoursesEventsFile.courseEventDecisions}" rows="#{militaryCoursesEventsFile.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+								<rich:column style="width : 5%">
+									<f:facet name="header">#</f:facet>
+	                               				 #{index + 1}
+	                        				</rich:column>
+								<rich:column style="width : 20%">
+									<f:facet name="header"> #{msgs.label_decisionNumber} </f:facet>
+									<h:outputText value="#{decision.decisionNumber}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header"> #{msgs.label_decisionDate} </f:facet>
+									<h:outputText value="#{decision.decisionDateString}" />
+								</rich:column>
+								<rich:column style="width : 20%">
+									<f:facet name="header"> #{msgs.label_transactionType} </f:facet>
+									<h:outputText value="#{msgs.label_courseHoldingDecision}" rendered="#{decision.transactionTypeId == 47}" />
+									<h:outputText value="#{msgs.label_coursePostponementDecision}" rendered="#{decision.transactionTypeId == 48}" />
+									<h:outputText value="#{msgs.label_courseCancelDecision}" rendered="#{decision.transactionTypeId == 49}" />
+									<h:outputText value="#{msgs.label_courseHoldingModifyDecision}" rendered="#{decision.transactionTypeId == 52}" />
+								</rich:column>
+								<rich:column style="width : 20%">
+									<f:facet name="header"> #{msgs.label_courseStartDate} </f:facet>
+									<h:outputText value="#{decision.transStartDateString}" rendered="#{decision.transactionTypeId != 48	}" />
+									<h:outputText value="#{decision.newStartDateString}" rendered="#{decision.transactionTypeId == 48}" />
+								</rich:column>
+								<rich:column style="width : 20%">
+									<f:facet name="header"> #{msgs.label_courseEndDate} </f:facet>
+									<h:outputText value="#{decision.transEndDateString}" rendered="#{decision.transactionTypeId != 48}" />
+									<h:outputText value="#{decision.newEndDateString}" rendered="#{decision.transactionTypeId == 48}" />
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header"> #{msgs.label_showOrPrint} </f:facet>
+									<h:commandButton value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" action="#{militaryCoursesEventsFile.printTrainingCourseEventDecision(decision)}" styleClass="btn_icon" />
+
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+										<f:facet name="first">#{msgs.label_first}</f:facet>
+										<f:facet name="last">#{msgs.label_last}</f:facet>
+										<f:facet name="next">#{msgs.label_next}</f:facet>
+										<f:facet name="previous">#{msgs.label_previous}</f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	 	function getEmployee() {
+			if(getRecruitmentListSize() == 0) {
+				alert("#{msgs.error_addOfficersRecruitmentsFirst}");
+				return;
+			}
+			
+			graduationGroupNumberValue = document.getElementById('officersRecruitmentFormId:graduationGroupNumberId').value;
+			graduationGroupPlaceValue = document.getElementById('officersRecruitmentFormId:graduationGroupPlaceId').value;
+			recruitmentRegionValue = document.getElementById('officersRecruitmentFormId:recruitmentRegionId').value;
+		    openEmpsMiniSearchForRecruitmentModule('#{request.contextPath}', 'handleEmpMiniSearchResult(ret)', 2, 1, recruitmentRegionValue, graduationGroupNumberValue , graduationGroupPlaceValue, -1, -1, 'M', 0, -1);
+		 }
+		
+	 	function handleEmpMiniSearchResult(ret) {
+	 		if(ret!=null){
+			    document.getElementById('officersRecruitmentFormId:employeeIDId').value=ret[0];
+			    document.getElementById('officersRecruitmentFormId:searchEmpBtnId').click();
+		    }
+	 	}
+ 	
+		function getJob() {
+		 	 recRegionIdValue = document.getElementById('officersRecruitmentFormId:selectedRecRegionId').value;
+		 	 if(recRegionIdValue == null || recRegionIdValue == '')
+		 		recRegionIdValue = -1;
+			 openJobsMiniSearch('#{request.contextPath}', 'handleJobsMiniSearchResult(ret)', 7, 1, -1, -1, recRegionIdValue, -1, 0);
+	    }
+		
+		function handleJobsMiniSearchResult(ret) {
+		     if(ret != null){
+					document.getElementById('officersRecruitmentFormId:jobIDId').value = ret[0];
+					document.getElementById('officersRecruitmentFormId:jobCodeHId').value = ret[1];
+					document.getElementById('officersRecruitmentFormId:jobCodeId').innerHTML = ret[1];
+					document.getElementById('officersRecruitmentFormId:jobNameId').innerHTML = ret[2];
+					document.getElementById('officersRecruitmentFormId:jobNameHId').value = ret[2];
+					document.getElementById('officersRecruitmentFormId:unitFullNameId').innerHTML = ret[4];
+					document.getElementById('officersRecruitmentFormId:unitFullNameHId').value = ret[4];
+					document.getElementById('officersRecruitmentFormId:minorSpecIDId').value = ret[8];
+					document.getElementById('officersRecruitmentFormId:minorSpecDescId').innerHTML = ret[9];
+					document.getElementById('officersRecruitmentFormId:minorSpecDescHId').value = ret[9];
+		        }
+		}
+
+		function validateBasedOnData() {
+			// only check based on number and date when they are enabled
+			if(document.getElementById('officersRecruitmentFormId:recruitmentOrderDateId:day') != null) {
+				recruitmentOrderNumberValue = document.getElementById('officersRecruitmentFormId:recruitmentOrderNumberId').value;
+				recruitmentOrderDateValue = document.getElementById('officersRecruitmentFormId:recruitmentOrderDateId:day').value;
+				if ((recruitmentOrderNumberValue == null || recruitmentOrderNumberValue == '')
+						|| (recruitmentOrderDateValue == 0)) {
+					alert("#{msgs.error_officersBasedOnFieldsAreMandatory}");
+					return false;
+				}
+			}
+			
+			graduationGroupNumberValue = document.getElementById('officersRecruitmentFormId:graduationGroupNumberId').value;
+			graduationGroupPlaceValue = document.getElementById('officersRecruitmentFormId:graduationGroupPlaceId').value;
+			if ((graduationGroupNumberValue == null || graduationGroupNumberValue == '')
+					|| (graduationGroupPlaceValue == -1)) {
+				alert("#{msgs.error_officersBasedOnFieldsAreMandatory}");
+				return false;
+			}
+			return true; 
+		}
+
+		function validateRecruitmentData() {
+			jobIdValue = document.getElementById('officersRecruitmentFormId:jobIDId').value;
+			
+			if(#{officersRecruitment.role != 'SecondaryReviewerEmp'}) {
+				employeeIdValue = document.getElementById('officersRecruitmentFormId:employeeIDId').value;
+				recruitmentDateValue = document.getElementById('officersRecruitmentFormId:recruitmentDateId:day').value;
+				recruitmentDocsFlagValue = document.getElementById('officersRecruitmentFormId:recruitmentDocsFlagId').checked;
+				selectedRecRegionIdValue = document.getElementById('officersRecruitmentFormId:selectedRecRegionId').value;
+				
+				if ((employeeIdValue == null || employeeIdValue == '')
+						|| ((jobIdValue == null || jobIdValue == '') &amp;&amp; !(#{officersRecruitment.role == 'Requester'} &amp;&amp; selectedRecRegionIdValue != 1))
+						|| (recruitmentDateValue == 0)
+						|| (recruitmentDocsFlagValue == false)) {
+					alert("#{msgs.error_officersRecruitmentDataAreMandatory}");
+					return false;
+				}
+
+				officerRankIdValue = document.getElementById('officersRecruitmentFormId:officerRankId').value;
+				if (officerRankIdValue == null || officerRankIdValue == '') {
+					alert("#{msgs.error_officersRecruitmentDataAreMandatory}");
+					return false;
+				}
+				seniorityDaysValue = document.getElementById('officersRecruitmentFormId:seniorityDaysId').value;
+				if(seniorityDaysValue > 29){
+					alert("#{msgs.error_seniorityDaysMustNotExceed29Days}");
+					return false;
+				}
+					
+
+				lastPromotionDateValue = document.getElementById('officersRecruitmentFormId:lastPromotionDateId:day').value;
+				firstRecruitmentDatValue = document.getElementById('officersRecruitmentFormId:firstRecruitmentDateId:day').value;
+				if (lastPromotionDateValue != 0 &amp;&amp; firstRecruitmentDatValue == 0) {
+					alert("#{msgs.error_firstRecDateMandatory}");
+					return false;
+				}
+			} else {
+				if(jobIdValue == null || jobIdValue == '') {
+					alert("#{msgs.error_insertJob}");
+					return false;
+				}
+			}
+
+			
+			return true;
+		}
+	
+		function validateSend() {
+			if(getRecruitmentListSize() == 0) {
+				alert("#{msgs.error_recruitmentListEmpty}");
+				return false;
+			}
+			
+			return true;
+		}
+
+		function getRecruitmentListSize() {
+			return document.getElementById('officersRecruitmentFormId:recruitmentListSizeId').innerHTML;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="officersRecruitmentFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{officersRecruitment.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_recruitmentData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="basedOnPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_graduationGroupNumber}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="15%">
+										<h:inputText id="graduationGroupNumberId" readonly="#{officersRecruitment.recruitmentsList.size() > 0}" value="#{officersRecruitment.graduationGroupNumber}" onkeypress="return isDigit(event);" maxlength="3" />
+									</td>
+									<th width="15%">
+										#{msgs.label_graduationGroupPlace}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="15%">
+										<h:selectOneMenu id="graduationGroupPlaceId" disabled="#{officersRecruitment.recruitmentsList.size() > 0}" value="#{officersRecruitment.graduationGroupPlace}">
+											<f:selectItem itemLabel="" itemValue="-1" />
+											<f:selectItems value="#{officersRecruitment.graduationGroupPlaces}" var="graduationPlace" itemLabel="#{graduationPlace.description}" itemValue="#{graduationPlace.id}" />
+										</h:selectOneMenu>
+									</td>
+									<th width="15%">
+										#{msgs.label_region}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="25%">
+										<h:selectOneMenu id="recruitmentRegionId" disabled="#{officersRecruitment.recruitmentsList.size() > 0}" value="#{officersRecruitment.recruitmentRegionId}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItems value="#{officersRecruitment.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<h:outputText value="#{msgs.label_royalOrderNumber}" />
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td>
+										<h:inputText id="recruitmentOrderNumberId" readonly="#{officersRecruitment.recruitmentsList.size() > 0}" value="#{officersRecruitment.basedOnOrderNumber}" maxlength="50" />
+									</td>
+									<th>
+										<h:outputText value="#{msgs.label_royalOrderDate}" />
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td>
+										<util:hijri id="recruitmentOrderDateId" nullable="true" value="#{officersRecruitment.basedOnOrderDate}" rendered="#{officersRecruitment.recruitmentsList.size() == 0}" />
+										<h:outputText value="#{officersRecruitment.basedOnOrderDateString}" rendered="#{officersRecruitment.recruitmentsList.size() > 0}" />
+									</td>
+									<td style="text-align: center;">
+										<h:commandButton disabled="#{officersRecruitment.recruitmentsList.size() > 0}" rendered="#{officersRecruitment.role == 'Requester' or officersRecruitment.role == 'ReviewerEmp'}" onclick="return validateBasedOnData();" value="#{msgs.label_addOfficers}" action="#{officersRecruitment.getDistributedOfficers()}" styleClass="btn_normal">
+											<f:ajax execute="officersRecruitmentFormId:basedOnPanelId" render="officersRecruitmentFormId:basedOnPanelId officersRecruitmentFormId:recruitmentsListPanelId officersRecruitmentFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+									<td>
+										<h:outputText value="#{msgs.label_addOfficersMessage}" style="color: red; font-weight: bold;" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:outputText value="#{msgs.label_officersData}" />
+									<h:outputText value=" " />
+									<h:inputHidden id="employeeIDId" value="#{officersRecruitment.selectedEmpId}" />
+									<h:commandButton rendered="#{officersRecruitment.role == 'Requester' or officersRecruitment.role == 'ReviewerEmp'}" value="#{msgs.label_add}" onclick="getEmployee(); return false;" styleClass="btn_normal" />
+									<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{officersRecruitment.addNewRecruitment()}">
+										<f:ajax execute="officersRecruitmentFormId:basedOnPanelId officersRecruitmentFormId:employeeIDId" render="officersRecruitmentFormId:basedOnPanelId officersRecruitmentFormId:dataPanelId officersRecruitmentFormId:recruitmentsListPanelId officersRecruitmentFormId:employeeIDId officersRecruitmentFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<h:panelGroup id="recruitmentsListPanelId">
+							<h:outputText id="recruitmentListSizeId" style="display:none" value="#{officersRecruitment.recruitmentsList.size()}" />
+							<rich:dataTable rowKeyVar="index" var="recruitment" value="#{officersRecruitment.recruitmentsList}" rows="#{officersRecruitment.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+								<rich:column style="width : 5%">
+									<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon" action="#{officersRecruitment.selectNewRecruitment(recruitment)}">
+										<f:ajax render="officersRecruitmentFormId:dataPanelId officersRecruitmentFormId:employeeIDId officersRecruitmentFormId:notifyMessagesId" />
+									</h:commandButton>
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                    		</rich:column>
+								<rich:column style="width : 15%">
+									<f:facet name="header">#{msgs.label_name}</f:facet>
+									<h:outputText value="#{recruitment.employeeName}" />
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">#{msgs.label_privateNumber}</f:facet>
+									<h:outputText value="#{recruitment.militaryNumber}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_region}</f:facet>
+									<h:outputText value="#{recruitment.recruitmentRegionDesc}" />
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">#{msgs.label_jobCode}</f:facet>
+									<h:outputText value="#{recruitment.jobCode}" />
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">#{msgs.label_job}</f:facet>
+									<h:outputText value="#{recruitment.jobName}" />
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">#{msgs.label_empSpecialization}</f:facet>
+									<h:outputText value="#{recruitment.minorSpecDescription}" />
+								</rich:column>
+								<rich:column style="width : 15%">
+									<f:facet name="header">#{msgs.label_unit}</f:facet>
+									<h:outputText value="#{recruitment.unitFullName}" />
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_rank}" />
+									</f:facet>
+									<h:outputText value="#{recruitment.rankDescription}" />
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_rankTitle}" />
+									</f:facet>
+									<h:outputText value="#{recruitment.rankTitleDesc}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_recruitmentDate}" />
+									</f:facet>
+									<h:outputText value="#{recruitment.recruitmentDateString}" />
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_seniority}" />
+									</f:facet>
+									<h:outputText value="#{officersRecruitment.getConcatenatedPeriod(recruitment)}" />
+								</rich:column>
+								<rich:column rendered="#{officersRecruitment.role == 'Requester' or officersRecruitment.role == 'ReviewerEmp'}" style="width : 5%">
+									<f:facet name="header">#{msgs.label_delete}</f:facet>
+									<h:commandButton value="#{msgs.fa_times}" styleClass="btn_icon" title="#{msgs.label_delete}" action="#{officersRecruitment.deleteRecruitment(recruitment)}" onclick="return confirm('#{msgs.q_delete}');">
+										<f:ajax render="officersRecruitmentFormId:dataPanelId officersRecruitmentFormId:recruitmentsListPanelId officersRecruitmentFormId:basedOnPanelId officersRecruitmentFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+										<f:facet name="first">#{msgs.label_first}</f:facet>
+										<f:facet name="last">#{msgs.label_last}</f:facet>
+										<f:facet name="next">#{msgs.label_next}</f:facet>
+										<f:facet name="previous">#{msgs.label_previous}</f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="dataPanelId">
+							<h:panelGroup rendered="#{officersRecruitment.selectedRec.employeeId != null}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_name}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="30%">
+											<h:outputText value="#{officersRecruitment.selectedRec.employeeName}" />
+											<h:inputHidden id="selectedRecRegionId" value="#{officersRecruitment.selectedRec.recruitmentRegionId}" />
+										</td>
+										<th width="15%">
+											#{msgs.label_recruitmentPrerequisites}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="40%">
+											<h:selectBooleanCheckbox id="recruitmentDocsFlagId" disabled="#{officersRecruitment.role != 'Requester' and officersRecruitment.role != 'ReviewerEmp'}" value="#{officersRecruitment.selectedRec.recruitmentDocsFlagBoolean}" />
+										</td>
+									</tr>
+									<tr>
+										<th>
+											#{msgs.label_job}
+											<h:panelGroup rendered="#{officersRecruitment.role != 'Requester' or officersRecruitment.selectedRec.recruitmentRegionId == 1}">
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</h:panelGroup>
+										</th>
+										<td>
+											<h:outputText id="jobCodeId" value="#{officersRecruitment.selectedRec.jobCode}" />
+											<h:outputText value=" - " />
+											<h:outputText id="jobNameId" value="#{officersRecruitment.selectedRec.jobName}" />
+											<h:inputHidden id="jobNameHId" value="#{officersRecruitment.selectedRec.jobName}" />
+											<h:inputHidden id="jobCodeHId" value="#{officersRecruitment.selectedRec.jobCode}" />
+											<h:inputHidden id="jobIDId" value="#{officersRecruitment.selectedRec.jobId}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" rendered="#{officersRecruitment.role == 'Requester' or officersRecruitment.role == 'ReviewerEmp' or officersRecruitment.role == 'SecondaryReviewerEmp'}" onclick="getJob(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+										<th>#{msgs.label_empSpecialization}</th>
+										<td>
+											<h:inputHidden id="minorSpecIDId" value="#{officersRecruitment.selectedRec.minorSpecId}" />
+											<h:outputText id="minorSpecDescId" value="#{officersRecruitment.selectedRec.minorSpecDescription}" />
+											<h:inputHidden id="minorSpecDescHId" value="#{officersRecruitment.selectedRec.minorSpecDescription}" />
+										</td>
+									</tr>
+									<tr>
+										<th>#{msgs.label_unit}</th>
+										<td>
+											<h:outputText id="unitFullNameId" value="#{officersRecruitment.selectedRec.unitFullName}" />
+											<h:inputHidden id="unitFullNameHId" value="#{officersRecruitment.selectedRec.unitFullName}" />
+										</td>
+										<th>#{msgs.label_region}</th>
+										<td>
+											<h:outputText value="#{officersRecruitment.selectedRec.recruitmentRegionDesc}" />
+										</td>
+									</tr>
+									<tr>
+										<th>
+											<h:outputText value="#{msgs.label_rank}" />
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<h:selectOneMenu id="officerRankId" disabled="#{officersRecruitment.role != 'Requester' and officersRecruitment.role != 'ReviewerEmp'}" value="#{officersRecruitment.selectedRec.rankId}">
+												<f:selectItem itemLabel="" />
+												<f:selectItems value="#{officersRecruitment.ranks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+											</h:selectOneMenu>
+										</td>
+										<th>
+											<h:outputText value="#{msgs.label_rankTitle}" />
+										</th>
+										<td>
+											<h:selectOneMenu disabled="#{officersRecruitment.role != 'Requester' and officersRecruitment.role != 'ReviewerEmp'}" value="#{officersRecruitment.selectedRec.rankTitleId}">
+												<f:selectItem itemLabel="" />
+												<f:selectItems value="#{officersRecruitment.ranksTitles}" var="rankTitle" itemLabel="#{rankTitle.description}" itemValue="#{rankTitle.id}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+									<tr>
+										<th>
+											#{msgs.label_recruitmentDate}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<util:hijri id="recruitmentDateId" rendered="#{officersRecruitment.role == 'Requester' or officersRecruitment.role == 'ReviewerEmp'}" nullable="true" value="#{officersRecruitment.selectedRec.recruitmentDate}" />
+											<h:outputText rendered="#{officersRecruitment.role != 'Requester' and officersRecruitment.role != 'ReviewerEmp'}" value="#{officersRecruitment.selectedRec.recruitmentDateString}" />
+										</td>
+										<th>#{msgs.label_firstRecruitmentDate}</th>
+										<td>
+											<util:hijri id="firstRecruitmentDateId" rendered="#{officersRecruitment.role == 'Requester' or officersRecruitment.role == 'ReviewerEmp'}" nullable="true" value="#{officersRecruitment.selectedRec.firstRecruitmentDate}" viewOldRange="true" />
+											<h:outputText rendered="#{officersRecruitment.role != 'Requester' and officersRecruitment.role != 'ReviewerEmp'}" value="#{officersRecruitment.selectedRec.firstRecruitmentDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th>#{msgs.label_latestPromotionDate}</th>
+										<td>
+											<util:hijri id="lastPromotionDateId" rendered="#{officersRecruitment.role == 'Requester' or officersRecruitment.role == 'ReviewerEmp'}" nullable="true" value="#{officersRecruitment.selectedRec.lastPromotionDate}" viewOldRange="true" />
+											<h:outputText rendered="#{officersRecruitment.role != 'Requester' and officersRecruitment.role != 'ReviewerEmp'}" value="#{officersRecruitment.selectedRec.lastPromotionDateString}" />
+										</td>
+										<th>#{msgs.label_seniority}</th>
+										<td>
+											<h:inputText id="seniorityMonthsId" readonly="#{officersRecruitment.role != 'Requester' and officersRecruitment.role != 'ReviewerEmp'}" value="#{officersRecruitment.selectedRec.seniorityMonths}" maxlength="3" onkeypress="return isDigit(event);" />
+											<h:outputText value=" #{msgs.label_monthSeniority} " />
+											<h:inputText id="seniorityDaysId" readonly="#{officersRecruitment.role != 'Requester' and officersRecruitment.role != 'ReviewerEmp'}" value="#{officersRecruitment.selectedRec.seniorityDays}" maxlength="2" onkeypress="return isDigit(event);" />
+											<h:outputText value=" #{msgs.label_daySeniority}" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" colspan="4" style="text-align: center;">
+											<h:commandButton rendered="#{officersRecruitment.role == 'Requester' or officersRecruitment.role == 'ReviewerEmp' or officersRecruitment.role == 'SecondaryReviewerEmp'}" action="#{officersRecruitment.saveWFRecruitment()}" onclick="return validateRecruitmentData();" value="#{msgs.label_save}" styleClass="btn_normal">
+												<f:ajax execute="officersRecruitmentFormId:basedOnPanelId officersRecruitmentFormId:dataPanelId" render="officersRecruitmentFormId:basedOnPanelId officersRecruitmentFormId:recruitmentsListPanelId officersRecruitmentFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:decisionCopies external="#{officersRecruitment.externalCopies}" internal="#{officersRecruitment.internalCopies}" viewOnly="#{officersRecruitment.role != 'Requester' and officersRecruitment.role != 'ReviewerEmp'}" />
+					</td>
+				</tr>
+				<code:prevTasks rendered="#{officersRecruitment.role != 'Requester'}" value="#{officersRecruitment.prevTasks}" refuseRoles="SignManager,ReviewerEmp," />
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{officersRecruitment.currentEmployee}" rendered="#{officersRecruitment.role != 'Requester' and officersRecruitment.role != 'Notification' and officersRecruitment.role != 'History'}">
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{officersRecruitment.currentTask.notes}" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{officersRecruitment.role == 'SignManager' or officersRecruitment.role == 'ReviewerEmp'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{officersRecruitment.currentTask.refuseReasons}" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{officersRecruitment.role == 'Notification' or officersRecruitment.role == 'History'}" value="#{officersRecruitment.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+
+									<h:panelGroup rendered="#{officersRecruitment.role == 'Requester'}">
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_send}', 'validateSend()');" action="#{officersRecruitment.initProcess()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{officersRecruitment.role == 'ReviewerEmp'}">
+										<h:commandButton action="#{officersRecruitment.reviewRecruitments}" onclick="return handleOnAction('#{msgs.q_review}', 'validateSend()');" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;officersRecruitmentFormId:curTaskId:refuseReasonsId&quot;)');" action="#{officersRecruitment.rejectRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{officersRecruitment.role == 'SecondaryReviewerEmp'}">
+										<h:commandButton action="#{officersRecruitment.sendSRE}" onclick="return handleOnAction('#{msgs.q_send}', 'validateSend()');" value="#{msgs.label_send} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{officersRecruitment.role == 'SignManager'}">
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;officersRecruitmentFormId:curTaskId:refuseReasonsId&quot;)');" action="#{officersRecruitment.signRM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;officersRecruitmentFormId:curTaskId:refuseReasonsId&quot;, &quot;officersRecruitmentFormId:curTaskId:notesId&quot;)');" action="#{officersRecruitment.modifyRM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;officersRecruitmentFormId:curTaskId:refuseReasonsId&quot;)');" action="#{officersRecruitment.rejectRM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{officersRecruitment.role == 'Notification' and officersRecruitment.instanceApproved == 1}">
+										<h:commandButton action="#{officersRecruitment.print()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{officersRecruitment.role == 'Notification'}">
+										<h:commandButton id="nBtnId" action="#{officersRecruitment.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

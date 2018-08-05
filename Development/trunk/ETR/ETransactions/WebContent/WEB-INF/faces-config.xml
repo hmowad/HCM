@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<faces-config xmlns="http://java.sun.com/xml/ns/javaee" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+      http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd"
+   version="2.0">  
+   
+   <application>
+        <locale-config>
+            <default-locale>ar</default-locale>
+        <!--    <supported-locale>en</supported-locale>     -->
+            <supported-locale>ar</supported-locale>
+        </locale-config>
+        <resource-bundle>
+            <base-name>com.code.resources.messages</base-name>
+	    <var>msgs</var>
+        </resource-bundle>        
+    </application>
+    
+    <lifecycle>
+      	<phase-listener>com.code.ui.config.AppPhaseListener</phase-listener>
+    </lifecycle>
+    
+    <navigation-rule>
+        <from-view-id>/Main/Login.xhtml</from-view-id>
+        <navigation-case>
+          <from-outcome>SUCCESS</from-outcome>
+          <to-view-id>/Main/Welcome.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+  		<from-view-id>/Main/Login.xhtml</from-view-id>
+  		<navigation-case>
+   			<from-outcome>DUAL_SECURITY</from-outcome>
+   			<to-view-id>/Security/DualSecurity.xhtml</to-view-id>
+  		</navigation-case>
+ 	</navigation-rule>
+ 	
+ 	<navigation-rule>
+  		<from-view-id>/Security/DualSecurity.xhtml</from-view-id>
+  		<navigation-case>
+   			<from-outcome>SUCCESS</from-outcome>
+   			<to-view-id>/Main/Welcome.xhtml</to-view-id>
+  		</navigation-case>
+ 	</navigation-rule>
+    
+    <navigation-rule>
+  	    <from-view-id>*</from-view-id>
+  	    <navigation-case>
+            <from-outcome>SUCCESS</from-outcome>
+            <to-view-id>/Main/Message.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+  	    <from-view-id>*</from-view-id>
+  	    <navigation-case>
+            <from-outcome>INBOX</from-outcome>
+            <to-view-id>/WorkList/WFInbox.xhtml</to-view-id>
+			<redirect/>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+  	    <from-view-id>/WorkList/WFApprovalDashBoard.xhtml</from-view-id>
+  	    <navigation-case>
+            <from-outcome>COLLECTIVE_APPROVAL_5</from-outcome>
+            <to-view-id>/Vacations/VacationsCollectiveApproval.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>COLLECTIVE_APPROVAL_50</from-outcome>
+            <to-view-id>/Missions/MissionsCollectiveApproval.xhtml</to-view-id>
+        </navigation-case>
+         <navigation-case>
+            <from-outcome>COLLECTIVE_APPROVAL_20</from-outcome>
+            <to-view-id>/Recruitments/RecruitmentsCollectiveApproval.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>COLLECTIVE_APPROVAL_60</from-outcome>
+            <to-view-id>/Promotions/PromotionsCollectiveApproval.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>COLLECTIVE_APPROVAL_30</from-outcome>
+            <to-view-id>/Movements/MovementsCollectiveApproval.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>COLLECTIVE_APPROVAL_80</from-outcome>
+            <to-view-id>/Terminations/TerminationsCollectiveApproval.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>COLLECTIVE_APPROVAL_90</from-outcome>
+            <to-view-id>/Trainings/TrainingsCollectiveApproval.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>COLLECTIVE_APPROVAL_100</from-outcome>
+            <to-view-id>/Retirements/RetirementsCollectiveApproval.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+  	    <from-view-id>*</from-view-id>
+  	    <navigation-case>
+            <from-outcome>LOGIN</from-outcome>
+            <to-view-id>/Main/Login.xhtml</to-view-id>
+			<redirect/>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+  	    <from-view-id>*</from-view-id>
+  	    <navigation-case>
+            <from-outcome>OUTBOX</from-outcome>
+            <to-view-id>/WorkList/WFOutbox.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+    	<from-view-id>/Promotions/PromotionSoldiersReport.xhtml</from-view-id>
+    	<navigation-case>
+            <from-outcome>REPORT_MANAGMENT</from-outcome>
+            <to-view-id>/Promotions/PromotionReportsManagement.xhtml</to-view-id>
+         </navigation-case>
+    </navigation-rule>
+</faces-config>

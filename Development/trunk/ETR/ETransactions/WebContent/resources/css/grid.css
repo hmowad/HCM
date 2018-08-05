@@ -1,0 +1,99 @@
+.gridRowOdd {
+	background-color: white;
+}
+
+.gridRowEven {
+	background-color: #F1FAFF;
+}
+
+.gridMaster {
+	border-collapse: collapse;
+	border: 1px solid #E3E8EA;
+	width: 100%;
+	background-color: #f7f7f7;
+}
+
+.gridMaster th {
+	border-collapse: collapse;
+	height: 29px;
+	color: #3E5557;
+	font-size: 11px;
+	background-position: bottom;
+	font-family: DroidArabicKufi;
+	font-weight: bold;
+	text-align: center;
+	background-color: #D8E7F0 !important;
+	background-image: none !important;
+	border: 1px solid #C9D3DA;
+}
+
+.gridMaster td {
+	border-collapse: collapse;
+	height: 17px;
+	font-size: 12px;
+	padding-right: 1px;
+	padding-left: 1px;
+	text-align: center;
+	font-family: DroidArabicKufi;
+	border: 1px solid #D8E7F0;
+}
+
+.gridMaster a {
+	font-size: 12px;
+	padding-right: 1px;
+	padding-left: 1px;
+	font-family: DroidArabicKufi;
+	text-decoration: underline;
+}
+
+.rf-dt-ftr-c {
+	background-color: #D8E7F0 !important;
+	border: 1px solid #C9D3DA !important;
+}
+
+/***************************************Grid footer buttons********************************************/
+.rf-ds {
+	background: transparent !important;
+}
+
+.rf-ds-dis {
+	color: #96BBD2 !important;
+}
+
+.rf-ds-btn {
+	cursor: pointer;
+	border: 1px solid #5DA3CC !important;
+	display: inline-block;
+	background-color: #b1d6ec !important;
+	background-image: none !important;
+	font-size: 12px;
+	font-family: DroidArabicKufi !important;
+	color: #000000;
+	text-decoration: none;
+	font-weight: normal;
+	-webkit-border-radius: 3px !important;
+	-moz-border-radius: 3px !important;
+	border-radius: 3px !important;
+}
+
+.rf-ds-nmb-btn {
+	background-color: #B1D6EC !important;
+	background-image: none !important;
+	-webkit-border-radius: 3px !important;
+	-moz-border-radius: 3px !important;
+	border-radius: 3px !important;
+	border-top: 1px solid #004469 !important;
+}
+
+.rf-ds-act {
+	background-color: #B1D6EC !important;
+	color: #96BBD2 !important;
+	border-top: none !important;
+	border-bottom: 1px solid #004469 !important;
+}
+
+.rf-ds-nmb-btn:hover {
+	border: 1px solid #A1BFD0 !important;
+	background-color: #0E75AD !important;
+	color: #fff;
+}

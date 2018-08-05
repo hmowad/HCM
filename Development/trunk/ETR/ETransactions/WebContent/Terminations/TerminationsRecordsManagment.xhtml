@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">  
+
+	window.onkeypress = function(e) {
+		  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+		  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+	      if (keyCode == '13'){
+	    	  document.getElementById('terminationsRecordsFormId:searchBtnId').click();
+	    	  return false;
+	      }
+	}; 
+	
+	function getEmp(contextPath){
+        openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, #{terminationsRecordsMangement.mode}, -1, -1, -1, -1, -1);
+     }
+	
+	function handleEmpMiniSearchResult(ret){
+		if(ret != null){
+	           document.getElementById('terminationsRecordsFormId:empIDHId').value = ret[0];
+	           document.getElementById('terminationsRecordsFormId:empNameId').innerHTML = ret[1];
+	    }
+	}
+	
+		</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="terminationsRecordsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{terminationsRecordsMangement.screenTitle}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="70%">#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="terminationRecordDataId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+
+								<tr style="display: #{terminationsRecordsMangement.mode ==3 ? '' : 'none'}">
+									<th width="15%">
+										<h:outputText value="#{msgs.label_civilianCategory}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="civilianCategoryId" value="#{terminationsRecordsMangement.categoryId}">
+											<f:selectItems value="#{terminationsRecordsMangement.categories}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+											<f:ajax event="change" execute="terminationsRecordsFormId:civilianCategoryId" listener="#{terminationsRecordsMangement.civilianCategoryChanged()}" render="terminationsRecordsFormId:terminationRecordDataId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_terminationReason}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:panelGroup rendered="#{terminationsRecordsMangement.categoryId == 6}">
+											<h:selectOneMenu id="terminationReasonContractorId" value="#{terminationsRecordsMangement.reasonId}">
+												<f:selectItems value="#{terminationsRecordsMangement.terminationReasons}" var="reason" itemLabel="#{reason.description}" itemValue="#{reason.id}" />
+												<f:ajax event="change" execute="terminationsRecordsFormId:terminationReasonContractorId" render="terminationsRecordsFormId:terminationRecordDataId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneMenu>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{terminationsRecordsMangement.categoryId != 6}">
+											<h:selectOneMenu id="terminationReasonId" value="#{terminationsRecordsMangement.reasonId}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+												<f:selectItems value="#{terminationsRecordsMangement.terminationReasons}" var="reason" itemLabel="#{reason.description}" itemValue="#{reason.id}" />
+												<f:ajax event="change" execute="terminationsRecordsFormId:terminationReasonId" listener="#{terminationsRecordsMangement.reasonChanged()}" render="terminationsRecordsFormId:terminationRecordDataId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneMenu>
+										</h:panelGroup>
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_region}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="regionId" value="#{terminationsRecordsMangement.regionId}" disabled="#{terminationsRecordsMangement.loginEmpData.physicalRegionId != 1}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItems value="#{terminationsRecordsMangement.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_recordNumber}" />
+									</th>
+									<td width="35%">
+										<h:inputText id="recordNumberId" value="#{terminationsRecordsMangement.recordNumber}" onkeypress="return isDigit(event);" maxlength="6" />
+									</td>
+
+									<th width="15%">
+										<h:outputText value="#{msgs.label_recordStatus}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+
+										<h:panelGroup rendered="#{terminationsRecordsMangement.mode==1}">
+											<h:selectOneMenu value="#{terminationsRecordsMangement.status}">
+												<f:selectItem itemLabel="#{msgs.label_current}" itemValue="5" />
+												<f:selectItem itemLabel="#{msgs.label_closed}" itemValue="15" />
+											</h:selectOneMenu>
+										</h:panelGroup>
+
+										<h:panelGroup rendered="#{terminationsRecordsMangement.mode==2 or terminationsRecordsMangement.mode==3}">
+											<h:selectOneMenu value="#{terminationsRecordsMangement.status}">
+												<f:selectItem itemLabel="#{msgs.label_current}" itemValue="5" />
+												<f:selectItem itemLabel="#{msgs.label_underApproved}" itemValue="10" />
+												<f:selectItem itemLabel="#{msgs.label_closed}" itemValue="15" />
+											</h:selectOneMenu>
+										</h:panelGroup>
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_recordStartFrom}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<util:hijri id="recordDateFromId" value="#{terminationsRecordsMangement.recordDateFrom}" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_to}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<util:hijri id="recordDateToId" value="#{terminationsRecordsMangement.recordDateTo}" />
+									</td>
+								</tr>
+								<h:panelGroup id="terminationDueDatePanelId" rendered="#{terminationsRecordsMangement.reasonId==5 or terminationsRecordsMangement.reasonId==55 or terminationsRecordsMangement.reasonId==105}">
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_terminationDueDateFrom}" />
+										</th>
+										<td width="35%">
+											<util:hijri id="terminationDueDateFromId" value="#{terminationsRecordsMangement.retirementDateFrom}" nullable="true" />
+										</td>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_to}" />
+										</th>
+										<td width="35%">
+											<util:hijri id="terminationDueDateToId" value="#{terminationsRecordsMangement.retirementDateTo}" nullable="true" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_emp}" />
+									</th>
+									<td width="35%">
+										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_missionEmpName}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+										<h:inputHidden id="empIDHId" value="#{terminationsRecordsMangement.empId}" />
+										<h:outputText id="empNameId" value="#{terminationsRecordsMangement.empName}" />
+									</td>
+
+
+									<th width="15%">
+										<h:outputText rendered="#{terminationsRecordsMangement.mode!=3}" value="#{msgs.label_rank}" />
+										<h:outputText rendered="#{terminationsRecordsMangement.mode ==3}" value="#{msgs.label_personRank}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="ranksId" value="#{terminationsRecordsMangement.rankId}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItems value="#{terminationsRecordsMangement.ranks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" action="#{terminationsRecordsMangement.search()}" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon">
+										<f:ajax execute="terminationsRecordsFormId:terminationRecordDataId" render="terminationsRecordsFormId:terminationRecordTablePanelId" />
+									</h:commandButton>
+									<h:commandButton action="#{terminationsRecordsMangement.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="terminationsRecordsFormId:terminationRecordDataId terminationsRecordsFormId:terminationRecordsTableId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td align="center" width="100%">
+						<h:panelGroup id="terminationRecordTablePanelId">
+							<rich:dataTable id="terminationRecordsTableId" rowKeyVar="index" var="termination" rows="#{terminationsRecordsMangement.pageSize}" value="#{terminationsRecordsMangement.terminationRecords}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+								<rich:column style="width : 3%">
+									<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                            </rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">#{msgs.label_recordNumber}</f:facet>
+									<h:outputText value="#{termination.recordNumber}" />
+								</rich:column>
+								<rich:column style="width : 6%">
+									<f:facet name="header">#{msgs.label_transactionHijriDate}</f:facet>
+									<h:outputText value="#{termination.recordDateString}" />
+								</rich:column>
+								<rich:column style="width : 15%">
+									<f:facet name="header">#{msgs.label_reasons}</f:facet>
+									<h:outputText value="#{termination.reasonDesc}" />
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">#{msgs.label_recordStatus}</f:facet>
+									<h:outputText value="#{termination.status == 5 ? msgs.label_current : (termination.status == 10 ? msgs.label_underApproved : msgs.label_closed)}" />
+								</rich:column>
+								<rich:column style="width : 7%">
+									<f:facet name="header">#{msgs.label_details}</f:facet>
+									<h:panelGroup rendered="#{terminationsRecordsMangement.mode == 1}">
+										<a target="_blank" href="#{request.contextPath}/Terminations/TerminationsOfficersRecords.jsf?recordId=#{termination.id}&amp;mode=1" style="text-decoration: none;">
+											<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_showAndUpdate}"></i>
+										</a>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{terminationsRecordsMangement.mode == 2}">
+										<a target="_blank" href="#{request.contextPath}/Terminations/TerminationsSoldiersRecords.jsf?recordId=#{termination.id}&amp;mode=2" style="text-decoration: none;">
+											<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_showAndUpdate}"></i>
+										</a>
+									</h:panelGroup>
+									
+									<h:panelGroup rendered="#{terminationsRecordsMangement.mode == 3}">
+										<a target="_blank" href="#{request.contextPath}/Terminations/TerminationsCiviliansRecords.jsf?recordId=#{termination.id}&amp;mode=3" style="text-decoration: none;">
+											<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_showAndUpdate}"></i>
+										</a>
+									</h:panelGroup>
+								</rich:column>
+								<rich:column style="width : 7%">
+									<f:facet name="header">#{msgs.label_recordDraftPrint}</f:facet>
+									<h:commandButton value="#{msgs.fa_print}" action="#{terminationsRecordsMangement.printTerminationRecord(termination)}" styleClass="btn_icon" />
+								</rich:column>
+								<rich:column style="width : 3%;">
+									<f:facet name="header">#{msgs.label_delete}</f:facet>
+									<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{terminationsRecordsMangement.deleteTerminationRecord(termination)}" onclick="return confirm('#{msgs.q_delete}');" disabled="#{termination.status == 15 or termination.status == 10}">
+										<f:ajax execute="terminationsRecordsFormId:terminationRecordsTableId" render="terminationsRecordsFormId:terminationRecordsTableId terminationsRecordsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+										<f:facet name="first">#{msgs.label_first}</f:facet>
+										<f:facet name="last">#{msgs.label_last}</f:facet>
+										<f:facet name="next">#{msgs.label_next}</f:facet>
+										<f:facet name="previous">#{msgs.label_previous}</f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

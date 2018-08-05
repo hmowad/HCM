@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="menu.css" />
+	<script type="text/javascript">
+		function selectModule(selected) {
+			document.getElementById('processesManagementTDId').className = 'L3';
+			document.getElementById('unitsTDId').className = 'L3';
+			document.getElementById('jobsTDId').className = 'L3';
+			document.getElementById('manpowerNeedsTDId').className = 'L3';
+			document.getElementById('employeesDataTDId').className = 'L3';
+			document.getElementById('recruitmentsTDId').className = 'L3';
+			document.getElementById('terminationsTDId').className = 'L3';
+			document.getElementById('movementsTDId').className = 'L3';
+			document.getElementById('promotionsTDId').className = 'L3';
+			document.getElementById('missionsTDId').className = 'L3';
+			document.getElementById('vacationsTDId').className = 'L3';
+			document.getElementById('trainingsTDId').className = 'L3';
+			document.getElementById('exercisesTDId').className = 'L3';
+			document.getElementById('navyFormationTDId').className = 'L3';
+			document.getElementById('martyrsTDId').className = 'L3';
+			document.getElementById('definitionLettersTDId').className = 'L3';
+			document.getElementById('payrollDifferencesTDId').className = 'L3';
+			document.getElementById('generalNotificationsTDId').className = 'L3';
+			document.getElementById('minisearchScreensTDId').className = 'L3';
+
+			selected.parentNode.className = 'L3Selected';
+		}
+	</script>
+</h:head>
+<h:body styleClass="help_body">
+	<h:form dir="#{msgs.dir}">
+		<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td width="100%" height="5" colspan="2" />
+			</tr>
+
+			<tr>
+				<td class="screenTitle" colspan="2">
+					<h:outputText value="#{msgs.label_help}" />
+				</td>
+			</tr>
+
+			<tr>
+				<td width="100%" height="5" colspan="2" />
+			</tr>
+
+			<tr>
+				<td width="20%" valign="top" style="padding: 5px;">
+					<table border="0" cellpadding="0" cellspacing="0" width="100%">
+						<tr>
+							<td id="processesManagementTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/ProcessesManagement_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.label_instanceManagement} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="unitsTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/Units_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.label_organizationHierarchy} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="jobsTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/Jobs_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_jobFormations} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="manpowerNeedsTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/ManpowerNeeds_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_manpowerNeeds} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="employeesDataTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/EmployeesData_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_employeesData} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="recruitmentsTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/Recruitments_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_Recruitments} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="terminationsTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/ServiceTermination_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_terminations} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="movementsTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/Movements_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_movements} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="promotionsTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/Promotions_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_promotions} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="missionsTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/Missions_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_missions} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="vacationsTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/Vacations_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_vacations} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="trainingsTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/Trainings_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_trainingAndScholarship} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="exercisesTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/Exercises_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_exercises} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="navyFormationTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/NavyFormation_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_navyFormation} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="martyrsTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/Martyrs_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_martyrs} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="definitionLettersTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/DefinitionLetters_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_definitionLetters} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="payrollDifferencesTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/PayrollDifferences_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_payrollDifferences} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="generalNotificationsTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/GeneralNotifications_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_generalNotifications} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="minisearchScreensTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/MinisearchScreens_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.label_subScreens} </a>
+							</td>
+						</tr>
+					</table>
+				</td>
+
+				<td width="80%" style="padding: 5px;">
+					<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #fff;">
+						<tr>
+							<td width="100%">
+								<div class="help_choose_text">#{msgs.label_selectHelpFile}</div>
+								<iframe name="PDFViewer" src="" frameborder="0" width="100%" height="570px" class="help_pdf_frame"></iframe>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</h:form>
+</h:body>
+</html>

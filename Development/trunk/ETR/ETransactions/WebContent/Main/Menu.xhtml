@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head></h:head>
+    <h:body>    	    
+        <ui:composition>
+            <h:outputStylesheet library="css" name="menu.css" target="head"/>
+            <h:outputText value="" style="display:none;"><f:event type="preRenderComponent" listener="#{menuTree.init}"/></h:outputText>
+            <input id="menuTypeHId" type="hidden" value="#{menuTree.menuType}" />
+            
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr><td width="100%" height="5"/></tr>
+                 
+                <ui:repeat value="#{menuTree.currentTree}" var="menu">                                                               
+                    <tr onclick="controlMenuDiv('menuDivId_#{menu.menuId}');" style="cursor: pointer;">
+                       <td>
+                          <table border="0" cellpadding="0" cellspacing="0" class="L1" onmouseover="this.className='L1over';" onmouseout="this.className='L1';">
+                                <tr>
+                                    <td>       
+                                        <img id="menuDivId_#{menu.menuId}_PlusMinus" src="#{request.contextPath}/resources/images/#{menu.menuId == menuTree.rootOpened ? 'treeMinus.png' : 'treePlus.png'}"/>                                        
+                                        <span>#{msgs[menu.nameKey]}</span>
+                                    </td>
+                                </tr>
+                          </table>
+                        </td>
+                   </tr>
+                    
+                   <tr>
+                       <td>
+                            <div id="menuDivId_#{menu.menuId}" style="display:#{menu.menuId == menuTree.rootOpened ? '' : 'none'};">
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                    <ui:repeat value="#{menu.subMenus}" var="subMenu">
+                                    	<h:panelGroup rendered="#{subMenu.url == null}">
+	                                        <tr onclick="controlMenuDiv('menuDivId_#{subMenu.menuId}');" style="cursor: pointer;">
+	                                            <td>
+	                                                <table border="0" cellpadding="0" cellspacing="0" class="L2" onmouseover="this.className='L2over';" onmouseout="this.className='L2';">
+	                                                    <tr>
+	                                                        <td>
+	                                                            <img id="menuDivId_#{subMenu.menuId}_PlusMinus" src="#{request.contextPath}/resources/images/#{subMenu.menuId == menuTree.subParentOpened ? 'treeMinus.png' : 'treePlus.png'}"/>
+	                                                             
+	                                                            <span>#{msgs[subMenu.nameKey]}</span>
+	                                                        </td>
+	                                                    </tr>
+	                                                </table>
+	                                            </td>
+	                                        </tr>
+	                                        <tr>
+	                                            <td>
+	                                                <div id="menuDivId_#{subMenu.menuId}" style="display:#{subMenu.menuId == menuTree.subParentOpened ? '' : 'none'};">
+	                                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+	                                                        <ui:repeat value="#{subMenu.subMenus}" var="leafMenu">
+	                                                            <tr>
+	                                                                <td class="#{menuTree.checkCurrentURL(leafMenu.url) ? 'L3Selected' :'L3'}">
+	                                                                    <h:outputLink value="#{request.contextPath}#{leafMenu.url}">#{msgs[leafMenu.nameKey]}</h:outputLink>
+	                                                                </td>
+	                                                            </tr>
+	                                                        </ui:repeat>
+	                                                    </table>
+	                                                </div>
+	                                            </td>
+	                                        </tr>
+	                                    </h:panelGroup>
+                                        <h:panelGroup rendered="#{subMenu.url != null}">
+	                                        <tr>
+	                                            <td class="#{menuTree.checkCurrentURL(subMenu.url) ? 'L3Selected' :'L3'}">
+	                                                <h:outputLink value="#{request.contextPath}#{subMenu.url}">#{msgs[subMenu.nameKey]}</h:outputLink>
+	                                            </td>
+	                                        </tr>
+	                                    </h:panelGroup>
+                                    </ui:repeat>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>                   
+                </ui:repeat>                                           
+            </table>
+        </ui:composition>
+    </h:body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+
+	function getEmployee(contextPath) {
+		if(#{militaryTrainingClaimRequest.decisionRequest}) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{militaryTrainingClaimRequest.getLoginEmpPhysicalRegionFlag(true)});
+		} else {
+			openEmpsMiniSearch(contextPath,'handleEmpMiniSearchResult(ret)', 9, -1, -1, -1, -1, -1, '#{militaryTrainingClaimRequest.loginEmpData.physicalUnitHKey}');
+		}
+	}
+
+	function handleEmpMiniSearchResult(ret) {
+	   if(ret != null) {
+	   		document.getElementById('militaryTrainingClaimRequestFormId:beneficiaryEmployeeHId').value = ret[0];
+	   		document.getElementById('militaryTrainingClaimRequestFormId:beneficiaryEmployeeCategoryId').value = ret[2];
+	        document.getElementById('militaryTrainingClaimRequestFormId:searchEmpBtnId').click();
+		}
+	} 
+	   
+	function getCourse(contextPath) {
+		openTrainingCoursesMiniSearch(contextPath, 'handleCourseMiniSearchResult(ret)', 2);
+	}
+	
+	function handleCourseMiniSearchResult(ret) {
+		if(ret != null){ 
+	         document.getElementById('militaryTrainingClaimRequestFormId:courseIDId').value = ret[0];
+	         document.getElementById('militaryTrainingClaimRequestFormId:courseNameId').innerHTML = ret[1];
+		}
+	}
+
+    function getExternalParty() {
+		openExternalPartiesMiniSearch('#{request.contextPath}', 'handleExternalPartiesMiniSearchResult(ret)', 2, 0);
+	}
+	
+	function handleExternalPartiesMiniSearchResult(ret) {
+		if (ret != null) {
+			document.getElementById('militaryTrainingClaimRequestFormId:externalPartyIDHId').value = ret[0];
+			document.getElementById('militaryTrainingClaimRequestFormId:externalPartyNameId').innerHTML = ret[1];
+			document.getElementById('militaryTrainingClaimRequestFormId:externalPartyBtnId').click();
+		}
+	}
+	
+	function validateRequest(canChange) {
+		if(!canChange)
+			return true;
+		
+		var courseIdValue =  document.getElementById('militaryTrainingClaimRequestFormId:courseIDId').value;
+		var startDateValue =  document.getElementById('militaryTrainingClaimRequestFormId:startDateId:day').value;
+		var endDateValue =  document.getElementById('militaryTrainingClaimRequestFormId:endDateId:day').value;
+		
+		if(courseIdValue == null || courseIdValue=='') {
+			alert('#{msgs.error_courseNameMandatory}');
+			return false;
+		}
+	
+		if(#{militaryTrainingClaimRequest.mode == 1}) {
+			var externalPartyIdVale = document.getElementById('militaryTrainingClaimRequestFormId:externalPartyIDHId').value;
+			if(externalPartyIdVale == null || externalPartyIdVale == '') {
+			    alert('#{msgs.error_courseExecutionPartyMandatory}');
+				return false;
+			}
+		} else {
+			var trainingUnitIdValue = document.getElementById('militaryTrainingClaimRequestFormId:trainingUnitId').value;
+			if(trainingUnitIdValue == -1) {
+				 alert('#{msgs.error_trainingUnitMandatory}');
+				return false;
+			}
+			
+			var courseSerialValue = document.getElementById('militaryTrainingClaimRequestFormId:courseSerialId').value;
+			if(courseSerialValue == null || courseSerialValue == '') {
+			    alert('#{msgs.error_courseSerialMandatory}');
+				return false;
+			}
+
+			if(courseSerialValue == 0) {
+			    alert('#{msgs.error_courseSerialMustBeGreaterThanZero}');
+				return false;
+			}
+		}
+		
+		if(startDateValue == 0) {
+			alert('#{msgs.error_courseStartDateMandatory}');
+			return false;
+		}
+
+		if(endDateValue == 0) {
+			alert('#{msgs.error_courseEndDateMandatory}');
+			return false;
+		}
+		
+		if(!validResultsComponent()) {
+			return false
+		}
+		
+		return true;
+	}
+
+
+	function validateReview(canChange) {
+	    if(validateRefuseAndNotes(1, 'militaryTrainingClaimRequestFormId:curTaskId:refuseReasonsId')) {
+	    	if(!canChange)
+	    		return true;
+	    	return validateRequest();
+	    } else
+	    	return false;
+	}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="militaryTrainingClaimRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{militaryTrainingClaimRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_processRequester}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{militaryTrainingClaimRequest.requester}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiaryEmployee}" switchType="client" onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{militaryTrainingClaimRequest.beneficiary.empId == militaryTrainingClaimRequest.requester.empId})) { getEmployee('#{request.contextPath}'); return false;} else {return true;}" expanded="#{militaryTrainingClaimRequest.requester.empId != militaryTrainingClaimRequest.beneficiary.empId}"
+							rendered="#{(militaryTrainingClaimRequest.role == 'Requester' and (militaryTrainingClaimRequest.decisionRequest or militaryTrainingClaimRequest.loginEmpData.isManager == 1)) or militaryTrainingClaimRequest.requester.empId != militaryTrainingClaimRequest.beneficiary.empId}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+								<h:panelGroup rendered="#{militaryTrainingClaimRequest.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+														<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{militaryTrainingClaimRequest.constructWFTraining()}">
+															<f:ajax execute="militaryTrainingClaimRequestFormId:beneficiaryEmployeeHId militaryTrainingClaimRequestFormId:beneficiaryEmployeeCategoryId" render="militaryTrainingClaimRequestFormId:beneficiaryPanelId militaryTrainingClaimRequestFormId:dataPanelId militaryTrainingClaimRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:inputHidden id="beneficiaryEmployeeHId" value="#{militaryTrainingClaimRequest.selectedEmployeeId}" />
+														<h:inputHidden id="beneficiaryEmployeeCategoryId" value="#{militaryTrainingClaimRequest.selectedEmpCategoryId}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp id="beneficiaryId" value="#{militaryTrainingClaimRequest.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{militaryTrainingClaimRequest.mode == 0 ? msgs.label_previousMilitaryCourseData : msgs.label_previousExtMilitaryCourseData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="dataPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_theTrainingUnit}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:panelGroup rendered="#{militaryTrainingClaimRequest.mode == 0}">
+											<h:selectOneMenu id="trainingUnitId" value="#{militaryTrainingClaimRequest.wfTraining.trainingUnitId}" disabled="#{!militaryTrainingClaimRequest.canChangeRequestData()}">
+												<f:selectItem itemLabel=" " itemValue="-1" />
+												<f:selectItems value="#{militaryTrainingClaimRequest.trainingUnitsList}" var="trainingUnit" itemValue="#{trainingUnit.unitId}" itemLabel="#{trainingUnit.name}" />
+											</h:selectOneMenu>
+										</h:panelGroup>
+
+										<h:panelGroup rendered="#{militaryTrainingClaimRequest.mode == 1}">
+											<h:outputText id="externalPartyNameId" value="#{militaryTrainingClaimRequest.wfTraining.externalPartyDesc}" />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getExternalParty(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{militaryTrainingClaimRequest.canChangeRequestData()}" />
+											<h:commandButton id="externalPartyBtnId" style="display:none;" rendered="#{militaryTrainingClaimRequest.canChangeRequestData()}">
+												<f:ajax render="militaryTrainingClaimRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:inputHidden id="externalPartyIDHId" value="#{militaryTrainingClaimRequest.wfTraining.externalPartyId}" />
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_trainingCourseName}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="#{militaryTrainingClaimRequest.mode == 0 ? 20 : 85}%" colspan="#{militaryTrainingClaimRequest.mode == 0 ? 1 : 3}">
+										<h:outputText id="courseNameId" value="#{militaryTrainingClaimRequest.wfTraining.courseName}" />
+										<h:outputText value=" " />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getCourse('#{request.contextPath}');return false;" styleClass="btn_icon" rendered="#{militaryTrainingClaimRequest.canChangeRequestData()}" />
+										<h:inputHidden id="courseIDId" value="#{militaryTrainingClaimRequest.wfTraining.courseId}" />
+									</td>
+									<h:panelGroup rendered="#{militaryTrainingClaimRequest.mode == 0}">
+										<th width="15%">
+											#{msgs.label_trainingCourseNumber}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="50%">
+											<h:inputText id="courseSerialId" value="#{militaryTrainingClaimRequest.wfTraining.serial}" maxlength="10" onkeypress="return isDigit(event);" readonly="#{!militaryTrainingClaimRequest.canChangeRequestData()}" />
+										</td>
+									</h:panelGroup>
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_courseStartDate}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="20%">
+										<util:hijri id="startDateId" value="#{militaryTrainingClaimRequest.wfTraining.startDate}" nullable="true" rendered="#{militaryTrainingClaimRequest.canChangeRequestData()}" viewOldRange="true"/>
+										<h:outputText value="#{militaryTrainingClaimRequest.wfTraining.startDateString}" rendered="#{!militaryTrainingClaimRequest.canChangeRequestData()}" />
+									</td>
+									<th width="15%">
+										#{msgs.label_courseEndDate}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="50%">
+										<util:hijri id="endDateId" value="#{militaryTrainingClaimRequest.wfTraining.endDate}" nullable="true" rendered="#{militaryTrainingClaimRequest.canChangeRequestData()}" viewOldRange="true"/>
+										<h:outputText value="#{militaryTrainingClaimRequest.wfTraining.endDateString}" rendered="#{!militaryTrainingClaimRequest.canChangeRequestData()}" />
+									</td>
+
+								</tr>
+								<code:courseResults trainingObject="#{militaryTrainingClaimRequest.wfTraining}" loginEmpId="#{militaryTrainingClaimRequest.loginEmpData.empId}" viewOnly="#{!militaryTrainingClaimRequest.canChangeRequestData()}" military="true" claim="true"></code:courseResults>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{militaryTrainingClaimRequest.role != 'Requester'}" value="#{militaryTrainingClaimRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{militaryTrainingClaimRequest.currentEmployee}"
+							rendered="#{militaryTrainingClaimRequest.role == 'DirectManager' or militaryTrainingClaimRequest.role == 'ManagerRedirect' or militaryTrainingClaimRequest.role == 'ReviewerEmp' or militaryTrainingClaimRequest.role == 'SignManager'}">
+							<h:panelGroup rendered="#{militaryTrainingClaimRequest.role == 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{militaryTrainingClaimRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{militaryTrainingClaimRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{militaryTrainingClaimRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{militaryTrainingClaimRequest.role != 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{militaryTrainingClaimRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{militaryTrainingClaimRequest.role == 'Notification' or militaryTrainingClaimRequest.role == 'History'}" value="#{militaryTrainingClaimRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest(#{militaryTrainingClaimRequest.canChangeRequestData()})',null);" action="#{militaryTrainingClaimRequest.initWFTraining()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{militaryTrainingClaimRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="militaryTrainingClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;militaryTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{militaryTrainingClaimRequest.approveWFTrainingDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingClaimRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="militaryTrainingClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{militaryTrainingClaimRequest.rejectWFTrainingDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingClaimRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="militaryTrainingClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;militaryTrainingClaimRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{militaryTrainingClaimRequest.redirectWFTrainingMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{militaryTrainingClaimRequest.role == 'ManagerRedirect'}">
+										<f:ajax execute="@form" render="militaryTrainingClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateReview(#{militaryTrainingClaimRequest.canChangeRequestData()})',null);" action="#{militaryTrainingClaimRequest.approveWFTrainingRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingClaimRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="militaryTrainingClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{militaryTrainingClaimRequest.rejectWFTrainingRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingClaimRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="militaryTrainingClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;militaryTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{militaryTrainingClaimRequest.approveWFTrainingSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingClaimRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="militaryTrainingClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;militaryTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;militaryTrainingClaimRequestFormId:curTaskId:notesId&quot;)',null);" action="#{militaryTrainingClaimRequest.returnWFTrainingSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{militaryTrainingClaimRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="militaryTrainingClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{militaryTrainingClaimRequest.rejectWFTrainingSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryTrainingClaimRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="militaryTrainingClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="nBtnId" action="#{militaryTrainingClaimRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryTrainingClaimRequest.role == 'Notification'}">
+										<f:ajax execute="@form" render="militaryTrainingClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

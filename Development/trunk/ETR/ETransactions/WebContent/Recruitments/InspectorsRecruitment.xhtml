@@ -1,0 +1,481 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		var index;
+		
+	 	function getEmployee() {
+			if(!validateMandatoryFields())
+				return;
+				
+			rankIdValue = document.getElementById('inspectorsRecruitmentFormId:rankIDId').value;
+			openEmpsMiniSearchForRecruitmentModule('#{request.contextPath}', 'handleEmpMiniSearchResult(ret)', 2, 2, -1, -1 , -1, rankIdValue, -1, 'F', 0, -1);
+		 }
+
+	 	function handleEmpMiniSearchResult(ret) {
+			if(ret!=null) {
+			    document.getElementById('inspectorsRecruitmentFormId:employeeIDId').value=ret[0];
+				document.getElementById('inspectorsRecruitmentFormId:searchEmpBtnId').click();
+			}
+	 	}
+	 	
+		function getJob(i) {
+			 index = i;			
+	 	 	 var minorSpecIdValue = -1;
+	 	 	 var regionIdValue = -1;
+	 	 	 
+			 minorSpecIdValue = document.getElementById('inspectorsRecruitmentFormId:recruitmentsListId:' + index + ':empRecMinorSpecIDId').value;
+			 regionIdValue = document.getElementById('inspectorsRecruitmentFormId:regionIDId').value;
+	 		 rankIdValue = document.getElementById('inspectorsRecruitmentFormId:rankIDId').value;;
+
+	         openJobsMiniSearch('#{request.contextPath}','handleJobsMiniSearchResult(ret)', 7, 2, -1, rankIdValue, regionIdValue, minorSpecIdValue, 0);
+	    }
+
+		function handleJobsMiniSearchResult(ret) {
+	         if(ret != null){
+					document.getElementById('inspectorsRecruitmentFormId:recruitmentsListId:' + index + ':jobIDId').value = ret[0];
+					document.getElementById('inspectorsRecruitmentFormId:recruitmentsListId:' + index + ':jobCodeId').innerHTML = ret[1];
+					document.getElementById('inspectorsRecruitmentFormId:recruitmentsListId:' + index + ':jobCodeHId').value = ret[1];
+					document.getElementById('inspectorsRecruitmentFormId:recruitmentsListId:' + index + ':jobNameId').innerHTML = ret[2];
+					document.getElementById('inspectorsRecruitmentFormId:recruitmentsListId:' + index + ':jobNameHId').value = ret[2];
+					document.getElementById('inspectorsRecruitmentFormId:recruitmentsListId:' + index + ':unitFullNameId').innerHTML = ret[4];
+					document.getElementById('inspectorsRecruitmentFormId:recruitmentsListId:' + index + ':unitFullNameHId').value = ret[4];
+					document.getElementById('inspectorsRecruitmentFormId:recruitmentsListId:' + index + ':minorSpecIDId').value = ret[8];
+					document.getElementById('inspectorsRecruitmentFormId:recruitmentsListId:' + index + ':minorSpecDescriptionId').innerHTML = ret[9];
+					document.getElementById('inspectorsRecruitmentFormId:recruitmentsListId:' + index + ':minorSpecDescriptionHId').value = ret[9];
+					document.getElementById('inspectorsRecruitmentFormId:recruitmentsListId:' + index + ':searchJobBtnId').click();
+		        }
+		}
+
+		function validateMandatoryFields() {
+			// only check based on number and date when they are enabled
+			if(document.getElementById('inspectorsRecruitmentFormId:basedOnOrderDateId:day') != null) {
+
+				var basedOnOrderNumberValue, rankIdValue, degreeIdValue, regionIdValue, qualificationLevelIdValue;
+
+				basedOnOrderNumberValue = document.getElementById('inspectorsRecruitmentFormId:basedOnOrderNumberId').value;
+				rankIdValue = document.getElementById('inspectorsRecruitmentFormId:rankIDId').value;
+				degreeIdValue = document.getElementById('inspectorsRecruitmentFormId:degreeIDId').value;
+				qualificationLevelRewardValue = document.getElementById('inspectorsRecruitmentFormId:qualificationLevelRewardId').value;
+				regionIdValue = document.getElementById('inspectorsRecruitmentFormId:regionIDId').value;
+
+				if((basedOnOrderNumberValue == null || basedOnOrderNumberValue == '')
+						|| (rankIdValue == -1)
+						|| (degreeIdValue == -1)
+						|| (qualificationLevelRewardValue == null || qualificationLevelRewardValue == '') 
+						|| (regionIdValue == -1)) {
+
+					alert("#{msgs.error_inspectorsRecruitmentDataMandatory}");
+					return false;
+				}
+
+			}
+			return true; 
+		}
+	
+		function validateSend() {
+			if(document.getElementById('inspectorsRecruitmentFormId:recruitmentListSizeId').innerHTML == 0) {
+				alert("#{msgs.error_recruitmentListEmpty}");
+				return false;
+			}
+			return true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="inspectorsRecruitmentFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{inspectorsRecruitment.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_generalUnitLetter}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="basedOnPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+
+								<tr>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_generalUnitLetterNumber}" />
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="20%">
+										<h:inputText id="basedOnOrderNumberId" readonly="#{inspectorsRecruitment.recruitmentsList.size() > 0}" value="#{inspectorsRecruitment.basedOnOrderNumber}" maxlength="50" />
+									</td>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_generalUnitLetterDate}" />
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="40%">
+										<util:hijri id="basedOnOrderDateId" value="#{inspectorsRecruitment.basedOnOrderDate}" rendered="#{inspectorsRecruitment.recruitmentsList.size() == 0}" />
+										<h:outputText value="#{inspectorsRecruitment.basedOnOrderDateString}" rendered="#{inspectorsRecruitment.recruitmentsList.size() > 0}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15">
+										#{msgs.label_attachments}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="50%" colspan="3">
+										<code:attachments loginEmpId="#{inspectorsRecruitment.loginEmpData.empId}" attachmentId="#{inspectorsRecruitment.attachments}" addEnableFlag="#{inspectorsRecruitment.role == 'Requester' or inspectorsRecruitment.role == 'ReviewerEmp'}" viewEnableFlag="true" deleteEnableFlag="#{inspectorsRecruitment.role == 'Requester' or inspectorsRecruitment.role == 'ReviewerEmp'}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_soldiersData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="dataPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="16%">
+										#{msgs.label_region}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="25%">
+										<h:selectOneMenu id="regionIDId" value="#{inspectorsRecruitment.selectedRegionId}" disabled="#{inspectorsRecruitment.recruitmentsList.size() > 0}">
+											<f:selectItem itemLabel="" itemValue="-1" />
+											<f:selectItems value="#{inspectorsRecruitment.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+										</h:selectOneMenu>
+									</td>
+
+									<th width="16%">
+										#{msgs.label_rank}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="12%">
+										<h:selectOneMenu id="rankIDId" value="#{inspectorsRecruitment.selectedRankId}" disabled="#{inspectorsRecruitment.recruitmentsList.size() > 0}">
+											<f:selectItem itemLabel="" itemValue="-1" />
+											<f:selectItems value="#{inspectorsRecruitment.ranks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+										</h:selectOneMenu>
+									</td>
+
+									<th width="16%">
+										<h:outputText value="#{msgs.label_degree}" />
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="13%">
+										<h:selectOneMenu id="degreeIDId" value="#{inspectorsRecruitment.selectedDegreeId}" disabled="#{inspectorsRecruitment.recruitmentsList.size() > 0}">
+											<f:selectItem itemLabel="" itemValue="-1" />
+											<f:selectItems value="#{inspectorsRecruitment.degrees}" var="degree" itemLabel="#{degree.description}" itemValue="#{degree.id}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+
+								<tr>
+									<th>
+										#{msgs.label_qualificationLevelReward}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td>
+										<h:selectOneMenu id="qualificationLevelRewardId" value="#{inspectorsRecruitment.qualificationLevelReward}" disabled="#{inspectorsRecruitment.recruitmentsList.size() > 0}">
+											<f:selectItem itemLabel=" " />
+											<f:selectItem itemLabel="#{msgs.label_primarySchoolQualificationClause}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_intermediateEducationQualificationClause}" itemValue="2" />
+											<f:selectItem itemLabel="#{msgs.label_secondarySchoolQualificationClause}" itemValue="3" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:inputHidden id="employeeIDId" value="#{inspectorsRecruitment.selectedEmpId}" />
+									<h:outputText value="#{msgs.label_soldiersData}" />
+									<h:outputText value=" " />
+									<h:commandButton rendered="#{inspectorsRecruitment.role == 'Requester' or inspectorsRecruitment.role == 'ReviewerEmp'}" value="#{msgs.label_add}" onclick="getEmployee(); return false;" styleClass="btn_normal" />
+									<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{inspectorsRecruitment.addNewRecruitment()}">
+										<f:ajax execute="inspectorsRecruitmentFormId:basedOnPanelId inspectorsRecruitmentFormId:dataPanelId inspectorsRecruitmentFormId:employeeIDId" render="inspectorsRecruitmentFormId:basedOnPanelId inspectorsRecruitmentFormId:dataPanelId inspectorsRecruitmentFormId:recruitmentsListPanelId inspectorsRecruitmentFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<h:panelGroup id="recruitmentsListPanelId">
+							<h:outputText id="recruitmentListSizeId" style="display:none" value="#{inspectorsRecruitment.recruitmentsList.size()}" />
+							<rich:dataTable id="recruitmentsListId" rowKeyVar="index" var="recruitment" value="#{inspectorsRecruitment.recruitmentsList}" rows="#{inspectorsRecruitment.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+								<rich:column style="width : 5%">
+									<f:facet name="header">#</f:facet>
+	                                          #{index + 1}
+	                    		</rich:column>
+								<rich:column style="width : 15%">
+									<f:facet name="header">#{msgs.label_name}</f:facet>
+									<h:outputText value="#{recruitment.employeeName}" />
+									<h:inputHidden id="empRecMinorSpecIDId" value="#{recruitment.empRecruitmentMinorSpecId}" />
+								</rich:column>
+
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_jobCode}</f:facet>
+									<h:outputText id="jobCodeId" value="#{recruitment.jobCode}" />
+									<h:inputHidden id="jobCodeHId" value="#{recruitment.jobCode}" />
+									<h:inputHidden id="jobIDId" value="#{recruitment.jobId}" />
+									<h:outputText value=" " />
+									<h:commandButton value="#{msgs.fa_external_link}" onclick="getJob(#{index}); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{inspectorsRecruitment.role == 'Requester' or inspectorsRecruitment.role == 'ReviewerEmp'}" />
+									<h:commandButton id="searchJobBtnId" style="display:none;" action="#{inspectorsRecruitment.addRecruitmentJob(recruitment)}">
+										<f:ajax execute="inspectorsRecruitmentFormId:recruitmentsListPanelId" render="inspectorsRecruitmentFormId:recruitmentsListPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+								</rich:column>
+
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_job}</f:facet>
+									<h:outputText id="jobNameId" value="#{recruitment.jobName}" />
+									<h:inputHidden id="jobNameHId" value="#{recruitment.jobName}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_empSpecialization}</f:facet>
+									<h:outputText id="minorSpecDescriptionId" value="#{recruitment.minorSpecDescription}" />
+									<h:inputHidden id="minorSpecIDId" value="#{recruitment.minorSpecId}" />
+									<h:inputHidden id="minorSpecDescriptionHId" value="#{recruitment.minorSpecDescription}" />
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">#{msgs.label_unit}</f:facet>
+									<h:outputText id="unitFullNameId" value="#{recruitment.unitFullName}" />
+									<h:inputHidden id="unitFullNameHId" value="#{recruitment.unitFullName}" />
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">#{msgs.label_recruitmentPrerequisites}</f:facet>
+									<h:selectBooleanCheckbox disabled="#{true}" value="#{recruitment.recruitmentDocsFlagBoolean}" />
+								</rich:column>
+								<rich:column rendered="#{inspectorsRecruitment.role == 'Requester' or inspectorsRecruitment.role == 'ReviewerEmp'}" style="width : 5%">
+									<f:facet name="header">#{msgs.label_delete}</f:facet>
+									<h:commandButton value="#{msgs.fa_times}" styleClass="btn_icon" title="#{msgs.label_delete}" action="#{inspectorsRecruitment.deleteRecruitment(recruitment)}" onclick="return confirm('#{msgs.q_delete}');">
+										<f:ajax execute="inspectorsRecruitmentFormId:basedOnPanelId inspectorsRecruitmentFormId:dataPanelId" render="inspectorsRecruitmentFormId:basedOnPanelId inspectorsRecruitmentFormId:dataPanelId inspectorsRecruitmentFormId:recruitmentsListPanelId inspectorsRecruitmentFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+										<f:facet name="first">#{msgs.label_first}</f:facet>
+										<f:facet name="last">#{msgs.label_last}</f:facet>
+										<f:facet name="next">#{msgs.label_next}</f:facet>
+										<f:facet name="previous">#{msgs.label_previous}</f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:decisionCopies external="#{inspectorsRecruitment.externalCopies}" internal="#{inspectorsRecruitment.internalCopies}" viewOnly="#{inspectorsRecruitment.role != 'Requester' and inspectorsRecruitment.role != 'ReviewerEmp'}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_recruitmentPrerequisites}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="50%">
+									<h:outputText value="#{msgs.label_prerequisite1}" />
+								</td>
+								<td width="50%">
+									<h:outputText value="#{msgs.label_prerequisite2}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite3}" />
+								</td>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite4}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite5}" />
+								</td>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite6}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite7}" />
+								</td>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite8}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite9}" />
+								</td>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite10}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite11}" />
+								</td>
+								<td>
+									<h:outputText value="#{msgs.label_prerequisite12}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<code:prevTasks rendered="#{inspectorsRecruitment.role != 'Requester'}" value="#{inspectorsRecruitment.prevTasks}" refuseRoles="SignManager," />
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{inspectorsRecruitment.currentEmployee}" rendered="#{inspectorsRecruitment.role != 'Requester' and inspectorsRecruitment.role != 'Notification' and inspectorsRecruitment.role != 'History'}">
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{inspectorsRecruitment.currentTask.notes}" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{inspectorsRecruitment.role == 'SignManager'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{inspectorsRecruitment.currentTask.refuseReasons}" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{inspectorsRecruitment.role == 'Notification' or inspectorsRecruitment.role == 'History'}" value="#{inspectorsRecruitment.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+
+									<h:panelGroup rendered="#{inspectorsRecruitment.role == 'Requester'}">
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_send}', 'validateSend()');" action="#{inspectorsRecruitment.initProcess()}" value="#{msgs.label_send}  &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{inspectorsRecruitment.role == 'ReviewerEmp'}">
+										<h:commandButton action="#{inspectorsRecruitment.reviewRecruitments}" onclick="return handleOnAction('#{msgs.q_review}', 'validateSend()');" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{inspectorsRecruitment.role == 'SignManager'}">
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;inspectorsRecruitmentFormId:curTaskId:refuseReasonsId&quot;)');" action="#{inspectorsRecruitment.signRM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;inspectorsRecruitmentFormId:curTaskId:refuseReasonsId&quot;, &quot;inspectorsRecruitmentFormId:curTaskId:notesId&quot;)');" action="#{inspectorsRecruitment.modifyRM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;inspectorsRecruitmentFormId:curTaskId:refuseReasonsId&quot;)');" action="#{inspectorsRecruitment.rejectRM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{inspectorsRecruitment.role == 'Notification' and inspectorsRecruitment.instanceApproved == 1}">
+										<h:commandButton action="#{inspectorsRecruitment.print()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{inspectorsRecruitment.role == 'Notification'}">
+										<h:commandButton action="#{inspectorsRecruitment.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

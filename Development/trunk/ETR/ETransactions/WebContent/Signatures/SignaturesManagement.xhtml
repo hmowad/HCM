@@ -1,0 +1,558 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function getImage() {
+			var newSignatureId = document.getElementById('signaturesManagementFormId:newSignatureIdHId').value;
+			if(newSignatureId == null || newSignatureId == '')
+				return false;
+			
+			openImageUpload(2, '#{request.contextPath}','handleImageUploadResult()', newSignatureId, 0);
+		}
+	
+		function handleImageUploadResult() {
+			 document.getElementById('signaturesManagementFormId:imageBtnId').click();
+			//document.getElementById('signaturesManagementFormId').submit();
+		}
+
+
+		function getSignEmp(contextPath) {
+			openEmployeesMiniSearch(contextPath, 'handleSignEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1,-1, -1, -1);
+
+		}
+
+		function handleSignEmpMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('signaturesManagementFormId:signEmpIDHId').value = ret[0];
+				document.getElementById('signaturesManagementFormId:signEmpNameId').innerHTML = ret[1];
+				document.getElementById('signaturesManagementFormId:signEmpBtnId').click();
+
+			}
+		}
+
+		function validateClonedSignature() {
+			
+			if(!confirm('#{msgs.q_addNewSignature}'))
+				return false;
+			
+			var newSignatureDescription = document.getElementById('signaturesManagementFormId:newSignatureDescriptionId').value;
+			var newValidFromDate = document.getElementById('signaturesManagementFormId:newValidFromDateId:day').value;
+
+			
+			if (newSignatureDescription == null || newSignatureDescription.trim() == '') {
+				alert('#{msgs.error_signatureDescriptionIsMandatory}');
+				return false;
+			}
+			if (newValidFromDate == null || newValidFromDate.trim() == '' || newValidFromDate == 0) {
+				alert('#{msgs.error_newSignatureStartDateIsMandatory}');
+				return false;
+			}
+			return true;
+		}
+		
+		function validateSignature() {
+			var signTypeId = document.getElementById('signaturesManagementFormId:signTypeId').value;
+			var signDescId = document.getElementById('signaturesManagementFormId:signDescId').value;
+			var signNameId = document.getElementById('signaturesManagementFormId:signNameId').value;
+			var signTitleDescId = document.getElementById('signaturesManagementFormId:signTitleDescId').value;
+
+			var validFromDate = document.getElementById('signaturesManagementFormId:validFromDateId:day').value;
+			var signEmpIDHId = document.getElementById('signaturesManagementFormId:signEmpIDHId').value;
+			
+			
+			if (signTypeId == null || signTypeId.trim() == ''){
+				alert('#{msgs.error_signatureTypeIsMandatory}');
+				return false;
+			}
+
+			if (signDescId == null || signDescId.trim() == ''){
+				alert('#{msgs.error_signatureDescriptionIsMandatory}');
+				return false;
+			}
+
+			if (signNameId == null || signNameId.trim() == ''){
+				alert('#{msgs.error_signatureOwnerNameIsMandatory}');
+				return false;
+			}
+
+			if (signTitleDescId == null || signTitleDescId.trim() == ''){
+				alert('#{msgs.error_signatureOwnerTitleIsMandatory}');
+				return false;
+			}
+
+			if (validFromDate == null || validFromDate.trim() == '' || validFromDate == 0){
+				alert('#{msgs.error_signatureStartDateIsMandatory}');
+				return false;
+			}
+			
+			if (signEmpIDHId == null || signEmpIDHId.trim() == ''){
+				alert('#{msgs.error_employeeMandatory}');
+				return false;
+			}
+
+			return true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="signaturesManagementFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_signaturesManagement}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_signatureDescription}</th>
+									<td width="35%">
+										<h:selectOneMenu value="#{signaturesManagement.signatureDescription}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="" />
+											<f:selectItems value="#{signaturesManagement.signatureDescriptionsList}" var="signatureDescription" itemLabel="#{signatureDescription}" itemValue="#{signatureDescription}" />
+										</h:selectOneMenu>
+									</td>
+									<th width="15%">#{msgs.label_signatureStatus}</th>
+									<td width="35%">
+										<h:selectOneRadio value="#{signaturesManagement.signatureStatus}" layout="lineDirection">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItem itemLabel="#{msgs.label_newestSignature}" itemValue="1" />
+										</h:selectOneRadio>
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_signatureOwnerName}</th>
+									<td width="35%">
+										<h:inputText value="#{signaturesManagement.signatureOwnerName}" />
+									</td>
+									<th width="15%">#{msgs.label_signatureOwnerTitle}</th>
+									<td width="35%">
+										<h:inputText value="#{signaturesManagement.signatureOwnerTitle}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{signaturesManagement.search()}" title="#{msgs.label_searchByRoot}" styleClass="btn_normal_icon">
+										<f:ajax execute="signaturesManagementFormId:searchPanelId" render="signaturesManagementFormId:signaturesTableId signaturesManagementFormId:signaturePanelId signaturesManagementFormId:addNewSignaturePanelId signaturesManagementFormId:newSignaturePanelId signaturesManagementFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton action="#{signaturesManagement.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="signaturesManagementFormId:searchPanelId signaturesManagementFormId:signaturesTableId signaturesManagementFormId:signaturePanelId signaturesManagementFormId:addNewSignaturePanelId signaturesManagementFormId:newSignaturePanelId signaturesManagementFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:outputText value="#{msgs.label_signaturesData}" />
+									<h:outputText value=" " />
+									<h:commandButton id="addButtonId" value="#{msgs.label_add}" action="#{signaturesManagement.addNewSignature()}" styleClass="btn_normal" rendered="#{signaturesManagement.adminFlag}">
+										<f:ajax render="signaturesManagementFormId:signaturePanelId signaturesManagementFormId:addNewSignaturePanelId signaturesManagementFormId:newSignaturePanelId signaturesManagementFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="signaturesTableId" rowKeyVar="index" var="signature" value="#{signaturesManagement.signaturesList}" rows="#{signaturesManagement.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 5%">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                        </rich:column>
+							<rich:column style="width : 5%;">
+								<f:facet name="header"> #{msgs.label_select} </f:facet>
+								<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon" action="#{signaturesManagement.selectSignature(signature)}">
+									<f:ajax render="signaturesManagementFormId:signaturePanelId signaturesManagementFormId:addNewSignaturePanelId signaturesManagementFormId:newSignaturePanelId signaturesManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+								</h:commandButton>
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_signatureType}</f:facet>
+								<h:outputText value="#{signature.signType}" />
+							</rich:column>
+							<rich:column style="width : 20%">
+								<f:facet name="header">#{msgs.label_signatureDescription}</f:facet>
+								<h:outputText value="#{signature.signDesc}" />
+							</rich:column>
+							<rich:column style="width : 20%">
+								<f:facet name="header">#{msgs.label_signatureOwnerName}</f:facet>
+								<h:outputText value="#{signature.name}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_signatureOwnerRank}</f:facet>
+								<h:outputText value="#{signature.rankDesc}" />
+							</rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header">#{msgs.label_signatureOwnerTitle}</f:facet>
+								<h:outputText value="#{signature.titleDesc}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_signatureStartDate}</f:facet>
+								<h:outputText value="#{signature.validFromDateString}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_signatureEndDate}</f:facet>
+								<h:outputText value="#{signature.validToDateString}" />
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="signaturePanelId">
+							<h:panelGroup rendered="#{signaturesManagement.selectedSignature != null and signaturesManagement.selectedSignature.id != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="80%" style="height: 100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" style="height: 100%">
+												<tr>
+													<th width="20%">#{msgs.label_signatureType}</th>
+													<td width="80%" colspan="3">
+														<h:outputText value="#{signaturesManagement.selectedSignature.signType}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="20%">#{msgs.label_signatureDescription}</th>
+													<td width="80%" colspan="3">
+														<h:outputText value="#{signaturesManagement.selectedSignature.signDesc}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="20%">#{msgs.label_signatureOwnerName}</th>
+													<td width="80%" colspan="3">
+														<h:outputText value="#{signaturesManagement.selectedSignature.name}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="20%">#{msgs.label_signatureOwnerRank}</th>
+													<td width="80%" colspan="3">
+														<h:outputText value="#{signaturesManagement.selectedSignature.rankDesc}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="20%">#{msgs.label_signatureOwnerTitle}</th>
+													<td width="80%" colspan="3">
+														<h:outputText value="#{signaturesManagement.selectedSignature.titleDesc}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="20%">#{msgs.label_enSignatureOwnerName}</th>
+													<td width="80%" colspan="3">
+														<h:outputText value="#{signaturesManagement.selectedSignature.enName}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="20%">#{msgs.label_enSignatureOwnerRank}</th>
+													<td width="80%" colspan="3">
+														<h:outputText value="#{signaturesManagement.selectedSignature.enRankDesc}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="20%">#{msgs.label_enSignatureOwnerTitle}</th>
+													<td width="80%" colspan="3">
+														<h:outputText value="#{signaturesManagement.selectedSignature.enTitleDesc}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="20%">#{msgs.label_signatureStartDate}</th>
+													<td width="30%">
+														<h:outputText value="#{signaturesManagement.selectedSignature.validFromDateString}" />
+													</td>
+													<th width="20%">#{msgs.label_signatureEndDate}</th>
+													<td width="30%">
+														<h:outputText value="#{signaturesManagement.selectedSignature.validToDateString}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+										<td width="1%" />
+										<td width="19%" style="height: 100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" style="height: 100%">
+												<tr>
+													<td width="100%" style="text-align: center;">
+														<h:panelGroup>
+															<h:graphicImage width="264px" height="75px" value="#{signaturesManagement.hasPhoto(signaturesManagement.selectedSignature) ? '/image?mode=2&amp;objectId='.concat(signaturesManagement.selectedSignature.id).concat('&amp;nonce=').concat(session.lastAccessedTime):'/resources/images/100.png' }" styleClass="empProfileImage" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="addNewSignaturePanelId">
+							<h:panelGroup rendered="#{signaturesManagement.newRecordFlag}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%" colspan="4" align="center">
+											<h:selectOneRadio id="newSignatureFlagId" value="#{signaturesManagement.newSignatureFlag}" layout="lineDirection" disabled="#{signaturesManagement.newSignature != null}">
+												<f:selectItem itemLabel="#{msgs.label_existingSignatureType}" itemValue="0" />
+												<f:selectItem itemLabel="#{msgs.label_newSignatureType}" itemValue="1" />
+												<f:ajax event="change" execute="@this" render="signaturesManagementFormId:addNewSignaturePanelId signaturesManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneRadio>
+										</td>
+									</tr>
+									<h:panelGroup rendered="#{signaturesManagement.newSignatureFlag == 0}">
+										<tr>
+											<th width="20%">
+												#{msgs.label_signatureDescription}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="30%">
+												<h:selectOneMenu id="newSignatureDescriptionId" value="#{signaturesManagement.newSignatureDescription}" disabled="#{signaturesManagement.newSignature != null}">
+													<f:selectItem itemLabel="#{msgs.label_all}" itemValue="" />
+													<f:selectItems value="#{signaturesManagement.signatureDescriptionsList}" var="newSignatureDescription" itemLabel="#{newSignatureDescription}" itemValue="#{newSignatureDescription}" />
+												</h:selectOneMenu>
+											</td>
+											<th width="20%">
+												#{msgs.label_newSignatureStartDate}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="30%">
+												<util:hijri id="newValidFromDateId" value="#{signaturesManagement.newValidFromDate}" rendered="#{signaturesManagement.newSignature == null}" nullable="true" />
+												<h:outputText value="#{signaturesManagement.newSignature.validFromDateString}" rendered="#{signaturesManagement.newSignature != null}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+								</table>
+								<table border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+								</table>
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<h:commandButton action="#{signaturesManagement.cloneSignature()}" value="#{msgs.label_select} &nbsp; #{msgs.fa_check}" rendered="#{signaturesManagement.newSignatureFlag == 0}" onclick="return validateClonedSignature();" styleClass="btn_normal_icon" disabled="#{signaturesManagement.newSignature != null}">
+												<f:ajax execute="signaturesManagementFormId:addNewSignaturePanelId" render="signaturesManagementFormId:addNewSignaturePanelId signaturesManagementFormId:newSignaturePanelId signaturesManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:commandButton action="#{signaturesManagement.createNewSignature()}" value="#{msgs.label_select} &nbsp; #{msgs.fa_check}" rendered="#{signaturesManagement.newSignatureFlag == 1}" styleClass="btn_normal_icon" disabled="#{signaturesManagement.newSignature != null}">
+												<f:ajax execute="signaturesManagementFormId:addNewSignaturePanelId" render="signaturesManagementFormId:addNewSignaturePanelId signaturesManagementFormId:newSignaturePanelId signaturesManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="newSignaturePanelId">
+							<h:panelGroup rendered="#{signaturesManagement.newSignature != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="80%" style="height: 100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" style="height: 100%">
+												<tr>
+													<th width="25%">
+														<h:outputText value="#{msgs.label_signatureType}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="75%" colspan="3">
+														<h:inputText id="signTypeId" value="#{signaturesManagement.newSignature.signType}" styleClass="inputDataLarge" onkeypress="return isDigit(event);" disabled="#{signaturesManagement.newSignatureFlag == 0}" maxlength="9" />
+													</td>
+												</tr>
+												<tr>
+													<th width="25%">
+														<h:outputText value="#{msgs.label_signatureDescription}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="75%" colspan="3">
+														<h:inputText id="signDescId" value="#{signaturesManagement.newSignature.signDesc}" styleClass="inputDataLarge" disabled="#{signaturesManagement.newSignatureFlag == 0}" maxlength="75" />
+													</td>
+												</tr>
+												<tr>
+													<th width="25%">
+														<h:outputText value="#{msgs.label_signatureOwnerName}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="75%" colspan="3">
+														<h:inputText id="signNameId" value="#{signaturesManagement.newSignature.name}" maxlength="75" styleClass="inputDataLarge" />
+													</td>
+												</tr>
+												<tr>
+													<th width="25%">
+														<h:outputText value="#{msgs.label_signatureOwnerRank}" />
+													</th>
+													<td width="75%" colspan="3">
+														<h:inputText value="#{signaturesManagement.newSignature.rankDesc}" maxlength="75" styleClass="inputDataLarge" />
+													</td>
+												</tr>
+												<tr>
+													<th width="25%">
+														<h:outputText value="#{msgs.label_signatureOwnerTitle}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="75%" colspan="3">
+														<h:inputText id="signTitleDescId" value="#{signaturesManagement.newSignature.titleDesc}" maxlength="155" styleClass="inputDataLarge" />
+													</td>
+												</tr>
+												<tr>
+													<th width="25%">
+														<h:outputText value="#{msgs.label_enSignatureOwnerName}" />
+													</th>
+													<td width="75%" colspan="3">
+														<h:inputText value="#{signaturesManagement.newSignature.enName}" maxlength="100" styleClass="inputDataLarge" />
+													</td>
+												</tr>
+												<tr>
+													<th width="25%">
+														<h:outputText value="#{msgs.label_enSignatureOwnerRank}" />
+													</th>
+													<td width="75%" colspan="3">
+														<h:inputText value="#{signaturesManagement.newSignature.enRankDesc}" maxlength="100" styleClass="inputDataLarge" />
+													</td>
+												</tr>
+												<tr>
+													<th width="25%">
+														<h:outputText value="#{msgs.label_enSignatureOwnerTitle}" />
+													</th>
+													<td width="75%" colspan="3">
+														<h:inputText value="#{signaturesManagement.newSignature.enTitleDesc}" maxlength="100" styleClass="inputDataLarge" />
+													</td>
+												</tr>
+												<tr>
+													<th width="25%">
+														<h:outputText value="#{msgs.label_signatureStartDate}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="25%">
+														<util:hijri id="validFromDateId" value="#{signaturesManagement.newSignature.validFromDate}" rendered="#{signaturesManagement.newSignatureFlag == 1}" nullable="true" />
+														<h:outputText value="#{signaturesManagement.newSignature.validFromDateString}" rendered="#{signaturesManagement.newSignatureFlag == 0}" />
+													</td>
+													<th width="25%">
+														<h:outputText value="#{msgs.label_signatureEndDate}" />
+													</th>
+													<td width="25%">
+														<h:outputText value="#{signaturesManagement.newSignature.validToDateString}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="25%">
+														<h:outputText value="#{msgs.label_emp}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="75%" colspan="3">
+														<h:outputText id="signEmpNameId" value="#{signaturesManagement.newSignatureEmpName}" />
+														<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_select}" onclick="getSignEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+														<h:commandButton id="signEmpBtnId" style="display:none;">
+															<f:ajax execute="signaturesManagementFormId:signEmpIDHId signaturesManagementFormId:signEmpNameHId" />
+														</h:commandButton>
+														<h:inputHidden id="signEmpIDHId" value="#{signaturesManagement.newSignature.empId}" />
+														<h:inputHidden id="signEmpNameHId" />
+													</td>
+												</tr>
+											</table>
+										</td>
+										<td width="1%" />
+										<td width="19%" style="height: 100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" style="height: 100%">
+												<tr>
+													<td width="100%" style="text-align: center;">
+														<h:commandButton id="imageBtnId" action="#{signaturesManagement.updatePhoto()}" style="display:none;">
+															<f:ajax render="signaturesManagementFormId:imagePanelId signaturesManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:panelGroup id="imagePanelId">
+															<h:graphicImage width="264px" height="75px" value="#{signaturesManagement.hasPhoto(signaturesManagement.newSignature) ? '/image?mode=2&amp;objectId='.concat(signaturesManagement.newSignature.id).concat('&amp;nonce=').concat(session.lastAccessedTime):'/resources/images/100.png' }" onclick="return getImage();" styleClass="empProfileImage" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+								<table border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%" height="15" />
+									</tr>
+								</table>
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<h:commandButton action="#{signaturesManagement.saveSignature()}" onclick="return validateSignature();" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon">
+												<f:ajax execute="signaturesManagementFormId:newSignaturePanelId" render="signaturesManagementFormId:newSignatureIdHId signaturesManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+
+											<h:inputHidden id="newSignatureIdHId" value="#{signaturesManagement.newSignature.id}" />
+										</td>
+
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

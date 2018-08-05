@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[   
+	function getEmp(contextPath){
+		openEmployeesMiniSearchByOfficialRegionId(contextPath, 'handleEmpMiniSearchResult(ret)', 12, #{extensionDecisionRegistration.mode},-1);
+     }
+	
+	function handleEmpMiniSearchResult(ret){
+		if(ret != null){
+			   document.getElementById('extensionDecisionRegistrationFormId:empId').value = ret[0];
+		       document.getElementById('extensionDecisionRegistrationFormId:addEmpButton').click();
+	    }
+	}
+	 function validateExtensionData(){
+		 var decisionNumber = document.getElementById('extensionDecisionRegistrationFormId:decisionNumberId').value;
+		 var months = document.getElementById('extensionDecisionRegistrationFormId:extensionMonthsId').value;
+		 var empId = document.getElementById('extensionDecisionRegistrationFormId:empId').value;
+		 var catId = document.getElementById('extensionDecisionRegistrationFormId:categoryId').value;
+		     if(empId == null || empId == ''){
+   	             alert("#{msgs.error_employeeMandatory}");
+                 return false;
+             }
+
+		     if(decisionNumber == null || decisionNumber == ''){
+    	         alert("#{msgs.error_decNumberMandatory}");
+                 return false;
+             }
+
+			 if(months == null || months == ''){
+			     if(catId==2){
+    	         	alert("#{msgs.error_monthsMandatorySoldier}");
+                 	return false;
+			     }
+			     else{
+				 	alert("#{msgs.error_monthsMandatoryCivilains}");
+                 	return false;
+                 	}
+             }
+		     return true;
+		 }
+		// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="extensionDecisionRegistrationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{extensionDecisionRegistration.screenTitle}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="70%">#{msgs.label_decisionData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="extensionRecordDataId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_empName}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="80%" colspan="3">
+										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_emp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+										<h:commandButton id="addEmpButton" style="display: none;" action="#{extensionDecisionRegistration.selectEmployee()}">
+											<f:ajax render="extensionDecisionRegistrationFormId:extensionRecordDataId extensionDecisionRegistrationFormId:notifyMessagesId " execute="extensionDecisionRegistrationFormId:empId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+										<h:inputHidden id="empId" value="#{extensionDecisionRegistration.terminationTransactionData.empId}" />
+										<h:outputText id="empNameId" value="#{extensionDecisionRegistration.terminationTransactionData.empName}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_decisionNumber}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="30%">
+										<h:inputText id="decisionNumberId" value="#{extensionDecisionRegistration.terminationTransactionData.decisionNumber}" maxlength="50" styleClass="inputDataLarge" />
+									</td>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_decisionDate}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="30%">
+										<util:hijri id="decisionDateId" value="#{extensionDecisionRegistration.terminationTransactionData.decisionDate}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_extensionPeriodSoldier}" rendered="#{extensionDecisionRegistration.mode == 2}" />
+										<h:outputText value="#{msgs.label_extensionPeriod}" rendered="#{extensionDecisionRegistration.mode == 3}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="20%" colspan="3">
+										<h:inputText id="extensionMonthsId" value="#{extensionDecisionRegistration.terminationTransactionData.extensionPeriodMonths}" styleClass="inputDataSmall" onkeypress="return isDigit(event);" maxlength="2" />
+										<h:outputText value="  #{msgs.label_month}" />
+									</td>
+
+								</tr>
+
+								<tr>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_remarks}" />
+									</th>
+									<td width="80%" colspan="3">
+										<h:inputTextarea value="#{extensionDecisionRegistration.terminationTransactionData.remarks}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',450);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',450);" rows="2" styleClass="inputDataSuperLarge" />
+									</td>
+								</tr>
+							</table>
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_attachment}" />
+									</th>
+									<td width="80%">
+										<code:attachments loginEmpId="#{extensionDecisionRegistration.loginEmpData.empId}" attachmentId="#{extensionDecisionRegistration.terminationTransactionData.attachments}" addEnableFlag="true" viewEnableFlag="true" deleteEnableFlag="true" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsId">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton action="#{extensionDecisionRegistration.saveExtensionTransaction()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return handleOnAction('#{msgs.q_save}', 'validateExtensionData()');" styleClass="btn_normal_icon " rendered="#{extensionDecisionRegistration.saveHidden == false}">
+											<f:ajax execute="extensionDecisionRegistrationFormId:extensionRecordDataId" render="extensionDecisionRegistrationFormId:actionsId extensionDecisionRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+										<h:commandButton id="resetFormBtnId" action="#{extensionDecisionRegistration.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+											<f:ajax render="extensionDecisionRegistrationFormId:extensionRecordDataId extensionDecisionRegistrationFormId:actionsId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+			<h:inputHidden id="categoryId" value="#{extensionDecisionRegistration.terminationTransactionData.categoryId}" />
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

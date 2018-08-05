@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript"> 
+     	  window.onkeypress = function(e) {
+			  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+		      if (keyCode == '13') {
+		    	document.getElementById('basicJobsNamesForm:searchBtnId').click();
+		    	return false;
+		      }
+		  }; 
+		          
+          function returnBasicJobNameList() {
+            var basicJobsNamesIds = document.getElementById('basicJobsNamesForm:returnedBasicJobsNamesIdsHId').value;
+            var basicJobsNamesNames = document.getElementById('basicJobsNamesForm:returnedBasicJobsNamesNamesHId').value;
+            var basicJobsNamesCategoriesIds = document.getElementById('basicJobsNamesForm:returnedBasicJobsNamesCategoriesIdsHId').value;
+
+            if (basicJobsNamesIds.length > 0) {
+            	ret = new Array();
+            	ret[0] = basicJobsNamesIds;
+            	ret[1] = basicJobsNamesNames;
+            	ret[2] = basicJobsNamesCategoriesIds;
+            	window.close();
+         	    eval('(' + window.opener.#{param['miniSearchReturnHandler']} + ')');
+            } else {
+            	window.close();
+            }
+          }
+          
+          function selectBasicJobName(index) {
+	          var basicJobNameId = document.getElementById('basicJobsNamesForm:basicJobNameListId:' + index + ':idHId').value;
+	          var basicJobNameName = document.getElementById('basicJobsNamesForm:basicJobNameListId:' + index + ':nameId').innerHTML;
+	          var basicJobNameCategoryId = document.getElementById('basicJobsNamesForm:basicJobNameListId:' + index + ':categoryIdHId').value;		
+	          ret = new Array();
+	          ret[0] = basicJobNameId;
+	          ret[1] = basicJobNameName;
+	          ret[2] = basicJobNameCategoryId;
+	          window.close();
+       	      eval('(' + window.opener.#{param['miniSearchReturnHandler']} + ')');
+          }
+        </script>
+
+</h:head>
+<h:body onload="document.getElementById('basicJobsNamesForm:basicJobNameId').focus();" onunload="window.opener.unMaskOpenerScreen();">
+	<h:form id="basicJobsNamesForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/PlainTemplate.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{msgs.title_basicJobsNamesMiniSearch}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">#{msgs.label_basicJobName}</th>
+								<td width="85%">
+									<h:inputText id="basicJobNameId" value="#{basicJobsNamesMiniSearch.basicJobName}" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon" action="#{basicJobsNamesMiniSearch.searchBasicJobName}" title="#{msgs.label_searchByRoot}">
+										<f:ajax render="basicJobsNamesForm:basicJobNameListId basicJobsNamesForm:notifyMessagesId" execute="basicJobsNamesForm:basicJobNameId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="basicJobNameListId" rows="#{basicJobsNamesMiniSearch.rowsCount}" rowKeyVar="index" var="row" value="#{basicJobsNamesMiniSearch.basicJobNameList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+							<rich:column>
+								<f:facet name="header">#</f:facet>
+                                        #{index + 1}
+                                 <h:inputHidden id="idHId" value="#{row.id}" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">#{msgs.label_category}</f:facet>
+								<h:outputText value="#{row.categoryDescription}" />
+								<h:inputHidden id="categoryIdHId" value="#{row.categoryId}" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">#{msgs.label_basicJobName}</f:facet>
+								<h:outputText id="nameId" value="#{row.basicJobName}" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">#{msgs.label_select}</f:facet>
+								<h:commandButton rendered="#{! basicJobsNamesMiniSearch.multipleSelectFlag}" onclick="selectBasicJobName(#{index}); return false;" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon" />
+
+								<h:commandButton rendered="#{basicJobsNamesMiniSearch.multipleSelectFlag}" action="#{basicJobsNamesMiniSearch.addSelectedBasicJobName(row)}" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon">
+									<f:ajax render="basicJobsNamesForm:basicJobNameListId basicJobsNamesForm:selectedBasicJobNameListId basicJobsNamesForm:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+								</h:commandButton>
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()" maxPages="5">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<h:panelGroup rendered="#{basicJobsNamesMiniSearch.multipleSelectFlag}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th>#{msgs.label_selectedBasicJobsNames}</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td align="center" width="100%">
+							<rich:dataTable id="selectedBasicJobNameListId" rows="#{basicJobsNamesMiniSearch.rowsCount}" rowKeyVar="index" var="row" value="#{basicJobsNamesMiniSearch.selectedBasicJobNameList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+								<rich:column>
+									<f:facet name="header">#</f:facet>
+                                       #{index + 1}
+                                </rich:column>
+
+								<rich:column>
+									<f:facet name="header">#{msgs.label_category}</f:facet>
+									<h:outputText value="#{row.categoryDescription}" />
+								</rich:column>
+
+								<rich:column>
+									<f:facet name="header">#{msgs.label_basicJobName}</f:facet>
+									<h:outputText value="#{row.basicJobName}" />
+								</rich:column>
+
+								<rich:column>
+									<f:facet name="header">#{msgs.label_delete}</f:facet>
+									<h:commandButton action="#{basicJobsNamesMiniSearch.removeSelectedBasicJobName(row)}" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon">
+										<f:ajax render="basicJobsNamesForm:basicJobNameListId basicJobsNamesForm:selectedBasicJobNameListId basicJobsNamesForm:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+									</h:commandButton>
+								</rich:column>
+
+								<f:facet name="footer">
+									<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()" maxPages="5">
+										<f:facet name="first">#{msgs.label_first}</f:facet>
+										<f:facet name="last">#{msgs.label_last}</f:facet>
+										<f:facet name="next">#{msgs.label_next}</f:facet>
+										<f:facet name="previous">#{msgs.label_previous}</f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td colspan="4">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:inputHidden id="returnedBasicJobsNamesIdsHId" value="#{basicJobsNamesMiniSearch.selectedBasicJobsNamesIds}" />
+										<h:inputHidden id="returnedBasicJobsNamesNamesHId" value="#{basicJobsNamesMiniSearch.selectedBasicJobsNamesNames}" />
+										<h:inputHidden id="returnedBasicJobsNamesCategoriesIdsHId" value="#{basicJobsNamesMiniSearch.selectedBasicJobsNamesCategoriesIds}" />
+										<h:commandButton value="#{msgs.label_finish} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" action="#{basicJobsNamesMiniSearch.generateBasicJobsNamesInfo()}">
+											<f:ajax render="basicJobsNamesForm:returnedBasicJobsNamesIdsHId basicJobsNamesForm:returnedBasicJobsNamesNamesHId basicJobsNamesForm:returnedBasicJobsNamesCategoriesIdsHId basicJobsNamesForm:notifyMessagesId" onevent="function(data) { if (data.status == 'success') returnBasicJobNameList(); }" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[  
+	 function getJob(contextPath){
+
+		var reservationStatus;
+		
+	    if(#{jobsReservation.mode} == 2){
+	    	reservationStatus = getSelectOneRadioValue('jobsReservationForm:jobsReservationStatusForSoldiersId'); 
+	    	if(reservationStatus == 1 || reservationStatus == 2 || reservationStatus == 3){
+	    		openJobsMiniSearch(contextPath, 'handleJobsMiniSearchResult(ret)', 3, #{jobsReservation.mode}, -1, -1, -1, -1, 1);
+		    } else {
+	    		openJobsMiniSearch(contextPath, 'handleJobsMiniSearchResult(ret)', 10, #{jobsReservation.mode}, -1, -1, -1, -1, 1);
+		    }
+	    } else {
+	    	reservationStatus = getSelectOneRadioValue('jobsReservationForm:jobsReservationStatusForEmployeesId'); 
+	    	if(reservationStatus == 1){
+	    		openJobsMiniSearch(contextPath, 'handleJobsMiniSearchResult(ret)', 2, #{jobsReservation.mode}, -1, -1, -1, -1, 1);
+	    	} else {
+	    		openJobsMiniSearch(contextPath, 'handleJobsMiniSearchResult(ret)', 9, #{jobsReservation.mode}, -1, -1, -1, -1, 1);
+		    }	    	
+        }
+	 }
+	 
+	function handleJobsMiniSearchResult(ret){
+		if(ret != null){
+		       document.getElementById('jobsReservationForm:jobsIDsId').value=ret[0]; 
+		       document.getElementById('jobsReservationForm:searchJobsBtnId').click();
+	    }
+	}
+	    
+    function validateRemarks(){
+	  	remarks= document.getElementById('jobsReservationForm:jobReservationRemarksId').value;
+	  	if(remarks == null || remarks == ''){
+		  	alert('#{msgs.error_reservationRemarksRequired}');
+		  	return false;
+	  	}
+	  	return true;
+    }
+ 	// ]]>
+</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="jobsReservationForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{jobsReservation.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_selectTransaction}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:selectOneRadio rendered="#{jobsReservation.mode == 2}" id="jobsReservationStatusForSoldiersId" value="#{jobsReservation.reservationStatus}" layout="pageDirection">
+										<f:selectItem itemLabel="#{msgs.label_reserveJob}" itemValue="1" />
+										<f:selectItem itemLabel="#{msgs.label_reserveJobForRecruitment}" itemValue="2" />
+										<f:selectItem itemLabel="#{msgs.label_reserveJobForPromotion}" itemValue="3" />
+										<f:selectItem itemLabel="#{msgs.label_unReserveJob}" itemValue="0" />
+										<f:ajax event="change" execute="@this" listener="#{jobsReservation.reservationStatusChangeListener}" render="jobsReservationForm:jobsPanelId jobsReservationForm:jobReservationRemarksPanelId jobsReservationForm:jobActionsPanelId jobsReservationForm:notifyMessagesId" />
+									</h:selectOneRadio>
+									<h:selectOneRadio rendered="#{jobsReservation.mode == 3}" id="jobsReservationStatusForEmployeesId" value="#{jobsReservation.reservationStatus}" layout="pageDirection">
+										<f:selectItem itemLabel="#{msgs.label_reserveJob}" itemValue="1" />
+										<f:selectItem itemLabel="#{msgs.label_unReserveJob}" itemValue="0" />
+										<f:ajax event="change" execute="@this" listener="#{jobsReservation.reservationStatusChangeListener}" render="jobsReservationForm:jobsPanelId jobsReservationForm:jobReservationRemarksPanelId jobsReservationForm:jobActionsPanelId jobsReservationForm:notifyMessagesId" />
+									</h:selectOneRadio>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_jobs}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="jobsPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+											<tr>
+												<td width="100%">
+													<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getJob('#{request.contextPath}');return false;" />
+													<h:commandButton id="searchJobsBtnId" style="display: none;" action="#{jobsReservation.addJobs()}">
+														<f:ajax execute="jobsReservationForm:jobsIDsId" render="jobsReservationForm:jobsTableId jobsReservationForm:jobReservationRemarksPanelId jobsReservationForm:jobActionsPanelId jobsReservationForm:notifyMessagesId" />
+													</h:commandButton>
+													<h:inputHidden id="jobsIDsId" value="#{jobsReservation.selectedJobsIds}" />
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<rich:dataTable id="jobsTableId" value="#{jobsReservation.jobs}" var="job" rowKeyVar="index" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{jobsReservation.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width : 10%">
+												<f:facet name="header"> #{msgs.label_jobCode} </f:facet>
+												<h:outputText value="#{job.code}" />
+											</rich:column>
+											<rich:column style="width : 15%">
+												<f:facet name="header"> #{msgs.label_jobName} </f:facet>
+												<h:outputText value="#{job.name}" />
+											</rich:column>
+											<rich:column style="width : 15%">
+												<f:facet name="header"> #{jobsReservation.mode==2 ? msgs.label_rank : msgs.label_personRank} </f:facet>
+												<h:outputText value="#{job.rankDescription}" />
+											</rich:column>
+											<rich:column style="width : 15%">
+												<f:facet name="header"> #{msgs.label_jobMinorSpec} </f:facet>
+												<h:outputText value="#{job.minorSpecializationDescription}" />
+											</rich:column>
+											<rich:column style="width : 40%">
+												<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+												<h:outputText value="#{job.unitFullName}" />
+											</rich:column>
+											<rich:column style="width : 5%">
+												<f:facet name="header">#{msgs.label_delete}</f:facet>
+												<h:commandButton action="#{jobsReservation.deleteJob(job)}" onclick="return confirm('#{msgs.q_delete}');" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon">
+													<f:ajax render="jobsReservationForm:jobsPanelId jobsReservationForm:jobReservationRemarksPanelId jobsReservationForm:jobActionsPanelId jobsReservationForm:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller execute="jobsReservationForm:jobsTableId" oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+													<f:facet name="first">#{msgs.label_first}</f:facet>
+													<f:facet name="last">#{msgs.label_last}</f:facet>
+													<f:facet name="next">#{msgs.label_next}</f:facet>
+													<f:facet name="previous">#{msgs.label_previous}</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="jobReservationRemarksPanelId">
+							<h:panelGroup rendered="#{jobsReservation.reservationStatus == 1 or jobsReservation.reservationStatus == 2 or jobsReservation.reservationStatus == 3}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_reservationRemarks}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="20%">
+														#{msgs.label_reservationRemarks}
+														<font style="color: red;">*</font>
+													</th>
+													<td width="80%">
+														<h:inputTextarea id="jobReservationRemarksId" value="#{jobsReservation.reservationRemarks}" onkeypress="return enforceMaxLength(this, 500);" rows="3" styleClass="inputDataSuperLarge" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="jobActionsPanelId">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton action="#{jobsReservation.reserveJobs()}" onclick="return validateRemarks()" value="#{msgs.label_reserveJob}" styleClass="btn_normal" rendered="#{jobsReservation.reservationStatus == 1 or jobsReservation.reservationStatus == 2 or jobsReservation.reservationStatus == 3}">
+											<f:ajax render="jobsReservationForm:jobsPanelId jobsReservationForm:jobReservationRemarksPanelId jobsReservationForm:jobActionsPanelId jobsReservationForm:notifyMessagesId " execute="jobsReservationForm:jobReservationRemarksId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+										<h:commandButton action="#{jobsReservation.unReserveJobs()}" value="#{msgs.label_unReserveJob}" styleClass="btn_normal" rendered="#{jobsReservation.reservationStatus == 0}">
+											<f:ajax render="jobsReservationForm:jobsPanelId jobsReservationForm:jobReservationRemarksPanelId jobsReservationForm:jobActionsPanelId jobsReservationForm:notifyMessagesId " onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

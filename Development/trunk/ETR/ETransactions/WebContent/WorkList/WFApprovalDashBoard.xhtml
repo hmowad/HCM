@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:rich="http://richfaces.org/rich">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="dashBoardFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{wfApprovalDashBoard.screenTitle}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{wfApprovalDashBoard.mode == 1 ? msgs.label_wfAcceptanceDashBoardDetail : msgs.label_wfApprovalDashBoardDetail}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<ui:repeat value="#{wfApprovalDashBoard.dashBoardData}" var="data">
+					<tr>
+						<td align="center">
+							<table class="dashboardContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="20%">
+										<h:commandButton value="&nbsp;" action="#{wfApprovalDashBoard.navigate(data[0])}" disabled="#{data[2] == 0}" styleClass="pg#{data[0]}" />
+									</td>
+									<td width="70%">
+										<h:outputText value="#{data[1]}" />
+									</td>
+									<td width="10%">
+										<h:outputText value="#{data[2]}" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</ui:repeat>
+				<h:panelGroup rendered="#{wfApprovalDashBoard.mode == 1}">
+					<tr>
+						<td width="100%" height="250" />
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

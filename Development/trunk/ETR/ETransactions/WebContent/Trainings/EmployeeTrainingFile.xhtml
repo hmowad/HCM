@@ -1,0 +1,722 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	function getEmployee(contextPath) {
+		if(#{employeeTrainingFile.isModifyAdmin()}) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{employeeTrainingFile.getLoginEmpPhysicalRegionFlag(true)});
+		} else {
+			openEmpsMiniSearch(contextPath,'handleEmpMiniSearchResult(ret)', 9, -1, -1, -1, -1, -1, '#{employeeTrainingFile.loginEmpData.physicalUnitHKey}');
+		}
+	}
+	
+	function handleEmpMiniSearchResult(ret) {
+		if(ret!=null) { 
+	         document.getElementById('employeeTrainingFileFormId:employeeIDId').value=ret[0];
+	         document.getElementById('employeeTrainingFileFormId:employeeNameId').innerHTML=ret[1];
+	         document.getElementById('employeeTrainingFileFormId:employeeNameHId').value=ret[1];
+	         document.getElementById('employeeTrainingFileFormId:searchEmpBtnId').click();
+		}
+	}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="employeeTrainingFileFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_employeeTrainingFile}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="10%">
+									<h:outputText value="#{msgs.label_selectEmp}" />
+								</th>
+								<td width="90%">
+									<h:outputText id="employeeNameId" value="#{employeeTrainingFile.employeeName}" />
+									<h:outputText value=" " />
+									<h:inputHidden id="employeeIDId" value="#{employeeTrainingFile.employeeId}" />
+									<h:inputHidden id="employeeNameHId" value="#{employeeTrainingFile.employeeName}" />
+									<h:commandButton value="#{msgs.fa_external_link}" rendered="#{employeeTrainingFile.showSelectEmployee()}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+									<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{employeeTrainingFile.getEmployeeTrainingFileData()}">
+										<f:ajax execute="employeeTrainingFileFormId:employeeIDId employeeTrainingFileFormId:employeeNameHId"
+											render="employeeTrainingFileFormId:employeeNameId employeeTrainingFileFormId:internalMilitaryCoursesTableId employeeTrainingFileFormId:externalMilitaryCoursesTableId employeeTrainingFileFormId:morningCoursesTableId employeeTrainingFileFormId:eveningCoursesTableId employeeTrainingFileFormId:studyEnrollmentsTableId employeeTrainingFileFormId:scholarshipsTableId employeeTrainingFileFormId:scholarshipDetailsTableId employeeTrainingFileFormId:notifyMessagesId"
+											onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										<h:outputText value=" " />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_internalMilitaryCourses}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_searchWithCandidateStatus}</th>
+									<td width="85%">
+										<h:selectOneMenu id="internalMilitaryCourseStatus" value="#{employeeTrainingFile.internalMilitaryCoursesStatus}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItem itemLabel="#{msgs.label_nominationAccepted}" itemValue="3" />
+											<f:selectItem itemLabel="#{msgs.label_joinedTheCourse}" itemValue="4" />
+											<f:selectItem itemLabel="#{msgs.label_apologizedForTheCourse}" itemValue="5" />
+											<f:selectItem itemLabel="#{msgs.label_hasBeenReplaced}" itemValue="6" />
+											<f:selectItem itemLabel="#{msgs.label_courseCancelledForHim}" itemValue="7" />
+											<f:selectItem itemLabel="#{msgs.label_finishedTheCourse}" itemValue="8" />
+											<f:selectItem itemLabel="#{msgs.label_coursePostponed}" itemValue="9" />
+											<f:selectItem itemLabel="#{msgs.label_courseCancelled}" itemValue="10" />
+											<f:ajax listener="#{employeeTrainingFile.fetchInternalMilitaryCourses()}" execute="employeeTrainingFileFormId:internalMilitaryCourseStatus" render="employeeTrainingFileFormId:internalMilitaryCoursesTableId employeeTrainingFileFormId:notifyMessagesId" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2" width="100%">
+										<rich:dataTable id="internalMilitaryCoursesTableId" value="#{employeeTrainingFile.internalMilitaryCourses}" var="transaction" rows="#{employeeTrainingFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width : 5%">
+												<f:facet name="header">#</f:facet>
+                                                #{index + 1}
+                                            </rich:column>
+											<rich:column style="width:7%">
+												<f:facet name="header">#{msgs.label_trainingCourseName}</f:facet>
+												<h:outputText value="#{transaction.courseName}" />
+											</rich:column>
+											<rich:column style="width:17%">
+												<f:facet name="header">#{msgs.label_trainingUnit}</f:facet>
+												<h:outputText value="#{transaction.trainingUnitName}" />
+											</rich:column>
+											<rich:column style="width:7%">
+												<f:facet name="header">#{msgs.label_trainingYearName}</f:facet>
+												<h:outputText value="#{transaction.trainingYearName}" />
+											</rich:column>
+											<rich:column style="width:7%">
+												<f:facet name="header">#{msgs.label_courseStartDate}</f:facet>
+												<h:outputText value="#{transaction.actualStartDateString}" />
+											</rich:column>
+											<rich:column style="width:7%">
+												<f:facet name="header">#{msgs.label_courseEndDate}</f:facet>
+												<h:outputText value="#{transaction.actualEndDateString}" />
+											</rich:column>
+
+											<rich:column style="width:7%">
+												<f:facet name="header">#{msgs.label_status}</f:facet>
+												<h:outputText value="#{msgs.label_nominationAccepted}" rendered="#{transaction.status == 3}" />
+												<h:outputText value="#{msgs.label_joinedTheCourse}" rendered="#{transaction.status == 4}" />
+												<h:outputText value="#{msgs.label_apologizedForTheCourse}" rendered="#{transaction.status == 5}" />
+												<h:outputText value="#{msgs.label_hasBeenReplaced}" rendered="#{transaction.status == 6}" />
+												<h:outputText value="#{msgs.label_courseCancelledForHim}" rendered="#{transaction.status == 7}" />
+												<h:outputText value="#{msgs.label_finishedTheCourse}" rendered="#{transaction.status == 8}" />
+												<h:outputText value="#{msgs.label_coursePostponed}" rendered="#{transaction.status == 9}" />
+												<h:outputText value="#{msgs.label_courseCancelled}" rendered="#{transaction.status == 10}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_successIndicator}</f:facet>
+												<h:outputText value="#{msgs.label_successful}" rendered="#{transaction.successFlag == 1}" title="#{employeeTrainingFile.successIndicatorDetails(transaction)}" />
+												<h:outputText value="#{msgs.label_notSuccessful}" rendered="#{transaction.successFlag == 0}" title="#{employeeTrainingFile.successIndicatorDetails(transaction)}" />
+											</rich:column>
+											<rich:column style="width:7%">
+												<f:facet name="header">#{msgs.label_trainingJoiningDate}</f:facet>
+												<h:outputText value="#{transaction.trainingJoiningDateString}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.label_showOrPrint}" />
+												</f:facet>
+												<h:commandButton rendered="#{transaction.eflag == 1 and (transaction.status == 8 and transaction.successFlag == 1)}" value="#{msgs.fa_print}" action="#{employeeTrainingFile.printCertificate(transaction.id)}" title="#{msgs.label_showOrPrint}" styleClass="btn_icon" />
+												<h:commandButton rendered="#{transaction.eflag == 1 and transaction.status == 7 }" value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" action="#{employeeTrainingFile.printTraineeCourseCancellationDecision(transaction.id)}" styleClass="btn_icon" />
+											</rich:column>
+											<rich:column style="width:#{(employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin) ? 11 : 16 }%">
+												<f:facet name="header">#{msgs.label_joiningDateAtWorkingUnit}</f:facet>
+												<util:hijri id="internalMilitaryCourseJoiningDateId" value="#{transaction.joiningDate}" rendered="#{employeeTrainingFile.modifyAdmin and transaction.trainingJoiningDate != null and (transaction.status == 7 or transaction.status == 8 )}" nullable="true" />
+												<h:outputText value="#{transaction.joiningDateString}" rendered="#{!employeeTrainingFile.modifyAdmin}" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeTrainingFile.modifyAdmin}">
+												<f:facet name="header">#{msgs.label_save}</f:facet>
+												<h:commandButton rendered="#{employeeTrainingFile.modifyAdmin and transaction.eflag == 1 and (transaction.status == 7 or transaction.status == 8 )}" value="#{msgs.fa_floppy_o}" action="#{employeeTrainingFile.updateTrainingTransaction(transaction)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
+													<f:ajax execute="internalMilitaryCourseJoiningDateId" render="employeeTrainingFileFormId:internalMilitaryCoursesTableId employeeTrainingFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon" />
+												</f:facet>
+												<code:attachments loginEmpId="#{employeeTrainingFile.loginEmpData.empId}" attachmentId="#{transaction.attachments}" viewEnableFlag="true" compactModeFlag="true" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin}">
+												<f:facet name="header">#{msgs.label_delete}</f:facet>
+												<h:commandButton rendered="#{transaction.eflag == 0}" value="#{msgs.fa_times}" action="#{employeeTrainingFile.deleteTrainingTransactionClaim(transaction)}" styleClass="btn_icon" title="#{msgs.label_delete}" onclick="return confirm('#{msgs.q_delete}');">
+													<f:ajax execute="internalMilitaryCoursesTableId" render="internalMilitaryCoursesTableId employeeTrainingFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+														#{msgs.label_first}
+	                                            	</f:facet>
+													<f:facet name="last">
+                                                		#{msgs.label_last}
+                                            		</f:facet>
+													<f:facet name="next">
+	                                              		#{msgs.label_next}
+	                                        	    </f:facet>
+													<f:facet name="previous">
+	                                                	#{msgs.label_previous}
+	                                            	</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_externalMilitaryCourses}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_searchWithCandidateStatus}</th>
+									<td width="85%">
+										<h:selectOneMenu id="externalMilitaryCourseStatus" value="#{employeeTrainingFile.externalMilitaryCoursesStatus}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItem itemLabel="#{msgs.label_nominationAcceptedFromFG}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_nominationRejecteFromParty}" itemValue="2" />
+											<f:selectItem itemLabel="#{msgs.label_nominationAccepted}" itemValue="3" />
+											<f:selectItem itemLabel="#{msgs.label_joinedTheCourse}" itemValue="4" />
+											<f:selectItem itemLabel="#{msgs.label_apologizedForTheCourse}" itemValue="5" />
+											<f:selectItem itemLabel="#{msgs.label_hasBeenReplaced}" itemValue="6" />
+											<f:selectItem itemLabel="#{msgs.label_courseCancelledForHim}" itemValue="7" />
+											<f:selectItem itemLabel="#{msgs.label_finishedTheCourse}" itemValue="8" />
+											<f:selectItem itemLabel="#{msgs.label_coursePostponed}" itemValue="9" />
+											<f:selectItem itemLabel="#{msgs.label_courseCancelled}" itemValue="10" />
+											<f:ajax listener="#{employeeTrainingFile.fetchExternalMilitaryCourses()}" execute="employeeTrainingFileFormId:externalMilitaryCourseStatus" render="employeeTrainingFileFormId:externalMilitaryCoursesTableId" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2" width="100%">
+										<rich:dataTable id="externalMilitaryCoursesTableId" value="#{employeeTrainingFile.externalMilitaryCourses}" var="transaction" rows="#{employeeTrainingFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width : 5%">
+												<f:facet name="header">#</f:facet>
+                                                #{index + 1}
+                                            </rich:column>
+											<rich:column style="width:16%">
+												<f:facet name="header">#{msgs.label_trainingCourseName}</f:facet>
+												<h:outputText value="#{transaction.courseName}" />
+											</rich:column>
+											<rich:column style="width:12%">
+												<f:facet name="header">#{msgs.label_trainingUnit}</f:facet>
+												<h:outputText value="#{transaction.externalPartyDesc}" />
+											</rich:column>
+											<rich:column style="width:8%">
+												<f:facet name="header">#{msgs.label_courseStartDate}</f:facet>
+												<h:outputText value="#{transaction.actualStartDateString}" />
+											</rich:column>
+											<rich:column style="width:8%">
+												<f:facet name="header">#{msgs.label_courseEndDate}</f:facet>
+												<h:outputText value="#{transaction.actualEndDateString}" />
+											</rich:column>
+
+											<rich:column style="width:8%">
+												<f:facet name="header">#{msgs.label_status}</f:facet>
+												<h:outputText value="#{msgs.label_nominationAcceptedFromFG}" rendered="#{transaction.status == 1}" />
+												<h:outputText value="#{msgs.label_nominationRejecteFromParty}" rendered="#{transaction.status == 2}" />
+												<h:outputText value="#{msgs.label_nominationAccepted}" rendered="#{transaction.status == 3}" />
+												<h:outputText value="#{msgs.label_joinedTheCourse}" rendered="#{transaction.status == 4}" />
+												<h:outputText value="#{msgs.label_apologizedForTheCourse}" rendered="#{transaction.status == 5}" />
+												<h:outputText value="#{msgs.label_hasBeenReplaced}" rendered="#{transaction.status == 6}" />
+												<h:outputText value="#{msgs.label_courseCancelledForHim}" rendered="#{transaction.status == 7}" />
+												<h:outputText value="#{msgs.label_finishedTheCourse}" rendered="#{transaction.status == 8}" />
+												<h:outputText value="#{msgs.label_coursePostponed}" rendered="#{transaction.status == 9}" />
+												<h:outputText value="#{msgs.label_courseCancelled}" rendered="#{transaction.status == 10}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_successIndicator}</f:facet>
+												<h:outputText value="#{msgs.label_successful}" rendered="#{transaction.successFlag == 1}" title="#{employeeTrainingFile.successIndicatorDetails(transaction)}" />
+												<h:outputText value="#{msgs.label_notSuccessful}" rendered="#{transaction.successFlag == 0}" title="#{employeeTrainingFile.successIndicatorDetails(transaction)}" />
+											</rich:column>
+											<rich:column style="width:8%">
+												<f:facet name="header">#{msgs.label_trainingJoiningDate}</f:facet>
+												<h:outputText value="#{transaction.trainingJoiningDateString}" />
+											</rich:column>
+
+											<rich:column style="width:#{(employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin) ? 15:20}%">
+												<f:facet name="header">#{msgs.label_joiningDateAtWorkingUnit}</f:facet>
+												<util:hijri id="externalMilitaryCourseJoiningDateId" value="#{transaction.joiningDate}" rendered="#{employeeTrainingFile.modifyAdmin and transaction.trainingJoiningDate != null and (transaction.status == 7 or transaction.status == 8 )}" nullable="true" />
+												<h:outputText value="#{transaction.joiningDateString}" rendered="#{!employeeTrainingFile.modifyAdmin}" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeTrainingFile.modifyAdmin}">
+												<f:facet name="header">#{msgs.label_save}</f:facet>
+												<h:commandButton rendered="#{employeeTrainingFile.modifyAdmin and transaction.eflag == 1 and transaction.trainingJoiningDate != null and (transaction.status == 7 or transaction.status == 8 )}" value="#{msgs.fa_floppy_o}" action="#{employeeTrainingFile.updateTrainingTransaction(transaction)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
+													<f:ajax execute="externalMilitaryCourseJoiningDateId" render="employeeTrainingFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon" />
+												</f:facet>
+												<code:attachments loginEmpId="#{employeeTrainingFile.loginEmpData.empId}" attachmentId="#{transaction.attachments}" viewEnableFlag="true" compactModeFlag="true" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin}">
+												<f:facet name="header">#{msgs.label_delete}</f:facet>
+												<h:commandButton rendered="#{transaction.eflag == 0}" value="#{msgs.fa_times}" action="#{employeeTrainingFile.deleteTrainingTransactionClaim(transaction)}" styleClass="btn_icon" title="#{msgs.label_delete}" onclick="return confirm('#{msgs.q_delete}');">
+													<f:ajax execute="externalMilitaryCoursesTableId" render="externalMilitaryCoursesTableId employeeTrainingFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+														#{msgs.label_first}
+	                                            	</f:facet>
+													<f:facet name="last">
+                                                		#{msgs.label_last}
+                                            		</f:facet>
+													<f:facet name="next">
+	                                              		#{msgs.label_next}
+	                                        	    </f:facet>
+													<f:facet name="previous">
+	                                                	#{msgs.label_previous}
+	                                            	</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_scholarship}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<rich:dataTable id="scholarshipsTableId" value="#{employeeTrainingFile.scholarships}" var="transaction" rows="#{employeeTrainingFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_select}</f:facet>
+												<h:commandButton action="#{employeeTrainingFile.fetchScholarshipDetails(transaction)}" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon">
+													<f:ajax render="employeeTrainingFileFormId:scholarshipDetailsTableId employeeTrainingFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<rich:column style="width : 5%">
+												<f:facet name="header">#</f:facet>
+                                                #{index + 1}
+                                            </rich:column>
+											<rich:column style="width:7%">
+												<f:facet name="header">#{msgs.label_studySubject}</f:facet>
+												<h:outputText value="#{transaction.studySubject}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_universityName }#{'/'}#{msgs.label_facultyName}#{'/'}#{ msgs.label_country}</f:facet>
+												<h:outputText value="#{transaction.graduationPlaceDesc}#{'/'}#{transaction.graduationPlaceDetailDesc}#{'/'}#{transaction.graduationPlaceCountryName}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_periodInMonth}</f:facet>
+												<h:outputText value="#{transaction.studyMonthsCount}" />
+											</rich:column>
+											<rich:column style="width:7%">
+												<f:facet name="header">#{msgs.label_scholarshipStartDate}</f:facet>
+												<h:outputText value="#{transaction.studyStartDateString}" />
+											</rich:column>
+											<rich:column style="width:7%">
+												<f:facet name="header">#{msgs.label_scholarshipEndDate}</f:facet>
+												<h:outputText value="#{transaction.studyEndDateString}" />
+											</rich:column>
+
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_graduationStatus}</f:facet>
+												<h:outputText value="#{msgs.label_passing}" rendered="#{transaction.successFlag ==1 }" title="#{employeeTrainingFile.successIndicatorDetails(transaction)}" />
+												<h:outputText value="#{msgs.label_noPassing}" rendered="#{transaction.successFlag == 0}" title="#{employeeTrainingFile.successIndicatorDetails(transaction)}" />
+											</rich:column>
+											<rich:column style="width:7%">
+												<f:facet name="header">#{msgs.label_scholarshipJoiningDate}</f:facet>
+												<h:outputText value="#{transaction.trainingJoiningDateString}" />
+											</rich:column>
+											<rich:column style="width:7%">
+												<f:facet name="header">#{msgs.label_graduationDate}</f:facet>
+												<h:outputText value="#{transaction.studyGraduationDateString}" />
+											</rich:column>
+											<rich:column style="width:#{(employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin) ? 15:20}%">
+												<f:facet name="header">#{msgs.label_joiningDateAtWorkingUnit}</f:facet>
+												<util:hijri id="scholarshipJoiningDateId" value="#{transaction.joiningDate}" rendered="#{employeeTrainingFile.modifyAdmin and (transaction.successFlag != null or transaction.status == 13)}" nullable="true" />
+												<h:outputText value="#{transaction.joiningDateString}" rendered="#{!employeeTrainingFile.modifyAdmin}" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeTrainingFile.modifyAdmin}">
+												<f:facet name="header">#{msgs.label_save}</f:facet>
+												<h:commandButton rendered="#{employeeTrainingFile.modifyAdmin and transaction.eflag == 1 and (transaction.successFlag != null or transaction.status == 13) }" value="#{msgs.fa_floppy_o}" action="#{employeeTrainingFile.updateTrainingTransaction(transaction)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
+													<f:ajax execute="scholarshipJoiningDateId" render="employeeTrainingFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon" />
+												</f:facet>
+												<code:attachments loginEmpId="#{employeeTrainingFile.loginEmpData.empId}" attachmentId="#{transaction.attachments}" viewEnableFlag="true" compactModeFlag="true" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin}">
+												<f:facet name="header">#{msgs.label_delete}</f:facet>
+												<h:commandButton rendered="#{transaction.eflag == 0}" value="#{msgs.fa_times}" action="#{employeeTrainingFile.deleteTrainingTransactionClaim(transaction)}" styleClass="btn_icon" title="#{msgs.label_delete}" onclick="return confirm('#{msgs.q_delete}');">
+													<f:ajax execute="scholarshipsTableId" render="scholarshipsTableId employeeTrainingFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+														#{msgs.label_first}
+	                                            	</f:facet>
+													<f:facet name="last">
+                                                		#{msgs.label_last}
+                                            		</f:facet>
+													<f:facet name="next">
+	                                              		#{msgs.label_next}
+	                                        	    </f:facet>
+													<f:facet name="previous">
+	                                                	#{msgs.label_previous}
+	                                            	</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="scholarshipDetailsTableId">
+											<rich:dataTable rendered="#{employeeTrainingFile.scholarshipDetails.size() > 0}" value="#{employeeTrainingFile.scholarshipDetails}" var="transaction" rows="#{employeeTrainingFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+												<rich:column style="width : 5%">
+													<f:facet name="header">#</f:facet>
+                                                #{index + 1}
+                                            </rich:column>
+												<rich:column style="width:10%">
+													<f:facet name="header">#{msgs.label_ministerialDecisionNumber}</f:facet>
+													<h:outputText value="#{transaction.ministryDecisionNumber}" />
+												</rich:column>
+												<rich:column style="width:15%">
+													<f:facet name="header">#{msgs.label_ministerialDecisionDate}</f:facet>
+													<h:outputText value="#{transaction.ministryDecisionDateString}" />
+												</rich:column>
+												<rich:column style="width:10%">
+													<f:facet name="header">#{msgs.label_decisionType}</f:facet>
+													<h:outputText value="#{transaction.transactionTypeDesc}" />
+												</rich:column>
+												<rich:column style="width:10%">
+													<f:facet name="header">#{msgs.label_reportingNumber}</f:facet>
+													<h:outputText value="#{transaction.ministryReportNumber}" />
+												</rich:column>
+												<rich:column style="width:15%">
+													<f:facet name="header">#{msgs.label_reportingDate}</f:facet>
+													<h:outputText value="#{transaction.ministryReportDateString}" />
+												</rich:column>
+												<rich:column style="width:15%">
+													<f:facet name="header">#{msgs.label_startDate}</f:facet>
+													<h:outputText value="#{transaction.studyStartDateString}" />
+												</rich:column>
+												<rich:column style="width:15%">
+													<f:facet name="header">#{msgs.label_endDate}</f:facet>
+													<h:outputText value="#{transaction.studyEndDateString}" />
+												</rich:column>
+												<rich:column style="width:5%">
+													<f:facet name="header">
+														<h:outputText value="#{msgs.label_showOrPrint}" />
+													</f:facet>
+													<h:commandButton value="#{msgs.fa_print}" action="#{employeeTrainingFile.printScholarShipDecisions(transaction)}" title="#{msgs.label_showOrPrint}" styleClass="btn_icon" />
+												</rich:column>
+												<f:facet name="footer">
+													<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+														<f:facet name="first">
+														#{msgs.label_first}
+	                                            	</f:facet>
+														<f:facet name="last">
+                                                		#{msgs.label_last}
+                                            		</f:facet>
+														<f:facet name="next">
+	                                              		#{msgs.label_next}
+	                                        	    </f:facet>
+														<f:facet name="previous">
+	                                                	#{msgs.label_previous}
+	                                            	</f:facet>
+													</rich:dataScroller>
+												</f:facet>
+											</rich:dataTable>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_eveningCourses}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<rich:dataTable id="eveningCoursesTableId" value="#{employeeTrainingFile.eveningCourses}" var="transaction" rows="#{employeeTrainingFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width : 5%">
+												<f:facet name="header">#</f:facet>
+                                                #{index + 1}
+                                            </rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_trainingCourseName}</f:facet>
+												<h:outputText value="#{transaction.courseName}" />
+											</rich:column>
+											<rich:column style="width:#{(employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin)? 15:20}%">
+												<f:facet name="header">#{msgs.label_trainingUnit}</f:facet>
+												<h:outputText value="#{transaction.externalPartyDesc}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_place}</f:facet>
+												<h:outputText value="#{transaction.externalPartyAddress}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_fundResource}</f:facet>
+												<h:outputText value="#{msgs.label_costOnEmployee}" rendered="#{transaction.fundSource == 1}" />
+												<h:outputText value="#{msgs.label_costOnBorderGuard}" rendered="#{transaction.fundSource == 2}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_courseStartDate}</f:facet>
+												<h:outputText value="#{transaction.actualStartDateString}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_courseEndDate}</f:facet>
+												<h:outputText value="#{transaction.actualEndDateString}" />
+											</rich:column>
+
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_theResult}</f:facet>
+												<h:outputText value="#{msgs.label_passing}" rendered="#{transaction.successFlag == 1}" title="#{employeeTrainingFile.successIndicatorDetails(transaction)}" />
+												<h:outputText value="#{msgs.label_noPassing}" rendered="#{transaction.successFlag == 0 }" title="#{employeeTrainingFile.successIndicatorDetails(transaction)}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.label_approvalDocument}" />
+												</f:facet>
+												<h:commandButton rendered="#{transaction.eflag == 1}" value="#{msgs.fa_print}" title="#{msgs.label_approvalDocument}" styleClass="btn_icon" action="#{employeeTrainingFile.printJoiningApproval(transaction)}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon" />
+												</f:facet>
+												<code:attachments loginEmpId="#{employeeTrainingFile.loginEmpData.empId}" attachmentId="#{transaction.attachments}" viewEnableFlag="true" compactModeFlag="true" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin}">
+												<f:facet name="header">#{msgs.label_delete}</f:facet>
+												<h:commandButton rendered="#{(transaction.eflag == 1 and transaction.successFlag == null) or transaction.eflag == 0}" value="#{msgs.fa_times}" action="#{employeeTrainingFile.deleteTrainingTransactionClaim(transaction)}" styleClass="btn_icon" title="#{msgs.label_delete}" onclick="return confirm('#{msgs.q_delete}');">
+													<f:ajax execute="eveningCoursesTableId" render="eveningCoursesTableId employeeTrainingFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+														#{msgs.label_first}
+	                                            	</f:facet>
+													<f:facet name="last">
+                                                		#{msgs.label_last}
+                                            		</f:facet>
+													<f:facet name="next">
+	                                              		#{msgs.label_next}
+	                                        	    </f:facet>
+													<f:facet name="previous">
+	                                                	#{msgs.label_previous}
+	                                            	</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_studyEnrollment}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<rich:dataTable id="studyEnrollmentsTableId" value="#{employeeTrainingFile.studyEnrollments}" var="transaction" rows="#{employeeTrainingFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width : 5%">
+												<f:facet name="header">#</f:facet>
+                                                #{index + 1}
+                                            </rich:column>
+											<rich:column style="width:20%">
+												<f:facet name="header">#{msgs.label_studySubject}</f:facet>
+												<h:outputText value="#{transaction.studySubject}" />
+											</rich:column>
+											<rich:column style="width:#{(employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin)?15:20}%">
+												<f:facet name="header">#{msgs.label_universityName }#{'/'}#{msgs.label_facultyName}</f:facet>
+												<h:outputText value="#{transaction.graduationPlaceDesc}#{'/'}#{transaction.graduationPlaceDetailDesc}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_fundResource}</f:facet>
+												<h:outputText value="#{msgs.label_costOnEmployee}" rendered="#{transaction.fundSource == 1}" />
+												<h:outputText value="#{msgs.label_costOnBorderGuard}" rendered="#{transaction.fundSource == 2}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_studyStartDate}</f:facet>
+												<h:outputText value="#{transaction.studyStartDateString}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_studyEndDate}</f:facet>
+												<h:outputText value="#{transaction.studyEndDateString}" />
+											</rich:column>
+
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_graduationStatus}</f:facet>
+												<h:outputText value="#{msgs.label_passing}" rendered="#{transaction.successFlag == 1}" title="#{employeeTrainingFile.successIndicatorDetails(transaction)}" />
+												<h:outputText value="#{msgs.label_noPassing}" rendered="#{transaction.successFlag == 0}" title="#{employeeTrainingFile.successIndicatorDetails(transaction)}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_graduationDate}</f:facet>
+												<h:outputText value="#{transaction.studyGraduationDateString}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon" />
+												</f:facet>
+												<code:attachments loginEmpId="#{employeeTrainingFile.loginEmpData.empId}" attachmentId="#{transaction.attachments}" viewEnableFlag="true" compactModeFlag="true" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin}">
+												<f:facet name="header">#{msgs.label_delete}</f:facet>
+												<h:commandButton rendered="#{transaction.eflag == 0}" value="#{msgs.fa_times}" action="#{employeeTrainingFile.deleteTrainingTransactionClaim(transaction)}" styleClass="btn_icon" title="#{msgs.label_delete}" onclick="return confirm('#{msgs.q_delete}');">
+													<f:ajax execute="studyEnrollmentsTableId" render="studyEnrollmentsTableId employeeTrainingFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+														#{msgs.label_first}
+	                                            	</f:facet>
+													<f:facet name="last">
+                                                		#{msgs.label_last}
+                                            		</f:facet>
+													<f:facet name="next">
+	                                              		#{msgs.label_next}
+	                                        	    </f:facet>
+													<f:facet name="previous">
+	                                                	#{msgs.label_previous}
+	                                            	</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_morningCourses}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<rich:dataTable id="morningCoursesTableId" value="#{employeeTrainingFile.morningCourses}" var="transaction" rows="#{employeeTrainingFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width : 5%">
+												<f:facet name="header">#</f:facet>
+                                                #{index + 1}
+                                            </rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_trainingCourseName}</f:facet>
+												<h:outputText value="#{transaction.courseName}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_trainingUnit}</f:facet>
+												<h:outputText value="#{transaction.externalPartyDesc}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_place}</f:facet>
+												<h:outputText value="#{transaction.externalPartyAddress}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_courseStartDate}</f:facet>
+												<h:outputText value="#{transaction.actualStartDateString}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_courseEndDate}</f:facet>
+												<h:outputText value="#{transaction.actualEndDateString}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_theResult}</f:facet>
+												<h:outputText value="#{msgs.label_passing}" rendered="#{transaction.successFlag == 1}" title="#{employeeTrainingFile.successIndicatorDetails(transaction)}" />
+												<h:outputText value="#{msgs.label_noPassing}" rendered="#{transaction.successFlag == 0}" title="#{employeeTrainingFile.successIndicatorDetails(transaction)}" />
+											</rich:column>
+											<rich:column style="width:#{(employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin) ?15:20}%">
+												<f:facet name="header">#{msgs.label_joiningDateAtWorkingUnit}</f:facet>
+												<util:hijri id="morningCourseJoiningDateId" value="#{transaction.joiningDate}" rendered="#{employeeTrainingFile.modifyAdmin and transaction.successFlag != null}" nullable="true" />
+												<h:outputText value="#{transaction.joiningDateString}" rendered="#{!employeeTrainingFile.modifyAdmin}" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeTrainingFile.modifyAdmin}">
+												<f:facet name="header">#{msgs.label_save}</f:facet>
+												<h:commandButton rendered="#{employeeTrainingFile.modifyAdmin and transaction.eflag == 1 and transaction.successFlag != null }" value="#{msgs.fa_floppy_o}" action="#{employeeTrainingFile.updateTrainingTransaction(transaction)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
+													<f:ajax execute="morningCourseJoiningDateId" render="employeeTrainingFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.label_approvalDocument}" />
+												</f:facet>
+												<h:commandButton rendered="#{transaction.eflag == 1}" value="#{msgs.fa_print}" title="#{msgs.label_approvalDocument}" styleClass="btn_icon" action="#{employeeTrainingFile.printJoiningApproval(transaction)}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon" />
+												</f:facet>
+												<code:attachments loginEmpId="#{employeeTrainingFile.loginEmpData.empId}" attachmentId="#{transaction.attachments}" viewEnableFlag="true" compactModeFlag="true" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin}">
+												<f:facet name="header">#{msgs.label_delete}</f:facet>
+												<h:commandButton rendered="#{(transaction.eflag == 1 and transaction.successFlag == null) or transaction.eflag == 0}" value="#{msgs.fa_times}" action="#{employeeTrainingFile.deleteTrainingTransactionClaim(transaction)}" styleClass="btn_icon" title="#{msgs.label_delete}" onclick="return confirm('#{msgs.q_delete}');">
+													<f:ajax execute="morningCoursesTableId" render="morningCoursesTableId employeeTrainingFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+														#{msgs.label_first}
+	                                            	</f:facet>
+													<f:facet name="last">
+                                                		#{msgs.label_last}
+                                            		</f:facet>
+													<f:facet name="next">
+	                                              		#{msgs.label_next}
+	                                        	    </f:facet>
+													<f:facet name="previous">
+	                                                	#{msgs.label_previous}
+	                                            	</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

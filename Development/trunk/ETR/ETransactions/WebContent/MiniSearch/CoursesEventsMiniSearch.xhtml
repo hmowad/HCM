@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+		window.onkeypress = function(e) {
+			// window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+			if (keyCode == '13') {
+			  	document.getElementById('searchCoursesEventsFormId:searchBtnID').click();
+				return false;
+			}
+		};
+	       
+		function selectTrainingCourseEvent(index) {
+			var courseEventIDHId = document.getElementById('searchCoursesEventsFormId:trainingCoursesEventsTableId:'+index+':courseEventIDHId').value;
+			var courseEventNameId = document.getElementById('searchCoursesEventsFormId:trainingCoursesEventsTableId:'+index+':courseEventNameId').innerHTML;
+			
+			ret = new Array();
+			ret[0] = courseEventIDHId;
+			ret[1] = courseEventNameId;
+			
+			window.close();
+			eval('(' + window.opener.#{param['miniSearchReturnHandler']} + ')');
+		}
+	</script>
+</h:head>
+<h:body onload="document.getElementById('searchCoursesEventsFormId:searchBtnID').focus();" onunload="window.opener.unMaskOpenerScreen();">
+	<h:form id="searchCoursesEventsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/PlainTemplate.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{trainingCoursesEventsMiniSearch.screenTitle}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+
+
+				<h:panelGroup rendered="#{trainingCoursesEventsMiniSearch.noApprovedTrnYears}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%">#{msgs.error_noApprovedTrainingYears}</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{!trainingCoursesEventsMiniSearch.noApprovedTrnYears}">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_searchData}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="searchPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<h:panelGroup rendered="#{trainingCoursesEventsMiniSearch.trainingTypeId==1}">
+											<th width="10%">#{msgs.label_trainingYear}</th>
+											<td width="90%" colspan="3">
+												<h:outputText value="#{trainingCoursesEventsMiniSearch.trainingYears.get(0).name}" rendered="#{trainingCoursesEventsMiniSearch.trainingYears.size() == 1}" />
+												<h:selectOneMenu value="#{trainingCoursesEventsMiniSearch.selectedTrainingYearId}" rendered="#{trainingCoursesEventsMiniSearch.trainingYears.size() > 1}">
+													<f:selectItems value="#{trainingCoursesEventsMiniSearch.trainingYears}" var="trnYear" itemLabel="#{trnYear.name}" itemValue="#{trnYear.id}" />
+												</h:selectOneMenu>
+											</td>
+										</h:panelGroup>
+									</tr>
+									<tr>
+										<h:panelGroup rendered="#{trainingCoursesEventsMiniSearch.trainingTypeId == 1}">
+											<th width="10%">#{msgs.label_trainingUnit}</th>
+											<td width="90%" colspan="3">
+												<h:outputText value="#{trainingCoursesEventsMiniSearch.trainingUnits.get(0).name}" rendered="#{trainingCoursesEventsMiniSearch.trainingUnits.size() == 1}" />
+												<h:selectOneMenu value="#{trainingCoursesEventsMiniSearch.selectedTrainingUnitId}" rendered="#{trainingCoursesEventsMiniSearch.trainingUnits.size() > 1}">
+													<f:selectItems value="#{trainingCoursesEventsMiniSearch.trainingUnits}" var="unit" itemLabel="#{unit.name}" itemValue="#{unit.unitId}" />
+												</h:selectOneMenu>
+											</td>
+										</h:panelGroup>
+									</tr>
+									<tr>
+										<h:panelGroup rendered="#{trainingCoursesEventsMiniSearch.trainingTypeId != 1}">
+											<th width="10%">#{msgs.label_trainingUnit}</th>
+											<td width="40%">
+												<h:inputText value="#{trainingCoursesEventsMiniSearch.searchExternalPartyName}" rendered="#{trainingCoursesEventsMiniSearch.externalPartyId == -1 }" styleClass="inputDataLarge" />
+												<h:outputText value="#{trainingCoursesEventsMiniSearch.searchExternalPartyName}" rendered="#{trainingCoursesEventsMiniSearch.externalPartyId != -1 }" />
+											</td>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{trainingCoursesEventsMiniSearch.trainingTypeId==1}">
+											<th width="10%">#{msgs.label_trainingCourseNumber}</th>
+											<td width="40%">
+												<h:inputText value="#{trainingCoursesEventsMiniSearch.searchCourseSerial}" maxlength="10" onkeypress="return isDigit(event);" styleClass="inputDataNormal" />
+											</td>
+										</h:panelGroup>
+										<th width="10%">#{msgs.label_trainingCourseName}</th>
+										<td width="40%">
+											<h:inputText id="searchCourseNameID" value="#{trainingCoursesEventsMiniSearch.searchCourseName}" styleClass="inputDataLarge" />
+										</td>
+									</tr>
+
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td>
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton id="searchBtnID" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{trainingCoursesEventsMiniSearch.searchTrainingCoursesEvents()}" title="#{msgs.label_searchByRoot}" styleClass="btn_normal_icon">
+											<f:ajax execute="searchCoursesEventsFormId:searchPanelId" render="searchCoursesEventsFormId:trainingCoursesEventsTableId searchCoursesEventsFormId:notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{trainingCoursesEventsMiniSearch.reset()}" styleClass="btn_normal_icon">
+											<f:ajax render="searchCoursesEventsFormId:searchPanelId searchCoursesEventsFormId:trainingCoursesEventsTableId searchCoursesEventsFormId:notifyMessagesId" />
+										</h:commandButton>
+									</td>
+
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_searchResults}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td align="center" width="100%">
+							<rich:dataTable id="trainingCoursesEventsTableId" rows="#{trainingCoursesEventsMiniSearch.rowsCount}" rowKeyVar="index" var="row" value="#{trainingCoursesEventsMiniSearch.coursesEventsList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+								<rich:column style="width : 5%">
+									<f:facet name="header"> # </f:facet>
+									<h:outputText value=" #{index + 1}" />
+								</rich:column>
+								<rich:column style="width : 15%" rendered="#{trainingCoursesEventsMiniSearch.trainingTypeId==1}">
+									<f:facet name="header"> #{msgs.label_trainingUnit} </f:facet>
+									<h:outputText value="#{row.trainingUnitName}" />
+								</rich:column>
+								<rich:column style="width : #{trainingCoursesEventsMiniSearch.trainingTypeId==1? 15:20}%">
+									<f:facet name="header"> #{msgs.label_trainingCourseName} </f:facet>
+									<h:outputText id="courseEventNameId" value="#{row.courseName}" />
+									<h:inputHidden id="courseEventIDHId" value="#{row.id}" />
+								</rich:column>
+								<rich:column style="width : 10%" rendered="#{trainingCoursesEventsMiniSearch.trainingTypeId==1}">
+									<f:facet name="header"> #{msgs.label_trainingCourseNumber} </f:facet>
+									<h:outputText value="#{row.serial}" />
+								</rich:column>
+								<rich:column style="width : 20%" rendered="#{trainingCoursesEventsMiniSearch.trainingTypeId!=1}">
+									<f:facet name="header"> #{msgs.label_trainingUnit} </f:facet>
+									<h:outputText value="#{row.externalPartyDesc}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header"> #{msgs.label_startDate} </f:facet>
+									<h:outputText value="#{row.actualStartDateString}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header"> #{msgs.label_endDate} </f:facet>
+									<h:outputText value=" #{row.actualEndDateString}" />
+								</rich:column>
+								<rich:column style="width : #{trainingCoursesEventsMiniSearch.trainingTypeId==1? 20:30}%" rendered="#{trainingCoursesEventsMiniSearch.trainingTypeId==1 or trainingCoursesEventsMiniSearch.trainingTypeId==2}">
+									<f:facet name="header"> #{msgs.label_trainingCourseAdmissionPrequsites} </f:facet>
+									<h:outputText value=" #{row.prerquisites}" />
+								</rich:column>
+								<rich:column style="width:5%">
+									<f:facet name="header">#{msgs.label_select}</f:facet>
+									<h:commandButton value="#{msgs.fa_check_square}" onclick="selectTrainingCourseEvent(#{index}); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller execute="searchCoursesEventsFormId:trainingCoursesEventsTableId" oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+										<f:facet name="first">#{msgs.label_first}</f:facet>
+										<f:facet name="last">#{msgs.label_last}</f:facet>
+										<f:facet name="next">#{msgs.label_next}</f:facet>
+										<f:facet name="previous">#{msgs.label_previous}</f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+						</td>
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	function getEmployee(contextPath){
+		if(#{soldiersSecondmentTerminationDecisionRequest.movementType==4})
+	 		openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',7,2,-1,-1,-1,-1, -1);
+		else
+			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',8,2,-1,-1,-1,-1, -1);
+	}
+	
+	function handleEmpMiniSearchResult(ret){
+		if(ret!=null){ 
+	         document.getElementById('soldiersSecondmentTerminationDecisionRequestFormId:soldierIDId').value=ret[0];
+	         document.getElementById('soldiersSecondmentTerminationDecisionRequestFormId:searchEmpBtnId').click();
+		}
+	}
+	
+    function validateRequest(){
+        soldierId= document.getElementById('soldiersSecondmentTerminationDecisionRequestFormId:soldierIDId').value;
+        numberValue=document.getElementById('soldiersSecondmentTerminationDecisionRequestFormId:numberId').value;
+       	if(soldierId==null||soldierId==''||numberValue==null||numberValue==''){
+    		alert('#{msgs.error_secondmentTerminationDecisionRequestFieldsAreMandatory}');	
+            return false; 
+        } 	 
+
+       	return #{soldiersSecondmentTerminationDecisionRequest.role == 'ReviewerEmp'} ? validateRefuseAndNotes(1, &quot;soldiersSecondmentTerminationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;) : true;
+   }
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="soldiersSecondmentTerminationDecisionRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{soldiersSecondmentTerminationDecisionRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_soldier}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<h:panelGroup rendered="#{soldiersSecondmentTerminationDecisionRequest.role == 'Requester'}">
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%">
+													<h:commandButton onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" value="#{msgs.label_soldier}" />
+													<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{soldiersSecondmentTerminationDecisionRequest.searchSoldiers()}">
+														<f:ajax execute="soldiersSecondmentTerminationDecisionRequestFormId:soldierIDId" render="soldiersSecondmentTerminationDecisionRequestFormId:requestPanelId soldiersSecondmentTerminationDecisionRequestFormId:warningPanelId soldiersSecondmentTerminationDecisionRequestFormId:soldierPanelId soldiersSecondmentTerminationDecisionRequestFormId:notifyMessagesId" />
+													</h:commandButton>
+													<h:inputHidden id="soldierIDId" value="#{soldiersSecondmentTerminationDecisionRequest.wfMovement.employeeId}" />
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<td width="100%">
+									<h:panelGroup id="soldierPanelId">
+										<code:emp value="#{soldiersSecondmentTerminationDecisionRequest.soldier}" />
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requestPanelId">
+							<h:panelGroup rendered="#{soldiersSecondmentTerminationDecisionRequest.lastSecondment != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">#{soldiersSecondmentTerminationDecisionRequest.movementType==4 ? msgs.label_lastMandateData : msgs.label_lastSecondmentData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="10%">#{soldiersSecondmentTerminationDecisionRequest.movementType==4 ? msgs.label_mandateUnit : msgs.label_secondmentUnit}</th>
+													<td width="15%">
+														<h:outputText value="#{soldiersSecondmentTerminationDecisionRequest.lastSecondment.location}" />
+													</td>
+													<th width="10%">#{msgs.label_period}</th>
+													<td width="15%">
+														<h:outputText value="#{soldiersSecondmentTerminationDecisionRequest.lastSecondment.periodMonths}" />
+														<h:outputText value=" " />
+														<h:outputText value="#{msgs.label_month}" rendered="#{soldiersSecondmentTerminationDecisionRequest.lastSecondment.periodMonths != null and soldiersSecondmentTerminationDecisionRequest.lastSecondment.periodMonths != 0}" />
+														<h:outputText value=" " />
+														<h:outputText value="#{soldiersSecondmentTerminationDecisionRequest.lastSecondment.periodDays}" />
+														<h:outputText value=" " />
+														<h:outputText value="#{msgs.label_day}" rendered="#{soldiersSecondmentTerminationDecisionRequest.lastSecondment.periodDays != null and soldiersSecondmentTerminationDecisionRequest.lastSecondment.periodDays != 0}" />
+													</td>
+													<th width="10%">#{msgs.label_endDate}</th>
+													<td width="40%">
+														<h:outputText value="#{soldiersSecondmentTerminationDecisionRequest.lastSecondment.endDateString}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">#{msgs.label_decisionData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th>
+														#{soldiersSecondmentTerminationDecisionRequest.movementType==4 ? msgs.label_mandateTerminationDate : msgs.label_secondmentTerminationDate}
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td colspan="3">
+														<util:hijri id="TerminationDateId" value="#{soldiersSecondmentTerminationDecisionRequest.wfMovement.endDate}" rendered="#{(soldiersSecondmentTerminationDecisionRequest.role=='Requester' or soldiersSecondmentTerminationDecisionRequest.role=='ReviewerEmp')}" />
+														<h:outputText value="#{soldiersSecondmentTerminationDecisionRequest.wfMovement.endDateString}" rendered="#{!(soldiersSecondmentTerminationDecisionRequest.role=='Requester' or soldiersSecondmentTerminationDecisionRequest.role=='ReviewerEmp')}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														#{msgs.label_interiorMinisteryLetterNumber}
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="20%">
+														<h:inputText id="numberId" value="#{soldiersSecondmentTerminationDecisionRequest.wfMovement.ministryApprovalNumber}" readonly="#{!(soldiersSecondmentTerminationDecisionRequest.role=='Requester' or soldiersSecondmentTerminationDecisionRequest.role=='ReviewerEmp')}" maxlength="50" />
+													</td>
+													<th width="16%">
+														#{msgs.label_interiorMinisteryLetterDate}
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="49%">
+														<util:hijri id="dateId" value="#{soldiersSecondmentTerminationDecisionRequest.wfMovement.ministryApprovalDate}" rendered="#{(soldiersSecondmentTerminationDecisionRequest.role=='Requester' or soldiersSecondmentTerminationDecisionRequest.role=='ReviewerEmp')}" />
+														<h:outputText value="#{soldiersSecondmentTerminationDecisionRequest.wfMovement.ministryApprovalDateString}" rendered="#{!(soldiersSecondmentTerminationDecisionRequest.role=='Requester' or soldiersSecondmentTerminationDecisionRequest.role=='ReviewerEmp')}" />
+													</td>
+												</tr>
+												<tr>
+													<th>#{msgs.label_requiredAttachments}</th>
+													<td colspan="3">
+														<code:attachments loginEmpId="#{soldiersSecondmentTerminationDecisionRequest.loginEmpData.empId}" attachmentId="#{soldiersSecondmentTerminationDecisionRequest.attachments}" addEnableFlag="#{soldiersSecondmentTerminationDecisionRequest.role == 'Requester' or soldiersSecondmentTerminationDecisionRequest.role == 'ReviewerEmp'}" viewEnableFlag="true"
+															deleteEnableFlag="#{soldiersSecondmentTerminationDecisionRequest.role == 'Requester' or soldiersSecondmentTerminationDecisionRequest.role == 'ReviewerEmp'}" />
+													</td>
+												</tr>
+												<tr>
+													<th>#{msgs.label_remarks}</th>
+													<td colspan="3">
+														<h:inputText id="remarksId" value="#{soldiersSecondmentTerminationDecisionRequest.wfMovement.remarks}" readonly="#{soldiersSecondmentTerminationDecisionRequest.role!='Requester' and soldiersSecondmentTerminationDecisionRequest.role != 'ReviewerEmp'}" styleClass="inputDataSuperLarge" maxlength="500" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<code:specialAuthorityData id="specialAuthorityDataId" loginEmpId="#{soldiersSecondmentTerminationDecisionRequest.loginEmpData.empId}" wfMovement="#{soldiersSecondmentTerminationDecisionRequest.wfMovement}" role="#{soldiersSecondmentTerminationDecisionRequest.role}" requestFlag="#{false}"
+										rendered="#{soldiersSecondmentTerminationDecisionRequest.role == 'Requester' or soldiersSecondmentTerminationDecisionRequest.role == 'ReviewerEmp' or soldiersSecondmentTerminationDecisionRequest.role == 'SignManager'}" />
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:decisionCopies external="#{soldiersSecondmentTerminationDecisionRequest.externalCopies}" internal="#{soldiersSecondmentTerminationDecisionRequest.internalCopies}" viewOnly="#{soldiersSecondmentTerminationDecisionRequest.role != 'Requester' and soldiersSecondmentTerminationDecisionRequest.role != 'ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:prevTasks rendered="#{soldiersSecondmentTerminationDecisionRequest.role != 'Requester'}" value="#{soldiersSecondmentTerminationDecisionRequest.prevTasks}" refuseRoles="SignManager,ReviewerEmp," />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:curTask id="curTaskId" value="#{soldiersSecondmentTerminationDecisionRequest.currentEmployee}" rendered="#{soldiersSecondmentTerminationDecisionRequest.role == 'SignManager' or soldiersSecondmentTerminationDecisionRequest.role == 'ReviewerEmp'}">
+												<tr>
+													<th width="15%">#{msgs.label_notes}</th>
+													<td width="85%" colspan="3">
+														<h:inputText id="notesId" value="#{soldiersSecondmentTerminationDecisionRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+													</td>
+												</tr>
+												<h:panelGroup rendered="#{soldiersSecondmentTerminationDecisionRequest.role == 'SignManager' or soldiersSecondmentTerminationDecisionRequest.role == 'ReviewerEmp'}">
+													<tr>
+														<th width="15%">#{msgs.label_refuseReasons}</th>
+														<td width="85%" colspan="3">
+															<h:inputText id="refuseReasonsId" value="#{soldiersSecondmentTerminationDecisionRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+														</td>
+													</tr>
+												</h:panelGroup>
+											</code:curTask>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:outputText rendered="#{soldiersSecondmentTerminationDecisionRequest.role == 'Notification' or soldiersSecondmentTerminationDecisionRequest.role == 'History'}" value="#{soldiersSecondmentTerminationDecisionRequest.notificationMessage}" styleClass="successMessage" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:commandButton id="rBtnId" action="#{soldiersSecondmentTerminationDecisionRequest.initMovement()}" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentTerminationDecisionRequest.role == 'Requester'}">
+															<f:ajax execute="@form" render="soldiersSecondmentTerminationDecisionRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSmBtnId" action="#{soldiersSecondmentTerminationDecisionRequest.approveMovementSM()}" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;soldiersSecondmentTerminationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentTerminationDecisionRequest.role == 'SignManager'}">
+															<f:ajax execute="@form" render="soldiersSecondmentTerminationDecisionRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+														<h:commandButton id="retSmBtnId" action="#{soldiersSecondmentTerminationDecisionRequest.returnMovementSM()}"
+															onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateDecisionApprovalNotes(&quot;soldiersSecondmentTerminationDecisionRequestFormId:specialAuthorityDataId:decisionApprovalRemarksId&quot;, &quot;soldiersSecondmentTerminationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;soldiersSecondmentTerminationDecisionRequestFormId:curTaskId:notesId&quot;)',null);" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon"
+															rendered="#{soldiersSecondmentTerminationDecisionRequest.role == 'SignManager'}">
+															<f:ajax execute="@form" render="soldiersSecondmentTerminationDecisionRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+														<h:commandButton id="rejectSmBtnId" action="#{soldiersSecondmentTerminationDecisionRequest.rejectMovementSM()}" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;soldiersSecondmentTerminationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentTerminationDecisionRequest.role == 'SignManager'}">
+															<f:ajax execute="@form" render="soldiersSecondmentTerminationDecisionRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+
+														<h:commandButton id="approveReBtnId" action="#{soldiersSecondmentTerminationDecisionRequest.approveMovementRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" onclick="return handleOnAction('#{msgs.q_reviewForMovements}','validateRequest()',null);" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentTerminationDecisionRequest.role == 'ReviewerEmp'}">
+															<f:ajax execute="@form" render="soldiersSecondmentTerminationDecisionRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+														<h:commandButton id="rejectReBtnId" action="#{soldiersSecondmentTerminationDecisionRequest.rejectMovementRE()}" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;soldiersSecondmentTerminationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentTerminationDecisionRequest.role == 'ReviewerEmp'}">
+															<f:ajax execute="@form" render="soldiersSecondmentTerminationDecisionRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+
+														<h:commandButton id="printBtnId" action="#{soldiersSecondmentTerminationDecisionRequest.print()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentTerminationDecisionRequest.role == 'Notification' and soldiersSecondmentTerminationDecisionRequest.instanceApproved == 1}" />
+
+														<h:commandButton id="nBtnId" action="#{soldiersSecondmentTerminationDecisionRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentTerminationDecisionRequest.role == 'Notification'}">
+															<f:ajax render="soldiersSecondmentTerminationDecisionRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="warningPanelId">
+							<h:panelGroup rendered="#{soldiersSecondmentTerminationDecisionRequest.soldier != null and soldiersSecondmentTerminationDecisionRequest.lastSecondment == null}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.error_thereIsNoLastValidTrans}" styleClass="remarkMessage" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">   
+
+	  
+    function getEmp(contextPath){
+       openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 12, 2, -1, -1, -1, -1, -1);
+    }
+    
+    function handleEmpMiniSearchResult(ret){
+    	if(ret != null){
+            document.getElementById('soldiersRanksAdjustmentFormId:empIDHId').value = ret[0];
+            document.getElementById('soldiersRanksAdjustmentFormId:searchBtnId').click();
+         }
+    }
+
+    function getNewJob(contextPath){
+
+    	previousRankIdValue = document.getElementById('soldiersRanksAdjustmentFormId:previousRankIDHId').value;
+    	openJobsMiniSearch(contextPath, 'handleJobsMiniSearchResult(ret)',2,2,-1,previousRankIdValue,-1,-1,0);
+      }
+    
+    function handleJobsMiniSearchResult(ret){
+    	if(ret != null){
+            document.getElementById('soldiersRanksAdjustmentFormId:newJobIDHId').value = ret[0];
+            document.getElementById('soldiersRanksAdjustmentFormId:newJobCodeHId').value = ret[1];
+            document.getElementById('soldiersRanksAdjustmentFormId:newRankIDHId').value = ret[6];
+            document.getElementById('soldiersRanksAdjustmentFormId:newUnitIDHId').value = ret[3];
+            document.getElementById('soldiersRanksAdjustmentFormId:newUnitFullNameId').value = ret[4];
+            document.getElementById('soldiersRanksAdjustmentFormId:newJobDescHId').value = ret[2];
+            document.getElementById('soldiersRanksAdjustmentFormId:newRankDescHId').value = ret[7]  
+            document.getElementById('soldiersRanksAdjustmentFormId:newJobDescId').innerHTML = ret[2];
+            document.getElementById('soldiersRanksAdjustmentFormId:newRankDescId').innerHTML = ret[7];    
+         }    	
+    }
+
+    function validateSearchPanel() {
+    	empIDHId = document.getElementById('soldiersRanksAdjustmentFormId:empIDHId').value;
+			if (empIDHId == null || empIDHId == ''){
+				alert("#{msgs.error_employeeMandatory}");
+				return false;
+			}
+	    return true;
+	 }
+    
+   function validateData(){                  
+	  newJobIDHId = document.getElementById('soldiersRanksAdjustmentFormId:newJobIDHId').value;
+		if (newJobIDHId == null || newJobIDHId == ''){
+			alert("#{msgs.error_reducerHerJob}");
+			return false;
+		}
+
+	    var decisionNumberId = document.getElementById('soldiersRanksAdjustmentFormId:decisionNumberId').value;
+        if(decisionNumberId == null || decisionNumberId == ''){
+            alert("#{msgs.error_ministerialDecisionMandatory}");
+            return false;
+        }
+
+        var newLastPromotionDateId = document.getElementById('soldiersRanksAdjustmentFormId:newLastPromotionDateId:day').value;
+        if(newLastPromotionDateId == '' || newLastPromotionDateId == 0){
+            alert("#{msgs.error_newLastPromotionDateMandatory}");
+            return false;
+        }
+        
+	   return true;
+    }              
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="soldiersRanksAdjustmentFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_soldiersRanksAdjustment}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_soldier}" />
+									</th>
+									<td width="85%">
+										<h:outputText id="empNameId" value="#{soldiersRanksAdjustment.employee.name}" />
+										<h:inputHidden id="empIDHId" value="#{soldiersRanksAdjustment.empId}" />
+										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_name}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="" style="display: none;" action="#{soldiersRanksAdjustment.searchSoldierData()}" onclick="return validateSearchPanel();">
+										<f:ajax execute="soldiersRanksAdjustmentFormId:searchPanelId" render="soldiersRanksAdjustmentFormId:searchPanelId soldiersRanksAdjustmentFormId:soldierDataId soldiersRanksAdjustmentFormId:soldierPromotionDataId soldiersRanksAdjustmentFormId:soldierPromotionTableId soldiersRanksAdjustmentFormId:soldierPromotionPanelGroupId soldiersRanksAdjustmentFormId:savePanelId soldiersRanksAdjustmentFormId:previousRankIDHId soldiersRanksAdjustmentFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{soldiersRanksAdjustment.resetForm()}" styleClass="btn_normal_icon">
+										<f:ajax render="soldiersRanksAdjustmentFormId:searchPanelId soldiersRanksAdjustmentFormId:soldierDataId soldiersRanksAdjustmentFormId:soldierPromotionDataId soldiersRanksAdjustmentFormId:soldierPromotionTableId soldiersRanksAdjustmentFormId:soldierPromotionPanelGroupId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="soldierDataId">
+							<h:panelGroup rendered="#{soldiersRanksAdjustment.empId != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_soldierData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">#{msgs.label_currentRank}</th>
+										<td width="35%">
+											<h:outputText value="#{soldiersRanksAdjustment.employee.rankDesc}" />
+										</td>
+										<th width="15%">#{msgs.label_jobName}</th>
+										<td width="35%">
+											<h:outputText value="#{soldiersRanksAdjustment.employee.jobDesc}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>			
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="soldierPromotionDataId">
+							<h:panelGroup rendered="#{soldiersRanksAdjustment.empId != null}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_reducerHerJob}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:outputText id="newJobDescId" value="#{soldiersRanksAdjustment.promotionTransaction.newJobDesc}" />
+											<h:inputHidden id="newJobDescHId" value="#{soldiersRanksAdjustment.promotionTransaction.newJobDesc}" />
+											<h:inputHidden id="newJobIDHId" value="#{soldiersRanksAdjustment.promotionTransaction.newJobId}" />
+											<h:inputHidden id="newJobCodeHId" value="#{soldiersRanksAdjustment.promotionTransaction.newJobCode}" />
+											<h:inputHidden id="newRankIDHId" value="#{soldiersRanksAdjustment.promotionTransaction.newRankId}" />
+											<h:inputHidden id="newUnitIDHId" value="#{soldiersRanksAdjustment.promotionTransaction.newUnitId}" />
+											<h:inputHidden id="newUnitFullNameId" value="#{soldiersRanksAdjustment.promotionTransaction.newUnitFullName}" />
+											<h:inputHidden id="previousRankIDHId" value="#{soldiersRanksAdjustment.previousRankId}" />
+											<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_name}" onclick="getNewJob('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+										</td>
+										<th width="15%">#{msgs.label_newRank}</th>
+										<td width="35%">
+											<h:inputHidden id="newRankDescHId" value="#{soldiersRanksAdjustment.promotionTransaction.newRankDesc}" />
+											<h:outputText id="newRankDescId" value="#{soldiersRanksAdjustment.promotionTransaction.newRankDesc}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_dateRankReducerHer}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="85%" colspan="3">
+											<util:hijri id="newLastPromotionDateId" value="#{soldiersRanksAdjustment.promotionTransaction.newLastPromotionDate}" nullable="true" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.lable_dateOfMinisterialDecision}</th>
+										<td width="35%">
+											<util:hijri id="decisionDateId" value="#{soldiersRanksAdjustment.promotionTransaction.decisionDate}" nullable="false" />
+										</td>
+										<th width="15%">
+											#{msgs.lable_numberOfMinisterialDecision}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="decisionNumberId" value="#{soldiersRanksAdjustment.promotionTransaction.decisionNumber}" maxlength="15" />
+										</td>
+									</tr>
+								</table>
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+										<h:panelGroup id="savePanelId">
+											<h:commandButton action="#{soldiersRanksAdjustment.addPromotionTransaction()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return validateData();" rendered="#{soldiersRanksAdjustment.saveFlag}">
+												<f:ajax execute="soldiersRanksAdjustmentFormId:soldierPromotionDataId" render="soldiersRanksAdjustmentFormId:savePanelId soldiersRanksAdjustmentFormId:soldierPromotionTableId soldiersRanksAdjustmentFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</h:panelGroup>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td align="center" width="100%">
+						<h:panelGroup id="soldierPromotionPanelGroupId">
+							<rich:collapsiblePanel header="#{msgs.label_TransactionDataTitle}" switchType="client" expanded="false" rendered="#{soldiersRanksAdjustment.empId != null}">
+								<rich:dataTable id="soldierPromotionTableId" rowKeyVar="index" var="promotion" value="#{soldiersRanksAdjustment.promotionTransactionDataList}" rows="#{soldiersRanksAdjustment.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+									<rich:column style="width : 5%">
+										<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                            </rich:column>
+									<rich:column style="width : 25%">
+										<f:facet name="header">#{msgs.label_name}</f:facet>
+										<h:outputText value="#{promotion.name}" />
+									</rich:column>
+									<rich:column style="width : 10%">
+										<f:facet name="header"> #{msgs.lable_rankBeforReduce} </f:facet>
+										<h:outputText value="#{promotion.oldRankDesc}" />
+									</rich:column>
+									<rich:column style="width : 15%">
+										<f:facet name="header">#{msgs.lable_currentLastPromotionDate}</f:facet>
+										<h:outputText value="#{promotion.oldLastPromotionDateString}" />
+									</rich:column>
+									<rich:column style="width : 10%">
+										<f:facet name="header"> #{msgs.lable_rankAfterReduce} </f:facet>
+										<h:outputText value="#{promotion.newRankDesc}" />
+									</rich:column>
+									<rich:column style="width : 15%">
+										<f:facet name="header">#{msgs.lable_newDuePromotionDate}</f:facet>
+										<h:outputText value="#{promotion.newDueDateString}" />
+									</rich:column>
+									<rich:column style="width : 10%">
+										<f:facet name="header">#{msgs.lable_numberOfMinisterialDecision}</f:facet>
+										<h:outputText value="#{promotion.decisionNumber}" />
+									</rich:column>
+									<rich:column style="width : 10%">
+										<f:facet name="header">#{msgs.lable_dateOfMinisterialDecision}</f:facet>
+										<h:outputText value="#{promotion.decisionDateString}" />
+									</rich:column>
+									<f:facet name="footer">
+										<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+											<f:facet name="first">#{msgs.label_first}</f:facet>
+											<f:facet name="last">#{msgs.label_last}</f:facet>
+											<f:facet name="next">#{msgs.label_next}</f:facet>
+											<f:facet name="previous">#{msgs.label_previous}</f:facet>
+										</rich:dataScroller>
+									</f:facet>
+								</rich:dataTable>
+							</rich:collapsiblePanel>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

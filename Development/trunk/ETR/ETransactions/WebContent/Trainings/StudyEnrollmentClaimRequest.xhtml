@@ -1,0 +1,410 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+	function getEmployee(contextPath) {
+		if(#{studyEnrollmentClaimRequest.decisionRequest}) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{studyEnrollmentClaimRequest.getLoginEmpPhysicalRegionFlag(true)});
+		} else {
+			openEmpsMiniSearch(contextPath,'handleEmpMiniSearchResult(ret)', 9, -1, -1, -1, -1, -1, '#{studyEnrollmentClaimRequest.loginEmpData.physicalUnitHKey}');
+		}
+	}
+	
+	function handleEmpMiniSearchResult(ret) { 
+		if(ret != null) {
+			document.getElementById('studyEnrollmentClaimRequestFormId:beneficiaryEmployeeHId').value = ret[0];
+			document.getElementById('studyEnrollmentClaimRequestFormId:beneficiaryCategoryIDId').value = ret[2];
+			document.getElementById('studyEnrollmentClaimRequestFormId:searchEmpBtnId').click();
+		}
+	}
+	function getGraduationPlaces(contextPath) {
+		openGraduationPlacesMiniSearch(contextPath,'handleGraduationPlacesMiniSearchResult(ret)', 0);
+	}
+	
+	function handleGraduationPlacesMiniSearchResult(ret) { 
+		if(ret != null) {
+			document.getElementById('studyEnrollmentClaimRequestFormId:graduationPlaceDetailIDHId').value = ret[0];
+			document.getElementById('studyEnrollmentClaimRequestFormId:graduationPlaceDetailDescId').innerHTML = ret[1];
+			document.getElementById('studyEnrollmentClaimRequestFormId:graduationPlaceDescId').innerHTML = ret[3];
+			document.getElementById('studyEnrollmentClaimRequestFormId:graduationPlaceCountryNameId').innerHTML = ret[5];
+			document.getElementById('studyEnrollmentClaimRequestFormId:graduationPlaceDetailAddressId').innerHTML = ret[6];
+		}
+	}
+	function getQualificationMinorSpec() {
+		openQualificationMinorSpecsMiniSearch('#{request.contextPath}','handleQualificationMinorSpecMiniSearchResult(ret)', 0);
+	}
+
+function handleQualificationMinorSpecMiniSearchResult(ret) {
+	if (ret != null) {
+		document.getElementById('studyEnrollmentClaimRequestFormId:qualMinorSpecIDId').value = ret[0];
+		document.getElementById('studyEnrollmentClaimRequestFormId:qualMinorSpecDescId').innerHTML = ret[1];
+		}
+	}
+	function validateRequest() {
+		var qualificationLevelIDId=document.getElementById('studyEnrollmentClaimRequestFormId:qualificationLevelIDId').value;
+		var qualMinorSpecIDId=document.getElementById('studyEnrollmentClaimRequestFormId:qualMinorSpecIDId').value;
+		var studySubjectId=document.getElementById('studyEnrollmentClaimRequestFormId:studySubjectId').value;
+		var graduationPlaceDetailIDHId=document.getElementById('studyEnrollmentClaimRequestFormId:graduationPlaceDetailIDHId').value;
+		var startDateValue =  document.getElementById('studyEnrollmentClaimRequestFormId:startDateId:day').value;
+		var endDateValue =  document.getElementById('studyEnrollmentClaimRequestFormId:endDateId:day').value;
+		var fundSourceOnHisOwn = document.getElementById('studyEnrollmentClaimRequestFormId:studyFundSourceId:0').checked;
+		var fundSourceOnBorderGuard = document.getElementById('studyEnrollmentClaimRequestFormId:studyFundSourceId:1').checked;
+
+	
+		if(graduationPlaceDetailIDHId==null||graduationPlaceDetailIDHId=='') {
+			alert('#{msgs.error_trainingGraduationPlaceDetailMandatory}');
+			return false;
+		}
+		
+		if(qualMinorSpecIDId==null||qualMinorSpecIDId=='') {
+			alert('#{msgs.error_studyQualificationMinorSpecMandatory}');
+			return false;
+		}
+		
+		if(qualificationLevelIDId==null ||qualificationLevelIDId==0) {
+			alert('#{msgs.error_trainingQualificationLevelMandatory}');
+			return false;
+		}
+
+		if(studySubjectId==null||studySubjectId=='') {
+			alert('#{msgs.error_trainingStudySubjectMandatory}');
+			return false;
+		}
+
+		if(startDateValue == 0) {
+			alert('#{msgs.error_trainingStudyStartDateMandatory}');
+			return false;
+		}
+
+		if(endDateValue == 0) {
+			alert('#{msgs.error_trainingStudyEndDateMandatory}');
+			return false;
+		}
+		
+	    if(!fundSourceOnHisOwn && !fundSourceOnBorderGuard) {
+	    	alert('#{msgs.error_financeSourceMandatory}');
+			return false;
+		} 
+		
+		if(!validResultsComponent())
+			return false; 
+		
+		return true;
+	}
+	function validateReview(canChange) {
+		if(validateRefuseAndNotes(1, 'studyEnrollmentClaimRequestFormId:curTaskId:refuseReasonsId'))
+			{
+				if(!canChange)
+				return true;
+		
+				return validateRequest();
+			
+			}else
+			return false;
+	}
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="studyEnrollmentClaimRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{studyEnrollmentClaimRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_processRequester}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{studyEnrollmentClaimRequest.requester}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiaryEmployee}" switchType="client" onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{studyEnrollmentClaimRequest.beneficiary.empId == studyEnrollmentClaimRequest.requester.empId})) { getEmployee('#{request.contextPath}'); return false;} else {return true;}"
+							expanded="#{studyEnrollmentClaimRequest.requester.empId != studyEnrollmentClaimRequest.beneficiary.empId}" rendered="#{(studyEnrollmentClaimRequest.role == 'Requester' and (studyEnrollmentClaimRequest.decisionRequest or studyEnrollmentClaimRequest.loginEmpData.isManager == 1)) or studyEnrollmentClaimRequest.requester.empId != studyEnrollmentClaimRequest.beneficiary.empId}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<h:panelGroup rendered="#{studyEnrollmentClaimRequest.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+														<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{studyEnrollmentClaimRequest.constructWFTraining()}">
+															<f:ajax execute="studyEnrollmentClaimRequestFormId:beneficiaryEmployeeHId" render="studyEnrollmentClaimRequestFormId:beneficiaryPanelId studyEnrollmentClaimRequestFormId:dataPanelId studyEnrollmentClaimRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:inputHidden id="beneficiaryEmployeeHId" value="#{studyEnrollmentClaimRequest.wfTraining.employeeId}" />
+														<h:inputHidden id="beneficiaryCategoryIDId" value="#{studyEnrollmentClaimRequest.wfTraining.categoryId}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp id="beneficiaryId" value="#{studyEnrollmentClaimRequest.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_previousStudyEnrollmentData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="dataPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_graduationPlaceDetailName}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:outputText id="graduationPlaceDetailDescId" value="#{studyEnrollmentClaimRequest.wfTraining.graduationPlaceDetailDesc}" />
+										<h:inputHidden id="graduationPlaceDetailIDHId" value="#{studyEnrollmentClaimRequest.wfTraining.graduationPlaceDetailId}" />
+										<h:outputText value=" " />
+										<h:commandButton rendered="#{studyEnrollmentClaimRequest.canChangeRequestData()}" value="#{msgs.fa_external_link}" onclick="getGraduationPlaces('#{request.contextPath}'); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+									</td>
+
+									<th width="15%">#{msgs.label_graduationPlaceDetailAddress}</th>
+									<td width="35%">
+										<h:outputText id="graduationPlaceDetailAddressId" value="#{studyEnrollmentClaimRequest.wfTraining.graduationPlaceDetailAddress}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_graduationPlaceName}</th>
+									<td width="35%">
+										<h:outputText id="graduationPlaceDescId" value="#{studyEnrollmentClaimRequest.wfTraining.graduationPlaceDesc}" />
+									</td>
+
+									<th width="15%">#{msgs.label_graduationPlaceCountryName}</th>
+									<td width="35%">
+										<h:outputText id="graduationPlaceCountryNameId" value="#{studyEnrollmentClaimRequest.wfTraining.graduationPlaceCountryName}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_qualificationGrade}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:selectOneMenu disabled="#{!studyEnrollmentClaimRequest.canChangeRequestData()}" id="qualificationLevelIDId" value="#{studyEnrollmentClaimRequest.wfTraining.qualificationLevelId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{studyEnrollmentClaimRequest.qualificationLevels}" var="qualification" itemLabel="#{qualification.description}" itemValue="#{qualification.id}" />
+										</h:selectOneMenu>
+									</td>
+									<th width="15%">
+										#{msgs.label_studyQualificationMinorSpec}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:outputText id="qualMinorSpecDescId" value="#{studyEnrollmentClaimRequest.wfTraining.qualificationMinorSpecDesc}" />
+										<h:inputHidden id="qualMinorSpecIDId" value="#{studyEnrollmentClaimRequest.wfTraining.qualificationMinorSpecId}" />
+										<h:outputText value=" " />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getQualificationMinorSpec(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{studyEnrollmentClaimRequest.canChangeRequestData()}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_studySubject}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText rendered="#{!studyEnrollmentClaimRequest.canChangeRequestData()}" value="#{studyEnrollmentClaimRequest.wfTraining.studySubject}" />
+										<h:inputText id="studySubjectId" rendered="#{studyEnrollmentClaimRequest.canChangeRequestData()}" value="#{studyEnrollmentClaimRequest.wfTraining.studySubject}" styleClass="inputDataLarge" />
+									</td>
+
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_studyStartDate}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:outputText rendered="#{!studyEnrollmentClaimRequest.canChangeRequestData()}" value="#{studyEnrollmentClaimRequest.wfTraining.startDateString}" />
+										<util:hijri id="startDateId" nullable="true" rendered="#{studyEnrollmentClaimRequest.canChangeRequestData()}" value="#{studyEnrollmentClaimRequest.wfTraining.startDate}" viewOldRange="true"/>
+									</td>
+									<th width="15%">
+										#{msgs.label_studyEndDate}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:outputText rendered="#{!studyEnrollmentClaimRequest.canChangeRequestData()}" value="#{studyEnrollmentClaimRequest.wfTraining.endDateString}" />
+										<util:hijri id="endDateId" nullable="true" rendered="#{studyEnrollmentClaimRequest.canChangeRequestData()}" value="#{studyEnrollmentClaimRequest.wfTraining.endDate}" viewOldRange="true"/>
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_studyFundSource}</th>
+									<td width="35%">
+										<h:selectOneRadio id="studyFundSourceId" value="#{studyEnrollmentClaimRequest.wfTraining.fundSource}" disabled="#{!studyEnrollmentClaimRequest.canChangeRequestData()}">
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_costOnEmployee}" />
+											<f:selectItem itemValue="2" itemLabel="#{msgs.label_costOnBorderGuard}" />
+										</h:selectOneRadio>
+									</td>
+									<td width="50%" colspan="2"></td>
+								</tr>
+								<code:courseResults id="resultsId" trainingObject="#{studyEnrollmentClaimRequest.wfTraining}" loginEmpId="#{studyEnrollmentClaimRequest.loginEmpData.empId}" viewOnly="#{!studyEnrollmentClaimRequest.canChangeRequestData()}" military="false" claim="true" showGraduationDate="true">
+								</code:courseResults>
+
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{studyEnrollmentClaimRequest.role != 'Requester'}" value="#{studyEnrollmentClaimRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{studyEnrollmentClaimRequest.currentEmployee}"
+							rendered="#{studyEnrollmentClaimRequest.role == 'DirectManager'or studyEnrollmentClaimRequest.role == 'ManagerRedirect'  or studyEnrollmentClaimRequest.role == 'SignManager' or studyEnrollmentClaimRequest.role == 'ReviewerEmp'}">
+							<h:panelGroup rendered="#{studyEnrollmentClaimRequest.role == 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{studyEnrollmentClaimRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{studyEnrollmentClaimRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{studyEnrollmentClaimRequest.currentTask.notes}" styleClass="inputDataSuperLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{ studyEnrollmentClaimRequest.role != 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{studyEnrollmentClaimRequest.currentTask.refuseReasons}" styleClass="inputDataSuperLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{studyEnrollmentClaimRequest.role == 'Notification' or studyEnrollmentClaimRequest.role == 'History'}" value="#{studyEnrollmentClaimRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" action="#{studyEnrollmentClaimRequest.initWFTraining()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentClaimRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="studyEnrollmentClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;studyEnrollmentClaimRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{studyEnrollmentClaimRequest.approveWFTrainingDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentClaimRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="studyEnrollmentClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;studyEnrollmentClaimRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{studyEnrollmentClaimRequest.rejectWFTrainingDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentClaimRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="studyEnrollmentClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;studyEnrollmentClaimRequestFormId:curTaskId:reviewersId&quot;)');" action="#{studyEnrollmentClaimRequest.redirectWFTrainingMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentClaimRequest.role == 'ManagerRedirect'}">
+										<f:ajax execute="@form" render="studyEnrollmentClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateReview(#{studyEnrollmentClaimRequest.canChangeRequestData()})',null);" action="#{studyEnrollmentClaimRequest.approveWFTrainingRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentClaimRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="studyEnrollmentClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;studyEnrollmentClaimRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{studyEnrollmentClaimRequest.rejectWFTrainingRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentClaimRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="studyEnrollmentClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;studyEnrollmentClaimRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{studyEnrollmentClaimRequest.approveWFTrainingSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentClaimRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="studyEnrollmentClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;studyEnrollmentClaimRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;studyEnrollmentClaimRequestFormId:curTaskId:notesId&quot;)');" action="#{studyEnrollmentClaimRequest.returnWFTrainingSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentClaimRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="studyEnrollmentClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;studyEnrollmentClaimRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{studyEnrollmentClaimRequest.rejectWFTrainingSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentClaimRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="studyEnrollmentClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="nBtnId" action="#{studyEnrollmentClaimRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{studyEnrollmentClaimRequest.role == 'Notification'}">
+										<f:ajax execute="@form" render="studyEnrollmentClaimRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

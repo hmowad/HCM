@@ -1,0 +1,315 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+	//<![CDATA[  
+		function validateData(){
+            var oldVacationId = document.getElementById('cancelExceptionalVacationForm:oldVacationId').value;
+            if(oldVacationId == null || oldVacationId == ''){
+               	alert('#{msgs.error_noPrevVacation}');
+                   return false;
+            }
+
+            if (#{cancelExceptionalVacation.vacationMode} == 2) { 
+	            var requestJustifications = document.getElementById('cancelExceptionalVacationForm:requestJustificationsId').value;
+	            if(requestJustifications == null || requestJustifications == ''){
+	                alert('#{msgs.error_requestJustificationsMandatory}');
+	                return false;
+	            }
+            }                  
+            
+            return true;
+        }
+
+		function validateReferring(){
+			if (#{cancelExceptionalVacation.vacationMode} == 31 || #{cancelExceptionalVacation.vacationMode} == 32) {
+				var referring = document.getElementById('cancelExceptionalVacationForm:referringId').value;
+				if(referring == null || referring == ''){
+					alert('#{msgs.error_referringMandatory}');
+					return false;
+				}
+			}
+			return true;
+		}
+    // ]]>
+    </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="cancelExceptionalVacationForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{cancelExceptionalVacation.screenTitle}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requester}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:emp value="#{cancelExceptionalVacation.requester}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_lastVacInfo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:vac value="#{cancelExceptionalVacation.lastVacation}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requestInfo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<h:panelGroup rendered="#{cancelExceptionalVacation.vacationMode == 2}">
+								<tr>
+									<th width="15%">
+										#{msgs.label_requestJustifications}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%">
+										<h:inputText id="requestJustificationsId" value="#{cancelExceptionalVacation.vacRequest.reasons}" readonly="#{cancelExceptionalVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%">
+									<h:inputHidden id="oldVacationId" value="#{cancelExceptionalVacation.vacRequest.oldVacationId}" />
+									<h:inputText value="#{cancelExceptionalVacation.vacRequest.notes}" readonly="#{cancelExceptionalVacation.role != 'Requester'}" maxlength="100" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">#{msgs.label_attachments}</th>
+								<td width="85%">
+									<code:attachments loginEmpId="#{cancelExceptionalVacation.loginEmpData.empId}" attachmentId="#{cancelExceptionalVacation.attachments}" addEnableFlag="#{cancelExceptionalVacation.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{cancelExceptionalVacation.role == 'Requester'}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				
+				<h:panelGroup rendered="#{(cancelExceptionalVacation.role == 'ReviewerEmp' or cancelExceptionalVacation.role == 'SignManager') and (cancelExceptionalVacation.vacationMode == 31 or cancelExceptionalVacation.vacationMode == 32)}">
+					<tr>
+						<td width="100%" height="15" />
+					</tr>
+					
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_referringInfo}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_refferingTo}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%">
+										<h:inputText id="referringId" value="#{cancelExceptionalVacation.vacRequest.referring}" readonly="#{cancelExceptionalVacation.role != 'ReviewerEmp'}" maxlength="250" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				
+				<tr>
+					<td width="100%">
+						<h:panelGroup rendered="#{cancelExceptionalVacation.hasEarlierStartDateWarning()}">
+							<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th>#{msgs.label_warnings}</th>
+								</tr>
+								<tr>
+									<td>
+										<h:outputText value="#{msgs.label_warningsEarlierStartDateForVacation}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<code:prevTasks rendered="#{cancelExceptionalVacation.role != 'Requester'}" value="#{cancelExceptionalVacation.prevTasks}" refuseRoles="DirectManager,ReviewerEmp,SignManager," />
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{cancelExceptionalVacation.currentEmployee}" rendered="#{cancelExceptionalVacation.role != 'Requester' and cancelExceptionalVacation.role != 'Notification' and cancelExceptionalVacation.role != 'History'}">
+							<h:panelGroup rendered="#{cancelExceptionalVacation.role == 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{cancelExceptionalVacation.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{cancelExceptionalVacation.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{cancelExceptionalVacation.currentTask.notes}" maxlength="500" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+
+							<h:panelGroup rendered="#{cancelExceptionalVacation.role != 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{cancelExceptionalVacation.currentTask.refuseReasons}" maxlength="500" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{cancelExceptionalVacation.role == 'Notification' or cancelExceptionalVacation.role == 'History'}" value="#{cancelExceptionalVacation.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:panelGroup rendered="#{cancelExceptionalVacation.role == 'Requester'}">
+										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateData()');" action="#{cancelExceptionalVacation.initProcess}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{cancelExceptionalVacation.role == 'DirectManager'}">
+										<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;cancelExceptionalVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{cancelExceptionalVacation.approveDM}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;cancelExceptionalVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{cancelExceptionalVacation.rejectDM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{cancelExceptionalVacation.role == 'ManagerRedirect'}">
+										<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;cancelExceptionalVacationForm:curTaskId:reviewersId&quot;)');" action="#{cancelExceptionalVacation.redirectMR}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{cancelExceptionalVacation.role == 'ReviewerEmp'}">
+										<h:commandButton id="approveReBtnId" onclick="if (validateReferring()) { return handleOnAction('#{msgs.q_review}', 'validateRefuseAndNotes(1, &quot;cancelExceptionalVacationForm:curTaskId:refuseReasonsId&quot;)'); } else { return false; }" action="#{cancelExceptionalVacation.approveRE}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;cancelExceptionalVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{cancelExceptionalVacation.rejectRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{cancelExceptionalVacation.role == 'SignManager'}">
+										<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;cancelExceptionalVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{cancelExceptionalVacation.signSM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="modifySmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;cancelExceptionalVacationForm:curTaskId:refuseReasonsId&quot;, &quot;cancelExceptionalVacationForm:curTaskId:notesId&quot;)');" action="#{cancelExceptionalVacation.modifySM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;cancelExceptionalVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{cancelExceptionalVacation.rejectSM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{cancelExceptionalVacation.role == 'Notification' and cancelExceptionalVacation.instanceApproved == 1}">
+										<h:commandButton id="printBtnId" action="#{cancelExceptionalVacation.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{cancelExceptionalVacation.role == 'Notification'}">
+										<h:commandButton id="nBtnId" action="#{cancelExceptionalVacation.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

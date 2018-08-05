@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">   
+		window.onkeypress = function(e) {
+			  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+		      if (keyCode == '13') {
+		    	  document.getElementById('movementsInquiryFormId:searchBtnId').click();
+		    	  return false;
+		      }
+		}; 
+		
+		function getEmp(contextPath, mode){
+			openEmployeesMiniSearch(contextPath,'handleMiniSearchResult(ret)', 1, mode, -1, -1, -1, -1, -1, #{movementsInquiry.regionId});
+		}
+		
+		function handleMiniSearchResult(ret){
+			if(ret != null){
+				document.getElementById('movementsInquiryFormId:empIDHId').value = ret[0];
+				document.getElementById('movementsInquiryFormId:empNameId').innerHTML = ret[1];
+			}
+		}
+	
+		function validateSearchPanel() {
+			empIDHId = document.getElementById('movementsInquiryFormId:empIDHId').value;
+			decisionNumnberId = document.getElementById('movementsInquiryFormId:decisionNumnberId').value;
+			movementTypeIDId = document.getElementById('movementsInquiryFormId:movementTypeIDId').value;
+			fromDateId = document.getElementById('movementsInquiryFormId:fromDateId:day').value;
+			toDateId = document.getElementById('movementsInquiryFormId:toDateId:day').value;
+			
+			adminUserHId = document.getElementById('adminUserHId').value;
+
+			if ( adminUserHId == 'true' ) {
+				if (#{movementsInquiry.mode != 3} 
+						&amp;&amp; (empIDHId == null || empIDHId == -1) 
+						&amp;&amp; (decisionNumnberId == null || decisionNumnberId == '')
+						&amp;&amp; (movementTypeIDId == null || movementTypeIDId == -1)
+						&amp;&amp; (fromDateId == null || fromDateId == 0)
+						&amp;&amp; (toDateId == null || toDateId == 0)) {
+					alert("#{msgs.error_insertOneFieldAtLeast}");
+					return false;
+				}
+
+				if(#{movementsInquiry.mode == 3} 
+						&amp;&amp; (document.getElementById('movementsInquiryFormId:categoryIDId').value == null 
+									|| document.getElementById('movementsInquiryFormId:categoryIDId').value == -1)
+						&amp;&amp; (empIDHId == null || empIDHId == -1) 
+						&amp;&amp; (decisionNumnberId == null || decisionNumnberId == '')
+						&amp;&amp; (movementTypeIDId == null || movementTypeIDId == -1)
+						&amp;&amp; (fromDateId == null || fromDateId == 0)
+						&amp;&amp; (toDateId == null || toDateId == 0)) {
+					alert("#{msgs.error_insertOneFieldAtLeast}");
+					return false;
+				}
+			} else {
+				if(empIDHId == -1) {
+					alert("#{msgs.error_empSelectionManadatory}");
+					return false;
+				}
+			}
+			
+			return true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="movementsInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{movementsInquiry.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_selectEmp}" />
+									</th>
+									<td width="35%">
+										<h:outputText id="empNameId" value="#{movementsInquiry.empName}" />
+										<h:inputHidden id="empIDHId" value="#{movementsInquiry.empId}" />
+										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_select}" onclick="getEmp('#{request.contextPath}', #{movementsInquiry.mode}); return false;" styleClass="btn_icon" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_employeeType}" rendered="#{movementsInquiry.mode == 3}" />
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="categoryIDId" value="#{movementsInquiry.categoryId}" rendered="#{movementsInquiry.mode == 3}">
+											<f:selectItem itemValue="-1" itemLabel="" />
+											<f:selectItems value="#{movementsInquiry.personsCategories}" var="c" itemValue="#{c.id}" itemLabel="#{c.description}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_transactionType}" />
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="movementTypeIDId" value="#{movementsInquiry.movementTypeId}">
+											<f:selectItem itemValue="-1" itemLabel="" />
+											<f:selectItems value="#{movementsInquiry.movementTypesList}" var="mType" itemValue="#{mType.id}" itemLabel="#{mType.description}" />
+										</h:selectOneMenu>
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_decisionNumber}" />
+									</th>
+									<td width="35%">
+										<h:inputText id="decisionNumnberId" value="#{movementsInquiry.decisionNumber}" maxlength="50" />
+									</td>
+								</tr>
+								<tr>
+									<th width="20%">#{msgs.label_fromDate}</th>
+									<td width="30%">
+										<util:hijri id="fromDateId" value="#{movementsInquiry.fromDate}" nullable="true" />
+									</td>
+									<th width="20%">#{msgs.label_toDate}</th>
+									<td width="30%">
+										<util:hijri id="toDateId" value="#{movementsInquiry.toDate}" nullable="true" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{movementsInquiry.searchMovement()}" styleClass="btn_normal_icon" onclick="return validateSearchPanel();">
+										<f:ajax execute="movementsInquiryFormId:searchPanelId" render="movementsInquiryFormId:movementTableId movementsInquiryFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh }" action="#{movementsInquiry.resetForm()}" styleClass="btn_normal_icon">
+										<f:ajax render="movementsInquiryFormId:searchPanelId movementsInquiryFormId:movementTableId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="movementTableId" rowKeyVar="index" var="movement" value="#{movementsInquiry.movementsList}" rows="#{movementsInquiry.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 3%">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                            </rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+								<h:outputText value="#{movement.decisionNumber}" />
+							</rich:column>
+							<rich:column style="width : 6%">
+								<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+								<h:outputText value="#{movement.decisionDateString}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_transactionType}</f:facet>
+								<h:outputText value="#{movementsInquiry.mode == 2 ? (movement.transactionTypeCode == 3 ? msgs.label_soldierTerminationDecision : (movement.transactionTypeCode == 4 ? msgs.label_soldierCancelDecision : movement.transactionTypeDesc)) : (movement.movementTypeId == 3 ? '' : movement.transactionTypeDesc)} #{movementsInquiry.mode==3 and movement.movementTypeId==2 ? msgs.label_assignment : movement.movementTypeDesc}" />
+							</rich:column>
+							<rich:column style="width : 7%">
+								<f:facet name="header">#{msgs.label_startDate}</f:facet>
+								<h:outputText value="#{movement.executionDateString}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_showOrPrint}" />
+								</f:facet>
+								<h:commandButton value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" styleClass="btn_icon" action="#{movementsInquiry.print(movement)}" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="adminUserHId" value="#{movementsInquiry.adminUser}" />
+</h:body>
+</html>

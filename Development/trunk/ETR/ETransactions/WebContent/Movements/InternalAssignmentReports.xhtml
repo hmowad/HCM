@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript"> 
+		function getUnit() {
+			openUnitsMiniSearch(4, '#{request.contextPath}','handleUnitMiniSearchResult(ret)', -1, -1, #{internalAssignmentReports.equivalentUnitId});
+		}
+		
+		function handleUnitMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('internalAssignmentReportsFormId:unitIDId').value = ret[0];
+				document.getElementById('internalAssignmentReportsFormId:unitFullNameId').innerHTML = ret[1];
+				document.getElementById('internalAssignmentReportsFormId:unitFullNameHId').value = ret[1];
+			}
+		}
+
+		function validateParameters() {
+			unitIdValue = document.getElementById('internalAssignmentReportsFormId:unitIDId').value;
+			if (unitIdValue == null || unitIdValue == ''){
+				alert("#{msgs.error_unitIsMandatory}");
+				return false;
+			}
+			return true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="internalAssignmentReportsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{internalAssignmentReports.screenTitle}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<h:panelGroup rendered="#{!internalAssignmentRegistration.hasPrivilege}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%">#{msgs.label_mvtInternalAssignmentReportsPrivilege}</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{internalAssignmentRegistration.hasPrivilege}">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_searchData}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="reportPanelGroupId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="10%">
+											#{msgs.label_unit}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="90%" colspan="3">
+											<h:outputText id="unitFullNameId" value="#{internalAssignmentReports.selectedUnitFullName}" />
+											<h:inputHidden id="unitFullNameHId" value="#{internalAssignmentReports.selectedUnitFullName}" />
+											<h:inputHidden id="unitIDId" value="#{internalAssignmentReports.selectedUnitId}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+									</tr>
+
+									<tr>
+										<th width="10%">
+											#{msgs.label_fromDate}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="40%">
+											<util:hijri value="#{internalAssignmentReports.fromDate}" />
+										</td>
+
+										<th width="10%">
+											#{msgs.label_toDate}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="40%">
+											<util:hijri value="#{internalAssignmentReports.toDate}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton action="#{internalAssignmentReports.print()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" onclick="return validateParameters();" />
+										<h:commandButton action="#{internalAssignmentReports.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+											<f:ajax render="internalAssignmentReportsFormId:reportPanelGroupId" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

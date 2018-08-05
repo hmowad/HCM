@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function confirmRequest()
+		{
+			if(document.getElementById('movementsWishesConfigurationFormId:openFlagBtnId').className=='btn_toggleOn')
+				return confirm('#{msgs.q_save}');
+			return confirm('#{movementsWishesConfiguration.countRunningWorkflowsMessage}');
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="movementsWishesConfigurationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{movementsWishesConfiguration.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.title_setups}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_movementWishOpened}" />
+								</th>
+								<td>
+									<h:commandButton id="openFlagBtnId" action="#{movementsWishesConfiguration.updateOpenFlag()}" title="#{movementsWishesConfiguration.openFlag ? msgs.label_movementWishClosed : msgs.label_movementWishOpened}" value="#{movementsWishesConfiguration.openFlag ? msgs.fa_toggle_on : msgs.fa_toggle_off} " styleClass="#{movementsWishesConfiguration.openFlag ? 'btn_toggleOn' :  'btn_toggleOff'}">
+										<f:ajax render="movementsWishesConfigurationFormId:openFlagBtnId movementsWishesConfigurationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">
+									#{msgs.label_minServicePeriodAllowed}
+									<h:outputText value=" " />
+								</th>
+								<td width="35%">
+									<h:inputText value="#{movementsWishesConfiguration.minServicePeriod}" styleClass="inputDataNormal" maxlength="2" onkeypress="return isDigit(event);"/>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:commandButton id="saveBtnId" action="#{movementsWishesConfiguration.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return confirmRequest();">
+										<f:ajax execute="@form" render="@form" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

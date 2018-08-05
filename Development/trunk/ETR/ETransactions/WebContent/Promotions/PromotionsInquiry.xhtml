@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+
+		window.onkeypress = function(e) {
+			// window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+	  	    if (keyCode == '13'){
+	    		  document.getElementById('promotionsInquiryFormId:searchBtnId').click();
+	    		  return false;
+	    	  }
+		};
+	
+	  function getEmp(contextPath){
+	      openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, #{promotionsInquiry.mode}, -1, -1, -1, -1, -1, #{promotionsInquiry.employeesSearchRegionId});
+	  }
+	  
+	  function handleEmpMiniSearchResult(ret){
+		  if(ret != null){
+              document.getElementById('promotionsInquiryFormId:empIDHId').value = ret[0];
+              document.getElementById('promotionsInquiryFormId:empNameId').innerHTML = ret[1];
+           }
+	  }
+
+	  function validateSearchPanel() {
+      		empIDHId = document.getElementById('promotionsInquiryFormId:empIDHId').value;
+			decisionId = document.getElementById('promotionsInquiryFormId:decisionId').value;
+			adminUserHId = document.getElementById('adminUserHId').value;
+        if ( adminUserHId == 1 )
+         {
+				if ((empIDHId == null || empIDHId == '') &amp;&amp; (decisionId == null || decisionId == '')) 
+				{
+					alert("#{msgs.error_promotionFieldsAreMandatory}");
+					return false;
+				}
+		}
+		else if(empIDHId == null || empIDHId == '')
+			{
+                alert("#{msgs.error_empSelectionManadatory}");
+				return false;
+			}
+			 return true;
+       }
+
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="promotionsInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{promotionsInquiry.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionEmpName}" />
+									</th>
+									<td width="35%">
+										<h:outputText id="empNameId" value="#{promotionsInquiry.empName}" />
+										<h:inputHidden id="empIDHId" value="#{promotionsInquiry.empId}" />
+										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_missionEmpName}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_searchByDecision}" />
+									</th>
+									<td width="35%">
+										<h:inputText id="decisionId" value="#{promotionsInquiry.decisionNumber}" onkeypress="return isDigit(event);" />
+									</td>
+								</tr>
+								<tr style="display: #{promotionsInquiry.mode != 3  ? '' :'none'}">
+									<th width="15%">
+										<h:outputText value="#{msgs.label_promotionType}" />
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="promotionTypeId" value="#{promotionsInquiry.promotionType}">
+											<f:selectItem itemLabel="#{msgs.label_jobTypeNormal}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_exceptional}" itemValue="2" />
+											<f:selectItem itemLabel="#{msgs.label_promotionSoldierDecisionCancellation}" itemValue="6" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{promotionsInquiry.searchPromotions()}" styleClass="btn_normal_icon" onclick="return validateSearchPanel();">
+										<f:ajax execute="promotionsInquiryFormId:searchPanelId" render="promotionsInquiryFormId:promotionsTableId promotionsInquiryFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{promotionsInquiry.resetForm()}" styleClass="btn_normal_icon" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="promotionsTableId" rowKeyVar="index" var="promotion" value="#{promotionsInquiry.promotionTransactionDataList}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 3%">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                        </rich:column>
+							<rich:column rendered="#{promotionsInquiry.mode != 2}" style="width : 10%">
+								<f:facet name="header">#{msgs.label_name}</f:facet>
+								<h:outputText value="#{promotion.name}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+								<h:outputText value="#{promotion.decisionNumber}" />
+							</rich:column>
+							<rich:column style="width : 6%">
+								<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+								<h:outputText value="#{promotion.decisionDateString}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_promotionType}</f:facet>
+								<h:outputText value="#{promotion.promotionDesc}" />
+							</rich:column>
+							<rich:column style="width : 8%">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_newRank}" rendered="#{promotionsInquiry.mode == 2}" />
+									<h:outputText value="#{msgs.label_newEmployeeRank}" rendered="#{promotionsInquiry.mode == 3}" />
+								</f:facet>
+								<h:outputText value="#{promotion.newRankDesc}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_reportPrint}" />
+								</f:facet>
+								<h:commandButton value="#{msgs.fa_print}" title="#{msgs.label_reportPrint}" styleClass="btn_icon" action="#{promotionsInquiry.printPromotion(promotion)}" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="adminUserHId" value="#{promotionsInquiry.adminUser}" />
+</h:body>
+</html>

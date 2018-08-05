@@ -1,0 +1,468 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+	function getEmployee(contextPath) {
+			openEmployeesMiniSearch(contextPath,'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1,-1, -1);
+		}
+	
+	function handleEmpMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('scholarshipCancelDecisionRequestFormId:beneficiaryEmployeeHId').value = ret[0];
+				document.getElementById('scholarshipCancelDecisionRequestFormId:searchEmpBtnId').click();
+			}
+	}
+	
+	function validateRequest() {
+		var ministryDecisionNumberValue = document.getElementById('scholarshipCancelDecisionRequestFormId:ministryDecisionNumberId').value;
+		var ministryDecisionDateDaysValue = document.getElementById('scholarshipCancelDecisionRequestFormId:ministryDecisionDateId:day').value;
+		var ministryReportNumberValue = document.getElementById('scholarshipCancelDecisionRequestFormId:ministryReportNumberId').value;
+		var ministryReportDateDaysValue = document.getElementById('scholarshipCancelDecisionRequestFormId:ministryReportDateId:day').value;
+		var reasonsValue = document.getElementById('scholarshipCancelDecisionRequestFormId:reasonsId').value;
+
+		if(ministryDecisionNumberValue==null || ministryDecisionNumberValue =='') {
+			alert('#{msgs.error_ministerialDecisionMandatory}');
+			return false;
+		}
+		if(ministryDecisionDateDaysValue ==0) {
+			alert('#{msgs.error_ministryDecisionDateMandatory}');
+			return false;
+		}
+		if(ministryReportNumberValue==null || ministryReportNumberValue =='') {
+			alert('#{msgs.error_reportNumberMandatory}');
+			return false;
+		}
+		if(ministryReportDateDaysValue ==0) {
+			alert('#{msgs.error_reportDateMandatory}');
+			return false;
+		}
+		if(reasonsValue==null || reasonsValue =='') {
+			alert('#{msgs.error_cancelReasonMandatory}');
+			return false;
+		}
+		
+		return true;
+		
+	}
+	
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="scholarshipCancelDecisionRequestFormId" dir="#{msgs.dir}">
+		<ui:debug />
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{scholarshipCancelDecisionRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.title_employeeData}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="beneficiaryPanelId">
+
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td width="100%">
+										<h:panelGroup rendered="#{scholarshipCancelDecisionRequest.role == 'Requester'}">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+														<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{scholarshipCancelDecisionRequest.selectEmployee()}">
+															<f:ajax execute="scholarshipCancelDecisionRequestFormId:beneficiaryEmployeeHId" render="scholarshipCancelDecisionRequestFormId:beneficiaryPanelId scholarshipCancelDecisionRequestFormId:scholarshipData scholarshipCancelDecisionRequestFormId:actionPanelId scholarshipCancelDecisionRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:inputHidden id="beneficiaryEmployeeHId" value="#{scholarshipCancelDecisionRequest.wfTraining.employeeId}" />
+													</td>
+												</tr>
+											</table>
+										</h:panelGroup>
+
+									</td>
+								</tr>
+
+								<tr>
+									<td width="100%">
+										<code:emp value="#{scholarshipCancelDecisionRequest.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="scholarshipData">
+							<h:panelGroup rendered="#{scholarshipCancelDecisionRequest.beneficiary != null and !scholarshipCancelDecisionRequest.scholarships.isEmpty()}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{msgs.label_scholarshipData}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_studySubject}" />
+														<font style="color: red;"> *</font>
+													</th>
+													<td width="35%" colspan="3">
+														<h:outputText value="#{scholarshipCancelDecisionRequest.scholarships.get(0).studySubject}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_qualificationGrade}" />
+													</th>
+													<td width="35%">
+														<h:selectOneMenu disabled="true" id="qualificationLevelIDId" value="#{scholarshipCancelDecisionRequest.scholarships.get(0).qualificationLevelId}">
+															<f:selectItem itemLabel="" itemValue="0" />
+															<f:selectItems value="#{scholarshipCancelDecisionRequest.qualificationLevels}" var="qualification" itemLabel="#{qualification.description}" itemValue="#{qualification.id}" />
+														</h:selectOneMenu>
+													</td>
+													<td width="50%" colspan="2"></td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_facultyName}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{scholarshipCancelDecisionRequest.scholarships.get(0).graduationPlaceDetailDesc}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_graduationPlaceDetailAddress}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{scholarshipCancelDecisionRequest.scholarships.get(0).graduationPlaceDetailAddress}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_universityName}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{scholarshipCancelDecisionRequest.scholarships.get(0).graduationPlaceDesc}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_graduationPlaceCountryName}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{scholarshipCancelDecisionRequest.scholarships.get(0).graduationPlaceCountryName}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_scholarshipDuration}" />
+													</th>
+													<td width="85%" colspan="3">
+														<table border="0" cellpadding="0" cellspacing="0">
+															<tr>
+																<td>
+																	<h:outputText value="#{scholarshipCancelDecisionRequest.scholarships.get(0).studyMonthsCount}" />
+
+																</td>
+																<th>#{msgs.label_month}</th>
+																<td>
+
+																	<h:outputText value="#{scholarshipCancelDecisionRequest.scholarships.get(0).studyDaysCount}" />
+																</td>
+																<th>#{msgs.label_day}</th>
+															</tr>
+														</table>
+
+													</td>
+
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_scholarshipStartDate}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{scholarshipCancelDecisionRequest.scholarships.get(0).studyStartDateString}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_scholarshipEndDate}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{scholarshipCancelDecisionRequest.scholarships.get(0).studyEndDateString}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_justifications}" />
+													</th>
+													<td width="85%" colspan="3">
+														<h:outputText value="#{scholarshipCancelDecisionRequest.scholarships.get(0).reasons}" />
+													</td>
+
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.lable_numberOfMinisterialDecision}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{scholarshipCancelDecisionRequest.selectedTransactionDetail.ministryDecisionNumber}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_ministerialDecisionDate}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{scholarshipCancelDecisionRequest.selectedTransactionDetail.ministryDecisionDateString}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_reportingNumber}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{scholarshipCancelDecisionRequest.selectedTransactionDetail.ministryReportNumber}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_reportingDate}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{scholarshipCancelDecisionRequest.selectedTransactionDetail.ministryReportDateString}" />
+													</td>
+												</tr>
+											</table>
+
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{msgs.label_scholarshipCancellationData}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.lable_numberOfMinisterialDecision}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="35%">
+														<h:inputText id="ministryDecisionNumberId" value="#{scholarshipCancelDecisionRequest.wfTraining.ministryDecisionNumber}" rendered="#{scholarshipCancelDecisionRequest.role == 'Requester'}" />
+														<h:outputText value="#{scholarshipCancelDecisionRequest.wfTraining.ministryDecisionNumber}" rendered="#{scholarshipCancelDecisionRequest.role != 'Requester'}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_ministerialDecisionDate}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="35%">
+														<util:hijri id="ministryDecisionDateId" value="#{scholarshipCancelDecisionRequest.wfTraining.ministryDecisionDate}" nullable="true" rendered="#{scholarshipCancelDecisionRequest.role == 'Requester'}" />
+														<h:outputText value="#{scholarshipCancelDecisionRequest.wfTraining.ministryDecisionDateString}" rendered="#{scholarshipCancelDecisionRequest.role != 'Requester'}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_reportingNumber}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="35%">
+														<h:inputText id="ministryReportNumberId" value="#{scholarshipCancelDecisionRequest.wfTraining.ministryReportNumber}" rendered="#{scholarshipCancelDecisionRequest.role == 'Requester'}" />
+														<h:outputText value="#{scholarshipCancelDecisionRequest.wfTraining.ministryReportNumber}" rendered="#{scholarshipCancelDecisionRequest.role != 'Requester'}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_reportingDate}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="35%">
+														<util:hijri id="ministryReportDateId" value="#{scholarshipCancelDecisionRequest.wfTraining.ministryReportDate}" nullable="true" rendered="#{scholarshipCancelDecisionRequest.role == 'Requester'}" />
+														<h:outputText value="#{scholarshipCancelDecisionRequest.wfTraining.ministryReportDateString}" rendered="#{scholarshipCancelDecisionRequest.role != 'Requester'}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_cancelReason}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="85%" colspan="3">
+														<h:inputText id="reasonsId" value="#{scholarshipCancelDecisionRequest.wfTraining.reasons}" styleClass="inputDataSuperLarge" rendered="#{scholarshipCancelDecisionRequest.role == 'Requester'}" maxlength="500" />
+														<h:outputText value="#{scholarshipCancelDecisionRequest.wfTraining.reasons}" rendered="#{scholarshipCancelDecisionRequest.role != 'Requester'}" />
+													</td>
+												</tr>
+
+												<tr>
+													<th width="15">#{msgs.label_attachments}</th>
+													<td width="85%" colspan="3">
+														<code:attachments loginEmpId="#{scholarshipCancelDecisionRequest.loginEmpData.empId}" attachmentId="#{scholarshipCancelDecisionRequest.wfTraining.attachments}" addEnableFlag="#{scholarshipCancelDecisionRequest.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{scholarshipCancelDecisionRequest.role == 'Requester'}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:decisionCopies external="#{scholarshipCancelDecisionRequest.wfTraining.externalCopies}" internal="#{scholarshipCancelDecisionRequest.internalCopies}" viewOnly="#{scholarshipCancelDecisionRequest.role != 'Requester' and scholarshipCancelDecisionRequest.role != 'ReviewerEmp'}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{scholarshipCancelDecisionRequest.role != 'Requester'}" value="#{scholarshipCancelDecisionRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp,SecondarySignManager,SecondaryReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{scholarshipCancelDecisionRequest.currentEmployee}"
+							rendered="#{scholarshipCancelDecisionRequest.role == 'DirectManager'or scholarshipCancelDecisionRequest.role == 'ManagerRedirect'  or scholarshipCancelDecisionRequest.role == 'SignManager' or scholarshipCancelDecisionRequest.role == 'ReviewerEmp' or scholarshipCancelDecisionRequest.role == 'SecondaryManagerRedirect' or scholarshipCancelDecisionRequest.role == 'SecondaryReviewerEmp' or scholarshipCancelDecisionRequest.role == 'SecondarySignManager'}">
+							<h:panelGroup rendered="#{scholarshipCancelDecisionRequest.role == 'ManagerRedirect' or scholarshipCancelDecisionRequest.role == 'SecondaryManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{scholarshipCancelDecisionRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{scholarshipCancelDecisionRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{scholarshipCancelDecisionRequest.currentTask.notes}" styleClass="inputDataSuperLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{scholarshipCancelDecisionRequest.role != 'ManagerRedirect' and scholarshipCancelDecisionRequest.role != 'SecondaryManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{scholarshipCancelDecisionRequest.currentTask.refuseReasons}" styleClass="inputDataSuperLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{scholarshipCancelDecisionRequest.role == 'Notification' or scholarshipCancelDecisionRequest.role == 'History'}" value="#{scholarshipCancelDecisionRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionPanelId">
+							<h:panelGroup rendered="#{scholarshipCancelDecisionRequest.beneficiary != null and !scholarshipCancelDecisionRequest.scholarships.isEmpty()}">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:commandButton action="#{scholarshipCancelDecisionRequest.printScholarshipDecision(scholarshipCancelDecisionRequest.selectedTransactionDetail.id,scholarshipCancelDecisionRequest.selectedTransactionDetail.transactionTypeId)}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon"
+												rendered="#{(scholarshipCancelDecisionRequest.role == 'Notification' or scholarshipCancelDecisionRequest.role == 'History')and scholarshipCancelDecisionRequest.instanceApproved == 1}" />
+
+											<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" action="#{scholarshipCancelDecisionRequest.initNomination()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{scholarshipCancelDecisionRequest.role == 'Requester'}">
+												<f:ajax execute="@form" render="scholarshipCancelDecisionRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+
+											<!-- Reviewer  -->
+											<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRefuseAndNotes(1, &quot;scholarshipCancelDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)',null);" action="#{scholarshipCancelDecisionRequest.approveNominationRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{scholarshipCancelDecisionRequest.role == 'ReviewerEmp'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;scholarshipCancelDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{scholarshipCancelDecisionRequest.rejectNominationRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{scholarshipCancelDecisionRequest.role == 'ReviewerEmp'}">
+												<f:ajax execute="@form" render="notifyMessagesId" />
+											</h:commandButton>
+
+											<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;scholarshipCancelDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{scholarshipCancelDecisionRequest.approveNominationSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{scholarshipCancelDecisionRequest.role == 'SignManager'}">
+												<f:ajax execute="@form" render="scholarshipCancelDecisionRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;scholarshipCancelDecisionRequestFormId:curTaskId:refuseReasonsId&quot; ,&quot;scholarshipCancelDecisionRequestFormId:curTaskId:notesId&quot;)');" action="#{scholarshipCancelDecisionRequest.returnNominationSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon"
+												rendered="#{scholarshipCancelDecisionRequest.role == 'SignManager'}">
+												<f:ajax execute="@form" render="scholarshipCancelDecisionRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;scholarshipCancelDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{scholarshipCancelDecisionRequest.rejectNominationSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{scholarshipCancelDecisionRequest.role == 'SignManager'}">
+												<f:ajax execute="@form" render="scholarshipCancelDecisionRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+
+											<h:commandButton id="nBtnId" action="#{scholarshipCancelDecisionRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{scholarshipCancelDecisionRequest.role == 'Notification'}">
+												<f:ajax execute="@form" render="scholarshipCancelDecisionRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

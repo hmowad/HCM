@@ -1,0 +1,394 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">  
+	var callerId;
+	function validateData(){
+		var unitName = document.getElementById('unitSeparationFormId:selectedUnitNewNameId').value;
+        if(unitName == null || unitName == ''){
+            alert('#{msgs.error_unitNameMandatory}');
+            return false;
+        }
+
+        var unitOrder = document.getElementById('unitSeparationFormId:unitOrderId').value;
+        if(unitOrder == null || unitOrder == ''){
+            alert('#{msgs.error_unitOrderMandatory}');
+            return false;
+        }
+
+        var decNumber = document.getElementById('unitSeparationFormId:decNumberId').value;
+        if(decNumber == null || decNumber == ''){
+            alert('#{msgs.error_decNumberMandatory}');
+            return false;
+        }
+
+        var atatchmentsDoneFlag = document.getElementById('unitSeparationFormId:attachmentsDoneFlagId').checked;
+        if(! atatchmentsDoneFlag){
+            alert('#{msgs.error_attachmentsMandatory}');
+            return false;
+        }
+
+        document.getElementById('unitSeparationFormId:attachmentsDoneFlagId').checked = false;
+        return true;
+      }
+
+	function getMoveTo(contextPath, unitTypeCode, parentId, regionId, cId){
+		callerId = cId;
+        openUnitsMiniSearch(3, contextPath, 'handleUnitMiniSearchResult(ret)', unitTypeCode, regionId, parentId);
+     }
+	
+	function handleUnitMiniSearchResult(ret){
+		if(ret != null){
+            var idTokens = callerId.split(':');
+        	var oldParentIDId = document.getElementById('unitSeparationFormId:UnitTransactionListId:'+idTokens[2]+':oldParentIDId').value;
+        	if(ret[0] == oldParentIDId){
+        		alert('#{msgs.error_unitSameParentConsistency}');
+            }else{            	 
+		       	document.getElementById('unitSeparationFormId:UnitTransactionListId:'+idTokens[2]+':moveToUnitId').value = ret[0];
+	       	 	document.getElementById('unitSeparationFormId:UnitTransactionListId:'+idTokens[2]+':moveToUnitNameId').innerHTML = ret[1];
+	       	 	document.getElementById('unitSeparationFormId:UnitTransactionListId:'+idTokens[2]+':resetBtnId').style.display = '';
+	        }
+	   }
+	}
+
+    function resetMoveTo(callerId){
+    	var idTokens = callerId.split(':');
+    	document.getElementById('unitSeparationFormId:UnitTransactionListId:'+idTokens[2]+':moveToUnitId').value = '';
+   	 	document.getElementById('unitSeparationFormId:UnitTransactionListId:'+idTokens[2]+':moveToUnitNameId').innerHTML = '';
+   	 	document.getElementById('unitSeparationFormId:UnitTransactionListId:'+idTokens[2]+':resetBtnId').style.display = 'none';
+    }
+	</script>
+
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{unitSeparation.init}" />
+	<h:form id="unitSeparationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<a4j:status onstart="#{rich:component('reload')}.hide()" />
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_unitSeparation}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="35%" valign="top">
+									<!-- tree -->
+									<table cellpadding="0" cellspacing="0" width="98%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsTree}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:inputText id="searchNameValue" value="#{unitSeparation.searchName}" styleClass="inputDataLarge" onkeypress="return pressEnter(event);" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_search}" action="#{unitSeparation.search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+																<f:ajax render="unitSeparationFormId:treePanelId unitSeparationFormId:unitInformationPanelId unitSeparationFormId:notifyMessagesId unitSeparationFormId:UnitTransactionListId unitSeparationFormId:tableUnitInformationPanelId" execute="searchNameValue" />
+															</h:commandButton>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" colspan="2">
+															<h:panelGroup id="treePanelId">
+																<rich:tree id="unitTreeId" toggleListener="#{unitSeparation.treeToggleHandler(item)}" render="treePanelId" value="#{unitSeparation.unitTree}" var="item" dir="#{msgs.dir}" nodeType="unitType">
+																	<rich:treeNode type="unitType" expanded="#{item.expanded}" iconExpanded="/resources/images/#{item.unitType}.png" iconCollapsed="/resources/images/#{item.unitType}.png" iconLeaf="/resources/images/#{item.unitType}.png">
+																		<h:commandLink value="#{item.unitName}" action="#{unitSeparation.click(item)}">
+																			<f:ajax render="unitSeparationFormId:unitInformationPanelId unitSeparationFormId:UnitTransactionListId unitSeparationFormId:tableUnitInformationPanelId" />
+																		</h:commandLink>
+																	</rich:treeNode>
+																</rich:tree>
+																<h:outputStylesheet library="css" name="tree.css" />
+															</h:panelGroup>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="65%" valign="top">
+									<!-- tree from -->
+									<h:panelGroup id="unitInformationPanelId">
+										<table border="0" cellpadding="0" cellspacing="0" width="100%">
+											<tr>
+												<td>
+													<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td>#{msgs.label_unitDetails}</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+											<tr>
+												<td width="100%">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<th width="20%">
+																#{msgs.label_decNumber}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="30%">
+																<h:inputText id="decNumberId" value="#{unitSeparation.decNumber}" maxlength="50" />
+															</td>
+															<th width="20%">
+																#{msgs.label_decisionDate}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="30%">
+																<util:hijri value="#{unitSeparation.decDate}" />
+															</td>
+														</tr>
+
+														<tr>
+															<th width="20%">#{msgs.label_unitType}</th>
+															<td width="30%">
+																<h:outputText id="unitTypeId" value="#{unitSeparation.selectedUnitData.unitTypeDesc}" />
+															</td>
+															<th width="20%">#{msgs.label_region}</th>
+															<td width="30%">
+																<h:outputText id="unitRegionId" value="#{unitSeparation.selectedUnitData.regionDesc}" />
+															</td>
+														</tr>
+
+														<tr>
+															<th width="20%">#{msgs.label_parentUnit}</th>
+															<td width="30%">
+																<h:outputText id="parentUnitId" value="#{unitSeparation.selectedUnitData.parentUnitName}" />
+															</td>
+															<th width="20%">
+																#{msgs.label_unitOrderUnderParent}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="30%">
+																<h:inputText id="unitOrderId" value="#{unitSeparation.selectedUnitData.orderUnderParent}" onkeypress="return isDigit(event);" maxlength="2" />
+															</td>
+														</tr>
+
+														<tr>
+															<th width="20%">
+																#{msgs.label_unitName}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="80%" colspan="3">
+																<h:outputText value="#{unitSeparation.selectedUnitData.name}" />
+															</td>
+														</tr>
+
+														<tr>
+															<th width="20%">#{msgs.label_unitNewName}</th>
+															<td width="80%" colspan="3">
+																<h:inputText id="selectedUnitNewNameId" styleClass="inputDataLarge" value="#{unitSeparation.selectedUnitData.newName}" maxlength="200" />
+															</td>
+														</tr>
+
+														<tr>
+															<th width="20%">#{msgs.label_orgRemarks}</th>
+															<td width="80%" colspan="3">
+																<h:inputText id="ParentRemarksId" styleClass="inputDataLarge" value="#{unitSeparation.selectedUnitData.remarks}" maxlength="500" />
+															</td>
+														</tr>
+
+														<tr>
+															<th width="20%">#{msgs.label_attachments}</th>
+															<td width="30%">
+																<h:panelGroup id="attachmentComponentPanelId">
+																	<code:attachments id="attachmentComponentId" loginEmpId="#{unitSeparation.loginEmpData.empId}" attachmentId="#{unitSeparation.selectedUnitData.attachments}" addEnableFlag="true" viewEnableFlag="true" deleteEnableFlag="true" />
+																</h:panelGroup>
+															</td>
+															<th width="20%">#{msgs.label_attachmentsDoneFlag}</th>
+															<td width="30%">
+																<h:selectBooleanCheckbox id="attachmentsDoneFlagId" />
+															</td>
+														</tr>
+
+													</table>
+												</td>
+											</tr>
+										</table>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td>
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_transactionDataTitle}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td align="center" width="100%">
+						<!-- Transactions Grid -->
+						<rich:dataTable id="UnitTransactionListId" var="unit" rowKeyVar="index" value="#{unitSeparation.unitDataList}" rows="#{unitSeparation.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+							<rich:column>
+								<f:facet name="header">#</f:facet>
+                                    #{index + 1}
+                                </rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_unitType}" />
+								</f:facet>
+								<h:outputText value="#{unit.unitTypeDesc}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_unitName}" />
+								</f:facet>
+								<h:outputText value="#{unit.name}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_parentUnit}" />
+								</f:facet>
+								<h:outputText value="#{unit.parentUnitName}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_unitNewName}" />
+								</f:facet>
+								<h:inputText value="#{unit.name}" maxlength="200" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_unitMovingto}" />
+								</f:facet>
+								<h:commandButton value="#{msgs.fa_external_link}" onclick="getMoveTo('#{request.contextPath}', #{unitSeparation.selectedUnitData.unitTypeCode}, #{unitSeparation.selectedUnitData.parentUnitId}, #{unitSeparation.selectedUnitData.regionId}, this.id); return false;" title="#{msgs.label_search}" styleClass="btn_icon" />
+								<h:outputText id="moveToUnitNameId" value="#{unit.moveToUnitFullName}" />
+								<h:inputHidden id="moveToUnitId" value="#{unit.moveToUnitId}" />
+								<h:inputHidden id="oldParentIDId" value="#{unit.parentUnitId}" />
+								<h:commandButton id="resetBtnId" value="#{msgs.fa_refresh}" onclick="resetMoveTo(this.id); return false;" styleClass="btn_icon" title="#{msgs.label_reset}" style="display: none;" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">#{msgs.label_selectUnit}</f:facet>
+								<h:commandButton onclick="" value="#{msgs.fa_check_square}" action="#{unitSeparation.selectFromTable(unit)}" title="#{msgs.label_selectUnit}" styleClass="btn_icon">
+									<f:ajax render="unitSeparationFormId:tableUnitInformationPanelId" />
+								</h:commandButton>
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller execute="unitSeparationFormId:UnitTransactionListId">
+									<f:facet name="first">
+                                            #{msgs.label_first}
+                                    </f:facet>
+									<f:facet name="last">
+                                            #{msgs.label_last}
+                                    </f:facet>
+									<f:facet name="next">
+                                            #{msgs.label_next}
+                                    </f:facet>
+									<f:facet name="previous">
+                                           #{msgs.label_previous}
+                                   </f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<h:panelGroup id="tableUnitInformationPanelId">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td>
+										<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td>#{msgs.label_unitDetails}</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+
+											<tr>
+												<th width="35%">#{msgs.label_unitOrderUnderParent}</th>
+												<td width="65%">
+													<h:inputText value="#{unitSeparation.selectedUnitTableData.orderUnderParent}" onkeypress="return isDigit(event);" maxlength="2" />
+												</td>
+											</tr>
+
+											<tr>
+												<th width="35%">#{msgs.label_orgRemarks}</th>
+												<td width="65%">
+													<h:inputText id="unitRemarksId" styleClass="inputDataLarge" value="#{unitSeparation.selectedUnitTableData.remarks}" maxlength="500" />
+												</td>
+											</tr>
+											<tr align="center">
+												<td width="40%" />
+												<td width="60%">
+													<h:commandButton action="#{unitSeparation.saveUnitItem}" value="#{msgs.label_saveUnitData}" styleClass="btn_normal" style="text-align: center">
+														<f:ajax render="unitSeparationFormId:notifyMessagesId" execute="unitSeparationFormId:tableUnitInformationPanelId" />
+													</h:commandButton>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton action="#{unitSeparation.separate()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');" styleClass="btn_normal_icon">
+										<f:ajax render="unitSeparationFormId:notifyMessagesId unitSeparationFormId:treePanelId unitSeparationFormId:unitInformationPanelId unitSeparationFormId:UnitTransactionListId unitSeparationFormId:tableUnitInformationPanelId" execute="unitSeparationFormId:unitInformationPanelId unitSeparationFormId:UnitTransactionListId unitSeparationFormId:tableUnitInformationPanelId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

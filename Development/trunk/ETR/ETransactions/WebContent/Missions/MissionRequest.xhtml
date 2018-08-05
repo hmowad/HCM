@@ -1,0 +1,992 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">  
+
+	function getEmp(contextPath){
+		openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 9, #{missionRequest.mode}, -1, -1, -1, -1, -1,#{missionRequest.regionId});
+    }
+    
+	function handleEmpMiniSearchResult(ret){ 
+		if(ret != null){
+            document.getElementById('missionRequestForm:empIDId').value = ret[0];
+            document.getElementById('missionRequestForm:addEmpButton').click();
+         }
+	}   
+	 
+    function getCountries(contextPath){
+       	  openSelectCountries(1, contextPath, 'handleCountryMiniSearchResult(ret)');
+    }
+    
+    function handleCountryMiniSearchResult(ret){ 
+    	if(ret != null){
+       	  	document.getElementById('missionRequestForm:locationId').innerHTML = ret[0];
+   		  	document.getElementById('missionRequestForm:countriesNamesId').value = ret[0];
+       	}
+    }
+
+    function getRegions(contextPath){
+    	openSelectRegions(1, contextPath, 'handleRegionMiniSearchResult(ret)');
+ 	}
+    
+    function handleRegionMiniSearchResult(ret){
+    	if(ret != null){
+       		document.getElementById('missionRequestForm:regionsCodesId').value = ret[0];
+       	  	document.getElementById('missionRequestForm:regionsNamesId').innerHTML = ret[1];
+       	}	  
+    }
+
+    function validateMissionTaskData(){
+    	 var purpose = document.getElementById('missionRequestForm:purposeId').value;
+         if(purpose == null || purpose == ''){
+             alert("#{msgs.error_purposeMandatory}");
+             return false;
+         } 
+
+         var previousFlag = getSelectOneRadioValue('missionRequestForm:previousFlagId');
+         var previousExecutedFlag = document.getElementById('missionRequestForm:previousExecutedFlagId');
+         var relatedFlag = document.getElementById('missionRequestForm:relatedFlagId');
+         var notExecutedRelatedFlag = document.getElementById('missionRequestForm:notExecutedRelatedFlagId');
+         
+         if(previousFlag==null || (previousExecutedFlag.checked == false &amp;&amp; relatedFlag.checked == false  &amp;&amp; notExecutedRelatedFlag.checked == false)){
+        	 alert("#{msgs.error_previouseFlagsMandatory}");
+				return false;
+         }
+         
+         if(previousFlag == 1){
+ 			var previouseDescription = document.getElementById('missionRequestForm:previouseDescriptionId').value;
+ 			if(previouseDescription == null || previouseDescription == ''){
+ 				alert("#{msgs.error_previouseDescriptionMandatory}");
+ 				return false;
+ 			}
+         }
+ 		
+ 		 if(relatedFlag.checked == true){
+ 			var relatedDescription = document.getElementById('missionRequestForm:relatedDescriptionId').value;
+ 			if(relatedDescription == null || relatedDescription == ''){
+ 				alert("#{msgs.error_relatedDescriptionMandatory}");
+ 				return false;
+ 			}
+ 		 }
+ 		
+ 		 var basedOnFlag = getSelectOneRadioValue('missionRequestForm:basedOnFlagId');
+ 		 if(basedOnFlag==null){
+        	 alert("#{msgs.error_basedOnFlagsMandatory}");
+				return false;
+         }
+         
+ 		 if(basedOnFlag == 2 || basedOnFlag == 3) {
+ 			var basedOnNumber = document.getElementById('missionRequestForm:basedOnNumberId').value;
+ 			var basedOnDate = document.getElementById('missionRequestForm:basedOnDateId:day').value;
+ 			
+ 			if(basedOnNumber == null || basedOnNumber == ''){
+ 				alert("#{msgs.error_basedOnNumberMandatory}");
+ 				return false;
+ 			}
+ 			
+ 			if(basedOnDate == 0){
+ 				alert("#{msgs.error_basedOnDateMandatory}");
+ 				return false;
+ 			}
+ 		 }
+
+ 		 var resultReportFlag = document.getElementById('missionRequestForm:resultReportFlagId');
+ 		 var resultLetterFlag = document.getElementById('missionRequestForm:resultLetterFlagId');
+ 		 var resultOtherFlag = document.getElementById('missionRequestForm:resultOtherFlagId');
+ 		 
+ 		 if(resultReportFlag.checked == false &amp;&amp; resultLetterFlag.checked == false &amp;&amp; resultOtherFlag.checked == false){
+       	    alert("#{msgs.error_resultFlagsMandatory}");
+			return false;
+         }
+ 		
+ 		 if(resultLetterFlag.checked == true){
+ 			var resultLetterDescription = document.getElementById('missionRequestForm:resultLetterDescriptionId').value;
+ 			if(resultLetterDescription == null || resultLetterDescription == ''){
+ 				alert("#{msgs.error_resultLetterDescriptionMandatory}");
+ 				return false;
+ 			}
+ 		 }
+ 		
+ 		 if(resultOtherFlag.checked == true){
+ 			var resultOtherDescription = document.getElementById('missionRequestForm:resultOtherDescriptionId').value;
+ 			if(resultOtherDescription == null || resultOtherDescription == ''){
+ 				alert("#{msgs.error_resultOtherDescriptionMandatory}");
+ 				return false;
+ 			}
+ 		 }
+
+ 		 return true;
+    }
+    
+	function validateMissionData(){
+        var destination = document.getElementById('missionRequestForm:destinationId').value;
+        if(destination == null || destination == ''){
+            alert("#{msgs.error_destinationMandatory}");
+            return false;
+        }   
+        
+	    var locationFlag = getSelectOneRadioValue('missionRequestForm:locationFlagId');
+		if (locationFlag==1){
+				var location = document.getElementById('missionRequestForm:locationId').innerHTML;
+		        if(location == null || location == ''){
+		            alert("#{msgs.error_countryMandatory}");
+		            return false;
+		        } 
+		}  
+
+		var period = document.getElementById('missionRequestForm:periodId').value;
+		if (period == null || period == '' || period == 0 || period &lt; 0) {
+			alert("#{msgs.error_periodRequired}");
+			return false;
+		}
+
+		if (locationFlag==1){
+	        var ministeryApprovalNumber = document.getElementById('missionRequestForm:ministeryApprovalNumberId').value;
+        	var ministeryApprovalDate = document.getElementById('missionRequestForm:ministeryApprovalDateId:day').value;
+
+        	if(ministeryApprovalNumber == null || ministeryApprovalNumber == ''){
+            	alert("#{msgs.error_ministeryApprovalNumberMandatory}");
+                return false;
+            }
+            if(ministeryApprovalDate==0){
+            	alert("#{msgs.error_ministeryApprovalDateMandatory}");
+                return false;
+            }
+		}
+		
+		if (locationFlag==0){
+	        var roadLine = document.getElementById('missionRequestForm:roadLineId').value;
+	        var regions = document.getElementById('missionRequestForm:regionsCodesId').value;
+	        
+        	
+        	if(roadLine == null || roadLine == ''){
+            	alert("#{msgs.error_roadLineRequired}");
+                return false;
+            }
+        	if(regions == null || regions == ''){
+            	alert("#{msgs.error_regionMandatory}");
+                return false;
+            }
+		}
+		
+        return true;
+    }
+
+	function validateData(){
+		if(validateMissionTaskData() == false)
+			return false;
+		
+        return validateMissionData();
+    }
+
+	function validateReviewerEmpData(){
+		var locationFlag = getSelectOneRadioValue('missionRequestForm:locationFlagId');
+		if (locationFlag==1){
+        	var roadPeriod = document.getElementById('missionRequestForm:roadPeriodId').value;
+        	
+            if(roadPeriod == null || roadPeriod == '' || roadPeriod == 0 || roadPeriod &lt; 0){
+            	alert("#{msgs.error_roadPeriodRequired}");
+                return false;   
+            }
+		}
+
+		if(document.getElementById('missionRequestForm:referringId') != null){
+        	var referring = document.getElementById('missionRequestForm:referringId').value;
+       
+        	if(referring == null || referring == ''){
+        		alert("#{missionRequest.mode!=3 ? msgs.error_missionReferring : msgs.error_PersonmissionReferring}");
+            	return false;
+        	}
+		}  
+       
+        return validateData();
+	}
+
+	function validateDirectManagerData(){
+        if(validateData() == false)
+            return false;
+
+        return validateRefuseAndNotes(1, 'missionRequestForm:curTaskId:refuseReasonsId');
+	}
+
+	function validateCoordinationMessage(){
+		if(validateData() == false)
+            return false;
+        
+		var oututOfRequesterUnitFlag = document.getElementById('missionRequestForm:outOfRequesterUnitFlagId').value;
+		if(oututOfRequesterUnitFlag == 'true'){
+			return confirm('#{msgs.q_coordinateMessage}' + '\n' + '#{msgs.q_send}');
+		} else{
+			return confirm('#{msgs.q_send}');
+		}
+		 
+	}
+	
+ </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="missionRequestForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{missionRequest.screenTitle}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="70%" />
+								<td width="15%">
+									<h:outputText value="#{msgs.label_fiscalYearStart}" />
+								</td>
+								<td width="15">
+									<h:outputText id="fiscalYearStartId" value="#{missionRequest.startDateOfYear}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="missionTaskDataPanelId">
+							<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_missionTaskData}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%" colspan="2">
+											<h:outputText value="#{msgs.label_missionPurposeHint}" style="color: red; font-weight: bold;" />
+										</td>
+									</tr>
+
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionPurpose}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="85%" colspan="2">
+											<h:inputTextarea id="purposeId" value="#{missionRequest.wfMission.purpose}" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" onkeypress="return enforceTextAreaMaxLength(event, this, 280, false);" rows="2" styleClass="inputDataSuperLarge" />
+										</td>
+									</tr>
+
+									<tr>
+										<th width="15%" rowspan="4">
+											<h:outputText value="#{msgs.label_missionTaskAndPreviouse}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:selectOneRadio id="previousFlagId" value="#{missionRequest.wfMission.previousFlag}" disabled="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}">
+												<f:selectItem itemValue="0" itemLabel="#{msgs.label_entirlyNewMissionTask}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_relatedToPreviousMissionTask}" />
+												<f:ajax event="change" listener="#{missionRequest.changePerviouseFlag}" execute="missionRequestForm:missionTaskDataPanelId" render="missionRequestForm:missionTaskDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneRadio>
+										</td>
+										<td width="50%">
+											<h:inputText id="previouseDescriptionId" value="#{missionRequest.wfMission.previousDescription}" rendered="#{missionRequest.wfMission.previousFlag == 1}" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" styleClass="inputDataLarge" maxlength="65" />
+											<h:outputText value=" #{msgs.label_shortDescription}" rendered="#{missionRequest.wfMission.previousFlag == 1}" style="color: red;" />
+										</td>
+									</tr>
+
+									<tr>
+										<td width="85%" colspan="2">
+											<h:selectBooleanCheckbox id="previousExecutedFlagId" value="#{missionRequest.wfMission.previousExecutedFlagBoolean}" disabled="#{missionRequest.wfMission.notExecutedRelatedFlagBoolean or (missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp')}">
+												<f:ajax event="change" execute="missionRequestForm:missionTaskDataPanelId" render="missionRequestForm:missionTaskDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectBooleanCheckbox>
+											<h:outputText value="#{msgs.label_previouseExecuted}" />
+										</td>
+									</tr>
+
+									<tr>
+										<td width="35%">
+											<h:selectBooleanCheckbox id="relatedFlagId" value="#{missionRequest.wfMission.relatedFlagBoolean}" disabled="#{missionRequest.wfMission.notExecutedRelatedFlagBoolean or (missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp')}">
+												<f:ajax event="change" execute="missionRequestForm:missionTaskDataPanelId" listener="#{missionRequest.changeRelatedFlag}" render="missionRequestForm:missionTaskDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectBooleanCheckbox>
+											<h:outputText value="#{msgs.label_relatedToCaseOrTeamOrCommitte}" />
+										</td>
+										<td width="50%">
+											<h:inputText id="relatedDescriptionId" value="#{missionRequest.wfMission.relatedDescription}" rendered="#{missionRequest.wfMission.relatedFlagBoolean}" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" styleClass="inputDataLarge" maxlength="65" />
+											<h:outputText value=" #{msgs.label_shortDescription}" rendered="#{missionRequest.wfMission.relatedFlagBoolean}" style="color: red;" />
+										</td>
+									</tr>
+
+									<tr>
+										<td width="85%" colspan="2">
+											<h:selectBooleanCheckbox id="notExecutedRelatedFlagId" value="#{missionRequest.wfMission.notExecutedRelatedFlagBoolean}" disabled="#{missionRequest.wfMission.previousExecutedFlagBoolean == true or missionRequest.wfMission.relatedFlagBoolean == true or (missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp')}">
+												<f:ajax event="change" execute="missionRequestForm:missionTaskDataPanelId" render="missionRequestForm:missionTaskDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectBooleanCheckbox>
+											<h:outputText value="#{msgs.label_notPreviouseExecutedOrRelated}" />
+										</td>
+									</tr>
+
+									<tr>
+										<th width="15%" rowspan="2">
+											<h:outputText value="#{msgs.label_missionTaskBasedOn}" />
+											<font style="color: red;">*</font>
+										</th>
+
+										<td width="85%" colspan="2">
+											<h:selectOneRadio id="basedOnFlagId" value="#{missionRequest.wfMission.basedOnFlag}" disabled="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}">
+												<f:selectItem itemLabel="#{msgs.label_workNeed}" itemValue="0" />
+												<f:selectItem itemLabel="#{msgs.label_authorizedVerbalOrder}" itemValue="1" />
+												<f:selectItem itemLabel="#{msgs.label_authorizedSignOrder}" itemValue="2" />
+												<f:selectItem itemLabel="#{msgs.label_basedOnLetterFax}" itemValue="3" />
+												<f:ajax event="change" execute="missionRequestForm:missionTaskDataPanelId" listener="#{missionRequest.changeBasedOnFlag}" render="missionRequestForm:missionTaskDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneRadio>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="85%" colspan="2">
+											<h:panelGroup rendered="#{missionRequest.wfMission.basedOnFlag == 2 or missionRequest.wfMission.basedOnFlag == 3}">
+												<table border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<th width="5%">
+															<h:outputText value="#{msgs.label_number}" />
+															<h:outputText value="*" style="color: red;" />
+														</th>
+														<td width="20%">
+															<h:inputText id="basedOnNumberId" value="#{missionRequest.wfMission.basedOnNumber}" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" maxlength="16" />
+														</td>
+														<th width="5%">
+															<h:outputText value="#{msgs.label_basedOnDate}" />
+															<h:outputText value="*" style="color: red;" />
+														</th>
+														<td width="70%">
+															<util:hijri id="basedOnDateId" value="#{missionRequest.wfMission.basedOnDate}" nullable="true" rendered="#{missionRequest.role == 'Requester' or missionRequest.role == 'DirectManager' or missionRequest.role == 'ReviewerEmp'}" />
+															<h:outputText value="#{missionRequest.wfMission.basedOnDateString}" rendered="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" />
+
+															<h:outputText value=" #{msgs.label_missionBasedOnHint}" rendered="#{missionRequest.role == 'Requester' or missionRequest.role == 'DirectManager' or missionRequest.role == 'ReviewerEmp'}" style="color: red; font-weight: bold;" />
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+
+									<tr>
+										<th width="15%" rowspan="3">
+											<h:outputText value="#{msgs.label_missionTaskResult}" />
+											<font style="color: red;">*</font>
+										</th>
+
+										<td width="85%" colspan="2">
+											<h:selectBooleanCheckbox id="resultReportFlagId" value="#{missionRequest.wfMission.resultReportFlagBoolean}" disabled="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" />
+
+											<h:outputText value="#{msgs.label_resultReport}" />
+										</td>
+									</tr>
+
+									<tr>
+										<td width="35%">
+											<h:selectBooleanCheckbox id="resultLetterFlagId" value="#{missionRequest.wfMission.resultLetterFlagBoolean}" disabled="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}">
+												<f:ajax event="change" execute="missionRequestForm:missionTaskDataPanelId" listener="#{missionRequest.changeResultLetterFlag}" render="missionRequestForm:missionTaskDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectBooleanCheckbox>
+											<h:outputText value="#{msgs.label_redirectLetterTo}" />
+										</td>
+										<td width="50%">
+											<h:inputText id="resultLetterDescriptionId" value="#{missionRequest.wfMission.resultLetterDescription}" rendered="#{missionRequest.wfMission.resultLetterFlagBoolean}" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" styleClass="inputDataLarge" maxlength="65" />
+											<h:outputText value=" #{msgs.label_shortDescription}" rendered="#{missionRequest.wfMission.resultLetterFlagBoolean}" style="color: red;" />
+										</td>
+									</tr>
+
+									<tr>
+										<td width="35%">
+											<h:selectBooleanCheckbox id="resultOtherFlagId" value="#{missionRequest.wfMission.resultOtherFlagBoolean}" disabled="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}">
+												<f:ajax event="change" execute="missionRequestForm:missionTaskDataPanelId" listener="#{missionRequest.changeResultOtherFlag}" render="missionRequestForm:missionTaskDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectBooleanCheckbox>
+											<h:outputText value="#{msgs.label_otherProcess}" />
+										</td>
+										<td width="50%">
+											<h:inputText id="resultOtherDescriptionId" value="#{missionRequest.wfMission.resultOtherDescription}" rendered="#{missionRequest.wfMission.resultOtherFlagBoolean}" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" styleClass="inputDataLarge" maxlength="85" />
+											<h:outputText value=" #{msgs.label_shortDescription}" rendered="#{missionRequest.wfMission.resultOtherFlagBoolean}" style="color: red;" />
+										</td>
+									</tr>
+								</table>
+							</rich:collapsiblePanel>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="wfMissionPanelId">
+							<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_missionData}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionLocationFlag}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:selectOneRadio id="locationFlagId" value="#{missionRequest.wfMission.locationFlag}" disabled="#{missionRequest.role != 'Requester'}">
+												<f:selectItem itemValue="0" itemLabel="#{msgs.label_locIn}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_locOut}" />
+												<f:ajax event="click" listener="#{missionRequest.changeLocationFlag}" execute="missionRequestForm:wfMissionPanelId" render="missionRequestForm:wfMissionPanelId missionRequestForm:outOfRequesterUnitFlagId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneRadio>
+										</td>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_countries}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:commandButton value="#{msgs.label_selectCountries}" onclick="getCountries('#{request.contextPath}'); return false;" styleClass="btn_normal" disabled="#{missionRequest.wfMission.locationFlag==0 or (missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp')}" />
+											<h:outputText value=" " />
+											<h:outputText id="locationId" value="#{missionRequest.wfMission.location}" />
+											<h:inputHidden id="countriesNamesId" value="#{missionRequest.wfMission.location}" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" colspan="4" />
+									</tr>
+									<tr>
+										<td width="100%" colspan="4">
+											<h:outputText value=" #{msgs.label_missionDestinationHint}" style="color: red; font-weight: bold;" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionDestination}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="85%" colspan="3">
+											<h:inputText id="destinationId" value="#{missionRequest.wfMission.destination}" styleClass="inputDataLarge" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" maxlength="200" />
+										</td>
+									</tr>
+									<h:panelGroup rendered="#{missionRequest.wfMission.locationFlag == 0}">
+										<tr>
+											<th width="15%">
+												<h:outputText value="#{msgs.lable_missionRegion}" rendered="#{missionRequest.wfMission.locationFlag == 0}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="85%" colspan="3">
+												<h:commandButton value="#{msgs.label_selectRegions}" onclick="getRegions('#{request.contextPath}'); return false;" styleClass="btn_normal" disabled="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" rendered="#{missionRequest.wfMission.locationFlag == 0}" />
+												<h:outputText value=" " />
+												<h:outputText id="regionsNamesId" value="#{missionRequest.regionsNames}" rendered="#{missionRequest.wfMission.locationFlag == 0}" />
+												<h:inputHidden id="regionsCodesId" value="#{missionRequest.wfMission.regionsCodes}" rendered="#{missionRequest.wfMission.locationFlag == 0}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionPeriod}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="periodId" value="#{missionRequest.wfMission.period}" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" onkeypress="return isDigit(event);" maxlength="3">
+												<f:ajax event="blur" listener="#{missionRequest.adjustMissionEndDate()}" execute="@this missionRequestForm:roadPeriodId missionRequestForm:startDateId" render="missionRequestForm:endDateStringId missionRequestForm:selectPanelEmp notifyMessagesId" />
+											</h:inputText>
+											<h:outputText value=" #{msgs.label_periodHint}" rendered="#{missionRequest.wfMission.locationFlag == 1}" style="color: red; font-weight: bold;" />
+										</td>
+
+										<th width="15%">
+											<h:panelGroup rendered="#{missionRequest.wfMission.locationFlag == 1 and missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ManagerRedirect'}">
+												<h:outputText value="#{msgs.label_missionDistanceRoad}" />
+												<font style="color: red;">*</font>
+											</h:panelGroup>
+										</th>
+										<td width="35%">
+											<h:inputText id="roadPeriodId" value="#{missionRequest.wfMission.roadPeriod}" readonly="#{missionRequest.role != 'ReviewerEmp'}" rendered="#{missionRequest.wfMission.locationFlag == 1 and missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ManagerRedirect'}" onkeypress="return isDigit(event);" maxlength="3">
+												<f:ajax event="blur" listener="#{missionRequest.adjustMissionEndDate()}" execute="@this missionRequestForm:periodId missionRequestForm:startDateId" render="missionRequestForm:endDateStringId missionRequestForm:selectPanelEmp notifyMessagesId " />
+											</h:inputText>
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_startDate}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<util:hijri id="startDateId" value="#{missionRequest.wfMission.startDate}" onChangeAjaxSubmit="true" listenerMethod="#{missionRequest.adjustMissionEndDate()}" reRenderIds="missionRequestForm:endDateStringId missionRequestForm:fiscalYearStartId missionRequestForm:missionDetailsTableId missionRequestForm:selectPanelEmp missionRequestForm:notifyMessagesId" rendered="#{missionRequest.role == 'Requester' or missionRequest.role == 'DirectManager' or missionRequest.role == 'ReviewerEmp'}" />
+											<h:outputText rendered="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" value="#{missionRequest.wfMission.startDateString}" />
+										</td>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_endDate}" />
+										</th>
+										<td width="35%">
+											<h:outputText id="endDateStringId" value="#{missionRequest.wfMission.endDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" colspan="4" />
+									</tr>
+									<h:panelGroup rendered="#{missionRequest.wfMission.locationFlag==1}">
+										<tr>
+											<td width="100%" colspan="4">
+												<h:outputText rendered="#{missionRequest.wfMission.locationFlag==1}" value="#{msgs.label_ministryAprovalMessage}" style="color: red; font-weight: bold;" />
+											</td>
+										</tr>
+										<tr>
+											<th width="15%">
+												<h:outputText value="#{msgs.label_missionNoApprovalofTheMinistryOfInterior}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="35%">
+												<h:inputText id="ministeryApprovalNumberId" value="#{missionRequest.wfMission.ministeryApprovalNumber}" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" />
+											</td>
+
+											<th width="15%">
+												<h:outputText value="#{msgs.label_missionDateApprovalofTheMinistryOfInterior}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="35%">
+												<util:hijri id="ministeryApprovalDateId" rendered="#{missionRequest.role == 'Requester' or missionRequest.role == 'DirectManager' or missionRequest.role == 'ReviewerEmp'}" nullable="true" value="#{missionRequest.wfMission.ministeryApprovalDate}" />
+												<h:outputText rendered="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" value="#{missionRequest.wfMission.ministeryApprovalDateString}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionAreMissionExitKingdom}" />
+										</th>
+										<td width="35%">
+											<h:selectBooleanCheckbox value="#{missionRequest.wfMission.empExternalFlagBoolean}" disabled="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}">
+												<f:ajax event="change" execute="missionRequestForm:wfMissionPanelId" render="missionRequestForm:wfMissionPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectBooleanCheckbox>
+										</td>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionStatus}" rendered="#{missionRequest.wfMission.empExternalFlagBoolean}" />
+										</th>
+										<td width="35%">
+											<h:selectOneMenu value="#{missionRequest.wfMission.empExternalStatus}" rendered="#{missionRequest.wfMission.empExternalFlagBoolean and missionRequest.wfMission.locationFlag==1}" disabled="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}">
+												<f:selectItem itemLabel="#{msgs.label_missionInsideCountry}" itemValue="0" />
+												<f:selectItem itemLabel="#{msgs.label_missionOutsideCountry}" itemValue="1" />
+											</h:selectOneMenu>
+
+											<h:selectOneMenu value="#{missionRequest.wfMission.empExternalStatus}" rendered="#{missionRequest.wfMission.empExternalFlagBoolean and missionRequest.wfMission.locationFlag==0}" disabled="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}">
+												<f:selectItem itemLabel="#{msgs.label_missionOutsideCountry}" itemValue="1" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+									<h:panelGroup rendered="#{missionRequest.wfMission.locationFlag==0 and missionRequest.mode!=3}">
+										<tr>
+											<th width="15%">
+												<h:outputText value="#{msgs.label_missionHijj}" />
+											</th>
+											<td width="85%" colspan="3">
+												<h:selectBooleanCheckbox value="#{missionRequest.wfMission.hajjFlagBoolean}" disabled="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{missionRequest.wfMission.locationFlag==0 and missionRequest.mode==3}">
+										<tr>
+											<th width="15%">
+												<h:outputText value=" #{msgs.label_missionBalance120Days}" />
+											</th>
+											<td width="85%" colspan="3">
+												<h:selectBooleanCheckbox value="#{missionRequest.wfMission.doubleBalanceFlagBoolean}" disabled="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionTheRouteLine}" />
+											<font style="color: red;">#{missionRequest.wfMission.locationFlag == 0 ? '*' : ''}</font>
+										</th>
+										<td width="85%" colspan="3">
+											<h:inputText id="roadLineId" value="#{missionRequest.wfMission.roadLine}" styleClass="inputDataLarge" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" />
+										</td>
+									</tr>
+
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_notes}" />
+										</th>
+										<td width="85%" colspan="3">
+											<h:inputText styleClass="inputDataLarge" value="#{missionRequest.wfMission.remarks}" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionAttachment}" />
+										</th>
+										<td width="85%" colspan="3">
+											<code:attachments loginEmpId="#{missionRequest.loginEmpData.empId}" attachmentId="#{missionRequest.attachments}" addEnableFlag="#{missionRequest.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{missionRequest.role == 'Requester'}" />
+										</td>
+									</tr>
+								</table>
+							</rich:collapsiblePanel>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_missions}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+
+								<h:panelGroup rendered="#{missionRequest.role == 'Requester' or missionRequest.role == 'DirectManager' or missionRequest.role == 'ReviewerEmp'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+														<h:inputHidden id="empIDId" value="#{missionRequest.empId}" />
+														<h:commandButton id="addEmpButton" style="display: none;" action="#{missionRequest.addEmp()}">
+															<f:ajax execute="missionRequestForm:empIDId missionRequestForm:wfMissionPanelId missionRequestForm:selectPanelEmp" render=" missionRequestForm:missionDetailsTableId missionRequestForm:selectPanelEmp missionRequestForm:outOfRequesterUnitFlagId" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+								</h:panelGroup>
+
+								<tr>
+									<td align="center" width="100%">
+										<rich:dataTable id="missionDetailsTableId" rowKeyVar="index" var="wfMissionDetail" value="#{missionRequest.wfMissionDetailDataList}" rows="#{missionRequest.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+											<rich:column style="width : 5%">
+												<f:facet name="header">
+													<h:outputText value="" />
+												</f:facet>
+												<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_view}" action="#{missionRequest.showMissionDetail(wfMissionDetail)}" styleClass="btn_icon">
+													<f:ajax execute="missionRequestForm:selectPanelEmp" render="missionRequestForm:selectPanelEmp" />
+												</h:commandButton>
+											</rich:column>
+											<rich:column style="width : 5%">
+												<f:facet name="header">#</f:facet>
+	                                          #{index + 1}
+	                    					</rich:column>
+											<rich:column style="width : 25%">
+												<f:facet name="header">#{msgs.label_empName}</f:facet>
+												<h:outputText value="#{wfMissionDetail.empName}" />
+											</rich:column>
+											<rich:column style="width : 10%">
+												<f:facet name="header">
+													<h:outputText rendered="#{missionRequest.mode==3}" value="#{msgs.label_personRank}" />
+													<h:outputText rendered="#{missionRequest.mode!=3}" value="#{msgs.label_rank}" />
+												</f:facet>
+												<h:outputText value="#{wfMissionDetail.empRankDesc}" />
+											</rich:column>
+											<rich:column style="width : 15%">
+												<f:facet name="header">#{msgs.label_job}</f:facet>
+												<h:outputText value="#{wfMissionDetail.empJobDesc}" />
+											</rich:column>
+											<rich:column style="width : 30%">
+												<f:facet name="header">#{msgs.label_unit}</f:facet>
+												<h:outputText value="#{wfMissionDetail.empUnitDesc}" />
+											</rich:column>
+											<rich:column style="width : 5%">
+												<f:facet name="header">#{msgs.label_balance}</f:facet>
+												<h:outputText value="#{wfMissionDetail.balance}" />
+											</rich:column>
+											<rich:column style="width : 5%;">
+												<h:panelGroup rendered="#{missionRequest.role == 'Requester' or missionRequest.role == 'DirectManager' or missionRequest.role == 'ReviewerEmp'}">
+													<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{missionRequest.deleteEmp(wfMissionDetail)}" onclick="if(confirm('#{msgs.q_delete}') == false) return false;">
+														<f:ajax execute="missionRequestForm:selectPanelEmp" render="missionRequestForm:missionDetailsTableId missionRequestForm:selectPanelEmp missionRequestForm:outOfRequesterUnitFlagId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+													</h:commandButton>
+												</h:panelGroup>
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+													<f:facet name="first">#{msgs.label_first}</f:facet>
+													<f:facet name="last">#{msgs.label_last}</f:facet>
+													<f:facet name="next">#{msgs.label_next}</f:facet>
+													<f:facet name="previous">#{msgs.label_previous}</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="selectPanelEmp">
+											<h:panelGroup rendered="#{missionRequest.wfMissionDetailDataList.size()!= 0}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<th width="15%">#{msgs.label_name}</th>
+														<td width="85%" colspan="3">
+															<h:outputText value="#{missionRequest.selectedMissionDetail.empName}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															<h:outputText value="#{msgs.label_missionPeriod}" />
+															<font style="color: red;">*</font>
+														</th>
+														<td width="35%">
+															<h:inputText value="#{missionRequest.selectedMissionDetail.period}" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" onkeypress="return isDigit(event);" maxlength="3">
+																<f:ajax event="blur" listener="#{missionRequest.adjustMissionDetailEndDate()}" execute="@this missionRequestForm:empStartDateId" render="missionRequestForm:selectPanelEmp notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															</h:inputText>
+															<h:outputText value=" #{msgs.label_periodHint}" rendered="#{missionRequest.wfMission.locationFlag == 1}" style="color: red; font-weight: bold;" />
+														</td>
+														<th width="15%">
+															<h:outputText value="#{msgs.label_missionDistanceRoad}" rendered="#{missionRequest.wfMission.locationFlag == 1 and missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ManagerRedirect'}" />
+														</th>
+														<td width="35%">
+															<h:outputText value="#{missionRequest.selectedMissionDetail.roadPeriod}" rendered="#{missionRequest.wfMission.locationFlag == 1 and missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ManagerRedirect'}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															<h:outputText value="#{msgs.label_startDate}" />
+															<font style="color: red;">*</font>
+														</th>
+														<td width="35%">
+															<util:hijri id="empStartDateId" listenerMethod="#{missionRequest.refreshEmpBalance()}" rendered="#{missionRequest.role == 'Requester' or missionRequest.role == 'DirectManager' or missionRequest.role == 'ReviewerEmp'}" value="#{missionRequest.selectedMissionDetail.startDate}" onChangeAjaxSubmit="true" reRenderIds="missionRequestForm:selectPanelEmp missionRequestForm:missionDetailsTableId" onAjaxEvent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															<h:outputText rendered="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" value="#{missionRequest.selectedMissionDetail.startDateString}" />
+														</td>
+
+														<th width="15%">
+															<h:outputText value="#{msgs.label_endDate}" />
+														</th>
+														<td width="35%">
+															<h:outputText id="empEndDateStringId" value="#{missionRequest.selectedMissionDetail.endDateString}" />
+														</td>
+													</tr>
+													<h:panelGroup rendered="#{missionRequest.exceptionalBalanceValid}">
+														<tr>
+															<th width="15%">
+																<h:outputText value="#{missionRequest.mode == 3 ? msgs.label_missionNoApprovalofTheExcept : msgs.label_missionNoApprovalofTheMinistryOfInteriorExcept}" />
+															</th>
+															<td width="35%">
+																<h:inputText value="#{missionRequest.selectedMissionDetail.exceptionalApprovalNumber}" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" />
+															</td>
+
+															<th width="15%">
+																<h:outputText value="#{missionRequest.mode == 3 ? msgs.label_missionDateApprovalofTheExcept : msgs.label_missionDateApprovalofTheMinistryOfInteriorExcept}" />
+															</th>
+															<td width="35%">
+																<util:hijri rendered="#{missionRequest.role == 'Requester' or missionRequest.role == 'DirectManager' or missionRequest.role == 'ReviewerEmp'}" nullable="true" value="#{missionRequest.selectedMissionDetail.exceptionalApprovalDate}" />
+																<h:outputText rendered="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" value="#{missionRequest.selectedMissionDetail.exceptionalApprovalDateString}" />
+															</td>
+														</tr>
+													</h:panelGroup>
+													<tr>
+														<th width="15%">
+															<h:outputText value="#{msgs.label_missionTheRouteLine}" />
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputText value="#{missionRequest.selectedMissionDetail.roadLine}" styleClass="inputDataLarge" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															<h:outputText value="#{msgs.label_notes}" />
+														</th>
+														<td width="85%" colspan="3">
+															<h:inputText id="serRemarksId" styleClass="inputDataLarge" value="#{missionRequest.selectedMissionDetail.remarks}" readonly="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ReviewerEmp'}" />
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<h:panelGroup rendered="#{missionRequest.role != 'Requester' and missionRequest.role != 'DirectManager' and missionRequest.role != 'ManagerRedirect'}">
+					<h:panelGroup rendered="#{missionRequest.mode != 1 and missionRequest.wfMission.locationFlag == 0}">
+						<tr>
+							<td width="100%">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.lable_specialEmployeeCompetent}" />
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+
+						<tr>
+							<td width="100%" height="5" />
+						</tr>
+
+						<tr>
+							<td width="100%">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{missionRequest.mode != 3 ? msgs.label_missionReferring : msgs.label_basedOn}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="85%" colspan="3">
+											<h:inputText id="referringId" styleClass="inputDataLarge" value="#{missionRequest.wfMission.referring}" readonly="#{missionRequest.role != 'ReviewerEmp'}" />
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+
+						<tr>
+							<td width="100%" height="5" />
+						</tr>
+
+					</h:panelGroup>
+					<tr>
+						<td width="100%">
+							<code:decisionCopies external="#{missionRequest.wfMission.externalCopies}" internal="#{missionRequest.internalCopies}" viewOnly="#{missionRequest.role != 'ReviewerEmp'}" />
+						</td>
+
+					</tr>
+				</h:panelGroup>
+
+				<code:prevTasks rendered="#{missionRequest.role != 'Requester'}" value="#{missionRequest.prevTasks}" refuseRoles="DirectManager,SignManager," />
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{missionRequest.currentEmployee}" rendered="#{missionRequest.role != 'Requester' and missionRequest.role != 'Notification' and missionRequest.role != 'History'}">
+							<h:panelGroup rendered="#{missionRequest.role == 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{missionRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{missionRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{missionRequest.currentTask.notes}" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+
+							<h:panelGroup rendered="#{missionRequest.role != 'ManagerRedirect' and missionRequest.role != 'ReviewerEmp'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{missionRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{missionRequest.role == 'Notification' or missionRequest.role == 'History'}" value="#{missionRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:panelGroup rendered="#{missionRequest.role == 'Requester'}">
+										<h:commandButton id="rBtnId" onclick="return validateCoordinationMessage();" action="#{missionRequest.initProcess}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{missionRequest.role == 'DirectManager'}">
+										<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateDirectManagerData()');" action="#{missionRequest.approveDM}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;missionRequestForm:curTaskId:refuseReasonsId&quot;)');" action="#{missionRequest.rejectDM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="missionDataPrint" action="#{missionRequest.printMissionData}" value="#{msgs.label_printMissionData} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{missionRequest.role == 'ManagerRedirect'}">
+										<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;missionRequestForm:curTaskId:reviewersId&quot;)');" action="#{missionRequest.redirectVM}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{missionRequest.role == 'ReviewerEmp'}">
+										<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}', 'validateReviewerEmpData()');" action="#{missionRequest.approveRE}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{missionRequest.role == 'SignManager'}">
+										<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;missionRequestForm:curTaskId:refuseReasonsId&quot;)');" action="#{missionRequest.signVM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{missionRequest.role == 'SignManager' and ( missionRequest.wfMission.locationFlag == 1 or missionRequest.regionId != 1 or missionRequest.wfMission.hajjFlagBoolean or missionRequest.mode == 2 or missionRequest.mode == 3) }">
+										<h:commandButton id="modifySmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;missionRequestForm:curTaskId:refuseReasonsId&quot;, &quot;missionRequestForm:curTaskId:notesId&quot;)');" action="#{missionRequest.modifyVM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+									
+									<h:panelGroup rendered="#{missionRequest.role == 'SignManager'}">
+										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;missionRequestForm:curTaskId:refuseReasonsId&quot;)');" action="#{missionRequest.rejectVM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{missionRequest.role == 'Notification' and missionRequest.instanceApproved == 1}">
+										<h:commandButton id="printBtnId" action="#{missionRequest.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{missionRequest.role == 'Notification'}">
+										<h:commandButton id="nBtnId" action="#{missionRequest.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+			<h:inputHidden id="outOfRequesterUnitFlagId" value="#{missionRequest.outOfRequesterUnitFlag}" />
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

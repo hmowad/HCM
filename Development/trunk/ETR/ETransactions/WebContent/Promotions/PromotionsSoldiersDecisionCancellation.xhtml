@@ -1,0 +1,381 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">   
+
+		function getEmp(contextPath) {
+			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, 2, -1, -1, -1, -1, -1);		
+		}
+		
+		function handleEmpMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('promotionsSoldiersDecisionCancellationFormId:empIDHId').value = ret[0];
+				document.getElementById('promotionsSoldiersDecisionCancellationFormId:selectedEmpBtnId').click();
+			}
+		}
+
+		function getJob(contextPath){
+			var oldRankId  = document.getElementById('promotionsSoldiersDecisionCancellationFormId:empOldRankHId').value;
+			var empPhysicalRegionId  = document.getElementById('promotionsSoldiersDecisionCancellationFormId:empPhysicalRegionId').value;
+			openJobsMiniSearch(contextPath, 'handleJobsMiniSearch(ret)', 2, 2, -1, oldRankId, empPhysicalRegionId, -1);
+		}
+
+		function handleJobsMiniSearch(ret){
+			if (ret != null) {
+				document.getElementById('promotionsSoldiersDecisionCancellationFormId:empJobHId').value = ret[0];
+				document.getElementById('promotionsSoldiersDecisionCancellationFormId:empJobBtnId').click();
+			}
+		}
+
+		
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="promotionsSoldiersDecisionCancellationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{msgs.title_promotionsSoldiersDecisionCancellation}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<h:panelGroup rendered="#{!promotionsSoldiersDecisionCancellation.admin and promotionsSoldiersDecisionCancellation.role == 'Requester'}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%">"#{msgs.error_privilegeError}"</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.admin and promotionsSoldiersDecisionCancellation.role == 'Requester'}">
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_soldier}" />
+												</th>
+												<td width="85%">
+													<h:outputText id="empNameId" value="#{promotionsSoldiersDecisionCancellation.employee.name}" />
+													<h:inputHidden id="empIDHId" value="#{promotionsSoldiersDecisionCancellation.empId}" />
+													<h:outputText value=" " />
+													<h:commandButton value="#{msgs.fa_external_link}" onclick="getEmp('#{request.contextPath}');return false;" styleClass="btn_icon" />
+													<h:commandButton id="selectedEmpBtnId" style="display:none;" action="#{promotionsSoldiersDecisionCancellation.getEmployeeData()}">
+														<f:ajax execute="promotionsSoldiersDecisionCancellationFormId:empIDHId" render="promotionsSoldiersDecisionCancellationFormId:empNameId promotionsSoldiersDecisionCancellationFormId:promotionsSoldierTransactionDataSectionId promotionsSoldiersDecisionCancellationFormId:notifyMessagesId  promotionsSoldiersDecisionCancellationFormId:employeeDataId promotionsSoldiersDecisionCancellationFormId:actionsSectionId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+													</h:commandButton>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</h:panelGroup>
+						</table>
+					</td>
+				</tr>
+
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="employeeDataId">
+							<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="70%">#{msgs.label_soldierData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:emp value="#{promotionsSoldiersDecisionCancellation.employee}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="promotionsSoldierTransactionDataSectionId">
+							<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData!=null}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>#{msgs.label_promotionData}</td>
+									</tr>
+								</table>
+
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">#{msgs.label_decisionNumber}</th>
+										<td width="35%">
+											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.decisionNumber}" />
+										</td>
+										<th width="15%">#{msgs.label_decisionDate}</th>
+										<td width="35%">
+											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.decisionDateString}" />
+										</td>
+									</tr>
+
+									<tr>
+										<th width="15%">#{msgs.label_promotionType}</th>
+										<td width="35%">
+											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.promotionDesc}" />
+										</td>
+										<th width="15%">#{msgs.label_promotionDate}</th>
+										<td width="35%">
+											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.newDueDateString}" />
+										</td>
+									</tr>
+
+									<tr>
+										<th width="15%">#{msgs.label_oldRankDesc}</th>
+										<td width="35%">
+											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.oldRankDesc}" />
+											<h:inputHidden id="empOldRankHId" value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.oldRankId}" />
+											<h:inputHidden id="empPhysicalRegionId" value="#{promotionsSoldiersDecisionCancellation.employee.physicalRegionId}" />
+										</td>
+										<th width="15%">#{msgs.label_newRankDesc}</th>
+										<td width="35%">
+											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.newRankDesc}" />
+										</td>
+									</tr>
+
+									<tr>
+										<th width="15%">#{msgs.label_oldUnitDesc}</th>
+										<td width="35%">
+											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.oldUnitFullName}" />
+										</td>
+										<th width="15%">#{msgs.label_newUnitDesc}</th>
+										<td width="35%">
+											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.newUnitFullName}" />
+										</td>
+									</tr>
+
+									<tr>
+										<th width="15%">#{msgs.label_cancelTerminationNewJobName}</th>
+
+
+										<td width="35%">
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role == 'Requester' or promotionsSoldiersDecisionCancellation.role == 'ReviewerEmp'}">
+												<h:panelGroup id="empNewJobPanelId">
+													<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.changeEmpJob()}">
+														<h:outputText value="#{promotionsSoldiersDecisionCancellation.empNewJob.name}" />
+														<h:inputHidden id="empJobHId" value="#{promotionsSoldiersDecisionCancellation.newJobId}" />
+														<h:outputText value=" " />
+														<h:commandButton value="#{msgs.fa_external_link}" onclick="getJob('#{request.contextPath}');return false;" styleClass="btn_icon" />
+														<h:commandButton id="empJobBtnId" style="display:none;" action="#{promotionsSoldiersDecisionCancellation.getEmpNewJopData()}">
+															<f:ajax execute="promotionsSoldiersDecisionCancellationFormId:empJobHId" render="promotionsSoldiersDecisionCancellationFormId:empNewJobPanelId promotionsSoldiersDecisionCancellationFormId:empJobNumberId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</h:panelGroup>
+													<h:panelGroup rendered="#{!promotionsSoldiersDecisionCancellation.changeEmpJob()}">
+														<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.oldJobDesc}" />
+													</h:panelGroup>
+												</h:panelGroup>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role != 'Requester' and promotionsSoldiersDecisionCancellation.role != 'ReviewerEmp'}">
+												<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData.newJobDesc}" />
+											</h:panelGroup>
+										</td>
+
+
+										<th width="15%">#{msgs.label_cancelTerminationNewJobNumber}</th>
+										<td width="35%">
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role == 'Requester' or promotionsSoldiersDecisionCancellation.role == 'ReviewerEmp'}">
+												<h:outputText id="empJobNumberId" value="#{promotionsSoldiersDecisionCancellation.changeEmpJob()? promotionsSoldiersDecisionCancellation.empNewJob.code : promotionsSoldiersDecisionCancellation.promotionTransaction.oldJobCode}" />
+											</h:panelGroup>
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role != 'Requester' and promotionsSoldiersDecisionCancellation.role != 'ReviewerEmp'}">
+												<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData.newJobCode}" />
+											</h:panelGroup>
+										</td>
+									</tr>
+
+									<tr>
+										<th width="15%">#{msgs.label_justifications}</th>
+										<td width="85%" colspan="3">
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role == 'Requester' or promotionsSoldiersDecisionCancellation.role == 'ReviewerEmp'}">
+												<h:inputText value="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData.remarks}" styleClass="inputDataSuperLarge" />
+											</h:panelGroup>
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role != 'Requester' and promotionsSoldiersDecisionCancellation.role != 'ReviewerEmp'}">
+												<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData.remarks}" />
+											</h:panelGroup>
+										</td>
+									</tr>
+
+									<tr>
+										<th width="15%">
+											#{msgs.label_refferingTo}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="85%" colspan="3">
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role == 'Requester' or promotionsSoldiersDecisionCancellation.role == 'ReviewerEmp'}">
+												<h:inputText value="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData.referring}" styleClass="inputDataSuperLarge" />
+											</h:panelGroup>
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role != 'Requester' and promotionsSoldiersDecisionCancellation.role != 'ReviewerEmp'}">
+												<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData.referring}" />
+											</h:panelGroup>
+										</td>
+									</tr>
+
+									<tr>
+										<th width="15%">#{msgs.label_attachments}</th>
+										<td width="35%">
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role == 'Requester' or promotionsSoldiersDecisionCancellation.role == 'ReviewerEmp'}">
+												<code:attachments loginEmpId="#{promotionsSoldiersDecisionCancellation.loginEmpData.empId}" attachmentId="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData.attachments}" viewEnableFlag="true" addEnableFlag="true" />
+											</h:panelGroup>
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role != 'Requester' and promotionsSoldiersDecisionCancellation.role != 'ReviewerEmp'}">
+												<code:attachments loginEmpId="#{promotionsSoldiersDecisionCancellation.loginEmpData.empId}" attachmentId="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData.attachments}" viewEnableFlag="true" />
+											</h:panelGroup>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="decisionCopiesPanelId">
+							<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData.id != null}">
+								<code:decisionCopies external="#{promotionsSoldiersDecisionCancellation.promotionReportData.externalCopies}" internal="#{promotionsSoldiersDecisionCancellation.internalCopies}" viewOnly="#{promotionsSoldiersDecisionCancellation.role != 'Requester' and promotionsSoldiersDecisionCancellation.role != 'ReviewerEmp'}" />
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<code:prevTasks rendered="#{promotionsSoldiersDecisionCancellation.role != 'Requester'}" value="#{promotionsSoldiersDecisionCancellation.prevTasks}" refuseRoles="SignManager," />
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{promotionsSoldiersDecisionCancellation.currentEmployee}" rendered="#{promotionsSoldiersDecisionCancellation.role != 'Requester' and promotionsSoldiersDecisionCancellation.role != 'Notification' and promotionsSoldiersDecisionCancellation.role != 'History'}">
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{promotionsSoldiersDecisionCancellation.currentTask.notes}" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role == 'SignManager'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{promotionsSoldiersDecisionCancellation.currentTask.refuseReasons}" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{promotionsSoldiersDecisionCancellation.role == 'Notification' or promotionsSoldiersDecisionCancellation.role == 'History'}" value="#{promotionsSoldiersDecisionCancellation.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+
+						<h:panelGroup id="actionsSectionId">
+							<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData!=null}">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role == 'Requester'}">
+												<h:commandButton onclick="return handleOnAction('#{msgs.q_send}', 'true');" action="#{promotionsSoldiersDecisionCancellation.initProcess()}" value="#{msgs.label_send}  &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role == 'ReviewerEmp'}">
+												<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}', 'validateReportData()');" action="#{promotionsSoldiersDecisionCancellation.approveRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role == 'SignManager'}">
+												<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;promotionsSoldiersDecisionCancellationFormId:curTaskId:refuseReasonsId&quot;)');" action="#{promotionsSoldiersDecisionCancellation.aproveSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="modifySMBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;promotionsSoldiersDecisionCancellationFormId:curTaskId:refuseReasonsId&quot;, &quot;promotionsSoldiersDecisionCancellationFormId:curTaskId:notesId&quot;)');" action="#{promotionsSoldiersDecisionCancellation.modifySM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;promotionsSoldiersDecisionCancellationFormId:curTaskId:refuseReasonsId&quot;)');" action="#{promotionsSoldiersDecisionCancellation.rejectSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role == 'Notification'}">
+												<h:commandButton id="printBtnId" action="#{promotionsSoldiersDecisionCancellation.print()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role == 'Notification'}">
+												<h:commandButton id="nBtnId" action="#{promotionsSoldiersDecisionCancellation.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

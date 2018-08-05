@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+	function getEmployee(contextPath) {
+			openEmployeesMiniSearch(contextPath,'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1,-1, -1);
+		}
+	
+	function handleEmpMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('studyEnrollmentResultsRegiserationFormId:beneficiaryEmployeeHId').value = ret[0];
+				document.getElementById('studyEnrollmentResultsRegiserationFormId:searchEmpBtnId').click();
+			}
+	}
+	
+	function validate() {
+		
+		if(#{studyEnrollmentResultsRegiseration.beneficiaryTransactionsList.size() > 1}) {
+			var graduationPlaceDetaild =  document.getElementById('studyEnrollmentResultsRegiserationFormId:graduationPlaceDetailId').value;
+			if(graduationPlaceDetaild == -1) {
+				alert('#{msgs.error_graduationPlaceDetailMandatory}');
+				return false;
+			}
+				
+		}			
+		if(!validResultsComponent()) {
+			return false
+		}
+		return true;
+		
+	}
+	
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="studyEnrollmentResultsRegiserationFormId" dir="#{msgs.dir}">
+		<ui:debug />
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{studyEnrollmentResultsRegiseration.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.title_employeeData}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="beneficiaryPanelId">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="50%">
+													<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+													<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{studyEnrollmentResultsRegiseration.selectEmployee()}">
+														<f:ajax execute="studyEnrollmentResultsRegiserationFormId:beneficiaryEmployeeHId" render="studyEnrollmentResultsRegiserationFormId:beneficiaryPanelId studyEnrollmentResultsRegiserationFormId:studyEnrollmentResultData studyEnrollmentResultsRegiserationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+													</h:commandButton>
+													<h:inputHidden id="beneficiaryEmployeeHId" value="#{studyEnrollmentResultsRegiseration.transactionData.employeeId}" />
+												</td>
+											</tr>
+										</table>
+
+									</td>
+								</tr>
+
+								<tr>
+									<td width="100%">
+										<code:emp value="#{studyEnrollmentResultsRegiseration.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="studyEnrollmentResultData">
+							<h:panelGroup rendered="#{!studyEnrollmentResultsRegiseration.beneficiaryTransactionsList.isEmpty()}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{msgs.label_studyEnrollmentData}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_facultyName}" />
+														<font style="color: red;"> *</font>
+													</th>
+													<td width="35%">
+														<h:selectOneMenu id="graduationPlaceDetailId" value="#{studyEnrollmentResultsRegiseration.selectedTransactionId}" rendered="#{studyEnrollmentResultsRegiseration.beneficiaryTransactionsList.size() > 1}">
+															<f:selectItems value="#{studyEnrollmentResultsRegiseration.beneficiaryTransactionsList}" var="transaction" itemLabel="#{transaction.graduationPlaceDetailDesc}" itemValue="#{transaction.id}" />
+															<f:ajax event="change" execute="studyEnrollmentResultsRegiserationFormId:studyEnrollmentResultData" render="studyEnrollmentResultsRegiserationFormId:studyEnrollmentResultData" listener="#{studyEnrollmentResultsRegiseration.selectTransaction()}" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:selectOneMenu>
+														<h:outputText value="#{studyEnrollmentResultsRegiseration.beneficiaryTransactionsList.get(0).graduationPlaceDetailDesc}" rendered="#{studyEnrollmentResultsRegiseration.beneficiaryTransactionsList.size() == 1}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_graduationPlaceDetailAddress}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{studyEnrollmentResultsRegiseration.transactionData.graduationPlaceDetailAddress}" />
+													</td>
+												</tr>
+
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_universityName}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{studyEnrollmentResultsRegiseration.transactionData.graduationPlaceDesc}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_graduationPlaceCountryName}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{studyEnrollmentResultsRegiseration.transactionData.graduationPlaceCountryName}" />
+													</td>
+												</tr>
+
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_qualificationGrade}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{studyEnrollmentResultsRegiseration.transactionData.qualificationLevelDesc}" />
+													</td>
+													<td width="50%" colspan="2"></td>
+												</tr>
+
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_studySubject}" />
+													</th>
+													<td width="85%" colspan="3">
+														<h:outputText value="#{studyEnrollmentResultsRegiseration.transactionData.studySubject}" />
+													</td>
+												</tr>
+
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_studyStartDate}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{studyEnrollmentResultsRegiseration.transactionData.studyStartDateString}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_studyEndDate}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{studyEnrollmentResultsRegiseration.transactionData.studyEndDateString}" />
+													</td>
+												</tr>
+
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_courseFinanceSource}" />
+													</th>
+													<td width="85%" colspan="3">
+														<h:selectOneRadio id="courseFundSource" disabled="true" value="#{studyEnrollmentResultsRegiseration.transactionData.fundSource}">
+															<f:selectItem itemValue="1" itemLabel="#{msgs.label_costOnEmployee}" />
+															<f:selectItem itemValue="2" itemLabel="#{msgs.label_costOnBorderGuard}" />
+														</h:selectOneRadio>
+													</td>
+												</tr>
+
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_justifications}" />
+													</th>
+													<td width="85%" colspan="3">
+														<h:outputText value="#{studyEnrollmentResultsRegiseration.transactionData.reasons}" />
+													</td>
+
+												</tr>
+											</table>
+
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{msgs.label_graduationData}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+												<code:courseResults id="resultsId" trainingObject="#{studyEnrollmentResultsRegiseration.transactionData}" loginEmpId="#{studyEnrollmentResultsRegiseration.loginEmpData.empId}" viewOnly="false" military="false" showGraduationDate="true" claim="false" successFlagChangeListener="#{studyEnrollmentResultsRegiseration.successFlagChangeListener()}"></code:courseResults>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:commandButton id="saveBtnId" action="#{studyEnrollmentResultsRegiseration.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validate()');">
+															<f:ajax execute="studyEnrollmentResultsRegiserationFormId:studyEnrollmentResultData" render="studyEnrollmentResultsRegiserationFormId:notifyMessagesId" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+
+</h:body>
+</html>

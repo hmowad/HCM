@@ -1,0 +1,529 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="missionViewForm" dir="#{msgs.dir}">
+		<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td width="100%" height="5" />
+			</tr>
+
+			<tr>
+				<td class="screenTitle">#{missionView.screenTitle}</td>
+			</tr>
+
+			<tr>
+				<td width="100%" height="5" />
+			</tr>
+			<tr>
+				<td width="100%">
+					<h:panelGroup id="missionTaskDataPanelId">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_missionTaskData}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionPurpose}" />
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText value="#{missionView.mission.purpose}" />
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%" rowspan="4">
+										<h:outputText value="#{msgs.label_missionTaskAndPreviouse}" />
+									</th>
+									<td width="35%">
+										<h:outputText value="#{msgs.label_entirlyNewMissionTask}" rendered="#{missionView.mission.previousFlag == 0}" />
+										<h:outputText value="#{msgs.label_relatedToPreviousMissionTask}" rendered="#{missionView.mission.previousFlag == 1}" />
+									</td>
+
+									<th width="15%">
+										<h:outputText value="#{msgs.label_shortDescription}" rendered="#{missionView.mission.previousFlag == 1}" />
+									</th>
+									<td width="35%">
+										<h:outputText value="#{missionView.mission.previousDescription}" rendered="#{missionView.mission.previousFlag == 1}" />
+									</td>
+								</tr>
+
+								<tr>
+									<td width="85%" colspan="3">
+										<h:outputText value="#{msgs.label_previouseExecuted}" rendered="#{missionView.mission.previousExecutedFlagBoolean}" />
+									</td>
+								</tr>
+
+								<tr>
+									<td width="35%">
+										<h:outputText value="#{msgs.label_relatedToCaseOrTeamOrCommitte}" rendered="#{missionView.mission.relatedFlagBoolean}" />
+									</td>
+
+									<th width="15%">
+										<h:outputText value="#{msgs.label_shortDescription}" rendered="#{missionView.mission.relatedFlagBoolean}" />
+									</th>
+									<td width="35%">
+										<h:outputText value="#{missionView.mission.relatedDescription}" rendered="#{missionView.mission.relatedFlagBoolean}" />
+									</td>
+								</tr>
+
+								<tr>
+									<td width="85%" colspan="3">
+										<h:outputText value="#{msgs.label_notPreviouseExecutedOrRelated}" rendered="#{missionView.mission.notExecutedRelatedFlagBoolean}" />
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionTaskBasedOn}" />
+									</th>
+
+									<td width="45%">
+										<h:outputText value="#{msgs.label_workNeed}" rendered="#{missionView.mission.basedOnFlag == 0}" />
+										<h:outputText value="#{msgs.label_authorizedVerbalOrder}" rendered="#{missionView.mission.basedOnFlag == 1}" />
+										<h:outputText value="#{msgs.label_authorizedSignOrder}" rendered="#{missionView.mission.basedOnFlag == 2}" />
+										<h:outputText value="#{msgs.label_basedOnLetterFax}" rendered="#{missionView.mission.basedOnFlag == 3}" />
+									</td>
+									<td width="20%">
+										<h:outputText value="#{msgs.label_number}" rendered="#{missionView.mission.basedOnFlag == 2 or missionView.mission.basedOnFlag == 3}" />
+										<h:outputText value="  #{missionView.mission.basedOnNumber}" rendered="#{missionView.mission.basedOnFlag == 2 or missionView.mission.basedOnFlag == 3}" />
+									</td>
+									<td width="20%">
+										<h:outputText value="#{msgs.label_basedOnDate}" rendered="#{missionView.mission.basedOnFlag == 2 or missionView.mission.basedOnFlag == 3}" />
+										<h:outputText value="  #{missionView.mission.basedOnDateString}" rendered="#{missionView.mission.basedOnFlag == 2 or missionView.mission.basedOnFlag == 3}" />
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%" rowspan="3">
+										<h:outputText value="#{msgs.label_missionTaskResult}" />
+									</th>
+
+									<td width="85%" colspan="3">
+										<h:outputText value="#{msgs.label_resultReport}" rendered="#{missionView.mission.resultReportFlag == 1}" />
+									</td>
+								</tr>
+
+								<tr>
+									<td width="35%">
+										<h:outputText value="#{msgs.label_redirectLetterTo}" rendered="#{missionView.mission.resultLetterFlag == 1}" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_shortDescription}" rendered="#{missionView.mission.resultLetterFlag == 1}" />
+									</th>
+									<td width="35%">
+										<h:outputText value="#{missionView.mission.resultLetterDescription}" rendered="#{missionView.mission.resultLetterFlag == 1}" />
+									</td>
+								</tr>
+
+								<tr>
+									<td width="35%">
+										<h:outputText value="#{msgs.label_otherProcess}" rendered="#{missionView.mission.resultOtherFlag == 1}" />
+									</td>
+
+									<th width="15%">
+										<h:outputText value="#{msgs.label_shortDescription}" rendered="#{missionView.mission.resultOtherFlag == 1}" />
+									</th>
+									<td width="35%">
+										<h:outputText value="#{missionView.mission.resultOtherDescription}" rendered="#{missionView.mission.resultOtherFlag == 1}" />
+									</td>
+								</tr>
+
+							</table>
+						</rich:collapsiblePanel>
+					</h:panelGroup>
+				</td>
+			</tr>
+
+			<tr>
+				<td width="100%" height="5" />
+			</tr>
+
+			<tr>
+				<td width="100%">
+					<h:panelGroup id="wfMissionPanelId">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_missionData}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionLocationFlag}" />
+									</th>
+									<td width="35%">
+										<h:outputText value="#{msgs.label_locIn}" rendered="#{missionView.mission.locationFlag == 0}" />
+										<h:outputText value="#{msgs.label_locOut}" rendered="#{missionView.mission.locationFlag == 1}" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_countries}" rendered="#{missionView.mission.locationFlag == 0}" />
+									</th>
+									<td width="35%">
+										<h:outputText value="#{missionView.mission.location}" />
+									</td>
+								</tr>
+								<tr>
+									<td width="100%" height="5" colspan="4" />
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionDestination}" />
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText value="#{missionView.mission.destination}" />
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{missionView.mission.locationFlag == 0}">
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.lable_missionRegion}" rendered="#{missionView.mission.locationFlag == 0}" />
+										</th>
+										<td width="85%" colspan="3">
+											<h:outputText value="#{missionView.regionsNames}" rendered="#{missionView.mission.locationFlag == 0}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionPeriod}" />
+									</th>
+									<td width="35%">
+										<h:outputText value="#{missionView.mission.period}" />
+									</td>
+
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionDistanceRoad}" />
+									</th>
+									<td width="35%">
+										<h:outputText value="#{missionView.mission.roadPeriod}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_startDate}" />
+									</th>
+									<td width="35%">
+										<h:outputText value="#{missionView.mission.startDateString}" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_endDate}" />
+									</th>
+									<td width="35%">
+										<h:outputText value="#{missionView.mission.endDateString}" />
+									</td>
+								</tr>
+								<tr>
+									<td width="100%" height="5" colspan="4" />
+								</tr>
+								<h:panelGroup rendered="#{missionView.mission.locationFlag==1}">
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionNoApprovalofTheMinistryOfInterior}" />
+										</th>
+										<td width="35%">
+											<h:outputText value="#{missionView.mission.ministeryApprovalNumber}" />
+										</td>
+
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionDateApprovalofTheMinistryOfInterior}" />
+										</th>
+										<td width="35%">
+											<h:outputText value="#{missionView.mission.ministeryApprovalDateString}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionAreMissionExitKingdom}" />
+									</th>
+									<td width="35%">
+										<h:outputText value="#{msgs.label_yes}" rendered="#{missionView.mission.empExternalFlagBoolean}" />
+										<h:outputText value="#{msgs.label_no}" rendered="#{!missionView.mission.empExternalFlagBoolean}" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionStatus}" rendered="#{missionView.mission.empExternalFlagBoolean}" />
+									</th>
+									<td width="35%">
+										<h:outputText value="#{msgs.label_missionInsideCountry}" rendered="#{missionView.mission.empExternalStatus == 0 and missionView.mission.empExternalFlagBoolean}" />
+										<h:outputText value="#{msgs.label_missionOutsideCountry}" rendered="#{missionView.mission.empExternalStatus == 1 and missionView.mission.empExternalFlagBoolean}" />
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{missionView.mission.locationFlag==0}">
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionHijj}" />
+										</th>
+										<td width="35%">
+											<h:outputText value="#{msgs.label_yes}" rendered="#{missionView.mission.hajjFlagBoolean}" />
+											<h:outputText value="#{msgs.label_no}" rendered="#{!missionView.mission.hajjFlagBoolean}" />
+										</td>
+										<th width="15%">
+											<h:outputText value=" #{msgs.label_missionBalance120Days}" rendered="#{missionView.mode==3}" />
+										</th>
+										<td width="35%">
+											<h:outputText value="#{msgs.label_yes}" rendered="#{missionView.mission.doubleBalanceFlagBoolean and missionView.mode==3}" />
+											<h:outputText value="#{msgs.label_no}" rendered="#{!missionView.mission.doubleBalanceFlagBoolean and missionView.mode==3}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionTheRouteLine}" />
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText value="#{missionView.mission.roadLine}" />
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_notes}" />
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText value="#{missionView.mission.remarks}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_missionAttachment}" />
+									</th>
+									<td width="85%" colspan="3">
+										<code:attachments loginEmpId="#{missionView.loginEmpData.empId}" attachmentId="#{missionView.mission.attachments}" addEnableFlag="false" viewEnableFlag="true" deleteEnableFlag="false" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</h:panelGroup>
+				</td>
+			</tr>
+			<tr>
+				<td width="100%" height="5" />
+			</tr>
+
+			<tr>
+				<td width="100%">
+					<h:panelGroup rendered="#{missionView.mission.locationFlag == 0 and missionView.mode != 1}">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{missionView.mode != 3 ? msgs.label_missionReferring : msgs.label_basedOn}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{missionView.mode != 3 ? msgs.label_missionReferring : msgs.label_basedOn}" />
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText id="referringId" styleClass="inputDataLarge" value="#{missionView.mission.referring}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</h:panelGroup>
+				</td>
+			</tr>
+			<tr>
+				<td width="100%" height="5" />
+			</tr>
+
+			<tr>
+				<td width="100%">
+					<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_missions}">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+
+							<tr>
+								<td align="center" width="100%">
+									<rich:dataTable id="missionDetailsTableId" rowKeyVar="index" var="missionDetail" value="#{missionView.missionDetailList}" rows="#{missionView.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+										<rich:column style="width : 5%">
+											<f:facet name="header">
+												<h:outputText value="" />
+											</f:facet>
+											<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_view}" action="#{missionView.showMissionDetail(missionDetail)}" styleClass="btn_icon">
+												<f:ajax render="missionViewForm:selectPanelEmp" />
+											</h:commandButton>
+										</rich:column>
+										<rich:column style="width : 5%">
+											<f:facet name="header">#</f:facet>
+	                                          #{index + 1}
+	                    					</rich:column>
+										<rich:column style="width : 25%">
+											<f:facet name="header">#{msgs.label_empName}</f:facet>
+											<h:outputText value="#{missionDetail.empName}" />
+										</rich:column>
+										<rich:column style="width : 10%">
+											<f:facet name="header">
+												<h:outputText rendered="#{missionView.mode==3}" value="#{msgs.label_personRank}" />
+												<h:outputText rendered="#{missionView.mode!=3}" value="#{msgs.label_rank}" />
+											</f:facet>
+											<h:outputText value="#{missionDetail.transEmpRankDesc}" />
+										</rich:column>
+										<rich:column style="width : 15%">
+											<f:facet name="header">#{msgs.label_job}</f:facet>
+											<h:outputText value="#{missionDetail.transEmpJobDesc}" />
+										</rich:column>
+										<rich:column style="width : 30%">
+											<f:facet name="header">#{msgs.label_unit}</f:facet>
+											<h:outputText value="#{missionDetail.transEmpUnitDesc}" />
+										</rich:column>
+										<rich:column style="width : 5%">
+											<f:facet name="header">#{msgs.label_balance}</f:facet>
+											<h:outputText value="#{missionDetail.balance}" />
+										</rich:column>
+										<f:facet name="footer">
+											<rich:dataScroller fastControls="hide" onevent="function(e){if(e.status == 'complete') unMaskScreen();}">
+												<f:facet name="first">#{msgs.label_first}</f:facet>
+												<f:facet name="last">#{msgs.label_last}</f:facet>
+												<f:facet name="next">#{msgs.label_next}</f:facet>
+												<f:facet name="previous">#{msgs.label_previous}</f:facet>
+											</rich:dataScroller>
+										</f:facet>
+									</rich:dataTable>
+								</td>
+							</tr>
+
+							<tr>
+								<td width="100%" height="5" />
+							</tr>
+
+							<tr>
+								<td width="100%">
+									<h:panelGroup id="selectPanelEmp">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<th width="15%">#{msgs.label_name}</th>
+												<td width="85%" colspan="3">
+													<h:outputText value="#{missionView.selectedMissionDetail.empName}" />
+												</td>
+											</tr>
+											<tr>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_missionPeriod}" />
+												</th>
+												<td width="35%">
+													<h:outputText value="#{missionView.selectedMissionDetail.period}" />
+												</td>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_missionDistanceRoad}" rendered="#{missionView.mission.locationFlag==1}" />
+												</th>
+												<td width="35%">
+													<h:outputText value="#{missionView.selectedMissionDetail.roadPeriod}" rendered="#{missionView.mission.locationFlag==1}" />
+												</td>
+											</tr>
+											<tr>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_missionActualPeriod}" />
+												</th>
+												<td width="35%">
+													<h:outputText value="#{missionView.selectedMissionDetail.actualPeriod}" />
+												</td>
+											</tr>
+											<tr>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_startDate}" />
+												</th>
+												<td width="35%">
+													<h:outputText value="#{missionView.selectedMissionDetail.startDateString}" />
+												</td>
+
+												<th width="15%">
+													<h:outputText value="#{msgs.label_endDate}" />
+												</th>
+												<td width="35%">
+													<h:outputText value="#{missionView.selectedMissionDetail.endDateString}" />
+												</td>
+											</tr>
+											<tr>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_actualStartDateString}" />
+												</th>
+												<td width="35%">
+													<h:outputText value="#{missionView.selectedMissionDetail.actualStartDateString}" />
+												</td>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_actualEndDateString}" />
+												</th>
+												<td width="35%">
+													<h:outputText value="#{missionView.selectedMissionDetail.actualEndDateString}" />
+												</td>
+											</tr>
+											<tr>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_paymentDecisionIssued}" />
+												</th>
+												<td width="85%" colspan="3">
+													<h:outputText value="#{msgs.label_yes}" rendered="#{missionView.selectedMissionDetail.paymentDecisionIssuedFlagBoolean}" />
+													<h:outputText value="#{msgs.label_no}" rendered="#{!missionView.selectedMissionDetail.paymentDecisionIssuedFlagBoolean}" />
+												</td>
+											</tr>
+											<h:panelGroup rendered="#{missionView.selectedMissionDetail.paymentDecisionIssuedFlagBoolean}">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_paymentDecisionIssuedNumber}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{missionView.selectedMissionDetail.paymentDecisionNumber}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_paymentDecisionIssuedDate}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{missionView.selectedMissionDetail.paymentDecisionDateString}" />
+													</td>
+												</tr>
+											</h:panelGroup>
+											<tr>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_missionAbsence}" />
+												</th>
+												<td width="35%">
+													<h:outputText value="#{msgs.label_yes}" rendered="#{missionView.selectedMissionDetail.absenceFlagBoolean}" />
+													<h:outputText value="#{msgs.label_no}" rendered="#{!missionView.selectedMissionDetail.absenceFlagBoolean}" />
+												</td>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_missionAbsenceReasonsId}" rendered="#{missionView.selectedMissionDetail.absenceFlagBoolean}" />
+												</th>
+												<td width="35%">
+													<h:outputText value="#{missionView.selectedMissionDetail.absenceReasons}" rendered="#{missionView.selectedMissionDetail.absenceFlagBoolean}" />
+												</td>
+											</tr>
+											<tr>
+												<th width="15%">
+													<h:outputText value="#{missionView.mode == 3 ? msgs.label_missionNoApprovalofTheExcept : msgs.label_missionNoApprovalofTheMinistryOfInteriorExcept}" />
+												</th>
+												<td width="35%">
+													<h:outputText value="#{missionView.selectedMissionDetail.exceptionalApprovalNumber}" />
+												</td>
+
+												<th width="15%">
+													<h:outputText value="#{missionView.mode == 3 ? msgs.label_missionDateApprovalofTheExcept : msgs.label_missionDateApprovalofTheMinistryOfInteriorExcept}" />
+												</th>
+												<td width="35%">
+													<h:outputText value="#{missionView.selectedMissionDetail.exceptionalApprovalDateString}" />
+												</td>
+											</tr>
+											<tr>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_missionTheRouteLine}" />
+												</th>
+												<td width="85%" colspan="3">
+													<h:outputText value="#{missionView.selectedMissionDetail.roadLine}" />
+												</td>
+											</tr>
+											<tr>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_notes}" />
+												</th>
+												<td width="85%" colspan="3">
+													<h:outputText value="#{missionView.selectedMissionDetail.remarks}" />
+												</td>
+											</tr>
+										</table>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</rich:collapsiblePanel>
+				</td>
+			</tr>
+		</table>
+	</h:form>
+</h:body>
+</html>

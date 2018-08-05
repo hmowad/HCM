@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+			function validate () {
+				
+				var externalPartyId = document.getElementById( 'militaryExtCourseEventRegistrationFormId:externalPartyIdHId' ).value;
+				var trainingCourseId = document.getElementById( 'militaryExtCourseEventRegistrationFormId:trainingCourseIdHId' ).value;
+				var weeksCountValue = document.getElementById( 'militaryExtCourseEventRegistrationFormId:weeksCountId' ).value;
+				var candidatesCountValue = document.getElementById( 'militaryExtCourseEventRegistrationFormId:candidatesCountId' ).value;
+				var startDateValue = document.getElementById( 'militaryExtCourseEventRegistrationFormId:startDateId:day' ).value;
+				var endDateValue = document.getElementById( 'militaryExtCourseEventRegistrationFormId:endDateId:day').value;
+				var trainingCoursePrequisitiesValue = document.getElementById( 'militaryExtCourseEventRegistrationFormId:trainingCoursePrequisitiesId' ).value;
+
+				if ( externalPartyId == null || externalPartyId == '' ) {
+					alert( '#{msgs.error_externalPartyMandatory}' );
+					return false;
+				}
+				if ( trainingCourseId == null || trainingCourseId == '' ) {
+					alert( '#{msgs.error_courseNameMandatory}' );
+					return false;
+				}
+				if ( startDateValue == 0 ) {
+					alert( '#{msgs.error_courseStartDateMandatory}' );
+					return false;
+				}
+				if ( endDateValue == 0 ) {
+					alert( '#{msgs.error_courseEndDateMandatory}' );
+					return false;
+				}
+				if ( weeksCountValue == null || weeksCountValue == '' ) {
+					alert( '#{msgs.error_weeksCountMandatory}' );
+					return false;
+				} else if ( parseInt( weeksCountValue ) <= 0 || parseInt( weeksCountValue ) > 52 ) {
+					alert( '#{msgs.error_weeksCountRange}' );
+					return false;
+				}
+				if ( candidatesCountValue == null || candidatesCountValue == '' ) {
+					alert( '#{msgs.error_candidatesCountMandatory}' );
+					return false;
+				} else if ( parseInt( candidatesCountValue ) <= 0 || parseInt( candidatesCountValue ) > 99 ) {
+					alert( '#{msgs.error_weeksCountRange}' );
+					return false;
+				}
+				if ( trainingCoursePrequisitiesValue == null || trainingCoursePrequisitiesValue == '' ) {
+					alert( '#{msgs.error_coursePrequisitiesMandatory}' );
+					return false;
+				}
+				return true;
+			}
+			
+			function getExternalParties () {
+				openExternalPartiesMiniSearch( '#{request.contextPath}', 'handleExternalPartiesMiniSearchResult(ret)', 2, 0 );
+			}
+
+			function handleExternalPartiesMiniSearchResult ( ret ) {
+				if ( ret != null ) {
+					document.getElementById( 'militaryExtCourseEventRegistrationFormId:externalPartyIdHId' ).value = ret[ 0 ];
+					document.getElementById( 'militaryExtCourseEventRegistrationFormId:externalPartyNameId' ).innerHTML = ret[ 1 ];
+					document.getElementById( 'militaryExtCourseEventRegistrationFormId:externalPartyDescHId' ).value = ret[ 1 ];
+				}
+			}
+
+			function getTrainingCourse () {
+				openTrainingCoursesMiniSearch( '#{request.contextPath}', 'handleCoursesMiniSearch(ret)', 2 );
+			}
+
+			function handleCoursesMiniSearch ( ret ) {
+				if ( ret != null ) {
+					document.getElementById( 'militaryExtCourseEventRegistrationFormId:trainingCourseIdHId' ).value = ret[ 0 ];
+					document.getElementById( 'militaryExtCourseEventRegistrationFormId:trainingCourseNameId' ).innerHTML = ret[ 1 ];
+					document.getElementById( 'militaryExtCourseEventRegistrationFormId:trainingCourseNameHId' ).value = ret[ 1 ];
+					document.getElementById('militaryExtCourseEventRegistrationFormId:selectTrainingCourseBtnId').click();
+				}
+			}
+
+		//]]>
+	</script>
+</h:head>
+
+<h:body styleClass="screenBg">
+	<h:form id="militaryExtCourseEventRegistrationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{militaryExtCourseEventRegistration.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_externalCourseEventData}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="externalCourseEventDataPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_theTrainingUnit}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:outputText id="externalPartyNameId" value="#{militaryExtCourseEventRegistration.courseEventData.externalPartyDesc}" />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getExternalParties(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											<h:inputHidden id="externalPartyIdHId" value="#{militaryExtCourseEventRegistration.courseEventData.externalPartyId}" />
+											<h:inputHidden id="externalPartyDescHId" value="#{militaryExtCourseEventRegistration.courseEventData.externalPartyDesc}" />
+										</td>
+										<td width="50%" colspan="2" />
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_trainingCourseName}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:outputText id="trainingCourseNameId" value="#{militaryExtCourseEventRegistration.courseEventData.courseName}" />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getTrainingCourse(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											<h:commandButton id="selectTrainingCourseBtnId" style="display:none;" action="#{militaryExtCourseEventRegistration.getTrainingCourseData()}">
+												<f:ajax execute="militaryExtCourseEventRegistrationFormId:externalCourseEventDataPanelId" render="militaryExtCourseEventRegistrationFormId:externalCourseEventDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:inputHidden id="trainingCourseIdHId" value="#{militaryExtCourseEventRegistration.courseEventData.courseId}" />
+											<h:inputHidden id="trainingCourseNameHId" value="#{militaryExtCourseEventRegistration.courseEventData.courseName}" />
+										</td>
+										<td width="50%" colspan="2" />
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_courseStartDate}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%">
+											<util:hijri id="startDateId" value="#{militaryExtCourseEventRegistration.courseEventData.plannedStartDate}" nullable="true" listenerMethod="#{militaryExtCourseEventRegistration.manipulateEndDate()}" onChangeAjaxSubmit="true" reRenderIds="militaryExtCourseEventRegistrationFormId:externalCourseEventDataPanelId" onAjaxEvent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+										</td>
+										<th width="15%">
+											#{msgs.label_courseEndDate}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%">
+											<util:hijri id="endDateId" value="#{militaryExtCourseEventRegistration.courseEventData.plannedEndDate}" nullable="true" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_weeksCount}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="weeksCountId" value="#{militaryExtCourseEventRegistration.courseEventData.weeksCount}" onkeypress="return isDigit(event);" styleClass="inputDataNormal" maxlength="2">
+												<f:ajax event="change" listener="#{militaryExtCourseEventRegistration.manipulateEndDate()}" execute="@form" render="@form" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:inputText>
+										</td>
+										<th width="15%">
+											#{msgs.label_candidatesCount}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="candidatesCountId" value="#{militaryExtCourseEventRegistration.courseEventData.candidatesMax}" onkeypress="return isDigit(event);" styleClass="inputDataNormal" maxlength="2" />
+										</td>
+
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_coursePrequisities}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:inputTextarea id="trainingCoursePrequisitiesId" styleClass="inputDataSuperLarge" value="#{militaryExtCourseEventRegistration.courseEventData.prerquisites}" rows="3" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" />
+										</td>
+										<td width="50%" colspan="2" />
+									</tr>
+
+									<tr>
+										<th width="15%">#{msgs.label_syllabusAttachments}</th>
+										<td width="35%">
+											<code:attachments loginEmpId="#{militaryExtCourseEventRegistration.loginEmpData.empId}" attachmentId="#{militaryExtCourseEventRegistration.courseEventData.attachments}" addEnableFlag="true" viewEnableFlag="true" deleteEnableFlag="true" />
+										</td>
+										<td width="50%" colspan="2" />
+									</tr>
+
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+						<h:panelGroup id="actionsPanelId">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton id="saveBtnId" action="#{militaryExtCourseEventRegistration.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validate()');" rendered="#{militaryExtCourseEventRegistration.courseEventData.id == null}">
+											<f:ajax execute="militaryExtCourseEventRegistrationFormId:externalCourseEventDataPanelId militaryExtCourseEventRegistrationFormId:notifyMessagesId" render="militaryExtCourseEventRegistrationFormId:externalCourseEventDataPanelId militaryExtCourseEventRegistrationFormId:actionsPanelId militaryExtCourseEventRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+										<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{militaryExtCourseEventRegistration.reset()}">
+											<f:ajax render="militaryExtCourseEventRegistrationFormId:externalCourseEventDataPanelId militaryExtCourseEventRegistrationFormId:actionsPanelId militaryExtCourseEventRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:composite="http://java.sun.com/jsf/composite">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+		function getEmployee() {
+			if(#{scholarshipDecisionsInquiry.trainingUnitManagerFlag}) {
+				openEmployeesMiniSearch('#{request.contextPath}','handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1,-1, #{scholarshipDecisionsInquiry.getLoginEmpPhysicalRegionFlag(true)});
+			} else {
+				openEmpsMiniSearch('#{request.contextPath}','handleEmpMiniSearchResult(ret)', 9, -1, -1, -1, -1, -1, '#{scholarshipDecisionsInquiry.loginEmpData.physicalUnitHKey}');
+			}
+		}
+		function handleEmpMiniSearchResult(ret) {
+			if (ret != null) {
+				document
+						.getElementById('scholarshipDecisionsInquiryFormId:employeeHId').value = ret[0];
+				document
+						.getElementById('scholarshipDecisionsInquiryFormId:employeeNameId').innerHTML = ret[1];
+
+			}
+		}
+		function validateInput() {
+			empId = document
+					.getElementById('scholarshipDecisionsInquiryFormId:employeeHId').value
+			if (empId == null || empId == '-1') {
+				alert("#{msgs.error_insertEmployeeFirst}");
+				return false;
+			}
+			return true;
+		}
+		// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="scholarshipDecisionsInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{scholarshipDecisionsInquiry.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_trainingEmpName}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText id="employeeNameId" value="#{scholarshipDecisionsInquiry.selectedEmployeeName}" />
+										<h:commandButton rendered="#{scholarshipDecisionsInquiry.trainingUnitManagerFlag or scholarshipDecisionsInquiry.loginEmpData.isManager == 1}" value="#{msgs.fa_external_link}" onclick="getEmployee(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										<h:inputHidden id="employeeHId" value="#{scholarshipDecisionsInquiry.selectedEmployeeId}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_decisionType}</th>
+									<td width="35%">
+										<h:selectOneMenu value="#{scholarshipDecisionsInquiry.decisionType}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItem itemLabel="#{msgs.label_scholarShipDecision}" itemValue="43" />
+											<f:selectItem itemLabel="#{msgs.label_scholarShipExtensionDecision}" itemValue="44" />
+											<f:selectItem itemLabel="#{msgs.label_scholarShipTerminationDecision}" itemValue="45" />
+											<f:selectItem itemLabel="#{msgs.label_scholarShipCancelDecision}" itemValue="46" />
+										</h:selectOneMenu>
+									</td>
+									<th width="15%">#{msgs.label_decisionNumber}</th>
+									<td width="35%">
+										<h:inputText id="ministerialDecisionNumberId" value="#{scholarshipDecisionsInquiry.decisionNumber}" maxlength="50" />
+									</td>
+								</tr>
+
+
+
+							</table>
+
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{scholarshipDecisionsInquiry.search()}" onclick="return validateInput();" styleClass="btn_normal_icon">
+										<f:ajax execute="scholarshipDecisionsInquiryFormId:searchPanelId" render="scholarshipDecisionsInquiryFormId:scholarshipDecisionsTableId scholarshipDecisionsInquiryFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{scholarshipDecisionsInquiry.reset()}" styleClass="btn_normal_icon">
+										<f:ajax render="scholarshipDecisionsInquiryFormId:searchPanelId scholarshipDecisionsInquiryFormId:scholarshipDecisionsTableId scholarshipDecisionsInquiryFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_scholarshipDecisionsLetters}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="scholarshipDecisionsTableId">
+							<rich:dataTable rowKeyVar="index" var="decision" value="#{scholarshipDecisionsInquiry.trainingTransactionDetails}" rows="#{scholarshipDecisionsInquiry.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+								<rich:column style="width : 5%">
+									<f:facet name="header">#</f:facet>
+	                               				 #{index + 1}
+	                        				</rich:column>
+								<rich:column style="width : 20%">
+									<f:facet name="header"> #{msgs.label_trainingEmpName} </f:facet>
+									<h:outputText value="#{decision.employeeName}" />
+								</rich:column>
+								<rich:column style="width : 20%">
+									<f:facet name="header"> #{msgs.label_decisionType} </f:facet>
+									<h:outputText value="#{msgs.label_scholarShipDecision}" rendered="#{decision.transactionTypeId == 43}" />
+									<h:outputText value="#{msgs.label_scholarShipExtensionDecision}" rendered="#{decision.transactionTypeId == 44}" />
+									<h:outputText value="#{msgs.label_scholarShipTerminationDecision}" rendered="#{decision.transactionTypeId == 45}" />
+									<h:outputText value="#{msgs.label_scholarShipCancelDecision}" rendered="#{decision.transactionTypeId == 46}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header"> #{msgs.label_decisionNumber} </f:facet>
+									<h:outputText value="#{decision.decisionNumber}" />
+								</rich:column>
+								<rich:column style="width : 15%">
+									<f:facet name="header"> #{msgs.label_decisionDate} </f:facet>
+									<h:outputText value="#{decision.decisionDateString}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header"> #{msgs.label_reportingNumber} </f:facet>
+									<h:outputText value="#{decision.ministryReportNumber}" />
+								</rich:column>
+								<rich:column style="width : 15%">
+									<f:facet name="header"> #{msgs.label_reportingDate} </f:facet>
+									<h:outputText value="#{decision.ministryReportDateString}" />
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header"> #{msgs.label_print} </f:facet>
+									<h:commandButton value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" styleClass="btn_icon" action="#{scholarshipDecisionsInquiry.print(decision)}" />
+								</rich:column>
+
+								<f:facet name="footer">
+									<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+										<f:facet name="first">#{msgs.label_first}</f:facet>
+										<f:facet name="last">#{msgs.label_last}</f:facet>
+										<f:facet name="next">#{msgs.label_next}</f:facet>
+										<f:facet name="previous">#{msgs.label_previous}</f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

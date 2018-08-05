@@ -1,0 +1,324 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="javascript/utilities.js" target="head" />
+	<script type="text/javascript">
+	 function getUnit(contextPath, unitTypeCode, unitParentId){
+         openUnitsMiniSearch(3, contextPath, 'handleUnitMiniSearchResult(ret)', unitTypeCode, '-1', unitParentId);
+      }
+	 
+	 function handleUnitMiniSearchResult(ret){
+		 if(ret != null){
+        	 if(ret[0] == document.getElementById('unitMergeFormId:baseUniId').value ){
+     			alert('#{msgs.error_sameUnitViolation}');
+               	return;
+     		 }
+        	 document.getElementById('unitMergeFormId:unitIdSubmit').value = ret[0];
+        	 document.getElementById('unitMergeFormId:tableInsertionButtonId').click();
+        }
+	 }
+	
+	function validateData(){
+        var unitNewName = document.getElementById('unitMergeFormId:unitNewNameId').value;
+        if(unitNewName == null || unitNewName == ''){
+            alert('#{msgs.error_unitNameMandatory}');
+            return false;
+        }
+
+        var unitOrder = document.getElementById('unitMergeFormId:unitOrderId').value;
+        if(unitOrder == null || unitOrder == ''){
+            alert('#{msgs.error_unitOrderMandatory}');
+            return false;
+        }
+
+        var decNumber = document.getElementById('unitMergeFormId:decNumberId').value;
+        if(decNumber == null || decNumber == ''){
+            alert('#{msgs.error_decNumberMandatory}');
+            return false;
+        }
+
+        var attachmentsDoneFlag = document.getElementById('unitMergeFormId:attachmentsDoneFlagId').checked;
+        if(! attachmentsDoneFlag){
+            alert('#{msgs.error_attachmentsMandatory}');
+            return false;
+        }
+
+        document.getElementById('unitMergeFormId:attachmentsDoneFlagId').checked = false;
+        return true;
+      }
+</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{unitMerge.init}" />
+	<h:form id="unitMergeFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<a4j:status onstart="#{rich:component('reload')}.hide()" />
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_unitMerge}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="35%" valign="top">
+									<!-- tree -->
+									<table cellpadding="0" cellspacing="0" width="98%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsTree}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:inputText id="searchNameValue" value="#{unitMerge.searchName}" styleClass="inputDataLarge" onkeypress="return pressEnter(event);" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_search}" action="#{unitMerge.search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+																<f:ajax render="unitMergeFormId:treePanelId unitMergeFormId:unitInformationPanelId unitMergeFormId:notifyMessagesId unitMergeFormId:mergedUnitsDataListId" execute="searchNameValue" />
+															</h:commandButton>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" colspan="2">
+															<h:panelGroup id="treePanelId">
+																<rich:tree id="unitTreeId" toggleListener="#{unitMerge.treeToggleHandler(item)}" render="treePanelId" value="#{unitMerge.unitTree}" var="item" dir="#{msgs.dir}" nodeType="unitType">
+																	<rich:treeNode type="unitType" expanded="#{item.expanded}" iconExpanded="/resources/images/#{item.unitType}.png" iconCollapsed="/resources/images/#{item.unitType}.png" iconLeaf="/resources/images/#{item.unitType}.png">
+																		<h:commandLink value="#{item.unitName}" action="#{unitMerge.click(item)}">
+																			<f:ajax render="unitMergeFormId:unitInformationPanelId unitMergeFormId:addButtonId unitMergeFormId:mergedUnitsDataListId" />
+																		</h:commandLink>
+																	</rich:treeNode>
+																</rich:tree>
+																<h:outputStylesheet library="css" name="tree.css" />
+															</h:panelGroup>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="65%" valign="top">
+									<h:panelGroup id="unitInformationPanelId">
+										<!-- tree from -->
+										<table border="0" cellpadding="0" cellspacing="0" width="100%">
+											<tr>
+												<td>
+													<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td>#{msgs.label_unitDetails}</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+											<tr>
+												<td width="100%">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<th width="20%">
+																#{msgs.label_decNumber}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="30%">
+																<h:inputText id="decNumberId" value="#{unitMerge.decNumber}" maxlength="50" />
+															</td>
+															<th width="20%">#{msgs.label_decisionDate}</th>
+															<td width="30%">
+																<util:hijri value="#{unitMerge.decDate}" />
+															</td>
+														</tr>
+														<tr>
+															<th width="20%">#{msgs.label_unitType}</th>
+															<td width="30%">
+																<h:outputText id="unitTypeId" value="#{unitMerge.selectedUnitData.unitTypeDesc}" />
+															</td>
+															<th width="20%">#{msgs.label_region}</th>
+															<td width="30%">
+																<h:outputText id="unitRegionId" value="#{unitMerge.selectedUnitData.regionDesc}" />
+															</td>
+														</tr>
+
+														<tr>
+															<th width="20%">#{msgs.label_parentUnit}</th>
+															<td width="30%">
+																<h:outputText id="parentUnitNameId" value="#{unitMerge.selectedUnitData.parentUnitName}" />
+															</td>
+															<th width="20%">
+																#{msgs.label_unitOrderUnderParent}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="30%">
+																<h:inputText id="unitOrderId" value="#{unitMerge.selectedUnitData.orderUnderParent}" onkeypress="return isDigit(event);" maxlength="2" />
+															</td>
+														</tr>
+
+														<tr>
+															<th width="20%">#{msgs.label_unitName}</th>
+															<td width="80%" colspan="3">
+																<h:outputText id="unitNameId" value="#{unitMerge.selectedUnitData.name}" />
+																<h:inputHidden id="baseUniId" value="#{unitMerge.selectedUnitData.id}" />
+															</td>
+														</tr>
+
+														<tr>
+															<th width="20%">
+																#{msgs.label_unitNewName}
+																<font style="color: red;">*</font>
+															</th>
+															<td width="80%" colspan="3">
+																<h:inputText id="unitNewNameId" styleClass="inputDataLarge" value="#{unitMerge.selectedUnitData.newName}" maxlength="200" />
+															</td>
+														</tr>
+
+														<tr>
+															<th width="20%">#{msgs.label_orgRemarks}</th>
+															<td width="80%" colspan="3">
+																<h:inputText id="remarksId" styleClass="inputDataLarge" value="#{unitMerge.selectedUnitData.remarks}" maxlength="500" />
+															</td>
+														</tr>
+
+														<tr>
+															<th width="20%">#{msgs.label_attachments}</th>
+															<td width="30%">
+																<h:panelGroup id="attachmentComponentPanelId">
+																	<code:attachments id="attachmentComponentId" loginEmpId="#{unitMerge.loginEmpData.empId}" attachmentId="#{unitMerge.selectedUnitData.attachments}" addEnableFlag="true" viewEnableFlag="true" deleteEnableFlag="true" />
+																</h:panelGroup>
+															</td>
+															<th width="20%">#{msgs.label_attachmentsDoneFlag}</th>
+															<td width="30%">
+																<h:selectBooleanCheckbox id="attachmentsDoneFlagId" />
+															</td>
+														</tr>
+
+													</table>
+												</td>
+											</tr>
+										</table>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_mergedUnitsData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table style="text-align: right;" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="addButtonId" onclick="getUnit('#{request.contextPath}', #{unitMerge.selectedUnitData.unitTypeCode}, #{unitMerge.selectedUnitData.parentUnitId}); return false;" value="#{msgs.label_add}" styleClass="btn_normal" />
+									<h:commandButton id="tableInsertionButtonId" action="#{unitMerge.addUnitToTable}" style="display: none">
+										<f:ajax execute="unitMergeFormId:unitIdSubmit" render="unitMergeFormId:mergedUnitsDataListId unitMergeFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:inputHidden id="unitIdSubmit" value="#{unitMerge.unitId}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td align="center" width="100%">
+						<!-- Transactions Grid -->
+						<rich:dataTable id="mergedUnitsDataListId" var="unit" rowKeyVar="index" value="#{unitMerge.mergedUnitList}" rows="#{unitMerge.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+							<rich:column>
+								<f:facet name="header">#</f:facet>
+                                    #{index + 1}
+                                </rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_unitType}" />
+								</f:facet>
+								<h:outputText value="#{unit.unitTypeDesc}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_unitName}" />
+								</f:facet>
+								<h:outputText value="#{unit.name}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_parentUnit}" />
+								</f:facet>
+								<h:outputText value="#{unit.parentUnitName}" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">#{msgs.label_delete}</f:facet>
+								<h:commandButton value="#{msgs.fa_times}" action="#{unitMerge.removeUnitFromTable(unit)}" onclick="return confirm('#{msgs.q_delete}');" title="#{msgs.label_delete}" styleClass="btn_icon">
+									<f:ajax render="unitMergeFormId:mergedUnitsDataListId unitMergeFormId:notifyMessagesId" />
+								</h:commandButton>
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller>
+									<f:facet name="first">
+                                            #{msgs.label_first}
+                                    </f:facet>
+									<f:facet name="last">
+                                            #{msgs.label_last}
+                                    </f:facet>
+									<f:facet name="next">
+                                            #{msgs.label_next}
+                                    </f:facet>
+									<f:facet name="previous">
+                                           #{msgs.label_previous}
+                                   </f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton action="#{unitMerge.merge}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');" styleClass="btn_normal_icon">
+										<f:ajax render="unitMergeFormId:notifyMessagesId unitMergeFormId:treePanelId unitMergeFormId:unitInformationPanelId unitMergeFormId:mergedUnitsDataListId" execute="@form" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

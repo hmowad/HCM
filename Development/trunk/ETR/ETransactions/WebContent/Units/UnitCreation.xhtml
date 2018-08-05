@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+
+	function validateData(){
+		var unitType = document.getElementById('unitCreationFormId:unitTypeId').value;
+        if(unitType == 0){
+            alert('#{msgs.error_unitTypeMandatory}');
+            return false;
+        }
+        
+        var unitName = document.getElementById('unitCreationFormId:unitNameId').value;
+        if(unitName == null || unitName == ''){
+            alert('#{msgs.error_unitNameMandatory}');
+            return false;
+        }
+
+        var unitRegion = document.getElementById('unitCreationFormId:unitRegionId').value;
+        if(unitRegion == 0){
+            alert('#{msgs.error_unitRegionMandatory}');
+            return false;
+        }
+
+        var unitOrder = document.getElementById('unitCreationFormId:unitOrderId').value;
+        if(unitOrder == null || unitOrder == ''){
+            alert('#{msgs.error_unitOrderMandatory}');
+            return false;
+        }
+        
+        var decNumber = document.getElementById('unitCreationFormId:decNumberId').value;
+        if(decNumber == null || decNumber == ''){
+            alert('#{msgs.error_decNumberMandatory}');
+            return false;
+        }
+
+        var atatchmentsDoneFlag = document.getElementById('unitCreationFormId:attachmentsDoneFlagId').checked;
+        if(! atatchmentsDoneFlag){
+            alert('#{msgs.error_attachmentsMandatory}');
+            return false;
+        }
+        
+        document.getElementById('unitCreationFormId:attachmentsDoneFlagId').checked = false;
+        return true;
+      }
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{unitCreation.init}" />
+	<h:form id="unitCreationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<a4j:status onstart="#{rich:component('reload')}.hide()" />
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_unitCreation}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="35%" valign="top">
+									<!-- tree -->
+									<table cellpadding="0" cellspacing="0" width="98%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsTree}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:inputText id="searchNameValue" value="#{unitCreation.searchName}" styleClass="inputDataLarge" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_search}" action="#{unitCreation.search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+																<f:ajax render="unitCreationFormId:treePanelId unitCreationFormId:unitInformationPanelId unitCreationFormId:notifyMessagesId" execute="searchNameValue" />
+															</h:commandButton>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<h:panelGroup id="treePanelId">
+																<rich:tree id="unitTreeId" toggleListener="#{unitCreation.treeToggleHandler(item)}" render="treePanelId" value="#{unitCreation.unitTree}" var="item" dir="#{msgs.dir}" nodeType="unitType">
+																	<rich:treeNode type="unitType" expanded="#{item.expanded}" iconExpanded="/resources/images/#{item.unitType}.png" iconCollapsed="/resources/images/#{item.unitType}.png" iconLeaf="/resources/images/#{item.unitType}.png" title="#{item.orderUnderParent}">
+																		<h:commandLink value="#{item.unitName}" action="#{unitCreation.click(item)}">
+																			<f:ajax render="unitCreationFormId:unitInformationPanelId" />
+																		</h:commandLink>
+																	</rich:treeNode>
+																</rich:tree>
+																<h:outputStylesheet library="css" name="tree.css" />
+															</h:panelGroup>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="65%" valign="top">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+
+												<h:panelGroup id="unitInformationPanelId">
+													<!-- tree from -->
+													<table border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<td>
+																<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<td>#{msgs.label_unitDetails}</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+														<tr>
+															<td width="100%">
+																<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<th width="20%">
+																			#{msgs.label_decNumber}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<h:inputText id="decNumberId" value="#{unitCreation.decNumber}" maxlength="50" />
+																		</td>
+																		<th width="20%">
+																			#{msgs.label_decisionDate}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<util:hijri value="#{unitCreation.decDate}" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">
+																			#{msgs.label_unitType}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<h:selectOneMenu id="unitTypeId" value="#{unitCreation.newUnit.unitTypeId}">
+																				<f:selectItem itemLabel="" itemValue="0" />
+																				<f:selectItems value="#{unitCreation.allUnitTypeList}" var="unit" itemLabel="#{unit.description}" itemValue="#{unit.id}" />
+																			</h:selectOneMenu>
+																		</td>
+
+																		<th width="20%">
+																			#{msgs.label_region}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<h:outputText id="unitRegionId" value="#{unitCreation.selectedUnitData.regionDesc}" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_parentUnit}</th>
+																		<td width="30%">
+																			<h:outputText id="parentUnitId" value="#{unitCreation.selectedUnitData.name}" />
+																		</td>
+																		<th width="20%">
+																			#{msgs.label_unitOrderUnderParent}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<h:inputText id="unitOrderId" value="#{unitCreation.newUnit.orderUnderParent}" onkeypress="return isDigit(event);" maxlength="2" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">
+																			#{msgs.label_unitName}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="80%" colspan="3">
+																			<h:inputText id="unitNameId" value="#{unitCreation.newUnit.name}" styleClass="inputDataLarge" maxlength="200" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%">#{msgs.label_orgRemarks}</th>
+																		<td width="80%" colspan="3">
+																			<h:inputText id="remarksId" styleClass="inputDataLarge" value="#{unitCreation.newUnit.remarks}" maxlength="500" />
+																		</td>
+																	</tr>
+
+																	<tr>
+																		<th width="20%" rowspan="2" valign="bottom">#{msgs.label_attachments}</th>
+																		<td width="30%" rowspan="2" valign="bottom">
+																			<h:panelGroup id="attachmentComponentPanelId">
+																				<code:attachments id="attachmentComponentId" loginEmpId="#{unitCreation.loginEmpData.empId}" attachmentId="#{unitCreation.newUnit.attachments}" addEnableFlag="true" viewEnableFlag="true" deleteEnableFlag="true" />
+																			</h:panelGroup>
+																		</td>
+																		<th width="20%">#{msgs.label_unitTargets}</th>
+																		<td width="30%">
+																			<h:selectOneRadio id="targetsArchivedId" value="#{unitCreation.newUnit.targetsArchivedFlag}">
+																				<f:selectItem itemLabel="#{msgs.label_archived}" itemValue="1" />
+																				<f:selectItem itemLabel="#{msgs.label_notArchived}" itemValue="0" />
+																			</h:selectOneRadio>
+																		</td>
+																	</tr>
+																	<tr>
+																		<th width="20%">#{msgs.label_unitDuties}</th>
+																		<td width="30%">
+																			<h:selectOneRadio id="dutiesArchivedId" value="#{unitCreation.newUnit.dutiesArchivedFlag}">
+																				<f:selectItem itemLabel="#{msgs.label_archived}" itemValue="1" />
+																				<f:selectItem itemLabel="#{msgs.label_notArchived}" itemValue="0" />
+																			</h:selectOneRadio>
+																		</td>
+																	</tr>
+																	<tr>
+																		<th width="20%" rowspan="3" valign="top">#{msgs.label_attachmentsDoneFlag}</th>
+																		<td width="30%" rowspan="3" valign="top">
+																			<h:selectBooleanCheckbox id="attachmentsDoneFlagId" />
+																		</td>
+																		<th width="20%">#{msgs.label_jobDesc}</th>
+																		<td width="30%">
+																			<h:selectOneRadio id="jobsArchivedId" value="#{unitCreation.newUnit.jobsArchivedFlag}">
+																				<f:selectItem itemLabel="#{msgs.label_archived}" itemValue="1" />
+																				<f:selectItem itemLabel="#{msgs.label_notArchived}" itemValue="0" />
+																			</h:selectOneRadio>
+																		</td>
+																	</tr>
+																	<tr>
+																		<th width="20%">#{msgs.label_organizationalDesc}</th>
+																		<td width="30%">
+																			<h:selectOneRadio id="organizationalArchivedId" value="#{unitCreation.newUnit.organizationalArchivedFlag}">
+																				<f:selectItem itemLabel="#{msgs.label_archived}" itemValue="1" />
+																				<f:selectItem itemLabel="#{msgs.label_notArchived}" itemValue="0" />
+																			</h:selectOneRadio>
+																		</td>
+																	</tr>
+																	<tr>
+																		<th width="20%">#{msgs.label_equipmentDesc}</th>
+																		<td width="30%">
+																			<h:selectOneRadio id="equipmentsArchivedId" value="#{unitCreation.newUnit.equipmentsArchivedFlag}">
+																				<f:selectItem itemLabel="#{msgs.label_archived}" itemValue="1" />
+																				<f:selectItem itemLabel="#{msgs.label_notArchived}" itemValue="0" />
+																			</h:selectOneRadio>
+																		</td>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+
+											</td>
+										</tr>
+
+										<tr>
+											<td width="100%" height="15" />
+										</tr>
+
+										<tr>
+											<td width="100%">
+												<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:commandButton action="#{unitCreation.save}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');" styleClass="btn_normal_icon">
+																<f:ajax render="unitCreationFormId:notifyMessagesId unitCreationFormId:treePanelId unitCreationFormId:unitInformationPanelId" execute="unitInformationPanelId" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">   
+	
+	function getUnit() {
+		var regionIdValue;
+			regionIdValue= document.getElementById('employeesNavyFormationReportFormId:formationRegionIDId').value
+		
+		openUnitsMiniSearch(2, '#{request.contextPath}', 'handleUnitMiniSearchResult(ret)', -1, regionIdValue, -1);
+	}
+
+	function handleUnitMiniSearchResult(ret) {
+		if (ret != null) {
+				document.getElementById('employeesNavyFormationReportFormId:formationUnitIDId').value = ret[0];
+				document.getElementById('employeesNavyFormationReportFormId:formationUnitFullNameId').innerHTML = ret[1];
+				
+				document.getElementById('employeesNavyFormationReportFormId:formationEmpIDId').value = -1;
+		        document.getElementById('employeesNavyFormationReportFormId:formationEmpNameId').innerHTML = '';
+			
+		}
+	}
+	function getEmployee(){
+		var regionId= document.getElementById('employeesNavyFormationReportFormId:formationRegionIDId').value;
+		openEmployeesMiniSearch('#{request.contextPath}', 'handleEmpMiniSearchResult(ret)', 1, #{employeesNavyFormationReport.mode}, -1, -1 , -1, -1, -1, regionId)
+	}
+	
+	function handleEmpMiniSearchResult(ret){
+		if(ret!=null){ 
+	         document.getElementById('employeesNavyFormationReportFormId:formationEmpIDId').value=ret[0];
+	         document.getElementById('employeesNavyFormationReportFormId:formationEmpNameId').innerHTML = ret[1];
+		}
+	}
+    </script>
+</h:head>
+
+<h:body styleClass="screenBg">
+	<h:form id="employeesNavyFormationReportFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{employeesNavyFormationReport.screenTitle}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<h:panelGroup id="searchDataId">
+							<table width="100%" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td>#{msgs.label_searchData}</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<th width="15%">#{msgs.label_region}</th>
+												<td width="35%">
+													<h:selectOneMenu id="formationRegionIDId" value="#{employeesNavyFormationReport.regionId}" disabled="#{employeesNavyFormationReport.getLoginEmpPhysicalRegionFlag(true) != -1}">
+														<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+														<f:selectItems value="#{employeesNavyFormationReport.regionsList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+														<f:ajax event="change" listener="#{employeesNavyFormationReport.regionChangeListener()}" render="employeesNavyFormationReportFormId:formationUnitFullNameId employeesNavyFormationReportFormId:formationUnitIDId employeesNavyFormationReportFormId:formationEmpNameId  employeesNavyFormationReportFormId:formationEmpIDId" />
+													</h:selectOneMenu>
+												</td>
+												<th width="15%">#{msgs.label_orgUnit}</th>
+												<td width="35%">
+													<h:outputText id="formationUnitFullNameId" value="#{employeesNavyFormationReport.unitFullName}" />
+													<h:inputHidden id="formationUnitIDId" value="#{employeesNavyFormationReport.unitId}" />
+													<h:outputText value=" " />
+													<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+												</td>
+											</tr>
+											<tr>
+												<th width="15%">#{msgs.label_emp}</th>
+												<td width="35%">
+													<h:outputText id="formationEmpNameId" value="#{employeesNavyFormationReport.empName}" />
+													<h:inputHidden id="formationEmpIDId" value="#{employeesNavyFormationReport.empId}" />
+													<h:outputText value=" " />
+													<h:commandButton value="#{msgs.fa_external_link}" onclick="getEmployee(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+												</td>
+												<th width="15%">#{msgs.label_navyFormationData}</th>
+												<td width="35%">
+													<h:inputText id="navyFormationDescriptionId" value="#{employeesNavyFormationReport.navyFormationDescription}" />
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton action="#{employeesNavyFormationReport.print()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									<h:commandButton action="#{employeesNavyFormationReport.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="employeesNavyFormationReportFormId:searchDataId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

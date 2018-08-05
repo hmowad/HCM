@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript"> 
+	//<![CDATA[
+		function getEmployee(contextPath){
+			openEmpsMiniSearch(contextPath,'handleEmpMiniSearchResult(ret)', 15, #{internalAssignmentRegistration.mode}, -1, -1, -1, -1, '#{internalAssignmentRegistration.physicalUnitHKey}');
+		}
+		
+		function handleEmpMiniSearchResult(ret){ 
+			if(ret!=null){
+				document.getElementById('internalAssignmentRegistration:employeeIDId').value=ret[0];
+				document.getElementById('internalAssignmentRegistration:employeeNameId').innerHTML=ret[1];
+				document.getElementById('internalAssignmentRegistration:getEmpBtnId').click();
+			}
+		}
+		
+		function getUnit() {
+			openUnitsMiniSearch(4, '#{request.contextPath}','handleUnitMiniSearchResult(ret)', -1, -1, #{internalAssignmentRegistration.physicalUnitId});
+		}
+		
+		function handleUnitMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('internalAssignmentRegistration:unitIDId').value = ret[0];
+				document.getElementById('internalAssignmentRegistration:unitFullNameId').innerHTML = ret[1];
+				document.getElementById('internalAssignmentRegistration:unitFullNameHId').value = ret[1];
+			}
+		}
+
+	    function checkAsManager() {
+		    var unitFullName = document.getElementById('internalAssignmentRegistration:unitFullNameId').innerHTML;
+		    var unitManagerFlag = document.getElementById('internalAssignmentRegistration:unitManagerFlagId').checked;
+		    
+	    	if(unitManagerFlag == true) {
+		    	if (unitFullName != null && unitFullName != '') {
+			    	if(!confirm("#{msgs.q_isAsManager} (" + unitFullName + ")")) {
+			    		document.getElementById('internalAssignmentRegistration:unitManagerFlagId').checked = false;
+			    	}
+		    	} else {
+		    		document.getElementById('internalAssignmentRegistration:unitManagerFlagId').checked = false;
+			    	alert("#{msgs.error_unitIsMandatory}");
+			    }
+	    	}
+	    }
+	    
+		function validateNameAndUnit() {
+			employeeIdValue = document.getElementById('internalAssignmentRegistration:employeeIDId').value;
+			unitIdValue = document.getElementById('internalAssignmentRegistration:unitIDId').value;
+			if ((employeeIdValue == null || employeeIdValue == '')) {
+						alert("#{msgs.error_employeeMandatory}");
+						return false;
+					}
+			else if ((unitIdValue == null || unitIdValue == '')){
+				alert("#{msgs.error_unitMandatory}");
+				return false;
+			}
+			return true;
+		}
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="internalAssignmentRegistration" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{internalAssignmentRegistration.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:panelGroup rendered="#{!internalAssignmentRegistration.hasPrivilege}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%">#{msgs.label_mvtInternalAssignmentPrivilege}</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{internalAssignmentRegistration.hasPrivilege}">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_InternalAssignmentData}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="dataPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+
+									<tr>
+										<th width="18%">
+											<h:outputText value="#{internalAssignmentRegistration.mode == 1 ? msgs.label_officer : (internalAssignmentRegistration.mode == 2 ? msgs.label_soldier : msgs.label_person)}" />
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="32%">
+											<h:outputText id="employeeNameId" value="#{internalAssignmentRegistration.movementTrans.employeeName}" />
+											<h:inputHidden id="employeeIDId" value="#{internalAssignmentRegistration.movementTrans.employeeId}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getEmployee('#{request.contextPath}');return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											<h:commandButton id="getEmpBtnId" style="display:none;" action="#{internalAssignmentRegistration.constructTransaction()}">
+												<f:ajax execute="internalAssignmentRegistration:employeeIDId" render="internalAssignmentRegistration:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_assignedAsManager}" />
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:selectBooleanCheckbox id="unitManagerFlagId" value="#{internalAssignmentRegistration.movementTrans.managerFlagBoolean}" onclick="checkAsManager()" />
+										</td>
+									</tr>
+									<tr>
+										<th>
+											#{msgs.label_internalAssignmentUnit}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td colspan="3">
+											<h:outputText id="unitFullNameId" value="#{internalAssignmentRegistration.movementTrans.unitFullName}" />
+											<h:inputHidden id="unitFullNameHId" value="#{internalAssignmentRegistration.movementTrans.unitFullName}" />
+											<h:inputHidden id="unitIDId" value="#{internalAssignmentRegistration.movementTrans.unitId}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+
+									</tr>
+									<tr>
+										<th>#{msgs.label_requiredAttachments}</th>
+										<td colspan="3">
+											<code:attachments loginEmpId="#{internalAssignmentRegistration.loginEmpData.empId}" attachmentId="#{internalAssignmentRegistration.movementTrans.attachments}" addEnableFlag="true" viewEnableFlag="true" deleteEnableFlag="true" />
+										</td>
+									</tr>
+									<tr>
+										<th>#{msgs.label_notes}</th>
+										<td colspan="3">
+											<h:inputText id="remarksId" styleClass="inputDataSuperLarge" value="#{internalAssignmentRegistration.movementTrans.remarks}" maxlength="500" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="actionsPanelId">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<h:commandButton id="saveBtnId" action="#{internalAssignmentRegistration.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validateNameAndUnit()');" rendered="#{internalAssignmentRegistration.movementTrans.id == null}">
+												<f:ajax execute="employeeIDId unitIDId unitFullNameHId unitManagerFlagId remarksId" render="internalAssignmentRegistration:actionsPanelId internalAssignmentRegistration:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:commandButton action="#{internalAssignmentRegistration.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+												<f:ajax render="internalAssignmentRegistration:dataPanelId internalAssignmentRegistration:actionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

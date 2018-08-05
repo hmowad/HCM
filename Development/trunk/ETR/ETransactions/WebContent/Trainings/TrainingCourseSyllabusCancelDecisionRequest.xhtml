@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+		function getMilitaryCourses() {
+			openTrainingCoursesMiniSearch('#{request.contextPath}',
+					'handleMilitaryCoursesMiniSearchResult(ret)', 2);
+		}
+
+		function handleMilitaryCoursesMiniSearchResult(ret) {
+			if (ret != null) {
+				document
+						.getElementById('trainingCourseSyllabusCancelDecisionRequestFormId:searchCourseIDId').value = ret[0];
+				document
+						.getElementById('trainingCourseSyllabusCancelDecisionRequestFormId:searchCourseDescId').innerHTML = ret[1];
+			}
+		}
+	
+		function validateRequest() {
+
+			var attachmentTypeCurriculumChecked = document
+					.getElementById('trainingCourseSyllabusCancelDecisionRequestFormId:attachmentsTypeId:0').checked;
+			var attachmentTypeScheduleChecked = document
+					.getElementById('trainingCourseSyllabusCancelDecisionRequestFormId:attachmentsTypeId:1').checked;
+			var attachmentTypeSyllabusChecked = document
+					.getElementById('trainingCourseSyllabusCancelDecisionRequestFormId:attachmentsTypeId:2').checked;
+
+			if (!attachmentTypeCurriculumChecked
+					&& !attachmentTypeScheduleChecked
+					&& !attachmentTypeSyllabusChecked) {
+				alert('#{msgs.error_contentTypeMandatory}');
+				return false;
+			}
+			var searchCourseIDId = document
+					.getElementById('trainingCourseSyllabusCancelDecisionRequestFormId:searchCourseIDId').value;
+			if (searchCourseIDId == null || searchCourseIDId == '') {
+				alert('#{msgs.error_courseNameMandatory}');
+				return false;
+			}
+			
+			return true;
+		}
+		// ]]>
+	</script>
+</h:head>
+
+<h:body styleClass="screenBg">
+	<h:form id="trainingCourseSyllabusCancelDecisionRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{trainingCourseSyllabusCancelDecisionRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requestData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15">#{msgs.label_contentType}</th>
+								<td width="85%">
+									<h:selectOneRadio disabled="#{trainingCourseSyllabusCancelDecisionRequest.role != 'Requester' and trainingCourseSyllabusCancelDecisionRequest.role != 'CommitteeSecretary'}" id="attachmentsTypeId" value="#{trainingCourseSyllabusCancelDecisionRequest.wfTrainingCourse.contentType}">
+										<f:selectItem itemLabel="#{msgs.label_curriculum}" itemValue="1" />
+										<f:selectItem itemLabel="#{msgs.label_schedule}" itemValue="2" />
+										<f:selectItem itemLabel="#{msgs.label_syllabus}" itemValue="3" />
+									</h:selectOneRadio>
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">
+									#{msgs.label_trainingCourseName}
+									<h:outputText value=" " />
+									<font style="color: red;">*</font>
+								</th>
+								<td width="85%">
+									<h:inputHidden id="searchCourseIDId" value="#{trainingCourseSyllabusCancelDecisionRequest.wfTrainingCourse.courseId}" />
+									<h:outputText id="searchCourseDescId" value="#{trainingCourseSyllabusCancelDecisionRequest.selectedCourseName}" />
+									<h:commandButton rendered="#{trainingCourseSyllabusCancelDecisionRequest.role == 'Requester' or trainingCourseSyllabusCancelDecisionRequest.role == 'CommitteeSecretary'}" onclick="getMilitaryCourses(); return false;" value="#{msgs.fa_external_link}" styleClass="btn_icon" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{trainingCourseSyllabusCancelDecisionRequest.role != 'Requester'}" value="#{trainingCourseSyllabusCancelDecisionRequest.prevTasks}" refuseRoles="SignManager,CommitteeSecretary,CommitteePresident," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{trainingCourseSyllabusCancelDecisionRequest.currentEmployee}" rendered="#{trainingCourseSyllabusCancelDecisionRequest.role != 'Requester' and trainingCourseSyllabusCancelDecisionRequest.role != 'Notification' and trainingCourseSyllabusCancelDecisionRequest.role != 'History'}">
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{trainingCourseSyllabusCancelDecisionRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{trainingCourseSyllabusCancelDecisionRequest.role != 'Requester'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{trainingCourseSyllabusCancelDecisionRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup rendered="#{trainingCourseSyllabusCancelDecisionRequest.role == 'Requester' }">
+							<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th>#{msgs.label_warnings}</th>
+								</tr>
+								<tr>
+									<td>
+										<h:outputText value="#{msgs.notify_copySyllabusAttachmentsToHistoricalSyllabusAttachments}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{trainingCourseSyllabusCancelDecisionRequest.role == 'Notification' or trainingCourseSyllabusCancelDecisionRequest.role == 'History'}" value="#{trainingCourseSyllabusCancelDecisionRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:commandButton action="#{trainingCourseSyllabusCancelDecisionRequest.print()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{(trainingCourseSyllabusCancelDecisionRequest.role == 'Notification' or trainingCourseSyllabusCancelDecisionRequest.role == 'History')and trainingCourseSyllabusCancelDecisionRequest.instanceApproved == 1}" />
+									<!-- Requester -->
+									<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" action="#{trainingCourseSyllabusCancelDecisionRequest.initWFTrainingCourse()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusCancelDecisionRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+
+									<!-- CommitteeSecretary -->
+									<h:commandButton id="approveCsBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;trainingCourseSyllabusCancelDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)',null);" action="#{trainingCourseSyllabusCancelDecisionRequest.approveWFTrainingCourseCS()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusCancelDecisionRequest.role == 'CommitteeSecretary'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectCsBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;trainingCourseSyllabusCancelDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{trainingCourseSyllabusCancelDecisionRequest.rejectWFTrainingCourseCS()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusCancelDecisionRequest.role == 'CommitteeSecretary'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+
+									<!-- CommitteePresident -->
+
+									<h:commandButton id="approveCpBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1,&quot;trainingCourseSyllabusCancelDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)',null);" action="#{trainingCourseSyllabusCancelDecisionRequest.approveWFTrainingCourseCP()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusCancelDecisionRequest.role == 'CommitteePresident'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectCpBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;trainingCourseSyllabusCancelDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{trainingCourseSyllabusCancelDecisionRequest.rejectWFTrainingCourseCP()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusCancelDecisionRequest.role == 'CommitteePresident'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="returnCpBtnId" onclick="return handleOnAction('#{msgs.q_returnToCommitteeSecretary}','validateRefuseAndNotes(2,&quot;trainingCourseSyllabusCancelDecisionRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;trainingCourseSyllabusCancelDecisionRequestFormId:curTaskId:notesId&quot;)',null);" action="#{trainingCourseSyllabusCancelDecisionRequest.returnWFTrainingCourseCP()}" value="#{msgs.label_returnToCommitteeSecretary} &nbsp; #{msgs.fa_undo}"
+										styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusCancelDecisionRequest.role == 'CommitteePresident'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- Sign manager -->
+									<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1,&quot;trainingCourseSyllabusCancelDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)',null);" action="#{trainingCourseSyllabusCancelDecisionRequest.approveWFTrainingCourseSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusCancelDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;trainingCourseSyllabusCancelDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{trainingCourseSyllabusCancelDecisionRequest.rejectWFTrainingCourseSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusCancelDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="returnSmBtnId" onclick="return handleOnAction('#{msgs.q_returnToCommitteeSecretary}','validateRefuseAndNotes(2,&quot;trainingCourseSyllabusCancelDecisionRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;trainingCourseSyllabusCancelDecisionRequestFormId:curTaskId:notesId&quot;)',null);" action="#{trainingCourseSyllabusCancelDecisionRequest.returnWFTrainingCourseSM()}" value="#{msgs.label_returnToCommitteeSecretary} &nbsp; #{msgs.fa_undo}"
+										styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusCancelDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="nBtnId" action="#{trainingCourseSyllabusCancelDecisionRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingCourseSyllabusCancelDecisionRequest.role == 'Notification'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

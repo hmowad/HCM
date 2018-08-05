@@ -1,0 +1,302 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">          
+          function validateData(){
+            var oldVacationId = document.getElementById('cancelCompellingVacationForm:oldVacationId').value;
+            if(oldVacationId == null || oldVacationId == ''){
+                alert(document.getElementById('noPrevVacationId').value);
+                return false;
+            }
+
+            if (#{cancelCompellingVacation.vacationMode} == 2) {
+	            var requestJustifications = document.getElementById('cancelCompellingVacationForm:requestJustificationsId').value;
+	            if(requestJustifications == null || requestJustifications == ''){
+	                alert('#{msgs.error_requestJustificationsMandatory}');
+	                return false;
+	            }
+            }                  
+            
+            return true;
+          }
+        </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="cancelCompellingVacationForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{cancelCompellingVacation.screenTitle}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requester}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:emp value="#{cancelCompellingVacation.requester}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_lastVacInfo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:vac value="#{cancelCompellingVacation.lastVacation}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requestInfo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<h:panelGroup rendered="#{cancelCompellingVacation.vacationMode == 2}">
+								<tr>
+									<th width="15%">
+										#{msgs.label_requestJustifications}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%">
+										<h:inputText id="requestJustificationsId" value="#{cancelCompellingVacation.vacRequest.reasons}" readonly="#{cancelCompellingVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%">
+									<h:inputHidden id="oldVacationId" value="#{cancelCompellingVacation.vacRequest.oldVacationId}" />
+									<h:inputText value="#{cancelCompellingVacation.vacRequest.notes}" readonly="#{cancelCompellingVacation.role != 'Requester'}" maxlength="100" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">#{msgs.label_attachments}</th>
+								<td width="85%">
+									<code:attachments loginEmpId="#{cancelCompellingVacation.loginEmpData.empId}" attachmentId="#{cancelCompellingVacation.attachments}" addEnableFlag="#{cancelCompellingVacation.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{cancelCompellingVacation.role == 'Requester'}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup rendered="#{cancelCompellingVacation.hasEarlierStartDateWarning()}">
+							<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th>#{msgs.label_warnings}</th>
+								</tr>
+								<tr>
+									<td>
+										<h:outputText value="#{msgs.label_warningsEarlierStartDateForVacation}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<code:prevTasks rendered="#{cancelCompellingVacation.role != 'Requester'}" value="#{cancelCompellingVacation.prevTasks}" refuseRoles="DirectManager,ReviewerEmp,SignManager," />
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{cancelCompellingVacation.currentEmployee}" rendered="#{cancelCompellingVacation.role != 'Requester' and cancelCompellingVacation.role != 'Notification' and cancelCompellingVacation.role != 'History'}">
+							<h:panelGroup rendered="#{cancelCompellingVacation.role == 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{cancelCompellingVacation.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{cancelCompellingVacation.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{cancelCompellingVacation.currentTask.notes}" maxlength="500" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+
+							<h:panelGroup rendered="#{cancelCompellingVacation.role != 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{cancelCompellingVacation.currentTask.refuseReasons}" maxlength="500" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+
+				<h:panelGroup rendered="#{cancelCompellingVacation.vacationMode == 2 and cancelCompellingVacation.role == 'DirectManager'}">
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>
+										<h:outputText value="#{msgs.label_directManagerSpecificTitle}" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:outputText value="#{msgs.label_cancelSoldiersCompellingVacationdirectManagerSpecific}" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{cancelCompellingVacation.role == 'Notification' or cancelCompellingVacation.role == 'History'}" value="#{cancelCompellingVacation.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:panelGroup rendered="#{cancelCompellingVacation.role == 'Requester'}">
+										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{(cancelCompellingVacation.vacationMode == 2 and cancelCompellingVacation.lastVacation.locationFlag == 1) ? (msgs.q_cancelSoldierExternalVacWarning) : (msgs.q_send)}', 'validateData()');" action="#{cancelCompellingVacation.initProcess}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{cancelCompellingVacation.role == 'DirectManager'}">
+										<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;cancelCompellingVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{cancelCompellingVacation.approveDM}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;cancelCompellingVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{cancelCompellingVacation.rejectDM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{cancelCompellingVacation.role == 'ManagerRedirect'}">
+										<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;cancelCompellingVacationForm:curTaskId:reviewersId&quot;)');" action="#{cancelCompellingVacation.redirectMR}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{cancelCompellingVacation.role == 'ReviewerEmp'}">
+										<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}', 'validateRefuseAndNotes(1, &quot;cancelCompellingVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{cancelCompellingVacation.approveRE}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;cancelCompellingVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{cancelCompellingVacation.rejectRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{cancelCompellingVacation.role == 'SignManager'}">
+										<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;cancelCompellingVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{cancelCompellingVacation.signSM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="modifySmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;cancelCompellingVacationForm:curTaskId:refuseReasonsId&quot;, &quot;cancelCompellingVacationForm:curTaskId:notesId&quot;)');" action="#{cancelCompellingVacation.modifySM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;cancelCompellingVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{cancelCompellingVacation.rejectSM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{cancelCompellingVacation.role == 'Notification' and cancelCompellingVacation.instanceApproved == 1}">
+										<h:commandButton id="printBtnId" action="#{cancelCompellingVacation.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{cancelCompellingVacation.role == 'Notification'}">
+										<h:commandButton id="nBtnId" action="#{cancelCompellingVacation.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="noPrevVacationId" value="#{msgs.error_noPrevVacation}" />
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

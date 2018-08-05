@@ -1,0 +1,311 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+
+	function getEmployee(contextPath) {
+		if(#{moveWishRequest.adminRequest}) {
+			openEmployeesMiniSearchByOfficialRegionId(contextPath, 'handleEmpMiniSearchResult(ret)', 15, 2, #{moveWishRequest.getLoginEmpPhysicalRegionFlag(true)});
+		} else {
+			openEmpsMiniSearch(contextPath,'handleEmpMiniSearchResult(ret)', 15, 2, -1, -1, -1, -1, '#{moveWishRequest.loginEmpData.physicalUnitHKey}');
+		}
+	}
+
+	function handleEmpMiniSearchResult(ret) {
+	   if(ret != null) {
+	   		document.getElementById('moveWishRequestFormId:beneficiaryEmployeeHId').value = ret[0];
+	        document.getElementById('moveWishRequestFormId:searchEmpBtnId').click();
+		}
+	} 
+	 	
+	function validateRequest(canChange) {
+		employeeId = document.getElementById('moveWishRequestFormId:beneficiaryEmployeeHId').value;
+			if (employeeId == null || employeeId == '') {
+				alert('#{msgs.error_empSelectionManadatory}');
+				    return false;
+			}
+			toRegionId = document.getElementById('moveWishRequestFormId:toRegionId').value;
+			fromRegionId =  document.getElementById('moveWishRequestFormId:fromRegionId').value;
+			if (toRegionId == null || toRegionId == '-1') {
+				alert('#{msgs.error_moveRegionToMandatory}');
+				    return false;
+			} 
+			if (toRegionId == fromRegionId) {
+				alert('#{msgs.error_regionFromSameAsRegionTo}');
+				    return false;
+			}
+		if(!canChange)
+			return true;
+		
+		return true;
+	}
+
+
+	function validateReview(canChange) {
+	    if(validateRefuseAndNotes(1, 'moveWishRequestFormId:curTaskId:refuseReasonsId')) {
+	    	if(!canChange)
+	    		return true;
+	    	return validateRequest();
+	    } else
+	    	return false;
+	}	
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="moveWishRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{moveWishRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:panelGroup rendered="#{!moveWishRequest.movementWishOpenFlag}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%">
+										<h:outputText value="#{msgs.error_movementWishOpenFlagClosed}" />
+									</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{moveWishRequest.movementWishOpenFlag}">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_processRequester}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<code:emp value="#{moveWishRequest.requester}" />
+						</td>
+					</tr>
+					<h:panelGroup rendered="#{moveWishRequest.beneficiary != null}">
+						<tr>
+							<td width="100%" height="5" />
+						</tr>
+						<tr>
+							<td width="100%">
+								<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiaryEmployee}" switchType="client" onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{moveWishRequest.beneficiary.empId == moveWishRequest.requester.empId})) { getEmployee('#{request.contextPath}'); return false;} else {return true;}" expanded="#{moveWishRequest.requester.empId != moveWishRequest.beneficiary.empId}"
+									rendered="#{(moveWishRequest.role == 'Requester' and (moveWishRequest.adminRequest or moveWishRequest.loginEmpData.isManager == 1)) or moveWishRequest.requester.empId != moveWishRequest.beneficiary.empId}">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+										<h:panelGroup rendered="#{moveWishRequest.role == 'Requester'}">
+											<tr>
+												<td width="100%">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="50%">
+																<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+																<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{moveWishRequest.selectEmployee()}">
+																	<f:ajax execute="moveWishRequestFormId:beneficiaryEmployeeHId" render="moveWishRequestFormId:beneficiaryPanelId moveWishRequestFormId:dataPanelId moveWishRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																</h:commandButton>
+																<h:inputHidden id="beneficiaryEmployeeHId" value="#{moveWishRequest.selectedEmployeeId}" />
+															</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+										</h:panelGroup>
+										<tr>
+											<td width="100%">
+												<code:emp value="#{moveWishRequest.beneficiary}" />
+											</td>
+										</tr>
+									</table>
+								</rich:collapsiblePanel>
+							</td>
+						</tr>
+						<tr>
+							<td width="100%" height="5" />
+						</tr>
+						<tr>
+							<td width="100%">
+								<h:panelGroup id="dataPanelId">
+									<table width="100%" border="0" cellpadding="0" cellspacing="0">
+
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_movmentWishData}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<th width="20%">
+															#{msgs.label_curRegion}
+															<h:outputText value=" " />
+														</th>
+														<td width="80%" colspan="3">
+															<h:outputText value="#{moveWishRequest.regionFromDesc}" />
+															<h:inputHidden id="fromRegionId" value="#{moveWishRequest.wfMovementWish.fromRegionId}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="20%">
+															#{msgs.label_movmentWishRegion}
+															<h:outputText value=" " />
+															<font style="color: red;">*</font>
+														</th>
+														<td width="80%" colspan="3">
+															<h:selectOneMenu id="toRegionId" value="#{moveWishRequest.wfMovementWish.toRegionId}" disabled="#{!moveWishRequest.canChangeRequestData()}">
+																<f:selectItem itemLabel=" " itemValue="-1" />
+																<f:selectItems value="#{moveWishRequest.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+															</h:selectOneMenu>
+														</td>
+													</tr>
+													<tr>
+														<th width="20%">
+															#{msgs.label_reasons}
+															<h:outputText value=" " />
+														</th>
+														<td width="80%" colspan="3">
+															<h:inputText value="#{moveWishRequest.wfMovementWish.reasons}" styleClass="inputDataSuperLarge" maxlength="500" disabled="#{!moveWishRequest.canChangeRequestData()}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="20">
+															#{msgs.label_attachments}
+															<h:outputText value=" " />
+														</th>
+														<td width="80%" colspan="3">
+															<code:attachments loginEmpId="#{moveWishRequest.loginEmpData.empId}" attachmentId="#{moveWishRequest.attachments}" addEnableFlag="#{moveWishRequest.canChangeRequestData()}" viewEnableFlag="true" deleteEnableFlag="#{moveWishRequest.canChangeRequestData()}" />
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
+							</td>
+						</tr>
+						<tr>
+							<td width="100%">
+								<code:prevTasks rendered="#{moveWishRequest.role != 'Requester'}" value="#{moveWishRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp," />
+							</td>
+						</tr>
+						<tr>
+							<td width="100%" height="5" />
+						</tr>
+						<tr>
+							<td width="100%">
+								<code:curTask id="curTaskId" value="#{moveWishRequest.currentEmployee}" rendered="#{moveWishRequest.role == 'DirectManager' or moveWishRequest.role == 'ManagerRedirect' or moveWishRequest.role == 'ReviewerEmp' or moveWishRequest.role == 'SignManager'}">
+									<h:panelGroup rendered="#{moveWishRequest.role == 'ManagerRedirect'}">
+										<tr>
+											<th width="15%">#{msgs.label_selectEmp}</th>
+											<td width="40%" colspan="2">
+												<h:selectOneMenu id="reviewersId" value="#{moveWishRequest.selectedReviewerEmpId}">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems value="#{moveWishRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+												</h:selectOneMenu>
+											</td>
+											<td width="45%" />
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<th width="15%">#{msgs.label_notes}</th>
+										<td width="85%" colspan="3">
+											<h:inputText id="notesId" value="#{moveWishRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+										</td>
+									</tr>
+									<h:panelGroup rendered="#{moveWishRequest.role != 'ManagerRedirect'}">
+										<tr>
+											<th width="15%">#{msgs.label_refuseReasons}</th>
+											<td width="85%" colspan="3">
+												<h:inputText id="refuseReasonsId" value="#{moveWishRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+											</td>
+										</tr>
+									</h:panelGroup>
+								</code:curTask>
+							</td>
+						</tr>
+						<tr>
+							<td width="100%" height="5" />
+						</tr>
+						<tr>
+							<td width="100%">
+								<h:outputText rendered="#{moveWishRequest.role == 'Notification' or moveWishRequest.role == 'History'}" value="#{moveWishRequest.notificationMessage}" styleClass="successMessage" />
+							</td>
+						</tr>
+						<tr>
+							<td width="100%" height="5" />
+						</tr>
+						<tr>
+							<td width="100%">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest(#{moveWishRequest.canChangeRequestData()})',null);" action="#{moveWishRequest.initWFMovementWish()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{moveWishRequest.role == 'Requester'}">
+												<f:ajax execute="@form" render="moveWishRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;moveWishRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveWishRequest.approveWFMovementWishDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveWishRequest.role == 'DirectManager'}">
+												<f:ajax execute="@form" render="moveWishRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveWishRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveWishRequest.rejectWFMovementWishDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveWishRequest.role == 'DirectManager'}">
+												<f:ajax execute="@form" render="moveWishRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;moveWishRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{moveWishRequest.redirectWFMovementWishMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{moveWishRequest.role == 'ManagerRedirect'}">
+												<f:ajax execute="@form" render="moveWishRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateReview(#{moveWishRequest.canChangeRequestData()})',null);" action="#{moveWishRequest.approveWFMovementWishRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveWishRequest.role == 'ReviewerEmp'}">
+												<f:ajax execute="@form" render="moveWishRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveWishRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveWishRequest.rejectWFMovementWishRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveWishRequest.role == 'ReviewerEmp'}">
+												<f:ajax execute="@form" render="moveWishRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;moveWishRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveWishRequest.approveWFMovementWishSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveWishRequest.role == 'SignManager'}">
+												<f:ajax execute="@form" render="moveWishRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;moveWishRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;moveWishRequestFormId:curTaskId:notesId&quot;)',null);" action="#{moveWishRequest.returnWFMovementWishSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{moveWishRequest.role == 'SignManager'}">
+												<f:ajax execute="@form" render="moveWishRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveWishRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveWishRequest.rejectWFMovementWishSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveWishRequest.role == 'SignManager'}">
+												<f:ajax execute="@form" render="moveWishRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:commandButton id="nBtnId" action="#{moveWishRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveWishRequest.role == 'Notification'}">
+												<f:ajax execute="@form" render="moveWishRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</h:panelGroup>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

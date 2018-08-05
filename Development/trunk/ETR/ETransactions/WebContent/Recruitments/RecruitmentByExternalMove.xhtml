@@ -1,0 +1,626 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	function getEmployee(contextPath) {
+		openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, #{recruitmentByExternalMove.mode}, -1, -1, -1, -1, -1, -1);
+	}
+	
+	function handleEmpMiniSearchResult(ret) {
+		if(ret!=null) { 
+	         document.getElementById('recruitmentByExternalMoveFormId:employeeIDId').value=ret[0];
+             document.getElementById('recruitmentByExternalMoveFormId:employeeNameId').innerHTML = ret[1];
+	         document.getElementById('recruitmentByExternalMoveFormId:employeeCategoryId').value=ret[2];
+	         document.getElementById('recruitmentByExternalMoveFormId:searchEmpBtnId').click();
+		}
+	}
+
+	function getSocialIdIssuePlace() {
+		openSocialIdIssuePlacesMiniSearch('#{request.contextPath}', 'handleSocialIdIssuePlaceMiniSearchResult(ret)');
+	}
+	
+	function handleSocialIdIssuePlaceMiniSearchResult(ret) {
+		if(ret != null) {
+			document.getElementById('recruitmentByExternalMoveFormId:socialIdIssuePlaceIDId').value = ret[0];
+			document.getElementById('recruitmentByExternalMoveFormId:socialIdIssuePlaceDescHId').value = ret[1];
+			document.getElementById('recruitmentByExternalMoveFormId:socialIdIssuePlaceDescId').innerHTML = ret[1];
+		}
+	}
+	
+	function getJob() {
+		var categoryId = #{recruitmentByExternalMove.mode};
+		var newEmployeeCategoryId = document.getElementById("recruitmentByExternalMoveFormId:personsCategoriesId");
+		var oldEmployeeCategoryId = document.getElementById("recruitmentByExternalMoveFormId:employeeCategoryId");
+		if(newEmployeeCategoryId != null)
+			categoryId = newEmployeeCategoryId.value;
+		else if(oldEmployeeCategoryId != null)
+			categoryId = oldEmployeeCategoryId.value;
+		openJobsMiniSearch('#{request.contextPath}', 'handleJobsMiniSearchResult(ret)', 7, categoryId, -1, -1, -1, -1, 0);
+  	}
+  	
+	function handleJobsMiniSearchResult(ret) {
+	     if(ret != null){
+				document.getElementById('recruitmentByExternalMoveFormId:jobIDId').value = ret[0];
+				document.getElementById('recruitmentByExternalMoveFormId:jobCodeHId').value = ret[1];
+				document.getElementById('recruitmentByExternalMoveFormId:jobNameHId').value = ret[2];
+				var rankId = document.getElementById('recruitmentByExternalMoveFormId:jobRankId');
+				if(rankId != null)
+					rankId.value = ret[6];
+				document.getElementById('recruitmentByExternalMoveFormId:unitFullNameHId').value = ret[4];
+				document.getElementById('recruitmentByExternalMoveFormId:minorSpecDescHId').value = ret[9];
+				document.getElementById('recruitmentByExternalMoveFormId:searchJobBtnId').click();
+	        }
+	}
+
+
+	function getQualificationMinorAndMajorSpecs() {
+         openQualificationMinorSpecsMiniSearch('#{request.contextPath}', 'handleQualificationMiniSearchResult(ret)', 0);
+	}
+	
+	function handleQualificationMiniSearchResult(ret){
+		 if(ret != null){
+ 			document.getElementById('recruitmentByExternalMoveFormId:qualificationMinorSpecIDId').value = ret[0];
+			document.getElementById('recruitmentByExternalMoveFormId:qualificationMinorSpecDescId').innerHTML = ret[1];
+			document.getElementById('recruitmentByExternalMoveFormId:qualificationMinorSpecDescHId').value = ret[1];
+			document.getElementById('recruitmentByExternalMoveFormId:qualificationMajorSpecIDId').value = ret[2];
+			document.getElementById('recruitmentByExternalMoveFormId:qualificationMajorSpecDescId').innerHTML = ret[3];
+			document.getElementById('recruitmentByExternalMoveFormId:qualificationMajorSpecDescHId').value = ret[3];	        
+		}
+	}
+	
+	function validateSave() {
+		var jobIdValue = document.getElementById('recruitmentByExternalMoveFormId:jobIDId').value;
+		var employeeId = document.getElementById('recruitmentByExternalMoveFormId:employeeIDId');
+		var firstName = document.getElementById('recruitmentByExternalMoveFormId:firstNameId');
+		var secondName = document.getElementById('recruitmentByExternalMoveFormId:secondNameId');
+		var lastName = document.getElementById('recruitmentByExternalMoveFormId:lastNameId');
+		var birthDate = document.getElementById('recruitmentByExternalMoveFormId:birthDateId:day');
+		var birthPlace = document.getElementById('recruitmentByExternalMoveFormId:birthPlaceId');
+		var socialId = document.getElementById('recruitmentByExternalMoveFormId:socialIDId');
+		var socialIDIssueDate = document.getElementById('recruitmentByExternalMoveFormId:socialIdIssueDateId:day');
+		var socialIDIssuePlaceId = document.getElementById('recruitmentByExternalMoveFormId:socialIdIssuePlaceIDId');
+		var genderId = document.getElementById('recruitmentByExternalMoveFormId:genderId');
+		var	rankIdOfficers = document.getElementById('recruitmentByExternalMoveFormId:rankId');
+		var qualificationLevelId = document.getElementById('recruitmentByExternalMoveFormId:qualificationLevelIDId');
+		var militaryNumber = document.getElementById('recruitmentByExternalMoveFormId:militaryNumberId');
+		var graduationGroupNumber = document.getElementById('recruitmentByExternalMoveFormId:graduationGroupNumberId');
+		var graduationGroupPlace= document.getElementById('recruitmentByExternalMoveFormId:graduationGroupPlaceId');
+		var employeeCategoryId = document.getElementById('recruitmentByExternalMoveFormId:personsCategoriesId');
+		
+		var movedFromExternalPartyIdValue = document.getElementById('recruitmentByExternalMoveFormId:movedFromExternalPartyId').value;
+		var firstRecruitmentDate = document.getElementById('recruitmentByExternalMoveFormId:firstRecruitmentDateId:day');
+		var recruitmentDateValue = document.getElementById('recruitmentByExternalMoveFormId:recruitmentDateId:day').value;
+		var promotionDueDateValue = document.getElementById('recruitmentByExternalMoveFormId:promotionDueDate:day').value;
+		var recruitmentRankId = document.getElementById('recruitmentByExternalMoveFormId:recruitmentRankId');
+		var decisionNumberId = document.getElementById('recruitmentByExternalMoveFormId:decisionNumberId');
+		var decisionDate = document.getElementById('recruitmentByExternalMoveFormId:decisionDate:day');
+		
+		if(employeeId != null &amp;&amp; !employeeId.value){
+			alert("#{msgs.error_employeeMandatory}");
+			return false;
+		}
+		else if(firstName != null &amp;&amp; !firstName.value) {
+			alert("#{msgs.error_firstNameMandatory}");
+			return false;
+		}
+		else if(secondName != null &amp;&amp; !secondName.value) {
+			alert("#{msgs.error_secondNameMandatory}");
+			return false;
+		}
+		else if(lastName != null &amp;&amp; !lastName.value) {
+			alert("#{msgs.error_lastNameMandatory}");
+			return false;
+		}
+		else if(genderId != null &amp;&amp; !genderId.value) {
+			alert("#{msgs.error_genderIsMandatory}");
+			return false;
+		}
+		else if(birthDate != null  &amp;&amp;  birthDate.value == 0) {
+			alert("#{msgs.error_birthDateMandatory}");
+			return false;
+		}
+		else if(birthPlace != null &amp;&amp; !birthPlace.value) {
+			alert("#{msgs.error_birthPlaceMandatory}");
+			return false;
+		}
+		else if(socialId != null &amp;&amp; !socialId.value) {
+			alert("#{msgs.error_socialIDMandatory}");
+			return false;
+		}
+		else if(socialIDIssueDate!= null &amp;&amp; socialIDIssueDate == 0) {
+			alert("#{msgs.error_socialIDIssueDateMandatory}");
+			return false;
+		}
+		else if(socialIDIssuePlaceId != null &amp;&amp; !socialIDIssuePlaceId.value) {
+			alert("#{msgs.error_socialIDIssuePlaceMandatory}");
+			return false;
+		}
+		else if(qualificationLevelId != null &amp;&amp; !qualificationLevelId.value ) {
+			alert("#{msgs.error_recruitmentQualificationLevelMandatory}");
+			return false;
+		}
+		else if(graduationGroupNumber != null &amp;&amp; !graduationGroupNumber.value ) {
+			alert("#{msgs.error_graduationGroupNumberMandatory}");
+			return false;
+		}
+		else if(graduationGroupPlace != null &amp;&amp; !graduationGroupPlace.value ) {
+			alert("#{msgs.error_graduationGroupPlaceMandatory}");
+			return false;
+		}
+		else if(rankIdOfficers != null &amp;&amp; !rankIdOfficers.value) {
+			alert("#{msgs.error_rankIsMandatory}");
+			return false;
+		}
+		if(socialId!=null)
+		{
+				if (socialId.value.length != 10 || 
+						(socialId.value.charAt(0) != "1" &amp;&amp; socialId.value.charAt(0) != "2")) {
+					alert("#{msgs.error_socialIdNotValid}");
+					return false;
+				}
+		}
+		if (militaryNumber != null) {
+			if(militaryNumber.value &amp;&amp; militaryNumber.value.length != 6)
+				{
+					alert("#{msgs.error_invalidMilitaryNumber}");
+					return false;
+				}
+			else if(!militaryNumber.value)
+				{
+					alert("#{msgs.error_militaryNumberFieldMandatory}");
+					return false;
+				}
+		}
+		if(employeeCategoryId!=null &amp;&amp; !employeeCategoryId.value){
+			alert("#{msgs.error_categoryMandatory}");
+			return false;
+		}
+	    if(!movedFromExternalPartyIdValue) {
+			alert("#{msgs.error_movedFromExternalParty}");
+			return false;
+		}
+	    else if(!jobIdValue){
+			alert("#{msgs.error_jobMovedFromMandatory}");
+			return false;
+		}
+	    else if (firstRecruitmentDate != null &amp;&amp; firstRecruitmentDate.value == 0) {
+			alert("#{msgs.error_firstRecDateMandatory}");
+			return false;
+		}
+	    else if (recruitmentDateValue==0){
+	    	alert("#{msgs.error_movementDateMandatory}");
+			return false;
+	    }
+    	else if(promotionDueDateValue==0){
+	    	alert("#{msgs.error_promotionDueDateIsMandatory}");
+			return false;
+	    }
+	    else if(recruitmentRankId !=null &amp;&amp; !recruitmentRankId.value) {
+		    if(#{recruitmentByExternalMove.mode} != 3)
+				alert("#{msgs.error_recruitmentRankMandatory}");
+		    else
+		    	alert("#{msgs.error_civiliansRecruitmentRankMandatory}");
+				return false;
+			}
+		else if(decisionNumberId.value == null || decisionNumberId.value.trim() == '' ){
+	    	alert("#{msgs.error_decisionNumberMandatory}");
+			return false;
+		    }
+	    else if(decisionDate.value==0){
+			alert("#{msgs.error_decDateMandatory}");
+			return false;
+		}
+		return true;
+	}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="recruitmentByExternalMoveFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{recruitmentByExternalMove.screenTitle}</td>
+				</tr>
+				<tr>
+					<td>
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_employeeSelectionType}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:selectOneRadio value="#{recruitmentByExternalMove.employeeDataMode}" layout="pageDirection" disabled="#{recruitmentByExternalMove.recruitment.recruitmentTransaction.id != null}">
+										<f:selectItem itemLabel="#{msgs.label_newEmployee}" itemValue="0" />
+										<f:selectItem itemLabel="#{msgs.label_existingEmployee}" itemValue="1" />
+										<f:ajax event="change" execute="@this" listener="#{recruitmentByExternalMove.resetForm()}" render="recruitmentByExternalMoveFormId:employeeDataPanelId recruitmentByExternalMoveFormId:recruitmentByExternalMoveDataTable recruitmentByExternalMoveFormId:firstRecruitmentDatePanelId" />
+									</h:selectOneRadio>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_basicEmployeeData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="employeeDataPanelId">
+							<h:panelGroup rendered="#{recruitmentByExternalMove.employeeDataMode == 1}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														#{msgs.label_missionEmpName}
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="85%">
+														<h:outputText id="employeeNameId" value="#{recruitmentByExternalMove.employee.name}" />
+														<h:outputText value=" " />
+														<h:inputHidden id="employeeIDId" value="#{recruitmentByExternalMove.employee.empId}" />
+														<h:inputHidden id="employeeCategoryId" value="#{recruitmentByExternalMove.employee.categoryId}" />
+														<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+														<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{recruitmentByExternalMove.getEmployeeData()}">
+															<f:ajax execute="recruitmentByExternalMoveFormId:employeeIDId recruitmentByExternalMoveFormId:employeeNameId recruitmentByExternalMoveFormId:employeeCategoryId" render="recruitmentByExternalMoveFormId:employeeDataId:data recruitmentByExternalMoveFormId:recruitmentByExternalMoveDataTable recruitmentByExternalMoveFormId:notifyMessagesId recruitmentByExternalMoveFormId:employeeNameId recruitmentByExternalMoveFormId:employeeIDId" />
+															<h:outputText value="" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="2" width="100%">
+											<code:emp id="employeeDataId" value="#{recruitmentByExternalMove.employee}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{recruitmentByExternalMove.employeeDataMode == 0}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<th width="15%">
+											#{msgs.label_name}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="75%" colspan="5">
+											<h:inputText id="firstNameId" value="#{recruitmentByExternalMove.employee.firstName}" maxlength="50" styleClass="inputDataNormal" />
+											<h:outputText value=" " />
+											<h:inputText id="secondNameId" value="#{recruitmentByExternalMove.employee.secondName}" maxlength="50" styleClass="inputDataNormal" />
+											<h:outputText value=" " />
+											<h:inputText value="#{recruitmentByExternalMove.employee.thirdName}" maxlength="50" styleClass="inputDataNormal" />
+											<h:outputText value=" " />
+											<h:inputText id="lastNameId" value="#{recruitmentByExternalMove.employee.lastName}" maxlength="50" styleClass="inputDataNormal" />
+										</td>
+									</tr>
+									<tr>
+										<th>
+											#{msgs.label_gender}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<h:selectOneMenu id="genderId" value="#{recruitmentByExternalMove.employee.gender}">
+												<f:selectItem itemLabel=" " />
+												<f:selectItem itemLabel="#{msgs.label_male}" itemValue="M" />
+												<f:selectItem itemLabel="#{msgs.label_female}" itemValue="F" />
+											</h:selectOneMenu>
+										</td>
+										<th width="15%">
+											#{msgs.label_birthDate}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="15%">
+											<util:hijri id="birthDateId" value="#{recruitmentByExternalMove.employee.birthDate}" viewOldRange="true" />
+										</td>
+										<th width="15%">
+											#{msgs.label_birthPlace}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="10%">
+											<h:inputText id="birthPlaceId" value="#{recruitmentByExternalMove.employee.birthPlace}" maxlength="200" styleClass="inputDataLarge" />
+										</td>
+									</tr>
+									<tr>
+										<th>
+											#{msgs.label_socialId}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<h:inputText id="socialIDId" value="#{recruitmentByExternalMove.employee.socialID}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
+										</td>
+										<th>
+											#{msgs.label_issueDate}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<util:hijri id="socialIdIssueDateId" value="#{recruitmentByExternalMove.employee.socialIDIssueDate}" viewOldRange="true" />
+										</td>
+										<th>
+											#{msgs.label_issuePlace}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<h:outputText id="socialIdIssuePlaceDescId" value="#{recruitmentByExternalMove.employee.socialIDIssuePlaceDesc}" />
+											<h:inputHidden id="socialIdIssuePlaceDescHId" value="#{recruitmentByExternalMove.employee.socialIDIssuePlaceDesc}" />
+											<h:inputHidden id="socialIdIssuePlaceIDId" value="#{recruitmentByExternalMove.employee.socialIDIssuePlaceID}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getSocialIdIssuePlace(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+									</tr>
+									<tr>
+										<th>
+											#{msgs.label_qualificationLevel}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<h:selectOneMenu id="qualificationLevelIDId" value="#{recruitmentByExternalMove.employeeQualificationsData.recQualLevelId}">
+												<f:selectItems value="#{recruitmentByExternalMove.qualificationLevels}" var="qualification" itemLabel="#{qualification.description}" itemValue="#{qualification.id}" />
+											</h:selectOneMenu>
+										</td>
+										<th>#{msgs.label_majorQualificationSpecialization}</th>
+										<td>
+											<h:outputText id="qualificationMajorSpecDescId" value="#{recruitmentByExternalMove.employeeQualificationsData.recQualMajorSpecDesc}" />
+											<h:inputHidden id="qualificationMajorSpecDescHId" value="#{recruitmentByExternalMove.employeeQualificationsData.recQualMajorSpecDesc}" />
+											<h:inputHidden id="qualificationMajorSpecIDId" value="#{recruitmentByExternalMove.employeeQualificationsData.recQualMajorSpecId}" />
+										</td>
+										<th>#{msgs.label_minorQualificationSpecialization}</th>
+										<td>
+											<h:outputText id="qualificationMinorSpecDescId" value="#{recruitmentByExternalMove.employeeQualificationsData.recQualMinorSpecDesc}" />
+											<h:inputHidden id="qualificationMinorSpecDescHId" value="#{recruitmentByExternalMove.employeeQualificationsData.recQualMinorSpecDesc}" />
+											<h:inputHidden id="qualificationMinorSpecIDId" value="#{recruitmentByExternalMove.employeeQualificationsData.recQualMinorSpecId}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getQualificationMinorAndMajorSpecs(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+									</tr>
+									<h:panelGroup rendered="#{recruitmentByExternalMove.mode ==3}">
+										<tr>
+											<th>
+												#{msgs.label_category}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
+											<td>
+												<h:selectOneMenu id="personsCategoriesId" value="#{recruitmentByExternalMove.employee.categoryId}">
+													<f:selectItem itemLabel=" " />
+													<f:selectItems value="#{recruitmentByExternalMove.categories}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+													<f:ajax event="change" render="recruitmentByExternalMoveFormId:jobBtnId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:selectOneMenu>
+											</td>
+										</tr>
+
+									</h:panelGroup>
+									<tr>
+										<h:panelGroup rendered="#{recruitmentByExternalMove.mode == 1}">
+											<th>
+												#{msgs.label_privateNumber}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
+											<td>
+												<h:inputText id="militaryNumberId" value="#{recruitmentByExternalMove.employee.militaryNumber}" styleClass="inputDataLarge" maxlength="6" onkeypress="return isDigit(event);" />
+											</td>
+											<th>
+												#{msgs.label_graduationGroupNumber}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
+											<td>
+												<h:inputText id="graduationGroupNumberId" value="#{recruitmentByExternalMove.employee.graduationGroupNumber}" styleClass="inputDataLarge" onkeypress="return isDigit(event);" maxlength="3" />
+											</td>
+											<th>
+												#{msgs.label_graduationGroupPlace}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
+											<td>
+												<h:selectOneMenu id="graduationGroupPlaceId" value="#{recruitmentByExternalMove.employee.graduationGroupPlace}">
+													<f:selectItems value="#{recruitmentByExternalMove.officersGraduationGroupPlaces}" var="graduationPlace" itemLabel="#{graduationPlace.description}" itemValue="#{graduationPlace.id}" />
+												</h:selectOneMenu>
+											</td>
+										</h:panelGroup>
+									</tr>
+									<tr>
+										<h:panelGroup rendered="#{recruitmentByExternalMove.mode == 1}">
+											<th>
+												#{msgs.label_rank}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
+											<td>
+												<h:selectOneMenu id="rankId" value="#{recruitmentByExternalMove.recruitment.rankId}">
+													<f:selectItem itemLabel="" />
+													<f:selectItems value="#{recruitmentByExternalMove.officersRanks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+												</h:selectOneMenu>
+											</td>
+										</h:panelGroup>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_recruitmentByExternalMove}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<h:panelGroup id="recruitmentByExternalMoveDataTable">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<th>
+										#{msgs.label_movedFromExternalParty}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td>
+										<h:inputText id="movedFromExternalPartyId" value="#{recruitmentByExternalMove.recruitment.externalPartyMovedFrom}" styleClass="inputDataLarge" maxlength="100" />
+									</td>
+									<th>
+										#{msgs.label_jobToBeMovedTo}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td>
+										<h:outputText id="jobCodeAndNameId" value="#{recruitmentByExternalMove.getJobCodeAndNameString()}" />
+										<h:inputHidden id="jobNameHId" value="#{recruitmentByExternalMove.recruitment.transJobName}" />
+										<h:inputHidden id="jobCodeHId" value="#{recruitmentByExternalMove.recruitment.transJobCode}" />
+										<h:inputHidden id="jobIDId" value="#{recruitmentByExternalMove.recruitment.jobId}" />
+										<h:inputHidden id="jobRankId" value="#{recruitmentByExternalMove.recruitment.rankId}" rendered="#{recruitmentByExternalMove.mode==2 or recruitmentByExternalMove.mode==3}" />
+										<h:inputHidden id="minorSpecDescHId" value="#{recruitmentByExternalMove.recruitment.transMinorSpecializationDesc}" />
+										<h:inputHidden id="unitFullNameHId" value="#{recruitmentByExternalMove.recruitment.transUnitFullName}" />
+										<h:outputText value=" " />
+										<h:commandButton id="jobBtnId" value="#{msgs.fa_external_link}" onclick="getJob(); return false;" disabled="#{recruitmentByExternalMove.mode ==3 and recruitmentByExternalMove.employee.categoryId == null}" title="#{msgs.label_select}" styleClass="btn_icon" />
+										<h:commandButton id="searchJobBtnId" style="display:none;">
+											<f:ajax onevent="function(e){if(e.status == 'complete') unMaskScreen();}" execute="recruitmentByExternalMoveFormId:jobCodeHId recruitmentByExternalMoveFormId:jobNameHId recruitmentByExternalMoveFormId:jobIDId" render="recruitmentByExternalMoveFormId:jobCodeAndNameId" />
+										</h:commandButton>
+									</td>
+								</tr>
+								<tr>
+									<h:panelGroup id="firstRecruitmentDatePanelId">
+										<h:panelGroup rendered="#{recruitmentByExternalMove.employeeDataMode == 0}">
+											<th>
+												#{msgs.label_firstRecruitmentDate}
+												<font style="color: red;">*</font>
+											</th>
+											<td>
+												<util:hijri id="firstRecruitmentDateId" value="#{recruitmentByExternalMove.recruitment.firstRecruitmentDate}" />
+											</td>
+											<th>
+												#{recruitmentByExternalMove.mode != 3 ? msgs.label_recruitmentRank : msgs.label_personRecruitmentRank}
+												<font style="color: red;">*</font>
+											</th>
+											<td>
+												<h:selectOneMenu id="recruitmentRankId" value="#{recruitmentByExternalMove.employee.recruitmentRankId}">
+													<f:selectItem itemLabel="" />
+													<f:selectItems value="#{recruitmentByExternalMove.recruitmentRanks}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+													<f:ajax event="change" />
+												</h:selectOneMenu>
+											</td>
+										</h:panelGroup>
+									</h:panelGroup>
+								</tr>
+								<tr>
+									<th>
+										#{msgs.label_movementDate}
+										<font style="color: red;">*</font>
+									</th>
+									<td>
+										<util:hijri id="recruitmentDateId" value="#{recruitmentByExternalMove.recruitment.recruitmentDate}" />
+									</td>
+									<th>
+										#{msgs.label_promotionDueDate}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td>
+										<util:hijri id="promotionDueDate" value="#{recruitmentByExternalMove.employee.promotionDueDate}" />
+									</td>
+								</tr>
+								<tr>
+									<th>#{msgs.label_remarks}</th>
+									<td>
+										<h:inputText value="#{recruitmentByExternalMove.recruitment.remarks}" styleClass="inputDataSuperLarge" maxlength="500" />
+									</td>
+									<th>#{msgs.label_attachments}</th>
+									<td>
+										<code:attachments loginEmpId="#{recruitmentByExternalMove.loginEmpData.empId}" attachmentId="#{recruitmentByExternalMove.recruitment.attachments}" viewEnableFlag="true" addEnableFlag="true" deleteEnableFlag="true" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td height="10" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="decisionDataPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_decisionNumber}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:inputText id="decisionNumberId" value="#{recruitmentByExternalMove.recruitment.decisionNumber}" maxlength="50" />
+									</td>
+									<th width="15%">
+										#{msgs.label_decisionDate}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<util:hijri id="decisionDate" value="#{recruitmentByExternalMove.recruitment.decisionDate}"></util:hijri>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				<tr>
+					<td>
+						<h:panelGroup id="actionsPanelId">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton id="saveBtnId" action="#{recruitmentByExternalMove.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{recruitmentByExternalMove.recruitment.recruitmentTransaction.id == null}" onclick="return handleOnAction('#{msgs.q_save}', 'validateSave()');">
+											<f:ajax execute="recruitmentByExternalMoveFormId:recruitmentByExternalMoveDataTable recruitmentByExternalMoveFormId:decisionDataPanelId recruitmentByExternalMoveFormId:employeeDataPanelId  recruitmentByExternalMoveFormId:decisionNumberId recruitmentByExternalMoveFormId:decisionDate" render="@form recruitmentByExternalMoveFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+										<h:commandButton action="#{recruitmentByExternalMove.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+											<f:ajax render="@form" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

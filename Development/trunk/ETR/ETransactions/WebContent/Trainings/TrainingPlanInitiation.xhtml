@@ -1,0 +1,375 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	
+		function getMilitaryCourses() {
+			openTrainingCoursesMiniSearch('#{request.contextPath}','handleMilitaryCoursesMiniSearchResult(ret)', 2);
+		}
+
+		function handleMilitaryCoursesMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('trainingPlanInitiationFormId:newCourseHIDId').value = ret[0];
+				document.getElementById('trainingPlanInitiationFormId:addCourseBtnId').click();
+			}
+		}
+	</script>
+</h:head>
+
+<h:body styleClass="screenBg">
+	<h:form id="trainingPlanInitiationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_trainingPlanInitiation}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:panelGroup rendered="#{!trainingPlanInitiation.hasPrivilege}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%">
+										<h:outputText value="#{trainingPlanInitiation.errorMessage}" />
+									</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{trainingPlanInitiation.hasPrivilege}">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_trainingUnitData}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<h:panelGroup id="trainingUnitDataPanelId">
+							<td width="100%">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">#{msgs.label_trainingYear}</th>
+										<td width="85%">
+											<h:outputText value="#{trainingPlanInitiation.trainingPlan.trainingYearName}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_theTrainingUnit}</th>
+										<td width="85%">
+											<h:outputText value="#{trainingPlanInitiation.trainingPlan.trainingUnitName}" />
+										</td>
+									</tr>
+								</table>
+							</td>
+						</h:panelGroup>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="selectTrainingUnitPanelId">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<h:commandButton id="chooseBtnId" rendered="#{(trainingPlanInitiation.coursesEvents == null or trainingPlanInitiation.coursesEvents.size() == 0) and trainingPlanInitiation.modifyAdmin}" action="#{trainingPlanInitiation.importAnnualCourses()}" value="#{msgs.label_insert} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon">
+												<f:ajax render="trainingPlanInitiationFormId:wfDataPanel trainingPlanInitiationFormId:selectTrainingUnitPanelId trainingPlanInitiationFormId:trainingCoursesInPlanPanelId trainingPlanInitiationFormId:actionPanelId trainingPlanInitiationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="trainingCoursesInPlanPanelId">
+								<h:panelGroup rendered="#{!(trainingPlanInitiation.coursesEvents.size() == 0 and (trainingPlanInitiation.searchCourseName == null or trainingPlanInitiation.searchCourseName == ''))}">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_trainingCoursesInPlan}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="searchPanelId">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="5%">
+																<h:commandButton rendered="#{trainingPlanInitiation.modifyAdmin}" value="#{msgs.label_add}" styleClass="btn_normal" onclick="getMilitaryCourses();return false;" />
+																<h:commandButton rendered="#{trainingPlanInitiation.modifyAdmin}" id="addCourseBtnId" style="display:none;" action="#{trainingPlanInitiation.addCourseEvent()}">
+																	<f:ajax execute="trainingPlanInitiationFormId:newCourseHIDId" render="trainingPlanInitiationFormId:trainingCourseDetailPanelId trainingPlanInitiationFormId:trainingCoursesInPlanTableId trainingPlanInitiationFormId:actionPanelId trainingPlanInitiationFormId:notifyMessagesId" />
+																</h:commandButton>
+																<h:inputHidden id="newCourseHIDId" value="#{trainingPlanInitiation.newCourseId}" />
+															</td>
+															<th width="15%">
+																<h:outputText value="#{msgs.label_searchByCourseName}" />
+															</th>
+															<td width="70%">
+																<h:inputText id="courseNameId" value="#{trainingPlanInitiation.searchCourseName}" styleClass="inputDataSuperLarge" onkeypress="if (event.keyCode == 13) { document.getElementById('trainingPlanInitiationFormId:searchBtnId').click(); return false; }" />
+															</td>
+															<td width="10%">
+																<h:commandButton id="searchBtnId" action="#{trainingPlanInitiation.searchTrainingCourseEvents()}" styleClass="btn_normal_icon" style="float: left;" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}">
+																	<f:ajax execute="trainingPlanInitiationFormId:courseNameId" render="trainingPlanInitiationFormId:trainingCoursesInPlanPanelId trainingPlanInitiationFormId:trainingCourseDetailPanelId trainingPlanInitiationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																</h:commandButton>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<rich:dataTable id="trainingCoursesInPlanTableId" value="#{trainingPlanInitiation.coursesEvents}" var="course" rowKeyVar="index" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{trainingPlanInitiation.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+													<rich:column style="width : 5%">
+														<f:facet name="header">#{msgs.label_select}</f:facet>
+														<h:commandButton action="#{trainingPlanInitiation.selectCourse(course)}" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon">
+															<f:ajax render="trainingPlanInitiationFormId:trainingCourseDetailPanelId trainingPlanInitiationFormId:notifyMessagesId" />
+														</h:commandButton>
+													</rich:column>
+													<rich:column style="width : 5%">
+														<f:facet name="header"> # </f:facet>
+														<h:outputText value=" #{index + 1}" />
+													</rich:column>
+													<rich:column style="width : 15%">
+														<f:facet name="header"> #{msgs.label_trainingCourseName} </f:facet>
+														<h:outputText value="#{course.courseName}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header"> #{msgs.label_trainingCourseNumber}</f:facet>
+														<h:outputText value="#{course.serial}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header"> #{msgs.label_weeksCount}</f:facet>
+														<h:outputText value="#{course.weeksCount}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header"> #{msgs.label_candidatesNumber} </f:facet>
+														<h:outputText value="#{course.candidatesMin}-#{course.candidatesMax}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header"> #{msgs.label_startDate}</f:facet>
+														<h:outputText value="#{course.plannedStartDateString}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header"> #{msgs.label_endDate} </f:facet>
+														<h:outputText value="#{course.plannedEndDateString}" />
+													</rich:column>
+													<rich:column style="width : 20%">
+														<f:facet name="header"> #{msgs.label_coursePrequisities} </f:facet>
+														<h:outputText value="#{course.prerquisites}" style="white-space: pre;" />
+													</rich:column>
+													<rich:column style="width : 5%" rendered="#{trainingPlanInitiation.modifyAdmin}">
+														<f:facet name="header">#{msgs.label_delete}</f:facet>
+														<h:commandButton action="#{trainingPlanInitiation.deleteCourseEvent(course)}" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="return confirm('#{msgs.q_delete}');">
+															<f:ajax render="trainingPlanInitiationFormId:wfDataPanel trainingPlanInitiationFormId:trainingCoursesInPlanPanelId trainingPlanInitiationFormId:actionPanelId trainingPlanInitiationFormId:trainingCoursesInPlanTableId trainingPlanInitiationFormId:selectTrainingUnitPanelId trainingPlanInitiationFormId:trainingCourseDetailPanelId trainingPlanInitiationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</rich:column>
+													<f:facet name="footer">
+														<rich:dataScroller execute="trainingPlanInitiationFormId:trainingCoursesInPlanTableId" oncomplete="unMaskScreen()" fastControls="hide">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<!-- training courses data -->
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="trainingCourseDetailPanelId">
+								<h:panelGroup rendered="#{trainingPlanInitiation.selectedTrainingCourseEvent != null}">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+															<h:outputText value="#{msgs.label_trainingCourseData}" />
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+
+										<tr>
+											<td width="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<code:courseDetails id="trainingCourseData" courseEvent="#{trainingPlanInitiation.selectedTrainingCourseEvent}" viewOnly="#{!trainingPlanInitiation.modifyAdmin}" externalPartiesAllocation="#{trainingPlanInitiation.externalPartiesAllocations}" regionsAllocations="#{trainingPlanInitiation.regionsAllocations}" dateHandler="#{trainingPlanInitiation.manipulateEndDate()}" saveAction="#{trainingPlanInitiation.saveCourseEvent()}" showExternalParty="false" />
+												</table>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
+							</h:panelGroup>
+						</td>
+					</tr>
+
+					<tr>
+						<td>
+							<h:panelGroup id="wfDataPanel">
+								<h:panelGroup rendered="#{trainingPlanInitiation.coursesEvents.size() > 0}">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<code:prevTasks rendered="#{trainingPlanInitiation.role != 'Requester'}" value="#{trainingPlanInitiation.prevTasks}" refuseRoles="SignManager,SecondarySignManager,ReviewerEmp,SecondaryReviewerEmp," />
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<code:curTask id="curTaskId" value="#{trainingPlanInitiation.currentEmployee}" rendered="#{trainingPlanInitiation.role == 'DirectManager' or trainingPlanInitiation.role == 'ManagerRedirect' or trainingPlanInitiation.role == 'ReviewerEmp' or trainingPlanInitiation.role == 'SignManager' or trainingPlanInitiation.role == 'SecondaryReviewerEmp' or trainingPlanInitiation.role == 'SecondarySignManager' or trainingPlanInitiation.role == 'SecondaryManagerRedirect'}">
+													<h:panelGroup rendered="#{trainingPlanInitiation.role == 'ManagerRedirect' or trainingPlanInitiation.role == 'SecondaryManagerRedirect'}">
+														<tr>
+															<th width="15%">#{msgs.label_selectEmp}</th>
+															<td width="40%" colspan="2">
+																<h:selectOneMenu id="reviewersId" value="#{trainingPlanInitiation.selectedReviewerEmpId}">
+																	<f:selectItem itemLabel="" itemValue="0" />
+																	<f:selectItems value="#{trainingPlanInitiation.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+																</h:selectOneMenu>
+															</td>
+															<td width="45%" />
+														</tr>
+													</h:panelGroup>
+													<tr>
+														<th width="15%">#{msgs.label_notes}</th>
+														<td width="85%" colspan="3">
+															<h:inputText id="notesId" value="#{trainingPlanInitiation.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+														</td>
+													</tr>
+													<h:panelGroup rendered="#{trainingPlanInitiation.role != 'ManagerRedirect' and trainingPlanInitiation.role != 'SecondaryManagerRedirect'}">
+														<tr>
+															<th width="15%">#{msgs.label_refuseReasons}</th>
+															<td width="85%" colspan="3">
+																<h:inputText id="refuseReasonsId" value="#{trainingPlanInitiation.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+															</td>
+														</tr>
+													</h:panelGroup>
+												</code:curTask>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:outputText rendered="#{trainingPlanInitiation.role == 'Notification' or trainingPlanInitiation.role == 'History'}" value="#{trainingPlanInitiation.notificationMessage}" styleClass="successMessage" />
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+									</table>
+								</h:panelGroup>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="actionPanelId">
+								<h:panelGroup rendered="#{trainingPlanInitiation.coursesEvents.size() > 0}">
+									<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<td>
+												<!-- Print -->
+												<h:commandButton action="#{trainingPlanInitiation.printTrainingPlanInitialDraft()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" title="#{msgs.label_print}" styleClass="btn_normal_icon" rendered="#{trainingPlanInitiation.coursesEvents != null and trainingPlanInitiation.coursesEvents.size() != 0}" />
+
+												<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}',null,null);" action="#{trainingPlanInitiation.initWFTrainingPlan()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{trainingPlanInitiation.role == 'Requester' and trainingPlanInitiation.modifyAdmin}">
+													<f:ajax execute="@form" render="trainingPlanInitiationFormId:notifyMessagesId" />
+												</h:commandButton>
+
+												<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;trainingPlanInitiationFormId:curTaskId:reviewersId&quot;)', null);" action="#{trainingPlanInitiation.redirectWFTrainingPlanMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{trainingPlanInitiation.role == 'ManagerRedirect'}">
+													<f:ajax execute="@form" render="trainingPlanInitiationFormId:notifyMessagesId" />
+												</h:commandButton>
+
+												<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRefuseAndNotes(1, &quot;trainingPlanInitiationFormId:curTaskId:refuseReasonsId&quot;)',null);" action="#{trainingPlanInitiation.approveWFTrainingPlanRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingPlanInitiation.role == 'ReviewerEmp'}">
+													<f:ajax execute="@form" render="trainingPlanInitiationFormId:notifyMessagesId" />
+												</h:commandButton>
+												<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;trainingPlanInitiationFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{trainingPlanInitiation.rejectWFTrainingPlanRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{trainingPlanInitiation.role == 'ReviewerEmp'}">
+													<f:ajax execute="@form" render="trainingPlanInitiationFormId:notifyMessagesId" />
+												</h:commandButton>
+
+												<h:commandButton id="approveSreBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRefuseAndNotes(1, &quot;trainingPlanInitiationFormId:curTaskId:refuseReasonsId&quot;)',null);" action="#{trainingPlanInitiation.approveWFTrainingPlanSRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingPlanInitiation.role == 'SecondaryReviewerEmp'}">
+													<f:ajax execute="@form" render="trainingPlanInitiationFormId:notifyMessagesId" />
+												</h:commandButton>
+												<h:commandButton id="rejectSreBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;trainingPlanInitiationFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{trainingPlanInitiation.rejectWFTrainingPlanSRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{trainingPlanInitiation.role == 'SecondaryReviewerEmp'}">
+													<f:ajax execute="@form" render="trainingPlanInitiationFormId:notifyMessagesId" />
+												</h:commandButton>
+
+												<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;trainingPlanInitiationFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{trainingPlanInitiation.approveWFTrainingPlanSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingPlanInitiation.role == 'SignManager'}">
+													<f:ajax execute="@form" render="trainingPlanInitiationFormId:notifyMessagesId" />
+												</h:commandButton>
+												<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;trainingPlanInitiationFormId:curTaskId:refuseReasonsId&quot;,&quot;trainingPlanInitiationFormId:curTaskId:notesId&quot;)',null);" action="#{trainingPlanInitiation.returnWFTrainingPlanSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{trainingPlanInitiation.role == 'SignManager'}">
+													<f:ajax execute="@form" render="trainingPlanInitiationFormId:notifyMessagesId" />
+												</h:commandButton>
+												<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;trainingPlanInitiationFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{trainingPlanInitiation.rejectWFTrainingPlanSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{trainingPlanInitiation.role == 'SignManager'}">
+													<f:ajax execute="@form" render="trainingPlanInitiationFormId:notifyMessagesId" />
+												</h:commandButton>
+
+												<h:commandButton id="approveSsmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;trainingPlanInitiationFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{trainingPlanInitiation.approveWFTrainingPlanSSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingPlanInitiation.role == 'SecondarySignManager'}">
+													<f:ajax execute="@form" render="trainingPlanInitiationFormId:notifyMessagesId" />
+												</h:commandButton>
+												<h:commandButton id="retSsmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;trainingPlanInitiationFormId:curTaskId:refuseReasonsId&quot;,&quot;trainingPlanInitiationFormId:curTaskId:notesId&quot;)',null);" action="#{trainingPlanInitiation.returnWFTrainingPlanSSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{trainingPlanInitiation.role == 'SecondarySignManager'}">
+													<f:ajax execute="@form" render="trainingPlanInitiationFormId:notifyMessagesId" />
+												</h:commandButton>
+												<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;trainingPlanInitiationFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{trainingPlanInitiation.rejectWFTrainingPlanSSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{trainingPlanInitiation.role == 'SecondarySignManager'}">
+													<f:ajax execute="@form" render="trainingPlanInitiationFormId:notifyMessagesId" />
+												</h:commandButton>
+
+												<h:commandButton id="nBtnId" action="#{trainingPlanInitiation.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{trainingPlanInitiation.role == 'Notification'}">
+													<f:ajax execute="@form" render="trainingPlanInitiationFormId:notifyMessagesId" />
+												</h:commandButton>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
+							</h:panelGroup>
+						</td>
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

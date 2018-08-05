@@ -1,0 +1,398 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+	//<![CDATA[
+
+	function validatePrint(){
+		var basedOnLastDecisionFlag = document.getElementById('organizationTableInquiryFormId:reportTypeId:0').checked;
+		var detailsListSize = document.getElementById('organizationTableInquiryFormId:detailsListSizeHId').innerHTML;
+		
+		if(basedOnLastDecisionFlag && detailsListSize == 0){
+			alert('#{msgs.error_unitHasNoOrganizationTable}');
+            return false;
+		}
+
+		return true;
+	}
+
+	// ]]>
+    </script>
+
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{organizationTableInquiry.init}" />
+	<h:form id="organizationTableInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_organizationTableInquiry}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="35%" valign="top">
+									<!-- tree -->
+									<table cellpadding="0" cellspacing="0" width="98%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsTree}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:inputText id="searchNameValue" value="#{organizationTableInquiry.searchName}" styleClass="inputDataLarge" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_search}" action="#{organizationTableInquiry.search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+																<f:ajax render="organizationTableInquiryFormId:treePanelId organizationTableInquiryFormId:searchDataPanelId organizationTableInquiryFormId:printingOptionsPanelId organizationTableInquiryFormId:detailsPanelId organizationTableInquiryFormId:transactionsTableId organizationTableInquiryFormId:notifyMessagesId" execute="searchNameValue" />
+															</h:commandButton>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<!-- toChange ids, value of tree, .... -->
+															<h:panelGroup id="treePanelId">
+																<rich:tree id="unitTreeId" toggleListener="#{organizationTableInquiry.treeToggleHandler(item)}" render="treePanelId" value="#{organizationTableInquiry.unitTree}" var="item" dir="#{msgs.dir}" nodeType="unitType">
+																	<rich:treeNode type="unitType" expanded="#{item.expanded}" iconExpanded="/resources/images/#{item.unitType}.png" iconCollapsed="/resources/images/#{item.unitType}.png" iconLeaf="/resources/images/#{item.unitType}.png" title="#{item.orderUnderParent}" ontoggle="unMaskScreen();">
+																		<h:commandLink value="#{item.unitName}" action="#{organizationTableInquiry.selectUnit(item)}">
+																			<f:ajax execute="organizationTableInquiryFormId:printingOptionsPanelId" render="organizationTableInquiryFormId:searchDataPanelId organizationTableInquiryFormId:printingOptionsPanelId organizationTableInquiryFormId:detailsPanelId organizationTableInquiryFormId:transactionsTableId organizationTableInquiryFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandLink>
+																	</rich:treeNode>
+																</rich:tree>
+																<h:outputStylesheet library="css" name="tree.css" />
+															</h:panelGroup>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="65%" valign="top">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_searchData}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+
+										<!-- Search criteria -->
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="searchDataPanelId">
+													<!-- Decision info -->
+													<table class="sectionContent" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<td width="100%">
+																<table cellpadding="0" cellspacing="0">
+																	<tr>
+																		<th>
+																			#{msgs.label_orgUnit}
+																			<h:outputText value="  " />
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td colspan="2">
+																			<h:outputText value="#{organizationTableInquiry.selectedUnitData.fullName}" />
+																		</td>
+																	</tr>
+																	<tr>
+																		<th>
+																			#{msgs.label_category}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td>
+																			<h:selectOneMenu id="categoryClassId" value="#{organizationTableInquiry.selectedCategoryClass}">
+																				<f:selectItems value="#{organizationTableInquiry.categoryClasses}" var="category" itemValue="#{category.id}" itemLabel="#{category.description}" />
+																				<f:ajax event="change" listener="#{organizationTableInquiry.searchOrganizationTables(true)}" execute="organizationTableInquiryFormId:printingOptionsPanelId" render="organizationTableInquiryFormId:detailsListSizeHId organizationTableInquiryFormId:printingOptionsPanelId organizationTableInquiryFormId:detailsPanelId organizationTableInquiryFormId:transactionsTableId organizationTableInquiryFormId:notifyMessagesId" />
+																			</h:selectOneMenu>
+																			<h:outputText id="detailsListSizeHId" value="#{organizationTableInquiry.organizationTableDetails.size()}" style="display: none" />
+																		</td>
+																		<th>#{msgs.label_categoryClassMessageForInquiry}</th>
+																	</tr>
+																</table>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<!-- Print options -->
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_printingOptions}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="printingOptionsPanelId">
+													<!-- Decision info -->
+													<table class="sectionContent" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<th>#{msgs.label_viewAllLevelsJobs}</th>
+															<td colspan="2">
+																<h:outputText value="&nbsp;&nbsp;" />
+																<h:selectBooleanCheckbox value="#{organizationTableInquiry.viewAllLevelsJobsFlag}" />
+															</td>
+														</tr>
+														<tr>
+															<th>#{msgs.label_organizationTable}</th>
+															<td colspan="2">
+																<h:selectOneRadio id="reportTypeId" value="#{organizationTableInquiry.reportType}">
+																	<f:selectItem itemValue="10" itemLabel="#{msgs.label_basedOnLastDecision}" />
+																	<f:selectItem itemValue="20" itemLabel="#{msgs.label_currentOfficialSituation}" />
+																</h:selectOneRadio>
+															</td>
+														</tr>
+														<tr>
+															<th>#{msgs.label_jobs}</th>
+															<td>
+																<h:selectOneRadio value="#{organizationTableInquiry.approvedFlag}">
+																	<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+																	<f:selectItem itemValue="1" itemLabel="#{msgs.label_approvedOnly}" />
+																</h:selectOneRadio>
+															</td>
+															<td>
+																<h:commandButton value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" action="#{organizationTableInquiry.print()}" disabled="#{!organizationTableInquiry.authorized}" onclick="return validatePrint();" styleClass="btn_normal_icon" style="float:left" />
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_organizationalDetails}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<!-- Details panel -->
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="detailsPanelId">
+													<!-- organizationTable Details -->
+													<table border="0" cellpadding="0" cellspacing="0" width="100%">
+														<tr>
+															<td width="59%" valign="top">
+																<table class="sectionContent" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<td>
+																			<rich:dataTable var="detail" rowKeyVar="index" value="#{organizationTableInquiry.organizationTableDetails}" rows="#{organizationTableInquiry.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+																				<rich:column style="width : 6%;">
+																					<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_select}" onclick="changeSelectedRowStyle(this.parentElement.parentElement);" action="#{organizationTableInquiry.selectOrganizationTableDetail(detail)}" styleClass="btn_icon">
+																						<f:ajax render="organizationTableInquiryFormId:detailsDataId organizationTableInquiryFormId:notifyMessagesId" />
+																					</h:commandButton>
+																				</rich:column>
+																				<rich:column>
+																					<f:facet name="header">
+																						<h:outputText value="#{msgs.label_basicJobName}" />
+																					</f:facet>
+																					<h:outputText value="#{detail.basicJobName}" />
+																				</rich:column>
+																				<rich:column>
+																					<f:facet name="header">
+																						<h:outputText value="#{organizationTableInquiry.selectedCategoryClass == 1 ? msgs.label_rank : msgs.label_personRank}" />
+																					</f:facet>
+																					<h:outputText value="#{detail.rankDescription}" />
+																				</rich:column>
+																				<rich:column>
+																					<f:facet name="header">
+																						<h:outputText value="#{msgs.label_count}" />
+																					</f:facet>
+																					<h:outputText value="#{detail.jobsCount}" />
+																				</rich:column>
+																				<f:facet name="footer">
+																					<rich:dataScroller oncomplete="unMaskScreen()" fastControls="hide">
+																						<f:facet name="first">#{msgs.label_first}</f:facet>
+																						<f:facet name="last">#{msgs.label_last}</f:facet>
+																						<f:facet name="next">#{msgs.label_next}</f:facet>
+																						<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																					</rich:dataScroller>
+																				</f:facet>
+																			</rich:dataTable>
+																		</td>
+																	</tr>
+																</table>
+															</td>
+															<td width="1%" valign="top"></td>
+															<td width="40%" valign="top">
+																<h:panelGroup id="detailsDataId">
+																	<table class="sectionContent" cellpadding="0" cellspacing="0">
+																		<tr>
+																			<th width="30%">#{msgs.label_generalSpec}</th>
+																			<td>
+																				<h:outputText value="#{msgs.label_overland}" rendered="#{organizationTableInquiry.selectedOrganizationTableDetail.generalSpecialization == 1}" />
+																				<h:outputText value="#{msgs.label_naval}" rendered="#{organizationTableInquiry.selectedOrganizationTableDetail.generalSpecialization == 2}" />
+																				<h:outputText value="#{msgs.label_aerial}" rendered="#{organizationTableInquiry.selectedOrganizationTableDetail.generalSpecialization == 3}" />
+																			</td>
+																		</tr>
+																		<tr>
+																			<th width="30%">#{msgs.label_jobMinorSpec}</th>
+																			<td>
+																				<h:outputText id="jobMinorSpecializationDescriptionId" value="#{organizationTableInquiry.selectedOrganizationTableDetail.minorSpecializationDescription}" />
+																			</td>
+																		</tr>
+																		<tr>
+																			<th width="30%">#{msgs.label_generalType}</th>
+																			<td>
+																				<h:outputText value="#{msgs.label_jobTypeNormal}" rendered="#{organizationTableInquiry.selectedOrganizationTableDetail.generalType == 1}" />
+																				<h:outputText value="#{msgs.label_jobTypeTechnical}" rendered="#{organizationTableInquiry.selectedOrganizationTableDetail.generalType == 2}" />
+																				<h:outputText value="#{msgs.label_jobTypeField}" rendered="#{organizationTableInquiry.selectedOrganizationTableDetail.generalType == 3}" />
+																			</td>
+																		</tr>
+																		<tr>
+																			<th width="30%">#{msgs.label_approved}</th>
+																			<td>
+																				<h:outputText value="#{msgs.label_notApproved}" rendered="#{organizationTableInquiry.selectedOrganizationTableDetail.approvedFlag == 0}" />
+																				<h:outputText value="#{msgs.label_approved}" rendered="#{organizationTableInquiry.selectedOrganizationTableDetail.approvedFlag == 1}" />
+																			</td>
+																		</tr>
+																		<tr>
+																			<h:panelGroup rendered="#{organizationTableInquiry.selectedCategoryClass == 3}">
+																				<th width="30%">#{msgs.label_jobClass}</th>
+																				<td>
+																					<h:outputText value="#{organizationTableInquiry.selectedOrganizationTableDetail.classificationJobCode}" />
+																				</td>
+																			</h:panelGroup>
+																		</tr>
+																	</table>
+																</h:panelGroup>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_proccessDetails}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<!-- Transactions panel -->
+										<tr>
+											<td width="100%">
+												<!-- organizationTable Details -->
+												<table class="sectionContent" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td>
+															<rich:dataTable id="transactionsTableId" var="transaction" rowKeyVar="index" value="#{organizationTableInquiry.organizationTableTransactions}" rows="#{organizationTableInquiry.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+																<rich:column>
+																	<f:facet name="header" style="width : 5%;">#</f:facet>
+																		#{index+1}
+																	</rich:column>
+																<rich:column>
+																	<f:facet name="header">
+																		<h:outputText value="#{msgs.label_decisionNumber}" />
+																	</f:facet>
+																	<h:outputText value="#{transaction.decisionNumber}" />
+																</rich:column>
+																<rich:column>
+																	<f:facet name="header">
+																		<h:outputText value="#{msgs.label_decisionDate}" />
+																	</f:facet>
+																	<h:outputText value="#{transaction.decisionDateString}" />
+																</rich:column>
+																<rich:column>
+																	<f:facet name="header">
+																		<h:outputText value="#{msgs.label_transactionType}" />
+																	</f:facet>
+																	<h:outputText value="#{transaction.transactionTypeDescription}" />
+																</rich:column>
+																<rich:column>
+																	<f:facet name="header">
+																		<h:outputText value="#{msgs.label_basicJobName}" />
+																	</f:facet>
+																	<h:outputText value="#{transaction.basicJobName}" />
+																</rich:column>
+																<rich:column>
+																	<f:facet name="header">
+																		<h:outputText value="#{organizationTableInquiry.selectedCategoryClass == 1 ? msgs.label_rank : msgs.label_personRank}" />
+																	</f:facet>
+																	<h:outputText value="#{transaction.rankDescription}" />
+																</rich:column>
+																<rich:column>
+																	<f:facet name="header">
+																		<h:outputText value="#{msgs.label_count}" />
+																	</f:facet>
+																	<h:outputText value="#{transaction.jobsCount}" />
+																</rich:column>
+																<rich:column>
+																	<f:facet name="header">
+																		<h:outputText value="#{msgs.label_transactionUserFullName}" />
+																	</f:facet>
+																	<h:outputText value="#{transaction.transactionUserFullName}" />
+																</rich:column>
+																<rich:column>
+																	<f:facet name="header">
+																		<h:outputText value="#{msgs.label_transactionDate}" />
+																	</f:facet>
+																	<h:outputText value="#{transaction.transactionDateString}" />
+																</rich:column>
+
+																<f:facet name="footer">
+																	<rich:dataScroller oncomplete="unMaskScreen()" fastControls="hide">
+																		<f:facet name="first">#{msgs.label_first}</f:facet>
+																		<f:facet name="last">#{msgs.label_last}</f:facet>
+																		<f:facet name="next">#{msgs.label_next}</f:facet>
+																		<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																	</rich:dataScroller>
+																</f:facet>
+															</rich:dataTable>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

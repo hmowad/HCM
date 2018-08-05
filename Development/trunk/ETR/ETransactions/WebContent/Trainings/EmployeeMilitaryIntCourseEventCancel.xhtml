@@ -1,0 +1,387 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+		function getEmployee(contextPath) {
+			openEmployeesMiniSearch(contextPath,
+					'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1,
+					-1, -1);
+		}
+		function handleEmpMiniSearchResult(ret) {
+			if (ret != null) {
+				document
+						.getElementById('employeeMilitaryIntCourseEventCancelFormId:beneficiaryEmployeeHId').value = ret[0];
+				document
+						.getElementById('employeeMilitaryIntCourseEventCancelFormId:beneficiaryCategoryIDId').value = ret[2];
+				document
+						.getElementById(
+								'employeeMilitaryIntCourseEventCancelFormId:searchEmpBtnId')
+						.click();
+			}
+		}
+
+		function validateRequest() {
+			var beneficiaryEmployeeHId = document
+					.getElementById('employeeMilitaryIntCourseEventCancelFormId:beneficiaryEmployeeHId').value;
+			var courseEventId = document
+					.getElementById('employeeMilitaryIntCourseEventCancelFormId:courseEventId').value;
+			var cancelReasonChecked1 = document
+					.getElementById('employeeMilitaryIntCourseEventCancelFormId:cancelReasonId:0').checked;
+			var cancelReasonChecked2 = document
+					.getElementById('employeeMilitaryIntCourseEventCancelFormId:cancelReasonId:1').checked;
+			var cancelReasonChecked3 = document
+					.getElementById('employeeMilitaryIntCourseEventCancelFormId:cancelReasonId:2').checked;
+			var cancelReasonChecked4 = document
+					.getElementById('employeeMilitaryIntCourseEventCancelFormId:cancelReasonId:3').checked;
+
+			if (beneficiaryEmployeeHId == null || beneficiaryEmployeeHId == '') {
+				alert('#{msgs.error_employeeMandatory}');
+				return false;
+			}
+
+			if (courseEventId == null || courseEventId == '-1') {
+				alert('#{msgs.error_trainingCourseIsMandatory}');
+				return false;
+			}
+			if (!cancelReasonChecked1 && !cancelReasonChecked2
+					&& !cancelReasonChecked3 && !cancelReasonChecked4) {
+				alert("#{msgs.error_cancelReasonMandatory}");
+				return false;
+			}
+
+			return true;
+		}
+		function validateReview() {
+			if (validateRefuseAndNotes(1,
+					'employeeMilitaryIntCourseEventCancelFormId:curTaskId:refuseReasonsId')) {
+				return validateRequest();
+			} else
+				return false;
+		}
+		// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="employeeMilitaryIntCourseEventCancelFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{employeeMilitaryIntCourseEventCancel.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:panelGroup rendered="#{!employeeMilitaryIntCourseEventCancel.hasPrivilege}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%">
+										<h:outputText value="#{employeeMilitaryIntCourseEventCancel.errorMessage}" />
+									</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{employeeMilitaryIntCourseEventCancel.hasPrivilege}">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.title_employeeData}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="beneficiaryPanelId">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<h:panelGroup rendered="#{employeeMilitaryIntCourseEventCancel.role == 'Requester'}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="50%">
+															<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+															<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{employeeMilitaryIntCourseEventCancel.constructWFTraining()}">
+																<f:ajax execute="employeeMilitaryIntCourseEventCancelFormId:beneficiaryEmployeeHId employeeMilitaryIntCourseEventCancelFormId:beneficiaryCategoryIDId"
+																	render="employeeMilitaryIntCourseEventCancelFormId:beneficiaryPanelId employeeMilitaryIntCourseEventCancelFormId:courseDetailsPanelId employeeMilitaryIntCourseEventCancelFormId:notifyMessagesId"
+																	onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															</h:commandButton>
+															<h:inputHidden id="beneficiaryEmployeeHId" value="#{employeeMilitaryIntCourseEventCancel.wfTraining.employeeId}" />
+															<h:inputHidden id="beneficiaryCategoryIDId" value="#{employeeMilitaryIntCourseEventCancel.wfTraining.categoryId}" />
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<code:emp value="#{employeeMilitaryIntCourseEventCancel.beneficiary}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="courseDetailsPanelId">
+								<h:panelGroup rendered="#{employeeMilitaryIntCourseEventCancel.courseEvents!=null and !employeeMilitaryIntCourseEventCancel.courseEvents.isEmpty()}">
+									<table width="100%" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_trainingCourseData}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+
+
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<th width="15%">
+															#{msgs.label_trainingCourse}
+															<h:outputText value=" " />
+															<font style="color: red;">*</font>
+														</th>
+														<td width="85%" colspan="3">
+															<h:selectOneMenu id="courseEventId" disabled="#{employeeMilitaryIntCourseEventCancel.role != 'Requester' and employeeMilitaryIntCourseEventCancel.role != 'ReviewerEmp'}" value="#{employeeMilitaryIntCourseEventCancel.wfTraining.courseEventId}">
+																<f:selectItem itemLabel="" itemValue="-1" />
+																<f:selectItems value="#{employeeMilitaryIntCourseEventCancel.courseEvents}" var="course" itemLabel="#{course.courseName}" itemValue="#{course.id}" />
+																<f:ajax event="change" listener="#{employeeMilitaryIntCourseEventCancel.selectCourse()}" render="employeeMilitaryIntCourseEventCancelFormId:courseDetailsPanelId employeeMilitaryIntCourseEventCancelFormId:notifyMessagesId" execute="employeeMilitaryIntCourseEventCancelFormId:courseEventId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															</h:selectOneMenu>
+														</td>
+
+													</tr>
+													<tr>
+														<th width="15%">#{msgs.label_trainingYear}</th>
+														<td width="35%">
+															<h:outputText value="#{employeeMilitaryIntCourseEventCancel.selectedCourseEvent.trainingYearName}" />
+														</td>
+														<th width="15%">#{msgs.label_theTrainingUnit}</th>
+														<td width="35%">
+															<h:outputText value="#{employeeMilitaryIntCourseEventCancel.selectedCourseEvent.trainingUnitName}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">#{msgs.label_trainingCourseNumber}</th>
+														<td width="35%">
+															<h:outputText value="#{employeeMilitaryIntCourseEventCancel.selectedCourseEvent.serial}" />
+														</td>
+
+														<th width="15%">#{msgs.label_weeksCount}</th>
+														<td width="35%">
+															<h:outputText value="#{employeeMilitaryIntCourseEventCancel.selectedCourseEvent.weeksCount}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">#{msgs.label_courseStartDate}</th>
+														<td width="35%">
+															<h:outputText value="#{employeeMilitaryIntCourseEventCancel.selectedCourseEvent.actualStartDateString}" />
+														</td>
+
+														<th width="15%">#{msgs.label_courseEndDate}</th>
+														<td width="35%">
+															<h:outputText value="#{employeeMilitaryIntCourseEventCancel.selectedCourseEvent.actualEndDateString}" />
+														</td>
+													</tr>
+
+													<tr>
+														<th width="15%">#{msgs.label_coursePrequisities}</th>
+														<td width="35%" colspan="3">
+															<h:outputText value="#{employeeMilitaryIntCourseEventCancel.selectedCourseEvent.prerquisites}" />
+														</td>
+													</tr>
+												</table>
+
+
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+
+											<td width="100%">
+
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_cancelData}</td>
+													</tr>
+												</table>
+
+											</td>
+
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+
+											<td width="100%">
+
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<th width="15%">
+															#{msgs.label_cancelReason}
+															<font style="color: red;"> *</font>
+														</th>
+														<td width="85%">
+															<h:selectOneRadio id="cancelReasonId" value="#{employeeMilitaryIntCourseEventCancel.wfTraining.reasonType}" disabled="#{employeeMilitaryIntCourseEventCancel.role != 'Requester' and employeeMilitaryIntCourseEventCancel.role != 'ReviewerEmp'}">
+																<f:selectItem itemLabel="#{msgs.label_notPassedSubjectsInCourse}" itemValue="3" />
+																<f:selectItem itemLabel="#{msgs.label_absence}" itemValue="4" />
+																<f:selectItem itemLabel="#{msgs.label_badBehavior}" itemValue="5" />
+																<f:selectItem itemLabel="#{msgs.label_traineeCircumstances}" itemValue="6" />
+															</h:selectOneRadio>
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">#{msgs.label_notes}</th>
+														<td width="85%">
+															<h:inputTextarea styleClass="inputDataSuperLarge" value="#{employeeMilitaryIntCourseEventCancel.wfTraining.reasons}" rows="3" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" disabled="#{employeeMilitaryIntCourseEventCancel.role != 'Requester' and employeeMilitaryIntCourseEventCancel.role != 'ReviewerEmp'}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">#{msgs.label_attachments}</th>
+														<td width="85%">
+															<code:attachments loginEmpId="#{employeeMilitaryIntCourseEventCancel.loginEmpData.empId}" attachmentId="#{employeeMilitaryIntCourseEventCancel.wfTraining.attachments}" addEnableFlag="#{employeeMilitaryIntCourseEventCancel.role == 'Requester' or  employeeMilitaryIntCourseEventCancel.role == 'ReviewerEmp'}" viewEnableFlag="true" deleteEnableFlag="#{employeeMilitaryIntCourseEventCancel.role == 'Requester' or employeeMilitaryIntCourseEventCancel.role == 'ReviewerEmp'}" />
+														</td>
+													</tr>
+
+												</table>
+
+
+											</td>
+
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+
+										<tr>
+											<td width="100%">
+												<code:decisionCopies external="#{employeeMilitaryIntCourseEventCancel.wfTraining.externalCopies}" internal="#{employeeMilitaryIntCourseEventCancel.internalCopies}" viewOnly="#{employeeMilitaryIntCourseEventCancel.role != 'Requester' and employeeMilitaryIntCourseEventCancel.role != 'ReviewerEmp'}" />
+											</td>
+										</tr>
+
+										<tr>
+											<td width="100%">
+												<code:prevTasks rendered="#{employeeMilitaryIntCourseEventCancel.role != 'Requester'}" value="#{employeeMilitaryIntCourseEventCancel.prevTasks}" refuseRoles="SignManager,ReviewerEmp," />
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+
+										<tr>
+											<td width="100%">
+												<code:curTask id="curTaskId" value="#{employeeMilitaryIntCourseEventCancel.currentEmployee}" rendered="#{ employeeMilitaryIntCourseEventCancel.role == 'SignManager' or employeeMilitaryIntCourseEventCancel.role == 'ReviewerEmp'}">
+
+													<tr>
+														<th width="15%">#{msgs.label_notes}</th>
+														<td width="85%" colspan="3">
+															<h:inputText id="notesId" value="#{employeeMilitaryIntCourseEventCancel.currentTask.notes}" styleClass="inputDataSuperLarge" maxlength="500" />
+														</td>
+													</tr>
+
+													<tr>
+														<th width="15%">#{msgs.label_refuseReasons}</th>
+														<td width="85%" colspan="3">
+															<h:inputText id="refuseReasonsId" value="#{employeeMilitaryIntCourseEventCancel.currentTask.refuseReasons}" styleClass="inputDataSuperLarge" maxlength="500" />
+														</td>
+													</tr>
+
+												</code:curTask>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:outputText rendered="#{employeeMilitaryIntCourseEventCancel.role == 'Notification' or employeeMilitaryIntCourseEventCancel.role == 'History'}" value="#{employeeMilitaryIntCourseEventCancel.notificationMessage}" styleClass="successMessage" />
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+																<h:commandButton action="#{employeeMilitaryIntCourseEventCancel.print()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{(employeeMilitaryIntCourseEventCancel.role == 'Notification' or employeeMilitaryIntCourseEventCancel.role == 'History')and employeeMilitaryIntCourseEventCancel.instanceApproved == 1}" />
+
+																<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" action="#{employeeMilitaryIntCourseEventCancel.initEmployeeCourseEventCancel()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{employeeMilitaryIntCourseEventCancel.role == 'Requester'}">
+																	<f:ajax execute="@form" render="employeeMilitaryIntCourseEventCancelFormId:notifyMessagesId" />
+																</h:commandButton>
+																<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateReview()',null);" action="#{employeeMilitaryIntCourseEventCancel.approveEmployeeCourseEventCancelRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{employeeMilitaryIntCourseEventCancel.role == 'ReviewerEmp'}">
+																	<f:ajax execute="@form" render="employeeMilitaryIntCourseEventCancelFormId:notifyMessagesId" />
+																</h:commandButton>
+																<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;employeeMilitaryIntCourseEventCancelFormId:curTaskId:refuseReasonsId&quot;)');" action="#{employeeMilitaryIntCourseEventCancel.rejectEmployeeCourseEventCancelRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{employeeMilitaryIntCourseEventCancel.role == 'ReviewerEmp'}">
+																	<f:ajax execute="@form" render="employeeMilitaryIntCourseEventCancelFormId:notifyMessagesId" />
+																</h:commandButton>
+																<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;employeeMilitaryIntCourseEventCancelFormId:curTaskId:refuseReasonsId&quot;)');" action="#{employeeMilitaryIntCourseEventCancel.approveEmployeeCourseEventCancelSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{employeeMilitaryIntCourseEventCancel.role == 'SignManager'}">
+																	<f:ajax execute="@form" render="employeeMilitaryIntCourseEventCancelFormId:notifyMessagesId" />
+																</h:commandButton>
+																<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;employeeMilitaryIntCourseEventCancelFormId:curTaskId:refuseReasonsId&quot;,&quot;employeeMilitaryIntCourseEventCancelFormId:curTaskId:notesId&quot;)');" action="#{employeeMilitaryIntCourseEventCancel.returnEmployeeCourseEventCancelSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon"
+																	rendered="#{employeeMilitaryIntCourseEventCancel.role == 'SignManager'}">
+																	<f:ajax execute="@form" render="employeeMilitaryIntCourseEventCancelFormId:notifyMessagesId" />
+																</h:commandButton>
+																<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;employeeMilitaryIntCourseEventCancelFormId:curTaskId:refuseReasonsId&quot;)');" action="#{employeeMilitaryIntCourseEventCancel.rejectEmployeeCourseEventCancelSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{employeeMilitaryIntCourseEventCancel.role == 'SignManager'}">
+																	<f:ajax execute="@form" render="employeeMilitaryIntCourseEventCancelFormId:notifyMessagesId" />
+																</h:commandButton>
+																<h:commandButton id="nBtnId" action="#{employeeMilitaryIntCourseEventCancel.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{employeeMilitaryIntCourseEventCancel.role == 'Notification'}">
+																	<f:ajax execute="@form" render="employeeMilitaryIntCourseEventCancelFormId:notifyMessagesId" />
+																</h:commandButton>
+
+														</td>
+
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
+							</h:panelGroup>
+						</td>
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

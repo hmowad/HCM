@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">   
+		var callerId;
+
+		function getModifiedJob(contextPath) {
+			openJobsMiniSearch(contextPath,'handleModifiedJobsMiniSearchResult(ret)',1,#{jobsRenamingScalingTransactionsCollective.mode},-1,-1,-1,-1,1);
+	    }
+      
+        function handleModifiedJobsMiniSearchResult(ret){
+        	if(ret != null){
+        		 document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:selectedJobsIDsHId').value=ret[0];
+   				 document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:searchModifiedJobsBtnId').click();
+        	}
+        }
+        
+		function getNewBasicJobName(contextPath){
+			var categoryId = document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:currentCategoryIDHId').value; 
+			openBasicJobsNamesMiniSearch(contextPath, 'handleNewBasicJobsNamesMiniSearchResult(ret)', 3, categoryId, 0);
+			
+		}
+		 
+		function handleNewBasicJobsNamesMiniSearchResult(ret){
+			if(ret != null){
+				document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:jobNewNameId').innerHTML = ret[1];
+				document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:jobNewNameHId').value = ret[1];
+		    }
+		}
+		function getNewJobClassification(contextPath) {
+			var rankCode = document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:currentRankIDHId').value;
+			openJobClassificationsMiniSearch(contextPath,'handleNewJobClassificationMiniSearchResult(ret)', rankCode);
+		}
+		
+		function handleNewJobClassificationMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:jobNewClassificationIDHId').value = ret[0];
+				document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:jobNewClassificationCodeId').innerHTML = ret[1];
+				document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:jobNewClassificationCodeHId').value = ret[1];
+			}
+		}
+
+		function validateData(){
+
+			var decNumber = document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:decisionNumberId').value;
+	        if(decNumber == null || decNumber == ''){
+	        	alert('#{msgs.error_decNumberMandatory}');
+	            return false;
+	        }
+	        
+			var jobsListSize = document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:jobsListSizeHId').value;
+			if(jobsListSize == 0){
+				alert('#{msgs.error_emptyJobsTransactions}');
+	            return false;
+			}
+
+			var jobNewName = document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:jobNewNameId').innerHTML;
+			if(jobNewName == null || jobNewName == '' || jobNewName.trim() == '' ){
+				alert('#{msgs.error_newNameIsMandatory}');
+	            return false;
+			}
+	           
+	        return true;
+	   }
+
+   </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="jobsRenamingScalingTransactionsCollectiveFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{jobsRenamingScalingTransactionsCollective.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_decisionData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="decisionDataPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="10%">
+										#{msgs.label_decisionNumber}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="20%">
+										<h:inputText id="decisionNumberId" value="#{jobsRenamingScalingTransactionsCollective.decisionNumber}" />
+									</td>
+									<th width="10%">
+										#{msgs.label_decisionDate}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="25%">
+										<util:hijri id="decisionDate" value="#{jobsRenamingScalingTransactionsCollective.decisionDate}"></util:hijri>
+									</td>
+									<th width="10%">
+										#{msgs.label_executionDate}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="25%">
+										<util:hijri id="executionDate" value="#{jobsRenamingScalingTransactionsCollective.executionDate}"></util:hijri>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_details}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="100%">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<td>
+												<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getModifiedJob('#{request.contextPath}');return false;" />
+												<h:commandButton id="searchModifiedJobsBtnId" style="display: none;" action="#{jobsRenamingScalingTransactionsCollective.addSelectedJobs()}">
+													<f:ajax execute="jobsRenamingScalingTransactionsCollectiveFormId:selectedJobsIDsHId jobsRenamingScalingTransactionsCollectiveFormId:modifiedJobsTableId jobsRenamingScalingTransactionsCollectiveFormId:newDataPanelId"
+														render="jobsRenamingScalingTransactionsCollectiveFormId:modifiedJobsTableId jobsRenamingScalingTransactionsCollectiveFormId:newDataPanelId  jobsRenamingScalingTransactionsCollectiveFormId:currentCategoryIDHId jobsRenamingScalingTransactionsCollectiveFormId:currentRankIDHId jobsRenamingScalingTransactionsCollectiveFormId:jobsListSizeHId jobsRenamingScalingTransactionsCollectiveFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+
+												<h:inputHidden id="selectedJobsIDsHId" value="#{jobsRenamingScalingTransactionsCollective.selectedJobsIds}" />
+												<h:inputHidden id="jobsListSizeHId" value="#{jobsRenamingScalingTransactionsCollective.selectedJobs.size()}" />
+
+												<h:inputHidden id="currentCategoryIDHId" value="#{jobsRenamingScalingTransactionsCollective.currentCategoryId}" />
+												<h:inputHidden id="currentRankIDHId" value="#{jobsRenamingScalingTransactionsCollective.currentRankId}" />
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td width="100%">
+									<rich:dataTable id="modifiedJobsTableId" value="#{jobsRenamingScalingTransactionsCollective.selectedJobs}" rowKeyVar="index" var="job" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{jobsRenamingScalingTransactionsCollective.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+										<rich:column style="width : 5%;">
+											<f:facet name="header">#</f:facet>
+													#{index+1}
+										</rich:column>
+										<rich:column style="width : 5%;">
+											<f:facet name="header"> #{msgs.label_jobCode} </f:facet>
+											<h:outputText value="#{job.code}" />
+											<h:inputHidden value="#{job.categoryId}" />
+										</rich:column>
+										<rich:column style="width : 7%;">
+											<f:facet name="header"> #{msgs.label_jobName} </f:facet>
+											<h:outputText value="#{job.name}" />
+										</rich:column>
+										<rich:column rendered="#{jobsRenamingScalingTransactionsCollective.mode==3}" style="width : 7%;">
+											<f:facet name="header"> #{msgs.label_jobClass} </f:facet>
+											<h:outputText value="#{job.classificationJobCode}" />
+										</rich:column>
+										<rich:column style="width : 7%;">
+											<f:facet name="header"> #{jobsRenamingScalingTransactionsCollective.mode==3?(msgs.label_personRank):(msgs.label_rank)} </f:facet>
+											<h:outputText value="#{job.rankDescription}" />
+										</rich:column>
+										<rich:column rendered="#{jobsRenamingScalingTransactionsCollective.mode == 2}" style="width : 5%;">
+											<f:facet name="header"> #{msgs.label_generalSpec} </f:facet>
+											<h:outputText rendered="#{job.generalSpecialization == 1}" value="#{msgs.label_overland}" />
+											<h:outputText rendered="#{job.generalSpecialization == 2}" value="#{msgs.label_naval}" />
+											<h:outputText rendered="#{job.generalSpecialization == 3}" value="#{msgs.label_aerial}" />
+										</rich:column>
+										<rich:column style="width : 7%;">
+											<f:facet name="header"> #{msgs.label_jobMinorSpec} </f:facet>
+											<h:outputText value="#{job.minorSpecializationDescription}" />
+										</rich:column>
+										<rich:column style="width :14%;">
+											<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+											<h:outputText value="#{job.unitFullName}" />
+										</rich:column>
+										<rich:column style="width : 5%;">
+											<f:facet name="header"> #{msgs.label_generalType} </f:facet>
+											<h:outputText rendered="#{job.generalType == 1}" value="#{msgs.label_jobTypeNormal}" />
+											<h:outputText rendered="#{job.generalType == 2}" value="#{msgs.label_jobTypeTechnical}" />
+											<h:outputText rendered="#{job.generalType == 3}" value="#{msgs.label_jobTypeField}" />
+										</rich:column>
+										<rich:column rendered="#{jobsRenamingScalingTransactionsCollective.mode == 2}" style="width : 5%;">
+											<f:facet name="header"> #{msgs.label_approved} </f:facet>
+											<h:outputText rendered="#{job.approvedFlag == 1}" value="#{msgs.label_approved}" />
+											<h:outputText rendered="#{job.approvedFlag == 0}" value="#{msgs.label_notApproved}" />
+										</rich:column>
+										<rich:column style="width : 5%;">
+											<f:facet name="header">#{msgs.label_delete}</f:facet>
+											<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{jobsRenamingScalingTransactionsCollective.deleteSelectedJob(job)}" onclick="return confirm('#{msgs.q_delete}');">
+												<f:ajax execute="jobsRenamingScalingTransactionsCollectiveFormId:newDataPanelId"
+													render="jobsRenamingScalingTransactionsCollectiveFormId:decisionDataPanelId jobsRenamingScalingTransactionsCollectiveFormId:modifiedJobsTableId jobsRenamingScalingTransactionsCollectiveFormId:newDataPanelId jobsRenamingScalingTransactionsCollectiveFormId:currentCategoryIDHId jobsRenamingScalingTransactionsCollectiveFormId:currentRankIDHId jobsRenamingScalingTransactionsCollectiveFormId:jobsListSizeHId jobsRenamingScalingTransactionsCollectiveFormId:notifyMessagesId"
+													onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</rich:column>
+										<f:facet name="footer">
+											<rich:dataScroller oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+												<f:facet name="first">#{msgs.label_first}</f:facet>
+												<f:facet name="last">#{msgs.label_last}</f:facet>
+												<f:facet name="next">#{msgs.label_next}</f:facet>
+												<f:facet name="previous">#{msgs.label_previous}</f:facet>
+											</rich:dataScroller>
+										</f:facet>
+									</rich:dataTable>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="newDataPanelId">
+							<h:panelGroup rendered="#{(jobsRenamingScalingTransactionsCollective.selectedJobs.size() != 0)}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="20%">
+											#{msgs.label_jobNewName}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="80%">
+											<h:outputText id="jobNewNameId" value="#{jobsRenamingScalingTransactionsCollective.newJobName}" />
+											<h:inputHidden id="jobNewNameHId" value="#{jobsRenamingScalingTransactionsCollective.newJobName}" />
+											<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getNewBasicJobName('#{request.contextPath}');return false;" />
+										</td>
+									</tr>
+									<h:panelGroup rendered="#{(jobsRenamingScalingTransactionsCollective.mode == 2)}">
+										<tr>
+											<th width="20%">#{msgs.label_newRank}</th>
+											<td width="80%">
+												<h:selectOneMenu value="#{jobsRenamingScalingTransactionsCollective.newRankId}" disabled="#{jobsRenamingScalingTransactionsCollective.approvedJobsCount > 0}">
+													<f:selectItem itemLabel="" itemValue="-1" />
+													<f:selectItems value="#{jobsRenamingScalingTransactionsCollective.ranks}" var="rank" itemValue="#{rank.id}" itemLabel="#{rank.description}" />
+												</h:selectOneMenu>
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{jobsRenamingScalingTransactionsCollective.getCurrentCategoryId() == 3}">
+										<tr>
+											<th width="20%">#{msgs.label_jobNewClass}</th>
+											<td width="80%">
+												<h:outputText id="jobNewClassificationCodeId" value="#{jobsRenamingScalingTransactionsCollective.newClassificationJobCode}" />
+												<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getNewJobClassification('#{request.contextPath}') ; return false;" />
+												<h:inputHidden id="jobNewClassificationIDHId" value="#{jobsRenamingScalingTransactionsCollective.newClassificationId}" />
+												<h:inputHidden id="jobNewClassificationCodeHId" value="#{jobsRenamingScalingTransactionsCollective.newClassificationJobCode}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<th width="20%">#{msgs.label_reasons}</th>
+										<td width="80%">
+											<h:inputText value="#{jobsRenamingScalingTransactionsCollective.reasons}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsBtnsId">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton action="#{jobsRenamingScalingTransactionsCollective.save()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" rendered="#{!jobsRenamingScalingTransactionsCollective.done}" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');">
+											<f:ajax execute="jobsRenamingScalingTransactionsCollectiveFormId:decisionDataPanelId jobsRenamingScalingTransactionsCollectiveFormId:newDataPanelId" render="jobsRenamingScalingTransactionsCollectiveFormId:actionsBtnsId jobsRenamingScalingTransactionsCollectiveFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+										<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{jobsRenamingScalingTransactionsCollective.resetForm()}">
+											<f:ajax render="jobsRenamingScalingTransactionsCollectiveFormId:decisionDataPanelId jobsRenamingScalingTransactionsCollectiveFormId:modifiedJobsTableId jobsRenamingScalingTransactionsCollectiveFormId:newDataPanelId jobsRenamingScalingTransactionsCollectiveFormId:actionsBtnsId jobsRenamingScalingTransactionsCollectiveFormId:notifyMessagesId " onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

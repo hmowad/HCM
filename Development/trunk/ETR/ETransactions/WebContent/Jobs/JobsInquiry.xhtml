@@ -1,0 +1,486 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		window.onkeypress = function(e) {
+			  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+		      if (keyCode == '13'){
+		    	  document.getElementById('jobsInquiryFormId:searchBtnId').click();
+		    	  return false;
+		      }
+		}; 
+		
+		function getUnit() {
+			openUnitsMiniSearch(2, '#{request.contextPath}', 'handleUnitMiniSearchResult(ret)', -1, #{jobsInquiry.getLoginEmpPhysicalRegionFlag(true)}, -1);
+		}
+		
+		function handleUnitMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('jobsInquiryFormId:jobUnitIDId').value = ret[0];
+				document.getElementById('jobsInquiryFormId:jobUnitFullNameId').innerHTML = ret[1];
+				document.getElementById('jobsInquiryFormId:unitHKeyId').value = ret[3];
+			}
+		}
+
+		function validateSearchPanel() {
+			jobUnitIDId = document.getElementById('jobsInquiryFormId:jobUnitIDId').value;
+			jobCodeId = document.getElementById('jobsInquiryFormId:jobCodeId').value;
+			jobNameId = document.getElementById('jobsInquiryFormId:jobNameId').value;
+			executionDateFromId = document.getElementById('jobsInquiryFormId:executionDateFromId:day').value;
+			executionDateToId = document.getElementById('jobsInquiryFormId:executionDateToId:day').value;
+
+			if ((jobUnitIDId == null || jobUnitIDId == -1 || jobUnitIDId == '')
+					&amp;&amp; (jobCodeId == null || jobCodeId == '')
+					&amp;&amp; (jobNameId == null || jobNameId == '') 
+					&amp;&amp; (executionDateFromId == 0)
+					&amp;&amp; (executionDateToId == 0)) {
+				alert("#{msgs.error_jobInquiryFieldsAreMandatory}");
+				return false;
+			}
+			return true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="jobsInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{jobsInquiry.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_orgUnit}</th>
+									<td width="35%">
+										<h:outputText id="jobUnitFullNameId" />
+										<h:outputText value=" " />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										<h:inputHidden id="jobUnitIDId" value="#{jobsInquiry.unitId}" />
+										<h:inputHidden id="unitHKeyId" value="#{jobsInquiry.unitHKey}" />
+									</td>
+
+									<th width="15%">#{msgs.label_viewAllLevelsJobs}</th>
+									<td width="35%">
+										<h:selectBooleanCheckbox id="viewAllLevelsId" value="#{jobsInquiry.viewAllLevelsFlag}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_jobName}</th>
+									<td width="35%" colspan="3">
+										<h:inputText id="jobNameId" value="#{jobsInquiry.jobName}" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_jobCode}</th>
+									<td width="35%">
+										<h:inputText id="jobCodeId" value="#{jobsInquiry.jobCode}" maxlength="10" onkeypress="return isDigit(event);" />
+									</td>
+
+									<th width="15%">#{msgs.label_status}</th>
+									<td width="35%">
+										<h:selectOneMenu rendered="#{jobsInquiry.mode==2}" value="#{jobsInquiry.jobStatus}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItem itemLabel="#{msgs.label_vacant}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_occupied}" itemValue="2" />
+											<f:selectItem itemLabel="#{msgs.label_frozen}" itemValue="3" />
+											<f:selectItem itemLabel="#{msgs.label_canceled}" itemValue="4" />
+										</h:selectOneMenu>
+										<h:selectOneMenu rendered="#{jobsInquiry.mode!=2}" value="#{jobsInquiry.jobStatus}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItem itemLabel="#{msgs.label_vacant}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_occupied}" itemValue="2" />
+											<f:selectItem itemLabel="#{msgs.label_canceled}" itemValue="4" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{jobsInquiry.mode==2}">
+									<tr>
+										<th width="15%">#{msgs.label_reserved}</th>
+										<td width="35%">
+											<h:selectOneMenu value="#{jobsInquiry.reservationStatus}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_reserved}" />
+												<f:selectItem itemValue="2" itemLabel="#{msgs.label_reservedForRecruitment}" />
+												<f:selectItem itemValue="3" itemLabel="#{msgs.label_reservedForPromotion}" />
+												<f:selectItem itemValue="0" itemLabel="#{msgs.label_notReserved}" />
+											</h:selectOneMenu>
+										</td>
+										<th width="15%">#{msgs.label_approved}</th>
+										<td width="35%">
+											<h:selectOneMenu value="#{jobsInquiry.approved}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_approved}" />
+												<f:selectItem itemValue="0" itemLabel="#{msgs.label_notApproved}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{jobsInquiry.mode==3}">
+									<tr>
+										<th width="15%">#{msgs.label_reserved}</th>
+										<td width="35%">
+											<h:selectOneMenu value="#{jobsInquiry.reservationStatus}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_reserved}" />
+												<f:selectItem itemValue="0" itemLabel="#{msgs.label_notReserved}" />
+											</h:selectOneMenu>
+										</td>
+										<td width="50%" colspan="2" />
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th width="15%">#{msgs.label_executionDateFrom}</th>
+									<td width="35%">
+										<util:hijri id="executionDateFromId" value="#{jobsInquiry.executionDateFrom}" nullable="true" />
+									</td>
+									<th width="15%">#{msgs.label_to}</th>
+									<td width="35%">
+										<util:hijri id="executionDateToId" value="#{jobsInquiry.executionDateTo}" nullable="true" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{jobsInquiry.searchJobs()}" styleClass="btn_normal_icon" onclick="return validateSearchPanel();" title="#{msgs.label_searchByRoot}">
+										<f:ajax execute="jobsInquiryFormId:searchPanelId" render="jobsInquiryFormId:jobsTable jobsInquiryFormId:jobDetailsPanelId jobsInquiryFormId:jobTransactionTableId jobsInquiryFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{jobsInquiry.resetForm()}" styleClass="btn_normal_icon">
+										<f:ajax render="jobsInquiryFormId:searchPanelId jobsInquiryFormId:jobsTable jobsInquiryFormId:jobDetailsPanelId jobsInquiryFormId:jobTransactionTableId jobsInquiryFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_jobs}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="jobsTable" rowKeyVar="index" var="job" value="#{jobsInquiry.jobsList}" rows="#{jobsInquiry.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 5%;">
+								<f:facet name="header"></f:facet>
+								<h:commandButton value="#{msgs.fa_check_square}" action="#{jobsInquiry.showJobDetails(job)}" title="#{msgs.label_select}" styleClass="btn_icon">
+									<f:ajax render="jobsInquiryFormId:jobDetailsPanelId jobsInquiryFormId:jobTransactionTableId jobsInquiryFormId:notifyMessagesId" />
+								</h:commandButton>
+							</rich:column>
+							<rich:column style="width : 5%;">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                            </rich:column>
+							<rich:column style="width : 10%;">
+								<f:facet name="header">#{msgs.label_jobCode}</f:facet>
+								<h:outputText value="#{job.code}" />
+							</rich:column>
+							<rich:column style="width : 20%;">
+								<f:facet name="header">#{msgs.label_jobName}</f:facet>
+								<h:outputText value="#{job.name}" />
+							</rich:column>
+							<rich:column style="width : 20%;">
+								<f:facet name="header">#{msgs.label_jobMinorSpec}</f:facet>
+								<h:outputText value="#{job.minorSpecializationDescription}" />
+							</rich:column>
+							<rich:column style="width : 10%;">
+								<f:facet name="header">#{msgs.label_status}</f:facet>
+								<h:outputText value="#{msgs.label_vacant}" rendered="#{job.status == 1}" />
+								<h:outputText value="#{msgs.label_occupied}" rendered="#{job.status == 2}" />
+								<h:outputText value="#{msgs.label_frozen}" rendered="#{job.status == 3}" />
+								<h:outputText value="#{msgs.label_canceled}" rendered="#{job.status == 4}" />
+							</rich:column>
+							<rich:column style="width : 30%;">
+								<f:facet name="header">#{msgs.label_orgUnit}</f:facet>
+								<h:outputText value="#{job.unitFullName}" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_jobDetails}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="jobDetailsPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="20%">#{msgs.label_jobCode}</th>
+									<td width="25%">
+										<h:outputText value="#{jobsInquiry.selectedJob.code}" />
+									</td>
+									<th width="15%">#{msgs.label_status}</th>
+									<td width="40%">
+										<h:outputText value="#{msgs.label_vacant}" rendered="#{jobsInquiry.selectedJob.status == 1}" />
+										<h:outputText value="#{msgs.label_occupied}" rendered="#{jobsInquiry.selectedJob.status == 2}" />
+										<h:outputText value="#{msgs.label_frozen}" rendered="#{jobsInquiry.selectedJob.status == 3}" />
+										<h:outputText value="#{msgs.label_canceled}" rendered="#{jobsInquiry.selectedJob.status == 4}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="20%">#{msgs.label_jobName}</th>
+									<td width="25%">
+										<h:outputText value="#{jobsInquiry.selectedJob.name}" />
+									</td>
+									<th width="15%">#{jobsInquiry.mode == 3 ? msgs.label_personRank : msgs.label_rank}</th>
+									<td width="40%">
+										<h:outputText value="#{jobsInquiry.selectedJob.rankDescription}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="20%">#{msgs.label_orgUnit}</th>
+									<td colspan="3" width="80%">
+										<h:outputText value="#{jobsInquiry.selectedJob.unitFullName}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="20%">#{msgs.label_emp}</th>
+									<td width="80%" colspan="3">
+										<h:outputText value="#{jobsInquiry.mode == 1 ?  jobsInquiry.getSelectedJobEmployeeInfo() : jobsInquiry.selectedJob.employeeFullName}" />
+									</td>
+								</tr>
+								<tr>
+									<h:panelGroup rendered="#{jobsInquiry.mode!=3}">
+										<th width="20%">#{msgs.label_generalType}</th>
+										<td width="25%">
+											<h:outputText value="#{msgs.label_jobTypeNormal}" rendered="#{jobsInquiry.selectedJob.generalType == 1}" />
+											<h:outputText value="#{msgs.label_jobTypeTechnical}" rendered="#{jobsInquiry.selectedJob.generalType == 2}" />
+											<h:outputText value="#{msgs.label_jobTypeField}" rendered="#{jobsInquiry.selectedJob.generalType == 3}" />
+										</td>
+										<th width="15%">#{msgs.label_generalSpec}</th>
+										<td width="40%">
+											<h:outputText value="#{msgs.label_overland}" rendered="#{jobsInquiry.selectedJob.generalSpecialization == 1}" />
+											<h:outputText value="#{msgs.label_naval}" rendered="#{jobsInquiry.selectedJob.generalSpecialization == 2}" />
+											<h:outputText value="#{msgs.label_aerial}" rendered="#{jobsInquiry.selectedJob.generalSpecialization == 3}" />
+										</td>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{jobsInquiry.mode==3}">
+										<th width="20%">#{msgs.label_generalType}</th>
+										<td width="80%" colspan="3">
+											<h:outputText value="#{msgs.label_jobTypeNormal}" rendered="#{jobsInquiry.selectedJob.generalType == 1}" />
+											<h:outputText value="#{msgs.label_jobTypeTechnical}" rendered="#{jobsInquiry.selectedJob.generalType == 2}" />
+											<h:outputText value="#{msgs.label_jobTypeField}" rendered="#{jobsInquiry.selectedJob.generalType == 3}" />
+										</td>
+									</h:panelGroup>
+								</tr>
+								<tr>
+									<th width="20%">#{msgs.label_jobMajorSpec}</th>
+									<td width="25%">
+										<h:outputText value="#{jobsInquiry.selectedJob.majorSpecializationDescription}" />
+									</td>
+									<th width="15%">#{msgs.label_jobMinorSpec}</th>
+									<td width="40%">
+										<h:outputText value="#{jobsInquiry.selectedJob.minorSpecializationDescription}" />
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{jobsInquiry.mode==3}">
+									<tr>
+										<th width="20%">#{msgs.label_jobClass}</th>
+										<td width="25%">
+											<h:outputText value="#{jobsInquiry.selectedJob.classificationJobCode}" />
+										</td>
+										<th width="15%">#{msgs.label_jobClassificationDesc}</th>
+										<td width="40%">
+											<h:outputText value="#{jobsInquiry.selectedJob.classificationJobDescription}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th width="20%">#{msgs.label_jobDescription}</th>
+									<td colspan="3">
+										<h:outputText value="#{jobsInquiry.selectedJob.jobDesc}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="20%">#{msgs.label_jobDuties}</th>
+									<td colspan="3">
+										<h:outputText value="#{jobsInquiry.selectedJob.dutiesDesc}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="20%">#{msgs.label_notes}</th>
+									<td colspan="3">
+										<h:outputText value="#{jobsInquiry.selectedJob.remarks}" />
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{jobsInquiry.mode==2}">
+									<tr>
+										<th width="20%">#{msgs.label_approved}</th>
+										<td colspan="3">
+											<h:outputText value="#{msgs.label_yes}" rendered="#{jobsInquiry.selectedJob.approvedFlag==1}" />
+											<h:outputText value="#{msgs.label_no}" rendered="#{jobsInquiry.selectedJob.approvedFlag==0}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{jobsInquiry.mode!=1}">
+									<tr>
+										<th width="20%">#{msgs.label_reserveType}</th>
+										<td width="25%">
+											<h:outputText value="#{msgs.label_reserved}" rendered="#{jobsInquiry.selectedJob.reservationStatus==1}" />
+											<h:outputText value="#{msgs.label_reservedForRecruitment}" rendered="#{jobsInquiry.selectedJob.reservationStatus==2}" />
+											<h:outputText value="#{msgs.label_reservedForPromotion}" rendered="#{jobsInquiry.selectedJob.reservationStatus==3}" />
+											<h:outputText value="#{msgs.label_notReserved}" rendered="#{jobsInquiry.selectedJob.reservationStatus==0}" />
+										</td>
+										<th width="15%">#{msgs.label_reservationRemarks}</th>
+										<td width="40%">
+											<h:outputText value="#{jobsInquiry.selectedJob.reservationRemarks}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_jobHistory}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="jobTransactionTableId" rowKeyVar="index" var="jobTrans" value="#{jobsInquiry.jobTransactionsList}" rows="#{jobsInquiry.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 5%;">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                            </rich:column>
+							<rich:column style="width : 7%;">
+								<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+								<h:outputText value="#{jobTrans.decisionNumber}" />
+							</rich:column>
+							<rich:column style="width : 7%;">
+								<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+								<h:outputText value="#{jobTrans.decisionDateString}" />
+							</rich:column>
+							<rich:column style="width : 7%;">
+								<f:facet name="header">#{msgs.label_transactionType}</f:facet>
+								<h:outputText value="#{jobTrans.transactionTypeDescription}" />
+							</rich:column>
+							<rich:column style="width : 7%;">
+								<f:facet name="header">#{msgs.label_executionDate}</f:facet>
+								<h:outputText value="#{jobTrans.executionDateString}" />
+							</rich:column>
+							<rich:column style="width : 7%;">
+								<f:facet name="header">#{msgs.label_jobCode}</f:facet>
+								<h:outputText value="#{jobTrans.code}" />
+							</rich:column>
+							<rich:column style="width : 13%;">
+								<f:facet name="header">#{msgs.label_jobName}</f:facet>
+								<h:outputText value="#{jobTrans.name}" />
+							</rich:column>
+							<rich:column style="width : 7%;">
+								<f:facet name="header">#{msgs.label_status}</f:facet>
+								<h:outputText rendered="#{jobTrans.status == 1}" value="#{msgs.label_vacant}" />
+								<h:outputText rendered="#{jobTrans.status == 2}" value="#{msgs.label_occupied}" />
+								<h:outputText rendered="#{jobTrans.status == 3}" value="#{msgs.label_frozen}" />
+								<h:outputText rendered="#{jobTrans.status == 4}" value="#{msgs.label_canceled}" />
+							</rich:column>
+							<rich:column style="width : 7%;" rendered="#{jobsInquiry.mode!=1}">
+								<f:facet name="header">#{msgs.label_reserveType}</f:facet>
+								<h:outputText rendered="#{jobTrans.reservationStatus == 1}" value="#{msgs.label_reserved}" />
+								<h:outputText rendered="#{jobTrans.reservationStatus == 2}" value="#{msgs.label_reservedForRecruitment}" />
+								<h:outputText rendered="#{jobTrans.reservationStatus == 3}" value="#{msgs.label_reservedForPromotion}" />
+								<h:outputText rendered="#{jobTrans.reservationStatus == 0}" value="#{msgs.label_notReserved}" />
+							</rich:column>
+							<rich:column style="width : 13%;">
+								<f:facet name="header">#{msgs.label_reasons}</f:facet>
+								<h:outputText value="#{jobTrans.reasons}" />
+							</rich:column>
+							<rich:column style="width : 13%;">
+								<f:facet name="header">#{msgs.label_transactionUserFullName}</f:facet>
+								<h:outputText value="#{jobTrans.transactionUserFullName}" />
+							</rich:column>
+							<rich:column style="width : 7%;">
+								<f:facet name="header">#{msgs.label_transactionHijriDate}</f:facet>
+								<h:outputText value="#{jobTrans.transactionDateString}" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

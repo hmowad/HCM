@@ -1,0 +1,1001 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	function getEmployee(contextPath) {
+		openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 17, #{employeeFile.mode}, -1, -1, -1, -1, -1, #{employeeFile.regionId});
+	}
+
+	function handleEmpMiniSearchResult(ret) {
+		if(ret!=null) { 
+	         document.getElementById('employeeFileFormId:employeeIDId').value=ret[0];
+	         document.getElementById('employeeFileFormId:searchEmpBtnId').click();
+		}
+	}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="employeeFileFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table class="tableShowScroll" border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{employeeFile.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId" rendered="#{employeeFile.isModifyAdmin or employeeFile.isViewAdmin or employeeFile.loginEmpData.isManager == 1}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="10%">
+										<h:outputText value="#{employeeFile.mode ==1 ? msgs.label_selectOfficer : (employeeFile.mode == 2 ? msgs.label_selectSoldier : msgs.label_selectPerson)}" />
+									</th>
+									<td width="90%">
+										<h:outputText value="#{employeeFile.employee.name}" />
+										<h:outputText value=" " />
+										<h:inputHidden id="employeeIDId" value="#{employeeFile.employee.empId}" />
+										<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+										<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{employeeFile.getEmployeeFileData()}">
+											<f:ajax execute="employeeFileFormId:employeeIDId"
+												render="employeeFileFormId:recruitmentsTableId employeeFileFormId:graduationLetterPanelId employeeFileFormId:movementsTableId employeeFileFormId:vacationsTableId employeeFileFormId:missionsTableId employeeFileFormId:promotionsCollapsiblePanelId employeeFileFormId:terminationsCollapsiblePanelId employeeFileFormId:additionalSpecializationsTableId employeeFileFormId:searchPanelId employeeFileFormId:updateMovementBlackListFlagBtnId employeeFileFormId:movementBlackListFlagId employeeFileFormId:penalitiesTableId employeeFileFormId:bonusesTableId employeeFileFormId:allowancesTableId employeeFileFormId:disclaimersTableId employeeFileFormId:employeeDataPanelId employeeFileFormId:notifyMessagesId"
+												onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											<h:outputText value=" " />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="employeeDataPanelId" switchType="client" expanded="true" header="#{employeeFile.mode == 1 ? msgs.title_officerData : (employeeFile.mode == 2 ? msgs.label_soldierData : msgs.title_personData) }">
+							<code:emp value="#{employeeFile.employee}" />
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.title_Recruitments}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<rich:dataTable id="recruitmentsTableId" value="#{employeeFile.recruitments}" var="recruitment" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+												<h:outputText value="#{recruitment.decisionNumber}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+												<h:outputText value="#{recruitment.decisionDateString}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_transactionType}</f:facet>
+												<h:outputText value="#{recruitment.recruitmentType == 1 ? msgs.label_recruitment : (
+																	recruitment.recruitmentType == 2 ? msgs.label_reRecruitment : 
+																	msgs.label_externalMove)}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{employeeFile.mode == 3 ? msgs.label_personRecruitmentRank : msgs.label_recruitmentRank}</f:facet>
+												<h:outputText value="#{recruitment.rankDescription}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_recruitmentDate}</f:facet>
+												<h:outputText value="#{recruitment.recruitmentDateString}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_firstRecruitmentDate}</f:facet>
+												<h:outputText value="#{recruitment.firstRecruitmentDateString}" />
+											</rich:column>
+											<rich:column style="width:20%">
+												<f:facet name="header">#{msgs.label_recruitmentJoiningDate}</f:facet>
+												<util:hijri id="recJoiningDateId" value="#{recruitment.joiningDate}" rendered="#{employeeFile.isModifyAdmin and recruitment.joiningDate == null and (recruitment.recruitmentClass != 310 and recruitment.recruitmentClass != 313)}" nullable="true" />
+												<h:outputText value="#{recruitment.joiningDateString}" rendered="#{!employeeFile.isModifyAdmin or recruitment.joiningDate != null or (recruitment.recruitmentClass == 310 or recruitment.recruitmentClass == 313)}" />
+											</rich:column>
+											<rich:column style="width:10%" rendered="#{employeeFile.isModifyAdmin}">
+												<f:facet name="header">#{msgs.label_save}</f:facet>
+												<h:commandButton rendered="#{recruitment.joiningDate == null and (recruitment.recruitmentClass != 310 and recruitment.recruitmentClass != 313)}" value="#{msgs.fa_floppy_o}" action="#{employeeFile.updateRecruitmentJoiningDate(recruitment)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
+													<f:ajax execute="recJoiningDateId" render="employeeFileFormId:recruitmentsTableId employeeFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<rich:column style="width:#{employeeFile.isModifyAdmin ? 10 : 20}%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.label_showOrPrint}" />
+												</f:facet>
+												<h:commandButton rendered="#{recruitment.etrFlag == 1}" value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" styleClass="btn_icon" action="#{employeeFile.printRecruitment(recruitment)}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon" />
+												</f:facet>
+												<code:attachments rendered="#{recruitment.attachments != null}" loginEmpId="#{employeeFile.loginEmpData.empId}" attachmentId="#{recruitment.attachments}" viewEnableFlag="true" compactModeFlag="true" />
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+														#{msgs.label_first}
+	                                            	</f:facet>
+													<f:facet name="last">
+                                                		#{msgs.label_last}
+                                            		</f:facet>
+													<f:facet name="next">
+	                                              		#{msgs.label_next}
+	                                        	    </f:facet>
+													<f:facet name="previous">
+	                                                	#{msgs.label_previous}
+	                                            	</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="graduationLetterPanelId">
+											<rich:dataTable id="graduationLetterTableId" rendered="#{employeeFile.graduationLetters.size() > 0}" value="#{employeeFile.graduationLetters}" var="graduationLetter" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+												<rich:column style="width:15%">
+													<f:facet name="header">#{msgs.label_graduationLetterNumber}</f:facet>
+													<h:outputText value="#{graduationLetter.decisionNumber}" />
+												</rich:column>
+												<rich:column style="width:15%">
+													<f:facet name="header">#{msgs.label_graduationLetterDate}</f:facet>
+													<h:outputText value="#{graduationLetter.decisionDateString}" />
+												</rich:column>
+												<rich:column style="width:15%">
+													<f:facet name="header">#{msgs.label_transactionType}</f:facet>
+													<h:outputText value="#{msgs.label_graduationletter}" />
+												</rich:column>
+												<rich:column style="width:25%">
+													<f:facet name="header">#{msgs.label_joiningDate}</f:facet>
+													<util:hijri id="graduationJoiningDateId" value="#{graduationLetter.joiningDate}" rendered="#{employeeFile.isModifyAdmin and graduationLetter.joiningDate == null}" nullable="true" />
+													<h:outputText value="#{graduationLetter.joiningDateString}" rendered="#{!employeeFile.isModifyAdmin or graduationLetter.joiningDate != null}" />
+												</rich:column>
+												<rich:column style="width:10%" rendered="#{employeeFile.isModifyAdmin}">
+													<f:facet name="header">#{msgs.label_save}</f:facet>
+													<h:commandButton rendered="#{employeeFile.isModifyAdmin and graduationLetter.joiningDate == null}" value="#{msgs.fa_floppy_o}" action="#{employeeFile.updateRecruitmentJoiningDate(graduationLetter)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
+														<f:ajax execute="graduationJoiningDateId" render="employeeFileFormId:graduationLetterTableId employeeFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+													</h:commandButton>
+												</rich:column>
+												<rich:column style="width:#{employeeFile.isModifyAdmin ? 10 : 20}%">
+													<f:facet name="header">
+														<h:outputText value="#{msgs.label_showOrPrint}" />
+													</f:facet>
+													<h:commandButton rendered="#{graduationLetter.etrFlag == 1}" value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" styleClass="btn_icon" action="#{employeeFile.printRecruitment(graduationLetter)}" />
+												</rich:column>
+												<f:facet name="footer">
+													<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+														<f:facet name="first">
+															#{msgs.label_first}
+			                                            </f:facet>
+														<f:facet name="last">
+		                                                	#{msgs.label_last}
+		                                            	</f:facet>
+														<f:facet name="next">
+			                                                #{msgs.label_next}
+			                                            </f:facet>
+														<f:facet name="previous">
+			                                                #{msgs.label_previous}
+			                                            </f:facet>
+													</rich:dataScroller>
+												</f:facet>
+											</rich:dataTable>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.title_movements}">
+							<h:panelGroup rendered="#{employeeFile.mode == 2}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_isBannedFromMove}
+											<h:selectBooleanCheckbox id="movementBlackListFlagId" disabled="#{!employeeFile.isModifyAdmin or employeeFile.employee.empId == null}" value="#{employeeFile.employee.movementBlacklistFlagBoolean}" />
+										</th>
+										<td width="85%">
+											<h:commandButton id="updateMovementBlackListFlagBtnId" value="#{msgs.fa_floppy_o}" disabled="#{employeeFile.employee.empId == null}" action="#{employeeFile.updateMovementBlackListFlag()}" styleClass="btn_icon" rendered="#{employeeFile.isModifyAdmin}">
+												<f:ajax execute="movementBlackListFlagId" render="employeeFileFormId:notifyMessagesId" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%" colspan="1">
+										<rich:dataTable id="movementsTableId" value="#{employeeFile.movements}" var="movement" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<f:facet name="header">
+												<rich:columnGroup>
+													<rich:column rowspan="2">#{msgs.label_decisionNumber}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_decisionDate}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_transactionType}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_executionDate}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_endDate}</rich:column>
+													<rich:column rowspan="2" rendered="#{employeeFile.mode == 1}">#{msgs.label_employeeTransRank}</rich:column>
+													<rich:column colspan="3">#{msgs.label_jobMovedFrom}</rich:column>
+													<rich:column colspan="3">#{msgs.label_jobToBeMovedTo}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_joiningDate}</rich:column>
+													<rich:column rowspan="2" rendered="#{employeeFile.isModifyAdmin}">#{msgs.label_save}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_showOrPrint}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_joiningDocument}</rich:column>
+													<rich:column rowspan="2"><h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon"/></rich:column>
+													<rich:column breakRowBefore="true">#{msgs.label_job}</rich:column>
+													<rich:column>#{employeeFile.mode ==3 ? msgs.label_personRank : msgs.label_rank}</rich:column>
+													<rich:column>#{msgs.label_unit}</rich:column>
+													<rich:column>#{msgs.label_job}</rich:column>
+													<rich:column>#{employeeFile.mode ==3 ? msgs.label_personRank : msgs.label_rank}</rich:column>
+													<rich:column>#{msgs.label_unit}</rich:column>
+												</rich:columnGroup>
+											</f:facet>
+											<rich:column style="width:4%">
+												<h:outputText value="#{movement.decisionNumber}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<h:outputText value="#{movement.decisionDateString}" />
+											</rich:column>
+											<rich:column style="width:7%">
+												<h:outputText value="#{employeeFile.mode == 2 ? (movement.transactionTypeCode == 3 ? msgs.label_soldierTerminationDecision : (movement.transactionTypeCode == 4 ? msgs.label_soldierCancelDecision : movement.transactionTypeDesc)) : (movement.movementTypeId == 3 ? '' : movement.transactionTypeDesc)} #{employeeFile.mode==3 and movement.movementTypeId==2 ? msgs.label_assignment : movement.movementTypeDesc}" />
+											</rich:column>
+											<rich:column style="width:7%">
+												<h:outputText value="#{movement.executionDateString}" />
+											</rich:column>
+											<rich:column style="width:7%">
+												<h:outputText value="#{movement.endDateString}" />
+											</rich:column>
+											<rich:column style="width:4%" rendered="#{employeeFile.mode == 1}">
+												<h:outputText value="#{movement.transEmpRankDesc}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<h:outputText value="#{movement.transEmpJobName}" />
+											</rich:column>
+											<rich:column style="width:4%">
+												<h:outputText value="#{movement.transEmpJobRankDesc}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<h:outputText value="#{movement.transEmpUnitFullName}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<h:outputText value="#{movement.jobName}" />
+											</rich:column>
+											<rich:column style="width:4%">
+												<h:outputText value="#{movement.jobRankDesc}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<h:outputText value="#{movement.unitFullName}" />
+												<h:outputText value="#{movement.location}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<util:hijri id="mvtJoiningDateId" value="#{movement.joiningDate}" rendered="#{employeeFile.isModifyAdmin and movement.transactionTypeCode == 1 and movement.transJoiningApprovedJobName == null}" nullable="true" />
+												<h:outputText value="#{movement.joiningDateString}" rendered="#{!employeeFile.isModifyAdmin or movement.transactionTypeCode != 1 or movement.transJoiningApprovedJobName  != null}" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeFile.isModifyAdmin}">
+												<h:commandButton rendered="#{movement.transactionTypeCode == 1}" value="#{msgs.fa_floppy_o}" action="#{employeeFile.updateMovementJoiningDate(movement)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
+													<f:ajax execute="mvtJoiningDateId" render="employeeFileFormId:notifyMessagesId" />
+												</h:commandButton>
+											</rich:column>
+											<rich:column style="width:5%">
+												<h:commandButton rendered="#{movement.etrFlag == 1}" value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" styleClass="btn_icon" action="#{employeeFile.printMovement(movement)}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<h:commandButton rendered="#{movement.transJoiningApprovedJobName != null and (movement.movementTypeId==1||movement.movementTypeId==2) }" value="#{msgs.fa_print}" title="#{msgs.label_joiningDocument}" styleClass="btn_icon" action="#{employeeFile.printMovementJoiningDocument(movement)}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<code:attachments rendered="#{movement.attachments != null}" loginEmpId="#{employeeFile.loginEmpData.empId}" attachmentId="#{movement.attachments}" viewEnableFlag="true" compactModeFlag="true" />
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+												#{msgs.label_first}
+                                            </f:facet>
+													<f:facet name="last">
+                                                #{msgs.label_last}
+                                            </f:facet>
+													<f:facet name="next">
+                                                #{msgs.label_next}
+                                            </f:facet>
+													<f:facet name="previous">
+                                                #{msgs.label_previous}
+                                            </f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.title_vacations}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<rich:dataTable id="vacationsTableId" value="#{employeeFile.vacations}" var="vacation" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+												<h:outputText value="#{vacation.decisionNumber}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+												<h:outputText value="#{vacation.decisionDateString}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_vacType}</f:facet>
+												<h:outputText value="#{vacation.vacationTypeDescription}" />
+												<h:outputText rendered="#{vacation.subVacationTypeDescription != null}" value="&nbsp;" />
+												<h:outputText rendered="#{vacation.subVacationTypeDescription != null}" value="#{vacation.subVacationTypeDescription}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_period}</f:facet>
+												<h:outputText value="#{vacation.period}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_startDate}</f:facet>
+												<h:outputText value="#{vacation.startDateString}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_endDate}</f:facet>
+												<h:outputText value="#{vacation.endDateString}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_joiningDate}</f:facet>
+												<util:hijri id="vacJoiningDateId" value="#{vacation.joiningDate}" rendered="#{employeeFile.isModifyAdmin}" nullable="true" />
+												<h:outputText value="#{vacation.joiningDateString}" rendered="#{!employeeFile.isModifyAdmin}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_numberOfExceededDays}</f:facet>
+												<h:outputText value="#{vacation.exceededDays}" style="#{vacation.exceededDays > 0 ? 'color: red !important; font-weight: bold !important;' : ''}"  />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeFile.isModifyAdmin}">
+												<f:facet name="header">#{msgs.label_save}</f:facet>
+												<h:commandButton value="#{msgs.fa_floppy_o}" action="#{employeeFile.updateVacationJoiningDate(vacation)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
+													<f:ajax execute="vacJoiningDateId" render="employeeFileFormId:vacationsTableId employeeFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<rich:column style="width:#{employeeFile.isModifyAdmin ? 5 : 10}%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.label_showOrPrint}" />
+												</f:facet>
+												<h:commandButton rendered="#{vacation.etrFlag == 1}" value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" styleClass="btn_icon" action="#{employeeFile.printVaction(vacation)}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.label_joiningDocument}" />
+												</f:facet>
+												<h:commandButton rendered="#{vacation.joiningDateString != null and vacation.exceededDays != null}" value="#{msgs.fa_print}" title="#{msgs.label_joiningDocument}" styleClass="btn_icon" action="#{employeeFile.printJoiningDocument(vacation)}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon" />
+												</f:facet>
+												<code:attachments rendered="#{vacation.attachments != null}" loginEmpId="#{employeeFile.loginEmpData.empId}" attachmentId="#{vacation.attachments}" viewEnableFlag="true" compactModeFlag="true" />
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+												#{msgs.label_first}
+                                            </f:facet>
+													<f:facet name="last">
+                                                #{msgs.label_last}
+                                            </f:facet>
+													<f:facet name="next">
+                                                #{msgs.label_next}
+                                            </f:facet>
+													<f:facet name="previous">
+                                                #{msgs.label_previous}
+                                            </f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.title_missions}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<rich:dataTable id="missionsTableId" value="#{employeeFile.missions}" var="mission" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_missionDecisionNumber}</f:facet>
+												<h:outputText value="#{mission.missionDecisionNumber}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_missionDecisionDate}</f:facet>
+												<h:outputText value="#{mission.missionDecisionDateString}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_missionType}</f:facet>
+												<h:outputText value="#{msgs.label_locIn}" rendered="#{mission.missionLocationFlag == 0}" />
+												<h:outputText value="#{msgs.label_locOut}" rendered="#{mission.missionLocationFlag == 1}" />
+											</rich:column>
+											<rich:column tyle="width:10%">
+												<f:facet name="header">#{msgs.label_missionDestination}</f:facet>
+												<h:outputText value="#{mission.missionDestination}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_period}</f:facet>
+												<h:outputText value="#{mission.period}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_startDate}</f:facet>
+												<h:outputText value="#{mission.startDateString}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_endDate}</f:facet>
+												<h:outputText value="#{mission.endDateString}" />
+											</rich:column>
+											<rich:column style="width:20%">
+												<f:facet name="header">#{msgs.label_joiningDate}</f:facet>
+												<util:hijri id="msnJoiningDateId" value="#{mission.joiningDate}" rendered="#{employeeFile.isModifyAdmin}" nullable="true" />
+												<h:outputText value="#{mission.joiningDateString}" rendered="#{!employeeFile.isModifyAdmin}" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeFile.isModifyAdmin}">
+												<f:facet name="header">#{msgs.label_save}</f:facet>
+												<h:commandButton value="#{msgs.fa_floppy_o}" action="#{employeeFile.updateMissionJoiningDate(mission)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
+													<f:ajax execute="msnJoiningDateId" render="employeeFileFormId:notifyMessagesId" />
+												</h:commandButton>
+											</rich:column>
+											<rich:column style="width:#{employeeFile.isModifyAdmin ? 5 : 10}%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.label_showOrPrint}" />
+												</f:facet>
+												<h:commandButton rendered="#{mission.eflag == 1}" value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" styleClass="btn_icon" action="#{employeeFile.printMission(mission)}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													<h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon" />
+												</f:facet>
+												<code:attachments rendered="#{mission.missionAttachments != null}" loginEmpId="#{employeeFile.loginEmpData.empId}" attachmentId="#{mission.missionAttachments}" viewEnableFlag="true" compactModeFlag="true" />
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+												#{msgs.label_first}
+                                            </f:facet>
+													<f:facet name="last">
+                                                #{msgs.label_last}
+                                            </f:facet>
+													<f:facet name="next">
+                                                #{msgs.label_next}
+                                            </f:facet>
+													<f:facet name="previous">
+                                                #{msgs.label_previous}
+                                            </f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="promotionsCollapsiblePanelId" switchType="client" expanded="true" header="#{msgs.title_promotions}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_lastPromotionDate}</th>
+									<td width="15%">
+										<h:outputText value="#{employeeFile.employee.lastPromotionDateString}" />
+									</td>
+									<th width="15%">#{msgs.label_nextPromotionDueDate}</th>
+									<td width="55%">
+										<h:outputText value="#{employeeFile.employee.promotionDueDateString}" />
+									</td>
+								</tr>
+								<tr>
+									<td width="100%" colspan="4">
+										<rich:dataTable value="#{employeeFile.promotions}" var="promotion" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<f:facet name="header">
+												<rich:columnGroup>
+													<rich:column rowspan="2">#{msgs.label_decisionNumber}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_decisionDate}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_promotionType}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_promotionDueDate}</rich:column>
+													<rich:column colspan="3">#{msgs.label_jobBeforePromotion}</rich:column>
+													<rich:column colspan="3">#{msgs.label_jobAfterPromotion}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_joiningDate}</rich:column>
+													<rich:column rowspan="2" rendered="#{employeeFile.isModifyAdmin}">#{msgs.label_save}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_showOrPrint}</rich:column>
+													<rich:column rowspan="2" rendered="#{employeeFile.mode != 3}"><h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon"/></rich:column>
+													<rich:column breakRowBefore="true">#{msgs.label_job}</rich:column>
+													<rich:column>#{employeeFile.mode ==3 ? msgs.label_personRank : msgs.label_rank}</rich:column>
+													<rich:column>#{msgs.label_unit}</rich:column>
+													<rich:column>#{msgs.label_job}</rich:column>
+													<rich:column>#{employeeFile.mode ==3 ? msgs.label_personRank : msgs.label_rank}</rich:column>
+													<rich:column>#{msgs.label_unit}</rich:column>
+												</rich:columnGroup>
+											</f:facet>
+											<rich:column style="width:6%">
+												<h:outputText value="#{promotion.decisionNumber}" />
+											</rich:column>
+											<rich:column style="width:7%">
+												<h:outputText value="#{promotion.decisionDateString}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<h:outputText value="#{promotion.promotionDesc}" />
+											</rich:column>
+											<rich:column style="width:7%">
+												<h:outputText value="#{promotion.oldDueDateString}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<h:outputText value="#{promotion.oldJobDesc}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<h:outputText value="#{promotion.oldRankDesc}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<h:outputText value="#{promotion.oldUnitFullName}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<h:outputText value="#{promotion.newJobDesc}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<h:outputText value="#{promotion.newRankDesc}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<h:outputText value="#{promotion.newUnitFullName}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<util:hijri id="prmJoiningDateId" value="#{promotion.joiningDate}" rendered="#{employeeFile.isModifyAdmin and promotion.joiningDate == null}" nullable="true" />
+												<h:outputText value="#{promotion.joiningDateString}" rendered="#{!(employeeFile.isModifyAdmin and promotion.joiningDate == null)}" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeFile.isModifyAdmin}">
+												<h:commandButton rendered="#{promotion.joiningDate == null}" value="#{msgs.fa_floppy_o}" action="#{employeeFile.updatePromotionJoiningDate(promotion)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
+													<f:ajax execute="prmJoiningDateId" render="employeeFileFormId:notifyMessagesId employeeFileFormId:promotionsCollapsiblePanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<rich:column style="width:#{employeeFile.isModifyAdmin ? 5 : 10}%">
+												<h:commandButton rendered="#{promotion.eflag == 1}" value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" styleClass="btn_icon" action="#{employeeFile.printPromotion(promotion)}" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeFile.mode != 3}">
+												<code:attachments rendered="#{promotion.attachments != null}" loginEmpId="#{employeeFile.loginEmpData.empId}" attachmentId="#{promotion.attachments}" viewEnableFlag="true" compactModeFlag="true" />
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+												#{msgs.label_first}
+                                            </f:facet>
+													<f:facet name="last">
+                                                #{msgs.label_last}
+                                            </f:facet>
+													<f:facet name="next">
+                                                #{msgs.label_next}
+                                            </f:facet>
+													<f:facet name="previous">
+                                                #{msgs.label_previous}
+                                            </f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="terminationsCollapsiblePanelId" switchType="client" expanded="true" header="#{employeeFile.employee.categoryId == 2 ? msgs.title_terminationsForSolders : msgs.title_terminations}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="10%">#{msgs.label_serviceTerminationDueDate}</th>
+									<td width="15%">
+										<h:outputText value="#{employeeFile.employee.serviceTerminationDueDateString}" />
+									</td>
+									<th width="10%">#{employeeFile.employee.categoryId == 2 ? msgs.label_soldiersLastExtensionEndDate :msgs.label_lastExtensionEndDate}</th>
+									<td width="15%">
+										<h:outputText value="#{employeeFile.employee.lastExtensionEndDateString}" />
+									</td>
+									<th width="10%">#{msgs.label_serviceTerminationDate}</th>
+									<td width="15%">
+										<h:outputText value="#{employeeFile.employee.serviceTerminationDateString}" />
+									</td>
+
+								</tr>
+								<tr>
+									<td width="100%" colspan="6">
+										<rich:dataTable value="#{employeeFile.terminations}" var="termination" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<f:facet name="header">
+												<rich:columnGroup>
+													<rich:column rowspan="2">#{msgs.label_decisionNumber}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_decisionDate}</rich:column>
+													<rich:column colspan="2">#{employeeFile.employee.categoryId == 1 ? msgs.label_terminationData :(employeeFile.employee.categoryId == 2 ? msgs.label_terminationsDataForSoldiers : msgs.label_terminationsDataForCivilians)}</rich:column>
+													<rich:column colspan="#{employeeFile.mode == 1 ? 4 : 3}">#{employeeFile.employee.categoryId == 2 ? msgs.label_soldiersTerminationExtensionsDetails : msgs.label_terminationExtensionsDetails}</rich:column>
+													<rich:column rowspan="2" rendered="#{employeeFile.mode != 1}">#{msgs.label_showOrPrint}</rich:column>
+													<rich:column rowspan="2"><h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon" /></rich:column>
+													<rich:column breakRowBefore="true">#{employeeFile.employee.categoryId == 1 ? msgs.label_terminationReason : (employeeFile.employee.categoryId == 2 ? msgs.label_terminationReasonForSoldiers : msgs.label_terminationReasonForCivilians)}</rich:column>
+													<rich:column>#{msgs.label_serviceTerminationDate}</rich:column>
+													<rich:column rendered="#{employeeFile.mode == 1}">#{msgs.label_extensionPeriodByDays}</rich:column>
+													<rich:column>#{msgs.label_extensionPeriodByMonths}</rich:column>
+													<rich:column>#{employeeFile.employee.categoryId == 2 ? msgs.label_soldiersExtentionStartDate : msgs.label_extensionStartDate}</rich:column>
+													<rich:column>#{employeeFile.employee.categoryId == 2 ? msgs.label_soldiersExtentionEndDate : msgs.label_extensionEndDate}</rich:column>
+												</rich:columnGroup>
+											</f:facet>
+											<rich:column style="width:6%">
+												<h:outputText value="#{termination.decisionNumber}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<h:outputText value="#{termination.decisionDateString}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<h:outputText value="#{termination.reasonDesc}" rendered="#{termination.transactionTypeCode == 10}" />
+												<h:outputText value="#{termination.categoryId == 2 ? msgs.label_terminationCancelationForSolders : msgs.label_terminationCancelationForPersons}" rendered="#{termination.transactionTypeCode == 40}" />
+												<h:outputText value="#{termination.transactionTypeDesc}" rendered="#{termination.transactionTypeCode == 30}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<h:outputText value="#{termination.serviceTerminationDateString}" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeFile.mode == 1}">
+												<h:outputText value="#{termination.extensionPeriodDays}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<h:outputText value="#{termination.extensionPeriodMonths}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<h:outputText value="#{termination.extensionStartDateString}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<h:outputText value="#{termination.extensionEndDateString}" />
+											</rich:column>
+											<rich:column style="width:5%" rendered="#{employeeFile.mode != 1}">
+												<h:commandButton rendered="#{termination.eflag == 1 and termination.transactionTypeCode != 20}" value="#{msgs.fa_print}" action="#{employeeFile.printTerminationReport(termination)}" styleClass="btn_icon" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<code:attachments rendered="#{termination.attachments != null}" loginEmpId="#{employeeFile.loginEmpData.empId}" attachmentId="#{termination.attachments}" viewEnableFlag="true" compactModeFlag="true" />
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+												#{msgs.label_first}
+                                            </f:facet>
+													<f:facet name="last">
+                                                #{msgs.label_last}
+                                            </f:facet>
+													<f:facet name="next">
+                                                #{msgs.label_next}
+                                            </f:facet>
+													<f:facet name="previous">
+                                                #{msgs.label_previous}
+                                            </f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="disclaimersCollapsiblePanelId" switchType="client" expanded="true" header="#{msgs.label_disclaimer}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%" colspan="6">
+										<rich:dataTable id="disclaimersTableId" value="#{employeeFile.disclaimerTransactions}" var="disclaimerTransaction" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<f:facet name="header">
+												<rich:columnGroup>
+													<rich:column rowspan="2">#{msgs.label_decisionNumber}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_decisionDate}</rich:column>
+													<rich:column colspan="2">#{employeeFile.employee.categoryId == 1 ? msgs.label_terminationData :(employeeFile.employee.categoryId == 2 ? msgs.label_terminationsDataForSoldiers : msgs.label_terminationsDataForCivilians)}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_amountClaimed}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_deductionReason}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_governmentClaims}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_details}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_printDecision}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_printDisclaimerStepsReport}</rich:column>
+													<rich:column breakRowBefore="true">#{msgs.label_serviceTerminationNumber}</rich:column>
+													<rich:column>#{msgs.label_serviceTerminationDate}</rich:column>
+												</rich:columnGroup>
+											</f:facet>
+											<rich:column style="width:6%">
+												<h:outputText value="#{disclaimerTransaction.decisionNumber}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<h:outputText value="#{disclaimerTransaction.decisionDateString}" />
+											</rich:column>
+											<rich:column style="width:8%">
+												<h:outputText value="#{disclaimerTransaction.transTerminationDecisionNumber}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<h:outputText value="#{disclaimerTransaction.transTerminationDecisionDateString}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<h:outputText value="#{disclaimerTransaction.totalDueAmount}" />
+											</rich:column>
+											<rich:column style="width:20%">
+												<h:outputText value="#{disclaimerTransaction.deductionReason}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<h:outputText value="#{disclaimerTransaction.totalGovernmentalDueAmount}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<a target="_blank" href="#{request.contextPath}/Retirements/DisclaimerDataView.jsf?terminationTransactionId=#{disclaimerTransaction.terminationTransactionId}" style="text-decoration: none;">
+													<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_showAndUpdate}"></i>
+												</a>
+											</rich:column>
+											<rich:column style="width:5%">
+												<h:commandButton value="#{msgs.fa_print}" action="#{employeeFile.printDisclaimer(disclaimerTransaction.id)}" styleClass="btn_icon" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<h:commandButton value="#{msgs.fa_print}" action="#{employeeFile.printDisclaimerStepsReport(disclaimerTransaction)}" styleClass="btn_icon" />
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+												#{msgs.label_first}
+                                            </f:facet>
+													<f:facet name="last">
+                                                #{msgs.label_last}
+                                            </f:facet>
+													<f:facet name="next">
+                                                #{msgs.label_next}
+                                            </f:facet>
+													<f:facet name="previous">
+                                                #{msgs.label_previous}
+                                            </f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_penalities}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%" colspan="4">
+										<rich:dataTable id="penalitiesTableId" value="#{employeeFile.penalities}" var="penality" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width:23%">
+												<f:facet name="header">#{msgs.label_generalType}</f:facet>
+												<h:outputText value="#{penality.punchName}" />
+											</rich:column>
+											<rich:column style="width:12%">
+												<f:facet name="header">#{msgs.label_punchPeriod}</f:facet>
+												<h:outputText value="#{penality.punchPeriod}" />
+											</rich:column>
+											<rich:column style="width:12%">
+												<f:facet name="header">#{msgs.label_punchStopPeriod}</f:facet>
+												<h:outputText value="#{penality.punchStopPeriod}" />
+											</rich:column>
+											<rich:column style="width:12%">
+												<f:facet name="header">#{msgs.label_punchDecisionTypeDescription}</f:facet>
+												<h:outputText value="#{penality.decisionTypeDescription}" />
+											</rich:column>
+											<rich:column style="width:12%">
+												<f:facet name="header">#{msgs.label_punchDecisionNumber}</f:facet>
+												<h:outputText value="#{penality.decisionNumber}" />
+											</rich:column>
+											<rich:column style="width:12%">
+												<f:facet name="header">#{msgs.label_punchDecisionDate}</f:facet>
+												<h:outputText value="#{penality.decisionDate}" />
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+													#{msgs.label_first}
+	                                            </f:facet>
+													<f:facet name="last">
+                                                	#{msgs.label_last}
+                                            	</f:facet>
+													<f:facet name="next">
+	                                                #{msgs.label_next}
+	                                            </f:facet>
+													<f:facet name="previous">
+	                                                #{msgs.label_previous}
+	                                            </f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_bounses}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%" colspan="4">
+										<rich:dataTable id="bonusesTableId" value="#{employeeFile.bonuses}" var="bonus" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width:30%">
+												<f:facet name="header">#{msgs.label_bonusDescription}</f:facet>
+												<h:outputText value="#{bonus.bonusDesicion}" />
+											</rich:column>
+											<rich:column style="width:30%">
+												<f:facet name="header">#{msgs.label_bonusDecisionTypeDescription}</f:facet>
+												<h:outputText value="#{bonus.decisionTypeDescription}" />
+											</rich:column>
+											<rich:column style="width:20%">
+												<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+												<h:outputText value="#{bonus.decisionNumber}" />
+											</rich:column>
+											<rich:column style="width:20%">
+												<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+												<h:outputText value="#{bonus.decisionDate}" />
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+													#{msgs.label_first}
+	                                            </f:facet>
+													<f:facet name="last">
+                                                	#{msgs.label_last}
+                                            	</f:facet>
+													<f:facet name="next">
+	                                                #{msgs.label_next}
+	                                            </f:facet>
+													<f:facet name="previous">
+	                                                #{msgs.label_previous}
+	                                            </f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_allowances}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%" colspan="4">
+										<rich:dataTable id="allowancesTableId" value="#{employeeFile.allowances}" var="allowance" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width:25%">
+												<f:facet name="header">#{msgs.label_allowanceDescription}</f:facet>
+												<h:outputText value="#{allowance.allowanceDescription}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_category}</f:facet>
+												<h:outputText value="#{allowance.allowanceClass}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_allowancePercentage}</f:facet>
+												<h:outputText value="#{allowance.percentage}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_value}</f:facet>
+												<h:outputText value="#{allowance.value}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+												<h:outputText value="#{allowance.decisionNumber}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+												<h:outputText value="#{allowance.decisionDate}" />
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+													#{msgs.label_first}
+	                                            </f:facet>
+													<f:facet name="last">
+                                                	#{msgs.label_last}
+                                            	</f:facet>
+													<f:facet name="next">
+	                                                #{msgs.label_next}
+	                                            </f:facet>
+													<f:facet name="previous">
+	                                                #{msgs.label_previous}
+	                                            </f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_additionalSpecializations}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%" colspan="4">
+										<rich:dataTable id="additionalSpecializationsTableId" value="#{employeeFile.additionalSpecializations}" var="additionalSpec" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width:70%">
+												<f:facet name="header">#{msgs.label_additionalSpecialization}</f:facet>
+												<h:outputText value="#{additionalSpec.additionalSpecializationDesc}" />
+											</rich:column>
+											<rich:column style="width:30%">
+												<f:facet name="header">#{msgs.label_bannedFromMovementDueToAdditionalSpec}</f:facet>
+												<h:outputText value="#{additionalSpec.movementBlacklistFlagBoolean ? msgs.label_yes : msgs.label_no}" />
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+													#{msgs.label_first}
+	                                            </f:facet>
+													<f:facet name="last">
+                                                	#{msgs.label_last}
+                                            	</f:facet>
+													<f:facet name="next">
+	                                                #{msgs.label_next}
+	                                            </f:facet>
+													<f:facet name="previous">
+	                                                #{msgs.label_previous}
+	                                            </f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

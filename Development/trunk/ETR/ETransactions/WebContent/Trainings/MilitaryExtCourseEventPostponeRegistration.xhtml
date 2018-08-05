@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+			function validate () {	
+						
+				var trainingCourseId = document.getElementById( 'militaryExtCourseEventPostponeRegistrationFormId:trainingCourseEventIdHId' ).value;
+				var startDateValue =  document.getElementById('militaryExtCourseEventPostponeRegistrationFormId:courseEventNewStartDateId:day').value;
+				
+				if ( trainingCourseId == null || trainingCourseId == '' ) {
+					alert( '#{msgs.error_courseNameMandatory}' );
+					return false;
+				}
+				if(startDateValue == 0) {
+					alert('#{msgs.error_courseStartDateMandatory}');
+					return false;
+				}
+				
+				return true;	
+				
+			}
+
+			function getCourseEvents(requestingRegionId) {				
+				openTrainingExtCourseEventsMiniSearch('#{request.contextPath}', 'handleCourseEventsMiniSearchResult(ret)','1,3',-1);
+			}
+			
+			function handleCourseEventsMiniSearchResult(ret){
+				if(ret != null){
+					document.getElementById( 'militaryExtCourseEventPostponeRegistrationFormId:trainingCourseEventIdHId' ).value = ret[ 0 ];
+					document.getElementById( 'militaryExtCourseEventPostponeRegistrationFormId:trainingCourseEventNameId' ).innerHTML = ret[ 1 ];
+					document.getElementById( 'militaryExtCourseEventPostponeRegistrationFormId:trainingCourseEventNameHId' ).value = ret[ 1 ];
+					document.getElementById('militaryExtCourseEventPostponeRegistrationFormId:selectTrainingCourseEventBtnId').click();
+				}
+			}
+
+			
+
+		//]]>
+	</script>
+</h:head>
+
+<h:body styleClass="screenBg">
+	<h:form id="militaryExtCourseEventPostponeRegistrationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{militaryExtCourseEventPostponeRegistration.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_externalCourseEventData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="externalCourseEventData">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_trainingCourseName}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:outputText id="trainingCourseEventNameId" value="#{militaryExtCourseEventPostponeRegistration.courseEventData.courseName}" />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getCourseEvents(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										<h:commandButton id="selectTrainingCourseEventBtnId" style="display:none;" action="#{militaryExtCourseEventPostponeRegistration.getTrainingCourseEventData()}">
+											<f:ajax execute="militaryExtCourseEventPostponeRegistrationFormId:externalCourseEventData" render="militaryExtCourseEventPostponeRegistrationFormId:externalCourseEventData" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+										<h:inputHidden id="trainingCourseEventIdHId" value="#{militaryExtCourseEventPostponeRegistration.courseEventData.id}" />
+										<h:inputHidden id="trainingCourseEventNameHId" value="#{militaryExtCourseEventPostponeRegistration.courseEventData.courseName}" />
+									</td>
+									<td width="50%" colspan="2" />
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_theTrainingUnit}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:outputText id="externalPartyNameId" value="#{militaryExtCourseEventPostponeRegistration.courseEventData.externalPartyDesc}" />
+									</td>
+									<td width="50%" colspan="2" />
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_courseStartDate}
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="35%">
+										<h:outputText value="#{militaryExtCourseEventPostponeRegistration.courseEventStartDateString}" />
+									</td>
+									<th width="15%">
+										#{msgs.label_courseEndDate}
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="35%">
+										<h:outputText value="#{militaryExtCourseEventPostponeRegistration.courseEventEndDateString}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_newStartDate}" />
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<util:hijri id="courseEventNewStartDateId" value="#{militaryExtCourseEventPostponeRegistration.courseEventData.actualStartDate}" nullable="true" listenerMethod="#{militaryExtCourseEventPostponeRegistration.calculateNewEndDate()}" onChangeAjaxSubmit="true" reRenderIds="militaryExtCourseEventPostponeRegistrationFormId:externalCourseEventData" onAjaxEvent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_newEndDate}" />
+									</th>
+									<td width="35%">
+										<h:outputText value="#{militaryExtCourseEventPostponeRegistration.courseEventData.actualEndDateString}" />
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">#{msgs.label_syllabusAttachments}</th>
+									<td width="35%">
+										<code:attachments loginEmpId="#{militaryExtCourseEventPostponeRegistration.loginEmpData.empId}" attachmentId="#{militaryExtCourseEventPostponeRegistration.courseEventData.attachments}" addEnableFlag="true" viewEnableFlag="true" deleteEnableFlag="true" />
+									</td>
+									<td width="50%" colspan="2" />
+								</tr>
+
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="saveBtnId" action="#{militaryExtCourseEventPostponeRegistration.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validate()');">
+										<f:ajax execute="militaryExtCourseEventPostponeRegistrationFormId:externalCourseEventData militaryExtCourseEventPostponeRegistrationFormId:notifyMessagesId" render="militaryExtCourseEventPostponeRegistrationFormId:externalCourseEventData militaryExtCourseEventPostponeRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">   
+		var callerId;
+      
+        function getMovedJob(contextPath) {
+        	openJobsMiniSearch(contextPath,'handleMovedJobsMiniSearchResult(ret)',3,#{jobsMovingTransactionsCollective.mode},-1,-1,-1,-1,1);
+        }
+        
+        function handleMovedJobsMiniSearchResult(ret){
+        	if(ret != null){
+        	 document.getElementById('jobsMovingTransactionsCollectiveFormId:selectedJobsIDsHId').value=ret[0];
+       		 document.getElementById('jobsMovingTransactionsCollectiveFormId:searchMovedJobsBtnId').click();
+        	}
+        }
+        
+
+		function getNewUnit(contextPath, cId) {
+			unitsMiniSearch(2, '#{request.contextPath}','handleNewUnitMiniSearchResult(ret)', -1, -1, -1, null, 0);
+		}
+		
+		function handleNewUnitMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('jobsMovingTransactionsCollectiveFormId:jobNewUnitIDId').value = ret[0];
+				document.getElementById('jobsMovingTransactionsCollectiveFormId:jobNewUnitFullNameHId').value = ret[1];
+				document.getElementById('jobsMovingTransactionsCollectiveFormId:jobNewUnitFullNameId').innerHTML = ret[1];
+				document.getElementById('jobsMovingTransactionsCollectiveFormId:jobNewUnitRegionIdHId').value = ret[4];
+			}
+		}
+		
+
+		function validateData(){
+
+			var decNumber = document.getElementById('jobsMovingTransactionsCollectiveFormId:decisionNumberId').value;
+	        if(decNumber == null || decNumber == ''){
+	        	alert('#{msgs.error_decNumberMandatory}');
+	            return false;
+	        }
+	        
+			var jobsListSize = document.getElementById('jobsMovingTransactionsCollectiveFormId:jobsListSizeHId').value;
+			if(jobsListSize == 0){
+				alert('#{msgs.error_emptyJobsTransactions}');
+	            return false;
+			}
+
+			var jobNewUnit = document.getElementById('jobsMovingTransactionsCollectiveFormId:jobNewUnitFullNameId').innerHTML;
+			if(jobNewUnit == null || jobNewUnit == '' || jobNewUnit.trim() == '' ){
+				alert('#{msgs.error_newUnitIsMandatory}');
+	            return false;
+			}
+	           
+	        return true;
+	   }
+
+   </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="jobsMovingTransactionsCollectiveFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{jobsMovingTransactionsCollective.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_decisionData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="decisionDataPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="10%">
+										#{msgs.label_decisionNumber}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="20%">
+										<h:inputText id="decisionNumberId" value="#{jobsMovingTransactionsCollective.decisionNumber}" />
+									</td>
+									<th width="10%">
+										#{msgs.label_decisionDate}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="25%">
+										<util:hijri id="decisionDate" value="#{jobsMovingTransactionsCollective.decisionDate}"></util:hijri>
+									</td>
+									<th width="10%">
+										#{msgs.label_executionDate}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="25%">
+										<util:hijri id="executionDate" value="#{jobsMovingTransactionsCollective.executionDate}"></util:hijri>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_details}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="100%">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<td>
+												<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getMovedJob('#{request.contextPath}');return false;" />
+												<h:commandButton id="searchMovedJobsBtnId" style="display: none;" action="#{jobsMovingTransactionsCollective.addSelectedJobs()}">
+													<f:ajax execute="jobsMovingTransactionsCollectiveFormId:selectedJobsIDsHId" render="jobsMovingTransactionsCollectiveFormId:modifiedJobsTableId jobsMovingTransactionsCollectiveFormId:newDataPanelId jobsMovingTransactionsCollectiveFormId:jobsListSizeHId jobsMovingTransactionsCollectiveFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+												<h:inputHidden id="selectedJobsIDsHId" value="#{jobsMovingTransactionsCollective.selectedJobsIds}" />
+												<h:inputHidden id="jobsListSizeHId" value="#{jobsMovingTransactionsCollective.selectedJobs.size()}" />
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td width="100%">
+									<rich:dataTable id="modifiedJobsTableId" value="#{jobsMovingTransactionsCollective.selectedJobs}" rowKeyVar="index" var="job" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{jobsMovingTransactionsCollective.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+										<rich:column style="width : 5%;">
+											<f:facet name="header">#</f:facet>
+													#{index+1}
+												</rich:column>
+										<rich:column style="width : 5%;">
+											<f:facet name="header"> #{msgs.label_jobCode} </f:facet>
+											<h:outputText value="#{job.code}" />
+											<h:inputHidden value="#{job.categoryId}" />
+										</rich:column>
+										<rich:column style="width : 7%;">
+											<f:facet name="header"> #{msgs.label_jobName} </f:facet>
+											<h:outputText value="#{job.name}" />
+										</rich:column>
+										<rich:column rendered="#{jobsMovingTransactionsCollective.mode==3}" style="width : 7%;">
+											<f:facet name="header"> #{msgs.label_jobClass} </f:facet>
+											<h:outputText value="#{job.classificationJobCode}" />
+										</rich:column>
+										<rich:column style="width : 7%;">
+											<f:facet name="header"> #{jobsMovingTransactionsCollective.mode==3?(msgs.label_personRank):(msgs.label_rank)} </f:facet>
+											<h:outputText value="#{job.rankDescription}" />
+
+										</rich:column>
+										<rich:column rendered="#{jobsMovingTransactionsCollective.mode != 3}" style="width : 5%;">
+											<f:facet name="header"> #{msgs.label_generalSpec} </f:facet>
+											<h:selectOneMenu value="#{job.generalSpecialization}" rendered="#{jobsMovingTransactionsCollective.mode != 3}" disabled="true">
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_overland}" />
+												<f:selectItem itemValue="2" itemLabel="#{msgs.label_naval}" />
+												<f:selectItem itemValue="3" itemLabel="#{msgs.label_aerial}" />
+											</h:selectOneMenu>
+										</rich:column>
+										<rich:column style="width : 7%;">
+											<f:facet name="header"> #{msgs.label_jobMinorSpec} </f:facet>
+											<h:outputText value="#{job.minorSpecializationDescription}" />
+										</rich:column>
+										<rich:column style="width :14%;">
+											<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+											<h:outputText value="#{job.unitFullName}" />
+										</rich:column>
+										<rich:column style="width : 5%;">
+											<f:facet name="header"> #{msgs.label_generalType} </f:facet>
+											<h:selectOneMenu value="#{job.generalType}" disabled="true">
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_jobTypeNormal}" />
+												<f:selectItem itemValue="2" itemLabel="#{msgs.label_jobTypeTechnical}" />
+												<f:selectItem itemValue="3" itemLabel="#{msgs.label_jobTypeField}" />
+											</h:selectOneMenu>
+										</rich:column>
+										<rich:column rendered="#{jobsMovingTransactionsCollective.mode==2}" style="width : 5%;">
+											<f:facet name="header"> #{msgs.label_approved} </f:facet>
+											<h:selectOneMenu value="#{job.approvedFlag}" rendered="#{jobsMovingTransactionsCollective.mode==2}" disabled="true">
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_approved}" />
+												<f:selectItem itemValue="0" itemLabel="#{msgs.label_notApproved}" />
+											</h:selectOneMenu>
+										</rich:column>
+										<rich:column style="width : 5%;">
+											<f:facet name="header">#{msgs.label_delete}</f:facet>
+											<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{jobsMovingTransactionsCollective.deleteSelectedJob(job)}" onclick="return confirm('#{msgs.q_delete}');">
+												<f:ajax execute="jobsMovingTransactionsCollectiveFormId:newDataPanelId" render="jobsMovingTransactionsCollectiveFormId:decisionDataPanelId jobsMovingTransactionsCollectiveFormId:modifiedJobsTableId jobsMovingTransactionsCollectiveFormId:newDataPanelId jobsMovingTransactionsCollectiveFormId:jobsListSizeHId jobsMovingTransactionsCollectiveFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</rich:column>
+										<f:facet name="footer">
+											<rich:dataScroller oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+												<f:facet name="first">#{msgs.label_first}</f:facet>
+												<f:facet name="last">#{msgs.label_last}</f:facet>
+												<f:facet name="next">#{msgs.label_next}</f:facet>
+												<f:facet name="previous">#{msgs.label_previous}</f:facet>
+											</rich:dataScroller>
+										</f:facet>
+									</rich:dataTable>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="newDataPanelId">
+							<h:panelGroup rendered="#{(jobsMovingTransactionsCollective.selectedJobs.size() != 0)}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="20%">
+											#{msgs.label_newUnit}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="80%">
+											<h:outputText id="jobNewUnitFullNameId" value="#{jobsMovingTransactionsCollective.selectedNewUnit.fullName}" />
+											<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getNewUnit('#{request.contextPath}',this.id);return false;" />
+											<h:inputHidden id="jobNewUnitIDId" value="#{jobsMovingTransactionsCollective.selectedNewUnit.id}" />
+											<h:inputHidden id="jobNewUnitFullNameHId" value="#{jobsMovingTransactionsCollective.selectedNewUnit.fullName}" />
+											<h:inputHidden id="jobNewUnitRegionIdHId" value="#{jobsMovingTransactionsCollective.selectedNewUnit.regionId}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">#{msgs.label_reasons}</th>
+										<td width="80%">
+											<h:inputText value="#{jobsMovingTransactionsCollective.reasons}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsBtnsId">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton action="#{jobsMovingTransactionsCollective.save()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" rendered="#{!jobsMovingTransactionsCollective.done}" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');">
+											<f:ajax execute="jobsMovingTransactionsCollectiveFormId:decisionDataPanelId jobsMovingTransactionsCollectiveFormId:modifiedJobsTableId jobsMovingTransactionsCollectiveFormId:newDataPanelId" render="jobsMovingTransactionsCollectiveFormId:actionsBtnsId jobsMovingTransactionsCollectiveFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+										<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{jobsMovingTransactionsCollective.resetForm()}">
+											<f:ajax render="jobsMovingTransactionsCollectiveFormId:decisionDataPanelId jobsMovingTransactionsCollectiveFormId:modifiedJobsTableId jobsMovingTransactionsCollectiveFormId:newDataPanelId jobsMovingTransactionsCollectiveFormId:actionsBtnsId jobsMovingTransactionsCollectiveFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:rich="http://richfaces.org/rich" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:h="http://java.sun.com/jsf/html" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+	//<![CDATA[
+		function validateVacationConfiguration() {
+			
+			var vacBalanceValue = document.getElementById('vacationsConfigurationsFormId:vacBalanceId');
+			if(vacBalanceValue.value == null || vacBalanceValue.value.trim() == ''){
+				alert('#{msgs.error_vacationBalanceIsMandatory}');
+				return false;
+			}
+
+			var vacMinValue = document.getElementById('vacationsConfigurationsFormId:vacMinValueId');
+			if(!vacMinValue.disabled && (vacMinValue.value == null || vacMinValue.value.trim() == '' || vacMinValue.value <= 0)){
+				alert('#{msgs.error_vacationMinValueRequired}');
+				return false;
+			}
+
+			var vacMaxValueId = document.getElementById('vacationsConfigurationsFormId:vacMaxValueId');
+			if(!vacMaxValueId.disabled && (vacMaxValueId.value == null || vacMaxValueId.value.trim() == '')){
+				alert('#{msgs.error_vacationMaxValueRequired}');
+				return false;
+			}
+
+			var vacAllowedValuesId = document.getElementById('vacationsConfigurationsFormId:vacAllowedValuesId');
+			if(!vacAllowedValuesId.disabled && (vacAllowedValuesId.value == null || vacAllowedValuesId.value.trim() == '')){
+				alert('#{msgs.error_vacationAllowedValuesRequired}');
+				return false;
+			}
+
+			var periodBeforeFirstVacId = document.getElementById('vacationsConfigurationsFormId:periodBeforeFirstVacId');
+			if(!periodBeforeFirstVacId.disabled && (periodBeforeFirstVacId.value == null || periodBeforeFirstVacId.value.trim() == '')){
+				alert('#{msgs.error_periodBeforeFirstVacRequired}');
+				return false;
+			}
+			
+			var firstYearMaxVacDaysId = document.getElementById('vacationsConfigurationsFormId:firstYearMaxVacDaysId');
+			if(!firstYearMaxVacDaysId.disabled && (firstYearMaxVacDaysId.value == null || firstYearMaxVacDaysId.value.trim() == '')){
+				alert('#{msgs.error_firstYearMaxVacDaysRequired}');
+				return false;
+			}
+
+			var maxVacDaysPerYearId = document.getElementById('vacationsConfigurationsFormId:maxVacDaysPerYearId');
+			if(!maxVacDaysPerYearId.disabled && (maxVacDaysPerYearId.value == null || maxVacDaysPerYearId.value.trim() == '')){
+				alert('#{msgs.error_maxVacDaysPerYearRequired}');
+				return false;
+			}
+
+			var maxVacDaysPerYearExcpId = document.getElementById('vacationsConfigurationsFormId:maxVacDaysPerYearExcpId');
+			if(!maxVacDaysPerYearExcpId.disabled && (maxVacDaysPerYearExcpId.value == null || maxVacDaysPerYearExcpId.value.trim() == '')){
+				alert('#{msgs.error_maxVacDaysPerYearExceptionalRequired}');
+				return false;
+			}
+
+			var maxVacDaysPerReqExcpId = document.getElementById('vacationsConfigurationsFormId:maxVacDaysPerReqExcpId');
+			if(!maxVacDaysPerReqExcpId.disabled && (maxVacDaysPerReqExcpId.value == null || maxVacDaysPerReqExcpId.value.trim() == '')){
+				alert('#{msgs.error_maxVacDaysPerRequestExceptionalRequired}');
+				return false;
+			}
+
+			var balanceFrameValidityId = document.getElementById('vacationsConfigurationsFormId:balanceFrameValidityId');
+			if(!balanceFrameValidityId.disabled && (balanceFrameValidityId.value == null || balanceFrameValidityId.value.trim() == '')){
+				alert('#{msgs.error_balanceFrameValidityRequired}');
+				return false;
+			}
+
+			var minExternalVacDaysId = document.getElementById('vacationsConfigurationsFormId:minExternalVacDaysId');
+			if(!minExternalVacDaysId.disabled && (minExternalVacDaysId.value == null || minExternalVacDaysId.value.trim() == '')){
+				alert('#{msgs.error_minExternalVacDaysRequired}');
+				return false;
+			}
+
+			var additionalRegularVacDaysForSoldiersId = document.getElementById('vacationsConfigurationsFormId:additionalRegularVacDaysForSoldiersId');
+			if(!additionalRegularVacDaysForSoldiersId.disabled && (additionalRegularVacDaysForSoldiersId.value == null || additionalRegularVacDaysForSoldiersId.value.trim() == '')){
+				alert('#{msgs.error_additionalRegularVacDaysForSoldiersRequired}');
+				return false;
+			}
+
+			var periodsId = document.getElementById('vacationsConfigurationsFormId:periodsId');
+			if(!periodsId.disabled && (periodsId.value == null || periodsId.value.trim() == '')){
+				alert('#{msgs.error_regularVacationsOfficersPeriodsRequired}');
+				return false;
+			}
+			return true;
+		}
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="vacationsConfigurationsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_vacationsConfigurations}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_category}</th>
+									<td width="35%">
+										<h:selectOneMenu value="#{vacationsConfigurations.selectedCategoryId}">
+											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+											<f:selectItems value="#{vacationsConfigurations.categories}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+											<f:ajax event="change" execute="@this" render="vacationsConfigurationsFormId:vacationsTypesId" />
+										</h:selectOneMenu>
+									</td>
+									<th width="15%">#{msgs.label_vacType}</th>
+									<td width="35%">
+										<h:selectOneMenu id="vacationsTypesId" value="#{vacationsConfigurations.selectedVacationTypeId}">
+											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+											<f:selectItems value="#{vacationsConfigurations.vacationTypes}" var="vacType" itemLabel="#{(vacationsConfigurations.selectedCategoryId == -1 or vacationsConfigurations.selectedCategoryId == 1 or vacationsConfigurations.selectedCategoryId == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton action="#{vacationsConfigurations.search()}" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon">
+										<f:ajax execute="vacationsConfigurationsFormId:searchPanelId" render="vacationsConfigurationsFormId:vacationsConfigurationsTableId vacationsConfigurationsFormId:vacationConfigurationDetailsPanelId vacationsConfigurationsFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton action="#{vacationsConfigurations.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="vacationsConfigurationsFormId:searchPanelId vacationsConfigurationsFormId:vacationsConfigurationsTableId vacationsConfigurationsFormId:vacationConfigurationDetailsPanelId vacationsConfigurationsFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_searchResults}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="vacationsConfigurationsTableId" rowKeyVar="index" var="obj" value="#{vacationsConfigurations.vacationsConfigurationsList}" rows="#{vacationsConfigurations.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 5%">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                         </rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_select}</f:facet>
+								<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon" action="#{vacationsConfigurations.selectVacationConfiguration(obj)}">
+									<f:ajax event="click" render="vacationsConfigurationsFormId:vacationConfigurationDetailsPanelId vacationsConfigurationsFormId:notifyMessagesId" />
+								</h:commandButton>
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_category}</f:facet>
+								<h:outputText value="#{obj[2]}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_vacType}</f:facet>
+								<h:outputText value="#{(obj[0].categoryId == 1 or obj[0].categoryId == 2) ? obj[1].vacationTypeDesc : obj[1].vacationTypeDescForEmployees}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_subVacationType}</f:facet>
+								<h:outputText value="#{obj[0].subVacationType == 1 ? msgs.label_sickVacationA : msgs.label_sickVacationB}" rendered="#{obj[0].categoryId == 2 and obj[0].vacationTypeId == 2}" />
+								<h:outputText value="#{obj[0].subVacationType == 1 ? msgs.label_forCircumstances : msgs.label_forAccompany}" rendered="#{obj[0].categoryId != 1 and obj[0].categoryId != 2 and obj[0].categoryId != 6 and obj[0].vacationTypeId == 3}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_location}</f:facet>
+								<h:outputText value="#{obj[0].locationFlag == 0 ? msgs.label_locIn : (obj[0].locationFlag == 1 ? msgs.label_locOut : '')}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_paidVacationType}</f:facet>
+								<h:outputText value="#{msgs.label_vacFullPaid}" rendered="#{obj[0].paidVacationType == 1}" />
+								<h:outputText value="#{msgs.label_vacThreeQuarterPaid}" rendered="#{obj[0].paidVacationType == 2}" />
+								<h:outputText value="#{msgs.label_vacHalfPaid}" rendered="#{obj[0].paidVacationType == 3}" />
+								<h:outputText value="#{msgs.label_vacQuarterPaid}" rendered="#{obj[0].paidVacationType == 4}" />
+								<h:outputText value="#{msgs.label_vacWithoutPaid}" rendered="#{obj[0].paidVacationType == 5}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_categoryClassifications}</f:facet>
+								<h:outputText value="#{obj[0].categoryClassificationId == 601 ? msgs.label_classificationType : ''}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_fromDate}</f:facet>
+								<h:outputText value="#{obj[0].fromDateString}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_toDate}</f:facet>
+								<h:outputText value="#{obj[0].toDateString}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_active}</f:facet>
+								<h:outputText value="#{obj[0].active == 1 ? msgs.label_active : msgs.label_notActive}" />
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="vacationConfigurationDetailsPanelId">
+							<h:panelGroup rendered="#{vacationsConfigurations.selectedVacConfig[0] != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{msgs.label_details}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:panelGroup id="vacationConfigurationPanelId">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<th width="25%">#{msgs.label_category}</th>
+														<td width="25%">
+															<h:outputText value="#{vacationsConfigurations.selectedVacConfig[2]}" />
+														</td>
+														<th width="25%">#{msgs.label_categoryClassifications}</th>
+														<td width="25%">
+															<h:outputText value="#{vacationsConfigurations.selectedVacConfig[0].categoryClassificationId == 601 ? msgs.label_classificationType : ''}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="25%">#{msgs.label_vacType}</th>
+														<td width="25%">
+															<h:outputText value="#{(vacationsConfigurations.selectedVacConfig[0].categoryId == 1 or vacationsConfigurations.selectedVacConfig[0].categoryId == 2) ? vacationsConfigurations.selectedVacConfig[1].vacationTypeDesc : vacationsConfigurations.selectedVacConfig[1].vacationTypeDescForEmployees}" />
+														</td>
+														<th width="25%">#{msgs.label_location}</th>
+														<td width="25%">
+															<h:outputText value="#{vacationsConfigurations.selectedVacConfig[0].locationFlag == 0 ? msgs.label_locIn  : (vacationsConfigurations.selectedVacConfig[0].locationFlag == 1 ? msgs.label_locOut :'')}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="25%">#{msgs.label_subVacationType}</th>
+														<td width="25%">
+															<h:outputText value="#{vacationsConfigurations.selectedVacConfig[0].subVacationType == 1 ? msgs.label_sickVacationA : msgs.label_sickVacationB}" rendered="#{vacationsConfigurations.selectedVacConfig[0].categoryId == 2 and vacationsConfigurations.selectedVacConfig[0].vacationTypeId == 2}" />
+															<h:outputText value="#{vacationsConfigurations.selectedVacConfig[0].subVacationType == 1 ? msgs.label_forCircumstances : msgs.label_forAccompany}" rendered="#{vacationsConfigurations.selectedVacConfig[0].categoryId != 1 and vacationsConfigurations.selectedVacConfig[0].categoryId != 2 and vacationsConfigurations.selectedVacConfig[0].vacationTypeId == 3}" />
+														</td>
+														<th width="25%">#{msgs.label_paidVacationType}</th>
+														<td width="25%">
+															<h:outputText value="#{msgs.label_vacFullPaid}" rendered="#{vacationsConfigurations.selectedVacConfig[0].paidVacationType == 1}" />
+															<h:outputText value="#{msgs.label_vacThreeQuarterPaid}" rendered="#{vacationsConfigurations.selectedVacConfig[0].paidVacationType == 2}" />
+															<h:outputText value="#{msgs.label_vacHalfPaid}" rendered="#{vacationsConfigurations.selectedVacConfig[0].paidVacationType == 3}" />
+															<h:outputText value="#{msgs.label_vacQuarterPaid}" rendered="#{vacationsConfigurations.selectedVacConfig[0].paidVacationType == 4}" />
+															<h:outputText value="#{msgs.label_vacWithoutPaid}" rendered="#{vacationsConfigurations.selectedVacConfig[0].paidVacationType == 5}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="25%">#{msgs.label_fromDate}</th>
+														<td width="25%">
+															<h:outputText value="#{vacationsConfigurations.selectedVacConfig[0].fromDateString}" />
+														</td>
+														<th width="25%">#{msgs.label_toDate}</th>
+														<td width="25%">
+															<h:outputText value="#{vacationsConfigurations.selectedVacConfig[0].toDateString}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="25%">
+															#{msgs.label_vacationBalance}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="25%">
+															<h:inputText id="vacBalanceId" value="#{vacationsConfigurations.selectedVacConfig[0].balance}" disabled="#{!vacationsConfigurations.hasModifyPrivilege or vacationsConfigurations.selectedVacConfig[0].active == 0}" maxlength="4" onkeypress="return isDigit(event);" />
+														</td>
+														<th width="25%">#{msgs.label_active}</th>
+														<td width="25%">
+															<h:outputText value="#{vacationsConfigurations.selectedVacConfig[0].active == 1 ? msgs.label_active : msgs.label_notActive}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="25%">#{msgs.label_vacationMinValue}</th>
+														<td width="25%">
+															<h:inputText id="vacMinValueId" value="#{vacationsConfigurations.selectedVacConfig[0].minValue}" disabled="#{!vacationsConfigurations.hasModifyPrivilege or vacationsConfigurations.selectedVacConfig[0].active == 0 or vacationsConfigurations.originalVacConfig.minValue == null}" maxlength="4" onkeypress="return isDigit(event);" />
+														</td>
+														<th width="25%">#{msgs.label_vacationMaxValue}</th>
+														<td width="25%">
+															<h:inputText id="vacMaxValueId" value="#{vacationsConfigurations.selectedVacConfig[0].maxValue}" disabled="#{!vacationsConfigurations.hasModifyPrivilege or vacationsConfigurations.selectedVacConfig[0].active == 0 or vacationsConfigurations.originalVacConfig.maxValue == null}" maxlength="4" onkeypress="return isDigit(event);" />
+														</td>
+													</tr>
+													<tr>
+														<th width="25%">#{msgs.label_vacationAllowedValues}</th>
+														<td width="25%">
+															<h:inputText id="vacAllowedValuesId" value="#{vacationsConfigurations.selectedVacConfig[0].allowedValues}" disabled="#{!vacationsConfigurations.hasModifyPrivilege or vacationsConfigurations.selectedVacConfig[0].active == 0 or vacationsConfigurations.originalVacConfig.allowedValues == null}" />
+														</td>
+														<th width="25%">#{msgs.label_periodBeforFirstVacation}</th>
+														<td width="25%">
+															<h:inputText id="periodBeforeFirstVacId" value="#{vacationsConfigurations.selectedVacConfig[0].periodBeforeFirstVacation}" disabled="#{!vacationsConfigurations.hasModifyPrivilege or vacationsConfigurations.selectedVacConfig[0].active == 0 or vacationsConfigurations.originalVacConfig.periodBeforeFirstVacation == null}" maxlength="4" onkeypress="return isDigit(event);" />
+														</td>
+													</tr>
+													<tr>
+														<th width="25%">#{msgs.label_firstYearMaxVacationsDays}</th>
+														<td width="25%">
+															<h:inputText id="firstYearMaxVacDaysId" value="#{vacationsConfigurations.selectedVacConfig[0].firstYearMaxVacationDays}" disabled="#{!vacationsConfigurations.hasModifyPrivilege or vacationsConfigurations.selectedVacConfig[0].active == 0 or vacationsConfigurations.originalVacConfig.firstYearMaxVacationDays == null}" maxlength="4" onkeypress="return isDigit(event);" />
+														</td>
+														<th width="25%">#{msgs.label_maxVacationsDaysPerYear}</th>
+														<td width="25%">
+															<h:inputText id="maxVacDaysPerYearId" value="#{vacationsConfigurations.selectedVacConfig[0].maxVacationsDaysPerYear}" disabled="#{!vacationsConfigurations.hasModifyPrivilege or vacationsConfigurations.selectedVacConfig[0].active == 0 or vacationsConfigurations.originalVacConfig.maxVacationsDaysPerYear == null}" maxlength="4" onkeypress="return isDigit(event);" />
+														</td>
+													</tr>
+													<tr>
+														<th width="25%">#{msgs.label_maxVacationsDaysPerYearExcp}</th>
+														<td width="25%">
+															<h:inputText id="maxVacDaysPerYearExcpId" value="#{vacationsConfigurations.selectedVacConfig[0].maxVacationsDaysPerYearExceptional}" disabled="#{!vacationsConfigurations.hasModifyPrivilege or vacationsConfigurations.selectedVacConfig[0].active == 0 or vacationsConfigurations.originalVacConfig.maxVacationsDaysPerYearExceptional == null}" maxlength="4" onkeypress="return isDigit(event);" />
+														</td>
+														<th width="25%">#{msgs.label_maxVacationsDaysPerRequestExcp}</th>
+														<td width="25%">
+															<h:inputText id="maxVacDaysPerReqExcpId" value="#{vacationsConfigurations.selectedVacConfig[0].maxValueExceptional}" disabled="#{!vacationsConfigurations.hasModifyPrivilege or vacationsConfigurations.selectedVacConfig[0].active == 0 or vacationsConfigurations.originalVacConfig.maxValueExceptional == null}" maxlength="4" onkeypress="return isDigit(event);" />
+														</td>
+													</tr>
+													<tr>
+														<th width="25%">#{msgs.label_balanceFrameValidity}</th>
+														<td width="25%">
+															<h:inputText id="balanceFrameValidityId" value="#{vacationsConfigurations.selectedVacConfig[0].balanceFrame}" disabled="#{!vacationsConfigurations.hasModifyPrivilege or vacationsConfigurations.selectedVacConfig[0].active == 0 or vacationsConfigurations.originalVacConfig.balanceFrame == null}" maxlength="4" onkeypress="return isDigit(event);" />
+														</td>
+														<th width="25%">#{msgs.label_minExternalVacationDays}</th>
+														<td width="25%">
+															<h:inputText id="minExternalVacDaysId" value="#{vacationsConfigurations.selectedVacConfig[0].externalMinVacationDays}" disabled="#{!vacationsConfigurations.hasModifyPrivilege or vacationsConfigurations.selectedVacConfig[0].active == 0 or vacationsConfigurations.originalVacConfig.externalMinVacationDays == null}" maxlength="4" onkeypress="return isDigit(event);" />
+														</td>
+													</tr>
+													<tr>
+														<th width="25%">#{msgs.label_additionalRegularVacationDaysForSoldiers}</th>
+														<td width="75%" colspan="3">
+															<h:inputText id="additionalRegularVacDaysForSoldiersId" value="#{vacationsConfigurations.selectedVacConfig[0].additionalVacationDays}" disabled="#{!vacationsConfigurations.hasModifyPrivilege or vacationsConfigurations.selectedVacConfig[0].active == 0 or vacationsConfigurations.originalVacConfig.additionalVacationDays == null}" maxlength="4" onkeypress="return isDigit(event);" />
+														</td>
+													</tr>
+													<tr>
+														<th width="25%">#{msgs.label_regularVacationsOfficersPeriods}</th>
+														<td width="75%" colspan="3">
+															<h:inputText id="periodsId" styleClass="inputDataSuperLarge" value="#{vacationsConfigurations.selectedVacConfig[0].periods}" disabled="#{!vacationsConfigurations.hasModifyPrivilege or vacationsConfigurations.selectedVacConfig[0].active == 0 or vacationsConfigurations.originalVacConfig.periods == null}" />
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td>
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+														<h:commandButton rendered="#{vacationsConfigurations.hasModifyPrivilege or vacationsConfigurations.selectedVacConfig[0].active == 0}" action="#{vacationsConfigurations.saveVacationConfig()}" onclick="return validateVacationConfiguration();" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
+															<f:ajax execute="vacationsConfigurationsFormId:vacationConfigurationDetailsPanelId" render="vacationsConfigurationsFormId:notifyMessagesId" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

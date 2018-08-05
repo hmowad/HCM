@@ -1,0 +1,507 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+		window.onkeypress = function(e) {
+			// window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+			if (keyCode == '13') {
+				document.getElementById(
+						'morningCourseEventManagementFormId:searchBtnId')
+						.click();
+				return false;
+			}
+		};
+
+		function getExternalParties() {
+			openExternalPartiesMiniSearch('#{request.contextPath}',
+					'handleExternalPartiesMiniSearchResult(ret)', 1, 0);
+		}
+
+		function handleExternalPartiesMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('morningCourseEventManagementFormId:externalPartyIdHId').value = ret[0];
+				document.getElementById('morningCourseEventManagementFormId:externalPartyNameHId').value = ret[1];
+				document.getElementById('morningCourseEventManagementFormId:externalPartyNameId').innerHTML = ret[1];
+				document.getElementById('morningCourseEventManagementFormId:externalPartyAddressHId').value = ret[2];
+				document.getElementById('morningCourseEventManagementFormId:externalPartyAddressId').innerHTML = ret[2];
+
+			}
+		}
+
+		function getTrainingCourse() {
+			openTrainingCoursesMiniSearch('#{request.contextPath}',
+					'handleCoursesMiniSearch(ret)', 1);
+		}
+
+		function handleCoursesMiniSearch(ret) {
+			if (ret != null) {
+				document
+						.getElementById('morningCourseEventManagementFormId:trainingCourseIdHId').value = ret[0];
+				document
+						.getElementById(
+								'morningCourseEventManagementFormId:addCourseEventBtnId')
+						.click();
+
+			}
+		}
+		function validateSearch() {
+			var courseName = document
+					.getElementById('morningCourseEventManagementFormId:searchCourseNameId').value;
+			var externalPartyDesc = document
+					.getElementById('morningCourseEventManagementFormId:searchExternalPartyDescId').value;
+
+			var startDateValue = document
+					.getElementById('morningCourseEventManagementFormId:searchStartDateId:day').value;
+			var startDateToValue = document
+					.getElementById('morningCourseEventManagementFormId:searchStartDateToId:day').value;
+
+			if ((courseName == null || courseName == '')
+					&& (externalPartyDesc == null || externalPartyDesc == '')
+					&& startDateValue == 0 && startDateToValue == 0) {
+				alert("#{msgs.error_oneSearchFieldNeededAtLeast}");
+				return false;
+			}
+
+			return true;
+		}
+		function validateRequest() {
+			var externalPartyId = document
+					.getElementById('morningCourseEventManagementFormId:externalPartyIdHId').value;
+			var courseId = document
+					.getElementById('morningCourseEventManagementFormId:selectedCourseEventCourseHId').value;
+
+			var startDateValue = document
+					.getElementById('morningCourseEventManagementFormId:startDateId:day').value;
+			var endDateValue = document
+					.getElementById('morningCourseEventManagementFormId:endDateId:day').value;
+
+			if (courseId == null || courseId == '-1') {
+				alert('#{msgs.error_trainingCourseIsMandatory}');
+				return false;
+			}
+
+			if (externalPartyId == null || externalPartyId == '') {
+				alert('#{msgs.error_courseExecutionPartyMandatory}');
+				return false;
+			}
+			if (startDateValue == 0) {
+				alert('#{msgs.error_courseStartDateMandatory}');
+				return false;
+			}
+			if (endDateValue == 0) {
+				alert('#{msgs.error_courseEndDateMandatory}');
+				return false;
+			}
+
+			return true;
+		}
+		// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="morningCourseEventManagementFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{morningCourseEventManagement.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_searchData}" />
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_trainingCourseName}" />
+									</th>
+									<td width="35%">
+										<h:inputText id="searchCourseNameId" value="#{morningCourseEventManagement.searchCourseName}" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_courseExecutionParty}" />
+									</th>
+									<td width="35%">
+										<h:inputText id="searchExternalPartyDescId" value="#{morningCourseEventManagement.searchExternalPartyDesc}" />
+
+									</td>
+
+								</tr>
+
+								<tr>
+									<th width="15%">#{msgs.label_courseStartDateFrom}</th>
+									<td width="35%">
+										<util:hijri id="searchStartDateId" nullable="true" value="#{morningCourseEventManagement.courseStartDate}" />
+									</td>
+									<th width="15%">#{msgs.label_courseStartDateTo}</th>
+									<td width="35%">
+										<util:hijri id="searchStartDateToId" nullable="true" value="#{morningCourseEventManagement.courseStartDateTo}" />
+									</td>
+								</tr>
+
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{morningCourseEventManagement.searchCourseEvents()}" onclick="return validateSearch();" title="#{msgs.label_searchByRoot}" styleClass="btn_normal_icon">
+										<f:ajax execute="morningCourseEventManagementFormId:searchPanelId" render="morningCourseEventManagementFormId:courseEventsTableId morningCourseEventManagementFormId:courseDataPanelId morningCourseEventManagementFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton action="#{morningCourseEventManagement.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="morningCourseEventManagementFormId:searchPanelId morningCourseEventManagementFormId:courseDataPanelId  morningCourseEventManagementFormId:courseEventsTableId morningCourseEventManagementFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_trainingCoursesDetails}" />
+									<h:outputText value=" " />
+									<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getTrainingCourse(); return false;" title="#{msgs.label_select}" />
+
+									<h:commandButton id="addCourseEventBtnId" style="display:none;" action="#{morningCourseEventManagement.addCourseEvent()}">
+										<f:ajax execute="morningCourseEventManagementFormId:trainingCourseIdHId" render="morningCourseEventManagementFormId:courseDetailsPanelId morningCourseEventManagementFormId:courseDataPanelId morningCourseEventManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+									<h:inputHidden id="trainingCourseIdHId" value="#{morningCourseEventManagement.selectedCourseId}" />
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:dataTable id="courseEventsTableId" rowKeyVar="index" var="course" value="#{morningCourseEventManagement.courseEvents}" rows="#{morningCourseEventManagement.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_select}</f:facet>
+								<h:commandButton action="#{morningCourseEventManagement.selectCourseEvent(course)}" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon">
+									<f:ajax render="morningCourseEventManagementFormId:courseDataPanelId morningCourseEventManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+								</h:commandButton>
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                        	</rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header"> #{msgs.label_trainingCourseName} </f:facet>
+								<h:outputText value="#{course.courseName}" />
+							</rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header"> #{msgs.label_courseExecutionParty} </f:facet>
+								<h:outputText value="#{course.externalPartyDesc}" />
+							</rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header"> #{msgs.label_courseExecutionAddress} </f:facet>
+								<h:outputText value="#{course.externalPartyAddress}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header"> #{msgs.label_startDate} </f:facet>
+								<h:outputText value="#{course.actualStartDateString}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header"> #{msgs.label_endDate} </f:facet>
+								<h:outputText value=" #{course.actualEndDateString}" />
+							</rich:column>
+							<ui:remove>
+								<rich:column style="width : 25%">
+									<f:facet name="header"> #{msgs.label_justifications} </f:facet>
+									<h:outputText value=" #{course.reasons}" />
+								</rich:column>
+							</ui:remove>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_delete}</f:facet>
+								<h:commandButton action="#{morningCourseEventManagement.deleteCourseEvent(course)}" onclick="return confirm('#{msgs.q_delete}');" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon">
+									<f:ajax render="morningCourseEventManagementFormId:courseDataPanelId morningCourseEventManagementFormId:courseEventsTableId morningCourseEventManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+								</h:commandButton>
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="courseDataPanelId">
+							<h:panelGroup rendered="#{morningCourseEventManagement.selectedCourseEvent != null}">
+								<table width="100%" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_courseDetail}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<h:panelGroup id="courseDetailsPanelId">
+
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<th width="15%">
+															<h:outputText value="#{msgs.label_trainingCourseName}" />
+															<font style="color: red;"> *</font>
+														</th>
+														<td width="85%" colspan="3">
+															<h:outputText value="#{morningCourseEventManagement.selectedCourseEvent.courseName}" />
+															<h:inputHidden id="selectedCourseEventCourseHId" value="#{morningCourseEventManagement.selectedCourseEvent.courseId}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															<h:outputText value="#{msgs.label_courseExecutionParty}" />
+														</th>
+														<td width="35%">
+															<h:outputText id="externalPartyNameId" value="#{morningCourseEventManagement.selectedCourseEvent.externalPartyDesc}" />
+															<h:commandButton rendered="#{morningCourseEventManagement.modify}" value="#{msgs.fa_external_link}" onclick="getExternalParties(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+															<h:inputHidden id="externalPartyIdHId" value="#{morningCourseEventManagement.selectedCourseEvent.externalPartyId}" />
+															<h:inputHidden id="externalPartyNameHId" value="#{morningCourseEventManagement.selectedCourseEvent.externalPartyDesc}" />
+														</td>
+														<th width="15%">
+															<h:outputText value="#{msgs.label_courseExecutionAddress}" />
+														</th>
+														<td width="35%">
+															<h:outputText id="externalPartyAddressId" value="#{morningCourseEventManagement.selectedCourseEvent.externalPartyAddress}" />
+															<h:inputHidden id="externalPartyAddressHId" value="#{morningCourseEventManagement.selectedCourseEvent.externalPartyAddress}" />
+														</td>
+													</tr>
+													<tr>
+														<th width="15%">
+															#{msgs.label_courseStartDate}
+															<font style="color: red;"> *</font>
+														</th>
+														<td width="35%">
+															<util:hijri id="startDateId" nullable="true" value="#{morningCourseEventManagement.selectedCourseEvent.actualStartDate}" rendered="#{morningCourseEventManagement.modify}" />
+															<h:outputText value="#{morningCourseEventManagement.selectedCourseEvent.actualStartDateString}" rendered="#{!morningCourseEventManagement.modify}" />
+														</td>
+														<th width="15%">
+															#{msgs.label_courseEndDate}
+															<font style="color: red;"> *</font>
+														</th>
+														<td width="35%">
+															<util:hijri id="endDateId" nullable="true" value="#{morningCourseEventManagement.selectedCourseEvent.actualEndDate}" rendered="#{morningCourseEventManagement.modify}" />
+															<h:outputText rendered="#{!morningCourseEventManagement.modify}" value="#{morningCourseEventManagement.selectedCourseEvent.actualEndDateString}" />
+														</td>
+													</tr>
+													<ui:remove>
+														<tr>
+															<th width="15%">#{msgs.label_justifications}</th>
+															<td width="85%" colspan="3">
+																<h:inputTextarea styleClass="inputDataSuperLarge" value="#{morningCourseEventManagement.selectedCourseEvent.reasons}" rows="1" rendered="#{morningCourseEventManagement.modify}" />
+																<h:outputText rendered="#{!morningCourseEventManagement.modify}" value="#{morningCourseEventManagement.selectedCourseEvent.reasons}" />
+															</td>
+														</tr>
+														<tr>
+															<th width="15%">#{msgs.label_attachments}</th>
+															<td width="85%" colspan="3">
+																<code:attachments loginEmpId="#{morningCourseEventManagement.loginEmpData.empId}" attachmentId="#{morningCourseEventManagement.selectedCourseEvent.attachments}" viewEnableFlag="true" addEnableFlag="#{morningCourseEventManagement.modify}" deleteEnableFlag="#{morningCourseEventManagement.modify}" />
+															</td>
+														</tr>
+													</ui:remove>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+														<h:commandButton rendered="#{morningCourseEventManagement.modify}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" action="#{morningCourseEventManagement.saveCourseEvent()}" onclick="return validateRequest();">
+															<f:ajax execute="morningCourseEventManagementFormId:courseEventsTableId morningCourseEventManagementFormId:courseDetailsPanelId" render="morningCourseEventManagementFormId:courseEventsTableId morningCourseEventManagementFormId:notifyMessagesId" />
+														</h:commandButton>
+
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<h:panelGroup rendered="#{morningCourseEventManagement.selectedCourseEvent.id != null}">
+										<tr>
+											<td width="100%">
+
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_runningNominatedCourseEmployeesData}</td>
+													</tr>
+												</table>
+
+											</td>
+										</tr>
+
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td>
+												<rich:dataTable id="empsWfTrainingTableId" rowKeyVar="index" var="wfTraining" value="#{morningCourseEventManagement.wfTrainingList}" rows="#{morningCourseEventManagement.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+
+													<rich:column style="width : 5%">
+														<f:facet name="header">#</f:facet>
+	                          						#{index + 1}
+	                       						</rich:column>
+													<rich:column style="width : 25%">
+														<f:facet name="header"> #{msgs.label_name} </f:facet>
+														<h:outputText value="#{wfTraining.employeeName}" />
+													</rich:column>
+													<rich:column style="width : 15%">
+														<f:facet name="header"> #{msgs.label_rank} </f:facet>
+														<h:outputText value="#{wfTraining.employeeRankDesc}" />
+													</rich:column>
+													<rich:column style="width : 15%">
+														<f:facet name="header"> #{msgs.label_empNo} </f:facet>
+														<h:outputText value="#{wfTraining.employeeNumber}" />
+
+													</rich:column>
+													<rich:column style="width : 15%">
+														<f:facet name="header"> #{msgs.label_empJob} </f:facet>
+														<h:outputText value="#{wfTraining.employeeJobName}" />
+													</rich:column>
+													<rich:column style="width : 25%">
+														<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+														<h:outputText value="#{wfTraining.employeePhysicalUnitFullname}" />
+													</rich:column>
+
+													<f:facet name="footer">
+														<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_nominatedCourseEmployeesData}</td>
+													</tr>
+												</table>
+
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<rich:dataTable id="empsTransactionsTableId" rowKeyVar="index" var="transaction" value="#{morningCourseEventManagement.trainingTransactionList}" rows="#{morningCourseEventManagement.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+													<rich:column style="width : 5%">
+														<f:facet name="header">#</f:facet>
+	                         						#{index + 1}
+	                       						 </rich:column>
+													<rich:column style="width : 25%">
+														<f:facet name="header"> #{msgs.label_name} </f:facet>
+														<h:outputText value="#{transaction.employeeName}" />
+													</rich:column>
+													<rich:column style="width : 15%">
+														<f:facet name="header"> #{msgs.label_rank} </f:facet>
+														<h:outputText value="#{transaction.employeeRankDesc}" />
+													</rich:column>
+													<rich:column style="width : 15%">
+														<f:facet name="header"> #{msgs.label_empNo} </f:facet>
+														<h:outputText value="#{transaction.employeeNumber}" />
+													</rich:column>
+													<rich:column style="width : 15%">
+														<f:facet name="header"> #{msgs.label_empJob} </f:facet>
+														<h:outputText value="#{transaction.employeeJobName}" />
+													</rich:column>
+													<rich:column style="width : 25%">
+														<f:facet name="header"> #{msgs.label_orgUnit} </f:facet>
+														<h:outputText value="#{transaction.employeePhysicalUnitFullname}" />
+													</rich:column>
+
+													<f:facet name="footer">
+														<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+									</h:panelGroup>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+
+
+
+
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

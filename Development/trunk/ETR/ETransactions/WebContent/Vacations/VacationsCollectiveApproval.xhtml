@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css"/>       
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	
+	<script type="text/javascript">
+	    var selectedTasksCount = 0;
+        function updateSelectedTasksCount(checked, allFlag) {
+            var totalNumberOfTasks = document.getElementById('vacationsCollectiveApprovalForm:vacationsTasksListSizeId').value;
+			if (allFlag) {
+				if (checked)
+	                selectedTasksCount = totalNumberOfTasks;
+	            else 
+	                selectedTasksCount = 0;
+			} else {
+				if (checked) {
+	                selectedTasksCount++;
+	                if (totalNumberOfTasks == selectedTasksCount)
+	                	document.getElementById('vacationsCollectiveApprovalForm:tasksId:selectAllCheckboxId').checked=true;
+				} else {
+	                selectedTasksCount--;
+	                document.getElementById('vacationsCollectiveApprovalForm:tasksId:selectAllCheckboxId').checked=false;
+				}
+			}
+        }
+
+        function validateApproval(){
+            if(selectedTasksCount == 0){
+                alert('#{msgs.error_selectTasksForApproval}');
+                return false;
+            }
+
+            selectedTasksCount = 0;
+			return true;
+        }
+    </script>
+
+</h:head>
+
+<h:body styleClass="screenBg">
+    
+	<h:form id="vacationsCollectiveApprovalForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<!-- The Screen Title -->
+				<tr>
+					<td class="screenTitle">
+						<h:outputText id="screenTitleId" value="#{vacationsCollectiveApproval.screenTitle}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="25" />
+				</tr>
+
+				<!-- The Data Grid -->
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="tasksId" rowKeyVar="index" var="obj" value="#{vacationsCollectiveApproval.vacationsTasks}" rows="#{vacationsCollectiveApproval.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+
+							<!-- CheckBoxes Selection Column -->
+							<rich:column>
+								<f:facet name="header">
+									<h:selectBooleanCheckbox id="selectAllCheckboxId" value="#{vacationsCollectiveApproval.selectAll}" 
+										onchange="updateSelectedTasksCount(this.checked, true)">
+										<a4j:ajax event="change" listener="#{vacationsCollectiveApproval.selectUnselectAllRows()}" render="vacationsCollectiveApprovalForm:tasksId" oncomplete="#{rich:component('reload')}.hide()"/>
+									</h:selectBooleanCheckbox>
+								</f:facet>
+								
+								<h:selectBooleanCheckbox value="#{obj[0].selected}" 
+									onchange="updateSelectedTasksCount(this.checked, false)" />
+								
+							</rich:column>
+
+							<!-- Task ID Column-->
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_taskId}" />
+								</f:facet>
+								<h:outputText value="#{obj[1].taskId}" />
+							</rich:column>
+
+							<!-- Task Process Name Column-->
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_processName}" />
+								</f:facet>
+								<h:outputLink value="#{request.contextPath}#{obj[1].taskUrl}#{vacationsCollectiveApproval.taskUrlParam}#{obj[1].taskId}" target="_blank" >#{obj[3]}</h:outputLink>
+							</rich:column>
+
+							<!-- Task Requester - Task Owner Name Column-->
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_processRequester}" />
+								</f:facet>
+								<h:outputText value="#{obj[4].name}" />
+							</rich:column>
+
+							<!-- Task Delegating Name Column-->
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_delegatingName}" />
+								</f:facet>
+								<h:outputText value="#{obj[6]}" />
+							</rich:column>
+
+							<!--Vacation Beneficiary Column -->
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_theBeneficiary}" />
+								</f:facet>
+								<h:outputText value="#{obj[5].name}" />
+							</rich:column>
+							
+							<!-- Vacation Period Column -->
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_period}" />
+								</f:facet>
+								<h:outputText value="#{obj[0].period}" />
+							</rich:column>
+							
+							<!-- Vacation Start Date Column -->
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_startDate}" />
+								</f:facet>
+								<h:outputText value="#{obj[0].startDateString}" />
+							</rich:column>
+							
+							<!-- Vacation Location Column -->
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_location}" />
+								</f:facet>
+								<h:outputText value="#{obj[0].location}" />
+							</rich:column>
+
+							<!-- The Footer-->
+							<f:facet name="footer">
+								<rich:dataScroller id="tasksScrollerId" execute="tasksId" oncomplete="unMaskScreen()" fastControls="hide">
+									<f:facet name="first"> #{msgs.label_first} </f:facet>
+									<f:facet name="last"> #{msgs.label_last} </f:facet>
+									<f:facet name="next"> #{msgs.label_next} </f:facet>
+									<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+								    <h:inputHidden id="vacationsTasksListSizeId" value="#{vacationsCollectiveApproval.vacationsTasksListSize}" />
+									<h:commandButton onclick="return handleOnAction('#{vacationsCollectiveApproval.mode == 1 ? msgs.q_acceptNOfTasks : msgs.q_superSignToNOfTasks}'.format(selectedTasksCount), 'validateApproval()');" action="#{vacationsCollectiveApproval.doVacationsCollectiveAction()}" value="#{vacationsCollectiveApproval.mode == 1 ? msgs.label_approve : msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+										<f:ajax render="vacationsCollectiveApprovalForm:notifyMessagesId vacationsCollectiveApprovalForm:headerInboxProceduresCountId vacationsCollectiveApprovalForm:tasksId vacationsCollectiveApprovalForm:vacationsTasksListSizeId" execute="vacationsCollectiveApprovalForm:tasksId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+			</table>
+			
+		</ui:decorate>
+	</h:form>
+
+</h:body>
+</html>

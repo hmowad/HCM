@@ -1,0 +1,913 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:a4j="http://richfaces.org/a4j" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+		function getUnit() {
+			 openUnitsMiniSearch(2, '#{request.contextPath}','handleUnitMiniSearchResult(ret)', -1, -1, -1);
+		}
+		
+		function handleUnitMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('employeesDataViewFormId:jobUnitIDId').value = ret[0];
+				document.getElementById('employeesDataViewFormId:jobUnitFullNameId').innerHTML = ret[1];
+				document.getElementById('employeesDataViewFormId:jobUnitFullNameHId').value = ret[1];
+			}
+		}
+
+		function getRecruitmentQualificationMinorAndMajorSpecs() {
+	         openQualificationMinorSpecsMiniSearch('#{request.contextPath}','handleRecruitmentQualificationMiniSearchResult(ret)', 0);
+		}
+		
+		function handleRecruitmentQualificationMiniSearchResult(ret){
+		    if(ret != null){
+	 			document.getElementById('employeesDataViewFormId:recruitmentQualificationMinorSpecIDId').value = ret[0];
+				document.getElementById('employeesDataViewFormId:recruitmentQualificationMinorSpecDescId').innerHTML = ret[1];
+				document.getElementById('employeesDataViewFormId:recruitmentQualificationMinorSpecDescHId').value = ret[1];
+				document.getElementById('employeesDataViewFormId:recruitmentQualificationMajorSpecIDId').value = ret[2];
+				document.getElementById('employeesDataViewFormId:recruitmentQualificationMajorSpecDescId').innerHTML = ret[3];
+				document.getElementById('employeesDataViewFormId:recruitmentQualificationMajorSpecDescHId').value = ret[3];
+	        }
+		}
+
+		function getCurrentQualificationMinorAndMajorSpecs() {
+	         openQualificationMinorSpecsMiniSearch('#{request.contextPath}','handleCurrentQualificationMiniSearchResult(ret)', 0);
+		}
+		
+		function handleCurrentQualificationMiniSearchResult(ret){
+		    if(ret != null){
+	 			document.getElementById('employeesDataViewFormId:currentQualificationMinorSpecIDId').value = ret[0];
+				document.getElementById('employeesDataViewFormId:currentQualificationMinorSpecDescId').innerHTML = ret[1];
+				document.getElementById('employeesDataViewFormId:currentQualificationMinorSpecDescHId').value = ret[1];
+				document.getElementById('employeesDataViewFormId:currentQualificationMajorSpecIDId').value = ret[2];
+				document.getElementById('employeesDataViewFormId:currentQualificationMajorSpecDescId').innerHTML = ret[3];
+				document.getElementById('employeesDataViewFormId:currentQualificationMajorSpecDescHId').value = ret[3];
+	        }
+		}
+		
+		function getMinorSpecialization() {
+	   		 openMinorSpecializationsMiniSearch('#{request.contextPath}','handleMinorSpecializationMiniSearchResult(ret)');
+		}
+		
+	    function handleMinorSpecializationMiniSearchResult(ret){
+		  if(ret != null){
+				document.getElementById('employeesDataViewFormId:minorSpecIDId').value = ret[0];
+				document.getElementById('employeesDataViewFormId:minorSpecDescHId').value = ret[2];
+				document.getElementById('employeesDataViewFormId:minorSpecDescId').innerHTML = ret[2];
+	       }
+	    }
+
+		function getRecruitmentCountry() {
+			openSelectCountries(2, '#{request.contextPath}','handleRecruitmentStudyCountryMiniSearchResult(ret)');
+		}
+		
+		function handleRecruitmentStudyCountryMiniSearchResult(ret){
+			if(ret != null){
+				document.getElementById('employeesDataViewFormId:recStudyCountryIDId').value = ret[0];
+				document.getElementById('employeesDataViewFormId:recStudyCountryNameId').innerHTML = ret[1];
+				document.getElementById('employeesDataViewFormId:recStudyCountryNameHId').value = ret[1];
+			}
+		}
+
+		function getCurrentCountry() {
+			openSelectCountries(2, '#{request.contextPath}','handleCurrentStudyCountryMiniSearchResult(ret)');
+		}
+		
+		function handleCurrentStudyCountryMiniSearchResult(ret){
+			if(ret != null){
+				document.getElementById('employeesDataViewFormId:curStudyCountryIDId').value = ret[0];
+				document.getElementById('employeesDataViewFormId:curStudyCountryNameId').innerHTML = ret[1];
+				document.getElementById('employeesDataViewFormId:curStudyCountryNameHId').value = ret[1];
+			}
+		}
+		
+		function getNationalityCountry() {
+			openSelectCountries(2, '#{request.contextPath}','handleNationalityCountryMiniSearchResult(ret)');
+		}
+		
+		function handleNationalityCountryMiniSearchResult(ret){
+			if(ret != null){
+				document.getElementById('employeesDataViewFormId:countryIDId').value=ret[0];
+				document.getElementById('employeesDataViewFormId:nationalityId').innerHTML = ret[1];
+				document.getElementById('employeesDataViewFormId:nationalityHId').value = ret[1];
+			}
+		}
+		
+		function getImage(isNew, empId) {
+			openImageUpload(1, '#{request.contextPath}','handleImageUploadResult()', empId, isNew);
+			return false;
+		}
+
+		function handleImageUploadResult(){
+			document.getElementById('employeesDataViewFormId').submit();
+		}
+
+		function getSocialIdIssuePlace() {
+			openSocialIdIssuePlacesMiniSearch('#{request.contextPath}','handleSocialIdIssuePlaceMiniSearchResult(ret)');
+		}
+
+		function handleSocialIdIssuePlaceMiniSearchResult(ret){
+			if(ret != null) {
+				document.getElementById('employeesDataViewFormId:socialIdIssuePlaceIDId').value = ret[0];
+				document.getElementById('employeesDataViewFormId:socialIdIssuePlaceDescHId').value = ret[1];
+				document.getElementById('employeesDataViewFormId:socialIdIssuePlaceDescId').innerHTML = ret[1];
+			}
+		}
+		
+		function getRecruitmentGraduationPlaceDetail() {
+			 openGraduationPlacesMiniSearch('#{request.contextPath}','handleRecruitmentGraudationPlaceMiniSearchResutl(ret)', 0);
+		}
+		
+		function handleRecruitmentGraudationPlaceMiniSearchResutl(ret){
+			if(ret != null) {
+				document.getElementById('employeesDataViewFormId:recGraduationPlaceDetailIDId').value = ret[0];
+				document.getElementById('employeesDataViewFormId:recGraduationPlaceDetailDescId').value = ret[1];
+
+				document.getElementById('employeesDataViewFormId:recGraduationPlaceFullDescId').innerHTML = ret[1] +' \\ '+ ret[3] +' \\ '+ ret[5];
+			}
+		}
+
+		function getCurrentGraduationPlaceDetail() {
+			 openGraduationPlacesMiniSearch('#{request.contextPath}','handleCurrentGraudationPlaceMiniSearchResutl(ret)', 0);
+		}
+		
+		function handleCurrentGraudationPlaceMiniSearchResutl(ret){
+			if(ret != null) {
+				document.getElementById('employeesDataViewFormId:curGraduationPlaceDetailIDId').value = ret[0];
+				document.getElementById('employeesDataViewFormId:curGraduationPlaceDetailDescId').value = ret[1];
+
+				document.getElementById('employeesDataViewFormId:curGraduationPlaceFullDescId').innerHTML = ret[1] +' \\ '+ ret[3] +' \\ '+ ret[5];
+			}
+		}
+		
+		function validate(mode) {
+
+			countryIdValue = 190;
+			firstNameValue = document.getElementById('employeesDataViewFormId:firstNameId').value;
+			secondNameValue = document.getElementById('employeesDataViewFormId:secondNameId').value;
+			lastNameValue = document.getElementById('employeesDataViewFormId:lastNameId').value;
+			birthDate = document.getElementById('employeesDataViewFormId:birthDateId:day');
+			birthPlaceValue = document.getElementById('employeesDataViewFormId:birthPlaceId').value;
+			socialIdValue = document.getElementById('employeesDataViewFormId:socialIDId').value;
+			socialIDIssueDate = document.getElementById('employeesDataViewFormId:socialIdIssueDateId:day');
+			socialIDIssuePlaceIdValue = document.getElementById('employeesDataViewFormId:socialIdIssuePlaceIDId').value;
+			recQualificationLevelId = document.getElementById('employeesDataViewFormId:recQualificationLevelIDId');
+			curQualificationLevelId = document.getElementById('employeesDataViewFormId:curQualificationLevelIDId');
+			privateMobileNumberValue = document.getElementById('employeesDataViewFormId:privateMobileNumberId').value;
+			officialMobileNumberValue = document.getElementById('employeesDataViewFormId:officialMobileNumberId').value;
+			shieldMobileNumberValue = document.getElementById('employeesDataViewFormId:shieldMobileNumberId').value;
+			emailValue = document.getElementById('employeesDataViewFormId:emailId').value;
+			recQualificationPercentageValue = document.getElementById('employeesDataViewFormId:recQualificationPercentageId').value;
+			curQualificationPercentageValue = document.getElementById('employeesDataViewFormId:curQualificationPercentageId').value;
+
+			var emailRe = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			var mobileRe = /05\d{8}$/;	
+			
+			if ((firstNameValue == null || firstNameValue == '')
+					|| (secondNameValue == null || secondNameValue == '')
+					|| (lastNameValue == null || lastNameValue == '')
+					|| (birthDate != null && birthDate.value == 0)
+					|| (birthPlaceValue == null || birthPlaceValue == '')
+					|| (socialIdValue == null || socialIdValue == '')
+					|| (socialIDIssueDate != null && socialIDIssueDate.value == 0)
+					|| (socialIDIssuePlaceIdValue == null || socialIDIssuePlaceIdValue == '')
+					|| (recQualificationLevelId != null && !recQualificationLevelId.value)
+					|| (curQualificationLevelId != null && !curQualificationLevelId.value)) {
+				if (mode==1)
+					alert("#{msgs.error_employeesViewFieldsAreMandatrory}");
+				else if (mode==2)
+					alert("#{msgs.error_employeesViewFieldsAreMandatrory}");
+				else if (mode==3)
+					alert("#{msgs.error_personsViewFieldsAreMandatrory}");
+				return false;
+			} 
+			if (mode==3) {
+				//Persons
+				countryIdValue = document.getElementById('employeesDataViewFormId:countryIDId').value;
+				if (countryIdValue == null || countryIdValue == '') {
+					alert("#{msgs.error_personsViewFieldsAreMandatrory}");
+					return false;
+				}
+			}
+			if (socialIdValue) {
+				if (socialIdValue.length != 10 || (socialIdValue.charAt(0) != "1" && countryIdValue == 190)) {
+					alert("#{msgs.error_socialIdNotValid}");
+					return false;
+				}
+			}
+
+			if(recQualificationPercentageValue != null && recQualificationPercentageValue != '') {
+				if(recQualificationPercentageValue > 100) {
+					alert("#{msgs.error_recruitmentQualificationPercentageNotValid}");
+					return false;
+				}
+			}
+
+			if(curQualificationPercentageValue != null && curQualificationPercentageValue != '') {
+				if(curQualificationPercentageValue > 100) {
+					alert("#{msgs.error_currentQualificationPercentageNotValid}");
+					return false;
+				}
+			}
+			
+			if (!(privateMobileNumberValue == null || privateMobileNumberValue == '')) {
+				if(!mobileRe.test(privateMobileNumberValue)) {
+					alert("#{msgs.error_privateMobileNumberNotValid}");
+					return false;
+				}
+			}
+
+
+			if (!(officialMobileNumberValue == null || officialMobileNumberValue == '')) {
+				if(!mobileRe.test(officialMobileNumberValue)) {
+					alert("#{msgs.error_officialMobileNumberNotValid}");
+					return false;
+				}
+			}
+
+			if (!(shieldMobileNumberValue == null || shieldMobileNumberValue == '')) {
+				if(!mobileRe.test(shieldMobileNumberValue)) {
+					alert("#{msgs.error_shieldMobileNumberNotValid}");
+					return false;
+				}
+			}
+			
+			if(emailValue!=null && emailValue!='' && !emailRe.test(emailValue)) {
+				alert("#{msgs.error_emailNotValid}");
+				return false;
+			}
+			return true;
+		}
+		
+		function validateNonSaudiDoctorContractorCheckBox()
+		{
+			var nonSaudiDoctorContractor = document.getElementById("employeesDataViewFormId:nonSaudiDoctorContractorId");
+			if(nonSaudiDoctorContractor.checked)
+				alert("#{msgs.notify_nonSaudiDoctorWarning}");
+		}
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="employeesDataViewFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{employeesDataView.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_basicData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="basicDataPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_name}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="75%" colspan="5">
+										<h:inputText id="firstNameId" value="#{employeesDataView.employee.firstName}" readonly="#{employeesDataView.viewOnly}" maxlength="50" styleClass="inputDataNormal" />
+										<h:outputText value=" " />
+										<h:inputText id="secondNameId" value="#{employeesDataView.employee.secondName}" readonly="#{employeesDataView.viewOnly}" maxlength="50" styleClass="inputDataNormal" />
+										<h:outputText value=" " />
+										<h:inputText value="#{employeesDataView.employee.thirdName}" readonly="#{employeesDataView.viewOnly}" maxlength="50" styleClass="inputDataNormal" />
+										<h:outputText value=" " />
+										<h:inputText id="lastNameId" value="#{employeesDataView.employee.lastName}" readonly="#{employeesDataView.viewOnly}" maxlength="50" styleClass="inputDataNormal" />
+									</td>
+									<td width="10%" rowspan="4">
+										<h:graphicImage title="#{!employeesDataView.viewOnly ? msgs.label_changeImage : ''}" width="100px" height="125px" id="imageId" value="/image?mode=1&amp;objectId=#{employeesDataView.employee.empId}" styleClass="#{!employeesDataView.viewOnly ? 'empProfileImage' : ''}" onclick="#{!employeesDataView.viewOnly ? 'getImage('.concat(employeesDataView.empPhoto == null ? 1 : 0).concat(',').concat(employeesDataView.employee.empId).concat(');') : 'return false;'}" />
+									</td>
+								</tr>
+								<tr>
+									<h:panelGroup rendered="#{employeesDataView.mode != 3}">
+										<th width="15%">#{msgs.label_nationality}</th>
+										<td width="20%">
+											<h:outputText value="#{msgs.label_saudi}" />
+										</td>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{employeesDataView.mode == 3}">
+										<th width="15%">
+											#{msgs.label_nationality}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="20%">
+											<h:inputHidden id="countryIDId" value="#{employeesDataView.employee.countryId}" />
+											<h:outputText id="nationalityId" value="#{employeesDataView.employee.nationality}" />
+											<h:inputHidden id="nationalityHId" value="#{employeesDataView.employee.nationality}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" rendered="false" onclick="getNationalityCountry(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+									</h:panelGroup>
+									<th width="15%">
+										#{msgs.label_birthDate}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="15%">
+										<util:hijri id="birthDateId" value="#{employeesDataView.employee.birthDate}" rendered="#{!employeesDataView.viewOnly}" nullable="true" viewOldRange="true" />
+										<h:outputText value="#{employeesDataView.employee.birthDateString}" rendered="#{employeesDataView.viewOnly}" />
+									</td>
+									<th width="15%">
+										#{msgs.label_birthPlace}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="10%">
+										<h:inputText id="birthPlaceId" value="#{employeesDataView.employee.birthPlace}" readonly="#{employeesDataView.viewOnly}" maxlength="200" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_socialId}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="20%">
+										<h:inputText id="socialIDId" value="#{employeesDataView.employee.socialID}" readonly="#{employeesDataView.viewOnly}" styleClass="inputDataLarge" maxlength="10" />
+									</td>
+									<th width="15%">
+										#{msgs.label_issueDate}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="15%">
+										<util:hijri id="socialIdIssueDateId" value="#{employeesDataView.employee.socialIDIssueDate}" rendered="#{!employeesDataView.viewOnly}" nullable="true" viewOldRange="true" />
+										<h:outputText value="#{employeesDataView.employee.socialIDIssueDateString}" rendered="#{employeesDataView.viewOnly}" />
+									</td>
+									<th width="15%">
+										#{msgs.label_issuePlace}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="10%">
+										<h:outputText id="socialIdIssuePlaceDescId" value="#{employeesDataView.employee.socialIDIssuePlaceDesc}" />
+										<h:inputHidden id="socialIdIssuePlaceDescHId" value="#{employeesDataView.employee.socialIDIssuePlaceDesc}" />
+										<h:inputHidden id="socialIdIssuePlaceIDId" value="#{employeesDataView.employee.socialIDIssuePlaceID}" />
+										<h:outputText value=" " />
+										<h:commandButton value="#{msgs.fa_external_link}" rendered="#{!employeesDataView.viewOnly}" onclick="getSocialIdIssuePlace(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_gender}</th>
+									<td width="20%">
+										<h:selectOneMenu value="#{employeesDataView.employee.gender}" rendered="#{not employeesDataView.viewOnly}">
+											<f:selectItem itemLabel="#{msgs.label_male}" itemValue="M" />
+											<f:selectItem itemLabel="#{msgs.label_female}" itemValue="F" />
+										</h:selectOneMenu>
+										<h:outputText value="#{msgs.label_male}" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.gender == 'M'}" />
+										<h:outputText value="#{msgs.label_female}" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.gender == 'F'}" />
+									</td>
+									<th width="15%">#{msgs.label_bloodGroup}</th>
+									<td width="15%">
+										<h:selectOneMenu value="#{employeesDataView.employee.bloodGroup}" rendered="#{not employeesDataView.viewOnly}">
+											<f:selectItem itemLabel="" />
+											<f:selectItem itemValue="1" itemLabel="A+" />
+											<f:selectItem itemValue="2" itemLabel="A-" />
+											<f:selectItem itemValue="3" itemLabel="B+" />
+											<f:selectItem itemValue="4" itemLabel="B-" />
+											<f:selectItem itemValue="5" itemLabel="AB+" />
+											<f:selectItem itemValue="6" itemLabel="AB-" />
+											<f:selectItem itemValue="7" itemLabel="O+" />
+											<f:selectItem itemValue="8" itemLabel="O-" />
+										</h:selectOneMenu>
+										<h:outputText value="A+" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.bloodGroup == '1'}" />
+										<h:outputText value="A-" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.bloodGroup == '2'}" />
+										<h:outputText value="B+" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.bloodGroup == '3'}" />
+										<h:outputText value="B-" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.bloodGroup == '4'}" />
+										<h:outputText value="AB+" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.bloodGroup == '5'}" />
+										<h:outputText value="AB-" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.bloodGroup == '6'}" />
+										<h:outputText value="O+" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.bloodGroup == '7'}" />
+										<h:outputText value="O-" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.bloodGroup == '8'}" />
+									</td>
+									<th width="15%">#{msgs.label_socialStatus}</th>
+									<td width="10%">
+										<h:selectOneMenu value="#{employeesDataView.employee.socialStatus}" rendered="#{not employeesDataView.viewOnly}">
+											<f:selectItem itemLabel="" />
+											<f:selectItem itemLabel="#{msgs.label_single}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_married}" itemValue="2" />
+										</h:selectOneMenu>
+										<h:outputText value="#{msgs.label_single}" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.socialStatus == 1}" />
+										<h:outputText value="#{msgs.label_married}" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.socialStatus == 2}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_socialIdArchiving }">
+							<h:panelGroup id="socialIdArchivingPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="55%" colspan="3">
+											<code:attachments loginEmpId="#{employeesDataView.loginEmpData.empId}" attachmentId="#{employeesDataView.employee.socialIdCopy}" addEnableFlag="#{!employeesDataView.viewOnly or employeesDataView.employee.empId == employeesDataView.loginEmpData.empId}" viewEnableFlag="true" deleteEnableFlag="#{employeesDataView.employee.empId == employeesDataView.loginEmpData.empId}">
+											</code:attachments>
+										</td>
+
+										<h:panelGroup rendered="#{employeesDataView.employee.empId == employeesDataView.loginEmpData.empId}">
+											<td width="45%">
+												<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%" style="text-align: left;">
+															<h:commandButton id="saveSocialIdBtn" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validate(#{employeesDataView.mode})');">
+																<f:ajax execute="employeesDataViewFormId:basicDataPanelId employeesDataViewFormId:jobDataPanelId employeesDataViewFormId:recQualificationDataPanelId employeesDataViewFormId:curQualificationDataPanelId employeesDataViewFormId:communicationDataPanelId employeesDataViewFormId:socialIdArchivingPanelId" render="employeesDataViewFormId:notifyMessagesId" listener="#{employeesDataView.save()}" />
+															</h:commandButton>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</h:panelGroup>
+									</tr>
+								</table>
+							</h:panelGroup>
+
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_jobData}">
+							<h:panelGroup id="jobDataPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">#{msgs.label_status}</th>
+										<td width="#{employeesDataView.mode != 1 ? 20 : 85}%" colspan="#{employeesDataView.mode != 1 ? 1 : 5}">
+											<h:outputText value="#{employeesDataView.employee.statusDesc}" />
+										</td>
+										<h:panelGroup rendered="#{employeesDataView.mode == 2}">
+											<th width="15%">
+												<h:outputText value="#{msgs.label_generalNumber} " />
+											</th>
+											<td width="50%" colspan="3">
+												<h:outputText value="#{employeesDataView.employee.sequenceNumber}" />
+											</td>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{employeesDataView.mode == 3}">
+											<th width="15%">
+												<h:outputText value="#{msgs.label_category} " />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="#{employeesDataView.employee.countryId != 190 and employeesDataView.employee.categoryId == 6 ? 15 : 50} %" colspan="#{employeesDataView.employee.countryId != 190 and employeesDataView.employee.categoryId == 6 ? 1 : 3}">
+												<h:outputText value="#{employeesDataView.employee.categoryDesc}" />
+												<h:inputHidden id="categoryIdID" value="#{employeesDataView.employee.categoryId}" />
+											</td>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{employeesDataView.employee.countryId != 190 and employeesDataView.employee.categoryId == 6}">
+											<th width="15%">
+												<h:outputText value="#{msgs.label_nonSaudiDoctorContractor}" />
+											</th>
+											<td width="20%">
+												<h:selectBooleanCheckbox id="nonSaudiDoctorContractorId" value="#{employeesDataView.nonSaudiDoctorContractorFlag}" onclick="validateNonSaudiDoctorContractorCheckBox()" disabled="#{employeesDataView.viewOnly}" />
+											</td>
+										</h:panelGroup>
+									</tr>
+
+									<tr>
+										<th width="15%">#{employeesDataView.mode==3 ? msgs.label_personRank : msgs.label_rank}</th>
+										<td width="20%">
+											<h:outputText value="#{employeesDataView.employee.rankDesc}" />
+										</td>
+										<th width="15%">#{msgs.label_degree}</th>
+										<td width="#{employeesDataView.mode == 1 ? 15 : 50}%" colspan="#{employeesDataView.mode == 1 ? 1 : 3}">
+											<h:selectOneMenu value="#{employeesDataView.employee.degreeId}" rendered="#{not employeesDataView.viewOnly}">
+												<f:selectItems value="#{employeesDataView.degrees}" var="degree" itemValue="#{degree.id}" itemLabel="#{degree.description}" />
+											</h:selectOneMenu>
+											<h:outputText value="#{employeesDataView.employee.degreeDesc}" rendered="#{employeesDataView.viewOnly}" />
+										</td>
+										<h:panelGroup rendered="#{employeesDataView.mode == 1}">
+											<th width="15%">
+												<h:outputText value="#{msgs.label_rankTitle}" />
+											</th>
+											<td width="20%">
+												<h:selectOneMenu value="#{employeesDataView.employee.rankTitleId}" rendered="#{not employeesDataView.viewOnly}">
+													<f:selectItem itemLabel="" />
+													<f:selectItems value="#{employeesDataView.officersRanksTitles}" var="rankTitle" itemLabel="#{rankTitle.description}" itemValue="#{rankTitle.id}" />
+												</h:selectOneMenu>
+												<h:outputText value="#{employeesDataView.employee.rankTitleDesc}" rendered="#{employeesDataView.viewOnly}" />
+											</td>
+										</h:panelGroup>
+									</tr>
+
+									<tr>
+										<th width="15%">#{msgs.label_jobCode}</th>
+										<td width="20%">
+											<h:outputText value="#{employeesDataView.employee.jobCode}" />
+										</td>
+										<th width="15%">#{msgs.label_job}</th>
+										<td width="50%" colspan="3">
+											<h:outputText value="#{employeesDataView.employee.jobDesc}" />
+										</td>
+									</tr>
+
+									<h:panelGroup rendered="#{employeesDataView.employee.categoryId == 3}">
+										<tr>
+											<th width="15%">#{msgs.label_jobClass}</th>
+											<td width="20%">
+												<h:outputText value="#{employeesDataView.employee.jobClassificationCode}" />
+											</td>
+
+											<th width="15%">#{msgs.label_jobClassificationDesc}</th>
+											<td width="50%" colspan="3">
+												<h:outputText value="#{employeesDataView.employee.jobClassificationDesc}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{employeesDataView.mode != 3}">
+										<tr>
+											<th width="15%">#{msgs.label_generalSpec}</th>
+											<td width="20%">
+												<h:outputText rendered="#{employeesDataView.employee.generalSpecialization==1}" value="#{msgs.label_overland}" />
+												<h:outputText rendered="#{employeesDataView.employee.generalSpecialization==2}" value="#{msgs.label_naval}" />
+												<h:outputText rendered="#{employeesDataView.employee.generalSpecialization==3}" value="#{msgs.label_aerial}" />
+											</td>
+											<th width="15%">#{msgs.label_empJobMajorSpec}</th>
+											<td width="15%">
+												<h:outputText value="#{employeesDataView.employee.majorSpecDesc}" />
+											</td>
+											<th width="15%">#{msgs.label_empJobMinorSpec}</th>
+											<td width="20%">
+												<h:outputText value="#{employeesDataView.employee.minorSpecDesc}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+
+									<tr>
+									</tr>
+
+									<h:panelGroup rendered="#{employeesDataView.mode==1}">
+										<tr>
+											<th width="15%">#{msgs.label_privateNumber}</th>
+											<td width="20%">
+												<h:outputText value="#{employeesDataView.employee.militaryNumber}" />
+											</td>
+											<th width="15%">#{msgs.label_graduationGroupNumber}</th>
+											<td width="15%">
+												<h:outputText id="graduationGroupNumberId" value="#{employeesDataView.employee.graduationGroupNumber}" />
+											</td>
+											<th width="15%">#{msgs.label_graduationGroupPlace}</th>
+											<td width="20%">
+												<h:outputText value="#{employeesDataView.officersGraduationGroupPlace}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+
+									<tr>
+										<th width="15%">#{msgs.label_officialUnit}</th>
+										<td width="85%" colspan="5">
+											<h:outputText value="#{employeesDataView.employee.officialUnitFullName}" />
+										</td>
+									</tr>
+
+									<tr>
+										<th width="15%">#{msgs.label_physicalUnit}</th>
+										<td width="85%" colspan="5">
+											<h:outputText value="#{employeesDataView.employee.physicalUnitFullName}" />
+										</td>
+									</tr>
+
+									<h:panelGroup rendered="#{employeesDataView.mode == 2}">
+										<tr>
+											<th width="15%">#{msgs.label_isJobModified}</th>
+											<td>
+												<h:panelGroup rendered="#{!employeesDataView.viewOnly}">
+													<h:selectOneRadio value="#{employeesDataView.employee.jobModifiedFlag}">
+														<f:selectItem itemLabel="#{msgs.label_no}" itemValue="0" />
+														<f:selectItem itemLabel="#{msgs.label_yes}" itemValue="1" />
+													</h:selectOneRadio>
+												</h:panelGroup>
+												<h:panelGroup rendered="#{employeesDataView.viewOnly}">
+													<h:outputText value="#{employeesDataView.employee.jobModifiedFlag==1 ? msgs.label_yes : msgs.label_no}" />
+												</h:panelGroup>
+											</td>
+										</tr>
+									</h:panelGroup>
+								</table>
+							</h:panelGroup>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="false" header="#{employeesDataView.mode == 2 ? msgs.label_recruitmentsAndPormotionsAndSoldierTerminationData : msgs.label_recruitmentsAndPormotionsAndTerminationData}">
+							<h:panelGroup id="recruitmentsPromotionsTerminationDataPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">#{msgs.label_recruitmentDecisionNumber}</th>
+										<td width="20%">
+											<h:outputText value="#{employeesDataView.employee.recruitmentDecisionNumber}" />
+										</td>
+										<th width="15%">#{msgs.label_recruitmentDecisionDate}</th>
+										<td width="15%">
+											<h:outputText value="#{employeesDataView.employee.recruitmentDecisionDateString}" />
+										</td>
+										<th width="15%">#{employeesDataView.mode == 3 ? msgs.label_personRecruitmentRank : msgs.label_recruitmentRank}</th>
+										<td width="20%">
+											<h:outputText value="#{employeesDataView.employee.recruitmentRankDesc}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_recruitmentDate}</th>
+										<td width="15%">
+											<h:outputText value="#{employeesDataView.employee.recruitmentDateString}" />
+										</td>
+										<th width="15%">#{msgs.label_recruitmentPracticeDate}</th>
+										<td width="20%">
+											<h:outputText value="#{employeesDataView.employee.recruitmentJoiningDateString}" />
+										</td>
+										<th width="15%">#{msgs.label_firstRecruitmentDate}</th>
+										<td width="20%">
+											<h:outputText value="#{employeesDataView.employee.firstRecruitmentDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_latestPromotionDate}</th>
+										<td width="20%">
+											<h:outputText value="#{employeesDataView.employee.lastPromotionDateString}" />
+										</td>
+										<th width="15%">#{employeesDataView.mode==3?(msgs.label_nextPromotionDueDate):(msgs.label_nextRankDueDate)}</th>
+										<td width="15%">
+											<h:outputText value="#{employeesDataView.employee.promotionDueDateString}" />
+										</td>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_officerRecruitmentDate}" rendered="#{employeesDataView.mode == 1}" />
+										</th>
+										<td width="20%">
+											<h:outputText value="#{employeesDataView.employee.recruitmentAsOfficerDateString}" rendered="#{employeesDataView.mode == 1}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_terminationDueDate}</th>
+										<td width="20%">
+											<h:outputText value="#{employeesDataView.employee.serviceTerminationDueDateString}" />
+										</td>
+										<th width="15%">#{employeesDataView.mode == 2 ? msgs.label_soldiersLastExtensionEndDate : msgs.label_lastExtensionEndDate}</th>
+										<td width="15%">
+											<h:outputText value="#{employeesDataView.employee.lastExtensionEndDateString}" />
+										</td>
+										<th width="15%">#{msgs.label_serviceTerminationDate}</th>
+										<td width="20%">
+											<h:outputText value="#{employeesDataView.employee.serviceTerminationDateString}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_recruitmentQualification}">
+							<h:panelGroup id="recQualificationDataPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_qualificationLevel}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="20%">
+											<h:selectOneMenu id="recQualificationLevelIDId" value="#{employeesDataView.employeeQualificationsData.recQualLevelId}" rendered="#{not employeesDataView.viewOnly}">
+												<f:selectItem itemLabel="" />
+												<f:selectItems value="#{employeesDataView.qualificationLevels}" var="qualification" itemLabel="#{qualification.description}" itemValue="#{qualification.id}" />
+											</h:selectOneMenu>
+											<h:outputText value="#{employeesDataView.employeeQualificationsData.recQualLevelDesc}" rendered="#{employeesDataView.viewOnly}" />
+										</td>
+										<th width="15%">#{msgs.label_majorQualificationSpecialization}</th>
+										<td width="15%">
+											<h:outputText id="recruitmentQualificationMajorSpecDescId" value="#{employeesDataView.employeeQualificationsData.recQualMajorSpecDesc}" />
+											<h:inputHidden id="recruitmentQualificationMajorSpecDescHId" value="#{employeesDataView.employeeQualificationsData.recQualMajorSpecDesc}" />
+											<h:inputHidden id="recruitmentQualificationMajorSpecIDId" value="#{employeesDataView.employeeQualificationsData.recQualMajorSpecId}" />
+										</td>
+										<th width="15%">#{msgs.label_minorQualificationSpecialization}</th>
+										<td width="20%">
+											<h:outputText id="recruitmentQualificationMinorSpecDescId" value="#{employeesDataView.employeeQualificationsData.recQualMinorSpecDesc}" />
+											<h:inputHidden id="recruitmentQualificationMinorSpecDescHId" value="#{employeesDataView.employeeQualificationsData.recQualMinorSpecDesc}" />
+											<h:inputHidden id="recruitmentQualificationMinorSpecIDId" value="#{employeesDataView.employeeQualificationsData.recQualMinorSpecId}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" rendered="#{!employeesDataView.viewOnly}" onclick="getRecruitmentQualificationMinorAndMajorSpecs(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_graduationYear}</th>
+										<td width="20%">
+											<h:inputText value="#{employeesDataView.employeeQualificationsData.recGraduationYear}" readonly="#{employeesDataView.viewOnly}" maxlength="4" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
+										</td>
+										<th width="15%">#{msgs.label_graduationPlace}</th>
+										<td width="50%" colspan="3">
+											<h:outputText id="recGraduationPlaceFullDescId" value="#{employeesDataView.getRecGraduationPlaceFullDesc()}" />
+											<h:inputHidden id="recGraduationPlaceDetailDescId" value="#{employeesDataView.employeeQualificationsData.recGraduationPlaceDetailDesc}" />
+											<h:inputHidden id="recGraduationPlaceDetailIDId" value="#{employeesDataView.employeeQualificationsData.recGraduationPlaceDetailId}" />
+											<h:inputHidden id="recGraduationPlaceDescId" value="#{employeesDataView.employeeQualificationsData.recGraduationPlaceDesc}" />
+											<h:inputHidden id="recGraduationStudyCountryNameId" value="#{employeesDataView.employeeQualificationsData.recStudyCountryName}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" rendered="#{!employeesDataView.viewOnly}" onclick="getRecruitmentGraduationPlaceDetail(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_qualificationPercentage}</th>
+										<td width="15%">
+											<h:inputText id="recQualificationPercentageId" value="#{employeesDataView.employeeQualificationsData.recQualPercentage}" readonly="#{employeesDataView.viewOnly}" styleClass="inputDataLarge" maxlength="5" onkeypress="return isFloat(event,this.value,false);" />
+										</td>
+										<th width="15">#{msgs.label_attachments}</th>
+										<td width="55%" colspan="3">
+											<code:attachments loginEmpId="#{employeesDataView.loginEmpData.empId}" attachmentId="#{employeesDataView.employeeQualificationsData.recQualAttachments}" addEnableFlag="#{!employeesDataView.viewOnly}" viewEnableFlag="true" deleteEnableFlag="#{!employeesDataView.viewOnly}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_currentQualification}">
+							<h:panelGroup id="curQualificationDataPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_qualificationLevel}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="20%">
+											<h:selectOneMenu id="curQualificationLevelIDId" value="#{employeesDataView.employeeQualificationsData.curQualLevelId}" rendered="#{not employeesDataView.viewOnly}">
+												<f:selectItem itemLabel="" />
+												<f:selectItems value="#{employeesDataView.qualificationLevels}" var="qualification" itemLabel="#{qualification.description}" itemValue="#{qualification.id}" />
+											</h:selectOneMenu>
+											<h:outputText value="#{employeesDataView.employeeQualificationsData.curQualLevelDesc}" rendered="#{employeesDataView.viewOnly}" />
+										</td>
+										<th width="15%">#{msgs.label_majorQualificationSpecialization}</th>
+										<td width="15%">
+											<h:outputText id="currentQualificationMajorSpecDescId" value="#{employeesDataView.employeeQualificationsData.curQualMajorSpecDesc}" />
+											<h:inputHidden id="currentQualificationMajorSpecDescHId" value="#{employeesDataView.employeeQualificationsData.curQualMajorSpecDesc}" />
+											<h:inputHidden id="currentQualificationMajorSpecIDId" value="#{employeesDataView.employeeQualificationsData.curQualMajorSpecId}" />
+										</td>
+										<th width="15%">#{msgs.label_minorQualificationSpecialization}</th>
+										<td width="20%">
+											<h:outputText id="currentQualificationMinorSpecDescId" value="#{employeesDataView.employeeQualificationsData.curQualMinorSpecDesc}" />
+											<h:inputHidden id="currentQualificationMinorSpecDescHId" value="#{employeesDataView.employeeQualificationsData.curQualMinorSpecDesc}" />
+											<h:inputHidden id="currentQualificationMinorSpecIDId" value="#{employeesDataView.employeeQualificationsData.curQualMinorSpecId}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" rendered="#{!employeesDataView.viewOnly}" onclick="getCurrentQualificationMinorAndMajorSpecs(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_graduationYear}</th>
+										<td width="20%">
+											<h:inputText value="#{employeesDataView.employeeQualificationsData.curGraduationYear}" readonly="#{employeesDataView.viewOnly}" maxlength="4" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
+										</td>
+										<th width="15%">#{msgs.label_graduationPlace}</th>
+										<td width="50%" colspan="3">
+											<h:outputText id="curGraduationPlaceFullDescId" value="#{employeesDataView.getCurGraduationPlaceFullDesc()}" />
+											<h:inputHidden id="curGraduationPlaceDetailDescId" value="#{employeesDataView.employeeQualificationsData.curGraduationPlaceDetailDesc}" />
+											<h:inputHidden id="curGraduationPlaceDetailIDId" value="#{employeesDataView.employeeQualificationsData.curGraduationPlaceDetailId}" />
+											<h:inputHidden id="curGraduationPlaceDescId" value="#{employeesDataView.employeeQualificationsData.curGraduationPlaceDesc}" />
+											<h:inputHidden id="curGraduationStudyCountryNameId" value="#{employeesDataView.employeeQualificationsData.curStudyCountryName}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" rendered="#{!employeesDataView.viewOnly}" onclick="getCurrentGraduationPlaceDetail(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_qualificationPercentage}</th>
+										<td width="15%">
+											<h:inputText id="curQualificationPercentageId" value="#{employeesDataView.employeeQualificationsData.curQualPercentage}" readonly="#{employeesDataView.viewOnly}" styleClass="inputDataLarge" maxlength="5" onkeypress="return isFloat(event,this.value,false);" />
+										</td>
+										<th width="15">#{msgs.label_attachments}</th>
+										<td width="55%" colspan="3">
+											<code:attachments loginEmpId="#{employeesDataView.loginEmpData.empId}" attachmentId="#{employeesDataView.employeeQualificationsData.curQualAttachments}" addEnableFlag="#{!employeesDataView.viewOnly}" viewEnableFlag="true" deleteEnableFlag="#{!employeesDataView.viewOnly}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_communicationData}">
+							<h:panelGroup id="communicationDataPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">#{msgs.label_phoneExt}</th>
+										<td width="20%">
+											<h:inputText value="#{employeesDataView.employee.phoneExt}" readonly="#{employeesDataView.viewOnly}" maxlength="8" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
+										</td>
+										<th width="15%">#{msgs.label_ipPhoneExt}</th>
+										<td width="20%">
+											<h:inputText value="#{employeesDataView.employee.ipPhoneExt}" readonly="#{employeesDataView.viewOnly}" maxlength="8" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_privateMobileNumber}</th>
+										<td width="20%">
+											<h:inputText id="privateMobileNumberId" value="#{employeesDataView.employee.privateMobileNumber}" readonly="#{employeesDataView.viewOnly}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
+										</td>
+										<th width="15%">#{msgs.label_directPhoneNumber}</th>
+										<td width="50%" colspan="2">
+											<h:inputText value="#{employeesDataView.employee.directPhoneNumber}" readonly="#{employeesDataView.viewOnly}" maxlength="12" styleClass="inputDataLarge" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_officialMobileNumber}</th>
+										<td width="25%">
+											<h:inputText id="officialMobileNumberId" value="#{employeesDataView.employee.officialMobileNumber}" readonly="#{employeesDataView.viewOnly}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
+										</td>
+										<th width="15%">#{msgs.label_shieldMobileNumber}</th>
+										<td width="25%">
+											<h:inputText id="shieldMobileNumberId" value="#{employeesDataView.employee.shieldMobileNumber}" readonly="#{employeesDataView.viewOnly}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_email}</th>
+										<td width="20%">
+											<h:inputText id="emailId" value="#{employeesDataView.employee.email}" readonly="#{employeesDataView.viewOnly}" maxlength="100" styleClass="inputDataLarge" />
+										</td>
+
+										<th width="15%">#{msgs.label_userAccount}</th>
+										<td width="50%" colspan="2">
+											<h:inputText id="userAccountId" value="#{employeesDataView.employee.userAccount}" readonly="true" styleClass="inputDataLarge" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<h:panelGroup rendered="#{!employeesDataView.viewOnly}">
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td>
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton id="saveBtn" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validate(#{employeesDataView.mode})');">
+											<f:ajax execute="employeesDataViewFormId:basicDataPanelId employeesDataViewFormId:jobDataPanelId employeesDataViewFormId:recQualificationDataPanelId employeesDataViewFormId:curQualificationDataPanelId employeesDataViewFormId:communicationDataPanelId employeesDataViewFormId:socialIdArchivingPanelId" render="employeesDataViewFormId:notifyMessagesId" listener="#{employeesDataView.save()}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+	//<![CDATA[
+		function getUnit() {
+			var regionIdValue = document.getElementById('vacationsDataReportsForm:regionId').value;
+			openUnitsMiniSearch(2, '#{request.contextPath}', 'handleUnitMiniSearchResult(ret)', -1, regionIdValue, -1);
+		}
+	
+		function handleUnitMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('vacationsDataReportsForm:selectedUnitHID').value = ret[0];
+				document.getElementById('vacationsDataReportsForm:selectedUnitFullNameId').innerHTML = ret[1];
+				document.getElementById('vacationsDataReportsForm:selectedUnitFullNameHId').value = ret[1];
+				document.getElementById('vacationsDataReportsForm:selectedUnitHKeyId').value = ret[3];
+			}
+		}
+
+		function getEmp(contextPath){
+        	openEmployeesMiniSearch(contextPath, 'handleEmpsMiniSearchResult(ret)', 1, #{vacationsDataReports.mode}, -1, -1, -1, -1, -1, #{vacationsDataReports.getLoginEmpPhysicalRegionFlag(true)});
+        }
+        
+        function handleEmpsMiniSearchResult(ret){
+        	if(ret != null){
+                document.getElementById('vacationsDataReportsForm:selectedEmployeeHID').value = ret[0];
+                document.getElementById('vacationsDataReportsForm:selectedEmployeeNameId').innerHTML = ret[1];
+                document.getElementById('vacationsDataReportsForm:selectedEmployeeNameHId').value = ret[1];
+                document.getElementById('vacationsDataReportsForm:searchCategoryId').value = ret[2];
+
+                document.getElementById('vacationsDataReportsForm:searchEmpBtnId').click();
+             }
+        }
+
+        function validateData(){
+        	if (getSelectOneRadioValue('vacationsDataReportsForm:reportSelectTypeId') == 30
+                	|| getSelectOneRadioValue('vacationsDataReportsForm:reportSelectTypeId') == 70) {
+            	
+            	var employeeID = document.getElementById('vacationsDataReportsForm:selectedEmployeeHID').value;
+            	if(employeeID == null || employeeID == ''){
+                	alert('#{msgs.error_employeeMandatory}');
+                	return false;
+            	}
+            }
+            
+            if (getSelectOneRadioValue('vacationsDataReportsForm:reportSelectTypeId') == 70) {
+            	var decisionNumber = document.getElementById('vacationsDataReportsForm:decisionNumberId').value.trim();
+            	var decisionDateDay = document.getElementById('vacationsDataReportsForm:decisionDateId:day').value;            	
+            	
+           	 	if(decisionNumber == null || decisionNumber == '') {
+                 	alert('#{msgs.error_decNumberMandatory}');
+                 	return false;
+           	 	}
+
+            	if (decisionDateDay == null || decisionDateDay == 0) {
+					alert('#{msgs.error_decDateMandatory}');
+					return false;
+				}
+            }
+            return true;
+          }
+     // ]]>
+	</script>
+
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="vacationsDataReportsForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{vacationsDataReports.screenTitle}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.title_theReports}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:selectOneRadio id="reportSelectTypeId" value="#{vacationsDataReports.reportType}" layout="pageDirection">
+										<f:selectItem itemLabel="#{msgs.label_vacationsDecisionsAndRequests}" itemValue="20" />
+										<f:selectItem itemLabel="#{msgs.label_employeesVacations}" itemValue="30" />
+										<f:selectItem itemLabel="#{msgs.label_vacationsWithoutJoiningDate}" itemValue="40" />
+										<f:selectItem itemLabel="#{msgs.label_joiningDateExceeders}" itemValue="50" />
+										<f:selectItem itemLabel="#{msgs.label_joiningDocument}" itemValue="70" />
+										<f:ajax event="change" execute="@this" listener="#{vacationsDataReports.reportTypeChangeListener()}" render="vacationsDataReportsForm:reportPanelGroupId" />
+									</h:selectOneRadio>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<h:panelGroup id="reportFieldsPanelGroupId">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_searchData}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="reportPanelGroupId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+
+									<h:panelGroup rendered="#{vacationsDataReports.reportType == 20 or vacationsDataReports.reportType == 40 or vacationsDataReports.reportType == 50}">
+										<tr>
+											<th width="10%">
+												#{msgs.label_region}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="90%" colspan="3">
+												<h:selectOneMenu id="regionId" value="#{vacationsDataReports.selectedRegionId}" disabled="#{vacationsDataReports.getLoginEmpPhysicalRegionFlag(true) != -1}">
+													<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+													<f:selectItems value="#{vacationsDataReports.regionList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+													<f:ajax event="change" listener="#{vacationsDataReports.resetUnits}" execute="@this" render="vacationsDataReportsForm:unitPanelGroupId" />
+												</h:selectOneMenu>
+											</td>
+										</tr>
+										<tr>
+
+											<th width="10%">
+												#{msgs.label_unit}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="90%" colspan="3">
+												<h:panelGroup id="unitPanelGroupId">
+													<h:outputText id="selectedUnitFullNameId" value="#{vacationsDataReports.selectedUnitFullName}" />
+													<h:inputHidden id="selectedUnitFullNameHId" value="#{vacationsDataReports.selectedUnitFullName}" />
+													<h:inputHidden id="selectedUnitHID" value="#{vacationsDataReports.selectedUnitId}" />
+													<h:inputHidden id="selectedUnitHKeyId" value="#{vacationsDataReports.selectedUnitHKey}" />
+													<h:outputText value=" " />
+													<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit();return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+												</h:panelGroup>
+											</td>
+										</tr>
+									</h:panelGroup>
+										
+									<h:panelGroup rendered="#{vacationsDataReports.reportType == 20}">
+										<tr>
+											<th width="10%">
+												#{msgs.label_fromDate}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="40%">
+												<util:hijri value="#{vacationsDataReports.fromDate}" />
+											</td>
+
+											<th width="10%">
+												#{msgs.label_toDate}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="40%">
+												<util:hijri value="#{vacationsDataReports.toDate}" />
+											</td>
+										</tr>
+										
+										<h:panelGroup rendered="#{vacationsDataReports.mode == 1}">
+											<tr>
+												<th width="10%">
+													#{msgs.label_fromRank}
+													<font style="color: red;">*</font>
+												</th>
+												<td width="40%">
+													<h:selectOneMenu value="#{vacationsDataReports.fromRankId}">
+														<f:selectItems value="#{vacationsDataReports.ranksList}" var="rank" itemValue="#{rank.id}" itemLabel="#{rank.description}" />
+													</h:selectOneMenu>
+												</td>
+												<th width="10%">
+													#{msgs.label_toRank}
+													<font style="color: red;">*</font>
+												</th>
+												<td width="40%">
+													<h:selectOneMenu value="#{vacationsDataReports.toRankId}">
+														<f:selectItems value="#{vacationsDataReports.ranksList}" var="rank" itemValue="#{rank.id}" itemLabel="#{rank.description}" />
+													</h:selectOneMenu>
+												</td>
+											</tr>
+										</h:panelGroup>
+
+										<tr>
+											<th width="10%">
+												#{msgs.label_vacType}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="40%">
+												<h:selectOneMenu id="vacTypeId" value="#{vacationsDataReports.selectedVacationTypeId}">
+													<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+													<f:selectItems value="#{vacationsDataReports.vacationTypes}" var="vacType" itemLabel="#{(vacationsDataReports.mode == 1 or vacationsDataReports.mode == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
+												</h:selectOneMenu>
+											</td>
+											<th width="10%">
+												#{msgs.label_status}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="40%">
+												<h:selectOneRadio value="#{vacationsDataReports.vacationStatusFlag}">
+													<f:selectItem itemValue="2" itemLabel="#{msgs.label_decisionIssued}" />
+													<f:selectItem itemValue="1" itemLabel="#{msgs.label_UnderProcessing}" />
+												</h:selectOneRadio>
+											</td>
+										</tr>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{vacationsDataReports.reportType == 30 or vacationsDataReports.reportType == 50 or vacationsDataReports.reportType == 70}">
+										<tr>
+											<th width="10%">
+												#{msgs.label_selectEmp}
+												<h:outputText value="*" style="color: red;" rendered="#{vacationsDataReports.reportType == 30 or vacationsDataReports.reportType == 70}" />
+											</th>
+											<td width="#{vacationsDataReports.reportType == 70 ? 90 : 40}%" colspan="#{vacationsDataReports.reportType == 70 ? 3 : 1}">
+												<h:outputText id="selectedEmployeeNameId" value="#{vacationsDataReports.selectedEmployeeName}" />
+												<h:inputHidden id="selectedEmployeeNameHId" value="#{vacationsDataReports.selectedEmployeeName}" />
+												<h:inputHidden id="selectedEmployeeHID" value="#{vacationsDataReports.selectedEmployeeId}" />
+												<h:inputHidden id="searchCategoryId" value="#{vacationsDataReports.selectedEmployeeCategoryId}" />
+												<h:outputText value=" " />
+												<h:commandButton value="#{msgs.fa_external_link}" onclick="getEmp('#{request.contextPath}'); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+												<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{vacationsDataReports.setVacationTypes()}">
+													<f:ajax execute="vacationsDataReportsForm:searchCategoryId" render="vacationsDataReportsForm:empVacTypeId" />
+												</h:commandButton>
+											</td>
+											<h:panelGroup rendered="#{vacationsDataReports.reportType == 30 or vacationsDataReports.reportType == 50}">
+												<th width="10%">
+													#{msgs.label_vacType}
+													<font style="color: red;">*</font>
+												</th>
+												<td width="40%">
+													<h:selectOneMenu id="empVacTypeId" value="#{vacationsDataReports.selectedVacationTypeId}">
+														<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+														<f:selectItems value="#{vacationsDataReports.vacationTypes}" var="vacType" itemLabel="#{(vacationsDataReports.mode == 1 or vacationsDataReports.mode == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
+													</h:selectOneMenu>
+												</td>
+											</h:panelGroup>
+										</tr>
+									</h:panelGroup>
+									
+									<h:panelGroup rendered="#{vacationsDataReports.reportType == 30 or vacationsDataReports.reportType == 50}">
+										<tr>
+											<th width="10%">
+												#{vacationsDataReports.reportType == 50 ? msgs.label_vacationEndDateFrom : msgs.label_fromDate}
+											</th>
+											<td width="40%">
+												<util:hijri value="#{vacationsDataReports.employeeVactionFromDate}" nullable="true" />
+											</td>
+
+											<th width="10%">
+												#{msgs.label_toDate}
+											</th>
+											<td width="40%">
+												<util:hijri value="#{vacationsDataReports.employeeVactionToDate}" nullable="true" />
+											</td>
+										</tr>	
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{vacationsDataReports.reportType == 70}">
+										<tr>										
+											<th width="10%">
+												#{msgs.label_decisionNumber}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="40%">
+												<h:inputText id="decisionNumberId" value="#{vacationsDataReports.decisionNumber}" />
+											</td>
+											<th width="10%">
+												#{msgs.label_decisionDate}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="40%">
+												<util:hijri id="decisionDateId" value="#{vacationsDataReports.decisionDate}" />
+											</td>
+										</tr>
+									</h:panelGroup>
+
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="15" />
+					</tr>
+				</h:panelGroup>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton action="#{vacationsDataReports.print()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" onclick="return validateData();" />
+									<h:commandButton action="#{vacationsDataReports.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="vacationsDataReportsForm:reportPanelGroupId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

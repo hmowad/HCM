@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:rich="http://richfaces.org/rich">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">  
+
+        function validateData(mode){
+            if(document.getElementById('definitionLetterForm:letterTypesId:3').checked){
+            	var empEngName = document.getElementById('definitionLetterForm:empEngNameId').value;
+                if(empEngName == null || empEngName == '') {
+                    alert('#{msgs.error_empEngNameMandatory}');
+                    return false;
+                }
+            }
+
+            if(mode == 1) { // Print case
+                return confirm('#{msgs.q_confirmPrint}');
+            }
+            else if(mode == 2){ // Send case
+          	    var selectedEmp = document.getElementById('definitionLetterForm:searchEmpValue').value;
+				if(selectedEmp == null || selectedEmp == ''){
+					alert('#{msgs.error_empSelectionManadatory}');
+                  	return false;
+				}
+            }   
+
+            return true;
+        }
+        
+        function getEmp(contextPath){
+            openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1);
+        }
+          
+        function handleEmpMiniSearchResult(ret){ 
+      	    if(ret != null){
+                document.getElementById('definitionLetterForm:searchEmpValue').value = ret[0];
+                document.getElementById('definitionLetterForm:searchEmpButton').click();
+            }
+        }
+          
+        function getReqEmp(contextPath){
+		    openEmployeesMiniSearch(contextPath, 'handleReqEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{definitionLetter.getLoginEmpPhysicalRegionFlag(true)});
+        }
+
+        function handleReqEmpMiniSearchResult(ret){ 
+      	  	if(ret != null){
+                document.getElementById('definitionLetterForm:beneficiaryEmpValue').value = ret[0];
+                document.getElementById('definitionLetterForm:beneficiaryButtonId').click();
+      	  	}
+        }
+          
+        </script>
+</h:head>
+
+<h:body styleClass="screenBg">
+	<h:form id="definitionLetterForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{definitionLetter.screenTitle}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_beneficiaryDetails}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<h:panelGroup rendered="#{definitionLetter.role == 'Requester' and definitionLetter.requester.managerId != null and definitionLetter.isAdmin() == true}">
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="50%">
+													<h:commandButton value="#{msgs.label_selectBeneficiary}" onclick="getReqEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+													<h:inputHidden id="beneficiaryEmpValue" value="#{definitionLetter.beneficiarySearchId}" />
+													<h:commandButton id="beneficiaryButtonId" style="display: none;" action="#{definitionLetter.selectBeneficiary}">
+														<f:ajax render="beneficiaryResult:data beneficiaryEmpValue definitionLetterForm:definitionLetterOptionsId notifyMessagesId" execute="beneficiaryEmpValue" />
+													</h:commandButton>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<td width="100%">
+									<code:emp id="beneficiaryResult" value="#{definitionLetter.beneficiary}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_definitionLettersDetails}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%" colspan="2">
+									<h:panelGroup id="definitionLetterOptionsId">
+										<h:panelGroup rendered="#{!definitionLetter.retiredFlag}">
+											<h:selectOneRadio disabled="#{definitionLetter.role != 'Requester'}" id="letterTypesId" value="#{definitionLetter.WFDefLetter.letterType}" layout="pageDirection">
+												<f:selectItem itemLabel="#{msgs.label_definitionLettersDetailsOption1}" itemValue="10" />
+												<f:selectItem itemLabel="#{msgs.label_definitionLettersDetailsOption2}" itemValue="20" />
+												<f:selectItem itemLabel="#{msgs.label_definitionLettersDetailsOption3}" itemValue="30" />
+												<f:selectItem itemLabel="#{msgs.label_definitionLettersDetailsOption4}" itemValue="40" />
+												<f:selectItem itemLabel="#{msgs.label_definitionLettersDetailsOption5}" itemValue="50" />
+												<f:ajax event="change" execute="@this" render="definitionLetterForm:embassyPanelGroupId" />
+											</h:selectOneRadio>
+										</h:panelGroup>
+
+										<h:panelGroup rendered="#{definitionLetter.retiredFlag}">
+											<h:selectOneRadio disabled="#{definitionLetter.role != 'Requester'}" id="letterTypesForRetiredId" value="#{definitionLetter.WFDefLetter.letterType}" layout="pageDirection">
+												<f:selectItem itemLabel="#{msgs.label_definitionLettersDetailsOption6}" itemValue="60" />
+											</h:selectOneRadio>
+										</h:panelGroup>
+									</h:panelGroup>
+
+								</td>
+							</tr>
+							<tr>
+								<td width="100%" colspan="2">
+									<h:panelGroup id="embassyPanelGroupId">
+										<h:panelGroup rendered="#{definitionLetter.WFDefLetter.letterType=='40'}">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="15%">
+														#{msgs.label_directedTo}
+														<font style="color: red;">*</font>
+													</td>
+													<td width="35%">
+														<h:selectOneMenu id="embassyListId" value="#{definitionLetter.WFDefLetter.embassyId}" disabled="#{definitionLetter.role != 'Requester'}">
+															<f:selectItem itemLabel="#{msgs.label_toWhomeItMayConcern}" itemValue="" />
+															<f:selectItems value="#{definitionLetter.embassyList}" var="emb" itemLabel="#{emb.embassyName}" itemValue="#{emb.id}" />
+														</h:selectOneMenu>
+													</td>
+													<td width="15%">
+														#{msgs.label_empEnglishName}
+														<font style="color: red;">*</font>
+													</td>
+													<td width="35%">
+														<h:inputText readonly="#{definitionLetter.role != 'Requester'}" id="empEngNameId" value="#{definitionLetter.WFDefLetter.employeeEnglishName}" styleClass="inputDataLarge" />
+													</td>
+												</tr>
+											</table>
+										</h:panelGroup>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup rendered="#{definitionLetter.role == 'Requester' and definitionLetter.requester.managerId != null}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="50%">
+													<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+													<h:inputHidden id="searchEmpValue" value="#{definitionLetter.searchEmpId}" />
+													<h:commandButton id="searchEmpButton" style="display: none;" action="#{definitionLetter.searchEmployee}">
+														<f:ajax render="searchResult:data searchEmpValue notifyMessagesId" execute="searchEmpValue" />
+													</h:commandButton>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<code:emp id="searchResult" value="#{definitionLetter.searchEmployee}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="printBtnId" action="#{definitionLetter.print()}" value="#{msgs.label_showOrPrint} &nbsp; #{msgs.fa_print}" onclick="return validateData(1);" styleClass="btn_normal_icon" />
+
+									<h:commandButton rendered="#{definitionLetter.role == 'Requester' and definitionLetter.requester.managerId != null}" id="sendId" onclick="return handleOnAction('#{msgs.q_send}', 'validateData(2)');" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" action="#{definitionLetter.initProcess}" styleClass="btn_normal_icon">
+										<f:ajax render="notifyMessagesId" execute="letterTypesId letterTypesForRetiredId embassyListId empEngNameId" />
+									</h:commandButton>
+
+									<h:commandButton rendered="#{definitionLetter.role != 'Requester'}" action="#{definitionLetter.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

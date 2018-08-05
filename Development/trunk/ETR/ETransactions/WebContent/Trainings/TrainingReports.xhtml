@@ -1,0 +1,483 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+	function getEmployee(contextPath) {
+		openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{trainingReports.getLoginEmpPhysicalRegionFlag(true)});
+	}
+	
+	function handleEmpMiniSearchResult(ret) {
+		var reportType = document.getElementById('trainingReportsFormId:reportTypeHId').value;
+		if(ret!=null) { 
+			if(reportType == 1) {
+	         	document.getElementById('trainingReportsFormId:employeeIDId').value=ret[0];
+	         	document.getElementById('trainingReportsFormId:employeeNameId').innerHTML=ret[1];
+			} else if(reportType == 2 || reportType == 5 ) {
+	         	document.getElementById('trainingReportsFormId:empIDHId').value = ret[0];
+				document.getElementById('trainingReportsFormId:empNameId').innerHTML = ret[1];
+				document.getElementById('trainingReportsFormId:empNameHId').value = ret[1];
+			}
+		}
+	}
+
+	function getQualificationMinorSpec() {
+		openQualificationMinorSpecsMiniSearch('#{request.contextPath}', 'handleQualificationMinorSpecMiniSearchResult(ret)', -1);
+	}
+
+	function handleQualificationMinorSpecMiniSearchResult(ret) {
+		if (ret != null) {
+			document.getElementById('trainingReportsFormId:trainingCourseQualificationMinorSpecIdHId').value = ret[0];
+			document.getElementById('trainingReportsFormId:trainingCourseQualificationMinorSpecId').innerHTML = ret[1];
+			document.getElementById('trainingReportsFormId:trainingCourseQualificationMinorSpecDescHId').value = ret[1];
+		}
+	}
+
+	function getQualificationMajorSpec() {
+		openQualificationMajorSpecsMiniSearch('#{request.contextPath}', 'handleQualificationMajorSpecMiniSearchResult(ret)',-1);
+	}
+
+	function handleQualificationMajorSpecMiniSearchResult(ret) {
+		if (ret != null) {
+			document.getElementById('trainingReportsFormId:trainingCourseQualificationMajorSpecIdHId').value = ret[0];
+			document.getElementById('trainingReportsFormId:trainingCourseQualificationMajorSpecId').innerHTML = ret[1];
+			document.getElementById('trainingReportsFormId:trainingCourseQualificationMajorSpecDescHId').value = ret[1];
+		}
+	}
+	
+    function getUnit() {
+		openUnitsMiniSearch(3, '#{request.contextPath}','handleUnitMiniSearchResult(ret)', -1,  #{trainingReports.getLoginEmpPhysicalRegionFlag(true)},-1);
+	}
+
+	function handleUnitMiniSearchResult(ret) {
+		if (ret != null) {
+			document.getElementById('trainingReportsFormId:unitIDHId').value = ret[0];
+			document.getElementById('trainingReportsFormId:unitNameHId').value= ret[1];
+			document.getElementById('trainingReportsFormId:unitNameId').innerHTML = ret[1];
+
+		}
+	}
+
+	function getTrainingCourse() {
+		var reportType = document.getElementById('trainingReportsFormId:reportTypeHId').value;
+		if(reportType == 2 || reportType == 5 )
+	    	openTrainingCoursesMiniSearch('#{request.contextPath}', 'handleCoursesMiniSearch(ret)', -1);
+		else if(reportType == 4)
+			openTrainingCoursesMiniSearch('#{request.contextPath}', 'handleCoursesMiniSearch(ret)', 2);
+	}
+
+	function handleCoursesMiniSearch(ret) {
+		var reportType = document.getElementById('trainingReportsFormId:reportTypeHId').value;
+		if(ret!=null) { 
+			if(reportType == 2 || reportType == 5) {
+				document.getElementById('trainingReportsFormId:trainingCourseIdHId').value = ret[0];
+				document.getElementById('trainingReportsFormId:trainingCourseNameHId').value = ret[1];
+				document.getElementById('trainingReportsFormId:trainingCourseNameId').innerHTML = ret[1];
+			}	
+			else if(reportType == 4) {
+				document.getElementById('trainingReportsFormId:trainingCourseIdType4HId').value = ret[0];
+				document.getElementById('trainingReportsFormId:trainingCourseNameType4HId').value = ret[1];
+				document.getElementById('trainingReportsFormId:trainingCourseNameType4Id').innerHTML = ret[1];
+			}
+		}
+	}
+
+	function getCourseEvents(trainingYearId, trainingUnitId) {
+		openTrainingIntCourseEventsMiniSearch('#{request.contextPath}','handleCourseEventsMiniSearchResult(ret)', -1, trainingYearId, trainingUnitId, -1, -1); 	
+	}
+
+	function handleCourseEventsMiniSearchResult(ret) {
+		if (ret != null) {
+				document.getElementById('trainingReportsFormId:trainingCourseEventHId').value = ret[0];
+				document.getElementById('trainingReportsFormId:trainingCourseEventNameId').innerHTML = ret[1];
+			}
+	}
+	
+	function validatePrint(reportType) {
+		if(reportType == 2 || reportType == 5) {
+			var internalMilitaryIsChecked = document.getElementById('trainingReportsFormId:trainingTransactionsTypes:0').checked;
+			var externalMilitaryIsChecked = document.getElementById('trainingReportsFormId:trainingTransactionsTypes:1').checked;
+			var scholarshipIsChecked = document.getElementById('trainingReportsFormId:trainingTransactionsTypes:2').checked;
+			var stuyEnrollementIsChecked = document.getElementById('trainingReportsFormId:trainingTransactionsTypes:3').checked;
+			var morningCourseIsChecked = document.getElementById('trainingReportsFormId:trainingTransactionsTypes:4').checked;
+			var eveniningCourseIsChecked = document.getElementById('trainingReportsFormId:trainingTransactionsTypes:5').checked;
+
+			if(!internalMilitaryIsChecked && !externalMilitaryIsChecked && !scholarshipIsChecked && !stuyEnrollementIsChecked && !morningCourseIsChecked &&  !eveniningCourseIsChecked) {
+				alert('#{msgs.error_transactionTypeMandatory}');
+				return false;
+			}
+			
+		}else if(reportType == 4) {
+			var coursePlannedToBeHeldChecked = document.getElementById('trainingReportsFormId:courseEventStatusesId:0').checked;
+			var courseHoldingDecisionIssuedChecked = document.getElementById('trainingReportsFormId:courseEventStatusesId:1').checked;
+			var coursePostponementDecisionIssuedChecked = document.getElementById('trainingReportsFormId:courseEventStatusesId:2').checked;
+			var courseCancelDecisionIssuedChecked = document.getElementById('trainingReportsFormId:courseEventStatusesId:3').checked;
+			var courseHeldChecked = document.getElementById('trainingReportsFormId:courseEventStatusesId:4').checked;
+
+			if(!coursePlannedToBeHeldChecked && !courseHoldingDecisionIssuedChecked && !coursePostponementDecisionIssuedChecked && !courseCancelDecisionIssuedChecked && !courseHeldChecked) {
+				alert('#{msgs.error_courseStatusMandatory}');
+				return false;
+			}
+			
+		}	
+		return true;
+	}
+	
+		//]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="trainingReportsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_theReports}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:selectOneRadio value="#{trainingReports.reportType}" layout="pageDirection">
+										<f:selectItem itemLabel="#{msgs.label_cancelledTraineesCourses}" itemValue="1" />
+										<f:selectItem itemLabel="#{msgs.label_employeesTrainingTransactionsDataReport}" itemValue="2" />
+										<f:selectItem itemLabel="#{msgs.label_trainingPlanCandidateEmployeesReport}" itemValue="3" />
+										<f:selectItem itemLabel="#{msgs.label_coursesEventsInTrainingUnit}" itemValue="4" />
+										<f:selectItem itemLabel="#{msgs.label_employeesTrainingRequests}" itemValue="5" />
+										<f:ajax event="change" execute="@this" listener="#{trainingReports.reset()}" render="trainingReportsFormId:searchPanelId trainingReportsFormId:reportTypeHId trainingReportsFormId:actionSectionPanelId" />
+									</h:selectOneRadio>
+									<h:inputHidden id="reportTypeHId" value="#{trainingReports.reportType}" />
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<h:panelGroup rendered="#{trainingReports.reportType == 1}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="10%">
+											<h:outputText value="#{msgs.label_emp}" />
+										</th>
+										<td width="90%" colspan="3">
+											<h:outputText id="employeeNameId" />
+											<h:outputText value=" " />
+											<h:inputHidden id="employeeIDId" value="#{trainingReports.empId}" />
+											<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+										</td>
+									</tr>
+									<tr>
+										<th width="10%">#{msgs.label_cancellationDateFrom}</th>
+										<td width="40%">
+											<util:hijri value="#{trainingReports.fromDate}" nullable="true" />
+										</td>
+										<th width="10%">#{msgs.label_to}</th>
+										<td width="40%">
+											<util:hijri value="#{trainingReports.toDate}" nullable="true" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{trainingReports.reportType == 2 or trainingReports.reportType == 5}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_region}" />
+										</th>
+										<td width="35%">
+											<h:selectOneMenu id="regionsId" value="#{trainingReports.regionId}" rendered="#{trainingReports.getLoginEmpPhysicalRegionFlag(true) == -1 ? true : false}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItems value="#{trainingReports.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+											</h:selectOneMenu>
+											<h:outputText value="#{trainingReports.regionDesc}" rendered="#{trainingReports.getLoginEmpPhysicalRegionFlag(true) != -1 ? true : false}" />
+										</td>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_orgUnit}" />
+										</th>
+										<td width="35%">
+											<h:outputText id="unitNameId" value="#{trainingReports.unitName}" />
+											<h:inputHidden id="unitNameHId" value="#{trainingReports.unitName}" />
+											<h:inputHidden id="unitIDHId" value="#{trainingReports.unitId}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+									</tr>
+									<h:panelGroup rendered="#{trainingReports.reportType == 2}">
+										<tr>
+
+											<th width="15%">#{msgs.label_majorClassification}</th>
+											<td width="35%">
+												<h:outputText id="trainingCourseQualificationMajorSpecId" value="#{trainingReports.qualificationMajorSpecDesc}" />
+												<h:inputHidden id="trainingCourseQualificationMajorSpecIdHId" value="#{trainingReports.qualificationMajorSpecId}" />
+												<h:inputHidden id="trainingCourseQualificationMajorSpecDescHId" value="#{trainingReports.qualificationMajorSpecDesc}" />
+												<h:commandButton value="#{msgs.fa_external_link}" onclick="getQualificationMajorSpec(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											</td>
+
+											<th width="15%">#{msgs.label_minorClassification}</th>
+											<td width="35%">
+												<h:outputText id="trainingCourseQualificationMinorSpecId" value="#{trainingReports.qualificationMinorSpecDesc}" />
+												<h:inputHidden id="trainingCourseQualificationMinorSpecIdHId" value="#{trainingReports.qualificationMinorSpecId}" />
+												<h:inputHidden id="trainingCourseQualificationMinorSpecDescHId" value="#{trainingReports.qualificationMinorSpecDesc}" />
+												<h:commandButton value="#{msgs.fa_external_link}" onclick="getQualificationMinorSpec(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<th width="15%">#{msgs.label_employeesCategory}</th>
+										<td width="35%">
+											<h:selectOneMenu value="#{trainingReports.categoryId}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+												<f:selectItem itemLabel="#{msgs.label_officers}" itemValue="1" />
+												<f:selectItem itemLabel="#{msgs.label_soldiers}" itemValue="2" />
+												<f:selectItem itemLabel="#{msgs.label_employees}" itemValue="3" />
+											</h:selectOneMenu>
+										</td>
+										<th width="15%">#{msgs.label_emp}</th>
+										<td width="35%">
+											<h:outputText id="empNameId" value="#{trainingReports.empName}" />
+											<h:inputHidden id="empNameHId" value="#{trainingReports.empName}" />
+											<h:inputHidden id="empIDHId" value="#{trainingReports.empId}" />
+											<h:outputText value="  " />
+											<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+
+
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_trainingCourseName}</th>
+										<td width="35%">
+											<h:outputText id="trainingCourseNameId" value="#{trainingReports.trainingCourseName}" />
+											<h:inputHidden id="trainingCourseNameHId" value="#{trainingReports.trainingCourseName}" />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getTrainingCourse(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											<h:inputHidden id="trainingCourseIdHId" value="#{trainingReports.trainingCourseId}" />
+										</td>
+										<h:panelGroup rendered="#{trainingReports.reportType == 2}">
+											<th width="15%">#{msgs.label_searchWithCandidateStatus}</th>
+											<td width="35%">
+												<h:selectOneMenu value="#{trainingReports.traineeStatus}">
+													<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+													<f:selectItem itemLabel="#{msgs.label_nominationAcceptedFromFG}" itemValue="1" />
+													<f:selectItem itemLabel="#{msgs.label_nominationRejecteFromParty}" itemValue="2" />
+													<f:selectItem itemLabel="#{msgs.label_nominationAccepted}" itemValue="3" />
+													<f:selectItem itemLabel="#{msgs.label_joinedTheCourse}" itemValue="4" />
+													<f:selectItem itemLabel="#{msgs.label_apologizedForTheCourse}" itemValue="5" />
+													<f:selectItem itemLabel="#{msgs.label_hasBeenReplaced}" itemValue="6" />
+													<f:selectItem itemLabel="#{msgs.label_courseCancelledForHim}" itemValue="7" />
+													<f:selectItem itemLabel="#{msgs.label_finishedTheCourse}" itemValue="8" />
+													<f:selectItem itemLabel="#{msgs.label_coursePostponed}" itemValue="9" />
+													<f:selectItem itemLabel="#{msgs.label_courseCancelled}" itemValue="10" />
+													<f:selectItem itemLabel="#{msgs.label_scholarshipIssued}" itemValue="11" />
+													<f:selectItem itemLabel="#{msgs.label_scholarshipExtended}" itemValue="12" />
+													<f:selectItem itemLabel="#{msgs.label_scholarshipTerminated}" itemValue="13" />
+													<f:selectItem itemLabel="#{msgs.label_scholarshipCanceled}" itemValue="14" />
+												</h:selectOneMenu>
+											</td>
+										</h:panelGroup>
+
+										<h:panelGroup rendered="#{trainingReports.reportType == 5}">
+											<th width="15%">#{msgs.label_requestStatus}</th>
+											<td width="35%">
+												<h:selectOneMenu value="#{trainingReports.requestStatus}">
+													<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+													<f:selectItem itemLabel="#{msgs.notify_requestRejected}" itemValue="0" />
+													<f:selectItem itemLabel="#{msgs.notify_requestApproved}" itemValue="1" />
+												</h:selectOneMenu>
+											</td>
+										</h:panelGroup>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_fromDate}</th>
+										<td width="35%">
+											<util:hijri value="#{trainingReports.fromDate}" nullable="true" />
+										</td>
+										<th width="15%">#{msgs.label_toDate}</th>
+										<td width="35%">
+											<util:hijri value="#{trainingReports.toDate}" nullable="true" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_transactionType}</th>
+										<td width="85%" colspan="3">
+											<h:selectManyCheckbox id="trainingTransactionsTypes" value="#{trainingReports.checkedTrainingTypes}">
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_internalMilitaryCourse}" />
+												<f:selectItem itemValue="2" itemLabel="#{msgs.label_externalMilitaryCourse}" />
+												<f:selectItem itemValue="3" itemLabel="#{msgs.label_scholarship}" />
+												<f:selectItem itemValue="4" itemLabel="#{msgs.label_studyEnrolment}" />
+												<f:selectItem itemValue="5" itemLabel="#{msgs.label_morningCourse}" />
+												<f:selectItem itemValue="6" itemLabel="#{msgs.label_eveningCourse}" />
+											</h:selectManyCheckbox>
+										</td>
+									</tr>
+									<h:panelGroup rendered="#{trainingReports.reportType == 2}">
+										<tr>
+											<th width="15%">#{msgs.label_successIndicator}/#{msgs.label_thePassing}</th>
+											<td width="85%" colspan="3">
+												<h:selectOneRadio value="#{trainingReports.traineeSuccessFlag}">
+													<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+													<f:selectItem itemLabel="#{msgs.label_successful}/#{msgs.label_passing}" itemValue="1" />
+													<f:selectItem itemLabel="#{msgs.label_residual}/#{msgs.label_noPassing}" itemValue="0" />
+												</h:selectOneRadio>
+											</td>
+										</tr>
+									</h:panelGroup>
+								</table>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{trainingReports.reportType == 3}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_trainingYear}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:selectOneMenu id="trainingYearId" value="#{trainingReports.trainingYearId}">
+												<f:selectItems value="#{trainingReports.trainingYears}" var="year" itemLabel="#{year.name}" itemValue="#{year.id}" />
+												<f:ajax event="change" listener="#{trainingReports.searchDataChangeListener()}" render="trainingReportsFormId:trainingCourseEventHId trainingReportsFormId:trainingCourseEventNameId" />
+											</h:selectOneMenu>
+										</td>
+										<th width="15%">#{msgs.label_theTrainingUnit}</th>
+										<td width="35%">
+											<h:selectOneMenu id="trainingUnitId" value="#{trainingReports.unitId}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItems value="#{trainingReports.trainingUnits}" var="unit" itemLabel="#{unit.name}" itemValue="#{unit.unitId}" />
+												<f:ajax event="change" listener="#{trainingReports.searchDataChangeListener()}" render="trainingReportsFormId:trainingCourseEventHId trainingReportsFormId:trainingCourseEventNameId" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_trainingCourseName}</th>
+										<td width="35%">
+											<h:outputText value=" " />
+											<h:outputText id="trainingCourseEventNameId" />
+											<h:inputHidden id="trainingCourseEventHId" value="#{trainingReports.courseEventId}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getCourseEvents(document.getElementById('trainingReportsFormId:trainingYearId').value, document.getElementById('trainingReportsFormId:trainingUnitId').value); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										</td>
+										<th width="15%">#{msgs.label_region}</th>
+										<td width="35%">
+											<h:selectOneMenu value="#{trainingReports.regionId}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItems value="#{trainingReports.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{trainingReports.reportType == 4 and !trainingReports.noTrainingUnitsflag}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">#{msgs.label_trainingYear}</th>
+										<td width="35%">
+											<h:selectOneMenu value="#{trainingReports.trainingYearId}">
+												<f:selectItems value="#{trainingReports.trainingYears}" var="year" itemLabel="#{year.name}" itemValue="#{year.id}" />
+											</h:selectOneMenu>
+										</td>
+										<th width="15%">#{msgs.label_theTrainingUnit}</th>
+										<td width="35%">
+											<h:selectOneMenu value="#{trainingReports.unitId}">
+												<f:selectItems value="#{trainingReports.trainingUnits}" var="unit" itemLabel="#{unit.name}" itemValue="#{unit.unitId}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_trainingCourseName}</th>
+										<td width="85%" colspan="3">
+											<h:outputText id="trainingCourseNameType4Id" value="#{trainingReports.trainingCourseName}" />
+											<h:inputHidden id="trainingCourseNameType4HId" value="#{trainingReports.trainingCourseName}" />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getTrainingCourse(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											<h:inputHidden id="trainingCourseIdType4HId" value="#{trainingReports.trainingCourseId}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_trainingCourseStatus}</th>
+										<td width="85%" colspan="3">
+											<h:selectManyCheckbox id="courseEventStatusesId" value="#{trainingReports.checkedcourseEventStatuses}">
+												<f:selectItem itemLabel="#{msgs.label_coursePlannedToBeHeld}" itemValue="1" />
+												<f:selectItem itemLabel="#{msgs.label_courseHoldingDecisionIssued}" itemValue="2" />
+												<f:selectItem itemLabel="#{msgs.label_coursePostponementDecisionIssued}" itemValue="3" />
+												<f:selectItem itemLabel="#{msgs.label_courseCancelDecisionIssued}" itemValue="4" />
+												<f:selectItem itemLabel="#{msgs.label_courseHeld}" itemValue="5" />
+											</h:selectManyCheckbox>
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_courseStartDateFrom}</th>
+										<td width="35%">
+											<util:hijri value="#{trainingReports.fromDate}" nullable="true" />
+										</td>
+										<th width="15%">#{msgs.label_courseStartDateTo}</th>
+										<td width="35%">
+											<util:hijri value="#{trainingReports.toDate}" nullable="true" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{trainingReports.noTrainingUnitsflag}">
+								<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="100%">
+											<h:outputText value="#{msgs.error_trainingUnitsListWarning}" escape="false" styleClass="remarkMessage" />
+										</th>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionSectionPanelId">
+							<h:panelGroup rendered="#{!trainingReports.noTrainingUnitsflag}">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:commandButton action="#{trainingReports.print()}" onclick="return validatePrint(document.getElementById('trainingReportsFormId:reportTypeHId').value);" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon">
+											</h:commandButton>
+											<h:commandButton action="#{trainingReports.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+												<f:ajax render="trainingReportsFormId:searchPanelId" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

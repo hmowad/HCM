@@ -1,0 +1,296 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<h:outputScript>
+		//<![CDATA[
+			  window.onkeypress = function(e) {
+			  	   // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+				   var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+			       if (keyCode == '13') {
+			    	   document.getElementById('searchJobFormId:searchBtnID').click();
+			       	   return false;
+		      	   }
+			  };
+              function selectJob(index){
+              	  var jobIdValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobIdID').innerHTML;
+                  var jobCodeValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobCodeID').innerHTML;
+                  var jobNameValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobNameID').innerHTML;
+                  var jobMinorSpecIdValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobMinorSpecIDId').value;
+                  var jobMinorSpecDescValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobMinorSpecDescId').innerHTML;
+                  var jobRegionDescValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobRegionDescId').value;
+                  var jobRankIdValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobRankIDId').value;
+                  var jobRankDescValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobRankDescId').value;   
+                  var jobUnitIdValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobUnitIDId').value;           
+                  var jobUnitFullNameValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobUnitFullNameId').innerHTML;
+                  var jobClassificationCodeValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobClassificationCodeId').value;
+                  var jobClassificationDescValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobClassificationDescId').value;
+                  																
+                  ret = new Array();
+                  ret[0] = jobIdValue;
+                  ret[1] = jobCodeValue;
+                  ret[2] = jobNameValue;
+                  ret[3] = jobUnitIdValue;
+                  ret[4] = jobUnitFullNameValue;
+                  ret[5] = jobRegionDescValue;
+                  ret[6] = jobRankIdValue;
+                  ret[7] = jobRankDescValue;
+                  ret[8] = jobMinorSpecIdValue;
+                  ret[9] = jobMinorSpecDescValue;
+                  ret[11] = jobClassificationCodeValue;
+                  ret[12] = jobClassificationDescValue;
+                  
+                  window.close();
+           		  eval('(' + window.opener.#{param['miniSearchReturnHandler']} + ')');
+              }
+			  
+              function validateSearchInputs () {
+			  	  var code = document.getElementById('searchJobFormId:searchJobCodeID').value;
+		   	  	  var name = document.getElementById('searchJobFormId:searchJobNameID').value;
+		   	  	  var unitFullName = document.getElementById('searchJobFormId:searchUnitFullNameID').value;
+			  	  if(name === '' && code === '' && unitFullName === '') {
+			  		  alert("#{msgs.error_jobCodeOrNameOrUnitNameIsMandatory}");
+		      		  return false;
+			  	  }
+              }
+              
+              function returnJobsList(){
+        	    var jobsIds = document.getElementById('searchJobFormId:returnedJobsIDsId').value;
+              	ret = new Array();
+              	ret[0] = jobsIds;
+              	window.close();
+           	    eval('(' + window.opener.#{param['miniSearchReturnHandler']} + ')');
+          	  }
+      //]]>
+	</h:outputScript>
+</h:head>
+<h:body onload="document.getElementById('searchJobFormId:searchJobCodeID').focus();" onunload="window.opener.unMaskOpenerScreen();">
+	<h:form id="searchJobFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/PlainTemplate.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{jobsMiniSearch.screenTitle}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="10%">#{msgs.label_jobCode}</th>
+								<td width="40%">
+									<h:inputText id="searchJobCodeID" value="#{jobsMiniSearch.searchJobCode}" maxlength="10" onkeypress="return isDigit(event);" />
+								</td>
+
+								<th width="10%">#{msgs.label_jobName}</th>
+								<td width="40%">
+									<h:inputText id="searchJobNameID" value="#{jobsMiniSearch.searchJobName}" />
+								</td>
+							</tr>
+							<tr>
+								<th width="10%">#{msgs.label_unitName}</th>
+								<td width="90%" colspan="3">
+									<h:inputText id="searchUnitFullNameID" value="#{jobsMiniSearch.searchUnitFullName}" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton onclick="return validateSearchInputs();" action="#{jobsMiniSearch.searchJobs}" id="searchBtnID" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon" title="#{msgs.label_searchByRoot}">
+										<f:ajax execute="searchJobCodeID searchJobNameID searchUnitFullNameID" render="jobList searchJobFormId:notifyMessagesId"></f:ajax>
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="jobList" rows="#{jobsMiniSearch.rowsCount}" rowKeyVar="index" var="row" value="#{jobsMiniSearch.searchJobList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+							<rich:column style="width : 5%;">
+								<f:facet name="header">#</f:facet>
+								<h:outputText value="#{index + 1}" title="#{msgs.label_tableId} : #{row.id}" />
+                            </rich:column>
+
+							<rich:column style="width : 10%;">
+								<f:facet name="header">#{msgs.label_jobCode}</f:facet>
+								<h:outputText id="jobCodeID" value="#{row.code}" />
+								<h:outputText style="display:none" id="jobIdID" value="#{row.id}" />
+								<h:inputHidden id="jobRegionDescId" value="#{row.regionDescription}" />
+								<h:inputHidden id="jobRankIDId" value="#{row.rankId}" />
+								<h:inputHidden id="jobRankDescId" value="#{row.rankDescription}" />
+								<h:inputHidden id="jobClassificationCodeId" value="#{row.classificationJobCode}" />
+								<h:inputHidden id="jobClassificationDescId" value="#{row.classificationJobDescription}" />
+							</rich:column>
+
+							<rich:column style="width : 15%;">
+								<f:facet name="header">#{msgs.label_jobName}</f:facet>
+								<h:outputText id="jobNameID" value="#{row.name}" />
+							</rich:column>
+							
+							<rich:column style="width : 15%;">
+								<f:facet name="header">#{msgs.label_jobMinorSpec}</f:facet>
+								<h:outputText id="jobMinorSpecDescId" value="#{row.minorSpecializationDescription}" />
+								<h:inputHidden id="jobMinorSpecIDId" value="#{row.minorSpecializationId}" />
+							</rich:column>
+
+							<rich:column style="width : 5%;">
+								<f:facet name="header">#{msgs.label_status}</f:facet>
+								<h:outputText rendered="#{row.status == 1}" value="#{msgs.label_vacant}" />
+								<h:outputText rendered="#{row.status == 2}" value="#{msgs.label_occupied}" />
+								<h:outputText rendered="#{row.status == 3}" value="#{msgs.label_frozen}" />
+								<h:outputText rendered="#{row.status == 4}" value="#{msgs.label_canceled}" />
+							</rich:column>
+
+							<rich:column style="width : 25%;">
+								<f:facet name="header">#{msgs.label_unitName}</f:facet>
+								<h:outputText id="jobUnitFullNameId" value="#{row.unitFullName}" />
+								<h:inputHidden id="jobUnitIDId" value="#{row.unitId}" />
+							</rich:column>
+
+							<rich:column style="width : 20%;">
+								<f:facet name="header">#{msgs.label_employee}</f:facet>
+								<h:outputText value="#{row.employeeFullName}" />
+							</rich:column>
+
+							<rich:column style="width : 5%;">
+								<f:facet name="header">#{msgs.label_select}</f:facet>
+								<h:commandButton value="#{msgs.fa_check_square}" rendered="#{!jobsMiniSearch.multipleSelectFlag}" onclick="selectJob(#{index}); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+								<h:commandButton action="#{jobsMiniSearch.addSelectedJob(row)}" rendered="#{jobsMiniSearch.multipleSelectFlag}" value="#{msgs.fa_check_square}" title="#{msgs.label_selectJob}" styleClass="btn_icon">
+									<f:ajax render="searchJobFormId:notifyMessagesId searchJobFormId:jobList searchJobFormId:selectedJobsTableId searchJobFormId:returnedJobsIDsId " onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+								</h:commandButton>
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()" maxPages="5">
+									<f:facet name="first"> #{msgs.label_first} </f:facet>
+									<f:facet name="last"> #{msgs.label_last} </f:facet>
+									<f:facet name="next"> #{msgs.label_next} </f:facet>
+									<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:panelGroup rendered="#{jobsMiniSearch.multipleSelectFlag}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th>#{msgs.label_selectedJobs}</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td align="center" width="100%">
+							<h:inputHidden id="returnedJobsIDsId" value="#{jobsMiniSearch.selectedJobsIds}" />
+							<rich:dataTable id="selectedJobsTableId" rows="#{jobsMiniSearch.rowsCount}" rowKeyVar="index" var="row" value="#{jobsMiniSearch.selectedJobList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+								<rich:column style="width : 5%">
+									<f:facet name="header">#</f:facet>
+									 #{index + 1}
+                                </rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_jobCode}</f:facet>
+									<h:outputText value="#{row.code}" />
+								</rich:column>
+								
+								<rich:column style="width : 15%">
+									<f:facet name="header">#{msgs.label_jobName}</f:facet>
+									<h:outputText value="#{row.name}" />
+								</rich:column>
+								
+								<rich:column style="width : 15%;">
+									<f:facet name="header">#{msgs.label_jobMinorSpec}</f:facet>
+									<h:outputText value="#{row.minorSpecializationDescription}" />
+								</rich:column>
+	
+								<rich:column style="width : 5%">
+									<f:facet name="header">#{msgs.label_status}</f:facet>
+									<h:outputText rendered="#{row.status == 1}" value="#{msgs.label_vacant}" />
+									<h:outputText rendered="#{row.status == 2}" value="#{msgs.label_occupied}" />
+									<h:outputText rendered="#{row.status == 3}" value="#{msgs.label_frozen}" />
+									<h:outputText rendered="#{row.status == 4}" value="#{msgs.label_canceled}" />
+								</rich:column>
+	
+								<rich:column style="width : 25%">
+									<f:facet name="header">#{msgs.label_unitName}</f:facet>
+									<h:outputText value="#{row.unitFullName}" />
+								</rich:column>
+	
+								<rich:column style="width : 20%">
+									<f:facet name="header">#{msgs.label_employee}</f:facet>
+									<h:outputText value="#{row.employeeFullName}" />
+								</rich:column>
+
+								<rich:column style="width : 5%">
+									<f:facet name="header">#{msgs.label_delete}</f:facet>
+									<h:commandButton action="#{jobsMiniSearch.removeSelectedJob(row)}" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon">
+										<f:ajax render="searchJobFormId:notifyMessagesId searchJobFormId:jobList searchJobFormId:selectedJobsTableId searchJobFormId:returnedJobsIDsId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()" maxPages="5">
+										<f:facet name="first"> #{msgs.label_first} </f:facet>
+										<f:facet name="last"> #{msgs.label_last} </f:facet>
+										<f:facet name="next"> #{msgs.label_next} </f:facet>
+										<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+				
+					<tr>
+						<td colspan="4">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton value="#{msgs.label_finish}" onclick="returnJobsList(); return false;" styleClass="btn_normal" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

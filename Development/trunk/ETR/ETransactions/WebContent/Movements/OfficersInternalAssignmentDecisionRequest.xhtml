@@ -1,0 +1,421 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+		var callerId;
+		function getEmployee(contextPath) {
+			openEmployeesMiniSearchByOfficialRegionId(contextPath,'handleEmpMiniSearchResult(ret)', 5, 1, #{officersInternalAssignmentDecisionRequest.regionId});
+		}
+		
+		function handleEmpMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('officersInternalAssignmentDecisionRequestFormId:officerIDId').value = ret[0];
+				document.getElementById('officersInternalAssignmentDecisionRequestFormId:searchEmpBtnId').click();
+			}
+		}
+		
+		function getJob(contextPath, btnId) {
+			callerId = btnId;
+			var idTokens = btnId.split(':');
+			unitHKeyValue = document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId:'+ idTokens[2] + ':assignmentUnitHKeyId').value;
+			if (unitHKeyValue == '' || unitHKeyValue == '') {
+				alert("#{msgs.error_assignmentUnitMandatory}");
+			} else {
+				openJobsMiniSearch(contextPath,'handleJobsMiniSearchResult(ret)', 8, 1,unitHKeyValue, -1, -1, -1, 0);
+			}
+		}
+
+		function handleJobsMiniSearchResult(ret) {
+			var idTokens = callerId.split(':');
+			document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':assignmentJobIDId').value = ret[0];
+			document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':assignmentJobCodeId').innerHTML = ret[1];
+			document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':assignmentJobNameId').innerHTML = ret[2];
+			document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':assignmentJobNameHId').value = ret[2];
+		}
+
+		function getUnit(contextPath, cId) {
+			callerId=cId;
+			openUnitsMiniSearch(2, '#{request.contextPath}','handleUnitMiniSearchResult(ret)', -1, #{officersInternalAssignmentDecisionRequest.regionId}, -1);
+		}
+		
+		function handleUnitMiniSearchResult(ret){
+			if (ret != null) {
+				var idTokens = callerId.split(':');
+				document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':assignmentUnitIDId').value = ret[0];
+				document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':assignmentUnitNameId').innerHTML = ret[1];
+				document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':assignmentUnitNameHId').value = ret[1];
+				document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':assignmentUnitHKeyId').value = ret[3];
+				document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':searchUnitBtnId').click();
+				}
+		}
+
+	    function checkAsManager(index) {
+	    	var idTokens = index.split(':');
+
+	    	var unitFullName = document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':assignmentUnitNameId').innerHTML;
+	    	var unitManagerFlag = document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':managerFlagId').checked;
+
+	    	if(unitManagerFlag == true) {
+		    	if (unitFullName != null && unitFullName != '') {
+		    		if(!confirm("#{msgs.q_isAsManager} (" + unitFullName + ")")) {
+			    		document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':managerFlagId').checked = false;
+			    	}
+		    	} else {
+		    		document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':managerFlagId').checked = false;
+			    	alert("#{msgs.error_unitIsMandatory}");
+			    }
+	    	}
+	    }
+	    
+		function validateRequest() {
+
+			if(document.getElementById('officersInternalAssignmentDecisionRequestFormId:basedOnId') != null) {
+				
+				basedOn = document.getElementById('officersInternalAssignmentDecisionRequestFormId:basedOnId').value;
+				number = document.getElementById('officersInternalAssignmentDecisionRequestFormId:numberId').value;
+	
+				if (basedOn == null || basedOn == '' || number == null || Number == '') {
+					alert('#{msgs.error_officersInternalAssignmentDataIsMandatory}');
+					return false;
+				}
+			}
+						
+			if (document.getElementById('officersInternalAssignmentDecisionRequestFormId:wfMovementsListSizeId').innerHTML == 0) {
+				alert("#{msgs.error_officersAssignmentListEmpty}");
+				return false;
+			}
+			
+			return #{officersInternalAssignmentDecisionRequest.role == 'ReviewerEmp'} ? validateRefuseAndNotes(1, 'officersInternalAssignmentDecisionRequestFormId:curTaskId:refuseReasonsId') : true;
+		}
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="officersInternalAssignmentDecisionRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_officersAssignmentDecisionRequest}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">#{msgs.label_assignmentData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="assignmentDataPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="16%">
+										#{msgs.label_basedOn}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="84%" colspan="3">
+										<h:selectOneRadio value="#{officersInternalAssignmentDecisionRequest.decisionData.verbalOrderFlag}" disabled="#{officersInternalAssignmentDecisionRequest.role != 'Requester' and officersInternalAssignmentDecisionRequest.role != 'ReviewerEmp'}">
+											<f:selectItem itemValue="0" itemLabel="#{msgs.label_letterDispatchEtc}" />
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_verbalOrder}" />
+											<f:ajax execute="officersInternalAssignmentDecisionRequestFormId:assignmentDataPanelId" listener="#{officersInternalAssignmentDecisionRequest.verbalOrderFlagListener()}" render="officersInternalAssignmentDecisionRequestFormId:assignmentDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:selectOneRadio>
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{officersInternalAssignmentDecisionRequest.decisionData.verbalOrderFlag == 0}">
+									<tr>
+										<td width="100%" colspan="4">
+											<h:outputText value="#{msgs.label_movementsDecisionsWarning}" style="color: red; font-weight: bold;" />
+										</td>
+									</tr>
+									<tr>
+										<th>
+											#{msgs.label_basedOnLetterDispatchEtc}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td colspan="3">
+											<h:inputText id="basedOnId" value="#{officersInternalAssignmentDecisionRequest.decisionData.basedOn}" readonly="#{!(officersInternalAssignmentDecisionRequest.role=='Requester' or officersInternalAssignmentDecisionRequest.role=='ReviewerEmp')}" styleClass="inputDataSuperLarge" maxlength="400" />
+										</td>
+									</tr>
+									<tr>
+										<th width="16%">
+											#{msgs.label_number}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="20%">
+											<h:inputText id="numberId" value="#{officersInternalAssignmentDecisionRequest.decisionData.basedOnOrderNumber}" readonly="#{!(officersInternalAssignmentDecisionRequest.role=='Requester' or officersInternalAssignmentDecisionRequest.role=='ReviewerEmp')}" styleClass="inputDataLarge" maxlength="50" />
+										</td>
+										<th width="15%">
+											#{msgs.label_date}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="49%">
+											<h:outputText value="#{officersInternalAssignmentDecisionRequest.decisionData.basedOnOrderDateString}" rendered="#{!(officersInternalAssignmentDecisionRequest.role=='Requester' or officersInternalAssignmentDecisionRequest.role=='ReviewerEmp')}" />
+											<util:hijri id="dateId" value="#{officersInternalAssignmentDecisionRequest.decisionData.basedOnOrderDate}" rendered="#{(officersInternalAssignmentDecisionRequest.role=='Requester' or officersInternalAssignmentDecisionRequest.role=='ReviewerEmp')}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th>#{msgs.label_requiredAttachments}</th>
+									<td colspan="3">
+										<code:attachments loginEmpId="#{officersInternalAssignmentDecisionRequest.loginEmpData.empId}" attachmentId="#{officersInternalAssignmentDecisionRequest.attachments}" addEnableFlag="#{officersInternalAssignmentDecisionRequest.role == 'Requester' or officersInternalAssignmentDecisionRequest.role == 'ReviewerEmp'}" viewEnableFlag="true" deleteEnableFlag="#{officersInternalAssignmentDecisionRequest.role == 'Requester' or officersInternalAssignmentDecisionRequest.role == 'ReviewerEmp'}" />
+									</td>
+								</tr>
+								<tr>
+									<th>#{msgs.label_remarks}</th>
+									<td colspan="3">
+										<h:inputText id="remarksId" value="#{officersInternalAssignmentDecisionRequest.decisionData.remarks}" readonly="#{officersInternalAssignmentDecisionRequest.role!='Requester' and officersInternalAssignmentDecisionRequest.role != 'ReviewerEmp'}" styleClass="inputDataSuperLarge" maxlength="500" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<code:specialAuthorityData id="specialAuthorityDataId" loginEmpId="#{officersInternalAssignmentDecisionRequest.loginEmpData.empId}" wfMovement="#{officersInternalAssignmentDecisionRequest.decisionData}" role="#{officersInternalAssignmentDecisionRequest.role}" requestFlag="#{false}" rendered="#{officersInternalAssignmentDecisionRequest.role == 'Requester' or officersInternalAssignmentDecisionRequest.role == 'ReviewerEmp' or officersInternalAssignmentDecisionRequest.role == 'SignManager'}" />
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_officersData}" />
+									<h:outputText value=" " />
+									<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getEmployee('#{request.contextPath}');return false;" rendered="#{officersInternalAssignmentDecisionRequest.role == 'Requester' or officersInternalAssignmentDecisionRequest.role == 'ReviewerEmp' }" />
+									<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{officersInternalAssignmentDecisionRequest.addWFMovement()}">
+										<f:ajax execute="officersInternalAssignmentDecisionRequestFormId:officerIDId officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId" render="officersInternalAssignmentDecisionRequestFormId:wfMovementsTablePanelId officersInternalAssignmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:inputHidden id="officerIDId" value="#{officersInternalAssignmentDecisionRequest.selectedEmpId}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td align="center" width="100%">
+									<h:panelGroup id="wfMovementsTablePanelId">
+										<h:outputText id="wfMovementsListSizeId" style="display:none" value="#{officersInternalAssignmentDecisionRequest.wfMovementsList.size()}" />
+										<rich:dataTable id="wfMovementsTableId" value="#{officersInternalAssignmentDecisionRequest.wfMovementsList}" rowKeyVar="index" var="wfMovement" rows="#{officersInternalAssignmentDecisionRequest.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+											<rich:column style="width:10%">
+												<f:facet name="header">
+													#{msgs.label_name}
+												</f:facet>
+												<h:outputText value="#{wfMovement.employeeName}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">
+													#{msgs.label_militaryNumber}
+												</f:facet>
+												<h:outputText value="#{wfMovement.employeeMilitaryNumber}" />
+											</rich:column>
+											<rich:column style="width:6%">
+												<f:facet name="header">
+													#{msgs.label_rank}
+												</f:facet>
+												<h:outputText value="#{wfMovement.employeeRankDesc}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													#{msgs.label_currentJobCode}
+												</f:facet>
+												<h:outputText value="#{wfMovement.employeeJobCode}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													#{msgs.label_currentJob}
+												</f:facet>
+												<h:outputText value="#{wfMovement.employeeJobName}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">
+													#{msgs.label_currentUnit}
+												</f:facet>
+												<h:outputText value="#{wfMovement.employeeUnitName}" />
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">
+													#{msgs.label_assignmentedToUnit}
+													<h:outputText value=" " />
+													<font style="color: red;">*</font>
+												</f:facet>
+												<h:inputHidden id="assignmentUnitIDId" value="#{wfMovement.unitId}" />
+												<h:outputText id="assignmentUnitNameId" value="#{wfMovement.unitFullName}" />
+												<h:inputHidden id="assignmentUnitNameHId" value="#{wfMovement.unitFullName}" />
+												<h:inputHidden id="assignmentUnitHKeyId" value="#{wfMovement.unitHKey}" />
+												<h:outputText value=" " />
+												<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getUnit('#{request.contextPath}',this.id);return false;" rendered="#{(officersInternalAssignmentDecisionRequest.role=='Requester' or officersInternalAssignmentDecisionRequest.role=='ReviewerEmp' )}" />
+												<h:commandButton id="searchUnitBtnId" style="display:none;" action="#{officersInternalAssignmentDecisionRequest.assignmentUnitListener(wfMovement)}">
+													<f:ajax execute="officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId" render="officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId officersInternalAssignmentDecisionRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													#{msgs.label_assignedToJobNo}
+													<h:outputText value=" " />
+													<font style="color: red;">*</font>
+												</f:facet>
+												<h:inputHidden id="assignmentJobIDId" value="#{wfMovement.jobId}" />
+												<h:outputText id="assignmentJobCodeId" value="#{wfMovement.jobCode}" />
+												<h:inputHidden id="assignmentJobNameHId" value="#{wfMovement.jobName}" />
+												<h:outputText value=" " />
+												<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getJob('#{request.contextPath}',this.id);return false;" rendered="#{(officersInternalAssignmentDecisionRequest.role=='Requester' or officersInternalAssignmentDecisionRequest.role=='ReviewerEmp' )}" />
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">
+													#{msgs.label_assignedToJob}
+												</f:facet>
+												<h:outputText id="assignmentJobNameId" value="#{wfMovement.jobName}" />
+											</rich:column>
+											<rich:column style="width:12%">
+												<f:facet name="header">
+														#{msgs.label_startDate}
+														<h:outputText value=" " />
+													<font style="color: red;">*</font>
+												</f:facet>
+												<util:hijri id="executionDateId" rendered="#{officersInternalAssignmentDecisionRequest.role == 'Requester' or officersInternalAssignmentDecisionRequest.role == 'ReviewerEmp'}" value="#{wfMovement.executionDate}" />
+												<h:outputText value="#{wfMovement.executionDateString}" rendered="#{officersInternalAssignmentDecisionRequest.role != 'Requester' and officersInternalAssignmentDecisionRequest.role != 'ReviewerEmp'}" />
+											</rich:column>
+											<rich:column style="width:7%">
+												<f:facet name="header">
+													#{msgs.label_asManager}
+													<h:outputText value=" " />
+													<font style="color: red;">*</font>
+												</f:facet>
+												<h:selectBooleanCheckbox id="managerFlagId" value="#{wfMovement.managerFlagBoolean}" onclick="checkAsManager(this.id)" disabled="#{!( officersInternalAssignmentDecisionRequest.role=='Requester' or officersInternalAssignmentDecisionRequest.role=='ReviewerEmp' )}" />
+											</rich:column>
+											<rich:column style="width:4%" rendered="#{officersInternalAssignmentDecisionRequest.role=='Requester' or officersInternalAssignmentDecisionRequest.role=='ReviewerEmp' }">
+												<f:facet name="header">#{msgs.label_delete}</f:facet>
+												<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{officersInternalAssignmentDecisionRequest.deleteWFMovement(wfMovement)}" onclick="return confirm('#{msgs.q_delete}');">
+													<f:ajax execute="officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId" render="officersInternalAssignmentDecisionRequestFormId:wfMovementsTablePanelId officersInternalAssignmentDecisionRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" execute="officersInternalAssignmentDecisionRequestFormId:wfMovementsTableId">
+													<f:facet name="first">#{msgs.label_first}</f:facet>
+													<f:facet name="last">#{msgs.label_last}</f:facet>
+													<f:facet name="next">#{msgs.label_next}</f:facet>
+													<f:facet name="previous">#{msgs.label_previous}</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:decisionCopies external="#{officersInternalAssignmentDecisionRequest.externalCopies}" internal="#{officersInternalAssignmentDecisionRequest.internalCopies}" viewOnly="#{officersInternalAssignmentDecisionRequest.role != 'Requester' and officersInternalAssignmentDecisionRequest.role != 'ReviewerEmp'}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{officersInternalAssignmentDecisionRequest.role != 'Requester'}" value="#{officersInternalAssignmentDecisionRequest.prevTasks}" refuseRoles="SignManager,ReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{officersInternalAssignmentDecisionRequest.currentEmployee}" rendered="#{officersInternalAssignmentDecisionRequest.role == 'SignManager' or officersInternalAssignmentDecisionRequest.role == 'ReviewerEmp'}">
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{officersInternalAssignmentDecisionRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{officersInternalAssignmentDecisionRequest.role == 'SignManager' or officersInternalAssignmentDecisionRequest.role == 'ReviewerEmp'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{officersInternalAssignmentDecisionRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{officersInternalAssignmentDecisionRequest.role == 'Notification' or officersInternalAssignmentDecisionRequest.role == 'History'}" value="#{officersInternalAssignmentDecisionRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:commandButton id="rBtnId" action="#{officersInternalAssignmentDecisionRequest.initMovement()}" onclick="return handleOnAction('#{msgs.q_sendOfficers}','validateRequest()',null);" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{officersInternalAssignmentDecisionRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="officersInternalAssignmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveSmBtnId" action="#{officersInternalAssignmentDecisionRequest.approveMovementSM()}" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;officersInternalAssignmentDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{officersInternalAssignmentDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="officersInternalAssignmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="retSmBtnId" action="#{officersInternalAssignmentDecisionRequest.returnMovementSM()}" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateDecisionApprovalNotes(&quot;officersInternalAssignmentDecisionRequestFormId:specialAuthorityDataId:decisionApprovalRemarksId&quot;, &quot;officersInternalAssignmentDecisionRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;officersInternalAssignmentDecisionRequestFormId:curTaskId:notesId&quot;)',null);"
+										value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{officersInternalAssignmentDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="officersInternalAssignmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSmBtnId" action="#{officersInternalAssignmentDecisionRequest.rejectMovementSM()}" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;officersInternalAssignmentDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{officersInternalAssignmentDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="officersInternalAssignmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveReBtnId" action="#{officersInternalAssignmentDecisionRequest.approveMovementRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" onclick="return handleOnAction('#{msgs.q_reviewOfficers}','validateRequest()',null);" styleClass="btn_normal_icon" rendered="#{officersInternalAssignmentDecisionRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="officersInternalAssignmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;officersInternalAssignmentDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{officersInternalAssignmentDecisionRequest.rejectMovementRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{officersInternalAssignmentDecisionRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="officersInternalAssignmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="printBtnId" action="#{officersInternalAssignmentDecisionRequest.print()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{officersInternalAssignmentDecisionRequest.role == 'Notification' and officersInternalAssignmentDecisionRequest.instanceApproved == 1}" />
+
+									<h:commandButton id="nBtnId" action="#{officersInternalAssignmentDecisionRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{officersInternalAssignmentDecisionRequest.role == 'Notification'}">
+										<f:ajax render="officersInternalAssignmentDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

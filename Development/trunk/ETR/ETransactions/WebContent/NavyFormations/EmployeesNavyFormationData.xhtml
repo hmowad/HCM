@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function getEmp(contextPath) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpsMiniSearchResult(ret)', 12, #{employeesNavyFormationData.mode}, -1, -1, -1, -1, -1,#{employeesNavyFormationData.getLoginEmpPhysicalRegionFlag(true)});
+		}
+
+		function handleEmpsMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('employeesNavyFormationDataFormId:selectedEmpId').value = ret[0];
+				document.getElementById('employeesNavyFormationDataFormId:getEmployeeBtnId').click();
+			}
+		}
+		
+		function getNavyFormations(){
+			physicalRegionId = document.getElementById('employeesNavyFormationDataFormId:selectedEmpPhysicalRegionIDId').value;
+			openNavyFormationsMiniSearch('#{request.contextPath}' , 'handleNavyFormationsMiniSearchResult(ret)',physicalRegionId);
+		}
+		
+		function handleNavyFormationsMiniSearchResult(ret){
+			if(ret != null) {
+				document.getElementById('employeesNavyFormationDataFormId:navyFormationDescriptionId').innerHTML = ret[0];
+				document.getElementById('employeesNavyFormationDataFormId:navyFormationDescriptionHId').value = ret[0];
+			}
+		}
+		function clearNavyFormations(){
+			document.getElementById('employeesNavyFormationDataFormId:navyFormationDescriptionId').innerHTML = '';
+			document.getElementById('employeesNavyFormationDataFormId:navyFormationDescriptionHId').value = '';
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="employeesNavyFormationDataFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{employeesNavyFormationData.screenTitle}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="100%">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<td width="50%">
+												<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+												<h:inputHidden id="selectedEmpId" value="#{employeesNavyFormationData.selectedEmpId}" />
+												<h:commandButton id="getEmployeeBtnId" style="display: none;" action="#{employeesNavyFormationData.getEmployee()}">
+													<f:ajax execute="employeesNavyFormationDataFormId:selectedEmpId" render="employeesNavyFormationDataFormId:selectedEmpComponentId:data employeesNavyFormationDataFormId:navyFormationDataPanelId employeesNavyFormationDataFormId:actionsPanelId employeesNavyFormationDataFormId:notifyMessagesId" />
+												</h:commandButton>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td width="100%">
+									<code:emp id="selectedEmpComponentId" value="#{employeesNavyFormationData.employeeData}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_navyFormationData}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="navyFormationDataPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_navyFormationData}</th>
+									<td>
+										<h:inputHidden id ="selectedEmpPhysicalRegionIDId" value="#{employeesNavyFormationData.employeeData.physicalRegionId}" />
+										<h:outputText id="navyFormationDescriptionId" value="#{employeesNavyFormationData.employeeData.employee.navyFormation}" />
+										<h:inputHidden id="navyFormationDescriptionHId" value="#{employeesNavyFormationData.employeeData.employee.navyFormation}" />
+										<h:outputText value=" " />
+										<h:commandButton value="#{msgs.fa_external_link}" disabled="#{employeesNavyFormationData.employeeData.empId == null}" onclick="getNavyFormations(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										<h:commandButton value="#{msgs.fa_times}" disabled="#{employeesNavyFormationData.employeeData.empId == null}" onclick="clearNavyFormations(); return false;" title="#{msgs.label_delete}" styleClass="btn_icon" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsPanelId">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton id="saveBtnId" rendered="#{employeesNavyFormationData.employeeData.empId != null}" action="#{employeesNavyFormationData.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return confirm('#{msgs.q_save}');">
+											<f:ajax execute="employeesNavyFormationDataFormId:navyFormationDataPanelId" render="employeesNavyFormationDataFormId:actionsPanelId employeesNavyFormationDataFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+										<h:commandButton action="#{employeesNavyFormationData.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+											<f:ajax render="employeesNavyFormationDataFormId:selectedEmpComponentId:data employeesNavyFormationDataFormId:navyFormationDataPanelId employeesNavyFormationDataFormId:actionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

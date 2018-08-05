@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function getExternalParties() {
+			openExternalPartiesMiniSearch('#{request.contextPath}', 'handleExternalPartiesMiniSearchResult(ret)', 2, 0);
+		}
+
+		function handleExternalPartiesMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('annualMilitaryPartiesManagementFormId:externalPartyHId').value = ret[0];
+				document.getElementById('annualMilitaryPartiesManagementFormId:externalPartyDescHId').value = ret[1];
+				document.getElementById('annualMilitaryPartiesManagementFormId:addAnnualPartyBtnId').click();
+			}
+		}
+	</script>
+</h:head>
+
+<h:body styleClass="screenBg">
+	<h:form id="annualMilitaryPartiesManagementFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{annualMilitaryPartiesManagement.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_annualMilitaryPartiesManagement}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+
+
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">#{msgs.label_theTrainingUnit}</th>
+								<td width="85%" colspan="3">
+									<h:selectOneMenu id="trainingUnitId" value="#{annualMilitaryPartiesManagement.trainingUnitId}">
+										<f:selectItems value="#{annualMilitaryPartiesManagement.trainingUnits}" var="unit" itemLabel="#{unit.name}" itemValue="#{unit.unitId}" />
+										<f:ajax event="change" listener="#{annualMilitaryPartiesManagement.selectTrainingUnit()}" execute="annualMilitaryPartiesManagementFormId:trainingUnitId" render="annualMilitaryPartiesManagementFormId:annualPartiesPanelId annualMilitaryPartiesManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:selectOneMenu>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:panelGroup id="annualMilitaryPartiesPanelId">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>
+										<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getExternalParties(); return false;" />
+										<h:commandButton id="addAnnualPartyBtnId" style="display:none;" action="#{annualMilitaryPartiesManagement.addAnnualExternalParty()}">
+											<f:ajax execute="annualMilitaryPartiesManagementFormId:annualMilitaryPartiesPanelId" render="annualMilitaryPartiesManagementFormId:annualPartiesTableId annualMilitaryPartiesManagementFormId:notifyMessagesId" />
+										</h:commandButton>
+										<h:inputHidden id="externalPartyHId" value="#{annualMilitaryPartiesManagement.externalPartyData.id}" />
+										<h:inputHidden id="externalPartyDescHId" value="#{annualMilitaryPartiesManagement.externalPartyData.description}" />
+									</td>
+								</tr>
+							</table>
+
+						</td>
+					</tr>
+				</h:panelGroup>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="annualPartiesPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td width="100%">
+										<rich:dataTable id="annualPartiesTableId" value="#{annualMilitaryPartiesManagement.annualExternalPartiesList}" var="externalParty" rowKeyVar="index" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" rows="#{annualMilitaryPartiesManagement.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width : 5%">
+												<f:facet name="header"> # </f:facet>
+												<h:outputText value=" #{index + 1}" />
+											</rich:column>
+											<rich:column style="width : 90%">
+												<f:facet name="header"> #{msgs.label_annualExternalPartyName} </f:facet>
+												<h:outputText id="externalPartyDescriptionId" value="#{externalParty.externalPartyDesc}" />
+											</rich:column>
+											<rich:column style="width : 5%">
+												<f:facet name="header">#{msgs.label_delete}</f:facet>
+												<h:commandButton action="#{annualMilitaryPartiesManagement.deleteAnnualExternalParty(externalParty)}" value="#{msgs.fa_times}" onclick="return confirm('#{msgs.q_delete}');" title="#{msgs.label_delete}" styleClass="btn_icon">
+													<f:ajax render="annualMilitaryPartiesManagementFormId:annualPartiesTableId annualMilitaryPartiesManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller execute="annualMilitaryPartiesManagementFormId:annualPartiesTableId" oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+													<f:facet name="first">#{msgs.label_first}</f:facet>
+													<f:facet name="last">#{msgs.label_last}</f:facet>
+													<f:facet name="next">#{msgs.label_next}</f:facet>
+													<f:facet name="previous">#{msgs.label_previous}</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

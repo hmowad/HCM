@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="jobsBalancesFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{jobsBalances.screenTitle}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">#{msgs.label_region}</th>
+								<td width="85%">
+									<h:selectOneMenu value="#{jobsBalances.regionId}">
+										<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+										<f:selectItems value="#{jobsBalances.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+										<f:ajax event="change" execute="@this" listener="#{jobsBalances.getJobsBalances()}" render="jobsBalancesFormId:jobsBalancesDataTableId jobsBalancesFormId:notifyMessagesId" />
+									</h:selectOneMenu>
+									<h:outputText value=" " />
+									<h:outputText value="#{msgs.label_regionSelectionMessage}" rendered="#{jobsBalances.hasModifyPrivilege}" style="color: red; font-weight: bold;" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_jobsBalancesData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:dataTable id="jobsBalancesDataTableId" value="#{jobsBalances.jobsBalancesData}" var="jobBalance" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+							<rich:column style="width : 15%;">
+								<f:facet name="header"> #{msgs.label_rank} </f:facet>
+								<h:outputText value="#{jobBalance.rankDescription}" />
+							</rich:column>
+							<rich:column style="width : #{jobsBalances.regionId != -1 and jobsBalances.hasModifyPrivilege ? 10 : 15}%;">
+								<f:facet name="header"> #{msgs.label_approvedJobsBalance} </f:facet>
+								<h:inputText value="#{jobBalance.approvedJobsBalance}" rendered="#{jobsBalances.regionId != -1  and jobsBalances.hasModifyPrivilege}" maxlength="6" onkeypress="return isDigit(event);" />
+								<h:outputText value="#{jobBalance.approvedJobsBalance}" rendered="#{jobsBalances.regionId == -1 or !jobsBalances.hasModifyPrivilege}" />
+							</rich:column>
+							<rich:column style="width : 15%;">
+								<f:facet name="header"> #{msgs.label_occupiedJobsCount} </f:facet>
+								<h:outputText value="#{jobBalance.occupiedJobsCount}" />
+							</rich:column>
+							<rich:column style="width : 15%;">
+								<f:facet name="header"> #{msgs.label_vacantJobsCount} </f:facet>
+								<h:outputText value="#{jobBalance.vacantJobsCount}" />
+							</rich:column>
+							<rich:column style="width : 20%;">
+								<f:facet name="header"> #{msgs.label_futureTransactionsJobsCount} <font style="color: red;">*</font> </f:facet>
+								<h:outputText value="#{jobBalance.approvedJobsBalance - jobBalance.occupiedJobsCount - jobBalance.vacantJobsCount - jobBalance.availableJobsBalance}" />
+							</rich:column>
+							<rich:column style="width : #{jobsBalances.regionId != -1 and jobsBalances.hasModifyPrivilege ? 15 : 20}%;">
+								<f:facet name="header"> #{msgs.label_availableJobsBalance} </f:facet>
+								<h:outputText value="#{jobBalance.availableJobsBalance}" style="#{jobBalance.availableJobsBalance lt 0 ? 'color: red !important; font-weight: bold !important;' : ''}" />
+							</rich:column>
+
+							<rich:column style="width : 10%" rendered="#{jobsBalances.regionId != -1 and jobsBalances.hasModifyPrivilege}">
+								<f:facet name="header">#{msgs.label_save}</f:facet>
+								<h:commandButton action="#{jobsBalances.modifyJobsBalance(jobBalance)}" onclick="return handleOnAction('#{msgs.q_save}');" value="#{msgs.fa_floppy_o}" title="#{msgs.label_save}" styleClass="btn_icon">
+									<f:ajax execute="jobsBalancesFormId:jobsBalancesDataTableId" render="jobsBalancesFormId:jobsBalancesDataTableId jobsBalancesFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+								</h:commandButton>
+							</rich:column>
+						</rich:dataTable>
+					</td>
+				</tr>
+				
+				<tr>
+					<td>
+						<h:outputText value="#{msgs.label_jobsBalancesRemark}" styleClass="remarkMessage" />
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

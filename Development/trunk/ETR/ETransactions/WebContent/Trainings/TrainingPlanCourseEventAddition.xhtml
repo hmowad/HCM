@@ -1,0 +1,344 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+		function getMilitaryCourses() {
+			openTrainingCoursesMiniSearch('#{request.contextPath}','handleMilitaryCoursesMiniSearchResult(ret)', 2);
+		}
+
+		function handleMilitaryCoursesMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('trainingPlanCourseEventAdditionFormId:newCourseHIDId').value = ret[0];
+				document.getElementById('trainingPlanCourseEventAdditionFormId:addCourseBtnId').click();
+			}
+		}
+		
+		function getExternalParties() {
+			openExternalPartiesMiniSearch('#{request.contextPath}', 'handleExternalPartiesMiniSearchResult(ret)',2,0);
+		}
+		
+		function handleExternalPartiesMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('trainingPlanCourseEventAdditionFormId:externalPartyHId').value = ret[0];
+				document.getElementById('trainingPlanCourseEventAdditionFormId:addExternalPartyBtnId').click();
+			}
+		}
+		
+		function validateCourseDetails () {
+			// common course field validation
+		    var minimumCandidatesNumber = parseInt(document.getElementById('trainingPlanCourseEventAdditionFormId' +':minimumCandidatesNumberId').value);
+			var maximumCandidatesNumber = parseInt(document.getElementById('trainingPlanCourseEventAdditionFormId' +':maximumCandidatesNumberId').value);
+			var weeksCount = parseInt(document.getElementById('trainingPlanCourseEventAdditionFormId' +':weeksCountId').value);
+			var coursePrequisities = document.getElementById('trainingPlanCourseEventAdditionFormId' +':trainingCoursePrequisitiesId').value;
+			var startDateValue =  document.getElementById('trainingPlanCourseEventAdditionFormId' +':startDateId:day').value;
+			var endDateValue =  document.getElementById('trainingPlanCourseEventAdditionFormId' +':endDateId:day').value;
+			
+			
+			if (isNaN(minimumCandidatesNumber)) {
+				alert('#{msgs.error_minimumCandidatesNumberMandatory}');
+				return false;
+			}
+			if (isNaN(maximumCandidatesNumber)) {
+				alert('#{msgs.error_maximumCandidatesNumberMandatory}');
+				return false;
+			}
+			if (isNaN(weeksCount)) {
+				alert('#{msgs.error_weeksCountMandatory}');
+				return false;
+			}
+			if (coursePrequisities == null || coursePrequisities == '') {
+				alert('#{msgs.error_coursePrequisitiesMandatory}');
+				return false;
+			}
+			if(maximumCandidatesNumber < minimumCandidatesNumber) {
+				alert('#{msgs.error_minCandidatesNumGreaterThanMaxCandidatesNum}')
+				return false;
+			}
+			if(startDateValue == 0) {
+				alert('#{msgs.error_courseStartDateMandatory}');
+				return false;
+			}
+			if(endDateValue == 0) {
+				alert('#{msgs.error_courseEndDateMandatory}');
+				return false;
+			}
+			if(minimumCandidatesNumber<=0 || minimumCandidatesNumber>99) {
+				alert('#{msgs.error_minimumCandidatesNumberRange}');
+				return false;
+			}
+			if(maximumCandidatesNumber <=0 || maximumCandidatesNumber >99) {
+			    alert('#{msgs.error_maximumCandidatesNumberRange}');
+				return false;
+			}
+			if(weeksCount  <=0 || weeksCount >52) {
+			    alert('#{msgs.error_weeksCountRange}');
+				return false;
+			} 
+			if(document.getElementById('trainingPlanCourseEventAdditionFormId' +':courseNumber')!=null){
+				var serialCourseNumber =  document.getElementById('trainingPlanCourseEventAdditionFormId' +':courseNumber').value;
+				if(serialCourseNumber==null || serialCourseNumber=='') {
+				 alert('#{msgs.error_serialCourseNumberMandatory}');
+				return false;
+				}
+			}
+			return true;		
+		}
+		
+		function validateExternalPartiesNeeds(cId){
+			var externalPartySeatCountValue = document.getElementById(cId).value;
+			if(externalPartySeatCountValue<= 0 || externalPartySeatCountValue >99)
+			{
+			    alert('#{msgs.error_invalidExternalPartiesSeatCountRange}');
+			    document.getElementById(cId).value = '';
+			}
+		}
+		
+		function validateRegionsListSeatCount(cId) {
+			var regionSeatsCount = document.getElementById(cId).value;
+			if(regionSeatsCount<= 0 || regionSeatsCount >99)
+			{
+			    alert('#{msgs.error_invalidRegionSeatsCountRange}');
+			    document.getElementById(cId).value = '';
+			}
+		}
+	//]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="trainingPlanCourseEventAdditionFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_trainingPlanCourseEventAddition}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_trainingCourseData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">#{msgs.label_trainingYear}</th>
+								<td width="35%">
+									<h:selectOneMenu value="#{trainingPlanCourseEventAddition.selectedTrainingYearId}" disabled="#{trainingPlanCourseEventAddition.courseEvent.courseId != null}">
+										<f:selectItems value="#{trainingPlanCourseEventAddition.trainingYears}" var="trnYear" itemLabel="#{trnYear.name}" itemValue="#{trnYear.id}" />
+									</h:selectOneMenu>
+								</td>
+								<th width="15%">#{msgs.label_trainingUnit}</th>
+								<td width="35%">
+									<h:selectOneMenu value="#{trainingPlanCourseEventAddition.selectedTrainingUnitId}" disabled="#{trainingPlanCourseEventAddition.courseEvent.courseId != null}">
+										<f:selectItems value="#{trainingPlanCourseEventAddition.trainingUnits}" var="unit" itemLabel="#{unit.name}" itemValue="#{unit.unitId}" />
+									</h:selectOneMenu>
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">
+									#{msgs.label_trainingCourseName}
+									<h:outputText value=" " />
+									<font style="color: red;">*</font>
+								</th>
+								<td width="35%" colspan="3">
+									<h:outputText value="#{trainingPlanCourseEventAddition.courseEvent.courseName}" />
+									<h:outputText value=" " />
+									<h:commandButton disabled="#{trainingPlanCourseEventAddition.trainingYears.size() == 0 or trainingPlanCourseEventAddition.courseEvent.id != null}" value="#{msgs.fa_external_link}" title="#{msgs.label_select}" styleClass="btn_icon" onclick="getMilitaryCourses();return false;" />
+									<h:commandButton id="addCourseBtnId" style="display:none;" action="#{trainingPlanCourseEventAddition.selectCourse()}">
+										<f:ajax execute="@form" render="@form" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+									<h:inputHidden id="newCourseHIDId" value="#{trainingPlanCourseEventAddition.selectedCourseId}" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{trainingPlanCourseEventAddition.courseEvent.courseId != null}">
+								<!-- course Serial -->
+								<tr>
+									<th width="15%">
+										#{msgs.label_trainingCourseNumber}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:inputText id="courseNumber" value="#{trainingPlanCourseEventAddition.courseEvent.serial}" rendered="#{trainingPlanCourseEventAddition.courseEvent.autoGeneratedSerialFlag != 1}" onkeypress="return isDigit(event);" onchange="return parseInt(this.value)>0;" styleClass="inputDataNormal" />
+										<h:outputText value="#{trainingPlanCourseEventAddition.courseEvent.serial}" rendered="#{trainingPlanCourseEventAddition.courseEvent.autoGeneratedSerialFlag == 1}" />
+									</td>
+									<!-- weeks count -->
+									<th width="15%">
+										#{msgs.label_weeksCount}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:inputText id="weeksCountId" value="#{trainingPlanCourseEventAddition.courseEvent.weeksCount}" onkeypress="return isDigit(event);" onchange="return parseInt(this.value)>0;" styleClass="inputDataNormal" maxlength="2">
+											<f:ajax event="change" listener="#{trainingPlanCourseEventAddition.manipulateEndDate()}" execute="@form" render="@form" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:inputText>
+									</td>
+								</tr>
+								<tr>
+									<!-- start date -->
+									<th width="15%">
+										#{msgs.label_courseStartDate}
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="35%">
+										<util:hijri id="startDateId" value="#{trainingPlanCourseEventAddition.courseEvent.plannedStartDate}" nullable="true" listenerMethod="#{trainingPlanCourseEventAddition.manipulateEndDate()}" onChangeAjaxSubmit="true" reRenderIds="@form" onAjaxEvent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</td>
+									<!-- end date -->
+									<th width="15%">
+										#{msgs.label_courseEndDate}
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="35%">
+										<util:hijri id="endDateId" value="#{trainingPlanCourseEventAddition.courseEvent.plannedEndDate}" nullable="true" />
+									</td>
+								</tr>
+								<tr>
+									<!-- min cand -->
+									<th width="15%">
+										#{msgs.label_minimumCandidatesNumber}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:inputText id="minimumCandidatesNumberId" value="#{trainingPlanCourseEventAddition.courseEvent.candidatesMin}" onkeypress="return isDigit(event);" styleClass="inputDataNormal" maxlength="2" />
+									</td>
+									<!-- max cand -->
+									<th width="15%">
+										#{msgs.label_maximumCandidatesNumber}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%">
+										<h:inputText id="maximumCandidatesNumberId" value="#{trainingPlanCourseEventAddition.courseEvent.candidatesMax}" onkeypress="return isDigit(event);" styleClass="inputDataNormal" maxlength="2" />
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">
+										#{msgs.label_coursePrequisities}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%" colspan="3">
+										<h:inputTextarea id="trainingCoursePrequisitiesId" styleClass="inputDataSuperLarge" value="#{trainingPlanCourseEventAddition.courseEvent.prerquisites}" rows="3" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" />
+									</td>
+								</tr>
+
+								<tr>
+									<td width="100%" height="5" colspan="4" />
+								</tr>
+
+								<tr>
+									<!-- List of regions  -->
+									<td align="right" style="vertical-align: top" width="50%" colspan="2">
+										<rich:dataTable id="regionsAllocationTableId" rowKeyVar="index" var="region" value="#{trainingPlanCourseEventAddition.regionsAllocations}" rows="#{trainingPlanCourseEventAddition.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+											<f:facet name="header">
+												<rich:columnGroup>
+													<rich:column>#{msgs.label_region}</rich:column>
+													<rich:column colspan="2">#{msgs.label_seats}</rich:column>
+												</rich:columnGroup>
+											</f:facet>
+											<rich:column style="width : 20%">
+												<h:outputText value="#{region.regionShortDesc}" />
+											</rich:column>
+											<rich:column style="width : 20%">
+												<h:selectOneRadio value="#{region.allocationCountFlag}">
+													<f:selectItem itemLabel="#{msgs.label_count}" itemValue="true" />
+													<f:selectItem itemLabel="#{msgs.label_description}" itemValue="false" />
+													<f:ajax event="change" execute="trainingPlanCourseEventAdditionFormId:regionsAllocationTableId" render="trainingPlanCourseEventAdditionFormId:regionsAllocationTableId" onevent="function(e){if(e.status == 'complete'){ unMaskScreen();}}" />
+												</h:selectOneRadio>
+											</rich:column>
+											<rich:column style="width : 60%">
+												<h:inputText id="regionAllocationCountId" value="#{region.allocationCount}" rendered="#{region.allocationCountFlag}" maxlength="2" onkeypress="return isDigit(event);" onchange="validateRegionsListSeatCount(this.id);" />
+												<h:inputText id="regionAllocationDescId" value="#{region.allocationDesc}" rendered="#{!region.allocationCountFlag}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" />
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller execute="trainingPlanCourseEventAdditionFormId:regionsAllocationTableId" render="trainingPlanCourseEventAdditionFormId:regionsAllocationTableId #{cc.clientId.split(':')[0].concat(':notifyMessagesId')}" fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+													<f:facet name="first">#{msgs.label_first}</f:facet>
+													<f:facet name="last">#{msgs.label_last}</f:facet>
+													<f:facet name="next">#{msgs.label_next}</f:facet>
+													<f:facet name="previous">#{msgs.label_previous}</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+									<!-- external parties  -->
+									<td width="50%" colspan="2" style="vertical-align: top">
+
+										<table width="100%" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%">
+													<rich:dataTable id="externalPartiesAllocationTableId" rowKeyVar="index" var="externalParty" value="#{trainingPlanCourseEventAddition.externalPartiesAllocations}" rows="#{trainingPlanCourseEventAddition.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+														<rich:column style="width : 5%">
+															<f:facet name="header">#</f:facet>
+															<h:outputText value="#{index + 1}" />
+														</rich:column>
+														<rich:column style="width : 25%">
+															<f:facet name="header">#{msgs.label_party}</f:facet>
+															<h:outputText value="#{externalParty.externalPartyDesc}" />
+														</rich:column>
+														<rich:column style="width : 15%">
+															<f:facet name="header">#{msgs.label_seatsCount}</f:facet>
+															<h:inputText id="externalPartySeatCountId" onchange="validateExternalPartiesNeeds(this.id);" onkeypress="return isDigit(event);" styleClass="inputDataSuperLarge" maxlength="2" value="#{externalParty.allocationCount}" />
+														</rich:column>
+														<f:facet name="footer">
+															<rich:dataScroller execute="trainingPlanCourseEventAdditionFormId:externalPartiesAllocationTableId" fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+																<f:facet name="first">#{msgs.label_first}</f:facet>
+																<f:facet name="last">#{msgs.label_last}</f:facet>
+																<f:facet name="next">#{msgs.label_next}</f:facet>
+																<f:facet name="previous">#{msgs.label_previous}</f:facet>
+															</rich:dataScroller>
+														</f:facet>
+													</rich:dataTable>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</h:panelGroup>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup>
+							<h:panelGroup id="actionsPanelId" rendered="#{trainingPlanCourseEventAddition.courseEvent.courseId != null}">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:commandButton id="saveBtnId" rendered="#{trainingPlanCourseEventAddition.courseEvent.id == null}" action="#{trainingPlanCourseEventAddition.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validateCourseDetails()');">
+												<f:ajax execute="@form" render="@form" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:commandButton action="#{trainingPlanCourseEventAddition.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon">
+												<f:ajax render="@form" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

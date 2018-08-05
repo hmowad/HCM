@@ -1,0 +1,376 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+	function getEmp(contextPath){
+		if(#{eveningTrainingClaimRequest.decisionRequest}) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{eveningTrainingClaimRequest.getLoginEmpPhysicalRegionFlag(true)});
+		} else {
+			openEmpsMiniSearch(contextPath,'handleEmpMiniSearchResult(ret)', 9, -1, -1, -1, -1, -1, '#{eveningTrainingClaimRequest.loginEmpData.physicalUnitHKey}');
+		}
+    }
+  
+    function handleEmpMiniSearchResult(ret){
+    	if(ret != null){
+    	    document.getElementById('eveningTrainingClaimRequestFormId:beneficiaryEmployeeHId').value = ret[0];
+	   		document.getElementById('eveningTrainingClaimRequestFormId:beneficiaryEmployeeCategoryId').value = ret[2];
+	        document.getElementById('eveningTrainingClaimRequestFormId:searchEmpBtnId').click();
+        }
+    } 
+
+    function getExternalParties() {
+		openExternalPartiesMiniSearch('#{request.contextPath}', 'handleExternalPartiesMiniSearchResult(ret)',1,0);
+	}
+	
+	function handleExternalPartiesMiniSearchResult(ret){
+		if (ret != null) {
+			document.getElementById('eveningTrainingClaimRequestFormId:externalPartyIdHId').value = ret[0];
+			document.getElementById('eveningTrainingClaimRequestFormId:externalPartyNameId').innerHTML = ret[1];
+			document.getElementById('eveningTrainingClaimRequestFormId:externalPartyAddressId').innerHTML = ret[2];
+	
+		}
+	}
+
+	function getTrainingCourse() {
+	    openTrainingCoursesMiniSearch('#{request.contextPath}', 'handleCoursesMiniSearch(ret)',1);
+	}
+
+	function handleCoursesMiniSearch(ret) {
+	    if(ret != null) {
+			document.getElementById('eveningTrainingClaimRequestFormId:trainingCourseIdHId').value = ret[0];
+			document.getElementById('eveningTrainingClaimRequestFormId:trainingCourseNameId').innerHTML = ret[1];
+		}
+	}
+
+
+
+	function validateRequest(canChange) {
+		if(!canChange)
+			return true;
+		
+		var trainingCourseId =  document.getElementById('eveningTrainingClaimRequestFormId:trainingCourseIdHId').value;
+		var externalPartyId = document.getElementById('eveningTrainingClaimRequestFormId:externalPartyIdHId').value;
+		var startDateValue =  document.getElementById('eveningTrainingClaimRequestFormId:startDateId:day').value;
+		var endDateValue =  document.getElementById('eveningTrainingClaimRequestFormId:endDateId:day').value;
+		var financeSourceOnHisOwn = document.getElementById('eveningTrainingClaimRequestFormId:courseFundSource:0').checked;
+		var financeSourceOnBorderGuard = document.getElementById('eveningTrainingClaimRequestFormId:courseFundSource:1').checked;
+
+		if(trainingCourseId==null || trainingCourseId=='' ) {
+			alert('#{msgs.error_courseNameMandatory}');
+			return false;
+		} else if(externalPartyId==null || externalPartyId=='') {
+		    alert('#{msgs.error_courseExecutionPartyMandatory}');
+			return false;
+		} else if(startDateValue == 0) {
+				alert('#{msgs.error_courseStartDateMandatory}');
+				return false;
+		} else if(endDateValue == 0) {
+				alert('#{msgs.error_courseEndDateMandatory}');
+				return false;
+		} else if(!financeSourceOnHisOwn && !financeSourceOnBorderGuard){
+		    alert('#{msgs.error_financeSourceMandatory}');
+			return false;		
+		} else if(!validResultsComponent()) {
+			return false
+		}
+		return true;
+	}
+	
+	function validateReview(canChange) {
+	    if(validateRefuseAndNotes(1, 'eveningTrainingClaimRequestFormId:curTaskId:refuseReasonsId')) {
+	    	if(!canChange)
+	    		return true;
+	    	return validateRequest();
+	    } else
+	    	return false;
+	}
+	
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="eveningTrainingClaimRequestFormId" dir="#{msgs.dir}">
+		<ui:debug />
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{eveningTrainingClaimRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_processRequester}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{eveningTrainingClaimRequest.requester}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiaryEmployee}" switchType="client" onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{eveningTrainingClaimRequest.beneficiary.empId == eveningTrainingClaimRequest.requester.empId})) { getEmp('#{request.contextPath}'); return false;} else {return true;}" expanded="#{eveningTrainingClaimRequest.requester.empId != eveningTrainingClaimRequest.beneficiary.empId}"
+							rendered="#{(eveningTrainingClaimRequest.role == 'Requester' and (eveningTrainingClaimRequest.decisionRequest or eveningTrainingClaimRequest.loginEmpData.isManager == 1)) or eveningTrainingClaimRequest.requester.empId != eveningTrainingClaimRequest.beneficiary.empId}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+								<h:panelGroup rendered="#{eveningTrainingClaimRequest.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}');return false;" styleClass="btn_normal" />
+														<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{eveningTrainingClaimRequest.constructWFTraining()}">
+															<f:ajax execute="eveningTrainingClaimRequestFormId:beneficiaryEmployeeHId eveningTrainingClaimRequestFormId:beneficiaryEmployeeCategoryId" render="eveningTrainingClaimRequestFormId:beneficiaryPanelId eveningTrainingClaimRequestFormId:previousEveningTrainingCourseData eveningTrainingClaimRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:inputHidden id="beneficiaryEmployeeHId" value="#{eveningTrainingClaimRequest.wfTraining.employeeId}" />
+														<h:inputHidden id="beneficiaryEmployeeCategoryId" value="#{eveningTrainingClaimRequest.wfTraining.categoryId}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp id="beneficiaryId" value="#{eveningTrainingClaimRequest.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_previousEveningCourse}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="previousEveningTrainingCourseData">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_trainingCourseName}" />
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText id="trainingCourseNameId" value="#{eveningTrainingClaimRequest.wfTraining.courseName}" />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getTrainingCourse(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{eveningTrainingClaimRequest.canChangeRequestData()}" />
+										<h:inputHidden id="trainingCourseIdHId" value="#{eveningTrainingClaimRequest.wfTraining.courseId}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_courseExecutionParty}" />
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="35%">
+										<h:outputText id="externalPartyNameId" value="#{eveningTrainingClaimRequest.wfTraining.externalPartyDesc}" />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getExternalParties(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{eveningTrainingClaimRequest.canChangeRequestData()}" />
+										<h:inputHidden id="externalPartyIdHId" value="#{eveningTrainingClaimRequest.wfTraining.externalPartyId}" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_courseExecutionAddress}" />
+									</th>
+									<td width="35%">
+										<h:outputText id="externalPartyAddressId" value="#{eveningTrainingClaimRequest.wfTraining.externalPartyAddress}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_courseStartDate}
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="20%">
+										<util:hijri id="startDateId" value="#{eveningTrainingClaimRequest.wfTraining.startDate}" nullable="true" rendered="#{eveningTrainingClaimRequest.canChangeRequestData()}" viewOldRange="true"/>
+										<h:outputText value="#{eveningTrainingClaimRequest.wfTraining.startDateString}" rendered="#{!eveningTrainingClaimRequest.canChangeRequestData()}" />
+									</td>
+									<th width="15%">
+										#{msgs.label_courseEndDate}
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="50%">
+										<util:hijri id="endDateId" value="#{eveningTrainingClaimRequest.wfTraining.endDate}" nullable="true" rendered="#{eveningTrainingClaimRequest.canChangeRequestData()}" viewOldRange="true"/>
+										<h:outputText value="#{eveningTrainingClaimRequest.wfTraining.endDateString}" rendered="#{!eveningTrainingClaimRequest.canChangeRequestData()}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_courseFinanceSource}" />
+									</th>
+									<td width="85%" colspan="3">
+										<h:selectOneRadio id="courseFundSource" value="#{eveningTrainingClaimRequest.wfTraining.fundSource}" rendered="#{eveningTrainingClaimRequest.canChangeRequestData()}">
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_costOnEmployee}" />
+											<f:selectItem itemValue="2" itemLabel="#{msgs.label_costOnBorderGuard}" />
+										</h:selectOneRadio>
+										<h:outputText value="#{eveningTrainingClaimRequest.wfTraining.fundSource == 1 ? msgs.label_costOnEmployee : msgs.label_costOnBorderGuard}" rendered="#{!eveningTrainingClaimRequest.canChangeRequestData()}" />
+									</td>
+								</tr>
+								<code:courseResults id="resultsId" trainingObject="#{eveningTrainingClaimRequest.wfTraining}" loginEmpId="#{eveningTrainingClaimRequest.loginEmpData.empId}" viewOnly="#{!eveningTrainingClaimRequest.canChangeRequestData()}" military="false" showGraduationDate="false" claim="true"></code:courseResults>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{eveningTrainingClaimRequest.role != 'Requester'}" value="#{eveningTrainingClaimRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{eveningTrainingClaimRequest.currentEmployee}"
+							rendered="#{eveningTrainingClaimRequest.role == 'DirectManager' or eveningTrainingClaimRequest.role == 'ManagerRedirect' or eveningTrainingClaimRequest.role == 'ReviewerEmp' or eveningTrainingClaimRequest.role == 'SignManager'}">
+							<h:panelGroup rendered="#{eveningTrainingClaimRequest.role == 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{eveningTrainingClaimRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{eveningTrainingClaimRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{eveningTrainingClaimRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{eveningTrainingClaimRequest.role != 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{eveningTrainingClaimRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{eveningTrainingClaimRequest.role == 'Notification' or eveningTrainingClaimRequest.role == 'History'}" value="#{eveningTrainingClaimRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+
+									<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest(#{eveningTrainingClaimRequest.canChangeRequestData()})',null);" action="#{eveningTrainingClaimRequest.initWFTraining()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{eveningTrainingClaimRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;eveningTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{eveningTrainingClaimRequest.approveWFTrainingDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{eveningTrainingClaimRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;eveningTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{eveningTrainingClaimRequest.rejectWFTrainingDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{eveningTrainingClaimRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;eveningTrainingClaimRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{eveningTrainingClaimRequest.redirectWFTrainingMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{eveningTrainingClaimRequest.role == 'ManagerRedirect'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+
+
+
+									<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateReview(#{eveningTrainingClaimRequest.canChangeRequestData()})',null);" action="#{eveningTrainingClaimRequest.approveWFTrainingRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{eveningTrainingClaimRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;eveningTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{eveningTrainingClaimRequest.rejectWFTrainingRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{eveningTrainingClaimRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+
+
+									<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;eveningTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{eveningTrainingClaimRequest.approveWFTrainingSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{eveningTrainingClaimRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+
+									<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;eveningTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;eveningTrainingClaimRequestFormId:curTaskId:notesId&quot;)',null);" action="#{eveningTrainingClaimRequest.returnWFTrainingSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{eveningTrainingClaimRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+
+									<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;eveningTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{eveningTrainingClaimRequest.rejectWFTrainingSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{eveningTrainingClaimRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="nBtnId" action="#{eveningTrainingClaimRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{eveningTrainingClaimRequest.role == 'Notification'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

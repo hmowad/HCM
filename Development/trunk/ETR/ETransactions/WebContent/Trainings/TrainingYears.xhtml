@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+		var callerId;
+
+		function confirmAndValidate(cId) {
+			var confirmed = confirm('#{msgs.q_save}');
+			if (confirmed) {
+				if (!validate(cId))
+					return false;
+			} else
+				return false;
+
+			return true;
+		}
+
+		function validate(cId) {
+			var idTokens = cId.split(':');
+			if (document.getElementById('trainingYearsFormId:yearsTableId:'
+					+ idTokens[2] + ':semesterNameId') != null) {
+				var semsterNameValue = document
+						.getElementById('trainingYearsFormId:yearsTableId:'
+								+ idTokens[2] + ':semesterNameId').value;
+				if (semsterNameValue == null || semsterNameValue.trim() == '') {
+					alert('#{msgs.error_semsterNameMandatory}');
+					return false;
+				}
+			}
+			return true;
+		}
+
+		//]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="trainingYearsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{trainingYears.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:outputText value="#{msgs.label_trainingYearsData}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="20" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:commandButton id="addBtn" action="#{trainingYears.add}" value="#{msgs.label_add}" styleClass="btn_normal" disabled="#{trainingYears.disableAddButton}">
+							<f:ajax execute="trainingYearsFormId:trainingYearTypeId" render="@this trainingYearsFormId:yearsTableId trainingYearsFormId:trainingYearTypeId trainingYearsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+						</h:commandButton>
+						<h:outputText value="  " />
+						<h:selectOneMenu id="trainingYearTypeId" value="#{trainingYears.trainingYearTypeId}" disabled="#{trainingYears.disableAddButton}">
+							<f:selectItem itemLabel=" " itemValue="-1" />
+							<f:selectItem itemLabel="#{msgs.label_addNewSemesterForCurrentTrainingYear}" itemValue="1" />
+							<f:selectItem itemLabel="#{msgs.label_addNewSemesterForNewTrainingYear}" itemValue="2" />
+							<f:selectItem itemLabel="#{msgs.label_addNewTrainingYearWithNoSemesters}" itemValue="3" />
+						</h:selectOneMenu>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:dataTable id="yearsTableId" rowKeyVar="index" var="year" value="#{trainingYears.years}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<f:facet name="header">
+								<rich:columnGroup>
+									<rich:column rowspan="2">#</rich:column>
+									<rich:column rowspan="2">#{msgs.label_trainingYearName}</rich:column>
+									<rich:column rowspan="2">#{msgs.label_semster}</rich:column>
+									<rich:column colspan="2">#{msgs.label_trainingYear}</rich:column>
+									<rich:column colspan="2">#{msgs.label_trainingNeeds}</rich:column>
+									<rich:column rowspan="2">#{msgs.label_save}</rich:column>
+									<rich:column rowspan="2">#{msgs.label_draftStatusPrint}</rich:column>
+									<rich:column breakRowBefore="true">#{msgs.label_startDate}</rich:column>
+									<rich:column>#{msgs.label_endDate}</rich:column>
+									<rich:column>#{msgs.label_startDate}</rich:column>
+									<rich:column>#{msgs.label_endDate}</rich:column>
+								</rich:columnGroup>
+							</f:facet>
+							<rich:column style="width:5%">
+									#{index+1}
+							</rich:column>
+							<rich:column style="width:25%">
+								<h:outputText value="#{year.name}" />
+							</rich:column>
+							<rich:column style="width:16%">
+								<h:inputText id="semesterNameId" value="#{year.semesterName}" rendered="#{year.status!=trainingYears.statusApproved and trainingYears.trainingYearTypeId != 3}" styleClass="inputDataSuperLarge" maxlength="30" />
+								<h:outputText value="#{year.semesterName == null ? msgs.label_trainingYearWithNoSemesters : year.semesterName}" rendered="#{year.status==trainingYears.statusApproved or trainingYears.trainingYearTypeId == 3}" />
+							</rich:column>
+							<rich:column style="width:11%">
+								<util:hijri rendered="#{year.status!=trainingYears.statusApproved}" id="startDateId" value="#{year.startDate}" />
+								<h:outputText rendered="#{year.status==trainingYears.statusApproved}" value="#{year.startDateString}" />
+							</rich:column>
+							<rich:column style="width:11%">
+								<util:hijri rendered="#{year.status!=trainingYears.statusApproved}" id="endDateId" value="#{year.endDate}" />
+								<h:outputText rendered="#{year.status==trainingYears.statusApproved}" value="#{year.endDateString}" />
+							</rich:column>
+							<rich:column style="width:11%">
+								<util:hijri rendered="#{year.status!=trainingYears.statusInitialDraft and year.status!=trainingYears.statusApproved}" id="needsStartDateId" value="#{year.needsStartDate}" nullable="true" />
+								<h:outputText rendered="#{year.status==trainingYears.statusInitialDraft or year.status==trainingYears.statusApproved}" value="#{year.needsStartDateString}" />
+							</rich:column>
+							<rich:column style="width:11%">
+								<util:hijri rendered="#{year.status!=trainingYears.statusInitialDraft and year.status!=trainingYears.statusApproved}" id="needsEndDateId" value="#{year.needsEndDate}" nullable="true" />
+								<h:outputText rendered="#{year.status==trainingYears.statusInitialDraft or year.status==trainingYears.statusApproved}" value="#{year.needsEndDateString}" />
+							</rich:column>
+							<rich:column style="width:5%">
+								<h:commandButton rendered="#{year.status!=trainingYears.statusApproved}" value="#{msgs.fa_floppy_o}" title="#{msgs.label_save}" action="#{trainingYears.save(year)}" onclick="return confirmAndValidate(this.id);" styleClass="btn_icon">
+									<f:ajax execute="trainingYearsFormId:yearsTableId" render="trainingYearsFormId:yearsTableId trainingYearsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+								</h:commandButton>
+							</rich:column>
+							<rich:column style="width:5%">
+								<h:commandButton rendered="#{year.status == trainingYears.statusInitialDraft or year.status == trainingYears.statusFinalDraft}" value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" styleClass="btn_icon" action="#{trainingYears.printTrainingYearDrafts(year)}" />
+							</rich:column>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

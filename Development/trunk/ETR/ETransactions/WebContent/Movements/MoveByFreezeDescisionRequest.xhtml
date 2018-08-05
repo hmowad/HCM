@@ -1,0 +1,466 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	var callerId;
+	function getImage(isNew, empId) {
+			openImageUploader(1, '#{request.contextPath}', empId, isNew);
+				return false;
+		}
+	
+	function getEmp(contextPath){
+        openEmpsMiniSearch(contextPath,' handleEmpMiniSearchResult(ret)', 5, 2, -1, -1, -1, -1, -1);
+    }
+	
+	function handleEmpMiniSearchResult(ret){ 
+		  if(ret != null){
+	           document.getElementById('moveByFreezeDescisionRequestFormId:hiddenEmpId').value = ret[0];
+	           document.getElementById('moveByFreezeDescisionRequestFormId:addButtonId').click();
+	      }
+	}
+
+	function getJob(mode, btnId, jobType, jobRank){
+		callerId=btnId;
+		if(jobType==1)
+	        openJobsMiniSearch('#{request.contextPath}','handleJobToFreezeMiniSearchResult(ret)', mode, 2, -1,jobRank, -1,-1, 0);
+		else
+        openJobsMiniSearch('#{request.contextPath}','handleJobToMoveMiniSearchResult(ret)', mode, 2, -1,jobRank, -1,-1, 0);
+		
+		return false;
+   }
+   
+   function handleJobToFreezeMiniSearchResult(ret){
+	       if(ret != null){
+		   		var idTokens = callerId.split(':');
+	            document.getElementById('moveByFreezeDescisionRequestFormId:movementListId:'+idTokens[2]+':'+idTokens[3]+'Id').innerHTML = ret[2];
+	            document.getElementById('moveByFreezeDescisionRequestFormId:movementListId:'+idTokens[2]+':'+idTokens[3]+'HiddenId').value = ret[2];
+	            document.getElementById('moveByFreezeDescisionRequestFormId:movementListId:'+idTokens[2]+':'+idTokens[3]+'IdHiddenId').value = ret[0];
+	            document.getElementById('moveByFreezeDescisionRequestFormId:movementListId:'+idTokens[2]+':'+idTokens[3]+'CodeHiddenId').value = ret[1];
+	            document.getElementById('moveByFreezeDescisionRequestFormId:movementListId:'+idTokens[2]+':'+idTokens[3]+'CodeId').innerHTML = ret[1];
+	      }
+	}
+	
+	function handleJobToMoveMiniSearchResult(ret){
+	       if(ret != null){
+		   			var idTokens = callerId.split(':');
+	            	document.getElementById('moveByFreezeDescisionRequestFormId:movementListId:'+idTokens[2]+':'+idTokens[3]+'Id').innerHTML = ret[2];
+	            	document.getElementById('moveByFreezeDescisionRequestFormId:movementListId:'+idTokens[2]+':jobUnitId').innerHTML = ret[4];
+	            	document.getElementById('moveByFreezeDescisionRequestFormId:movementListId:'+idTokens[2]+':'+idTokens[3]+'HiddenId').value = ret[2];
+	            	document.getElementById('moveByFreezeDescisionRequestFormId:movementListId:'+idTokens[2]+':'+idTokens[3]+'IdHiddenId').value = ret[0];
+	            	document.getElementById('moveByFreezeDescisionRequestFormId:movementListId:'+idTokens[2]+':'+idTokens[3]+'CodeHiddenId').value = ret[1];
+	            	document.getElementById('moveByFreezeDescisionRequestFormId:movementListId:'+idTokens[2]+':'+idTokens[3]+'CodeId').innerHTML = ret[1];
+	            	document.getElementById('moveByFreezeDescisionRequestFormId:movementListId:'+idTokens[2]+':jobUnitHiddenId').value = ret[4];
+	            	document.getElementById('moveByFreezeDescisionRequestFormId:movementListId:'+idTokens[2]+':jobUnitIdHiddenId').value = ret[3];
+	            	document.getElementById('moveByFreezeDescisionRequestFormId:movementListId:'+idTokens[2]+':moveToJobSearchBtnId').click();
+	            }
+	}
+	
+	function validateData() {
+
+		if(document.getElementById('moveByFreezeDescisionRequestFormId:basedOnId') != null) {
+			
+			var basedOn = document.getElementById('moveByFreezeDescisionRequestFormId:basedOnId').value;
+	        if(basedOn == null || basedOn == ''){
+	            alert('#{msgs.error_mandatoryFieldsRequired}');
+	            return false;
+	        }     
+	                       
+	        var orderNumber = document.getElementById('moveByFreezeDescisionRequestFormId:orderNumberId').value;            
+	        if(orderNumber == null || orderNumber == ''){
+	        		alert('#{msgs.error_mandatoryFieldsRequired}');
+	                return false;
+	        }
+		}
+		
+		if(document.getElementById('moveByFreezeDescisionRequestFormId:movementListSizeId').innerHTML == 0) {
+			alert("#{msgs.error_moveListEmpty}");
+			return false;
+		}
+        return #{moveByFreezeDescisionRequest.role == 'ReviewerEmp'} ? validateRefuseAndNotes(1, &quot;moveByFreezeDescisionRequestFormId:curTaskId:refuseReasonsId&quot;) : true; 
+      }
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="moveByFreezeDescisionRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_moveByFreezeDescisionRequest}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">#{msgs.label_moveDetails}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="unitInformationFormId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="16%">
+										#{msgs.label_basedOn}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="84%" colspan="5">
+										<h:selectOneRadio value="#{moveByFreezeDescisionRequest.decisionData.verbalOrderFlag}" disabled="#{moveByFreezeDescisionRequest.role != 'Requester' and moveByFreezeDescisionRequest.role != 'ReviewerEmp'}">
+											<f:selectItem itemValue="0" itemLabel="#{msgs.label_letterDispatchEtc}" />
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_verbalOrder}" />
+											<f:ajax execute="moveByFreezeDescisionRequestFormId:unitInformationFormId" listener="#{moveByFreezeDescisionRequest.verbalOrderFlagListener()}" render="moveByFreezeDescisionRequestFormId:unitInformationFormId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:selectOneRadio>
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{moveByFreezeDescisionRequest.decisionData.verbalOrderFlag == 0}">
+									<tr>
+										<td width="100%" colspan="6">
+											<h:outputText value="#{msgs.label_movementsDecisionsWarning}" style="color: red; font-weight: bold;" />
+										</td>
+									</tr>
+									<tr>
+										<th>
+											#{msgs.label_basedOnLetterDispatchEtc}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td colspan="5">
+											<h:inputText id="basedOnId" value="#{moveByFreezeDescisionRequest.decisionData.basedOn}" disabled="#{moveByFreezeDescisionRequest.role != 'Requester' and moveByFreezeDescisionRequest.role != 'ReviewerEmp'}" styleClass="inputDataSuperLarge" maxlength="400" />
+										</td>
+									</tr>
+									<tr>
+										<th>
+											#{msgs.label_orderNumber}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<h:inputText id="orderNumberId" value="#{moveByFreezeDescisionRequest.decisionData.basedOnOrderNumber}" disabled="#{moveByFreezeDescisionRequest.role != 'Requester' and moveByFreezeDescisionRequest.role != 'ReviewerEmp'}" maxlength="50" />
+										</td>
+										<th>
+											#{msgs.label_orderDate}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td colspan="3">
+											<util:hijri value="#{moveByFreezeDescisionRequest.decisionData.basedOnOrderDate}" rendered="#{moveByFreezeDescisionRequest.role == 'Requester' or moveByFreezeDescisionRequest.role == 'ReviewerEmp'}" />
+											<h:outputText value="#{moveByFreezeDescisionRequest.decisionData.basedOnOrderDateString}" rendered="#{moveByFreezeDescisionRequest.role != 'Requester' and moveByFreezeDescisionRequest.role != 'ReviewerEmp'}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th width="16%">
+										#{msgs.label_moveReason}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="15%">
+										<h:selectOneMenu value="#{moveByFreezeDescisionRequest.decisionData.reasonType}" disabled="#{moveByFreezeDescisionRequest.role != 'Requester' and moveByFreezeDescisionRequest.role != 'ReviewerEmp'}">
+											<f:selectItem itemLabel="#{msgs.label_personalReason}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_workReason}" itemValue="2" />
+											<f:selectItem itemLabel="#{msgs.label_generalReason}" itemValue="3" />
+											<f:ajax event="change" render="moveByFreezeDescisionRequestFormId:vacationGrantFlagBooleanId" listener="#{moveByFreezeDescisionRequest.reasonTypeListener()}" />
+										</h:selectOneMenu>
+									</td>
+									<th width="16%">
+										#{msgs.label_moveFromDate}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="19%">
+										<util:hijri value="#{moveByFreezeDescisionRequest.decisionData.executionDate}" rendered="#{moveByFreezeDescisionRequest.role == 'Requester' or moveByFreezeDescisionRequest.role == 'ReviewerEmp'}" onChangeAjaxSubmit="true" reRenderIds="moveByFreezeDescisionRequestFormId:movementListId moveByFreezeDescisionRequestFormId:warningsPanelId moveByFreezeDescisionRequestFormId:notifyMessagesId" listenerMethod="#{moveByFreezeDescisionRequest.executionDateListener()}" />
+										<h:outputText value="#{moveByFreezeDescisionRequest.decisionData.executionDateString}" rendered="#{moveByFreezeDescisionRequest.role != 'Requester' and moveByFreezeDescisionRequest.role != 'ReviewerEmp'}" />
+									</td>
+									<th width="15%">#{msgs.label_allowVacation}</th>
+									<td width="19%">
+										<h:selectBooleanCheckbox id="vacationGrantFlagBooleanId" value="#{moveByFreezeDescisionRequest.decisionData.vacationGrantFlagBoolean}" disabled="#{(moveByFreezeDescisionRequest.role != 'Requester' and moveByFreezeDescisionRequest.role != 'ReviewerEmp') or moveByFreezeDescisionRequest.vacationGrantFlagDisabled}" />
+									</td>
+								</tr>
+								<tr>
+									<th>#{msgs.label_requiredAttachments}</th>
+									<td colspan="5">
+										<code:attachments loginEmpId="#{moveByFreezeDescisionRequest.loginEmpData.empId}" attachmentId="#{moveByFreezeDescisionRequest.attachments}" addEnableFlag="#{moveByFreezeDescisionRequest.role == 'Requester' or moveByFreezeDescisionRequest.role == 'ReviewerEmp'}" viewEnableFlag="true" deleteEnableFlag="#{moveByFreezeDescisionRequest.role == 'Requester' or moveByFreezeDescisionRequest.role == 'ReviewerEmp'}" />
+									</td>
+								</tr>
+								<tr>
+									<th>#{msgs.label_remarks}</th>
+									<td colspan="5">
+										<h:inputText value="#{moveByFreezeDescisionRequest.decisionData.remarks}" styleClass="inputDataSuperLarge" readonly="#{moveByFreezeDescisionRequest.role != 'Requester' and moveByFreezeDescisionRequest.role != 'ReviewerEmp'}" maxlength="500" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+
+					</td>
+				</tr>
+
+				<code:specialAuthorityData id="specialAuthorityDataId" loginEmpId="#{moveByFreezeDescisionRequest.loginEmpData.empId}" wfMovement="#{moveByFreezeDescisionRequest.decisionData}" role="#{moveByFreezeDescisionRequest.role}" requestFlag="#{false}" rendered="#{moveByFreezeDescisionRequest.role == 'Requester' or moveByFreezeDescisionRequest.role == 'ReviewerEmp' or moveByFreezeDescisionRequest.role == 'SignManager' or moveByFreezeDescisionRequest.role == 'PlanningOrganizationManager'}" />
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_soldiersData}" />
+									<h:outputText value=" " />
+									<h:commandButton onclick="getEmp('#{request.contextPath}'); return false;" value="#{msgs.label_add}" styleClass="btn_normal" rendered="#{moveByFreezeDescisionRequest.role == 'Requester' or moveByFreezeDescisionRequest.role == 'ReviewerEmp'}" />
+									<h:inputHidden id="hiddenEmpId" value="#{moveByFreezeDescisionRequest.empId}" />
+									<h:commandButton id="addButtonId" action="#{moveByFreezeDescisionRequest.addToList}" style="display: none">
+										<f:ajax execute="moveByFreezeDescisionRequestFormId:hiddenEmpId moveByFreezeDescisionRequestFormId:addButtonId moveByFreezeDescisionRequestFormId:movementListId " render="moveByFreezeDescisionRequestFormId:movementListPanelId moveByFreezeDescisionRequestFormId:warningsPanelId moveByFreezeDescisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<h:panelGroup id="movementListPanelId">
+							<h:outputText id="movementListSizeId" style="display:none" value="#{moveByFreezeDescisionRequest.wfMovementsList.size()}" />
+							<rich:dataTable id="movementListId" var="movement" rowKeyVar="index" value="#{moveByFreezeDescisionRequest.wfMovementsList}" rows="#{moveByFreezeDescisionRequest.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+								<rich:column>
+									<f:facet name="header">#</f:facet>
+                                    #{index + 1}
+                            </rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_soldier}" />
+									</f:facet>
+									<h:outputText id="empNameId" value="#{movement.employeeName}" />
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_rank}" />
+									</f:facet>
+									<h:outputText id="empRankId" value="#{movement.employeeRankDesc}" />
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_currentJobCode}" />
+									</f:facet>
+									<h:outputText value="#{movement.employeeJobCode}" />
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_currentJob}" />
+									</f:facet>
+									<h:outputText value="#{movement.employeeJobName}" />
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_currentUnit}" />
+									</f:facet>
+									<h:outputText id="empUnitId" value="#{movement.employeeUnitName}" />
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_jobCodeToFreeze}" />
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</f:facet>
+									<h:outputText id="jobToFreezeCodeId" value="#{movement.freezeJobCode}" />
+									<h:inputHidden id="jobToFreezeHiddenId" value="#{movement.freezeJobName}" />
+									<h:inputHidden id="jobToFreezeIdHiddenId" value="#{movement.freezeJobId}" />
+									<h:inputHidden id="jobToFreezeCodeHiddenId" value="#{movement.freezeJobCode}" />
+									<h:commandButton id="jobToFreeze" value="#{msgs.fa_external_link}" title="#{msgs.label_select}" onclick="getJob(2, this.id, 1, -1); return false;" styleClass="btn_icon" rendered="#{moveByFreezeDescisionRequest.role == 'Requester' or moveByFreezeDescisionRequest.role == 'ReviewerEmp'}" />
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_jobToFreeze}" />
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</f:facet>
+									<h:outputText id="jobToFreezeId" value="#{movement.freezeJobName}" />
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_jobCodeToBeMovedTo}" />
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</f:facet>
+									<h:outputText id="movedToJobCodeId" value="#{movement.jobCode}" />
+									<h:inputHidden id="movedToJobHiddenId" value="#{movement.jobName}" />
+									<h:inputHidden id="movedToJobIdHiddenId" value="#{movement.jobId}" />
+									<h:inputHidden id="movedToJobCodeHiddenId" value="#{movement.jobCode}" />
+									<h:commandButton id="movedToJob" value="#{msgs.fa_external_link}" title="#{msgs.label_select}" styleClass="btn_icon" onclick="getJob(4, this.id, 2, #{movement.employeeRankId});return false;" rendered="#{moveByFreezeDescisionRequest.role == 'Requester' or moveByFreezeDescisionRequest.role == 'ReviewerEmp'}" />
+									<h:commandButton id="moveToJobSearchBtnId" style="display:none" action="#{moveByFreezeDescisionRequest.calculateWarnings(movement)}">
+										<f:ajax execute="moveByFreezeDescisionRequestFormId:movementListPanelId" render="moveByFreezeDescisionRequestFormId:movementListId moveByFreezeDescisionRequestFormId:warningsPanelId moveByFreezeDescisionRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_jobToBeMovedTo}" />
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</f:facet>
+									<h:outputText id="movedToJobId" value="#{movement.jobName}" />
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_movedToUnit}" />
+									</f:facet>
+									<h:outputText id="jobUnitId" value="#{movement.unitFullName}" />
+									<h:inputHidden id="jobUnitHiddenId" value="#{movement.unitFullName}" />
+									<h:inputHidden id="jobUnitIdHiddenId" value="#{movement.unitId}" />
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">#{msgs.label_warnings}</f:facet>
+									<h:graphicImage value="/resources/images/warning.png" width="25px" height="25px" rendered="#{moveByFreezeDescisionRequest.getActualWarningMessage(movement.warningMessages) != null and moveByFreezeDescisionRequest.getActualWarningMessage(movement.warningMessages) != ''}" title="#{moveByFreezeDescisionRequest.getActualWarningMessage(movement.warningMessages)}" />
+								</rich:column>
+								<rich:column rendered="#{moveByFreezeDescisionRequest.role == 'Requester' or moveByFreezeDescisionRequest.role == 'ReviewerEmp'}">
+									<f:facet name="header">#{msgs.label_delete}</f:facet>
+									<h:commandButton value="#{msgs.fa_times}" action="#{moveByFreezeDescisionRequest.removeFromList(movement)}" onclick="return confirm('#{msgs.q_delete}');" title="#{msgs.label_delete}" styleClass="btn_icon">
+										<f:ajax execute="moveByFreezeDescisionRequestFormId:movementListId @this" render="moveByFreezeDescisionRequestFormId:movementListPanelId moveByFreezeDescisionRequestFormId:warningsPanelId moveByFreezeDescisionRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" execute="moveByFreezeDescisionRequestFormId:movementListId">
+										<f:facet name="first">#{msgs.label_first}</f:facet>
+										<f:facet name="last">#{msgs.label_last}</f:facet>
+										<f:facet name="next">#{msgs.label_next}</f:facet>
+										<f:facet name="previous">#{msgs.label_previous}</f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:decisionCopies external="#{moveByFreezeDescisionRequest.externalCopies}" internal="#{moveByFreezeDescisionRequest.internalCopies}" viewOnly="#{moveByFreezeDescisionRequest.role != 'Requester' and moveByFreezeDescisionRequest.role != 'ReviewerEmp'}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{moveByFreezeDescisionRequest.role != 'Requester'}" value="#{moveByFreezeDescisionRequest.prevTasks}" refuseRoles="SignManager,PlanningOrganizationManager,ReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{moveByFreezeDescisionRequest.currentEmployee}" rendered="#{moveByFreezeDescisionRequest.role == 'SignManager' or moveByFreezeDescisionRequest.role == 'PlanningOrganizationManager' or moveByFreezeDescisionRequest.role == 'ReviewerEmp'}">
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{moveByFreezeDescisionRequest.currentTask.notes}" styleClass="inputDataSuperLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{moveByFreezeDescisionRequest.role == 'SignManager' or moveByFreezeDescisionRequest.role == 'PlanningOrganizationManager' or moveByFreezeDescisionRequest.role == 'ReviewerEmp'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{moveByFreezeDescisionRequest.currentTask.refuseReasons}" styleClass="inputDataSuperLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="warningsPanelId">
+							<h:panelGroup rendered="#{moveByFreezeDescisionRequest.warningsCount > 0}">
+								<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th>#{msgs.label_warnings}</th>
+									</tr>
+									<tr>
+										<td>
+											<h:outputText value="#{moveByFreezeDescisionRequest.warningSummary}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{moveByFreezeDescisionRequest.role == 'Notification' or moveByFreezeDescisionRequest.role == 'History'}" value="#{moveByFreezeDescisionRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_sendSoldiers}', 'validateData()');" action="#{moveByFreezeDescisionRequest.initMovement()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{moveByFreezeDescisionRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="moveByFreezeDescisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_reviewSoldiers}', 'validateData()');" action="#{moveByFreezeDescisionRequest.approveMovementRE()}" value="#{msgs.label_review}  &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveByFreezeDescisionRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="moveByFreezeDescisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveByFreezeDescisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveByFreezeDescisionRequest.rejectMovementRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveByFreezeDescisionRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="moveByFreezeDescisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;moveByFreezeDescisionRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveByFreezeDescisionRequest.approveMovementSM}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveByFreezeDescisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="moveByFreezeDescisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateDecisionApprovalNotes(&quot;moveByFreezeDescisionRequestFormId:specialAuthorityDataId:decisionApprovalRemarksId&quot;, &quot;moveByFreezeDescisionRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;moveByFreezeDescisionRequestFormId:curTaskId:notesId&quot;)',null);" action="#{moveByFreezeDescisionRequest.returnMovementSM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{moveByFreezeDescisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="moveByFreezeDescisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveByFreezeDescisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveByFreezeDescisionRequest.rejectMovementSM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveByFreezeDescisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="moveByFreezeDescisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;moveByFreezeDescisionRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveByFreezeDescisionRequest.approveMovementPOM}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveByFreezeDescisionRequest.role == 'PlanningOrganizationManager'}">
+										<f:ajax execute="@form" render="moveByFreezeDescisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;moveByFreezeDescisionRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;moveByFreezeDescisionRequestFormId:curTaskId:notesId&quot;)',null);" action="#{moveByFreezeDescisionRequest.returnMovementPOM}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{moveByFreezeDescisionRequest.role == 'PlanningOrganizationManager'}">
+										<f:ajax execute="@form" render="moveByFreezeDescisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveByFreezeDescisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveByFreezeDescisionRequest.rejectMovementPOM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveByFreezeDescisionRequest.role == 'PlanningOrganizationManager'}">
+										<f:ajax execute="@form" render="moveByFreezeDescisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton action="#{moveByFreezeDescisionRequest.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{moveByFreezeDescisionRequest.role == 'Notification' and moveByFreezeDescisionRequest.instanceApproved == 1}" />
+
+									<h:commandButton action="#{moveByFreezeDescisionRequest.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveByFreezeDescisionRequest.role == 'Notification'}">
+										<f:ajax execute="@form" render="moveByFreezeDescisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

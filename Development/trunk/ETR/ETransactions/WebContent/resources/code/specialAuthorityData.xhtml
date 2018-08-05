@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:f="http://java.sun.com/jsf/core" xmlns:composite="http://java.sun.com/jsf/composite" xmlns:code="http://java.sun.com/jsf/composite/code">
+
+<composite:interface componentType="com.code.ui.components.util.UIAttachments">
+	<composite:attribute name="loginEmpId" required="true" />
+	<composite:attribute name="wfMovement" required="true" />
+	<composite:attribute name="role" required="true" />
+	<composite:attribute name="requestFlag" type="java.lang.Boolean" required="true" />
+</composite:interface>
+
+<composite:implementation>
+
+	<h:panelGroup>
+		<tr>
+			<td width="100%" height="5" />
+		</tr>
+
+		<tr>
+			<td width="100%">
+				<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+					<tr>
+						<td width="100%">#{msgs.label_specialAuthorityData}</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		
+		<tr>
+			<td width="100%">
+				<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+					<tr>
+						<th width="15%">#{msgs.label_specialRemarks}</th>
+						<td width="85%">
+							<h:inputTextarea value="#{cc.attrs.wfMovement.specialRemarks}" readonly="#{cc.attrs.role != 'ReviewerEmp' and cc.attrs.role != 'SecondaryReviewerEmp' and cc.attrs.role != 'ReplacementSecondaryReviewerEmp' and !(!cc.attrs.requestFlag and cc.attrs.role == 'Requester')}" styleClass="inputDataSuperLarge" rows="6" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}', 1200);" onkeyup="limitMaxLength(this, '#{msgs.error_maxNumberOfCharacters}', 1200);" />
+						</td>
+					</tr>
+					<tr>
+						<th width="15%">#{msgs.label_specialAttachments}</th>
+						<td width="85%">
+							<code:attachments loginEmpId="#{cc.attrs.loginEmpId}" attachmentId="#{cc.attrs.wfMovement.specialAttachments}" addEnableFlag="#{cc.attrs.role == 'ReviewerEmp' or cc.attrs.role == 'SecondaryReviewerEmp' or cc.attrs.role == 'ReplacementSecondaryReviewerEmp' or (!cc.attrs.requestFlag and cc.attrs.role == 'Requester')}" viewEnableFlag="true" deleteEnableFlag="#{cc.attrs.role == 'ReviewerEmp' or cc.attrs.role == 'SecondaryReviewerEmp' or cc.attrs.role == 'ReplacementSecondaryReviewerEmp' or (!cc.attrs.requestFlag and cc.attrs.role == 'Requester')}" />
+						</td>
+					</tr>
+					<tr>
+						<th width="15%" rowspan="2">#{msgs.label_privilegeOwnerRemarks}</th>
+						<td width="85%">
+							<h:inputText id="decisionApprovalRemarksId" value="#{cc.attrs.wfMovement.decisionApprovalRemarks}" readonly="#{cc.attrs.role != 'SignManager'}" styleClass="inputDataSuperLarge" maxlength="500" />
+						</td>
+					</tr>
+					<tr>
+						<td width="85%">
+							<h:outputText value="#{msgs.label_fieldForDecisionSignPrivilegeOwner}" style="color: red; font-weight: bold;" />
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</h:panelGroup>
+
+</composite:implementation>
+</html>

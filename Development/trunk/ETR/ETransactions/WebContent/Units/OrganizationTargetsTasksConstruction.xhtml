@@ -1,0 +1,304 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:rich="http://richfaces.org/rich" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:h="http://java.sun.com/jsf/html" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+	function validateOrganizationTargetTaskConstructionData(){
+   	 	var decisionNumber = document.getElementById('organizationTargetsTasksConstructionFormId:decisionNumberId').value.trim();
+   	 	if(decisionNumber == null || decisionNumber == '') {
+       		alert('#{msgs.error_decNumberMandatory}');
+       		return false;
+	   	 } else if (decisionNumber.indexOf("*") > -1 || decisionNumber.indexOf("#") > -1) {
+	     	alert('#{msgs.error_decNumberContainsProhibitedCharacter}');
+	         return false;
+	     }
+    	return true;
+	}
+    </script>
+
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{organizationTargetsTasksConstruction.initialize}" />
+	<h:form id="organizationTargetsTasksConstructionFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_organizationTargetsTasksConstruction}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="35%" valign="top">
+									<!-- tree -->
+									<table cellpadding="0" cellspacing="0" width="98%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsTree}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:inputText id="searchNameValue" value="#{organizationTargetsTasksConstruction.searchName}" styleClass="inputDataLarge" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_search}" action="#{organizationTargetsTasksConstruction.search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+																<f:ajax render="organizationTargetsTasksConstructionFormId:treePanelId organizationTargetsTasksConstructionFormId:notifyMessagesId" execute="searchNameValue" />
+															</h:commandButton>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<h:panelGroup id="treePanelId">
+																<rich:tree id="unitTreeId" toggleListener="#{organizationTargetsTasksConstruction.treeToggleHandler(item)}" render="treePanelId" value="#{organizationTargetsTasksConstruction.unitTree}" var="item" dir="#{msgs.dir}" nodeType="unitType">
+																	<rich:treeNode type="unitType" expanded="#{item.expanded}" iconExpanded="/resources/images/#{item.unitType}.png" iconCollapsed="/resources/images/#{item.unitType}.png" iconLeaf="/resources/images/#{item.unitType}.png" title="#{item.orderUnderParent}" ontoggle="unMaskScreen()">
+																		<h:commandLink value="#{item.unitName}" action="#{organizationTargetsTasksConstruction.selectUnit(item)}">
+																			<f:ajax execute="organizationTargetsTasksConstructionFormId:decisionPanelId organizationTargetsTasksConstructionFormId:targetsTableId organizationTargetsTasksConstructionFormId:tasksTableId"
+																					render="organizationTargetsTasksConstructionFormId:unitsTableId organizationTargetsTasksConstructionFormId:decisionPanelId organizationTargetsTasksConstructionFormId:targetsTableId organizationTargetsTasksConstructionFormId:tasksTableId organizationTargetsTasksConstructionFormId:notifyMessagesId"
+																					onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandLink>
+																	</rich:treeNode>
+																</rich:tree>
+																<h:outputStylesheet library="css" name="tree.css" />
+															</h:panelGroup>
+														</td>
+													</tr>
+
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="65%" valign="top">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsList}</td>
+													</tr>
+												</table>
+												<table border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td align="center" width="100%">
+															<rich:dataTable id="unitsTableId" rowKeyVar="index" var="unit" value="#{organizationTargetsTasksConstruction.selectedUnits}" rows="#{organizationTargetsTasksConstruction.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+																<rich:column style="width : 5%">
+																	<f:facet name="header">#</f:facet>
+						                                          	#{index + 1}
+						                    					</rich:column>
+
+																<rich:column style="width : 90%">
+																	<f:facet name="header">#{msgs.label_unitsList}</f:facet>
+																	<h:outputText value="#{unit.fullName}" />
+																</rich:column>
+
+																<rich:column style="width : 5%;">
+																	<f:facet name="header">#{msgs.label_delete}</f:facet>
+																	<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{organizationTargetsTasksConstruction.deleteUnit(unit)}" onclick="return confirm('#{msgs.q_delete}');">
+																		<f:ajax execute="organizationTargetsTasksConstructionFormId:decisionPanelId organizationTargetsTasksConstructionFormId:targetsTableId organizationTargetsTasksConstructionFormId:tasksTableId"
+																			render="organizationTargetsTasksConstructionFormId:treePanelId organizationTargetsTasksConstructionFormId:unitsTableId organizationTargetsTasksConstructionFormId:decisionPanelId organizationTargetsTasksConstructionFormId:targetsTableId organizationTargetsTasksConstructionFormId:tasksTableId organizationTargetsTasksConstructionFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																	</h:commandButton>
+																</rich:column>
+
+																<f:facet name="footer">
+																	<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+																		<f:facet name="first">#{msgs.label_first}</f:facet>
+																		<f:facet name="last">#{msgs.label_last}</f:facet>
+																		<f:facet name="next">#{msgs.label_next}</f:facet>
+																		<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																	</rich:dataScroller>
+																</f:facet>
+															</rich:dataTable>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td width="100%">
+															<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>#{msgs.label_decisionData}</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<h:panelGroup id="decisionPanelId">
+																<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																	<tr>
+																		<th width="20%">
+																			#{msgs.label_decisionNumber}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<h:inputText id="decisionNumberId" value="#{organizationTargetsTasksConstruction.decisionNumber}" maxlength="50" readonly="#{organizationTargetsTasksConstruction.completionFlag}" />
+																		</td>
+																		<th width="20%">
+																			#{msgs.label_decisionDate}
+																			<font style="color: red;">*</font>
+																		</th>
+																		<td width="30%">
+																			<util:hijri value="#{organizationTargetsTasksConstruction.decisionDate}" rendered="#{! organizationTargetsTasksConstruction.completionFlag}" />
+																			<h:outputText value="#{organizationTargetsTasksConstruction.decisionDateString}" rendered="#{organizationTargetsTasksConstruction.completionFlag}" />
+																		</td>
+																	</tr>
+																</table>
+															</h:panelGroup>
+														</td>
+													</tr>
+
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_targets}">
+													<table class="sectionContent" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="10%">
+																<h:commandButton value="#{msgs.label_add}" action="#{organizationTargetsTasksConstruction.addTargetTask(1)}" styleClass="btn_normal">
+																	<f:ajax execute="organizationTargetsTasksConstructionFormId:targetsTableId" render="organizationTargetsTasksConstructionFormId:targetsTableId" />
+																</h:commandButton>
+															</td>
+															<td width="1%"></td>
+															<th width="89%" style="text-align: center !important;">#{msgs.error_maxNumberOfTargetLetters}</th>
+														</tr>
+														<tr>
+															<td colspan="3" align="center" width="100%">
+																<rich:dataTable id="targetsTableId" rowKeyVar="index" var="target" value="#{organizationTargetsTasksConstruction.targets}" rows="#{organizationTargetsTasksConstruction.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+																	<rich:column style="width : 5%">
+																		<f:facet name="header">#</f:facet>
+	                                          								#{index + 1}
+	                    												</rich:column>
+																	<rich:column style="width : 90%">
+																		<f:facet name="header">#{msgs.label_targets} <font style="color: red;">*</font> </f:facet>
+																		<h:inputTextarea value="#{target.description}" disabled="#{target.id != null}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" rows="2" styleClass="inputDataSuperLarge" />
+																	</rich:column>
+																	<rich:column style="width : 5%;">
+																		<f:facet name="header">#{msgs.label_delete}</f:facet>
+																		<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="return confirm('#{msgs.q_delete}');" action="#{organizationTargetsTasksConstruction.deleteTargetTask(target)}" disabled="#{target.id != null}">
+																			<f:ajax execute="organizationTargetsTasksConstructionFormId:targetsTableId" render="organizationTargetsTasksConstructionFormId:targetsTableId organizationTargetsTasksConstructionFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandButton>
+																	</rich:column>
+																	<f:facet name="footer">
+																		<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+																			<f:facet name="first">#{msgs.label_first}</f:facet>
+																			<f:facet name="last">#{msgs.label_last}</f:facet>
+																			<f:facet name="next">#{msgs.label_next}</f:facet>
+																			<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																		</rich:dataScroller>
+																	</f:facet>
+																</rich:dataTable>
+															</td>
+														</tr>
+													</table>
+												</rich:collapsiblePanel>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_tasks}">
+													<table class="sectionContent" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="10%">
+																<h:commandButton value="#{msgs.label_add}" action="#{organizationTargetsTasksConstruction.addTargetTask(0)}" styleClass="btn_normal">
+																	<f:ajax execute="organizationTargetsTasksConstructionFormId:tasksTableId" render="organizationTargetsTasksConstructionFormId:tasksTableId" />
+																</h:commandButton>
+															</td>
+															<td width="1%"></td>
+															<th width="89%" style="text-align: center !important;">#{msgs.error_maxNumberOfTasksLetters}</th>
+														</tr>
+														<tr>
+															<td colspan="3" align="center" width="100%">
+																<rich:dataTable id="tasksTableId" rowKeyVar="index" var="task" value="#{organizationTargetsTasksConstruction.tasks}" rows="#{organizationTargetsTasksConstruction.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+																	<rich:column style="width : 5%">
+																		<f:facet name="header">#</f:facet>
+								                                            #{index + 1}
+								                    					</rich:column>
+																	<rich:column style="width : 90%">
+																		<f:facet name="header">#{msgs.label_tasks} <font style="color: red;">*</font> </f:facet>
+																		<h:inputTextarea value="#{task.description}" disabled="#{task.id != null}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" rows="2" styleClass="inputDataSuperLarge" />
+																	</rich:column>
+																	<rich:column style="width : 5%;">
+																		<f:facet name="header">#{msgs.label_delete}</f:facet>
+																		<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="return confirm('#{msgs.q_delete}');" action="#{organizationTargetsTasksConstruction.deleteTargetTask(task)}" disabled="#{task.id != null}">
+																			<f:ajax execute="organizationTargetsTasksConstructionFormId:tasksTableId" render="organizationTargetsTasksConstructionFormId:tasksTableId organizationTargetsTasksConstructionFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandButton>
+																	</rich:column>
+																	<f:facet name="footer">
+																		<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+																			<f:facet name="first">#{msgs.label_first}</f:facet>
+																			<f:facet name="last">#{msgs.label_last}</f:facet>
+																			<f:facet name="next">#{msgs.label_next}</f:facet>
+																			<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																		</rich:dataScroller>
+																	</f:facet>
+																</rich:dataTable>
+															</td>
+														</tr>
+													</table>
+												</rich:collapsiblePanel>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="actionsBtnsId">
+													<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="100%">
+																<h:commandButton action="#{organizationTargetsTasksConstruction.save()}" onclick="return handleOnAction('#{msgs.q_save}', 'validateOrganizationTargetTaskConstructionData()');" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{!organizationTargetsTasksConstruction.done}">
+																	<f:ajax execute="organizationTargetsTasksConstructionFormId:decisionPanelId organizationTargetsTasksConstructionFormId:targetsTableId organizationTargetsTasksConstructionFormId:tasksTableId" render="organizationTargetsTasksConstructionFormId:targetsTableId organizationTargetsTasksConstructionFormId:tasksTableId organizationTargetsTasksConstructionFormId:actionsBtnsId organizationTargetsTasksConstructionFormId:notifyMessagesId"
+																		onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																</h:commandButton>
+																<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{organizationTargetsTasksConstruction.reset()}">
+																	<f:ajax render="organizationTargetsTasksConstructionFormId:treePanelId organizationTargetsTasksConstructionFormId:unitsTableId organizationTargetsTasksConstructionFormId:decisionPanelId organizationTargetsTasksConstructionFormId:targetsTableId organizationTargetsTasksConstructionFormId:tasksTableId organizationTargetsTasksConstructionFormId:actionsBtnsId organizationTargetsTasksConstructionFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																</h:commandButton>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

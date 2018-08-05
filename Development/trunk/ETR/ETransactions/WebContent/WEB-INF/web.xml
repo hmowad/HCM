@@ -1,0 +1,286 @@
+<?xml version = '1.0' encoding = 'windows-1252'?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+	<context-param>
+		<param-name>org.apache.myfaces.EXPRESSION_FACTORY</param-name>
+		<param-value>org.jboss.el.ExpressionFactoryImpl</param-value>
+	</context-param>
+
+	<listener>
+		<listener-class>com.code.ui.config.AppContextListener</listener-class>
+	</listener>
+
+	<context-param>
+		<param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+		<param-value>server</param-value>
+	</context-param>
+	<context-param>
+		<param-name>org.apache.myfaces.NUMBER_OF_VIEWS_IN_SESSION</param-name>
+		<param-value>1000</param-value>
+	</context-param>
+	<context-param>
+		<param-name>org.richfaces.fileUpload.maxRequestSize</param-name>
+		<param-value>204800</param-value>
+	</context-param>
+	<context-param>
+		<param-name>org.richfaces.fileUpload.createTempFiles</param-name>
+		<param-value>false</param-value>
+	</context-param>
+
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.jsf</url-pattern>
+	</servlet-mapping>
+
+	<!-- Image Servlet -->
+	<servlet>
+		<servlet-name>imageServlet</servlet-name>
+		<servlet-class>com.code.ui.servlets.ImageServlet</servlet-class>
+	</servlet>
+
+	<!-- Image Servlet Mapping -->
+	<servlet-mapping>
+		<servlet-name>imageServlet</servlet-name>
+		<url-pattern>/image/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- Webservices Servlet Mapping -->
+	<servlet>
+		<servlet-name>HCMSchedulerWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.hcm.HCMSchedulerWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>HCMSchedulerWSHttpPort</servlet-name>
+		<url-pattern>/HCMSchedulerWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>SecurityWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.security.SecurityWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SecurityWSHttpPort</servlet-name>
+		<url-pattern>/SecurityWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>SetupWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.setup.SetupWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SetupWSHttpPort</servlet-name>
+		<url-pattern>/SetupWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ConfigWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.config.ETRConfigurationWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ConfigWSHttpPort</servlet-name>
+		<url-pattern>/ETRConfigurationWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>UnitsWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.hcm.UnitsWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UnitsWSHttpPort</servlet-name>
+		<url-pattern>/UnitsWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>PromotionsDrugsTestWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.hcm.PromotionsDrugsTestWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PromotionsDrugsTestWSHttpPort</servlet-name>
+		<url-pattern>/PromotionsDrugsTestWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>EmployeesWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.hcm.EmployeesWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EmployeesWSHttpPort</servlet-name>
+		<url-pattern>/EmployeesWS</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>MovementsWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.hcm.MovementsWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MovementsWSHttpPort</servlet-name>
+		<url-pattern>/MovementsWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>WorkFlowWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.workflow.WorkFlowWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>WorkFlowWSHttpPort</servlet-name>
+		<url-pattern>/WorkFlowWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>RecruitmentsWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.hcm.RecruitmentsWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RecruitmentsWSHttpPort</servlet-name>
+		<url-pattern>/RecruitmentsWS</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>MissionsWorkFlowWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.workflow.hcm.MissionsWorkFlowWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MissionsWorkFlowWSHttpPort</servlet-name>
+		<url-pattern>/MissionsWorkFlowWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>MissionsWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.hcm.MissionsWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MissionsWSHttpPort</servlet-name>
+		<url-pattern>/MissionsWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>MovementsWorkFlowWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.workflow.hcm.MovementsWorkFlowWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MovementsWorkFlowWSHttpPort</servlet-name>
+		<url-pattern>/MovementsWorkFlowWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>VacationsWorkFlowWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.workflow.hcm.VacationsWorkFlowWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>VacationsWorkFlowWSHttpPort</servlet-name>
+		<url-pattern>/VacationsWorkFlowWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>VacationsWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.hcm.VacationsWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>VacationsWSHttpPort</servlet-name>
+		<url-pattern>/VacationsWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>TrainingsWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.hcm.TrainingsWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TrainingsWSHttpPort</servlet-name>
+		<url-pattern>/TrainingsWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>PayrollDifferencesWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.hcm.PayrollDifferencesWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PayrollDifferencesWSHttpPort</servlet-name>
+		<url-pattern>/PayrollDifferencesWS</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>PushNotificationsWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.pushnotifications.PushNotificationsWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PushNotificationsWSHttpPort</servlet-name>
+		<url-pattern>/PushNotificationsWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>GeneralNotificationsWorkFlowWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.workflow.generalnotifications.GeneralNotificationsWorkFlowWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GeneralNotificationsWorkFlowWSHttpPort</servlet-name>
+		<url-pattern>/GeneralNotificationsWorkFlowWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>TrainingsWorkFlowWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.workflow.hcm.TrainingsWorkFlowWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TrainingsWorkFlowWSHttpPort</servlet-name>
+		<url-pattern>/TrainingsWorkFlowWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>GeneralNewsWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.hcm.GeneralNewsWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GeneralNewsWSHttpPort</servlet-name>
+		<url-pattern>/GeneralNewsWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>PushServerWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.hcm.PushServerWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PushServerWSHttpPort</servlet-name>
+		<url-pattern>/PushServerWS</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>AirlinesReservationsWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.ereservations.AirlinesReservationsWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AirlinesReservationsWSHttpPort</servlet-name>
+		<url-pattern>/AirlinesReservationsWS</url-pattern>
+	</servlet-mapping>
+	
+	<session-config>
+		<session-timeout>60</session-timeout>    <!-- minutes -->
+	</session-config>
+</web-app>

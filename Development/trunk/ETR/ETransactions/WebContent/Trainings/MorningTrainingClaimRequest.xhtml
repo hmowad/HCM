@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+	function getEmp(contextPath) {
+		if(#{morningTrainingClaimRequest.decisionRequest}) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{morningTrainingClaimRequest.getLoginEmpPhysicalRegionFlag(true)});
+		} else {
+			openEmpsMiniSearch(contextPath,'handleEmpMiniSearchResult(ret)', 9, -1, -1, -1, -1, -1, '#{morningTrainingClaimRequest.loginEmpData.physicalUnitHKey}');
+		}
+	}
+  
+    function handleEmpMiniSearchResult(ret){
+    	if(ret != null){
+    	    document.getElementById('morningTrainingClaimRequestFormId:beneficiaryEmployeeHId').value = ret[0];
+	   		document.getElementById('morningTrainingClaimRequestFormId:beneficiaryEmployeeCategoryId').value = ret[2];
+	        document.getElementById('morningTrainingClaimRequestFormId:searchEmpBtnId').click();
+        }
+    } 
+
+    function getExternalParties() {
+		openExternalPartiesMiniSearch('#{request.contextPath}', 'handleExternalPartiesMiniSearchResult(ret)',1,0);
+	}
+	
+	function handleExternalPartiesMiniSearchResult(ret){
+		if (ret != null) {
+			document.getElementById('morningTrainingClaimRequestFormId:externalPartyIdHId').value = ret[0];
+			document.getElementById('morningTrainingClaimRequestFormId:externalPartyNameId').innerHTML = ret[1];
+			document.getElementById('morningTrainingClaimRequestFormId:externalPartyAddressId').innerHTML = ret[2];
+			
+		}
+	}
+
+	function getTrainingCourse() {
+	    openTrainingCoursesMiniSearch('#{request.contextPath}', 'handleCoursesMiniSearch(ret)',1);
+	}
+
+	function handleCoursesMiniSearch(ret) {
+	    if(ret != null) {
+			document.getElementById('morningTrainingClaimRequestFormId:trainingCourseIdHId').value = ret[0];
+			document.getElementById('morningTrainingClaimRequestFormId:trainingCourseNameId').innerHTML = ret[1];
+		}
+	}	
+
+	function validateRequest(canChange) {
+		if(!canChange)
+			return true;
+		
+		var trainingCourseId =  document.getElementById('morningTrainingClaimRequestFormId:trainingCourseIdHId').value;
+		var externalPartyId = document.getElementById('morningTrainingClaimRequestFormId:externalPartyIdHId').value;
+		var startDateValue =  document.getElementById('morningTrainingClaimRequestFormId:startDateId:day').value;
+		var endDateValue =  document.getElementById('morningTrainingClaimRequestFormId:endDateId:day').value;
+
+		if(trainingCourseId==null || trainingCourseId=='' ) {
+			alert('#{msgs.error_courseNameMandatory}');
+			return false;
+		} else if(externalPartyId==null || externalPartyId=='') {
+		    alert('#{msgs.error_courseExecutionPartyMandatory}');
+			return false;
+		} else if(startDateValue == 0) {
+			alert('#{msgs.error_courseStartDateMandatory}');
+			return false;
+		} else if(endDateValue == 0) {
+			alert('#{msgs.error_courseEndDateMandatory}');
+			return false;
+		} else if(!validResultsComponent()) {
+			return false
+		}
+		return true;
+	}
+
+	function validateReview(canChange) {
+	    if(validateRefuseAndNotes(1, 'morningTrainingClaimRequestFormId:curTaskId:refuseReasonsId')) {
+	    	if(!canChange)
+	    		return true;
+	    	return validateRequest();
+	    } else
+	    	return false;
+	}
+	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="morningTrainingClaimRequestFormId" dir="#{msgs.dir}">
+		<ui:debug />
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{morningTrainingClaimRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_processRequester}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{morningTrainingClaimRequest.requester}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiaryEmployee}" switchType="client" onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{morningTrainingClaimRequest.beneficiary.empId == morningTrainingClaimRequest.requester.empId})) { getEmp('#{request.contextPath}'); return false;} else {return true;}" expanded="#{morningTrainingClaimRequest.requester.empId != morningTrainingClaimRequest.beneficiary.empId}"
+							rendered="#{(morningTrainingClaimRequest.role == 'Requester' and (morningTrainingClaimRequest.decisionRequest or morningTrainingClaimRequest.loginEmpData.isManager == 1)) or morningTrainingClaimRequest.requester.empId != morningTrainingClaimRequest.beneficiary.empId}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+								<h:panelGroup rendered="#{morningTrainingClaimRequest.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}');return false;" styleClass="btn_normal" />
+														<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{morningTrainingClaimRequest.constructWFTraining()}">
+															<f:ajax execute="morningTrainingClaimRequestFormId:beneficiaryEmployeeHId morningTrainingClaimRequestFormId:beneficiaryEmployeeCategoryId" render="morningTrainingClaimRequestFormId:beneficiaryPanelId morningTrainingClaimRequestFormId:previousMorningTrainingCourseData morningTrainingClaimRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:inputHidden id="beneficiaryEmployeeHId" value="#{morningTrainingClaimRequest.wfTraining.employeeId}" />
+														<h:inputHidden id="beneficiaryEmployeeCategoryId" value="#{morningTrainingClaimRequest.wfTraining.categoryId}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp id="beneficiaryId" value="#{morningTrainingClaimRequest.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_previousMorningCourse}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="previousMorningTrainingCourseData">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_trainingCourseName}" />
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText id="trainingCourseNameId" value="#{morningTrainingClaimRequest.wfTraining.courseName}" />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getTrainingCourse(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{morningTrainingClaimRequest.canChangeRequestData()}" />
+										<h:inputHidden id="trainingCourseIdHId" value="#{morningTrainingClaimRequest.wfTraining.courseId}" />
+
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_courseExecutionParty}" />
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="35%">
+										<h:outputText id="externalPartyNameId" value="#{morningTrainingClaimRequest.wfTraining.externalPartyDesc}" />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getExternalParties(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{morningTrainingClaimRequest.canChangeRequestData()}" />
+										<h:inputHidden id="externalPartyIdHId" value="#{morningTrainingClaimRequest.wfTraining.externalPartyId}" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_courseExecutionAddress}" />
+									</th>
+									<td width="35%">
+										<h:outputText id="externalPartyAddressId" value="#{morningTrainingClaimRequest.wfTraining.externalPartyAddress}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										#{msgs.label_courseStartDate}
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="20%">
+										<util:hijri id="startDateId" value="#{morningTrainingClaimRequest.wfTraining.startDate}" nullable="true" rendered="#{morningTrainingClaimRequest.canChangeRequestData()}" viewOldRange="true"/>
+										<h:outputText value="#{morningTrainingClaimRequest.wfTraining.startDateString}" rendered="#{!morningTrainingClaimRequest.canChangeRequestData()}" />
+									</td>
+									<th width="15%">
+										#{msgs.label_courseEndDate}
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="50%">
+										<util:hijri id="endDateId" value="#{morningTrainingClaimRequest.wfTraining.endDate}" nullable="true" rendered="#{morningTrainingClaimRequest.canChangeRequestData()}" viewOldRange="true"/>
+										<h:outputText value="#{morningTrainingClaimRequest.wfTraining.endDateString}" rendered="#{!morningTrainingClaimRequest.canChangeRequestData()}" />
+									</td>
+								</tr>
+								<code:courseResults id="resultsId" trainingObject="#{morningTrainingClaimRequest.wfTraining}" loginEmpId="#{morningTrainingClaimRequest.loginEmpData.empId}" viewOnly="#{!morningTrainingClaimRequest.canChangeRequestData()}" military="false" showGraduationDate="false" claim="true"></code:courseResults>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{morningTrainingClaimRequest.role != 'Requester'}" value="#{morningTrainingClaimRequest.prevTasks}" refuseRoles="SignManager,DirectManager,ReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{morningTrainingClaimRequest.currentEmployee}"
+							rendered="#{morningTrainingClaimRequest.role == 'DirectManager' or morningTrainingClaimRequest.role == 'ManagerRedirect' or morningTrainingClaimRequest.role == 'ReviewerEmp' or morningTrainingClaimRequest.role == 'SignManager'}">
+							<h:panelGroup rendered="#{morningTrainingClaimRequest.role == 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{morningTrainingClaimRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{morningTrainingClaimRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{morningTrainingClaimRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{morningTrainingClaimRequest.role != 'ManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{morningTrainingClaimRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{morningTrainingClaimRequest.role == 'Notification' or morningTrainingClaimRequest.role == 'History'}" value="#{morningTrainingClaimRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+
+									<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest(#{morningTrainingClaimRequest.canChangeRequestData()})',null);" action="#{morningTrainingClaimRequest.initWFTraining()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{morningTrainingClaimRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;morningTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{morningTrainingClaimRequest.approveWFTrainingDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{morningTrainingClaimRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;morningTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{morningTrainingClaimRequest.rejectWFTrainingDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{morningTrainingClaimRequest.role == 'DirectManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;morningTrainingClaimRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{morningTrainingClaimRequest.redirectWFTrainingMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{morningTrainingClaimRequest.role == 'ManagerRedirect'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateReview(#{morningTrainingClaimRequest.canChangeRequestData()})',null);" action="#{morningTrainingClaimRequest.approveWFTrainingRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{morningTrainingClaimRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;morningTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{morningTrainingClaimRequest.rejectWFTrainingRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{morningTrainingClaimRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;morningTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{morningTrainingClaimRequest.approveWFTrainingSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{morningTrainingClaimRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;morningTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;morningTrainingClaimRequestFormId:curTaskId:notesId&quot;)',null);" action="#{morningTrainingClaimRequest.returnWFTrainingSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{morningTrainingClaimRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;morningTrainingClaimRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{morningTrainingClaimRequest.rejectWFTrainingSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{morningTrainingClaimRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="nBtnId" action="#{morningTrainingClaimRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{morningTrainingClaimRequest.role == 'Notification'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

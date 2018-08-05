@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		window.onkeypress = function(e) {
+			  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+		      if (keyCode == '13'){
+		    	  document.getElementById('employeesInquiryFormId:searchBtnId').click();
+		    	  return false;
+		      }
+		};
+		
+		function getUnit() {
+			openUnitsMiniSearch(2, '#{request.contextPath}', 'handleUnitMiniSearchResult(ret)', -1, #{employeesInquiry.regionId}, -1);
+		}
+		
+		function handleUnitMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('employeesInquiryFormId:unitIDId').value = ret[0];
+				document.getElementById('employeesInquiryFormId:unitFullNameId').innerHTML = ret[1];
+			}
+		}
+		
+		function getJob(){
+	          openJobsMiniSearch('#{request.contextPath}', 'handleJobsMiniSearchResult(ret)', 5, #{employeesInquiry.mode}, -1, -1, -1, -1, 0);
+	    }
+	    
+		function handleJobsMiniSearchResult(ret){ 
+			if(ret != null){
+				document.getElementById('employeesInquiryFormId:jobIDId').value = ret[0];
+				document.getElementById('employeesInquiryFormId:jobNameId').innerHTML = ret[2];
+	        }
+		}
+
+		function getMinorSpecialization() {
+	         openMinorSpecializationsMiniSearch('#{request.contextPath}', 'handleMinorSpecializationMiniSearchResult(ret)');
+		}
+		
+		function handleMinorSpecializationMiniSearchResult(ret){
+			 if(ret != null){
+					document.getElementById('employeesInquiryFormId:minorSpecIDId').value = ret[0];
+					document.getElementById('employeesInquiryFormId:minorSpecDescId').innerHTML = ret[2];
+		     }
+		}
+		
+		function validateSearchPanel() {
+			nameValue = document.getElementById('employeesInquiryFormId:nameId').value;
+			socialIdValue = document.getElementById('employeesInquiryFormId:socialIDId').value;
+			unitIdValue = document.getElementById('employeesInquiryFormId:unitIDId').value;
+			jobIdValue = document.getElementById('employeesInquiryFormId:jobIDId').value;
+			MinorSpecIdValue = document.getElementById('employeesInquiryFormId:minorSpecIDId').value;
+			
+			if ((socialIdValue == null || socialIdValue == '')
+					&amp;&amp; (unitIdValue == null || unitIdValue == '')
+					&amp;&amp; (jobIdValue == null || jobIdValue == '')
+					&amp;&amp; (MinorSpecIdValue == null || MinorSpecIdValue == '')) {
+
+				if(nameValue == null || nameValue == '') {
+					
+					if(document.getElementById('employeesInquiryFormId:militaryNumberId')== null) {
+						alert("#{msgs.error_employeesInquiryFieldsAreMandatory}");
+						return false;
+					} else {
+						militaryNumberValue = document.getElementById('employeesInquiryFormId:militaryNumberId').value;
+						if(militaryNumberValue == null || militaryNumberValue == '') {
+							alert("#{msgs.error_officersInquiryFieldsAreMandatory}");
+							return false;
+						}
+					}
+				} else {
+					if(nameValue.length &lt; 3) {
+						alert("#{msgs.error_cannotSearchByLessThanThreeCharacters}");
+						return false;
+					}
+				}
+			}
+				
+			if(!(socialIdValue == null || socialIdValue == ''))
+				if( socialIdValue.length != 10 ) {
+					alert("#{msgs.error_socialIdNotValid}");
+					return false;
+				}			
+
+			return true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="employeesInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{employeesInquiry.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="10%">#{msgs.label_name}</th>
+									<td width="40%">
+										<h:inputText id="nameId" value="#{employeesInquiry.name}" styleClass="inputDataLarge" />
+									</td>
+									<th width="10%">#{msgs.label_socialId}</th>
+									<td width="40%">
+										<h:inputText id="socialIDId" value="#{employeesInquiry.socialId}" maxlength="10" onkeypress="return isDigit(event);" />
+									</td>
+								</tr>
+								<tr>
+									<th width="10%">#{msgs.label_region}</th>
+									<td width="40%">
+										<h:selectOneMenu id="regionId" value="#{employeesInquiry.regionId}" disabled="#{employeesInquiry.loginEmpData.physicalRegionId != 1}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItems value="#{employeesInquiry.regionsList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+										</h:selectOneMenu>
+									</td>
+									<th width="10%">#{msgs.label_orgUnit}</th>
+									<td width="40%">
+										<h:outputText id="unitFullNameId" />
+										<h:inputHidden id="unitIDId" value="#{employeesInquiry.unitId}" />
+										<h:outputText value=" " />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+									</td>
+								</tr>
+								<tr>
+									<th width="10%">#{msgs.label_job}</th>
+									<td width="40%">
+										<h:outputText id="jobNameId" />
+										<h:inputHidden id="jobIDId" value="#{employeesInquiry.jobId}" />
+										<h:outputText value=" " />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getJob(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+									</td>
+									<th width="10%">#{msgs.label_jobMinorSpecialization}</th>
+									<td width="40%">
+										<h:outputText id="minorSpecDescId" />
+										<h:inputHidden id="minorSpecIDId" value="#{employeesInquiry.minorSpecId}" />
+										<h:outputText value=" " />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getMinorSpecialization(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+									</td>
+								</tr>
+								<tr>
+									<h:panelGroup rendered="#{employeesInquiry.mode==1}">
+										<th width="10%">#{msgs.label_privateNumber}</th>
+										<td width="40%">
+											<h:inputText id="militaryNumberId" onkeypress="return isDigit(event);" value="#{employeesInquiry.militaryNumber}" maxlength="6" />
+										</td>
+									</h:panelGroup>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{employeesInquiry.searchEmployees()}" title="#{msgs.label_searchByRoot}" styleClass="btn_normal_icon" onclick="return validateSearchPanel();">
+										<f:ajax execute="employeesInquiryFormId:searchPanelId" render="employeesInquiryFormId:employeesTableId" />
+									</h:commandButton>
+									<h:commandButton action="#{employeesInquiry.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="employeesInquiryFormId:searchPanelId employeesInquiryFormId:employeesTableId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText rendered="#{employeesInquiry.mode==1}" value="#{msgs.label_officers}" />
+									<h:outputText rendered="#{employeesInquiry.mode==2}" value="#{msgs.label_soldiers}" />
+									<h:outputText rendered="#{employeesInquiry.mode==3}" value="#{msgs.label_employees}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="employeesTableId" rowKeyVar="index" var="emp" value="#{employeesInquiry.employeesList}" rows="#{employeesInquiry.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column style="width : 5%">
+								<f:facet name="header">#</f:facet>
+	                                #{index + 1}
+	                            </rich:column>
+							<rich:column rendered="#{employeesInquiry.mode==1}" style="width : 10%">
+								<f:facet name="header">#{msgs.label_privateNumber}</f:facet>
+								<h:outputText value="#{emp.militaryNumber}" />
+							</rich:column>
+							<rich:column style="width : 20%">
+								<f:facet name="header">#{msgs.label_name}</f:facet>
+								<h:outputText value="#{emp.name}" />
+							</rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header">#{msgs.label_physicalUnit}</f:facet>
+								<h:outputText value="#{emp.physicalUnitFullName}" />
+							</rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header">#{msgs.label_officialUnit}</f:facet>
+								<h:outputText value="#{emp.officialUnitFullName}" />
+							</rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header">#{msgs.label_job}</f:facet>
+								<h:outputText value="#{emp.jobDesc}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">
+									<h:outputText value="#{employeesInquiry.mode == 3 ? msgs.label_personRank : msgs.label_rank}" />
+								</f:facet>
+								<h:outputText value="#{emp.rankDesc}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_socialId}</f:facet>
+								<h:outputText value="#{emp.socialID}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_showAndUpdate}</f:facet>
+								<h:panelGroup rendered="#{emp.statusId != 1 and emp.statusId != 5 and emp.statusId != 10 and emp.statusId != 12}">
+									<a target="_blank" href="#{request.contextPath}/Employees/EmployeesDataView.jsf?employeeId=#{emp.empId}" style="text-decoration: none;">
+										<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_showAndUpdate}"></i>
+									</a>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{emp.statusId == 1 or emp.statusId == 5 or emp.statusId == 10 or emp.statusId == 12}">
+									<a target="_blank" href="#{request.contextPath}/Recruitments/NewEmployeeRegistration.jsf?employeeId=#{emp.empId}" style="text-decoration: none;">
+										<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_showAndUpdate}"></i>
+									</a>
+								</h:panelGroup>
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

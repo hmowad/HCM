@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	
+	<script type="text/javascript">
+	//<![CDATA[
+	  function getEmp(contextPath){
+          openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1,  #{auditInquiry.getLoginEmpPhysicalRegionFlag(true)});
+       }
+      
+      function handleEmpMiniSearchResult(ret){
+      	 if(ret != null){
+               document.getElementById('auditInquiryFormId:searchEmpIdHId').value = ret[0];
+               document.getElementById('auditInquiryFormId:searchNameId').innerHTML = ret[1];
+         }
+      }
+
+      function validateAuditSearchData(){
+        	var systemUser = document.getElementById('auditInquiryFormId:searchEmpIdHId').value;
+        	var contentEntity = document.getElementById('auditInquiryFormId:contentEntityId').value;
+        	var contentId = document.getElementById('auditInquiryFormId:contentIdId').value;
+        	var operationDateFrom = document.getElementById('auditInquiryFormId:fromDateIdInputDate').value;
+        	var operationDateTo = document.getElementById('auditInquiryFormId:toDateIdInputDate').value;
+        	
+        	if ((systemUser == null || systemUser == "") 
+        		    && (contentEntity == "-1" || contentId == null || contentId == "")
+        		    && (contentEntity == "-1" || operationDateFrom == null || operationDateFrom == "" || operationDateTo == null || operationDateTo == "")) {
+        		alert("#{msgs.error_auditInquiryFieldsAreMandatory}");
+            	return false;
+            }
+        	
+  	    	return true;
+        }
+   	// ]]>
+	</script>
+</h:head>
+
+<h:body styleClass="screenBg">
+	<h:form id="auditInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{msgs.title_auditInquiry}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_table}" />
+									</th>
+									<td width="35%">
+										<h:selectOneMenu id="contentEntityId" value="#{auditInquiry.contentEntity}">
+											<f:selectItem itemLabel="ALL" itemValue="-1" />
+											<f:selectItems value="#{auditInquiry.contentEntities}" var="contentEntity" itemLabel="#{contentEntity[1]}" itemValue="#{contentEntity[0]}" />
+											<f:ajax event="change" execute="@this" render="contentIdId"></f:ajax>
+										</h:selectOneMenu>
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_tableId}" />
+									</th>
+									<td width="35%">
+										<h:inputText id="contentIdId" value="#{auditInquiry.contentId}" disabled="#{auditInquiry.contentEntity == '-1'}" onkeypress="return isDigit(event);" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_operationType}" />
+									</th>
+									<td width="35%">
+										<h:selectOneMenu value="#{auditInquiry.operation}">
+											<f:selectItem itemLabel="ALL" itemValue="-1" />
+											<f:selectItems value="#{auditInquiry.operations}" var="operation" itemLabel="#{operation}" itemValue="#{operation}" />
+										</h:selectOneMenu>
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_operationEmployee}" />
+									</th>
+									<td width="35%">
+										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+										<h:inputHidden id="searchEmpIdHId" value="#{auditInquiry.systemUserId}" />
+										<h:outputText id="searchNameId" value="#{auditInquiry.systemUserName}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_operationTimeFrom}" />
+									</th>
+									<td width="35%">
+										<rich:calendar id="fromDateId" value="#{auditInquiry.operationDateFrom}" datePattern="dd/MM/yyyy" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_to}" />
+									</th>
+									<td width="35%">
+										<rich:calendar id="toDateId" value="#{auditInquiry.operationDateTo}" datePattern="dd/MM/yyyy" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_content}" />
+									</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="contentId" value="#{auditInquiry.content}" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" colspan="4">
+						<h:panelGroup id="searchSectionId">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton action="#{auditInquiry.search()}" onclick="return validateAuditSearchData();" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon">
+											<f:ajax execute="auditInquiryFormId:searchPanelId" render="auditInquiryFormId:searchResultPanelGroupId auditInquiryFormId:contentAttributesTitleId auditInquiryFormId:contentDetailsPanelGroupId auditInquiryFormId:notifyMessagesId"></f:ajax>
+										</h:commandButton>
+										<h:commandButton action="#{auditInquiry.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+											<f:ajax render="auditInquiryFormId:searchPanelId auditInquiryFormId:searchResultPanelGroupId auditInquiryFormId:contentAttributesTitleId auditInquiryFormId:contentDetailsPanelGroupId auditInquiryFormId:notifyMessagesId"></f:ajax>
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchResults}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<h:panelGroup id="searchResultPanelGroupId">
+							<rich:dataTable var="auditLog" value="#{auditInquiry.auditLogs}" rows="#{auditInquiry.pageSize}" rowKeyVar="index" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+								<rich:column style="width : 5%;">
+									<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon" action="#{auditInquiry.selectAuditLog(auditLog)}">
+										<f:ajax render="auditInquiryFormId:contentAttributesTitleId auditInquiryFormId:contentDetailsPanelGroupId auditInquiryFormId:notifyMessagesId"></f:ajax>
+									</h:commandButton>
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">#</f:facet>
+										#{index + 1}
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_transactionNumber}" />
+									</f:facet>
+									<h:outputText value="#{auditLog.id}" />
+								</rich:column>
+								<rich:column style="width : 15%">
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_operationTime}" />
+									</f:facet>
+									<h:outputText value="#{auditLog.operationDate}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_operationType}" />
+									</f:facet>
+									<h:outputText value="#{auditLog.operation}" />
+								</rich:column>
+								<rich:column style="width : 40%">
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_table}" />
+									</f:facet>
+									<h:outputText value="#{auditLog.contentEntity}" />
+								</rich:column>
+								<rich:column style="width : 15%">
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_tableId}" />
+									</f:facet>
+									<h:outputText value="#{auditLog.contentId}" />
+								</rich:column>
+
+								<f:facet name="footer">
+									<rich:dataScroller oncomplete="unMaskScreen()" fastControls="hide">
+										<f:facet name="first"> #{msgs.label_first} </f:facet>
+										<f:facet name="last"> #{msgs.label_last} </f:facet>
+										<f:facet name="next"> #{msgs.label_next} </f:facet>
+										<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText id="contentAttributesTitleId" value="#{auditInquiry.selectedAuditLog == null ? msgs.label_content : msgs.label_content.concat(' (').concat(msgs.label_transactionNumber).concat(' : ').concat(auditInquiry.selectedAuditLog.id).concat(')').concat(' - ').concat(msgs.label_operationEmployee).concat(' : ').concat(auditInquiry.selectedAuditLogSystemUserName)}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<h:panelGroup id="contentDetailsPanelGroupId">
+							<rich:dataTable var="row" value="#{auditInquiry.contentAttributes.entrySet().toArray()}" rows="#{auditInquiry.pageSize}" rowKeyVar="index" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+								<rich:column style="width : 30%">
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_field}" />
+									</f:facet>
+									<h:outputText value="#{row.key}" />
+								</rich:column>
+								<rich:column style="width : 70%">
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_value}" />
+									</f:facet>
+									<h:outputText value="#{row.value}" />
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller oncomplete="unMaskScreen()" fastControls="hide">
+										<f:facet name="first"> #{msgs.label_first} </f:facet>
+										<f:facet name="last"> #{msgs.label_last} </f:facet>
+										<f:facet name="next"> #{msgs.label_next} </f:facet>
+										<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

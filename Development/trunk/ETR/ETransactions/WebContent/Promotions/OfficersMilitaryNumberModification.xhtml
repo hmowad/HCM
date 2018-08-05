@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">   
+		function getEmp(contextPath) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 12, 1, -1, -1, -1, -1, -1,-1);
+		}
+		
+		function handleEmpMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('officersMilitaryNumberModificationFormId:employeeIDId').value = ret[0];
+				document.getElementById('officersMilitaryNumberModificationFormId:searchEmpBtnId').click();
+			}
+		}
+
+		function validateMilitaryNumber() {
+			var militaryNumberId = document.getElementById('officersMilitaryNumberModificationFormId:militaryNumberId').value;
+
+			if (militaryNumber == null || militaryNumber.trim() == '') {
+				alert('#{msgs.error_militaryNumberMandatory}');
+				return false;
+		    }
+			return true;
+		}
+    </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="officersMilitaryNumberModificationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{msgs.title_officersMilitaryNumberModify}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_selectOfficer}" />
+								</th>
+								<td width="75%">
+									<h:inputHidden id="employeeIDId" value="#{officersMilitaryNumberModification.empId}" />
+									<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmp('#{request.contextPath}');return false;" />
+									<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{officersMilitaryNumberModification.searchEmpData()}">
+										<f:ajax execute="officersMilitaryNumberModificationFormId:employeeIDId" render="officersMilitaryNumberModificationFormId:employeeDataPanelId officersMilitaryNumberModificationFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">#{msgs.title_officerData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="employeeDataPanelId">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td width="100%">
+										<code:emp id="employeeDataId" value="#{officersMilitaryNumberModification.employeeData}" />
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="militaryNumberId" rendered="#{officersMilitaryNumberModification.empId != null}">
+											<table border="0" cellpadding="0" cellspacing="0" width="100%">
+												<tr>
+													<td width="100%">
+														<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+															<tr>
+																<td width="100%">#{msgs.label_data}</td>
+															</tr>
+														</table>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+															<tr>
+																<th width="15%">
+																	<h:outputText value="#{msgs.label_militaryNumber}" />
+																	<font style="color: red;">*</font>
+																</th>
+																<td width="85%">
+																	<h:inputText value="#{officersMilitaryNumberModification.militaryNumber}" styleClass="inputDataLarge" onkeypress="return isDigit(event);" maxlength="6" />
+																</td>
+															</tr>
+														</table>
+													</td>
+												</tr>
+											</table>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td>
+													<h:commandButton value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" onclick="return validateMilitaryNumber();" action="#{officersMilitaryNumberModification.save()}" title="#{msgs.label_save}" styleClass="btn_normal_icon" disabled="#{officersMilitaryNumberModification.empId == null}">
+														<f:ajax execute="officersMilitaryNumberModificationFormId:militaryNumberId" render="officersMilitaryNumberModificationFormId:employeeDataPanelId officersMilitaryNumberModificationFormId:militaryNumberId officersMilitaryNumberModificationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+													</h:commandButton>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

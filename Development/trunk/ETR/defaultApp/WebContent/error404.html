@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>جاري تحديث النظام</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<style>
+body {
+	font-family: 'DroidArabicKufi';
+	background-size: 100%;
+	direction: rtl;
+}
+
+.back-ground {
+	background: url(/images/BG-BODY.jpg) no-repeat;
+	padding-bottom: 19px;
+	background-size: cover;
+}
+
+.title-h {
+	word-spacing: 4px;
+	line-height: 75px;
+	color: #164685;
+	padding-top: 70px;
+}
+
+.img-line1 {
+	position: absolute;
+	left: 31.5%;
+	top: 32px;
+}
+
+.img-line2 {
+	position: absolute;
+	left: 31.5%;
+	bottom: 32px;
+}
+
+.footer {
+	background: url(/images/stirp-bottom.png) repeat-y 0px top;
+	padding: 20px 0px;
+	background-size: contain
+}
+
+@font-face {
+	font-family: 'DroidArabicKufi';
+	src: url('/fonts/DroidArabicKufi.eot');
+	src: url('/fonts/DroidArabicKufi.eot') format('embedded-opentype'),
+		url('/fonts/DroidArabicKufi.woff') format('woff'),
+		url('/fonts/DroidArabicKufi.ttf') format('truetype'),
+		url('/fonts/DroidArabicKufi.svg#DroidArabicKufi') format('svg');
+}
+
+@media ( min-width : 1200px) {
+	.title-h {
+		font-size: 47px !important;
+	}
+	.padd {
+		padding: 0px
+	}
+	.img-line1 {
+		left: 31.5% !important;
+	}
+	.img-line2 {
+		left: 31.5% !important;
+	}
+}
+
+@media ( min-width : 768px) {
+	.title-h {
+		font-size: 42px;
+	}
+	.img-responsive {
+		display: initial !important
+	}
+	.padd {
+		padding: 0px
+	}
+	.img-line1 {
+		left: 33%;
+	}
+	.img-line2 {
+		left: 33%;
+	}
+	h3 {
+		font-size: 24px !important;
+	}
+}
+
+@media ( max-width : 768px) {
+	.img-line2, .img-line1 {
+		display: none
+	}
+	.img-responsive {
+		display: initial !important
+	}
+	.title-h {
+		padding: 0px 1px;
+		font-size: 34px;
+		line-height: 54px;
+	}
+	h3 {
+		font-size: 15px;
+		margin-top: 24px !important;
+	}
+	.footer div {
+		padding: 3px !important
+	}
+}
+
+@media ( max-width : 768px) {
+}
+</style>
+</head>
+<body>
+
+	<div class="back-ground">
+		<div style="height: 80px"></div>
+		<div class="container">
+			<div class="row" style="position: relative">
+				<div class="img-line1">
+					<img src="/images/line-top.png" class="img-responsive">
+				</div>
+				<div class="img-line2">
+					<img src="/images/line-bottom.png" class=" img-responsive">
+				</div>
+				<div class="col-md-5 col-sm-12 col-xs-12 padd" style="text-align: center;">
+					<img src="/images/img-2.png" class="img-responsive">
+				</div>
+
+				<div class="col-md-7 col-sm-12 col-xs-12 padd">
+
+					<h1 class="title-h">نعمل على إدراج إصدار بمزايا ووظائف جديدة وسيعود النظام للعمل قريباً (بإذن الله).</h1>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-12 footer">
+		<div class="container">
+			<div class="col-md-12  col-sm-12 ">
+				<div class="col-md-2 col-sm-2 col-xs-2 ">
+					<img src="/images/logo1.png" class=" img-responsive">
+				</div>
+				<div class="col-md-8 col-sm-8 col-xs-8 ">
+					<h3 style="color: #fff; margin-top: 32px; text-align: center">مع تحيات الإدارة العامة لتقنية المعلومات</h3>
+				</div>
+				<div class="col-md-2 col-sm-2 col-xs-2 ">
+					<img src="/images/logo2.png" class=" img-responsive" />
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

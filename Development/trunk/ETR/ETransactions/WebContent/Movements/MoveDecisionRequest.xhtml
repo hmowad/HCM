@@ -1,0 +1,572 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+	var callerId;
+	function getEmployee(contextPath){
+		openEmployeesMiniSearchByOfficialRegionId(contextPath,'handleEmpMiniSearhResult(ret)',5,#{moveDecisionRequest.mode}, #{moveDecisionRequest.regionId});
+	}
+	
+	function handleEmpMiniSearhResult(ret){ 
+		if(ret!=null){ 
+	         document.getElementById('moveDecisionRequestFormId:employeeIDId').value=ret[0];
+	         document.getElementById('moveDecisionRequestFormId:searchEmpBtnId').click();
+		}
+	}
+
+    function getJob(contextPath,btnId){
+    	callerId=btnId;
+        openJobsMiniSearch(contextPath,'handleJobsMiniSearchResult(ret)',6,#{moveDecisionRequest.mode}, -1, -1, #{moveDecisionRequest.regionId}, -1, 0);
+    }
+    
+    function handleJobsMiniSearchResult(ret){
+    	if(ret!=null){
+       	 var idTokens = callerId.split(':');
+	         document.getElementById('moveDecisionRequestFormId:wfMovementsTableId:'+idTokens[2]+':movedToJobIDId').value=ret[0];
+	         document.getElementById('moveDecisionRequestFormId:wfMovementsTableId:'+idTokens[2]+':searchJobBtnId').click();
+       }
+    }
+
+    function checkAsManager(index) {
+    	var idTokens = index.split(':');
+    	
+	    var unitFullName = document.getElementById('moveDecisionRequestFormId:wfMovementsTableId:'+idTokens[2]+':movedToUnitFullNameId').innerHTML;
+	    var unitManagerFlag = document.getElementById('moveDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':managerFlagId').checked;
+
+	    if(unitManagerFlag == true) {
+	    	if (unitFullName != null && unitFullName != '') {
+	    		if(!confirm("#{msgs.q_isAsManager} (" + unitFullName + ")")) {
+		    		document.getElementById('moveDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':managerFlagId').checked = false;
+		    	}
+	    	} else {
+	    		document.getElementById('moveDecisionRequestFormId:wfMovementsTableId:' + idTokens[2] + ':managerFlagId').checked = false;
+		    	alert("#{msgs.error_unitIsMandatory}");
+		    }
+    	}
+    }
+    
+    function validateRequest() {
+
+        if(document.getElementById('moveDecisionRequestFormId:basedOnId') != null) {
+	       	basedOn = document.getElementById('moveDecisionRequestFormId:basedOnId').value;
+	       	number = document.getElementById('moveDecisionRequestFormId:numberId').value;
+	       	
+	       	if(basedOn == null || basedOn == '' || number == null || number == '') {
+				alert('#{msgs.error_movementDataIsRequired}')
+				return false;
+	        }
+        }
+        
+		if(document.getElementById('moveDecisionRequestFormId:wfMovementsListSizeId').innerHTML == 0) {
+			alert("#{msgs.error_moveListEmpty}");
+			return false;
+		}
+
+		if(document.getElementById('moveDecisionRequestFormId:ministryAgreementNumberId') != null) {
+	    	ministryAgreementNumberValue = document.getElementById('moveDecisionRequestFormId:ministryAgreementNumberId').value;
+	    	if(ministryAgreementNumberValue == null || ministryAgreementNumberValue == '') {
+				alert('#{msgs.error_ministryAgreementDataIsRequired}');
+				return false;
+	        }
+		}
+
+		return #{moveDecisionRequest.role == 'ReviewerEmp'} ? validateRefuseAndNotes(1, 'moveDecisionRequestFormId:curTaskId:refuseReasonsId') : true;
+     }
+ 	// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="moveDecisionRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{moveDecisionRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">#{msgs.label_moveDetails}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="moveDataPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="16%">
+										#{msgs.label_basedOn}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="84%" colspan="5">
+										<h:selectOneRadio value="#{moveDecisionRequest.decisionData.verbalOrderFlag}" disabled="#{moveDecisionRequest.role != 'Requester' and moveDecisionRequest.role != 'ReviewerEmp'}">
+											<f:selectItem itemValue="0" itemLabel="#{msgs.label_letterDispatchEtc}" />
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_verbalOrder}" />
+											<f:ajax execute="moveDecisionRequestFormId:moveDataPanelId" listener="#{moveDecisionRequest.verbalOrderFlagListener()}" render="moveDecisionRequestFormId:moveDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:selectOneRadio>
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{moveDecisionRequest.decisionData.verbalOrderFlag == 0}">
+									<tr>
+										<td width="100%" colspan="6">
+											<h:outputText value="#{msgs.label_movementsDecisionsWarning}" style="color: red; font-weight: bold;" />
+										</td>
+									</tr>
+									<tr>
+										<th width="16%">
+											#{msgs.label_basedOnLetterDispatchEtc}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="84%" colspan="5">
+											<h:inputText id="basedOnId" value="#{moveDecisionRequest.decisionData.basedOn}" readonly="#{!(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}" styleClass="inputDataSuperLarge" maxlength="400" />
+										</td>
+									</tr>
+									<tr>
+										<th width="16%">
+											#{msgs.label_number}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="15%">
+											<h:inputText id="numberId" value="#{moveDecisionRequest.decisionData.basedOnOrderNumber}" readonly="#{!(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}" styleClass="inputDataLarge" maxlength="50" />
+										</td>
+										<th width="16%">
+											#{msgs.label_date}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="53%" colspan="3">
+											<h:outputText value="#{moveDecisionRequest.decisionData.basedOnOrderDateString}" rendered="#{!(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}" />
+											<util:hijri id="dateId" value="#{moveDecisionRequest.decisionData.basedOnOrderDate}" rendered="#{(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th width="16%">
+										#{msgs.label_moveReason}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="15%">
+										<h:selectOneMenu value="#{moveDecisionRequest.decisionData.reasonType}" rendered="#{moveDecisionRequest.mode==1}" disabled="#{!(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}">
+											<f:selectItem itemLabel="#{msgs.label_personalReason}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_workReason}" itemValue="2" />
+											<f:ajax event="change" execute="moveDecisionRequestFormId:moveDataPanelId" listener="#{moveDecisionRequest.reasonTypeListener()}" render="moveDecisionRequestFormId:moveDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:selectOneMenu>
+										<h:selectOneMenu value="#{moveDecisionRequest.decisionData.reasonType}" rendered="#{moveDecisionRequest.mode==3}" disabled="#{!(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}">
+											<f:selectItem itemLabel="#{msgs.label_personalReason}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_workReason}" itemValue="2" />
+										</h:selectOneMenu>
+										<h:selectOneMenu value="#{moveDecisionRequest.decisionData.reasonType}" rendered="#{moveDecisionRequest.mode==2}" disabled="#{!(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}">
+											<f:selectItem itemLabel="#{msgs.label_personalReason}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_workReason}" itemValue="2" />
+											<f:selectItem itemLabel="#{msgs.label_generalReason}" itemValue="3" />
+											<f:ajax event="change" execute="moveDecisionRequestFormId:moveDataPanelId moveDecisionRequestFormId:wfMovementsTableId" listener="#{moveDecisionRequest.reasonTypeListener()}" render="moveDecisionRequestFormId:moveDataPanelId moveDecisionRequestFormId:wfMovementsTableId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:selectOneMenu>
+									</td>
+									<h:panelGroup >
+										<th width="16%">
+											#{msgs.label_isMoveConsideredFromDecisionDate}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="#{moveDecisionRequest.decisionData.executionDateFlag == 1 ? 53 : 18}%" colspan="#{moveDecisionRequest.decisionData.executionDateFlag == 1 ? 3 : 1}">
+											<h:selectBooleanCheckbox id="executionDateFlagId" value="#{moveDecisionRequest.decisionData.executionDateFlagBoolean}" disabled="#{!(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}">
+												<f:ajax execute="moveDecisionRequestFormId:moveDataPanelId moveDecisionRequestFormId:wfMovementsTableId" render="moveDecisionRequestFormId:moveDataPanelId moveDecisionRequestFormId:wfMovementsTableId moveDecisionRequestFormId:warningsPanelId moveDecisionRequestFormId:notifyMessagesId" listener="#{moveDecisionRequest.executionDateFlagListener()}" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectBooleanCheckbox>
+										</td>
+										<h:panelGroup rendered="#{moveDecisionRequest.decisionData.executionDateFlag == 0}">
+											<th width="15%">
+												#{msgs.label_moveConsideredFrom}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="20%">
+												<util:hijri id="executionDateId" value="#{moveDecisionRequest.decisionData.executionDate}" rendered="#{moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp'}" onChangeAjaxSubmit="true" listenerMethod="#{moveDecisionRequest.executionDateListener()}" reRenderIds="moveDecisionRequestFormId:wfMovementsTableId moveDecisionRequestFormId:warningsPanelId moveDecisionRequestFormId:notifyMessagesId" />
+												<h:outputText value="#{moveDecisionRequest.decisionData.executionDateString}" rendered="#{moveDecisionRequest.role != 'Requester' and moveDecisionRequest.role != 'ReviewerEmp'}" />
+											</td>
+										</h:panelGroup>
+									</h:panelGroup>
+								</tr>
+								<h:panelGroup rendered="#{(moveDecisionRequest.mode == 1 or moveDecisionRequest.mode == 2) and moveDecisionRequest.regionId == -1}">
+									<tr>
+										<h:panelGroup rendered="#{moveDecisionRequest.mode == 2}">
+											<th width="16%">
+												#{msgs.label_internalExternal}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="15%">
+												<h:selectOneRadio id="locationFlagId" value="#{moveDecisionRequest.decisionData.locationFlag}" disabled="#{!(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp') or moveDecisionRequest.decisionData.reasonType == 3}">
+													<f:selectItem itemLabel="#{msgs.label_insideFrontierGurads}" itemValue="0" />
+													<f:selectItem itemLabel="#{msgs.label_outsideFrontierGuards}" itemValue="1" />
+													<f:ajax execute="moveDecisionRequestFormId:moveDataPanelId" listener="#{moveDecisionRequest.locationFlagListener()}" render="moveDecisionRequestFormId:wfMovementsTableId moveDecisionRequestFormId:moveDataPanelId moveDecisionRequestFormId:ministryDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:selectOneRadio>
+											</td>
+										</h:panelGroup>
+										<h:panelGroup>
+											<th width="16%">
+												#{msgs.label_allowVacation}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="#{moveDecisionRequest.mode == 2 ? 53 : 84}%" colspan="#{moveDecisionRequest.mode==2 ? 3 : 5}">
+												<h:selectBooleanCheckbox value="#{moveDecisionRequest.decisionData.vacationGrantFlagBoolean}" disabled="#{!(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp') or moveDecisionRequest.decisionData.reasonType == 1}">
+													<f:ajax execute="@this" />
+												</h:selectBooleanCheckbox>
+											</td>
+										</h:panelGroup>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th>#{msgs.label_requiredAttachments}</th>
+									<td colspan="5">
+										<code:attachments loginEmpId="#{moveDecisionRequest.loginEmpData.empId}" attachmentId="#{moveDecisionRequest.attachments}" addEnableFlag="#{moveDecisionRequest.role == 'Requester' or moveDecisionRequest.role == 'ReviewerEmp'}" viewEnableFlag="true" deleteEnableFlag="#{moveDecisionRequest.role == 'Requester' or moveDecisionRequest.role == 'ReviewerEmp'}" />
+									</td>
+								</tr>
+								<tr>
+									<th>#{msgs.label_remarks}</th>
+									<td colspan="5">
+										<h:inputText id="remarksId" value="#{moveDecisionRequest.decisionData.remarks}" readonly="#{!(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}" styleClass="inputDataSuperLarge" maxlength="500" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="ministryDataPanelId">
+							<h:panelGroup rendered="#{moveDecisionRequest.decisionData.locationFlag == 1 and moveDecisionRequest.regionId == -1}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">#{msgs.label_interiorMinisteryAgreementData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th>
+														#{msgs.label_interiorMinisteryAgreementNumber}
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td>
+														<h:inputText id="ministryAgreementNumberId" value="#{moveDecisionRequest.decisionData.ministryApprovalNumber}" readonly="#{moveDecisionRequest.role != 'Requester' and moveDecisionRequest.role != 'ReviewerEmp'}" styleClass="inputDataLarge" maxlength="50" />
+													</td>
+													<th>
+														#{msgs.label_interiorMinisteryAgreementDate}
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td>
+														<util:hijri value="#{moveDecisionRequest.decisionData.ministryApprovalDate}" rendered="#{moveDecisionRequest.role == 'Requester' or moveDecisionRequest.role == 'ReviewerEmp'}" />
+														<h:outputText value="#{moveDecisionRequest.decisionData.ministryApprovalDateString}" rendered="#{moveDecisionRequest.role != 'Requester' and moveDecisionRequest.role != 'ReviewerEmp'}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<code:specialAuthorityData id="specialAuthorityDataId" loginEmpId="#{moveDecisionRequest.loginEmpData.empId}" wfMovement="#{moveDecisionRequest.decisionData}" role="#{moveDecisionRequest.role}" requestFlag="#{false}" rendered="#{moveDecisionRequest.role == 'Requester' or moveDecisionRequest.role == 'ReviewerEmp' or moveDecisionRequest.role == 'SignManager'}" />
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									#{moveDecisionRequest.mode==1?(msgs.label_officersData):(moveDecisionRequest.mode==2?(msgs.label_soldiersData):(msgs.label_personsData))}
+									<h:outputText value=" " />
+									<h:commandButton value="#{msgs.label_add}" rendered="#{(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}" styleClass="btn_normal" onclick="getEmployee('#{request.contextPath}');return false;" />
+									<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{moveDecisionRequest.addWfMovement()}">
+										<f:ajax execute="moveDecisionRequestFormId:employeeIDId moveDecisionRequestFormId:wfMovementsTableId" render="moveDecisionRequestFormId:wfMovementsTablePanelId moveDecisionRequestFormId:warningsPanelId moveDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:inputHidden id="employeeIDId" value="#{moveDecisionRequest.selectedEmpId}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td align="center" width="100%">
+									<h:panelGroup id="wfMovementsTablePanelId">
+										<h:outputText id="wfMovementsListSizeId" style="display:none" value="#{moveDecisionRequest.wfMovementsList.size()}" />
+										<rich:dataTable id="wfMovementsTableId" value="#{moveDecisionRequest.wfMovementsList}" rowKeyVar="index" var="wfMovement" rows="#{moveDecisionRequest.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+											<rich:column>
+												<f:facet name="header">
+													#{moveDecisionRequest.mode==1?(msgs.label_officer):(moveDecisionRequest.mode==2?(msgs.label_soldier):(msgs.label_person))}
+												</f:facet>
+												<h:outputText value="#{wfMovement.employeeName}" />
+											</rich:column>
+											<rich:column rendered="#{moveDecisionRequest.mode==1}">
+												<f:facet name="header">
+													#{msgs.label_militaryNumber}
+												</f:facet>
+												<h:outputText value="#{wfMovement.employeeMilitaryNumber}" />
+											</rich:column>
+											<rich:column rendered="#{moveDecisionRequest.mode==3}">
+												<f:facet name="header">
+													#{msgs.label_socialId}
+												</f:facet>
+												<h:outputText value="#{wfMovement.employeeSocialID}" />
+											</rich:column>
+											<rich:column>
+												<f:facet name="header">
+													#{moveDecisionRequest.mode==3?(msgs.label_personRank):(msgs.label_rank)}
+												</f:facet>
+												<h:outputText value="#{wfMovement.employeeRankDesc}" />
+											</rich:column>
+											<rich:column>
+												<f:facet name="header">
+													#{msgs.label_currentJobCode}
+												</f:facet>
+												<h:outputText value="#{wfMovement.employeeJobCode}" />
+											</rich:column>
+											<rich:column>
+												<f:facet name="header">
+													#{msgs.label_currentJob}
+												</f:facet>
+												<h:outputText value="#{wfMovement.employeeJobName}" />
+											</rich:column>
+											<rich:column>
+												<f:facet name="header">
+													#{msgs.label_currentUnit}
+												</f:facet>
+												<h:outputText value="#{wfMovement.employeeUnitName}" />
+											</rich:column>
+											<rich:column rendered="#{moveDecisionRequest.decisionData.locationFlag==0}">
+												<f:facet name="header">
+													#{msgs.label_sequentialMovement}
+												</f:facet>
+												<h:selectBooleanCheckbox value="#{wfMovement.sequentialMvtFlagBoolean}" disabled="#{(moveDecisionRequest.role != 'Requester' and moveDecisionRequest.role != 'ReviewerEmp')}">
+													<f:ajax execute="moveDecisionRequestFormId:wfMovementsTableId" listener="#{moveDecisionRequest.sequentialMvtFlagListener(wfMovement)}" render="moveDecisionRequestFormId:wfMovementsTableId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:selectBooleanCheckbox>
+											</rich:column>
+											<rich:column rendered="#{moveDecisionRequest.decisionData.locationFlag==0}">
+												<f:facet name="header">
+													#{msgs.label_jobCodeToBeMovedTo}
+													<h:outputText value=" " />
+													<font style="color: red;">*</font>
+												</f:facet>
+
+												<h:panelGroup rendered="#{wfMovement.sequentialMvtFlagBoolean == false}">
+													<h:outputText value="#{wfMovement.jobCode}" />
+													<h:outputText value=" " />
+													<h:inputHidden id="movedToJobIDId" value="#{wfMovement.jobId}" />
+													<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_select}" styleClass="btn_icon" onclick="getJob('#{request.contextPath}',this.id);return false;" rendered="#{(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}" />
+													<h:commandButton id="searchJobBtnId" style="display:none;" action="#{moveDecisionRequest.movedToJobChanged(wfMovement)}">
+														<f:ajax execute="moveDecisionRequestFormId:wfMovementsTableId" render="moveDecisionRequestFormId:wfMovementsTableId moveDecisionRequestFormId:warningsPanelId moveDecisionRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+													</h:commandButton>
+												</h:panelGroup>
+
+												<h:panelGroup rendered="#{wfMovement.sequentialMvtFlagBoolean == true}">
+													<h:selectOneMenu value="#{wfMovement.jobId}" rendered="#{(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}">
+														<f:selectItem itemLabel="" />
+														<f:selectItems value="#{moveDecisionRequest.jobsData}" var="job" itemLabel="#{job.name} - #{job.code}" itemValue="#{job.id}" />
+														<f:ajax execute="moveDecisionRequestFormId:wfMovementsTableId" listener="#{moveDecisionRequest.movedToJobChanged(wfMovement)}" render="moveDecisionRequestFormId:wfMovementsTableId moveDecisionRequestFormId:warningsPanelId moveDecisionRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+													</h:selectOneMenu>
+													<h:outputText value="#{wfMovement.jobCode}" rendered="#{(moveDecisionRequest.role != 'Requester' and moveDecisionRequest.role != 'ReviewerEmp')}" />
+												</h:panelGroup>
+											</rich:column>
+											<rich:column rendered="#{moveDecisionRequest.decisionData.locationFlag==0}">
+												<f:facet name="header">
+													#{msgs.label_jobToBeMovedTo}
+												</f:facet>
+												<h:outputText value="#{wfMovement.jobName}" />
+											</rich:column>
+											<rich:column rendered="#{moveDecisionRequest.decisionData.locationFlag==0}">
+												<f:facet name="header">
+													#{msgs.label_movedToUnit}
+												</f:facet>
+												<h:outputText id="movedToUnitFullNameId" value="#{wfMovement.unitFullName}" />
+											</rich:column>
+											<rich:column rendered="#{moveDecisionRequest.decisionData.locationFlag==1}">
+												<f:facet name="header">
+													#{msgs.label_externalUnit}
+													<h:outputText value=" " />
+													<font style="color: red;">*</font>
+												</f:facet>
+												<h:inputText value="#{wfMovement.location}" rendered="#{(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}" maxlength="100" />
+												<h:outputText value="#{wfMovement.location}" rendered="#{!(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}" />
+											</rich:column>
+											<rich:column rendered="#{moveDecisionRequest.mode != 2}">
+												<f:facet name="header">#{msgs.label_asManager}</f:facet>
+												<h:selectBooleanCheckbox id="managerFlagId" value="#{wfMovement.managerFlagBoolean}" onclick="checkAsManager(this.id)" disabled="#{!(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}" />
+											</rich:column>
+											<rich:column>
+												<f:facet name="header">#{msgs.label_warnings}</f:facet>
+												<h:graphicImage value="/resources/images/warning.png" width="25px" height="25px" rendered="#{moveDecisionRequest.getActualWarningMessage(wfMovement.warningMessages) != null and moveDecisionRequest.getActualWarningMessage(wfMovement.warningMessages) != ''}" title="#{moveDecisionRequest.getActualWarningMessage(wfMovement.warningMessages)}" />
+											</rich:column>
+											<rich:column rendered="#{(moveDecisionRequest.role=='Requester' or moveDecisionRequest.role=='ReviewerEmp')}">
+												<f:facet name="header">#{msgs.label_delete}</f:facet>
+												<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{moveDecisionRequest.deleteWFMovement(wfMovement)}" onclick="var r = confirm('#{msgs.q_delete}');if (r == false){return false;}">
+													<f:ajax execute="moveDecisionRequestFormId:wfMovementsTableId" render="moveDecisionRequestFormId:wfMovementsTablePanelId moveDecisionRequestFormId:warningsPanelId moveDecisionRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" execute="moveDecisionRequestFormId:wfMovementsTablePanelId">
+													<f:facet name="first">#{msgs.label_first}</f:facet>
+													<f:facet name="last">#{msgs.label_last}</f:facet>
+													<f:facet name="next">#{msgs.label_next}</f:facet>
+													<f:facet name="previous">#{msgs.label_previous}</f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:decisionCopies external="#{moveDecisionRequest.externalCopies}" internal="#{moveDecisionRequest.internalCopies}" viewOnly="#{moveDecisionRequest.role != 'Requester' and moveDecisionRequest.role != 'ReviewerEmp'}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{moveDecisionRequest.role != 'Requester'}" value="#{moveDecisionRequest.prevTasks}" refuseRoles="SignManager,ReviewerEmp," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{moveDecisionRequest.currentEmployee}" rendered="#{moveDecisionRequest.role == 'SignManager' or moveDecisionRequest.role == 'ReviewerEmp'}">
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{moveDecisionRequest.currentTask.notes}" styleClass="inputDataSuperLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{moveDecisionRequest.role == 'SignManager' or moveDecisionRequest.role == 'ReviewerEmp'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{moveDecisionRequest.currentTask.refuseReasons}" styleClass="inputDataSuperLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="warningsPanelId">
+							<h:panelGroup rendered="#{moveDecisionRequest.warningsCount > 0}">
+								<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th>#{msgs.label_warnings}</th>
+									</tr>
+									<tr>
+										<td>
+											<h:outputText value="#{moveDecisionRequest.warningSummary}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{moveDecisionRequest.role == 'Notification' or moveDecisionRequest.role == 'History'}" value="#{moveDecisionRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:commandButton id="rBtnId" action="#{moveDecisionRequest.initMovement()}" onclick="return handleOnAction('#{moveDecisionRequest.mode == 1 ? msgs.q_sendOfficers : (moveDecisionRequest.mode == 2 ? msgs.q_sendSoldiers : msgs.q_sendCivilians)}','validateRequest()');" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="moveDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveSmBtnId" action="#{moveDecisionRequest.approveMovementSM()}" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;moveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)');" value="#{msgs.label_superSign}  &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="moveDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="retSmBtnId" action="#{moveDecisionRequest.returnMovementSM()}" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateDecisionApprovalNotes(&quot;moveDecisionRequestFormId:specialAuthorityDataId:decisionApprovalRemarksId&quot;, &quot;moveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;moveDecisionRequestFormId:curTaskId:notesId&quot;)');" value="#{msgs.label_returnReviewer}  &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon"
+										rendered="#{moveDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="moveDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSmBtnId" action="#{moveDecisionRequest.rejectMovementSM()}" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)');" value="#{msgs.label_reject}  &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="moveDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="approveReBtnId" action="#{moveDecisionRequest.approveMovementRE()}" value="#{msgs.label_review}  &nbsp; #{msgs.fa_check}" onclick="return handleOnAction('#{moveDecisionRequest.mode == 1 ? msgs.q_reviewOfficers : (moveDecisionRequest.mode == 2 ? msgs.q_reviewSoldiers : msgs.q_reviewCivilians)}','validateRequest()');" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="moveDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveDecisionRequest.rejectMovementRE()}" value="#{msgs.label_reject}  &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'ReviewerEmp'}">
+										<f:ajax execute="@form" render="moveDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="printBtnId" action="#{moveDecisionRequest.print()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'Notification' and moveDecisionRequest.instanceApproved == 1}" />
+
+									<h:commandButton id="nBtnId" action="#{moveDecisionRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'Notification'}">
+										<f:ajax render="moveDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+	function changeCategory() {
+		var confirmedFlag = confirm('#{msgs.q_confirmChangeCategoryClass}');
+		var oldCategoryClass = document.getElementById('organizationTableJobsGenerationFormId:oldCategoryClassHId').value;
+
+		if(! confirmedFlag){
+ 			document.getElementById('organizationTableJobsGenerationFormId:categoryClassId').value = oldCategoryClass;
+ 			return false;
+		}else{
+			document.getElementById('organizationTableJobsGenerationFormId:oldCategoryClassHId').value = document.getElementById('organizationTableJobsGenerationFormId:categoryClassId').value;
+			return true;
+		}
+	}
+
+	function validateData(){
+
+		var unitsListSize = document.getElementById('organizationTableJobsGenerationFormId:unitsListSizeHId').value;
+		if(unitsListSize == 0){
+			alert('#{msgs.error_orgTableUnitsListEmpty}');
+            return false;
+		}           
+        return true;
+   }	
+    </script>
+
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{organizationTableJobsGeneration.init}" />
+	<h:form id="organizationTableJobsGenerationFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_organizationTableJobsGeneration}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="35%" valign="top">
+									<!-- tree -->
+									<table cellpadding="0" cellspacing="0" width="98%">
+										<tr>
+											<td>
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>#{msgs.label_unitsTree}</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:inputText id="searchNameValue" value="#{organizationTableJobsGeneration.searchName}" styleClass="inputDataLarge" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_search}" action="#{organizationTableJobsGeneration.search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+																<f:ajax render="organizationTableJobsGenerationFormId:treePanelId organizationTableJobsGenerationFormId:notifyMessagesId" execute="searchNameValue" />
+															</h:commandButton>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<!-- toChange ids, value of tree, .... -->
+															<h:panelGroup id="treePanelId">
+																<rich:tree id="unitTreeId" toggleListener="#{organizationTableJobsGeneration.treeToggleHandler(item)}" render="treePanelId" value="#{organizationTableJobsGeneration.unitTree}" var="item" dir="#{msgs.dir}" nodeType="unitType">
+																	<rich:treeNode type="unitType" expanded="#{item.expanded}" iconExpanded="/resources/images/#{item.unitType}.png" iconCollapsed="/resources/images/#{item.unitType}.png" iconLeaf="/resources/images/#{item.unitType}.png" title="#{item.orderUnderParent}" ontoggle="unMaskScreen();">
+																		<h:commandLink value="#{item.unitName}" action="#{organizationTableJobsGeneration.selectUnit(item)}">
+																			<f:ajax render="organizationTableJobsGenerationFormId:unitsListId organizationTableJobsGenerationFormId:actionsBtnsId organizationTableJobsGenerationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandLink>
+																	</rich:treeNode>
+																</rich:tree>
+																<h:outputStylesheet library="css" name="tree.css" />
+															</h:panelGroup>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width="65%" valign="top">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%" height="12" />
+										</tr>
+										<!-- Category chosen -->
+										<tr>
+											<td width="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<th>
+															#{msgs.label_category}
+															<font style="color: red;">*</font>
+														</th>
+														<td>
+															<h:selectOneMenu id="categoryClassId" value="#{organizationTableJobsGeneration.selectedCategoryClass}" disabled="true" onchange="return changeCategory()">
+																<f:selectItems value="#{organizationTableJobsGeneration.categoryClasses}" var="category" itemValue="#{category.id}" itemLabel="#{category.description}" />
+
+																<f:ajax event="change" listener="#{organizationTableJobsGeneration.reset()}" render="organizationTableJobsGenerationFormId:unitsListId organizationTableJobsGenerationFormId:actionsBtnsId organizationTableJobsGenerationFormId:notifyMessagesId" />
+
+															</h:selectOneMenu>
+															<h:inputHidden id="oldCategoryClassHId" value="#{organizationTableJobsGeneration.selectedCategoryClass}" />
+														</td>
+														<th>#{msgs.label_categoryClassMessageForJobGeneration}</th>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<!-- Units selected -->
+										<tr>
+											<td width="100%">
+												<table border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td>
+															<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>#{msgs.label_organizationTableUnits}</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>
+																		<rich:dataTable id="unitsListId" var="unit" rowKeyVar="index" value="#{organizationTableJobsGeneration.selectedUnits}" rows="#{organizationTableJobsGeneration.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+																			<rich:column>
+																				<f:facet name="header" style="width : 5%;">#</f:facet>
+																					#{index+1}
+																				</rich:column>
+																			<rich:column>
+																				<f:facet name="header" style="width : 90%;">
+																					<h:outputText value="#{msgs.label_organizationTableUnits}" />
+																				</f:facet>
+																				<h:outputText value="#{unit.fullName}" />
+																			</rich:column>
+																			<rich:column style="width : 5%;">
+																				<f:facet name="header">#{msgs.label_delete}</f:facet>
+																				<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{organizationTableJobsGeneration.deleteUnit(unit)}" onclick="return confirm('#{msgs.q_delete}');">
+																					<f:ajax render="organizationTableJobsGenerationFormId:unitsListId organizationTableJobsGenerationFormId:actionsBtnsId organizationTableJobsGenerationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																				</h:commandButton>
+																			</rich:column>
+																			<f:facet name="footer">
+																				<rich:dataScroller oncomplete="unMaskScreen()" fastControls="hide">
+																					<f:facet name="first">#{msgs.label_first}</f:facet>
+																					<f:facet name="last">#{msgs.label_last}</f:facet>
+																					<f:facet name="next">#{msgs.label_next}</f:facet>
+																					<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																				</rich:dataScroller>
+																			</f:facet>
+																		</rich:dataTable>
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										<tr>
+											<td width="100%">
+												<h:panelGroup id="actionsBtnsId">
+													<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td width="100%">
+																<h:commandButton action="#{organizationTableJobsGeneration.save()}" styleClass="btn_normal_icon" value="#{msgs.label_organizationTableJobsGeneration} &nbsp; #{msgs.fa_floppy_o}" onclick="return handleOnAction('#{msgs.q_autoJobsGeneration}', 'validateData()');" disabled="#{organizationTableJobsGeneration.selectedUnits.size() == 0}" rendered="#{!organizationTableJobsGeneration.done}" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}">
+																	<f:ajax execute="organizationTableJobsGenerationFormId:categoryClassId organizationTableJobsGenerationFormId:unitsListId" render="organizationTableJobsGenerationFormId:actionsBtnsId organizationTableJobsGenerationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+																</h:commandButton>
+																<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{organizationTableJobsGeneration.reset()}">
+																	<f:ajax render="organizationTableJobsGenerationFormId:treePanelId organizationTableJobsGenerationFormId:unitsListId organizationTableJobsGenerationFormId:actionsBtnsId organizationTableJobsGenerationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+																</h:commandButton>
+																<h:inputHidden id="unitsListSizeHId" value="#{organizationTableJobsGeneration.selectedUnits.size()}" />
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

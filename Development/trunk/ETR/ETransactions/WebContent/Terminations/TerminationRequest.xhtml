@@ -1,0 +1,611 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+			var mode = '#{terminationRequest.mode}';
+			
+			function validateTerminationRequestData(){
+				var terminationRequestReasons = document.getElementById('terminationRequestFormId:terminationRequestReasonsId').value;
+				var desiredTerminationDateDay  =  document.getElementById('terminationRequestFormId:desiredTerminationDateId:day').value;
+				if(mode != 1 && (desiredTerminationDateDay == null || desiredTerminationDateDay.trim() == '' || desiredTerminationDateDay == 0 )){
+		           	alert("#{msgs.error_desiredTerminationDateIsMandatory}");
+		            return false;
+		        }
+		        if(terminationRequestReasons == null || terminationRequestReasons.trim() == ''){
+		           	alert("#{msgs.error_terminationRequestReasonsIsMandatory}");
+		            return false;
+			    }
+				return true;
+			}
+
+			function validateTerminationRequestRE(){
+			       if(mode == 2){
+			       	var judgmentFlagBoolean = document.getElementById('terminationRequestFormId:judgmentFlagBooleanId');
+					if(judgmentFlagBoolean == null ||  judgmentFlagBoolean.checked == false){
+						alert("#{msgs.error_noJudjmentIsMandatoryRequestSoldiers}");
+						return false;
+		           }
+					var specializationPeriodFlagBoolean = document.getElementById('terminationRequestFormId:specializationPeriodFlagBooleanId');
+					if(specializationPeriodFlagBoolean == null || specializationPeriodFlagBoolean.checked == false){
+			           	alert("#{msgs.error_specializationPeriodFlagBooleanIsMandatory}");
+		               return false;
+			        }
+		      }
+				return true;
+			}
+		// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="terminationRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{terminationRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{terminationRequest.mode == 1 ? msgs.title_officerData : (terminationRequest.mode == 2 ? msgs.label_soldierData : (terminationRequest.mode == 3 ? msgs.title_personData : msgs.title_contractorData))}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="terminationEmployeeDataPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_empName}" />
+									</th>
+									<td width="30%">
+										<h:outputText value="#{terminationRequest.requester.name}" />
+									</td>
+									<th width="20%">
+										<h:outputText value="#{(terminationRequest.mode==3 or terminationRequest.mode==6) ? msgs.label_personRank : msgs.label_rank}" />
+									</th>
+									<td width="30%">
+										<h:outputText value="#{terminationRequest.requester.rankDesc}" />
+									</td>
+								</tr>
+								<tr>
+									<h:panelGroup rendered="#{terminationRequest.mode == 1}">
+										<th width="20%">
+											<h:outputText value="#{msgs.label_militaryNumber}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationRequest.requester.militaryNumber}" />
+										</td>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{terminationRequest.mode != 1}">
+										<th width="20%">
+											<h:outputText value="#{msgs.label_jobCode}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationRequest.requester.jobCode}" />
+										</td>
+									</h:panelGroup>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_jobName}" />
+									</th>
+									<td width="30%">
+										<h:outputText value="#{terminationRequest.requester.jobDesc}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_officialUnit}" />
+									</th>
+									<td width="80%" colspan="3">
+										<h:outputText value="#{terminationRequest.requester.officialUnitFullName}" />
+									</td>
+								</tr>
+
+								<tr>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_physicalUnit}" />
+									</th>
+									<td width="80%" colspan="3">
+										<h:outputText value="#{terminationRequest.requester.physicalUnitFullName}" />
+									</td>
+								</tr>
+
+								<tr>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_birthDate}" />
+									</th>
+									<td width="30%">
+										<h:outputText value="#{terminationRequest.requester.birthDateString}" />
+									</td>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_recruitmentDate}" />
+									</th>
+									<td width="30%">
+										<h:outputText value="#{terminationRequest.requester.recruitmentDateString}" />
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{terminationRequest.mode != 6}">
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_serviceTerminationDueDate}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationRequest.requester.serviceTerminationDueDateString}" />
+										</td>
+										<h:panelGroup rendered="#{terminationRequest.mode != 2}">
+											<th width="20%">
+												<h:outputText value="#{msgs.label_lastExtensionEndDate}" />
+											</th>
+											<td width="30%">
+												<h:outputText value="#{terminationRequest.requester.lastExtensionEndDateString}" />
+											</td>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{terminationRequest.mode == 2}">
+											<th width="20%">
+												<h:outputText value="#{msgs.label_soldiersLastExtensionEndDate}" />
+											</th>
+											<td width="30%">
+												<h:outputText value="#{terminationRequest.requester.lastExtensionEndDateString}" />
+											</td>
+										</h:panelGroup>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_promotionDueDate}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationRequest.requester.promotionDueDateString}" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.lable_lastPromotionDate}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationRequest.requester.lastPromotionDateString}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="terminationExtensionDetailsPanelId">
+							<rich:collapsiblePanel rendered="#{terminationRequest.mode != 6}" switchType="client" expanded="false" header="#{terminationRequest.mode == 2 ? msgs.title_soldiersPreviousExtensionPeriods : msgs.title_previousExtensionPeriods}">
+								<rich:dataTable value="#{terminationRequest.terminationExtensionTransactionDataList}" var="extension" rows="#{terminationRequest.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+									<f:facet name="header">
+										<rich:columnGroup>
+											<rich:column rowspan="2">
+												<h:outputText value="#{msgs.label_decisionNumber}" />
+											</rich:column>
+											<rich:column rowspan="2">
+												<h:outputText value="#{msgs.label_decisionDate}" />
+											</rich:column>
+											<rich:column colspan="3">
+												<h:outputText value="#{terminationRequest.mode == 2 ? msgs.label_soldiersTerminationExtensionsDetails : msgs.label_terminationExtensionsDetails}" />
+											</rich:column>
+											<rich:column rowspan="2">
+												<h:outputText value="#{msgs.label_showAttachment}" />
+											</rich:column>
+
+											<rich:column breakRowBefore="true">
+												<h:outputText value="#{msgs.label_extensionPeriodByMonths}" />
+											</rich:column>
+											<rich:column>
+												<h:outputText value="#{terminationRequest.mode == 2 ? msgs.label_soldiersExtentionStartDate : msgs.label_extensionStartDate}" />
+											</rich:column>
+											<rich:column>
+												<h:outputText value="#{terminationRequest.mode == 2 ? msgs.label_soldiersExtentionEndDate : msgs.label_extensionEndDate}" />
+											</rich:column>
+										</rich:columnGroup>
+									</f:facet>
+									<rich:column style="width:10%">
+										<h:outputText value="#{extension.decisionNumber}" />
+									</rich:column>
+									<rich:column style="width:10%">
+										<h:outputText value="#{extension.decisionDateString}" />
+									</rich:column>
+									<rich:column style="width:15%">
+										<h:outputText value="#{extension.extensionPeriodMonths}" />
+									</rich:column>
+									<rich:column style="width:15%">
+										<h:outputText value="#{extension.extensionStartDateString}" />
+									</rich:column>
+									<rich:column style="width:15%">
+										<h:outputText value="#{extension.extensionEndDateString}" />
+									</rich:column>
+									<rich:column style="width:35%">
+										<code:attachments loginEmpId="#{terminationRequest.loginEmpData.empId}" attachmentId="#{extension.attachments}" addEnableFlag="false" viewEnableFlag="true" deleteEnableFlag="false" />
+									</rich:column>
+									<f:facet name="footer">
+										<rich:dataScroller oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+											<f:facet name="first">#{msgs.label_first}</f:facet>
+											<f:facet name="last">#{msgs.label_last}</f:facet>
+											<f:facet name="next">#{msgs.label_next}</f:facet>
+											<f:facet name="previous">#{msgs.label_previous}</f:facet>
+										</rich:dataScroller>
+									</f:facet>
+								</rich:dataTable>
+							</rich:collapsiblePanel>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{terminationRequest.mode == 1 ?  msgs.label_requestData :(terminationRequest.mode == 6 ? msgs.label_terminationDataContractors : msgs.label_terminationData)}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="terminationDetailsPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="20%">
+										<h:outputText value="#{terminationRequest.mode != 6 ? msgs.label_desiredTerminationDate : msgs.label_desiredContractorTerminationDate}" />
+										<h:outputText value="*" rendered="#{terminationRequest.mode != 1}" style="color: red;" />
+									</th>
+									<td width="85%" colspan="2">
+										<util:hijri id="desiredTerminationDateId" value="#{terminationRequest.wfTermination.desiredTerminationDate}" rendered="#{terminationRequest.role == 'Requester'}" nullable="true" />
+										<h:outputText value="#{terminationRequest.wfTermination.desiredTerminationDateString}" rendered="#{terminationRequest.role != 'Requester'}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_justifications}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="80%" colspan="2">
+										<h:inputTextarea id="terminationRequestReasonsId" value="#{terminationRequest.wfTermination.reasons}" disabled="#{terminationRequest.role != 'Requester'}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge" />
+									</td>
+								</tr>
+								<tr>
+									<th width="20%">
+										<h:outputText value="#{msgs.label_attachments}" />
+									</th>
+									<td width="80%" colspan="2">
+										<code:attachments loginEmpId="#{terminationRequest.loginEmpData.empId}" attachmentId="#{terminationRequest.attachments}" addEnableFlag="#{terminationRequest.role == 'ReviewerEmp' or terminationRequest.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{terminationRequest.role == 'ReviewerEmp' or terminationRequest.role == 'Requester'}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup rendered="#{terminationRequest.mode == 2 and terminationRequest.role == 'Requester'}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td width="100%">
+										<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td>
+													<h:outputText value="#{msgs.label_terminationRequiredDocumentsTitle}" />
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%">
+													<h:outputText value="#{msgs.label_terminationRequiredSoldierDocuments}" escape="false" />
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				
+				<tr>
+					<td width="100%">
+							<h:panelGroup rendered="#{terminationRequest.role == 'Requester' and terminationRequest.mode != 6}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{msgs.label_terminationRequestPledgeTitle}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+														<h:outputText value="#{terminationRequest.terminationRequestCondition}" escape="false" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				
+				<h:panelGroup id="specialEmloyeePanelId">
+					<h:panelGroup rendered="#{terminationRequest.mode != 1 and terminationRequest.role != 'Requester' and terminationRequest.role != 'DirectManager' and terminationRequest.role != 'ManagerRedirect' and terminationRequest.role != 'SecondaryManagerRedirect' and terminationRequest.wfTermination.recordId != null}">
+						<tr>
+							<td width="100%">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.lable_specialEmployeeCompetent}" />
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td width="100%" height="5" />
+						</tr>
+						<tr>
+							<td width="100%">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<th width="20%">#{msgs.label_notes}</th>
+										<td width="80%" colspan="3">
+											<h:inputTextarea id="notesId" value="#{terminationRequest.terminationRecordDetailData.remarks}" disabled="#{terminationRequest.role != 'ReviewerEmp'}" styleClass="inputDataSuperLarge" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" rows="2" />
+										</td>
+									</tr>
+									<tr>
+										<h:panelGroup rendered="#{terminationRequest.mode == 2 || terminationRequest.mode == 3}">
+											<th width="20%">
+												<h:outputText value="#{msgs.label_notJudgmentFlag}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="#{terminationRequest.mode == 2 ? 20 : 80}%">
+												<h:selectBooleanCheckbox id="judgmentFlagBooleanId" value="#{terminationRequest.terminationRecordDetailData.judgmentFlagBoolean}" disabled="#{terminationRequest.role != 'ReviewerEmp'}" />
+											</td>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{terminationRequest.mode == 2}">
+											<th width="30%">
+												<h:outputText value="#{msgs.label_specializationPeriodFlag}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="30%">
+												<h:selectBooleanCheckbox id="specializationPeriodFlagBooleanId" value="#{terminationRequest.terminationRecordDetailData.specializationPeriodFlagBoolean}" disabled="#{terminationRequest.role != 'ReviewerEmp'}" />
+											</td>
+										</h:panelGroup>
+									</tr>
+									<h:panelGroup rendered="#{terminationRequest.mode == 2 || terminationRequest.mode == 3}">
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_terminationReason}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:selectOneRadio id="terminationRequestTypeId" value="#{terminationRequest.terminationRecordDetailData.terminationRequestType}" disabled="#{terminationRequest.isDisabledTerminationRequestType or terminationRequest.role != 'ReviewerEmp'}">
+													<f:selectItem itemValue="1" itemLabel="#{msgs.label_terminationTypeRetirement}" />
+													<f:selectItem itemValue="2" itemLabel="#{msgs.label_terminationTypeResignation}" />
+												</h:selectOneRadio>
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{terminationRequest.mode == 6 }">
+										<tr>
+											<th width="20%">
+												<h:outputText value="#{msgs.label_contractorBasedOnType}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="80%" colspan="3">
+												<h:selectOneMenu value="#{terminationRequest.terminationRecordDetailData.contractorBasedOnType}" disabled="#{terminationRequest.role != 'ReviewerEmp'}">
+													<f:selectItem itemLabel="#{msgs.label_basedOnWorkingSystem}" itemValue="1" />
+													<f:selectItem itemLabel="#{msgs.label_basedOnEmploymentListNonSaudis}" itemValue="2" />
+												</h:selectOneMenu>
+											</td>
+										</tr>
+									</h:panelGroup>
+								</table>
+							</td>
+						</tr>
+					</h:panelGroup>
+				</h:panelGroup>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:decisionCopies external="#{terminationRequest.terminationRecordData.externalCopies}" internal="#{terminationRequest.internalCopies}" rendered="#{terminationRequest.mode != 1 and terminationRequest.role != 'Requester' and terminationRequest.role != 'DirectManager'}" viewOnly="#{terminationRequest.role != 'ReviewerEmp'}" />
+					</td>
+				</tr>
+					<code:prevTasks rendered="#{terminationRequest.role != 'Requester'}" value="#{terminationRequest.prevTasks}" refuseRoles="DirectManager,SignManager,SecondarySignManager,SecondaryReviewerEmp,ReviewerEmp," />
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{terminationRequest.currentEmployee}" rendered="#{terminationRequest.role != 'Requester' and terminationRequest.role != 'Notification' and terminationRequest.role != 'History'}">
+							<h:panelGroup rendered="#{terminationRequest.role == 'ManagerRedirect' or terminationRequest.role == 'SecondaryManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="3">
+										<h:selectOneMenu id="reviewersId" value="#{terminationRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{terminationRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
+							</h:panelGroup>
+
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{terminationRequest.currentTask.notes}" maxlength="500" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{terminationRequest.role == 'DirectManager' or terminationRequest.role == 'ReviewerEmp' or terminationRequest.role == 'SecondaryReviewerEmp' or terminationRequest.role == 'SignManager' or terminationRequest.role == 'SecondarySignManager'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{terminationRequest.currentTask.refuseReasons}" maxlength="500" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{terminationRequest.role == 'Notification' or terminationRequest.role == 'History'}" value="#{terminationRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:panelGroup rendered="#{terminationRequest.role == 'Requester'}">
+										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateTerminationRequestData()');" action="#{terminationRequest.initProcess}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{terminationRequest.role == 'DirectManager'}">
+										<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;terminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationRequest.approveDM}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;terminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationRequest.rejectDM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+									
+									<h:panelGroup rendered="#{terminationRequest.role == 'SecondaryManagerRedirect'}">
+										<h:commandButton id="smrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;terminationRequestFormId:curTaskId:reviewersId&quot;)');" action="#{terminationRequest.redirectSMR}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+									
+									<h:panelGroup rendered="#{terminationRequest.role == 'ManagerRedirect'}">
+										<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;terminationRequestFormId:curTaskId:reviewersId&quot;)');" action="#{terminationRequest.redirectMR}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+									
+									<h:panelGroup rendered="#{terminationRequest.role == 'SecondaryReviewerEmp'}">
+										<h:commandButton id="approveSreBtnId" onclick="return handleOnAction('#{msgs.q_review}', 'validateRefuseAndNotes(1, &quot;terminationRequestFormId:curTaskId:refuseReasonsId&quot;)');"  action="#{terminationRequest.approveSRE}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectSreBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;terminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationRequest.rejectSRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+									
+									<h:panelGroup rendered="#{terminationRequest.role == 'ReviewerEmp'}">
+										<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}', 'validateTerminationRequestRE()');" action="#{terminationRequest.approveRE}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;terminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationRequest.rejectRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+									
+									<h:panelGroup rendered="#{terminationRequest.role == 'SecondarySignManager'}">
+										<h:commandButton id="submitSsmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;terminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationRequest.signSSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="modifySsmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;terminationRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;terminationRequestFormId:curTaskId:notesId&quot;)');" action="#{terminationRequest.modifySSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;terminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationRequest.rejectSSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+						
+									<h:panelGroup rendered="#{terminationRequest.role == 'SignManager'}">
+										<h:commandButton id="submitSmBtnId" onclick="return handleOnAction('#{terminationRequest.mode == 1 ? msgs.q_officersTerminationSuperSign : msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;terminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationRequest.signSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										<h:panelGroup rendered="#{terminationRequest.mode != 1}">
+											<h:commandButton id="modifySmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;terminationRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;terminationRequestFormId:curTaskId:notesId&quot;)');" action="#{terminationRequest.modifySM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+												<f:ajax render="notifyMessagesId" execute="@form" />
+											</h:commandButton>
+										</h:panelGroup>
+										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;terminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationRequest.rejectSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+									
+									<h:panelGroup rendered="#{terminationRequest.mode != 1 and  terminationRequest.role == 'Notification' and terminationRequest.instanceApproved == 1}">
+										<h:commandButton id="printBtnId" action="#{terminationRequest.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+									</h:panelGroup>
+
+									<h:panelGroup rendered="#{terminationRequest.role == 'Notification'}">
+										<h:commandButton id="nBtnId" action="#{terminationRequest.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+								</td> 
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<!-- hidden input -->
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

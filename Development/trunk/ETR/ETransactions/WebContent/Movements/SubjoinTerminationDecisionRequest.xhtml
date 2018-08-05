@@ -1,0 +1,431 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">		  
+		function validateSearch() {
+			decisionNumberValue = document.getElementById('subjoinTerminationDecisionRequestFormId:decisionNumberId').value;
+			if(decisionNumberValue == null || decisionNumberValue == '') {
+				alert("#{msgs.error_transactionSearchFieldsMandatory}");
+				return false;	
+			}
+			return true;
+		}
+	
+		function validateSend() {
+
+			if(document.getElementById('subjoinTerminationDecisionRequestFormId:subjoinListPanelId') != null) {
+
+				if(document.getElementById('subjoinTerminationDecisionRequestFormId:basedOnId') != null) {
+					basedOnValue = document.getElementById('subjoinTerminationDecisionRequestFormId:basedOnId').value;
+					basedOnOrderNumberValue = document.getElementById('subjoinTerminationDecisionRequestFormId:basedOnOrderNumberId').value;
+		
+					if((basedOnValue == null || basedOnValue == '') || (basedOnOrderNumberValue == null || basedOnOrderNumberValue == '')) {
+						alert("#{msgs.error_subjoinDecisionFieldsMandatory}");
+						return false;
+					}
+				}
+	
+				if(document.getElementById('subjoinTerminationDecisionRequestFormId:subjoinListSizeId').innerHTML == 0) {
+					if(#{subjoinTerminationDecisionRequest.mode == 3})
+						alert("#{msgs.error_assignmentListEmpty}");
+					else
+						alert("#{msgs.error_subjoinListEmpty}");
+					return false;
+				}
+			
+			} else {
+				return false;
+			}
+
+			if(document.getElementById('subjoinTerminationDecisionRequestFormId:ministryApprovalNumberId') != null) {
+		    	ministryApprovalNumberValue = document.getElementById('subjoinTerminationDecisionRequestFormId:ministryApprovalNumberId').value;
+		    	if(ministryApprovalNumberValue == null || ministryApprovalNumberValue == '') {
+					alert('#{msgs.error_ministryAgreementDataIsRequired}');
+					return false;
+		        }
+			}	
+			
+			return #{subjoinTerminationDecisionRequest.role == 'ReviewerEmp'} ? validateRefuseAndNotes(1, &quot;subjoinTerminationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;) : true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="subjoinTerminationDecisionRequestFormId" dir="#{msgs.dir}">
+		<ui:debug />
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{subjoinTerminationDecisionRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_basedOnDecision}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="10%">#{msgs.label_decisionNumber}</th>
+								<td width="15%">
+									<h:inputText id="decisionNumberId" value="#{subjoinTerminationDecisionRequest.decisionData.basedOnDecisionNumber}" readonly="#{subjoinTerminationDecisionRequest.role != 'Requester' and subjoinTerminationDecisionRequest.role != 'ReviewerEmp'}" maxlength="50" />
+								</td>
+								<th width="10%">#{msgs.label_decisionDate}</th>
+								<td width="15%">
+									<util:hijri id="decisionDateId" value="#{subjoinTerminationDecisionRequest.decisionData.basedOnDecisionDate}" rendered="#{subjoinTerminationDecisionRequest.role == 'Requester' or subjoinTerminationDecisionRequest.role == 'ReviewerEmp'}" />
+									<h:outputText value="#{subjoinTerminationDecisionRequest.decisionData.basedOnDecisionDateString}" rendered="#{subjoinTerminationDecisionRequest.role != 'Requester' and subjoinTerminationDecisionRequest.role != 'ReviewerEmp'}" />
+								</td>
+								<td width="50%">
+									<h:commandButton onclick="return validateSearch();" action="#{subjoinTerminationDecisionRequest.getSubjoinByDecisionInfo}" styleClass="btn_normal_icon" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" rendered="#{subjoinTerminationDecisionRequest.role == 'Requester'}">
+										<f:ajax execute="subjoinTerminationDecisionRequestFormId:decisionNumberId subjoinTerminationDecisionRequestFormId:decisionDateId" render="subjoinTerminationDecisionRequestFormId:requestDataPanelId subjoinTerminationDecisionRequestFormId:warningPanelId subjoinTerminationDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requestDataPanelId">
+							<h:panelGroup rendered="#{subjoinTerminationDecisionRequest.wfMovementsList.size() > 0}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{subjoinTerminationDecisionRequest.mode != 3 ? msgs.label_subjoinData : msgs.label_assignmentData }" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:panelGroup id="commonDataPanelId">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<th width="16%">
+															#{msgs.label_basedOn}
+															<h:outputText value=" " />
+															<font style="color: red;">*</font>
+														</th>
+														<td width="84%" colspan="3">
+															<h:selectOneRadio value="#{subjoinTerminationDecisionRequest.decisionData.verbalOrderFlag}" disabled="#{subjoinTerminationDecisionRequest.role != 'Requester' and subjoinTerminationDecisionRequest.role != 'ReviewerEmp'}">
+																<f:selectItem itemValue="0" itemLabel="#{msgs.label_letterDispatchEtc}" />
+																<f:selectItem itemValue="1" itemLabel="#{msgs.label_verbalOrder}" />
+																<f:ajax execute="subjoinTerminationDecisionRequestFormId:commonDataPanelId" listener="#{subjoinTerminationDecisionRequest.verbalOrderFlagListener()}" render="subjoinTerminationDecisionRequestFormId:commonDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															</h:selectOneRadio>
+														</td>
+													</tr>
+													<h:panelGroup rendered="#{subjoinTerminationDecisionRequest.decisionData.verbalOrderFlag == 0}">
+														<tr>
+															<td width="100%" colspan="4">
+																<h:outputText value="#{msgs.label_movementsDecisionsWarning}" style="color: red; font-weight: bold;" />
+															</td>
+														</tr>
+														<tr>
+															<th>
+																#{msgs.label_basedOnLetterDispatchEtc}
+																<h:outputText value=" " />
+																<font style="color: red;">*</font>
+															</th>
+															<td colspan="3">
+																<h:inputText id="basedOnId" readonly="#{subjoinTerminationDecisionRequest.role != 'Requester' and subjoinTerminationDecisionRequest.role != 'ReviewerEmp'}" value="#{subjoinTerminationDecisionRequest.decisionData.basedOn}" styleClass="inputDataSuperLarge" maxlength="400" />
+															</td>
+														</tr>
+														<tr>
+															<th width="16%">
+																<h:outputText value="#{msgs.label_number}" />
+																<h:outputText value=" " />
+																<font style="color: red;">*</font>
+															</th>
+															<td width="20%">
+																<h:inputText id="basedOnOrderNumberId" readonly="#{subjoinTerminationDecisionRequest.role != 'Requester' and subjoinTerminationDecisionRequest.role != 'ReviewerEmp'}" value="#{subjoinTerminationDecisionRequest.decisionData.basedOnOrderNumber}" maxlength="50" />
+															</td>
+															<th width="15%">
+																<h:outputText value="#{msgs.label_date}" />
+																<h:outputText value=" " />
+																<font style="color: red;">*</font>
+															</th>
+															<td width="49%">
+																<util:hijri value="#{subjoinTerminationDecisionRequest.decisionData.basedOnOrderDate}" rendered="#{subjoinTerminationDecisionRequest.role == 'Requester' or subjoinTerminationDecisionRequest.role == 'ReviewerEmp'}" />
+																<h:outputText value="#{subjoinTerminationDecisionRequest.decisionData.basedOnOrderDateString}" rendered="#{subjoinTerminationDecisionRequest.role != 'Requester' and subjoinTerminationDecisionRequest.role != 'ReviewerEmp'}" />
+															</td>
+														</tr>
+													</h:panelGroup>
+													<tr>
+														<th>#{msgs.label_requiredAttachments}</th>
+														<td colspan="3">
+															<code:attachments loginEmpId="#{subjoinTerminationDecisionRequest.loginEmpData.empId}" attachmentId="#{subjoinTerminationDecisionRequest.attachments}" addEnableFlag="#{subjoinTerminationDecisionRequest.role == 'Requester' or subjoinTerminationDecisionRequest.role == 'ReviewerEmp'}" viewEnableFlag="true" deleteEnableFlag="#{subjoinTerminationDecisionRequest.role == 'Requester' or subjoinTerminationDecisionRequest.role == 'ReviewerEmp'}" />
+														</td>
+													</tr>
+													<tr>
+														<th>#{msgs.label_notes}</th>
+														<td colspan="3">
+															<h:inputText readonly="#{subjoinTerminationDecisionRequest.role != 'Requester' and subjoinTerminationDecisionRequest.role != 'ReviewerEmp'}" value="#{subjoinTerminationDecisionRequest.decisionData.remarks}" styleClass="inputDataSuperLarge" maxlength="500" />
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<h:panelGroup rendered="#{subjoinTerminationDecisionRequest.decisionData.locationFlag == 1}">
+												<table border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+
+													<tr>
+														<td width="100%">
+															<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td>#{msgs.label_dataFilledBySpecializedEmployee}</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" height="5" />
+													</tr>
+													<tr>
+														<td width="100%">
+															<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<th>
+																		#{msgs.label_interiorMinisteryAgreementNumber}
+																		<h:outputText value=" " />
+																		<font style="color: red;">*</font>
+																	</th>
+																	<td>
+																		<h:inputText id="ministryApprovalNumberId" value="#{subjoinTerminationDecisionRequest.decisionData.ministryApprovalNumber}" readonly="#{subjoinTerminationDecisionRequest.role != 'Requester' and subjoinTerminationDecisionRequest.role != 'ReviewerEmp'}" maxlength="50" />
+																	</td>
+																	<th>
+																		#{msgs.label_interiorMinisteryAgreementDate}
+																		<h:outputText value=" " />
+																		<font style="color: red;">*</font>
+																	</th>
+																	<td>
+																		<util:hijri value="#{subjoinTerminationDecisionRequest.decisionData.ministryApprovalDate}" rendered="#{subjoinTerminationDecisionRequest.role == 'Requester' or subjoinTerminationDecisionRequest.role == 'ReviewerEmp'}" />
+																		<h:outputText value="#{subjoinTerminationDecisionRequest.decisionData.ministryApprovalDateString}" rendered="#{subjoinTerminationDecisionRequest.role != 'Requester' and subjoinTerminationDecisionRequest.role != 'ReviewerEmp'}" />
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</h:panelGroup>
+										</td>
+									</tr>
+
+									<code:specialAuthorityData id="specialAuthorityDataId" loginEmpId="#{subjoinTerminationDecisionRequest.loginEmpData.empId}" wfMovement="#{subjoinTerminationDecisionRequest.decisionData}" role="#{subjoinTerminationDecisionRequest.role}" requestFlag="#{false}" rendered="#{subjoinTerminationDecisionRequest.role == 'Requester' or subjoinTerminationDecisionRequest.role == 'ReviewerEmp' or subjoinTerminationDecisionRequest.role == 'SignManager'}" />
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+														<h:outputText value="#{subjoinTerminationDecisionRequest.mode == 1 ? msgs.label_officersData : (subjoinTerminationDecisionRequest.mode == 2 ? msgs.label_soldiersData : msgs.label_personsData)}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td align="center" width="100%">
+											<h:panelGroup id="subjoinListPanelId">
+												<h:outputText id="subjoinListSizeId" style="display:none" value="#{subjoinTerminationDecisionRequest.wfMovementsList.size()}" />
+												<rich:dataTable id="subjoinListId" rowKeyVar="index" var="subjoin" value="#{subjoinTerminationDecisionRequest.wfMovementsList}" rows="#{subjoinTerminationDecisionRequest.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+													<rich:column style="width : #{subjoinTerminationDecisionRequest.role == 'Requester' or subjoinTerminationDecisionRequest.role == 'ReviewerEmp' ? 15 : 20}%">
+														<f:facet name="header">#{msgs.label_name}</f:facet>
+														<h:outputText value="#{subjoin.employeeName}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header">
+															<h:outputText value="#{(subjoinTerminationDecisionRequest.mode == 1 or subjoinTerminationDecisionRequest.mode == 2)?(msgs.label_rank):(msgs.label_personRank)}" />
+														</f:facet>
+														<h:outputText value="#{subjoin.employeeRankDesc}" />
+													</rich:column>
+													<rich:column style="width : 20%">
+														<f:facet name="header">#{msgs.label_currentUnit}</f:facet>
+														<h:outputText value="#{subjoin.employeeUnitName}" />
+													</rich:column>
+													<rich:column style="width : 5%">
+														<f:facet name="header">#{msgs.label_currentJobCode}</f:facet>
+														<h:outputText value="#{subjoin.employeeJobCode}" />
+													</rich:column>
+													<rich:column style="width : 10%">
+														<f:facet name="header">#{msgs.label_currentJob}</f:facet>
+														<h:outputText value="#{subjoin.employeeJobName}" />
+													</rich:column>
+													<rich:column style="width : 20%">
+														<f:facet name="header">
+															<h:outputText value="#{subjoinTerminationDecisionRequest.decisionData.locationFlag == 0 or subjoinTerminationDecisionRequest.decisionData.locationFlag == null ? (subjoinTerminationDecisionRequest.mode == 3 ? msgs.label_assignmentUnit : msgs.label_subjoinUnit) : msgs.label_requestedExternalUnitToMoveTo}" />
+														</f:facet>
+														<h:outputText value="#{subjoin.unitFullName}" rendered="#{subjoinTerminationDecisionRequest.decisionData.locationFlag == 0}" />
+														<h:outputText value="#{subjoin.location}" rendered="#{subjoinTerminationDecisionRequest.decisionData.locationFlag == 1}" />
+													</rich:column>
+													<rich:column style="width : 15%">
+														<f:facet name="header">
+															<h:outputText value="#{subjoinTerminationDecisionRequest.mode == 2 ? msgs.label_terminationDate : msgs.label_endDate} " />
+															<font style="color: red;">*</font>
+														</f:facet>
+														<util:hijri value="#{subjoin.endDate}" rendered="#{subjoinTerminationDecisionRequest.role == 'Requester' or subjoinTerminationDecisionRequest.role == 'ReviewerEmp'}" />
+														<h:outputText value="#{subjoin.endDateString}" rendered="#{subjoinTerminationDecisionRequest.role != 'Requester' and subjoinTerminationDecisionRequest.role != 'ReviewerEmp'}" />
+													</rich:column>
+													<rich:column rendered="#{subjoinTerminationDecisionRequest.role == 'Requester' or subjoinTerminationDecisionRequest.role == 'ReviewerEmp'}" style="width : 5%">
+														<f:facet name="header">#{msgs.label_delete}</f:facet>
+														<h:commandButton value="#{msgs.fa_times}" styleClass="btn_icon" title="#{msgs.label_delete}" action="#{subjoinTerminationDecisionRequest.deleteSubjoin(subjoin)}" onclick="return confirm('#{msgs.q_delete}');">
+															<f:ajax execute="subjoinTerminationDecisionRequestFormId:requestDataPanelId" render="subjoinTerminationDecisionRequestFormId:requestDataPanelId subjoinTerminationDecisionRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</rich:column>
+													<f:facet name="footer">
+														<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" execute="subjoinTerminationDecisionRequestFormId:subjoinListPanelId">
+															<f:facet name="first">#{msgs.label_first}</f:facet>
+															<f:facet name="last">#{msgs.label_last}</f:facet>
+															<f:facet name="next">#{msgs.label_next}</f:facet>
+															<f:facet name="previous">#{msgs.label_previous}</f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+											</h:panelGroup>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:decisionCopies external="#{subjoinTerminationDecisionRequest.externalCopies}" internal="#{subjoinTerminationDecisionRequest.internalCopies}" viewOnly="#{subjoinTerminationDecisionRequest.role != 'Requester' and subjoinTerminationDecisionRequest.role != 'ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:prevTasks rendered="#{subjoinTerminationDecisionRequest.role != 'Requester'}" value="#{subjoinTerminationDecisionRequest.prevTasks}" refuseRoles="SignManager,ReviewerEmp," />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:curTask id="curTaskId" value="#{subjoinTerminationDecisionRequest.currentEmployee}" rendered="#{subjoinTerminationDecisionRequest.role == 'SignManager' or subjoinTerminationDecisionRequest.role == 'ReviewerEmp'}">
+												<tr>
+													<th width="15%">#{msgs.label_notes}</th>
+													<td width="85%" colspan="3">
+														<h:inputText id="notesId" value="#{subjoinTerminationDecisionRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+													</td>
+												</tr>
+												<h:panelGroup rendered="#{subjoinTerminationDecisionRequest.role == 'SignManager' or subjoinTerminationDecisionRequest.role == 'ReviewerEmp'}">
+													<tr>
+														<th width="15%">#{msgs.label_refuseReasons}</th>
+														<td width="85%" colspan="3">
+															<h:inputText id="refuseReasonsId" value="#{subjoinTerminationDecisionRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+														</td>
+													</tr>
+												</h:panelGroup>
+											</code:curTask>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:outputText rendered="#{subjoinTerminationDecisionRequest.role == 'Notification' or subjoinTerminationDecisionRequest.role == 'History'}" value="#{subjoinTerminationDecisionRequest.notificationMessage}" styleClass="successMessage" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+
+														<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateSend(#{subjoinTerminationDecisionRequest.mode})');" action="#{subjoinTerminationDecisionRequest.initMovement()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationDecisionRequest.role == 'Requester'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveReBtnId" action="#{subjoinTerminationDecisionRequest.approveMovementRE()}" onclick="return handleOnAction('#{msgs.q_reviewForMovements}', 'validateSend(#{subjoinTerminationDecisionRequest.mode})');" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationDecisionRequest.role == 'ReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinTerminationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationDecisionRequest.rejectMovementRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationDecisionRequest.role == 'ReviewerEmp'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;subjoinTerminationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationDecisionRequest.approveMovementSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationDecisionRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateDecisionApprovalNotes(&quot;subjoinTerminationDecisionRequestFormId:specialAuthorityDataId:decisionApprovalRemarksId&quot;, &quot;subjoinTerminationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;subjoinTerminationDecisionRequestFormId:curTaskId:notesId&quot;)');" action="#{subjoinTerminationDecisionRequest.returnMovementSM()}"
+															value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationDecisionRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinTerminationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationDecisionRequest.rejectMovementSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationDecisionRequest.role == 'SignManager'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="printBtnId" action="#{subjoinTerminationDecisionRequest.print}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationDecisionRequest.role == 'Notification' and subjoinTerminationDecisionRequest.instanceApproved == 1}" />
+
+														<h:commandButton id="nBtnId" action="#{subjoinTerminationDecisionRequest.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationDecisionRequest.role == 'Notification'}">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="warningPanelId">
+							<h:panelGroup rendered="#{subjoinTerminationDecisionRequest.decisionData.basedOnDecisionNumber != null and subjoinTerminationDecisionRequest.wfMovementsList.size() == 0}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.error_thereIsNoLastValidTrans}" styleClass="remarkMessage" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

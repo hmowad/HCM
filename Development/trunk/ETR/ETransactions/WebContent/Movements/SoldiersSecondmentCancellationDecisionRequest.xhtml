@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	function getEmployee(contextPath){
+		if(#{soldiersSecondmentCancellationDecisionRequest.movementType==4})
+	 		openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',7,2,-1,-1,-1,-1, -1);
+		else
+			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',8,2,-1,-1,-1,-1, -1);
+	}
+	
+	function handleEmpMiniSearchResult(ret){
+		if(ret!=null){ 
+	         document.getElementById('soldiersSecondmentCancellationDecisionRequestFormId:soldierIDId').value=ret[0];
+	         document.getElementById('soldiersSecondmentCancellationDecisionRequestFormId:searchEmpBtnId').click();
+		}
+	}
+	
+    function validateRequest(){
+        soldierId= document.getElementById('soldiersSecondmentCancellationDecisionRequestFormId:soldierIDId').value;
+       	number=document.getElementById('soldiersSecondmentCancellationDecisionRequestFormId:numberId').value;
+       	if(soldierId==null||soldierId==''||number==null||number==''){
+    		alert('#{msgs.error_secondmentCancellationDecisionRequestFieldsAreMandatory}');	
+            return false; 
+        } 	
+
+       	return #{soldiersSecondmentCancellationDecisionRequest.role == 'ReviewerEmp'} ? validateRefuseAndNotes(1, &quot;soldiersSecondmentCancellationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;) : true;
+    }
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="soldiersSecondmentCancellationDecisionRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{soldiersSecondmentCancellationDecisionRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_soldier}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<h:panelGroup rendered="#{soldiersSecondmentCancellationDecisionRequest.role == 'Requester'}">
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%">
+													<h:commandButton value="#{msgs.label_soldier}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+													<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{soldiersSecondmentCancellationDecisionRequest.searchSoldiers()}">
+														<f:ajax execute="soldiersSecondmentCancellationDecisionRequestFormId:soldierIDId" render="soldiersSecondmentCancellationDecisionRequestFormId:requestPanelId soldiersSecondmentCancellationDecisionRequestFormId:warningPanelId soldiersSecondmentCancellationDecisionRequestFormId:soldierPanelId soldiersSecondmentCancellationDecisionRequestFormId:notifyMessagesId" />
+													</h:commandButton>
+													<h:inputHidden id="soldierIDId" value="#{soldiersSecondmentCancellationDecisionRequest.wfMovement.employeeId}" />
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</h:panelGroup>
+							<tr>
+								<td width="100%">
+									<h:panelGroup id="soldierPanelId">
+										<code:emp value="#{soldiersSecondmentCancellationDecisionRequest.soldier}" />
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requestPanelId">
+							<h:panelGroup rendered="#{soldiersSecondmentCancellationDecisionRequest.lastSecondment != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">#{soldiersSecondmentCancellationDecisionRequest.movementType==4 ? msgs.label_lastMandateData : msgs.label_lastSecondmentData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="10%">#{soldiersSecondmentCancellationDecisionRequest.movementType==4 ? msgs.label_mandateUnit : msgs.label_secondmentUnit}</th>
+													<td width="15%">
+														<h:outputText value="#{soldiersSecondmentCancellationDecisionRequest.lastSecondment.location}" />
+													</td>
+													<th width="10%">#{msgs.label_period}</th>
+													<td width="15%">
+														<h:outputText value="#{soldiersSecondmentCancellationDecisionRequest.lastSecondment.periodMonths}" />
+														<h:outputText value=" " />
+														<h:outputText value="#{msgs.label_month}" rendered="#{soldiersSecondmentCancellationDecisionRequest.lastSecondment.periodMonths != null and soldiersSecondmentCancellationDecisionRequest.lastSecondment.periodMonths != 0}" />
+														<h:outputText value=" " />
+														<h:outputText value="#{soldiersSecondmentCancellationDecisionRequest.lastSecondment.periodDays}" />
+														<h:outputText value=" " />
+														<h:outputText value="#{msgs.label_day}" rendered="#{soldiersSecondmentCancellationDecisionRequest.lastSecondment.periodDays != null and soldiersSecondmentCancellationDecisionRequest.lastSecondment.periodDays != 0}" />
+													</td>
+													<th width="10%">#{msgs.label_endDate}</th>
+													<td width="40%">
+														<h:outputText value="#{soldiersSecondmentCancellationDecisionRequest.lastSecondment.endDateString}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">#{msgs.label_decisionData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														#{msgs.label_interiorMinisteryLetterNumber}
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="20%">
+														<h:inputText id="numberId" value="#{soldiersSecondmentCancellationDecisionRequest.wfMovement.ministryApprovalNumber}" readonly="#{!(soldiersSecondmentCancellationDecisionRequest.role=='Requester' or soldiersSecondmentCancellationDecisionRequest.role=='ReviewerEmp')}" maxlength="50" />
+													</td>
+													<th width="16%">
+														#{msgs.label_interiorMinisteryLetterDate}
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="49%">
+														<util:hijri id="dateId" value="#{soldiersSecondmentCancellationDecisionRequest.wfMovement.ministryApprovalDate}" rendered="#{(soldiersSecondmentCancellationDecisionRequest.role=='Requester' or soldiersSecondmentCancellationDecisionRequest.role=='ReviewerEmp')}" />
+														<h:outputText value="#{soldiersSecondmentCancellationDecisionRequest.wfMovement.ministryApprovalDateString}" rendered="#{!(soldiersSecondmentCancellationDecisionRequest.role=='Requester' or soldiersSecondmentCancellationDecisionRequest.role=='ReviewerEmp')}" />
+													</td>
+												</tr>
+												<tr>
+													<th>#{msgs.label_requiredAttachments}</th>
+													<td colspan="3">
+														<code:attachments loginEmpId="#{soldiersSecondmentCancellationDecisionRequest.loginEmpData.empId}" attachmentId="#{soldiersSecondmentCancellationDecisionRequest.attachments}" addEnableFlag="#{soldiersSecondmentCancellationDecisionRequest.role == 'Requester' or soldiersSecondmentCancellationDecisionRequest.role == 'ReviewerEmp'}" viewEnableFlag="true"
+															deleteEnableFlag="#{soldiersSecondmentCancellationDecisionRequest.role == 'Requester' or soldiersSecondmentCancellationDecisionRequest.role == 'ReviewerEmp'}" />
+													</td>
+												</tr>
+												<tr>
+													<th>#{msgs.label_remarks}</th>
+													<td colspan="3">
+														<h:inputText id="remarksId" value="#{soldiersSecondmentCancellationDecisionRequest.wfMovement.remarks}" readonly="#{soldiersSecondmentCancellationDecisionRequest.role!='Requester' and soldiersSecondmentCancellationDecisionRequest.role != 'ReviewerEmp'}" styleClass="inputDataSuperLarge" maxlength="500" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<code:specialAuthorityData id="specialAuthorityDataId" loginEmpId="#{soldiersSecondmentCancellationDecisionRequest.loginEmpData.empId}" wfMovement="#{soldiersSecondmentCancellationDecisionRequest.wfMovement}" role="#{soldiersSecondmentCancellationDecisionRequest.role}" requestFlag="#{false}" rendered="#{soldiersSecondmentCancellationDecisionRequest.role == 'Requester' or soldiersSecondmentCancellationDecisionRequest.role == 'ReviewerEmp' or soldiersSecondmentCancellationDecisionRequest.role == 'SignManager'}" />
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:decisionCopies external="#{soldiersSecondmentCancellationDecisionRequest.externalCopies}" internal="#{soldiersSecondmentCancellationDecisionRequest.internalCopies}" viewOnly="#{soldiersSecondmentCancellationDecisionRequest.role != 'Requester' and soldiersSecondmentCancellationDecisionRequest.role != 'ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:prevTasks rendered="#{soldiersSecondmentCancellationDecisionRequest.role != 'Requester'}" value="#{soldiersSecondmentCancellationDecisionRequest.prevTasks}" refuseRoles="SignManager,ReviewerEmp," />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:curTask id="curTaskId" value="#{soldiersSecondmentCancellationDecisionRequest.currentEmployee}" rendered="#{soldiersSecondmentCancellationDecisionRequest.role == 'SignManager' or soldiersSecondmentCancellationDecisionRequest.role == 'ReviewerEmp'}">
+												<tr>
+													<th width="15%">#{msgs.label_notes}</th>
+													<td width="85%" colspan="3">
+														<h:inputText id="notesId" value="#{soldiersSecondmentCancellationDecisionRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+													</td>
+												</tr>
+												<h:panelGroup rendered="#{soldiersSecondmentCancellationDecisionRequest.role == 'SignManager' or soldiersSecondmentCancellationDecisionRequest.role == 'ReviewerEmp'}">
+													<tr>
+														<th width="15%">#{msgs.label_refuseReasons}</th>
+														<td width="85%" colspan="3">
+															<h:inputText id="refuseReasonsId" value="#{soldiersSecondmentCancellationDecisionRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+														</td>
+													</tr>
+												</h:panelGroup>
+											</code:curTask>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:outputText rendered="#{soldiersSecondmentCancellationDecisionRequest.role == 'Notification' or soldiersSecondmentCancellationDecisionRequest.role == 'History'}" value="#{soldiersSecondmentCancellationDecisionRequest.notificationMessage}" styleClass="successMessage" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:commandButton id="rBtnId" action="#{soldiersSecondmentCancellationDecisionRequest.initMovement()}" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentCancellationDecisionRequest.role == 'Requester'}">
+															<f:ajax execute="@form" render="soldiersSecondmentCancellationDecisionRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+
+														<h:commandButton id="approveSmBtnId" action="#{soldiersSecondmentCancellationDecisionRequest.approveMovementSM()}" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;soldiersSecondmentCancellationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" value="#{msgs.label_superSign} &nsbp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentCancellationDecisionRequest.role == 'SignManager'}">
+															<f:ajax execute="@form" render="soldiersSecondmentCancellationDecisionRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+														<h:commandButton id="retSmBtnId" action="#{soldiersSecondmentCancellationDecisionRequest.returnMovementSM()}"
+															onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateDecisionApprovalNotes(&quot;soldiersSecondmentCancellationDecisionRequestFormId:specialAuthorityDataId:decisionApprovalRemarksId&quot;, &quot;soldiersSecondmentCancellationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;soldiersSecondmentCancellationDecisionRequestFormId:curTaskId:notesId&quot;)',null);" value="#{msgs.label_returnReviewer} &nsbp; #{msgs.fa_undo}" styleClass="btn_normal_icon"
+															rendered="#{soldiersSecondmentCancellationDecisionRequest.role == 'SignManager'}">
+															<f:ajax execute="@form" render="soldiersSecondmentCancellationDecisionRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+														<h:commandButton id="rejectSmBtnId" action="#{soldiersSecondmentCancellationDecisionRequest.rejectMovementSM()}" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;soldiersSecondmentCancellationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" value="#{msgs.label_reject} &nsbp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentCancellationDecisionRequest.role == 'SignManager'}">
+															<f:ajax execute="@form" render="soldiersSecondmentCancellationDecisionRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+
+														<h:commandButton id="approveReBtnId" action="#{soldiersSecondmentCancellationDecisionRequest.approveMovementRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" onclick="return handleOnAction('#{msgs.q_reviewForMovements}','validateRequest()',null);" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentCancellationDecisionRequest.role == 'ReviewerEmp'}">
+															<f:ajax execute="@form" render="soldiersSecondmentCancellationDecisionRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+														<h:commandButton id="rejectReBtnId" action="#{soldiersSecondmentCancellationDecisionRequest.rejectMovementRE()}" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;soldiersSecondmentCancellationDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentCancellationDecisionRequest.role == 'ReviewerEmp'}">
+															<f:ajax execute="@form" render="soldiersSecondmentCancellationDecisionRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+
+														<h:commandButton id="printBtnId" action="#{soldiersSecondmentCancellationDecisionRequest.print()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentCancellationDecisionRequest.role == 'Notification' and soldiersSecondmentCancellationDecisionRequest.instanceApproved == 1}" />
+
+														<h:commandButton id="nBtnId" action="#{soldiersSecondmentCancellationDecisionRequest.closeProcess()}" value="#{msgs.label_notified} &nsbp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{soldiersSecondmentCancellationDecisionRequest.role == 'Notification'}">
+															<f:ajax render="soldiersSecondmentCancellationDecisionRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="warningPanelId">
+							<h:panelGroup rendered="#{soldiersSecondmentCancellationDecisionRequest.soldier != null and soldiersSecondmentCancellationDecisionRequest.lastSecondment == null}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.error_thereIsNoLastValidTrans}" styleClass="remarkMessage" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

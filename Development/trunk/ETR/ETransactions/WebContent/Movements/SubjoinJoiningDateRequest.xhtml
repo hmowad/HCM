@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function getEmployee(contextPath) {
+			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',
+					9, #{subjoinJoiningDateRequest.mode}, -1, -1, -1, -1,
+					'#{subjoinJoiningDateRequest.loginEmpData.physicalUnitHKey}');
+
+		}
+
+		function handleEmpMiniSearchResult(ret) {
+			if (ret != null) {
+				document
+						.getElementById('subjoinJoiningDateRequestFormId:beneficiaryEmployeeHId').value = ret[0];
+				document.getElementById(
+						'subjoinJoiningDateRequestFormId:searchEmpBtnId')
+						.click();
+			}
+		}
+		function validateRequest() {
+			var joiningDateValue =  document.getElementById('subjoinJoiningDateRequestFormId:mvtJoiningDateId:day').value;
+			 if(joiningDateValue == 0) {
+					alert('#{msgs.error_joiningDateMandatroy}');
+					return false;
+				}
+			 return true;
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="subjoinJoiningDateRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{subjoinJoiningDateRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_processRequester}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{subjoinJoiningDateRequest.requester}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiaryEmployee}" switchType="client" onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{subjoinJoiningDateRequest.beneficiary.empId == subjoinJoiningDateRequest.requester.empId})) { getEmployee('#{request.contextPath}'); return false;} else {return true;}" expanded="#{subjoinJoiningDateRequest.requester.empId != subjoinJoiningDateRequest.beneficiary.empId}"
+							rendered="#{(subjoinJoiningDateRequest.role == 'Requester' and (subjoinJoiningDateRequest.loginEmpData.isManager == 1)) or subjoinJoiningDateRequest.requester.empId != subjoinJoiningDateRequest.beneficiary.empId}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+								<h:panelGroup rendered="#{subjoinJoiningDateRequest.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmployee('#{request.contextPath}');return false;" styleClass="btn_normal" />
+														<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{subjoinJoiningDateRequest.searchEmployees()}">
+															<f:ajax execute="subjoinJoiningDateRequestFormId:beneficiaryEmployeeHId" render="subjoinJoiningDateRequestFormId:beneficiaryPanelId subjoinJoiningDateRequestFormId:requestPanelId subjoinJoiningDateRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:inputHidden id="beneficiaryEmployeeHId" value="#{subjoinJoiningDateRequest.wfMovement.employeeId}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp id="beneficiaryId" value="#{subjoinJoiningDateRequest.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requestPanelId">
+							<h:panelGroup rendered="#{subjoinJoiningDateRequest.lastValidTran != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_subjoinData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">#{msgs.label_decisionNumber}</th>
+													<td width="35%">
+														<h:outputText value="#{subjoinJoiningDateRequest.lastValidTran.decisionNumber}" />
+													</td>
+													<th width="15%">#{msgs.label_decisionDate}</th>
+													<td width="35%">
+														<h:outputText value="#{subjoinJoiningDateRequest.lastValidTran.decisionDateString}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_transSubjoinUnit}" />
+													</th>
+													<td width="85%" colspan="3">
+														<h:outputText value="#{subjoinJoiningDateRequest.lastValidTran.transEmpUnitFullName}" />
+													</td>
+
+												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_subjoinUnit}" />
+													</th>
+													<td width="85%" colspan="3">
+														<h:outputText value="#{subjoinJoiningDateRequest.lastValidTran.unitFullName}" />
+													</td>
+
+												</tr>
+												<tr>
+													<th width="15%">#{msgs.label_startDate}</th>
+													<td width="35%">
+														<h:outputText value="#{subjoinJoiningDateRequest.lastValidTran.executionDateString}" />
+													</td>
+													<th width="15%">#{msgs.label_endDate}</th>
+													<td width="35%">
+														<h:outputText value="#{subjoinJoiningDateRequest.lastValidTran.endDateString}" />
+													</td>
+												</tr>
+
+												<tr>
+													<th width="15%">#{msgs.label_justifications}</th>
+													<td width="85%" colspan="3">
+														<h:outputText value="#{subjoinJoiningDateRequest.lastValidTran.reasons}" />
+													</td>
+												</tr>
+
+											</table>
+
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_requestData}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_joiningDate}" />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="85%">
+														<util:hijri id="mvtJoiningDateId" value="#{subjoinJoiningDateRequest.wfMovement.joiningDate}" nullable="true" rendered="#{subjoinJoiningDateRequest.role == 'Requester'}" />
+														<h:outputText value="#{subjoinJoiningDateRequest.wfMovement.joiningDateString}" rendered="#{subjoinJoiningDateRequest.role != 'Requester'}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:prevTasks rendered="#{subjoinJoiningDateRequest.role != 'Requester'}" value="#{subjoinJoiningDateRequest.prevTasks}" refuseRoles="DirectManager," />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<code:curTask id="curTaskId" value="#{subjoinJoiningDateRequest.currentEmployee}" rendered="#{subjoinJoiningDateRequest.role == 'DirectManager'}">
+												<tr>
+													<th width="15%">#{msgs.label_notes}</th>
+													<td width="85%" colspan="3">
+														<h:inputText id="notesId" value="#{subjoinJoiningDateRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+													</td>
+												</tr>
+
+												<tr>
+													<th width="15%">#{msgs.label_refuseReasons}</th>
+													<td width="85%" colspan="3">
+														<h:inputText id="refuseReasonsId" value="#{subjoinJoiningDateRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+													</td>
+												</tr>
+
+											</code:curTask>
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:outputText rendered="#{subjoinJoiningDateRequest.role == 'Notification' or subjoinJoiningDateRequest.role == 'History'}" value="#{subjoinJoiningDateRequest.notificationMessage}" styleClass="successMessage" />
+										</td>
+									</tr>
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:commandButton id="rBtnId" action="#{subjoinJoiningDateRequest.initMovement()}" onclick="return handleOnAction('#{msgs.q_send}', 'validateRequest()');" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{subjoinJoiningDateRequest.role == 'Requester'}">
+															<f:ajax execute="@form" render="subjoinJoiningDateRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+														<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;subjoinJoiningDateRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{subjoinJoiningDateRequest.approveMovementDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinJoiningDateRequest.role == 'DirectManager'}">
+															<f:ajax execute="@form" render="subjoinJoiningDateRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+														<h:commandButton id="rejectDmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;subjoinJoiningDateRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{subjoinJoiningDateRequest.rejectMovementDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinJoiningDateRequest.role == 'DirectManager'}">
+															<f:ajax execute="@form" render="subjoinJoiningDateRequestFormId:notifyMessagesId" />
+														</h:commandButton>
+														<h:commandButton id="nBtnId" action="#{subjoinJoiningDateRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinJoiningDateRequest.role == 'Notification'}">
+															<f:ajax execute="@form" render="notifyMessagesId" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

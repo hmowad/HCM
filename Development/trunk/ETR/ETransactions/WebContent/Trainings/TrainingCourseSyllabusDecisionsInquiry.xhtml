@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+
+		function getTrainingCourse() {
+			openTrainingCoursesMiniSearch('#{request.contextPath}','handleCoursesMiniSearch(ret)', 2);
+		}
+
+		function handleCoursesMiniSearch(ret) {
+			if (ret != null) {
+				document.getElementById('trainingCourseSyllabusDecisionsInquiryFormId:trainingCourseIdHId').value = ret[0];
+				document.getElementById('trainingCourseSyllabusDecisionsInquiryFormId:trainingCourseNameHId').value = ret[1];
+				document.getElementById('trainingCourseSyllabusDecisionsInquiryFormId:trainingCourseNameId').innerHTML = ret[1];
+			}
+		}
+
+		function validateSearch() {
+			var courseId = document.getElementById('trainingCourseSyllabusDecisionsInquiryFormId:trainingCourseIdHId').value
+			var startDateValue = document.getElementById('trainingCourseSyllabusDecisionsInquiryFormId:startDateId:day').value;
+			var endDateValue = document.getElementById('trainingCourseSyllabusDecisionsInquiryFormId:endDateId:day').value;
+			if ((startDateValue == 0 || endDateValue == 0) && courseId == '-1') {
+				alert('#{msgs.error_courseStartDateOrEndDateOrCourseIdMandatory}');
+				return false;
+			}
+			return true;
+		}
+
+		//]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="trainingCourseSyllabusDecisionsInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_trainingCourseSyllabusDecisionsInquiry}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_trainingCourseName}</th>
+									<td width="35%">
+										<h:outputText id="trainingCourseNameId" value="#{trainingCourseSyllabusDecisionsInquiry.trainingCourseName}" />
+										<h:inputHidden id="trainingCourseNameHId" value="#{trainingCourseSyllabusDecisionsInquiry.trainingCourseName}" />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getTrainingCourse(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										<h:inputHidden id="trainingCourseIdHId" value="#{trainingCourseSyllabusDecisionsInquiry.trainingCourseId}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_from}</th>
+									<td width="35%">
+										<util:hijri id="startDateId" value="#{trainingCourseSyllabusDecisionsInquiry.fromDate}" nullable="true" />
+									</td>
+									<th width="15%">#{msgs.label_to}</th>
+									<td width="35%">
+										<util:hijri id="endDateId" value="#{trainingCourseSyllabusDecisionsInquiry.toDate}" nullable="true" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup>
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>
+										<h:commandButton action="#{trainingCourseSyllabusDecisionsInquiry.searchDecisions()}" onclick="return validateSearch();" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon">
+											<f:ajax execute="trainingCourseSyllabusDecisionsInquiryFormId:searchPanelId" render="trainingCourseSyllabusDecisionsInquiryFormId:courseDecisionsTableId trainingCourseSyllabusDecisionsInquiryFormId:notifyMessagesId"/>
+										</h:commandButton>
+										<h:commandButton action="#{trainingCourseSyllabusDecisionsInquiry.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+											<f:ajax render="trainingCourseSyllabusDecisionsInquiryFormId:searchPanelId trainingCourseSyllabusDecisionsInquiryFormId:courseDecisionsTableId trainingCourseSyllabusDecisionsInquiryFormId:notifyMessagesId" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<rich:dataTable id="courseDecisionsTableId" rowKeyVar="index" var="decision" value="#{trainingCourseSyllabusDecisionsInquiry.coursesDecisions}" rows="#{trainingCourseSyllabusDecisionsInquiry.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+										<rich:column style="width : 5%">
+											<f:facet name="header">#</f:facet>
+	                                		#{index + 1}
+	                        			</rich:column>
+										<rich:column style="width : 25%">
+											<f:facet name="header"> #{msgs.label_trainingCourseName} </f:facet>
+											<h:outputText value="#{decision.transactionCourseName}" />
+										</rich:column>
+										<rich:column style="width : 25%">
+											<f:facet name="header"> #{msgs.label_contentType} </f:facet>
+											<h:outputText value="#{msgs.label_curriculum}" rendered="#{decision.contentType == 1}" />
+											<h:outputText value="#{msgs.label_schedule}" rendered="#{decision.contentType == 2}" />
+											<h:outputText value="#{msgs.label_syllabus}" rendered="#{decision.contentType == 3}" />
+										</rich:column>
+										<rich:column style="width : 25%">
+											<f:facet name="header"> #{msgs.label_decisionType} </f:facet>
+											<h:outputText value="#{msgs.label_superSign}" rendered="#{decision.transactionTypeId== 54}" />
+											<h:outputText value="#{msgs.label_cancel}" rendered="#{decision.transactionTypeId == 55}" />
+
+										</rich:column>
+										<rich:column style="width : 20%">
+											<f:facet name="header">
+												<h:outputText value="#{msgs.label_print}" />
+											</f:facet>
+											<h:commandButton value="#{msgs.fa_print}" title="#{msgs.label_print}" styleClass="btn_icon" action="#{trainingCourseSyllabusDecisionsInquiry.print(decision)}" />
+										</rich:column>
+										<f:facet name="footer">
+											<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+												<f:facet name="first">#{msgs.label_first}</f:facet>
+												<f:facet name="last">#{msgs.label_last}</f:facet>
+												<f:facet name="next">#{msgs.label_next}</f:facet>
+												<f:facet name="previous">#{msgs.label_previous}</f:facet>
+											</rich:dataScroller>
+										</f:facet>
+									</rich:dataTable>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

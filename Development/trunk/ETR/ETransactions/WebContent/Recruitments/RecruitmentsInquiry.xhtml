@@ -1,0 +1,304 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		window.onkeypress = function(e) {
+			// window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+			if (keyCode == '13') {
+				document.getElementById('recruitmentsInquiryFormId:searchBtnId').click();
+				return false;
+			}
+		};
+		
+		function getEmployee(contextPath) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, #{recruitmentsInquiry.mode}, -1, -1, -1, -1, -1, #{recruitmentsInquiry.regionId});
+		}
+		
+		function handleEmpMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('recruitmentsInquiryFormId:employeeIDId').value=ret[0];
+				document.getElementById('recruitmentsInquiryFormId:employeeNameId').innerHTML=ret[1];
+			}
+		}
+		
+		function validateSearchFields() {
+			employeeIDId = document.getElementById('recruitmentsInquiryFormId:employeeIDId').value;
+			
+			if (#{recruitmentsInquiry.adminUser == 'false'}) {
+				if (employeeIDId == null || employeeIDId == '') {
+					alert('#{msgs.error_empSelectionManadatory}');
+ 				    return false;
+				}
+			} else {
+				decisionNumberId = document.getElementById('recruitmentsInquiryFormId:decisionNumberId').value;
+				basedOnOrderNumberId = document.getElementById('recruitmentsInquiryFormId:basedOnOrderNumberId').value;
+				decisionDateFromId = document.getElementById('recruitmentsInquiryFormId:decisionDateFromId:day').value;
+				decisionDateToId = document.getElementById('recruitmentsInquiryFormId:decisionDateToId:day').value;
+
+				if (#{recruitmentsInquiry.mode == 1}) {
+					graduationGroupNumberId = document.getElementById('recruitmentsInquiryFormId:graduationGroupNumberId').value;
+					graduationGroupPlaceId = document.getElementById('recruitmentsInquiryFormId:graduationGroupPlaceId').value;
+
+					if (employeeIDId==''
+							&amp;&amp; decisionNumberId == '' 
+							&amp;&amp; basedOnOrderNumberId == '' 
+							&amp;&amp; decisionDateFromId == 0 
+							&amp;&amp; decisionDateToId == 0 
+							&amp;&amp; graduationGroupNumberId == '' 
+							&amp;&amp; graduationGroupPlaceId == -1) {
+						
+				        alert('#{msgs.error_recruitmentsInquiryFieldsAreMandatory}');
+						return false;
+					}
+					
+				    return true;
+				}
+				
+				if (#{recruitmentsInquiry.mode == 2}) {
+					if(employeeIDId == '' 
+							&amp;&amp; decisionNumberId == '' 
+							&amp;&amp; basedOnOrderNumberId == '' 
+							&amp;&amp; decisionDateFromId == 0 
+							&amp;&amp; decisionDateToId == 0 ) {
+						
+						alert('#{msgs.error_recruitmentsInquiryFieldsAreMandatory}');
+						return false;
+					}
+					
+					return true;
+				}
+				
+				if (#{recruitmentsInquiry.mode == 3}) {
+					categoryIDId = document.getElementById('recruitmentsInquiryFormId:categoryIDId').value;
+					
+					if (employeeIDId == ''
+							&amp;&amp; decisionNumberId == ''
+							&amp;&amp; basedOnOrderNumberId == '' 
+							&amp;&amp; decisionDateFromId == 0 
+							&amp;&amp; decisionDateToId == 0 
+							&amp;&amp; categoryIDId == -1) { 
+
+				        alert('#{msgs.error_recruitmentsInquiryFieldsAreMandatory}');
+						return false;
+					}
+					return true;
+				}
+			}		
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="recruitmentsInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{recruitmentsInquiry.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<h:panelGroup rendered="#{recruitmentsInquiry.mode == 2}">
+									<tr>
+										<th>#{msgs.label_transactionType}</th>
+										<td colspan="3">
+											<h:selectOneRadio value="#{recruitmentsInquiry.recruitmentType}">
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_recruitmentDecision}" />
+												<f:selectItem itemValue="0" itemLabel="#{msgs.label_graduationletter}" />
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+											</h:selectOneRadio>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<th>
+										<h:outputText value="#{recruitmentsInquiry.mode == 1 ?  msgs.label_officer : (recruitmentsInquiry.mode == 2 ? msgs.label_soldier : msgs.label_person)}" />
+									</th>
+									<td colspan="#{recruitmentsInquiry.mode == 3 ? 1 : 3}">
+										<h:outputText id="employeeNameId" />
+										<h:inputHidden id="employeeIDId" value="#{recruitmentsInquiry.employeeId}" />
+										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_select}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+									</td>
+									<h:panelGroup rendered="#{recruitmentsInquiry.mode == 3}">
+										<th>
+											<h:outputText value="#{msgs.label_recruitmentType}" />
+										</th>
+										<td>
+											<h:selectOneMenu id="categoryIDId" value="#{recruitmentsInquiry.categoryId}">
+												<f:selectItem itemLabel=" " itemValue="-1" />
+												<f:selectItems value="#{recruitmentsInquiry.categories}" var="category" itemValue="#{category.id}" itemLabel="#{category.description}" />
+											</h:selectOneMenu>
+										</td>
+									</h:panelGroup>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{recruitmentsInquiry.mode == 2 ? msgs.label_decisionOrLetterNumber : msgs.label_decisionNumber}" />
+									</th>
+									<td width="20%">
+										<h:inputText id="decisionNumberId" value="#{recruitmentsInquiry.decisionNumber}" />
+									</td>
+									<th width="18%">
+										<h:outputText value="#{recruitmentsInquiry.mode == 1 ?  msgs.label_royalOrderNumber : (recruitmentsInquiry.mode == 2 ? msgs.label_generalUnitLetterNumber : msgs.label_number)}" />
+									</th>
+									<td width="47%">
+										<h:inputText id="basedOnOrderNumberId" value="#{recruitmentsInquiry.basedOnOrderNumber}" />
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<h:outputText value="#{recruitmentsInquiry.mode == 2 ? msgs.label_decisionOrLetterDateFrom : msgs.label_fromDate}" />
+									</th>
+									<td>
+										<util:hijri id="decisionDateFromId" value="#{recruitmentsInquiry.decisionDateFrom}" nullable="true" />
+									</td>
+									<th>
+										<h:outputText value="#{msgs.label_to}" />
+									</th>
+									<td>
+										<util:hijri id="decisionDateToId" value="#{recruitmentsInquiry.decisionDateTo}" nullable="true" />
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{recruitmentsInquiry.mode == 1}">
+									<tr>
+										<th>
+											<h:outputText value="#{msgs.label_graduationGroupNumber}" />
+										</th>
+										<td>
+											<h:inputText id="graduationGroupNumberId" value="#{recruitmentsInquiry.graduationGroupNumber}" />
+										</td>
+										<th>
+											<h:outputText value="#{msgs.label_graduationGroupPlace}" />
+										</th>
+										<td>
+											<h:selectOneMenu id="graduationGroupPlaceId" value="#{recruitmentsInquiry.graduationGroupPlace}">
+												<f:selectItem itemLabel=" " itemValue="-1" />
+												<f:selectItems value="#{recruitmentsInquiry.officersGraduationGroupPlaces}" var="graduationPlace" itemLabel="#{graduationPlace.description}" itemValue="#{graduationPlace.id}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+								</h:panelGroup>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon" action="#{recruitmentsInquiry.search()}" onclick="return validateSearchFields();">
+										<f:ajax execute="recruitmentsInquiryFormId:searchPanelId" render="recruitmentsInquiryFormId:recruitmentTransactionsTableId recruitmentsInquiryFormId:notifyMessagesId " />
+									</h:commandButton>
+									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{recruitmentsInquiry.resetForm()}">
+										<f:ajax render="recruitmentsInquiryFormId:searchPanelId recruitmentsInquiryFormId:recruitmentTransactionsTableId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchResults}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="recruitmentTransactionsTableId" rowKeyVar="index" var="transaction" value="#{recruitmentsInquiry.recruitmentsTransactions}" rows="#{recruitmentsInquiry.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<rich:column rendered="#{recruitmentsInquiry.mode == 3}">
+								<f:facet name="header">
+	                            	#{msgs.label_recruitmentType}
+	                            </f:facet>
+								<h:outputText value="#{transaction.categoryDesc}" />
+							</rich:column>
+							<rich:column rendered="#{recruitmentsInquiry.mode == 2}">
+								<f:facet name="header">
+	                            	#{msgs.label_transactionType}
+	                            </f:facet>
+								<h:outputText rendered="#{transaction.recruitmentType == 1}" value="#{msgs.label_recruitmentDecision}" />
+								<h:outputText rendered="#{transaction.recruitmentType == 0}" value="#{msgs.label_graduationletter}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">#{recruitmentsInquiry.mode == 2 ? msgs.label_theNumber : msgs.label_decisionNumber}</f:facet>
+								<h:outputText value="#{transaction.decisionNumber}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">#{recruitmentsInquiry.mode == 2 ? msgs.label_date : msgs.label_decisionDate}</f:facet>
+								<h:outputText value="#{transaction.decisionDateString}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">#{recruitmentsInquiry.mode == 1 ?  msgs.label_royalOrderNumber :(recruitmentsInquiry.mode == 2 ? msgs.label_generalUnitLetterNumber : msgs.label_number)}</f:facet>
+								<h:outputText value="#{transaction.basedOnOrderNumber}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">#{recruitmentsInquiry.mode == 1 ? msgs.label_royalOrderDate : (recruitmentsInquiry.mode == 2 ? msgs.label_generalUnitLetterDate : msgs.label_date)}</f:facet>
+								<h:outputText value="#{transaction.basedOnOrderDateString}" />
+							</rich:column>
+							<rich:column rendered="#{recruitmentsInquiry.mode == 1}">
+								<f:facet name="header">#{msgs.label_graduationGroupNumber}</f:facet>
+								<h:outputText value="#{transaction.graduationGroupNumber}" />
+							</rich:column>
+							<rich:column rendered="#{recruitmentsInquiry.mode == 1}">
+								<f:facet name="header">#{msgs.label_graduationGroupPlace}</f:facet>
+								<h:outputText value="#{transaction.graduationGroupPlaceName}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_showOrPrint}" />
+								</f:facet>
+								<h:commandButton action="#{recruitmentsInquiry.print(transaction)}" value="#{msgs.fa_print}" title="#{msgs.label_showOrPrint}" styleClass="btn_icon" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

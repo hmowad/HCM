@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:code="http://java.sun.com/jsf/composite/code">
+    <h:head>	
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    	
+        <h:outputStylesheet library="css" name="styles.css"/>   
+        <h:outputStylesheet library="css" name="grid.css"/>                
+        <h:outputScript name="utilities.js" library="javascript" target="head"/>
+    </h:head>
+    <h:body styleClass="screenBg">
+        <h:form id="delegationForm" dir="#{msgs.dir}">
+            <ui:decorate template="/Main/Template.xhtml">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tr><td width="100%" height="5"/></tr>
+                     
+                    <tr>                        
+                        <td class="screenTitle"><h:outputText value="#{wfDelegationToManagement.screenTitle}"/></td>
+                    </tr>
+                     
+                    <tr><td width="100%" height="5"/></tr>                    
+
+                    <!-- Current Employee -->
+                    
+                    <tr>
+                        <td width="100%">
+                            <table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td>#{msgs.label_mainData}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td width="100%">
+                            <code:emp value="#{wfDelegationToManagement.curEmployee}"/>                            
+                        </td>
+                    </tr>                                        
+                    
+                    
+                    
+                    <!-- View Total Delegation -->
+                    
+                    <tr><td width="100%" height="15"/></tr>
+                
+                    <tr>
+                        <td width="100%">
+                            <table id="totalDelegationTableId" class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td>#{msgs.label_totalDelegation}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>                                    
+                    
+                    <tr>
+                        <td align="center" width="100%">
+                            <rich:dataTable rows="#{wfDelegationToManagement.rowsCount}" rowKeyVar="index" var="row" value="#{wfDelegationToManagement.totalDelegationList}"  rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+                                <rich:column style="width : 3%">
+                                    <f:facet name="header">#</f:facet>
+                                    #{index + 1}
+                                </rich:column>
+                                <rich:column style="width : 20%">
+                                    <f:facet name="header">#{msgs.label_delegatingName}</f:facet>
+                                    <h:outputText value="#{row.empName}"/>
+                                </rich:column>
+                                <rich:column style="width : 20%">
+                                    <f:facet name="header">#{msgs.label_delegateeName}</f:facet>
+                                    <h:outputText value="#{row.delegateName}"/>
+                                </rich:column>
+                                <rich:column style="width : 57%">
+                                    <f:facet name="header">#{msgs.label_delegatedOrgUnit}</f:facet>
+                                    <h:outputText value="#{row.unitFullName}"/>
+                                </rich:column>
+                                <f:facet name="footer">
+									<rich:dataScroller maxPages="5" fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+										<f:facet name="first">#{msgs.label_first}</f:facet>
+										<f:facet name="last">#{msgs.label_last}</f:facet>
+										<f:facet name="next">#{msgs.label_next}</f:facet>
+										<f:facet name="previous">#{msgs.label_previous}</f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+                        </td>
+                    </tr>
+                    <tr><td width="100%" height="30"/></tr>
+                                          
+                     
+                                          
+                    <!-- View Partial Delegation -->
+                    
+                    <tr><td width="100%" height="15"/></tr>
+                    
+                    <tr>
+                        <td width="100%">
+                            <table id="partialDelegationTableId" class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td>#{msgs.label_partialDelegation}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td align="center" width="100%">
+                            <rich:dataTable rows="#{wfDelegationToManagement.rowsCount}" rowKeyVar="index" var="row" value="#{wfDelegationToManagement.partialDelegationList}"  rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+                                <rich:column style="width : 3%">
+                                    <f:facet name="header">#</f:facet>
+                                    #{index + 1}
+                                </rich:column>
+                                <rich:column style="width : 15%">
+                                    <f:facet name="header">#{msgs.label_processName}</f:facet>
+                                    <h:outputText value="#{row.processName}"/>
+                                </rich:column>
+                                <rich:column style="width : 15%">
+                                    <f:facet name="header">#{msgs.label_delegatingName}</f:facet>
+                                    <h:outputText value="#{row.empName}"/>
+                                </rich:column>
+                                <rich:column style="width : 15%">
+                                    <f:facet name="header">#{msgs.label_delegateeName}</f:facet>
+                                    <h:outputText value="#{row.delegateName}"/>
+                                </rich:column>
+                                <rich:column style="width : 52%">
+                                    <f:facet name="header">#{msgs.label_delegatedOrgUnit}</f:facet>
+                                    <h:outputText value="#{row.unitFullName}"/>
+                                </rich:column>
+                                <f:facet name="footer">
+									<rich:dataScroller maxPages="5" fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+										<f:facet name="first">#{msgs.label_first}</f:facet>
+										<f:facet name="last">#{msgs.label_last}</f:facet>
+										<f:facet name="next">#{msgs.label_next}</f:facet>
+										<f:facet name="previous">#{msgs.label_previous}</f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+                        </td>
+                    </tr>
+                    <tr><td width="100%" height="30"/></tr>
+                </table>
+            </ui:decorate>
+        </h:form>
+    </h:body>
+</html>

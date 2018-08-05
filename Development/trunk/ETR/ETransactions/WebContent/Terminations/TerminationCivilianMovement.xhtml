@@ -1,0 +1,375 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript"> 
+
+	function getEmp(contextPath) {
+		var categoryId = 3;
+		openEmployeesMiniSearchByOfficialRegionId(contextPath, 'handleEmpMiniSearchResult(ret)', 13, categoryId, -1);
+	}
+
+	function handleEmpMiniSearchResult(ret) {
+		if (ret != null) {
+				document.getElementById('terminationCivilianMovementFormId:empSigularHId').value = ret[0];
+				document.getElementById('terminationCivilianMovementFormId:searchEmpBtnId').click();
+		}
+	}
+	function validateData(){
+		var referring =  document.getElementById('terminationCivilianMovementFormId:referringId').value;
+		var movementDestination =  document.getElementById('terminationCivilianMovementFormId:movementDestinationId').value;
+
+		var movementDestinationJoiningDate = document.getElementById('terminationCivilianMovementFormId:moveDestationJoiningDateId:day').value;
+		var joiningBasedon =  document.getElementById('terminationCivilianMovementFormId:joiningBasedOnId').value;
+
+		var disclaimerDate = document.getElementById('terminationCivilianMovementFormId:disclaimerDateId:day').value;
+		var serviceTerminationDate = document.getElementById('terminationCivilianMovementFormId:serviceTerminationDateId:day').value;
+
+		if (referring == null || referring == '') {
+			alert("#{msgs.error_refferingToIsMandatory}");
+			return false;
+		}
+		if (movementDestination == null || movementDestination == '') {
+			alert("#{msgs.error_TerminationMovementDestinationIsMandatory}");
+			return false;
+		}
+
+		if(movementDestinationJoiningDate == null || movementDestinationJoiningDate == 0){
+        	alert("#{msgs.error_terminationMovementJoiningDateIsMandatory}");
+            return false;
+        }
+		
+		if (joiningBasedon == null || joiningBasedon == '') {
+			alert("#{msgs.error_joiningBasedonIsMandatory}");
+			return false;
+		}
+
+		if(disclaimerDate == null || disclaimerDate == 0){
+        	alert("#{msgs.error_disclaimerDateIsMandatory}");
+            return false;
+        }		
+		if(serviceTerminationDate == null || serviceTerminationDate == 0){
+        	alert("#{msgs.error_terminationMovementDateIsMandatory}");
+            return false;
+        }
+		
+		return true;
+	}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="terminationCivilianMovementFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{msgs.title_civiliansTerminationMovement}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="terminationEmployeeDataPanelId">
+							<h:panelGroup>
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0" style="margin-top: 3px">
+									<tr>
+										<td width="100%">#{msgs.title_personData}</td>
+									</tr>
+								</table>
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_empName}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationCivilianMovement.selectedEmpData.name}" />
+											<h:inputHidden id="empSigularHId" value="#{terminationCivilianMovement.selectedEmpId}" />
+											<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmp('#{request.contextPath}');return false;" rendered="#{terminationCivilianMovement.role == 'Requester'}" />
+											<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{terminationCivilianMovement.constructEmpData()}">
+												<f:ajax execute="terminationCivilianMovementFormId:terminationEmployeeDataPanelId" render="terminationCivilianMovementFormId:terminationEmployeeDataPanelId terminationCivilianMovementFormId:terminationServiceDataPanelId  terminationCivilianMovementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_personRank}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationCivilianMovement.selectedEmpData.rankDesc}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_jobCode}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationCivilianMovement.selectedEmpMovementTransactionData.transEmpJobCode}" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_jobName}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationCivilianMovement.selectedEmpMovementTransactionData.transEmpJobName}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_officialUnit}" />
+										</th>
+										<td width="80%" colspan="3">
+											<h:outputText value="#{terminationCivilianMovement.selectedEmpMovementTransactionData.transEmpUnitFullName}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_birthDate}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationCivilianMovement.selectedEmpData.birthDateString}" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_recruitmentDate}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationCivilianMovement.selectedEmpData.recruitmentDateString}" />
+										</td>
+									</tr>
+
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_serviceTerminationDueDate}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationCivilianMovement.selectedEmpData.serviceTerminationDueDateString}" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_lastExtensionEndDate}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationCivilianMovement.selectedEmpData.lastExtensionEndDateString}" />
+										</td>
+
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_promotionDueDate}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationCivilianMovement.selectedEmpData.promotionDueDateString}" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.lable_lastPromotionDate}" />
+										</th>
+										<td width="30%">
+											<h:outputText value="#{terminationCivilianMovement.selectedEmpData.lastPromotionDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_movementDate}" />
+										</th>
+										<td width="80%" colspan="3">
+											<h:outputText value="#{terminationCivilianMovement.selectedEmpMovementTransactionData.executionDateString}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup id="terminationServiceDataPanelId">
+							<h:panelGroup switchType="client" expanded="true" header="#{msgs.label_terminationData}" rendered="#{terminationCivilianMovement.selectedEmpData.empId != null }">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0" style="margin-top: 3px">
+									<tr>
+										<td width="100%">#{msgs.label_terminationData}</td>
+									</tr>
+								</table>
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_refferingTo}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="80%" colspan="3">
+											<h:inputTextarea id="referringId" value="#{terminationCivilianMovement.wfCancellationMovementData.referring}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge" disabled="#{terminationCivilianMovement.role != 'Requester' and  terminationCivilianMovement.role !='ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_movementDestination}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="30%">
+											<h:inputText id="movementDestinationId" value="#{terminationCivilianMovement.wfCancellationMovementData.movedTo}" disabled="#{terminationCivilianMovement.role != 'Requester' and  terminationCivilianMovement.role !='ReviewerEmp'}" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_moveDestationJoiningDate}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="30%">
+											<util:hijri id="moveDestationJoiningDateId" nullable="true" value="#{terminationCivilianMovement.wfCancellationMovementData.movementJoiningDate}" rendered="#{terminationCivilianMovement.role == 'Requester' or  terminationCivilianMovement.role =='ReviewerEmp'}" />
+											<h:outputText value="#{terminationCivilianMovement.wfCancellationMovementData.movementJoiningDateString}" rendered="#{terminationCivilianMovement.role != 'Requester' and  terminationCivilianMovement.role !='ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_joiningBasedOn}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="80%" colspan="3">
+											<h:inputText id="joiningBasedOnId" value="#{terminationCivilianMovement.wfCancellationMovementData.movementJoiningDesc}" styleClass="inputDataSuperLarge" disabled="#{terminationCivilianMovement.role != 'Requester' and  terminationCivilianMovement.role !='ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_disclaimerDate}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="30%">
+											<util:hijri id="disclaimerDateId" nullable="true" value="#{terminationCivilianMovement.wfCancellationMovementData.disclaimerDate}" rendered="#{terminationCivilianMovement.role == 'Requester' or  terminationCivilianMovement.role =='ReviewerEmp'}" />
+											<h:outputText value="#{terminationCivilianMovement.wfCancellationMovementData.disclaimerDateString}" rendered="#{terminationCivilianMovement.role != 'Requester' and  terminationCivilianMovement.role !='ReviewerEmp'}" />
+										</td>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_enrollmentCollapseDate}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="30%">
+											<util:hijri id="serviceTerminationDateId" nullable="true" value="#{terminationCivilianMovement.wfCancellationMovementData.serviceTerminationDate}" rendered="#{terminationCivilianMovement.role == 'Requester' or  terminationCivilianMovement.role =='ReviewerEmp'}" />
+											<h:outputText value="#{terminationCivilianMovement.wfCancellationMovementData.serviceTerminationDateString}" rendered="#{terminationCivilianMovement.role != 'Requester' and  terminationCivilianMovement.role !='ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_remarks}" />
+										</th>
+										<td width="80%" colspan="3">
+											<h:inputText value="#{terminationCivilianMovement.wfCancellationMovementData.remarks}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge" disabled="#{terminationCivilianMovement.role != 'Requester' and  terminationCivilianMovement.role !='ReviewerEmp'}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_addAttachments}" />
+										</th>
+										<td width="85%" colspan="3">
+											<code:attachments loginEmpId="#{terminationCivilianMovement.loginEmpData.empId}" attachmentId="#{terminationCivilianMovement.attachments}" addEnableFlag="#{terminationCivilianMovement.role != 'SignManager'}" viewEnableFlag="true" deleteEnableFlag="#{terminationCivilianMovement.role != 'SignManager'}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="decisionCopiesPanelId">
+							<h:panelGroup>
+								<code:decisionCopies viewOnly="#{terminationCivilianMovement.role != 'Requester' and  terminationCivilianMovement.role !='ReviewerEmp'}" external="#{terminationCivilianMovement.wfCancellationMovementData.externalCopies}" internal="#{terminationCivilianMovement.internalCopies}" />
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<h:panelGroup id="prevTasksPanelId" rendered="#{terminationCivilianMovement.role !='Requester'}">
+					<code:prevTasks rendered="#{terminationCivilianMovement.role != 'Requester'}" value="#{terminationCivilianMovement.prevTasks}" refuseRoles="SignManager," />
+				</h:panelGroup>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="curTaskPanelId" rendered="#{terminationCivilianMovement.role !='Requester'}">
+							<code:curTask id="curTaskId" value="#{terminationCivilianMovement.currentEmployee}" rendered="#{terminationCivilianMovement.role != 'Requester' and terminationCivilianMovement.role != 'Notification' and terminationCivilianMovement.role != 'History'}">
+
+								<tr>
+									<th width="15%">#{msgs.label_notes}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="notesId" value="#{terminationCivilianMovement.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+
+								<h:panelGroup rendered="#{terminationCivilianMovement.role == 'ReviewerEmp' or terminationCivilianMovement.role == 'SignManager'}">
+									<tr>
+										<th width="15%">#{msgs.label_refuseReasons}</th>
+										<td width="85%" colspan="3">
+											<h:inputText id="refuseReasonsId" value="#{terminationCivilianMovement.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+										</td>
+									</tr>
+								</h:panelGroup>
+
+							</code:curTask>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{terminationCivilianMovement.role == 'Notification' or terminationCivilianMovement.role == 'History'}" value="#{terminationCivilianMovement.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsSectionId">
+							<h:panelGroup>
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<h:panelGroup rendered="#{terminationCivilianMovement.role == 'Requester'}">
+												<h:commandButton id="sendBtnId" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" onclick="return handleOnAction('#{msgs.q_send}', 'validateData()');" action="#{terminationCivilianMovement.initProcess()}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{terminationCivilianMovement.role == 'ReviewerEmp'}">
+												<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}', 'validateData()');" action="#{terminationCivilianMovement.approveRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;terminationCivilianMovementFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationCivilianMovement.rejectRE}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{terminationCivilianMovement.role == 'SignManager'}">
+												<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;terminationCivilianMovementFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationCivilianMovement.signSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="modifySmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;terminationCivilianMovementFormId:curTaskId:refuseReasonsId&quot;, &quot;terminationCivilianMovementFormId:curTaskId:notesId&quot;)');" action="#{terminationCivilianMovement.modifySM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;terminationCivilianMovementFormId:curTaskId:refuseReasonsId&quot;)');" action="#{terminationCivilianMovement.rejectSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{terminationCivilianMovement.role == 'Notification' and terminationCivilianMovement.instanceApproved == 1}">
+												<h:commandButton action="#{terminationCivilianMovement.printForNotification()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+											</h:panelGroup>
+
+											<h:panelGroup rendered="#{terminationsCiviliansRecords.role == 'Notification'}">
+												<h:commandButton id="nBtnId" action="#{terminationCivilianMovement.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+</h:body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+          var index;
+          function getEmp(i, contextPath){
+        	 index = i;
+        	 openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{wfInbox.getLoginEmpPhysicalRegionFlag(false)});
+          }
+          
+          function handleEmpMiniSearchResult(ret){
+        	  if(ret != null){
+                  document.getElementById('wfInboxForm:searchEmpValue').value = ret[0];
+                  document.getElementById('wfInboxForm:selectedIndex').value = index;
+                  document.getElementById('wfInboxForm:searchEmpButton').click();
+               }
+          }
+
+          function getAssignee(contextPath){
+	          if(#{wfInbox.admin}) {
+  	        	  openEmployeesMiniSearch(contextPath, 'handleAssigneeMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{wfInbox.getLoginEmpPhysicalRegionFlag(true)});
+          	  } else {
+          		  openEmpsMiniSearch(contextPath,'handleAssigneeMiniSearchResult(ret)', 9, -1, -1, -1, -1, -1, #{wfInbox.loginEmpData.physicalUnitHKey});
+              }  	               	  
+	      }
+	        
+	      function handleAssigneeMiniSearchResult(ret){ 
+	          if(ret != null){
+		          document.getElementById('wfInboxForm:searchAssigneeIDId').value = ret[0];
+		          document.getElementById('wfInboxForm:searchAssigneeNameId').innerHTML = ret[1];
+		          document.getElementById('wfInboxForm:searchAssigneeBtnId').click();
+		      }
+	      }
+
+	      function getBeneficiary(contextPath){
+	    	  openEmployeesMiniSearch(contextPath, 'handleBeneficiaryMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, -1);        	 
+	      }
+	        
+	      function handleBeneficiaryMiniSearchResult(ret){ 
+	          if(ret != null){
+		          document.getElementById('wfInboxForm:searchBeneficiaryIDId').value = ret[0];
+		          document.getElementById('wfInboxForm:searchBeneficiaryNameId').innerHTML = ret[1];
+		          document.getElementById('wfInboxForm:resetBeneficiaryBtnId').style.display = '';   	
+		          document.getElementById('wfInboxForm:searchBeneficiaryBtnId').click();
+		      }
+	      }
+
+	      function resetBeneficiary() {
+		      document.getElementById('wfInboxForm:searchBeneficiaryIDId').value = '';
+	    	  document.getElementById('wfInboxForm:searchBeneficiaryNameId').innerHTML = '';	 
+	    	  document.getElementById('wfInboxForm:resetBeneficiaryBtnId').style.display = 'none';   		
+	    	  document.getElementById('wfInboxForm:searchBeneficiaryBtnId').click();
+	      }
+
+	      	var selectedTasksCount = 0;
+	      	function updateSelectedTasksCount(checked, allFlag) {
+	            var totalNumberOfTasks = document.getElementById('wfInboxForm:tasksListSizeHId').value;
+				if (allFlag) {
+					if (checked)
+		                selectedTasksCount = totalNumberOfTasks;
+		            else 
+		                selectedTasksCount = 0;
+				} else {
+					if (checked) {
+		                selectedTasksCount++;
+		                if (totalNumberOfTasks == selectedTasksCount)
+		                	document.getElementById('wfInboxForm:tasksId:selectAllCheckboxId').checked = true;
+					} else {
+		                selectedTasksCount--;
+		                document.getElementById('wfInboxForm:tasksId:selectAllCheckboxId').checked = false;
+					}
+				}
+	       	}
+
+	        function validateCloseNotifications(){
+	            if(selectedTasksCount == 0){
+	                alert('#{msgs.error_selectNotificationsToBeClosed}');
+	                return false;
+	            } else if(selectedTasksCount > 500){
+	                var confirmed = confirm('#{msgs.label_notificationsGreaterThanThresholdWarning}'.format(selectedTasksCount));
+	                if (!confirmed)
+	                	return false;
+	            }
+
+	            selectedTasksCount = 0;
+				return true;
+	        }
+
+	        function resetSelectedTasksCount() {
+	        	selectedTasksCount = 0;
+		    }
+	// ]]>
+    </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<f:event type="preRenderComponent" listener="#{wfInbox.init}" />
+	<h:form id="wfInboxForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{msgs.title_followingInboxProcesses}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td>
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_taskOwner}" />
+								</th>
+								<td width="35%">
+									<h:outputText id="searchAssigneeNameId" value="#{wfInbox.searchByAssigneeName}" />
+									<h:inputHidden id="searchAssigneeIDId" value="#{wfInbox.searchByAssigneeId}" />
+									<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getAssignee('#{request.contextPath}'); return false;" styleClass="btn_icon" rendered="#{(wfInbox.admin or wfInbox.loginEmpData.isManager ==1)}" />
+									<h:commandButton id="searchAssigneeBtnId" action="#{wfInbox.searchTasks}" style="display: none;">
+										<f:ajax onevent="resetSelectedTasksCount()" render="notifyMessagesId tasksId" execute="searchAssigneeIDId" />
+									</h:commandButton>
+								</td>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_selectBeneficiary}" />
+								</th>
+								<td width="35%">
+									<h:outputText id="searchBeneficiaryNameId" value="#{wfInbox.searchByBeneficiaryName}" />
+									<h:inputHidden id="searchBeneficiaryIDId" value="#{wfInbox.searchByBeneficiaryId}" />
+									<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getBeneficiary('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+									<h:commandButton id="searchBeneficiaryBtnId" action="#{wfInbox.searchTasks}" style="display: none;">
+										<f:ajax onevent="resetSelectedTasksCount()" render="notifyMessagesId tasksId" execute="searchBeneficiaryIDId" />
+									</h:commandButton>
+									<h:commandButton id="resetBeneficiaryBtnId" value="#{msgs.fa_times}" onclick="resetBeneficiary(); return false;" title="#{msgs.label_cancelSelection}" styleClass="btn_icon" style="display: none" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_searchBy}" />
+								</th>
+								<td width="50%" colspan="2">
+									<h:selectOneMenu value="#{wfInbox.selectedProcessGroupId}">
+										<f:selectItem itemLabel="#{msgs.label_searchByModule}" itemValue="0" />
+										<f:selectItems value="#{wfInbox.processesGroups}" var="pG" itemLabel="#{pG.processGroupName}" itemValue="#{pG.processGroupId}" />
+
+										<f:ajax event="change" onevent="resetSelectedTasksCount()" listener="#{wfInbox.searchProcesses}" execute="@this" render="notifyMessagesId processesId tasksId" />
+									</h:selectOneMenu>
+
+									<h:selectOneMenu id="processesId" value="#{wfInbox.selectedProcessId}">
+										<f:selectItem itemLabel="#{msgs.label_searchByProcess}" itemValue="0" />
+										<f:selectItems value="#{wfInbox.processes}" var="p" itemLabel="#{p.processName}" itemValue="#{p.processId}" />
+
+										<f:ajax event="change" onevent="resetSelectedTasksCount()" listener="#{wfInbox.searchByProcess}" execute="@this" render="notifyMessagesId tasksId" />
+									</h:selectOneMenu>
+								</td>
+								<td width="35%">
+									<h:selectOneRadio value="#{wfInbox.selectedTaskRole}">
+										<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+										<f:selectItem itemLabel="#{msgs.label_actions}" itemValue="1" />
+										<f:selectItem itemLabel="#{msgs.label_notifications}" itemValue="2" />
+
+										<f:ajax event="change" onevent="resetSelectedTasksCount()" listener="#{wfInbox.searchByTaskRole}" execute="@this" render="notifyMessagesId tasksId actionsPanelId" />
+									</h:selectOneRadio>
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">
+									<h:outputText value="#{msgs.label_searchByTaskOwner}" />
+								</th>
+								<td width="50%" colspan="2">
+									<h:inputText id="taskOwnerNameId" value="#{wfInbox.searchByTaskOwnerName}" />
+									<h:outputText value=" " />
+									<h:commandButton action="#{wfInbox.searchTasks}" value="#{msgs.fa_search}" title="#{msgs.label_searchByRoot}" styleClass="btn_icon">
+										<f:ajax onevent="resetSelectedTasksCount()" render="notifyMessagesId tasksId" execute="taskOwnerNameId" />
+									</h:commandButton>
+								</td>
+								<td width="35%">
+									<h:commandButton action="#{wfInbox.sortASC}" value="#{msgs.fa_sort_asc}" title="#{msgs.label_sortAsc}" styleClass="btn_icon">
+										<f:ajax render="notifyMessagesId tasksId" />
+									</h:commandButton>
+									<h:commandButton action="#{wfInbox.sortDESC}" value="#{msgs.fa_sort_desc}" title="#{msgs.label_sortDesc}" styleClass="btn_icon">
+										<f:ajax render="notifyMessagesId tasksId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="currentDoneProcessesId">
+							<div class="tab-border">
+								<h:commandButton action="#{wfInbox.getRunningTasks}" value="#{msgs.label_currentProcesses} &nbsp; #{msgs.fa_cogs}" styleClass="btn_normal_icon #{wfInbox.runningFlag ? 'selected-tab' : ''}">
+									<f:ajax render="notifyMessagesId tasksId actionsPanelId currentDoneProcessesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+								</h:commandButton>
+								<h:commandButton action="#{wfInbox.getDoneCompletedTasks}" value="#{msgs.label_doneProcesses} &nbsp; #{msgs.fa_chevron_circle_left}" styleClass="btn_normal_icon #{wfInbox.runningFlag ? '' : 'selected-tab'}">
+									<f:ajax render="notifyMessagesId tasksId actionsPanelId currentDoneProcessesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+								</h:commandButton>
+							</div>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td align="center" width="100%" class="tab-body">
+						<rich:dataTable id="tasksId" rowKeyVar="index" var="task" value="#{wfInbox.tasks}" rows="#{wfInbox.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+							<!-- CheckBoxes Selection Column -->
+							<rich:column rendered="#{wfInbox.selectedTaskRole == 2 and wfInbox.runningFlag}">
+								<f:facet name="header">
+									<h:selectBooleanCheckbox id="selectAllCheckboxId" value="#{wfInbox.selectAll}" onchange="updateSelectedTasksCount(this.checked, true)">
+										<a4j:ajax event="change" listener="#{wfInbox.selectUnselectAllRows()}" render="wfInboxForm:tasksId" oncomplete="#{rich:component('reload')}.hide()" />
+									</h:selectBooleanCheckbox>
+								</f:facet>
+
+								<h:selectBooleanCheckbox value="#{task.selected}" onchange="updateSelectedTasksCount(this.checked, false)" />
+
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_taskId}" />
+								</f:facet>
+								<h:outputText value="#{task.taskId}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_processName}" />
+								</f:facet>
+								<h:outputText rendered="#{wfInbox.loginEmpData.empId != task.assigneeId}" value="#{task.processName}" />
+								<h:outputLink rendered="#{wfInbox.loginEmpData.empId == task.assigneeId}" value="#{request.contextPath}#{task.taskUrl}">#{task.processName}</h:outputLink>
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_processRequester}" />
+								</f:facet>
+								<h:outputText value="#{task.taskOwnerName}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_requesterRefernce}" />
+								</f:facet>
+								<h:outputText value="#{task.requesterReferenceRankDesc} #{task.requesterReferenceRankDesc == null ? '' : '/'} #{task.requesterReferenceName}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_taskDate}" />
+								</f:facet>
+								<h:outputText value="#{task.hijriAssignDateString}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_delegatingName}" />
+								</f:facet>
+								<h:outputText value="#{task.delegatingName}" />
+							</rich:column>
+							<rich:column rendered="#{!wfInbox.runningFlag}">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_taskAction}" />
+								</f:facet>
+								<h:outputText value="#{task.action}" />
+							</rich:column>
+							<rich:column rendered="#{!wfInbox.runningFlag}">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_taskActionDate}" />
+								</f:facet>
+								<h:outputText value="#{task.hijriActionDateString}" />
+							</rich:column>
+							<rich:column rendered="#{wfInbox.runningFlag and wfInbox.loginEmpData.empId == wfInbox.searchByAssigneeId}">
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_delegation}" />
+								</f:facet>
+								<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" rendered="#{wfInbox.loginEmpData.empId == task.assigneeId}" styleClass="btn_icon" onclick="getEmp(#{index},'#{request.contextPath}'); return false;" />
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:dataScroller oncomplete="unMaskScreen()" fastControls="hide" execute="wfInboxForm:tasksId">
+									<f:facet name="first"> #{msgs.label_first} </f:facet>
+									<f:facet name="last"> #{msgs.label_last} </f:facet>
+									<f:facet name="next"> #{msgs.label_next} </f:facet>
+									<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsPanelId">
+							<h:panelGroup rendered="#{wfInbox.selectedTaskRole == 2 and wfInbox.runningFlag}">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<h:inputHidden id="tasksListSizeHId" value="#{wfInbox.tasksListSize}" />
+											<h:commandButton onclick="return handleOnAction('#{msgs.q_completeNOfTasks}'.format(selectedTasksCount), 'validateCloseNotifications()');" action="#{wfInbox.closeProcesses()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+												<f:ajax execute="wfInboxForm:tasksId" render="wfInboxForm:notifyMessagesId wfInboxForm:headerNotificationsCountId wfInboxForm:tasksId wfInboxForm:tasksListSizeHId" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+			</table>
+		</ui:decorate>
+
+		<h:inputHidden id="searchEmpValue" value="#{wfInbox.searchEmpId}" />
+		<h:inputHidden id="selectedIndex" value="#{wfInbox.selectedGridIndex}" />
+		<h:commandButton id="searchEmpButton" style="display: none;" action="#{wfInbox.delegateTaskEmployee}">
+			<f:ajax render="wfInboxForm:tasksId notifyMessagesId" execute="searchEmpValue selectedIndex" />
+		</h:commandButton>
+	</h:form>
+</h:body>
+</html>

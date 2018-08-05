@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+	//<![CDATA[
+		function getUnit() {
+			if (#{notificationMessages.admin}) {
+				openUnitsMiniSearch(2, '#{request.contextPath}', 'handleUnitMiniSearchResult(ret)', -1, document.getElementById('notificationMessagesFormId:regionId').value, -1);
+			} else if (#{notificationMessages.manager}) {
+				openUnitsMiniSearch(4, '#{request.contextPath}', 'handleUnitMiniSearchResult(ret)', -1, -1, #{notificationMessages.selectedUnitId});
+			}
+		}
+
+		function handleUnitMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('notificationMessagesFormId:selectedUnitHID').value = ret[0];
+				document.getElementById('notificationMessagesFormId:selectedUnitFullNameId').innerHTML = ret[1];
+				document.getElementById('notificationMessagesFormId:selectedUnitFullNameHId').value = ret[1];
+				document.getElementById('notificationMessagesFormId:selectedUnitHKeyId').value = ret[3];
+			}
+		}
+
+        function validateData() {
+           	var notificationMessage = document.getElementById('notificationMessagesFormId:notificationMessageId').value;
+           	if (notificationMessage == null || notificationMessage.trim() == '') {
+               	alert('#{msgs.error_messageMandatory}');
+               	return false;
+           	}
+           return true;
+         }
+     // ]]>
+	</script>
+
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="notificationMessagesFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_notificationMessages}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="noPrivilageGroupId" rendered="#{!notificationMessages.manager and !notificationMessages.admin and notificationMessages.role == 'Requester'}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="100%" style="vertical-align: top;">#{msgs.label_notificationMessagesPrivilage}</th>
+								</tr>
+							</table>
+						</h:panelGroup>
+
+						<h:panelGroup id="managerAdminPanelGroupId" rendered="#{notificationMessages.manager or notificationMessages.admin or notificationMessages.role != 'Requester'}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<h:panelGroup rendered="#{notificationMessages.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>#{msgs.label_notificationMessagesFilter}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														#{msgs.label_region}
+														<font style="color: red;">*</font>
+													</th>
+													<td width="85%">
+														<h:selectOneMenu id="regionId" value="#{notificationMessages.selectedRegionId}" disabled="#{notificationMessages.getLoginEmpPhysicalRegionFlag(notificationMessages.admin) != -1}">
+															<f:selectItems value="#{notificationMessages.regionsList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+															<f:ajax event="change" execute="@this" listener="#{notificationMessages.resetUnits}" render="notificationMessagesFormId:unitPanelGroupId" />
+														</h:selectOneMenu>
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														#{msgs.label_unit}
+														<font style="color: red;">*</font>
+													</th>
+													<td width="85%">
+														<h:panelGroup id="unitPanelGroupId">
+															<h:outputText id="selectedUnitFullNameId" value="#{notificationMessages.selectedUnitFullName}" />
+															<h:inputHidden id="selectedUnitFullNameHId" value="#{notificationMessages.selectedUnitFullName}" />
+															<h:inputHidden id="selectedUnitHID" value="#{notificationMessages.selectedUnitId}" />
+															<h:inputHidden id="selectedUnitHKeyId" value="#{notificationMessages.selectedUnitHKey}" />
+															<h:outputText value=" " />
+															<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit();return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+														</h:panelGroup>
+													</td>
+												</tr>
+												<tr>
+													<th width="15%">
+														#{msgs.label_category}
+														<font style="color: red;">*</font>
+													</th>
+													<td width="85%">
+														<h:selectOneMenu value="#{notificationMessages.selectedCategoryId}">
+															<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+															<f:selectItems value="#{notificationMessages.categorieslist}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+														</h:selectOneMenu>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+
+								<tr>
+									<td width="100%">
+										<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td>#{msgs.label_messageData}</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<th width="15%">
+													#{msgs.label_message}
+													<font style="color: red;">*</font>
+												</th>
+												<td width="85%">
+													<h:inputTextarea id="notificationMessageId" value="#{notificationMessages.message}" rendered="#{notificationMessages.role == 'Requester'}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',300);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',300);" rows="3" styleClass="inputDataSuperLarge" />
+													<h:outputText value="#{notificationMessages.message}" rendered="#{notificationMessages.role != 'Requester'}" style="white-space: pre-wrap;" />
+												</td>
+											</tr>
+											<tr>
+												<th width="15%">#{msgs.label_attachment}</th>
+												<td width="85%">
+													<code:attachments loginEmpId="#{notificationMessages.loginEmpData.empId}" attachmentId="#{notificationMessages.attachments}" addEnableFlag="#{notificationMessages.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{notificationMessages.role == 'Requester'}" />
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+
+								<tr>
+									<td width="100%" height="15" />
+								</tr>
+
+								<tr>
+									<td width="100%">
+										<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%">
+													<h:panelGroup rendered="#{notificationMessages.role == 'Requester'}">
+														<h:commandButton action="#{notificationMessages.initProcess}" onclick="return handleOnAction('#{msgs.q_send}', 'validateData()');" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+													</h:panelGroup>
+													<h:panelGroup rendered="#{notificationMessages.role == 'Notification'}">
+														<h:commandButton action="#{notificationMessages.closeProcess}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+													</h:panelGroup>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

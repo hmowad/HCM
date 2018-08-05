@@ -1,0 +1,216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+
+	function getQualificationMinorSpec() {
+		openQualificationMinorSpecsMiniSearch('#{request.contextPath}','handleQualificationMinorSpecMiniSearchResult(ret)', '#{addTrainingCourseNameRequest.wfTrainingCourseName.courseType == 2 ? 1:0}');
+	}
+
+	function handleQualificationMinorSpecMiniSearchResult(ret) {
+		if (ret != null) {
+			document.getElementById('addTrainingCourseNameRequestFormId:trainingCourseQualificationMinorSpecIdHId').value = ret[0];
+			document.getElementById('addTrainingCourseNameRequestFormId:trainingCourseQualificationMinorSpecId').innerHTML = ret[1];
+		}
+	}
+
+	function validateRequest() {
+		var trainingCourseName = document.getElementById('addTrainingCourseNameRequestFormId:trainingCourseNameId').value;
+
+		if (trainingCourseName == null || trainingCourseName == '') {
+			alert('#{msgs.error_courseNameMandatory}');
+			return false;
+		}
+
+		
+		if (#{addTrainingCourseNameRequest.modifyAdmin}) {
+			var trainingCourseQualMinorSpecId = document.getElementById('addTrainingCourseNameRequestFormId:trainingCourseQualificationMinorSpecIdHId').value;
+			if (trainingCourseQualMinorSpecId == null || trainingCourseQualMinorSpecId == '') {
+				alert('#{msgs.error_qualificationMinorSpecMandatory}');
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	function validateReview() {
+	    if(validateRefuseAndNotes(1, 'addTrainingCourseNameRequestFormId:curTaskId:refuseReasonsId')) {
+	    	if(#{!addTrainingCourseNameRequest.modifyAdmin})
+	    		return true;
+	    	return validateRequest();
+	    } else
+	    	return false;
+	}
+	
+	</script>
+</h:head>
+
+<h:body styleClass="screenBg">
+	<h:form id="addTrainingCourseNameRequestFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{addTrainingCourseNameRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requester}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{addTrainingCourseNameRequest.requester}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_requestData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">
+									#{msgs.label_trainingCourseName}
+									<h:outputText value=" " />
+									<font style="color: red;">*</font>
+								</th>
+								<td width="35%">
+									<h:inputText id="trainingCourseNameId" value="#{addTrainingCourseNameRequest.wfTrainingCourseName.courseName}" rendered="#{addTrainingCourseNameRequest.modifyAdmin or addTrainingCourseNameRequest.role == 'Requester'}" styleClass="inputDataSuperLarge" />
+									<h:outputText value="#{addTrainingCourseNameRequest.wfTrainingCourseName.courseName}" rendered="#{!addTrainingCourseNameRequest.modifyAdmin and addTrainingCourseNameRequest.role != 'Requester'}" />
+								</td>
+								<th width="15">#{msgs.label_attachments}</th>
+								<td width="35%">
+									<code:attachments loginEmpId="#{addTrainingCourseNameRequest.loginEmpData.empId}" attachmentId="#{addTrainingCourseNameRequest.attachments}" addEnableFlag="#{addTrainingCourseNameRequest.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{addTrainingCourseNameRequest.role == 'Requester'}" />
+								</td>
+
+							</tr>
+							<tr>
+								<h:panelGroup rendered="#{addTrainingCourseNameRequest.modifyAdmin or (addTrainingCourseNameRequest.role != 'Requester' and addTrainingCourseNameRequest.role != 'SecondarySignManager')}">
+									<th width="15%">
+										#{msgs.label_trainingQualificationMinorSpec}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText id="trainingCourseQualificationMinorSpecId" value="#{addTrainingCourseNameRequest.wfTrainingCourseName.qualificationMinorSpecDescription}" />
+										<h:inputHidden id="trainingCourseQualificationMinorSpecIdHId" value="#{addTrainingCourseNameRequest.wfTrainingCourseName.qualificationMinorSpecId}" />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getQualificationMinorSpec(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{addTrainingCourseNameRequest.modifyAdmin}" />
+									</td>
+								</h:panelGroup>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:prevTasks rendered="#{addTrainingCourseNameRequest.role != 'Requester'}" value="#{addTrainingCourseNameRequest.prevTasks}" refuseRoles="SignManager,SecondarySignManager," />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:curTask id="curTaskId" value="#{addTrainingCourseNameRequest.currentEmployee}" rendered="#{addTrainingCourseNameRequest.role == 'SignManager' or addTrainingCourseNameRequest.role == 'SecondarySignManager'}">
+							<tr>
+								<th width="15%">#{msgs.label_notes}</th>
+								<td width="85%" colspan="3">
+									<h:inputText id="notesId" value="#{addTrainingCourseNameRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{addTrainingCourseNameRequest.role != 'Requester'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{addTrainingCourseNameRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
+						</code:curTask>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:outputText rendered="#{addTrainingCourseNameRequest.role == 'Notification' or addTrainingCourseNameRequest.role == 'History'}" value="#{addTrainingCourseNameRequest.notificationMessage}" styleClass="successMessage" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<!-- Requester -->
+									<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()',null);" action="#{addTrainingCourseNameRequest.initWFTrainingCourseName()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{addTrainingCourseNameRequest.role == 'Requester'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- Sign manager -->
+									<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateReview()', null);" action="#{addTrainingCourseNameRequest.approveWFTrainingCourseNameSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{addTrainingCourseNameRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;addTrainingCourseNameRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{addTrainingCourseNameRequest.rejectWFTrainingCourseNameSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{addTrainingCourseNameRequest.role == 'SignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<!-- Secondary Sign manager -->
+									<h:commandButton id="approveSsmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateReview()', null);" action="#{addTrainingCourseNameRequest.approveWFTrainingCourseNameSSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{addTrainingCourseNameRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;addTrainingCourseNameRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{addTrainingCourseNameRequest.rejectWFTrainingCourseNameSSM}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{addTrainingCourseNameRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+									<h:commandButton id="nBtnId" action="#{addTrainingCourseNameRequest.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{addTrainingCourseNameRequest.role == 'Notification'}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
+									</h:commandButton>
+
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
+</h:body>
+</html>

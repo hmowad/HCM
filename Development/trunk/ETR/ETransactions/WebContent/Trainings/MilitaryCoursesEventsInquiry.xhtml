@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:composite="http://java.sun.com/jsf/composite">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		//<![CDATA[
+		window.onkeypress = function(e) {
+			  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+		      if (keyCode == '13'){
+		    	  document.getElementById('militaryCoursesEventsInquiryFormId:searchBtnId').click();
+		    	  return false;
+		      }
+		}; 
+		// ]]>
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="militaryCoursesEventsInquiryFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_militaryCoursesEventsInquiry}</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_trainingCourse}
+									</th>
+									<td width="35%">
+										<h:selectOneMenu value="#{militaryCoursesEventsInquiry.trainingTypeId}">
+											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											<f:selectItem itemLabel="#{msgs.label_insideBorderGuards}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_outsideBorderGuards}" itemValue="2" />
+										</h:selectOneMenu>
+									</td>
+									<th width="15%">
+										#{msgs.label_country}
+									</th>
+									<td width="35%">
+										<h:inputText value="#{militaryCoursesEventsInquiry.countryName}" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_theTrainingUnit}</th>
+									<td width="35%">
+										<h:inputText value="#{militaryCoursesEventsInquiry.trainingUnitPartyDesc}" styleClass="inputDataLarge" />
+									</td>
+
+									<th width="15%">#{msgs.label_trainingCourseName}</th>
+									<td width="35%">
+										<h:inputText value="#{militaryCoursesEventsInquiry.courseName}" styleClass="inputDataLarge" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_courseStartDateFrom}</th>
+									<td width="35%">
+										<util:hijri value="#{militaryCoursesEventsInquiry.startDateFrom}" nullable="true" />
+									</td>
+									<th width="15%">#{msgs.label_courseStartDateTo}</th>
+									<td width="35%">
+										<util:hijri value="#{militaryCoursesEventsInquiry.startDateTo}" nullable="true" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{militaryCoursesEventsInquiry.searchCourses()}" styleClass="btn_normal_icon">
+										<f:ajax execute="militaryCoursesEventsInquiryFormId:searchPanelId" render="militaryCoursesEventsInquiryFormId:courseEventsTableId  militaryCoursesEventsInquiryFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{militaryCoursesEventsInquiry.reset()}" styleClass="btn_normal_icon">
+										<f:ajax render="militaryCoursesEventsInquiryFormId:searchPanelId militaryCoursesEventsInquiryFormId:courseEventsTableId  militaryCoursesEventsInquiryFormId:notifyMessagesId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_trainingCoursesDetails}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<rich:dataTable id="courseEventsTableId" rowKeyVar="index" var="course" value="#{militaryCoursesEventsInquiry.courseEvents}" rows="#{militaryCoursesEventsInquiry.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+										<rich:column style="width : 5%">
+											<f:facet name="header">#</f:facet>
+	                                		#{index + 1}
+	                        			</rich:column>
+										<rich:column style="width : 10%">
+											<f:facet name="header"> #{msgs.label_trainingCourseName} </f:facet>
+											<h:outputText value="#{course.courseName}" />
+										</rich:column>
+										<rich:column style="width : 15%">
+											<f:facet name="header"> #{msgs.label_theTrainingUnit} </f:facet>
+											<h:outputText value="#{course.trainingTypeId ==  1 ? course.trainingUnitName : course.externalPartyDesc}" />
+										</rich:column>
+										<rich:column style="width : 10%">
+											<f:facet name="header"> #{msgs.label_trainingYear} </f:facet>
+											<h:outputText value="#{course.trainingYearName}" />
+										</rich:column>
+										<rich:column style="width : 10%">
+											<f:facet name="header"> #{msgs.label_country} </f:facet>
+											<h:outputText value="#{course.countryName}" />
+										</rich:column>
+										<rich:column style="width : 10%">
+											<f:facet name="header"> #{msgs.label_startDate} </f:facet>
+											<h:outputText value="#{course.actualStartDateString}" />
+										</rich:column>
+										<rich:column style="width : 10%">
+											<f:facet name="header"> #{msgs.label_endDate} </f:facet>
+											<h:outputText value=" #{course.actualEndDateString}" />
+										</rich:column>
+										<rich:column style="width : 15%">
+											<f:facet name="header"> #{msgs.label_trainingCourseAdmissionPrequsites} </f:facet>
+											<h:outputText value=" #{course.prerquisites}" />
+										</rich:column>
+										<rich:column style="width : 10%">
+											<f:facet name="header"> #{msgs.label_trainingCourseStatus} </f:facet>
+											<h:outputText value="#{msgs.label_coursePlannedToBeHeld}" rendered="#{course.status == 1}" />
+											<h:outputText value="#{msgs.label_courseHoldingDecisionIssued}" rendered="#{course.status == 2}" />
+											<h:outputText value="#{msgs.label_coursePostponementDecisionIssued}" rendered="#{course.status == 3}" />
+											<h:outputText value="#{msgs.label_courseCancelDecisionIssued}" rendered="#{course.status == 4}" />
+											<h:outputText value="#{msgs.label_courseHeld}" rendered="#{course.status == 5}" />
+										</rich:column>
+										<rich:column style="width : 5%">
+											<f:facet name="header"> #{msgs.label_nominationRequest} </f:facet>
+											<h:panelGroup rendered="#{militaryCoursesEventsInquiry.isNominationAllowed(course)}">
+												<a target="_blank" href="#{request.contextPath}/Trainings/MilitaryTrainingRequest.jsf?mode=#{course.trainingTypeId == 1 ? 0 : 1}&amp;&amp;courseEventId=#{course.id}" style="text-decoration: none;">
+													<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_nominationRequest}"></i>
+												</a>
+											</h:panelGroup>
+										</rich:column>
+										<f:facet name="footer">
+											<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+												<f:facet name="first">#{msgs.label_first}</f:facet>
+												<f:facet name="last">#{msgs.label_last}</f:facet>
+												<f:facet name="next">#{msgs.label_next}</f:facet>
+												<f:facet name="previous">#{msgs.label_previous}</f:facet>
+											</rich:dataScroller>
+										</f:facet>
+									</rich:dataTable>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>
