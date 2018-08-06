@@ -122,6 +122,10 @@ public class SignaturesService extends BaseService {
 	} else if (SignaturesTypesEnum.STAMP.getCode() == signatureStampType) {
 	    newSignature.setName(existingSignature.getSignDesc());
 	    newSignature.setTitleDesc(existingSignature.getSignDesc());
+
+	    newSignature.setUnitId(existingSignature.getUnitId());
+	    newSignature.setUnitFullName(existingSignature.getUnitFullName());
+
 	}
 
 	return newSignature;

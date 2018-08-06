@@ -59,6 +59,8 @@ public class Signature extends AuditEntity implements InsertableAuditEntity, Upd
     private String enRankDesc;
     private String enTitleDesc;
     private Long empId;
+    private Long unitId;
+    private String unitFullName;
 
     @SequenceGenerator(name = "ETRGeneralSeq",
 	    sequenceName = "ETR_GENERAL_SEQ")
@@ -217,6 +219,26 @@ public class Signature extends AuditEntity implements InsertableAuditEntity, Upd
 	this.empId = empId;
     }
 
+    @Basic
+    @Column(name = "UNIT_ID")
+    public Long getUnitId() {
+	return unitId;
+    }
+
+    public void setUnitId(Long unitId) {
+	this.unitId = unitId;
+    }
+
+    @Basic
+    @Column(name = "UNIT_FULL_NAME")
+    public String getUnitFullName() {
+	return unitFullName;
+    }
+
+    public void setUnitFullName(String unitFullName) {
+	this.unitFullName = unitFullName;
+    }
+
     @Override
     public Long calculateContentId() {
 	return id;
@@ -225,6 +247,8 @@ public class Signature extends AuditEntity implements InsertableAuditEntity, Upd
     @Override
     public String calculateContent() {
 	return "empId:" + empId + AUDIT_SEPARATOR +
+		"unitId:" + unitId + AUDIT_SEPARATOR +
+		"unitFullName:" + unitFullName + AUDIT_SEPARATOR +
 		"signType:" + signType + AUDIT_SEPARATOR +
 		"signDesc:" + signDesc + AUDIT_SEPARATOR +
 		"name:" + name + AUDIT_SEPARATOR +

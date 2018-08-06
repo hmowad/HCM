@@ -18,7 +18,24 @@
 		function handleImageUploadResult() {
 			 document.getElementById('stampsManagementFormId:imageBtnId').click();
 		}
-
+		function getUnit() {
+			openUnitsMiniSearch(2, '#{request.contextPath}', 'handleUnitMiniSearchResult(ret)', -1, #{stampsManagement.getLoginEmpPhysicalRegionFlag(true)}, -1);
+		}
+	
+		function handleUnitMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('stampsManagementFormId:selectedUnitFullNameId').innerHTML = ret[1];
+				document.getElementById('stampsManagementFormId:selectedUnitFullNameHId').value = ret[1];
+				document.getElementById('stampsManagementFormId:selectedUnitHId').value = ret[0];
+				document.getElementById('stampsManagementFormId:removeSelectedUnitButtonId').style.display = '';
+			}
+		}
+		function resetSelectedUnit() {
+			document.getElementById('stampsManagementFormId:selectedUnitFullNameId').innerHTML = '';
+			document.getElementById('stampsManagementFormId:selectedUnitFullNameHId').value = '';
+			document.getElementById('stampsManagementFormId:selectedUnitHId').value = '';
+			document.getElementById('stampsManagementFormId:removeSelectedUnitButtonId').style.display = 'none';
+		}
 		function validateClonedSignature() {
 
 			if(!confirm('#{msgs.q_addNewStamp}'))
@@ -166,15 +183,19 @@
 								<f:facet name="header">#{msgs.label_stampType}</f:facet>
 								<h:outputText value="#{signature.signType}" />
 							</rich:column>
-							<rich:column style="width : 40%">
+							<rich:column style="width : 25%">
 								<f:facet name="header">#{msgs.label_stampDescription}</f:facet>
 								<h:outputText value="#{signature.signDesc}" />
 							</rich:column>
-							<rich:column style="width : 20%">
+							<rich:column style="width : 25%">
+								<f:facet name="header">#{msgs.label_orgUnit}</f:facet>
+								<h:outputText value="#{signature.unitFullName}" />
+							</rich:column>
+							<rich:column style="width : 15%">
 								<f:facet name="header">#{msgs.label_stampStartDate}</f:facet>
 								<h:outputText value="#{signature.validFromDateString}" />
 							</rich:column>
-							<rich:column style="width : 20%">
+							<rich:column style="width : 15%">
 								<f:facet name="header">#{msgs.label_stampEndDate}</f:facet>
 								<h:outputText value="#{signature.validToDateString}" />
 							</rich:column>
@@ -213,6 +234,13 @@
 														<h:outputText value="#{stampsManagement.selectedSignature.signDesc}" />
 													</td>
 												</tr>
+												<tr>
+													<th width="20%">#{msgs.label_orgUnit}</th>
+													<td width="80%">
+														<h:outputText value="#{stampsManagement.selectedSignature.unitFullName}" />
+													</td>
+												</tr>
+
 												<tr>
 													<th width="20%">#{msgs.label_stampStartDate}</th>
 													<td width="80%">
@@ -334,6 +362,19 @@
 													</th>
 													<td width="80%">
 														<h:inputText id="signDescId" value="#{stampsManagement.newSignature.signDesc}" styleClass="inputDataLarge" disabled="#{stampsManagement.newSignatureFlag == 0}" maxlength="75" />
+													</td>
+												</tr>
+												<tr>
+													<th width="20%">
+														<h:outputText value="#{msgs.label_orgUnit}" />
+													</th>
+													<td width="80%">
+														<h:outputText id="selectedUnitFullNameId" value="#{stampsManagement.newSignature.unitFullName}" />
+														<h:inputHidden id="selectedUnitFullNameHId" value="#{stampsManagement.newSignature.unitFullName}" />
+														<h:inputHidden id="selectedUnitHId" value="#{stampsManagement.newSignature.unitId}" />
+														<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getUnit();return false;" disabled="#{stampsManagement.newSignatureFlag == 0}" />
+														<h:outputText value=" " />
+														<h:commandButton id="removeSelectedUnitButtonId" title="#{msgs.label_cancelSelection}" value="#{msgs.fa_times}" onclick="resetSelectedUnit(); return false;" styleClass="btn_icon" style="display: none" />
 													</td>
 												</tr>
 												<tr>
