@@ -2351,7 +2351,7 @@ public class TerminationsService extends BaseService {
      * @return report bytes
      * @throws BusinessException
      */
-    public static byte[] getTerminationReportsBytes(long categoryId, int reportType, Long reasonId, long regionId, String unitFullName, Long rankId, Date serviceTerminationDateFrom, Date serviceTerminationDateTo, Date terminationDueDateFrom, Date terminationDueDateTo, Date extensionDateFrom, Date extensionDateTo, Date decisionDateFrom, Date decisionDateTo) throws BusinessException {
+    public static byte[] getTerminationReportsBytes(long categoryId, int reportType, Long reasonId, long regionId, String unitFullName, Long rankId, Date serviceTerminationDateFrom, Date serviceTerminationDateTo, Date terminationDueDateFrom, Date terminationDueDateTo, Date extensionDateFrom, Date extensionDateTo, Date decisionDateFrom, Date decisionDateTo, Integer graduationGroupNumber) throws BusinessException {
 	if ((reportType == 1 || reportType == 2 || reportType == 8) && serviceTerminationDateFrom != null && serviceTerminationDateFrom.after(serviceTerminationDateTo))
 	    throw new BusinessException("error_reportTerminationDateFromMustBefore");
 	if ((reportType == 3 || reportType == 4) && extensionDateFrom != null && extensionDateFrom.after(extensionDateTo))
@@ -2423,6 +2423,7 @@ public class TerminationsService extends BaseService {
 		    parameters.put("P_RANK_ID", rankId == null ? FlagsEnum.ALL.getCode() : rankId);
 		    parameters.put("P_FROM_DATE", terminationDueDateFrom == null ? null : HijriDateService.getHijriDateString(terminationDueDateFrom));
 		    parameters.put("P_TO_DATE", HijriDateService.getHijriDateString(terminationDueDateTo));
+		    parameters.put("P_GRADUATION_GROUP_NUMBER", graduationGroupNumber == null ? FlagsEnum.ALL.getCode() : graduationGroupNumber);
 		}
 		if (reportType == TERMINATIONS_RETIREMENT_ELIGIBLITY_INQUIRY_REPORT) {
 		    if (categoryId == CategoriesEnum.OFFICERS.getCode())

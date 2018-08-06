@@ -48,6 +48,7 @@ public class TerminationReport extends BaseBacking {
     private Date terminationDueDateTo;
     private Date decisionDateFrom;
     private Date decisionDateTo;
+    private Integer graduationGroupNumber;
 
     public TerminationReport() {
 	init();
@@ -133,7 +134,7 @@ public class TerminationReport extends BaseBacking {
 
     public void print() {
 	try {
-	    byte[] bytes = TerminationsService.getTerminationReportsBytes(categoryId, reportType, reasonId, regionId, unitFullName, rankId, serviceTerminationDateFrom, serviceTerminationDateTo, terminationDueDateFrom, terminationDueDateTo, extensionDateFrom, extensionDateTo, decisionDateFrom, decisionDateTo);
+	    byte[] bytes = TerminationsService.getTerminationReportsBytes(categoryId, reportType, reasonId, regionId, unitFullName, rankId, serviceTerminationDateFrom, serviceTerminationDateTo, terminationDueDateFrom, terminationDueDateTo, extensionDateFrom, extensionDateTo, decisionDateFrom, decisionDateTo, graduationGroupNumber);
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -349,6 +350,14 @@ public class TerminationReport extends BaseBacking {
 
     public void setDecisionDateTo(Date decisionDateTo) {
 	this.decisionDateTo = decisionDateTo;
+    }
+
+    public Integer getGraduationGroupNumber() {
+	return graduationGroupNumber;
+    }
+
+    public void setGraduationGroupNumber(Integer graduationGroupNumber) {
+	this.graduationGroupNumber = graduationGroupNumber;
     }
 
 }
