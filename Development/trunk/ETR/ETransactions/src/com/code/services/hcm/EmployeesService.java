@@ -991,7 +991,7 @@ public class EmployeesService extends BaseService {
     }
 
     // ----------------------------------- Employees Reports -------------------
-    public static byte[] getEmployeesDataBytes(int officialPhysicalFlag, int officialPhysicalSimilarityFlag, long categoryId, long regionId, String unitHKey, long rankId, long minorSpecializationId, String groupNumber, List<Long> statusIds, long rankTitleId, int generalSpecialization) throws BusinessException {
+    public static byte[] getEmployeesDataBytes(int officialPhysicalFlag, int officialPhysicalSimilarityFlag, long categoryId, long regionId, String unitHKey, long rankId, long minorSpecializationId, String groupNumber, List<Long> statusIds, long rankTitleId, int generalSpecialization, String recruitmentDateFrom, String recruitmentDateTo) throws BusinessException {
 	try {
 	    String reportName = ReportNamesEnum.EMPLOYEES_DATA.getCode();
 
@@ -1039,6 +1039,21 @@ public class EmployeesService extends BaseService {
 	    parameters.put("P_PRINT_DATE", HijriDateService.getHijriSysDateString());
 	    parameters.put("P_RANK_TITLE_ID", rankTitleId);
 	    parameters.put("P_GENERAL_SPECIALIZATION", generalSpecialization);
+	    if (recruitmentDateFrom != null) {
+		parameters.put("P_PRECRUITMENT_DATE_FROM_FLAG", FlagsEnum.ON.getCode());
+		parameters.put("P_RECRUITMENT_DATE_FROM", recruitmentDateFrom);
+	    } else {
+		parameters.put("P_RECRUITMENT_DATE_FROM_FLAG", FlagsEnum.ALL.getCode());
+		parameters.put("P_RECRUITMENT_DATE_FROM", HijriDateService.getHijriSysDateString());
+	    }
+	    if (recruitmentDateTo != null) {
+		parameters.put("P_RECRUITMENT_DATE_TO_FLAG", FlagsEnum.ON.getCode());
+		parameters.put("P_RECRUITMENT_DATE_TO", recruitmentDateTo);
+	    } else {
+		parameters.put("P_RECRUITMENT_DATE_TO_FLAG", FlagsEnum.ALL.getCode());
+		parameters.put("P_RECRUITMENT_DATE_TO", HijriDateService.getHijriSysDateString());
+	    }
+
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1084,7 +1099,7 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    public static byte[] getEmployeesStatisticsDataBytes(int officialPhysicalFlag, int officialPhysicalSimilarityFlag, long categoryId, long regionId, long unitId, String unitFullName, long rankId, long minorSpecializationId, String groupNumber, List<Long> statusIds, long rankTitleId, int generalSpecialization) throws BusinessException {
+    public static byte[] getEmployeesStatisticsDataBytes(int officialPhysicalFlag, int officialPhysicalSimilarityFlag, long categoryId, long regionId, long unitId, String unitFullName, long rankId, long minorSpecializationId, String groupNumber, List<Long> statusIds, long rankTitleId, int generalSpecialization, String recruitmentDateFrom, String recruitmentDateTo) throws BusinessException {
 	try {
 	    String reportName = ReportNamesEnum.EMPLOYEES_STATISTICS.getCode();
 	    if (categoryId == CategoriesEnum.MEDICAL_STAFF.getCode())
@@ -1138,6 +1153,20 @@ public class EmployeesService extends BaseService {
 	    parameters.put("P_RANK_TITLE_ID", rankTitleId);
 	    parameters.put("P_RANK_TITLE_DESC", rankTitleId == FlagsEnum.ALL.getCode() ? getMessage("label_all") : CommonService.getRankTitleById(rankTitleId).getDescription());
 	    parameters.put("P_GENERAL_SPECIALIZATION", generalSpecialization);
+	    if (recruitmentDateFrom != null) {
+		parameters.put("P_PRECRUITMENT_DATE_FROM_FLAG", FlagsEnum.ON.getCode());
+		parameters.put("P_RECRUITMENT_DATE_FROM", recruitmentDateFrom);
+	    } else {
+		parameters.put("P_RECRUITMENT_DATE_FROM_FLAG", FlagsEnum.ALL.getCode());
+		parameters.put("P_RECRUITMENT_DATE_FROM", HijriDateService.getHijriSysDateString());
+	    }
+	    if (recruitmentDateTo != null) {
+		parameters.put("P_RECRUITMENT_DATE_TO_FLAG", FlagsEnum.ON.getCode());
+		parameters.put("P_RECRUITMENT_DATE_TO", recruitmentDateTo);
+	    } else {
+		parameters.put("P_RECRUITMENT_DATE_TO_FLAG", FlagsEnum.ALL.getCode());
+		parameters.put("P_RECRUITMENT_DATE_TO", HijriDateService.getHijriSysDateString());
+	    }
 
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
