@@ -37,6 +37,7 @@ public class ManagerAssignmentManagement extends BaseBacking {
 	    mode = Integer.parseInt(getRequest().getParameter("mode"));
 	    employee = new EmployeeData();
 	    selectedUnit = new UnitData();
+	    equivalentUnit = new UnitData();
 	    switch (mode) {
 
 	    case 1:
@@ -61,6 +62,8 @@ public class ManagerAssignmentManagement extends BaseBacking {
     public void getEmployeeData() {
 	try {
 	    this.employee = EmployeesService.getEmployeeData(employeeId);
+	    if (employee.getIsManager().intValue() == 0)
+		throw new BusinessException("error_managersOnly");
 	    equivalentUnit = UnitsService.getAncestorUnderPresidencyByLevel(employee.getPhysicalUnitId(), employee.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) ? UnitsAncestorsLevelsEnum.LEVEL_TWO.getCode() : UnitsAncestorsLevelsEnum.LEVEL_THREE.getCode());
 	    getEmployeePhysicalUnitsData();
 	} catch (BusinessException e) {
