@@ -7,6 +7,8 @@ import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
+import com.code.enums.RegionsEnum;
+import com.code.enums.UnitsAncestorsLevelsEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.MovementsService;
@@ -26,6 +28,7 @@ public class ManagerAssignmentManagement extends BaseBacking {
     private long unitId;
     private EmployeeData employee;
     private UnitData selectedUnit;
+    private UnitData equivalentUnit;
     private List<UnitData> employeePhysicalUnits;
 
     public ManagerAssignmentManagement() {
@@ -58,6 +61,7 @@ public class ManagerAssignmentManagement extends BaseBacking {
     public void getEmployeeData() {
 	try {
 	    this.employee = EmployeesService.getEmployeeData(employeeId);
+	    equivalentUnit = UnitsService.getAncestorUnderPresidencyByLevel(employee.getPhysicalUnitId(), employee.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) ? UnitsAncestorsLevelsEnum.LEVEL_TWO.getCode() : UnitsAncestorsLevelsEnum.LEVEL_THREE.getCode());
 	    getEmployeePhysicalUnitsData();
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -65,7 +69,6 @@ public class ManagerAssignmentManagement extends BaseBacking {
     }
 
     private void getEmployeePhysicalUnitsData() {
-
 	try {
 	    this.employeePhysicalUnits = UnitsService.getUnitsByPhysicalManager(employeeId);
 	} catch (BusinessException e) {
@@ -86,6 +89,11 @@ public class ManagerAssignmentManagement extends BaseBacking {
     // add a physical unit
     private void addEmployeeAsPhysicalManagerOnUnit(UnitData unit) {
 	try {
+	    for (UnitData iterUnit : employeePhysicalUnits) {
+		if (iterUnit.getId().longValue() == unit.getId()) {
+		    throw new BusinessException("error_duplicatedUnit");
+		}
+	    }
 	    unit.getUnit().setSystemUser(this.loginEmpData.getEmpId() + "");
 	    MovementsService.setEmployeeAsPhysicalManagerOnUnit(unit, employeePhysicalUnits, employee.getPhysicalUnitId(), employeeId);
 	    employeePhysicalUnits.add(unit);
@@ -153,6 +161,14 @@ public class ManagerAssignmentManagement extends BaseBacking {
 
     public void setEmployeePhysicalUnits(List<UnitData> employeePhysicalUnits) {
 	this.employeePhysicalUnits = employeePhysicalUnits;
+    }
+
+    public UnitData getEquivalentUnit() {
+	return equivalentUnit;
+    }
+
+    public void setEquivalentUnit(UnitData equivalentUnit) {
+	this.equivalentUnit = equivalentUnit;
     }
 
     public int getPageSize() {

@@ -9,9 +9,7 @@
 	<script type="text/javascript">
 		//<![CDATA[
 		function getEmployee(contextPath) {
-			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',
-					15, '#{managerAssignmentManagement.mode}', -1, 1, -1, -1,
-					-1);
+			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',15, '#{managerAssignmentManagement.mode}', -1, 1, -1, -1, -1);
 		}
 
 		function handleEmpMiniSearchResult(ret) {
@@ -23,11 +21,8 @@
 		}
 		
 		function getUnit() {
-			var regionId = document.getElementById('managerAssignmentManagementId:physicalRegionIDId').value;
-
-			openUnitsMiniSearch(4, '#{request.contextPath}',
-					'handleUnitMiniSearchResult(ret)', -1,
-					regionId,-1);
+			var equivalentUnitId = document.getElementById('managerAssignmentManagementId:equivalentUnitIDId').value;
+			openUnitsMiniSearch(4, '#{request.contextPath}', 'handleUnitMiniSearchResult(ret)', -1, -1,equivalentUnitId);
 		}
 
 		function handleUnitMiniSearchResult(ret) {
@@ -119,7 +114,7 @@
 				<tr>
 					<td width="100%">
 						<h:panelGroup id="physicalUnitPanelId">
-						<h:inputHidden id="physicalRegionIDId" value="#{managerAssignmentManagement.employee.physicalRegionId}" />
+							<h:inputHidden id="equivalentUnitIDId" value="#{managerAssignmentManagement.equivalentUnit.id}" />
 							<h:panelGroup rendered="#{managerAssignmentManagement.employeeId !=0}">
 								<rich:dataTable id="employeePhysicalUnitsTableId" rowKeyVar="index" var="unit" value="#{managerAssignmentManagement.employeePhysicalUnits}" rows="#{managerAssignmentManagement.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
 									<rich:column style="width : 5%">
