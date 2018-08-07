@@ -2,6 +2,7 @@ package com.code.ui.backings.hcm.employees;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
@@ -28,6 +29,7 @@ import com.code.services.hcm.TrainingSetupService;
 import com.code.services.hcm.UnitsService;
 import com.code.services.security.SecurityService;
 import com.code.services.util.CommonService;
+import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
 
 @ManagedBean(name = "employeesReports")
@@ -57,6 +59,8 @@ public class EmployeesReports extends BaseBacking implements Serializable {
     // common between the two reports 1 and 2 and 5
     private List<Region> regionsList;
     private List<Rank> ranksList;
+    private Date recruitmentDateFrom;
+    private Date recruitmentDateTo;
 
     // common between the reports 1 and 5
     private List<RankTitle> rankTitlesList;
@@ -130,9 +134,9 @@ public class EmployeesReports extends BaseBacking implements Serializable {
 	try {
 	    byte[] bytes = null;
 	    if (reportType == 1) {
-		bytes = EmployeesService.getEmployeesDataBytes(officialPhysicalFlag, officialPhysicalSimilarityFlag, categoryId, regionId, unitHKey.equals("") ? null : unitHKey, rankId, minorSpecializationId, groupNumber == null || groupNumber.equals("") ? FlagsEnum.ALL.getCode() + "" : groupNumber, Arrays.asList(statusIds), rankTitleId, generalSpecialization);
+		bytes = EmployeesService.getEmployeesDataBytes(officialPhysicalFlag, officialPhysicalSimilarityFlag, categoryId, regionId, unitHKey.equals("") ? null : unitHKey, rankId, minorSpecializationId, groupNumber == null || groupNumber.equals("") ? FlagsEnum.ALL.getCode() + "" : groupNumber, Arrays.asList(statusIds), rankTitleId, generalSpecialization, HijriDateService.getHijriDateString(recruitmentDateFrom), HijriDateService.getHijriDateString(recruitmentDateTo));
 	    } else if (reportType == 5) {
-		bytes = EmployeesService.getEmployeesStatisticsDataBytes(officialPhysicalFlag, officialPhysicalSimilarityFlag, categoryId, regionId, unitId, unitFullName, rankId, minorSpecializationId, groupNumber == null || groupNumber.equals("") ? FlagsEnum.ALL.getCode() + "" : groupNumber, Arrays.asList(statusIds), rankTitleId, generalSpecialization);
+		bytes = EmployeesService.getEmployeesStatisticsDataBytes(officialPhysicalFlag, officialPhysicalSimilarityFlag, categoryId, regionId, unitId, unitFullName, rankId, minorSpecializationId, groupNumber == null || groupNumber.equals("") ? FlagsEnum.ALL.getCode() + "" : groupNumber, Arrays.asList(statusIds), rankTitleId, generalSpecialization, HijriDateService.getHijriDateString(recruitmentDateFrom), HijriDateService.getHijriDateString(recruitmentDateTo));
 	    } else if (reportType == 8) {
 		bytes = EmployeesService.getEmployeesServiceYearsDataBytes(categoryId, regionId, unitHKey, onDutyFlag, serviceYearsBegin, serviceYearsEnd);
 	    } else if (reportType == 9) {
@@ -157,6 +161,8 @@ public class EmployeesReports extends BaseBacking implements Serializable {
 	    // statusId = FlagsEnum.ALL.getCode();
 	    groupNumber = "";
 	    rankTitleId = FlagsEnum.ALL.getCode();
+	    recruitmentDateFrom = null;
+	    recruitmentDateTo = null;
 	    generalSpecialization = FlagsEnum.ALL.getCode();
 	    if (mode == CategoryModesEnum.OFFICERS.getCode()) {
 		statusIds = new Long[] { EmployeeStatusEnum.ON_DUTY.getCode(),
@@ -350,6 +356,22 @@ public class EmployeesReports extends BaseBacking implements Serializable {
 
     public void setRanksList(List<Rank> ranksList) {
 	this.ranksList = ranksList;
+    }
+
+    public Date getRecruitmentDateFrom() {
+	return recruitmentDateFrom;
+    }
+
+    public void setRecruitmentDateFrom(Date recruitmentDateFrom) {
+	this.recruitmentDateFrom = recruitmentDateFrom;
+    }
+
+    public Date getRecruitmentDateTo() {
+	return recruitmentDateTo;
+    }
+
+    public void setRecruitmentDateTo(Date recruitmentDateTo) {
+	this.recruitmentDateTo = recruitmentDateTo;
     }
 
     public List<Category> getPersonsCategorieslist() {
