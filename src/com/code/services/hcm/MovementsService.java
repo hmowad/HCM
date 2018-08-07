@@ -1201,11 +1201,8 @@ public class MovementsService extends BaseService {
 	    unit.setPhysicalManagerId(null);
 	    DataAccess.updateEntity(unit.getUnit());
 	} catch (Exception e) {
-	    if (e instanceof BusinessException)
-		throw (BusinessException) e;
-
 	    e.printStackTrace();
-	    throw new BusinessException("error_deletePhysicalUnit");
+	    throw new BusinessException("error_general");
 	}
     }
 
@@ -2047,45 +2044,33 @@ public class MovementsService extends BaseService {
     }
 
     private static void validateRemovingPhysicalManagerFromUnit(UnitData unit, List<UnitData> employeeUnitsAsPhysicalManager, Long employeePhysicalUnitId) throws BusinessException {
-	// delete employee's physical unit , he/she won't be a manager anymore :(
-	if (employeeUnitsAsPhysicalManager.size() > 1) {
-	    // he/she can not delete his/her physical unit
-	    if (unit.getId().equals(employeePhysicalUnitId))
-		throw new BusinessException("error_deletePhysicalUnit");
-	}
+	// delete employee's physical unit , he/she won't be a manager anymore
+	if (unit.getId().equals(employeePhysicalUnitId))
+	    throw new BusinessException("error_deletePhysicalUnit");
     }
 
     private static void validateAddingPhysicalManagerOnUnit(UnitData unit, List<UnitData> employeeUnitsAsPhysicalManager, Long employeePhysicalUnitId) throws BusinessException {
+	Boolean sameParentFlag = new Boolean(true);
+	Boolean sameHierarchicalTree = new Boolean(true);
 
-	if (employeeUnitsAsPhysicalManager.size() == 0)
-	    throw new BusinessException("error_general");
-	// must add his/her physical unit first
-	if (employeeUnitsAsPhysicalManager.size() == 1) {
-	    if (!employeePhysicalUnitId.equals(unit.getId()))
-		throw new BusinessException("error_employeeMustBePhyManagerOnHisPhyUnit");
-	} else {
-	    Boolean sameParentFlag = new Boolean(true);
-	    Boolean sameHierarchicalTree = new Boolean(true);
-
-	    // case 1 -> all units have the same parent
-	    for (UnitData curUnit : employeeUnitsAsPhysicalManager) {
-		if (!(curUnit.getParentUnitId()).equals(unit.getParentUnitId())) {
-		    sameParentFlag = false; // doesn't satisfy the condition
-		    break;
-		}
+	// case 1 -> all units have the same parent
+	for (UnitData curUnit : employeeUnitsAsPhysicalManager) {
+	    if (!(curUnit.getParentUnitId()).equals(unit.getParentUnitId())) {
+		sameParentFlag = false; // doesn't satisfy the condition
+		break;
 	    }
-	    // case 2 -> all units are in a hierarchical view
-	    // check on his/her top Hierarchical unit
-	    // check if the selected unit in the bottom of the tree
-	    if (!sameParentFlag) {
-		if (!employeeUnitsAsPhysicalManager.get(employeeUnitsAsPhysicalManager.size() - 1).getId().equals(unit.getParentUnitId()))
-		    sameHierarchicalTree = false;
-	    }
-
-	    // only one case must happen
-	    if (!sameParentFlag && !sameHierarchicalTree)
-		throw new BusinessException("error_unitsMustBeSameParentUnitsOrHierarchicalView");
 	}
+	// case 2 -> all units are in a hierarchical view
+	// check on his/her top Hierarchical unit
+	// check if the selected unit in the bottom of the tree
+	if (!sameParentFlag) {
+	    if (!employeeUnitsAsPhysicalManager.get(employeeUnitsAsPhysicalManager.size() - 1).getId().equals(unit.getParentUnitId()))
+		sameHierarchicalTree = false;
+	}
+
+	// only one case must happen
+	if (!sameParentFlag && !sameHierarchicalTree)
+	    throw new BusinessException("error_unitsMustBeSameParentUnitsOrHierarchicalView");
     }
 
     private static void validateReplacedUnitManager(UnitData unit, long employeeId) throws BusinessException {
