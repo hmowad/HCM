@@ -26,6 +26,7 @@ import com.code.dal.orm.workflow.hcm.trainings.WFTrainingData;
 import com.code.dal.orm.workflow.hcm.trainings.WFTrainingPlanData;
 import com.code.dal.orm.workflow.hcm.trainings.WFTrainingPlanNeedData;
 import com.code.enums.CategoriesEnum;
+import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.RegionsEnum;
@@ -876,7 +877,7 @@ public class TrainingCoursesEventsWorkFlow extends BaseWorkFlow {
 
 	    List<TrainingTransactionData> allTraineesInCourseEvent = TrainingEmployeesService.getJoinedAndAcceptedEmployeesInCourseEventTransactionsList(courseEvent.getId());
 	    for (TrainingTransactionData trainingTrn : allTraineesInCourseEvent)
-		if (trainingTrn.getStatus().equals(TraineeStatusEnum.NOMINATION_ACCEPTED.getCode()))
+		if (trainingTrn.getStatus().equals(TraineeStatusEnum.NOMINATION_ACCEPTED.getCode()) && EmployeesService.getEmployeeData(trainingTrn.getEmployeeId()).getStatusId() != EmployeeStatusEnum.SERVICE_TERMINATED.getCode())
 		    throw new BusinessException("error_allTraineesShouldBeJoined");
 
 	    TrainingEmployeesService.validateTrainingTransactionsForResultRegistration(allTraineesInCourseEvent, courseEvent.getId());
