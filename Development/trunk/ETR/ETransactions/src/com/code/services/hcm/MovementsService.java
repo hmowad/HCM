@@ -2046,7 +2046,7 @@ public class MovementsService extends BaseService {
     private static void validateRemovingPhysicalManagerFromUnit(UnitData unit, List<UnitData> employeeUnitsAsPhysicalManager, Long employeePhysicalUnitId) throws BusinessException {
 	// delete employee's physical unit , he/she won't be a manager anymore
 	if (unit.getId().equals(employeePhysicalUnitId))
-	    throw new BusinessException("error_deletePhysicalUnit");
+	    throw new BusinessException("error_employeeMustBePhyManagerOnHisPhyUnit");
     }
 
     private static void validateAddingPhysicalManagerOnUnit(UnitData unit, List<UnitData> employeeUnitsAsPhysicalManager, Long employeePhysicalUnitId) throws BusinessException {
