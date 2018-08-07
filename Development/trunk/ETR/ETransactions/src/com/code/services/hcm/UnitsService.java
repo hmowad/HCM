@@ -1319,6 +1319,10 @@ public class UnitsService extends BaseService {
 	return getUnitsByHKeys(getAncestorsHkeys(unitHKey, 1));
     }
 
+    public static List<UnitData> getAncestorsUnitsByHKey(String unitHKey, int level) throws BusinessException {
+	return getUnitsByHKeys(getAncestorsHkeys(unitHKey, level));
+    }
+
     /**
      * Gets all the units have any of the sent Hkey. </br>
      * wrapper for {@link #searchUnitsByHKey(List)}
