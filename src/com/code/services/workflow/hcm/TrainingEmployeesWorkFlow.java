@@ -14,6 +14,7 @@ import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.organization.jobs.JobData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
+import com.code.dal.orm.hcm.terminations.TerminationTransaction;
 import com.code.dal.orm.hcm.trainings.GraduationPlaceData;
 import com.code.dal.orm.hcm.trainings.GraduationPlaceDetailData;
 import com.code.dal.orm.hcm.trainings.QualificationMajorSpec;
@@ -29,6 +30,7 @@ import com.code.dal.orm.workflow.WFTask;
 import com.code.dal.orm.workflow.WFTaskData;
 import com.code.dal.orm.workflow.hcm.trainings.WFTrainingData;
 import com.code.enums.CategoriesEnum;
+import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.FundSourceEnum;
 import com.code.enums.GradesEnum;
@@ -51,6 +53,7 @@ import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.JobsService;
+import com.code.services.hcm.TerminationsService;
 import com.code.services.hcm.TrainingCoursesEventsService;
 import com.code.services.hcm.TrainingEmployeesService;
 import com.code.services.hcm.UnitsService;
@@ -1349,10 +1352,18 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 
 	EmployeeData employee = EmployeesService.getEmployeeData(employeeId);
 	trainingTransactionDetailData.setTransEmpCategoryId(employee.getCategoryId());
-	trainingTransactionDetailData.setTransEmpJobCode(employee.getJobCode());
-	trainingTransactionDetailData.setTransEmpJobName(employee.getJobDesc());
-	trainingTransactionDetailData.setTransEmpRankDesc(employee.getRankDesc());
-	trainingTransactionDetailData.setTransEmpUnitFullName(employee.getPhysicalUnitFullName());
+	if (employee.getStatusId() == EmployeeStatusEnum.SERVICE_TERMINATED.getCode()) {
+	    TerminationTransaction terminationTransaction = TerminationsService.getLastTerminationMovementTransaction(employeeId);
+	    trainingTransactionDetailData.setTransEmpJobCode(terminationTransaction.getJobCode());
+	    trainingTransactionDetailData.setTransEmpJobName(terminationTransaction.getJobName());
+	    trainingTransactionDetailData.setTransEmpRankDesc(terminationTransaction.getTransEmpRankDesc());
+	    trainingTransactionDetailData.setTransEmpUnitFullName(terminationTransaction.getTransEmpUnitFullName());
+	} else {
+	    trainingTransactionDetailData.setTransEmpJobCode(employee.getJobCode());
+	    trainingTransactionDetailData.setTransEmpJobName(employee.getJobDesc());
+	    trainingTransactionDetailData.setTransEmpRankDesc(employee.getRankDesc());
+	    trainingTransactionDetailData.setTransEmpUnitFullName(employee.getPhysicalUnitFullName());
+	}
 
 	if (wfTraining != null) {
 	    trainingTransactionDetailData.setMinistryDecisionNumber(wfTraining.getMinistryDecisionNumber());
