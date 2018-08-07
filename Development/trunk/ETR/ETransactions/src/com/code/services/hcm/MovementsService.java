@@ -2050,15 +2050,17 @@ public class MovementsService extends BaseService {
 	// delete employee's physical unit , he/she won't be a manager anymore :(
 	if (employeeUnitsAsPhysicalManager.size() > 1) {
 	    // he/she can not delete his/her physical unit
-	    if (!unit.getId().equals(employeePhysicalUnitId))
-		throw new BusinessException("error_general");
+	    if (unit.getId().equals(employeePhysicalUnitId))
+		throw new BusinessException("error_deletePhysicalUnit");
 	}
     }
 
     private static void validateAddingPhysicalManagerOnUnit(UnitData unit, List<UnitData> employeeUnitsAsPhysicalManager, Long employeePhysicalUnitId) throws BusinessException {
 
+	if (employeeUnitsAsPhysicalManager.size() == 0)
+	    throw new BusinessException("error_general");
 	// must add his/her physical unit first
-	if (employeeUnitsAsPhysicalManager.size() == 0) {
+	if (employeeUnitsAsPhysicalManager.size() == 1) {
 	    if (!employeePhysicalUnitId.equals(unit.getId()))
 		throw new BusinessException("error_employeeMustBePhyManagerOnHisPhyUnit");
 	} else {
@@ -2094,7 +2096,7 @@ public class MovementsService extends BaseService {
 	    // get all units of this manager
 	    List<UnitData> replacedManagerUnitsAsPhysicalManager = UnitsService.getUnitsByPhysicalManager(unit.getPhysicalManagerId());
 	    EmployeeData emp = EmployeesService.getEmployeeData(employeeId);
-	    if (replacedManagerUnitsAsPhysicalManager.size() > 1) {
+	    if (replacedManagerUnitsAsPhysicalManager.size() > 2) {
 		if (unit.getId().equals(EmployeesService.getEmployeeData(unit.getPhysicalManagerId()).getPhysicalUnitId()))
 		    throw new BusinessException("error_replacedManagerPhysicalUnit", new Object[] { emp.getName(), unit.getFullName() });
 
@@ -2105,6 +2107,9 @@ public class MovementsService extends BaseService {
 		    }
 
 		}
+	    } // this employee must still a manager
+	    else {
+		throw new BusinessException("error_general");
 	    }
 	}
     }

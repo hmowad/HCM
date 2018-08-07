@@ -86,6 +86,7 @@ public class ManagerAssignmentManagement extends BaseBacking {
     // add a physical unit
     private void addEmployeeAsPhysicalManagerOnUnit(UnitData unit) {
 	try {
+	    unit.getUnit().setSystemUser(this.loginEmpData.getEmpId() + "");
 	    MovementsService.setEmployeeAsPhysicalManagerOnUnit(unit, employeePhysicalUnits, employee.getPhysicalUnitId(), employeeId);
 	    employeePhysicalUnits.add(unit);
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
@@ -97,6 +98,7 @@ public class ManagerAssignmentManagement extends BaseBacking {
     // delete all units except
     public void removePhysicalManagerFromlUnit(UnitData unit) {
 	try {
+	    unit.getUnit().setSystemUser(this.loginEmpData.getEmpId() + "");
 	    MovementsService.removePhysicalManagerFromUnit(unit, employeePhysicalUnits, employee.getPhysicalUnitId());
 	    employeePhysicalUnits.remove(unit);
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
