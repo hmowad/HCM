@@ -1784,7 +1784,7 @@ public class PromotionsService extends BaseService {
     public static void validatePromotionsSoldiersDecisionCancellationWithOtherTransactions(Long empId, Date decisiondate) throws BusinessException {
 
 	MovementTransactionData movementTransactionData = MovementsService.getLastMovementTransactionByEmployeeId(empId);
-	if (movementTransactionData != null && movementTransactionData.getDecisionDate().after(decisiondate))
+	if (movementTransactionData.getDecisionDate() != null && movementTransactionData.getDecisionDate().after(decisiondate))
 	    throw new BusinessException("error_promotionCancellationNotValid");
 
 	VacationData vacationData = VacationsService.getLastVacationData(empId, FlagsEnum.ALL.getCode());
