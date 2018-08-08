@@ -88,9 +88,8 @@ public class PromotionsSoldiersDecisionCancellation extends WFBaseBacking implem
     public Boolean changeEmpJob() {
 	try {
 	    if (promotionTransaction.getOldJobId() == null ||
-		    ((JobsService.getJobById(promotionTransaction.getOldJobId()).getRegionId() != employee.getPhysicalRegionId()
-			    || JobsService.getJobById(promotionTransaction.getOldJobId()).getStatus() != JobStatusEnum.VACANT.getCode())
-			    && empNewJob == null))
+		    JobsService.getJobById(promotionTransaction.getOldJobId()).getRegionId() != employee.getPhysicalRegionId()
+		    || JobsService.getJobById(promotionTransaction.getOldJobId()).getStatus() != JobStatusEnum.VACANT.getCode())
 		return true;
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
