@@ -233,7 +233,10 @@
 									</tr>
 
 									<tr>
-										<th width="15%">#{msgs.label_justifications}</th>
+										<th width="15%">
+											#{msgs.label_justifications}
+											<font style="color: red;">*</font>
+										</th>
 										<td width="85%" colspan="3">
 											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role == 'Requester' or promotionsSoldiersDecisionCancellation.role == 'ReviewerEmp'}">
 												<h:inputText value="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData.remarks}" styleClass="inputDataSuperLarge" />
@@ -354,7 +357,7 @@
 													<f:ajax render="notifyMessagesId" execute="@form" />
 												</h:commandButton>
 											</h:panelGroup>
-											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role == 'Notification'}">
+											<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.role == 'Notification' and promotionsSoldiersDecisionCancellation.instanceApproved == 1}">
 												<h:commandButton id="printBtnId" action="#{promotionsSoldiersDecisionCancellation.print()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
 											</h:panelGroup>
 

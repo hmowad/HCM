@@ -2345,6 +2345,8 @@ public class PromotionsService extends BaseService {
 	    } else if (promotionReportData.getPromotionTypeId().equals(PromotionsTypesEnum.PROMOTION_CANCELLATION.getCode())) {
 		if (promotionReportDetailDataItr.getReferring() == null || promotionReportDetailDataItr.getReferring().trim().isEmpty())
 		    throw new BusinessException("error_refferingToIsMandatory");
+		if (promotionReportDetailDataItr.getRemarks() == null || promotionReportDetailDataItr.getRemarks().trim().isEmpty())
+		    throw new BusinessException("error_requestJustificationsMandatory");
 	    } else {
 
 		/*
