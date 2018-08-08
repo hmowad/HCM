@@ -934,7 +934,7 @@ public class PromotionsService extends BaseService {
 
 	employeeList.add(employee);
 
-	constructNewPromotionReportDetails(promotionReportData, reportDetailDataList, employeeList, promotionTransactionsData.get(0));
+	constructNewPromotionReportDetails(promotionReportData, reportDetailDataList, employeeList, (promotionTransactionsData != null && promotionTransactionsData.size() != 0) ? promotionTransactionsData.get(0) : null);
 	if (reportDetailDataList != null && !(reportDetailDataList.isEmpty()))
 	    return reportDetailDataList.get(0);
 	else
