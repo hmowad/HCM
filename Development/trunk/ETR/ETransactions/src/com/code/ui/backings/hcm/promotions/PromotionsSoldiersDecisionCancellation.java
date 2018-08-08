@@ -46,12 +46,16 @@ public class PromotionsSoldiersDecisionCancellation extends WFBaseBacking implem
     private boolean isAdmin;
     private List<EmployeeData> internalCopies;
 
-    public PromotionsSoldiersDecisionCancellation() throws BusinessException {
-	if (SecurityService.isEmployeeMenuActionGranted(this.loginEmpData.getEmpId(), MenuCodesEnum.PRM_SOLDIERS_CANCELLATION.getCode(), MenuActionsEnum.PRM_DECISION_SOLDIERS_CANCELLATION.getCode()))
-	    isAdmin = true;
-	employee = new EmployeeData();
-	promotionTransaction = new PromotionTransactionData();
-	this.init();
+    public PromotionsSoldiersDecisionCancellation() {
+	try {
+	    if (SecurityService.isEmployeeMenuActionGranted(this.loginEmpData.getEmpId(), MenuCodesEnum.PRM_SOLDIERS_CANCELLATION.getCode(), MenuActionsEnum.PRM_DECISION_SOLDIERS_CANCELLATION.getCode()))
+		isAdmin = true;
+	    employee = new EmployeeData();
+	    promotionTransaction = new PromotionTransactionData();
+	    this.init();
+	} catch (BusinessException e) {
+	    super.setServerSideErrorMessages(e.getMessage());
+	}
     }
 
     public void resetForm() {
