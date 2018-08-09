@@ -56,7 +56,7 @@ import com.code.services.util.HijriDateService;
 	@NamedQuery(name = "hcm_missionDetailData_getMissionTransactionAfterDecisionDate",
 		query = (" select m from MissionDetailData m "
 			+ " where (:P_EMP_ID = -1 or m.empId = :P_EMP_ID) "
-			+ " and (:P_MISSION_DECISION_DATE_FLAG = -1 or to_date(:P_MISSION_DECISION_DATE, 'MI/MM/YYYY') >= m.missionDecisionDate) "
+			+ " and (:P_MISSION_DECISION_DATE_FLAG = -1 or to_date(:P_MISSION_DECISION_DATE, 'MI/MM/YYYY') <= m.missionDecisionDate) "
 			+ " order by m.missionDecisionDate "))
 })
 @SuppressWarnings("serial")
