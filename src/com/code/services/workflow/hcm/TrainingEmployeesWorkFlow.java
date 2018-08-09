@@ -14,7 +14,7 @@ import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.organization.jobs.JobData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
-import com.code.dal.orm.hcm.terminations.TerminationTransaction;
+import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
 import com.code.dal.orm.hcm.trainings.GraduationPlaceData;
 import com.code.dal.orm.hcm.trainings.GraduationPlaceDetailData;
 import com.code.dal.orm.hcm.trainings.QualificationMajorSpec;
@@ -1353,7 +1353,7 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 	EmployeeData employee = EmployeesService.getEmployeeData(employeeId);
 	trainingTransactionDetailData.setTransEmpCategoryId(employee.getCategoryId());
 	if (employee.getStatusId() == EmployeeStatusEnum.SERVICE_TERMINATED.getCode()) {
-	    TerminationTransaction terminationTransaction = TerminationsService.getLastTerminationMovementTransaction(employeeId);
+	    TerminationTransactionData terminationTransaction = TerminationsService.getEffectiveTerminationTransaction(employeeId);
 	    trainingTransactionDetailData.setTransEmpJobCode(terminationTransaction.getJobCode());
 	    trainingTransactionDetailData.setTransEmpJobName(terminationTransaction.getJobName());
 	    trainingTransactionDetailData.setTransEmpRankDesc(terminationTransaction.getTransEmpRankDesc());
