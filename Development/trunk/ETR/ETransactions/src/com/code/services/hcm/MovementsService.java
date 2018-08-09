@@ -2081,7 +2081,7 @@ public class MovementsService extends BaseService {
 	    // get all units of this manager
 	    List<UnitData> replacedManagerUnitsAsPhysicalManager = UnitsService.getUnitsByPhysicalManager(unit.getPhysicalManagerId());
 	    EmployeeData emp = EmployeesService.getEmployeeData(employeeId);
-	    if (replacedManagerUnitsAsPhysicalManager.size() > 2) {
+	    if (replacedManagerUnitsAsPhysicalManager.size() > 1) {
 		if (unit.getId().equals(EmployeesService.getEmployeeData(unit.getPhysicalManagerId()).getPhysicalUnitId()))
 		    throw new BusinessException("error_replacedManagerPhysicalUnit", new Object[] { emp.getName(), unit.getFullName() });
 
@@ -2092,9 +2092,6 @@ public class MovementsService extends BaseService {
 		    }
 
 		}
-	    } // this employee must still a manager
-	    else {
-		throw new BusinessException("error_general");
 	    }
 	}
     }
