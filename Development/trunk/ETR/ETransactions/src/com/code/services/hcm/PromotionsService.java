@@ -2241,13 +2241,15 @@ public class PromotionsService extends BaseService {
 
 	    // check for non-existence of new job.
 	    if ((errorString.isEmpty() || errorString.equals("error_choosePromotionJob")) && promotionReportDetailDataItr.getNewJobId() == null) {
-		if (promotionReportData.getPromotionTypeId().equals(PromotionsTypesEnum.PROMOTION_CANCELLATION.getCode()))
-		    errorString = "error_jobReturnedMandatory";
-		else
+		if (promotionReportData.getPromotionTypeId().equals(PromotionsTypesEnum.PROMOTION_CANCELLATION.getCode())) {
+		    throw new BusinessException("error_jobReturnedMandatory");
+		} else {
 		    errorString = "error_choosePromotionJob";
-		employeesString += comma + emp.getName();
-		comma = ", ";
-		continue;
+		    employeesString += comma + emp.getName();
+		    comma = ", ";
+		    continue;
+		}
+
 	    }
 	    // check for repeated job.
 	    if ((errorString.isEmpty() || errorString.equals("error_repeatedPromotionJobParameterized")) && !promotionReportData.getScaleUpFlagBoolean() && promotionReportDetailDataItr.getNewJobId() != null && !jobsIds.add(promotionReportDetailDataItr.getNewJobId())) {
