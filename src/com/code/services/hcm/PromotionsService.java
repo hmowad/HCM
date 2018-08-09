@@ -2240,7 +2240,10 @@ public class PromotionsService extends BaseService {
 
 	    // check for non-existence of new job.
 	    if ((errorString.isEmpty() || errorString.equals("error_choosePromotionJob")) && promotionReportDetailDataItr.getNewJobId() == null) {
-		errorString = "error_choosePromotionJob";
+		if (promotionReportData.getPromotionTypeId().equals(PromotionsTypesEnum.PROMOTION_CANCELLATION.getCode()))
+		    errorString = "error_jobReturnedMandatory";
+		else
+		    errorString = "error_choosePromotionJob";
 		employeesString += comma + emp.getName();
 		comma = ", ";
 		continue;
