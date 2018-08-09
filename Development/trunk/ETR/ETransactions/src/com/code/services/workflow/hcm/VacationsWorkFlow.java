@@ -1435,7 +1435,7 @@ public class VacationsWorkFlow extends BaseWorkFlow {
 
 	    Long count = DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.WF_VALIDATE_VACATION_RUNNING_PROCESSES.getCode(), qParams).get(0);
 	    if (count > 0)
-		throw new BusinessException("error_anotherRequestUnderProcessing");
+		throw new BusinessException("error_vacationConflict");
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
