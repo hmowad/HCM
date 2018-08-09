@@ -26,7 +26,7 @@ import com.code.services.util.HijriDateService;
 	@NamedQuery(name = "hcm_disclaimerTransactionData_getDisclaimerTransactionBasedOnDecisionDate",
 		query = " select d from DisclaimerTransactionData d "
 			+ " where (:P_EMP_ID = -1 or d.empId = :P_EMP_ID) "
-			+ " and (:P_DECISION_DATE_FLAG = -1 or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') >= d.decisionDate) "
+			+ " and (:P_DECISION_DATE_FLAG = -1 or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') <= d.decisionDate) "
 			+ " order by d.decisionDate ")
 })
 
