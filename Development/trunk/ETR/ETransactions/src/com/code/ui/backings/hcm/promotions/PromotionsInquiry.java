@@ -82,7 +82,7 @@ public class PromotionsInquiry extends BaseBacking {
 
     public void printPromotion(PromotionTransactionData promotion) {
 	try {
-	    byte[] bytes = PromotionsService.getPromotionBytes(promotion);
+	    byte[] bytes = PromotionsService.getPromotionBytes(promotion, null, null);
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));

@@ -204,9 +204,9 @@ public class PromotionsSoldiersDecisionCancellation extends WFBaseBacking implem
 
     public void print() {
 	try {
-	    PromotionTransactionData promotionTransaction = PromotionsService.getPromotionTransactionByDecisionNumberAndDecisionDate(promotionReportData.getDecisionNumber(), promotionReportData.getDecisionDate(), promotionReportData.getPromotionTypeId());
-	    if (promotionTransaction != null) {
-		byte[] bytes = PromotionsService.getPromotionBytes(promotionTransaction);
+	    PromotionTransactionData promotionCancellationTransaction = PromotionsService.getPromotionTransactionByDecisionNumberAndDecisionDate(promotionReportData.getDecisionNumber(), promotionReportData.getDecisionDate(), promotionReportData.getPromotionTypeId());
+	    if (promotionCancellationTransaction != null) {
+		byte[] bytes = PromotionsService.getPromotionBytes(promotionCancellationTransaction, promotionTransaction.getDecisionDate(), promotionTransaction.getDecisionNumber());
 		super.print(bytes);
 	    }
 	} catch (BusinessException e) {

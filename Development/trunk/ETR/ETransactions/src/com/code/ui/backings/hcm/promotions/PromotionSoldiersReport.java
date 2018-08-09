@@ -418,7 +418,7 @@ public class PromotionSoldiersReport extends PromotionsBase {
 	try {
 	    PromotionTransactionData promotionTransaction = PromotionsService.getPromotionTransactionByDecisionNumberAndDecisionDate(promotionReportData.getDecisionNumber(), promotionReportData.getDecisionDate(), promotionReportData.getPromotionTypeId());
 	    if (promotionTransaction != null) {
-		byte[] bytes = PromotionsService.getPromotionBytes(promotionTransaction);
+		byte[] bytes = PromotionsService.getPromotionBytes(promotionTransaction, null, null);
 		super.print(bytes);
 	    }
 	} catch (BusinessException e) {
