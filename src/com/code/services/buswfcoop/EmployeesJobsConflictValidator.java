@@ -89,6 +89,8 @@ public class EmployeesJobsConflictValidator extends BaseService {
 
 	    if (categoryId != null && categoryId.length != 0 && categoryId[0] == CategoriesEnum.OFFICERS.getCode())
 		checkRunningTerminations(empsIds, jobsIds, null);
+	    else if (isCancellation)
+		checkRunningTerminations(empsIds, null, null);
 	    else
 		checkRunningTerminations(null, jobsIds, null);
 
