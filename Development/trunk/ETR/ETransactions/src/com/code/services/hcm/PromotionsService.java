@@ -1772,6 +1772,8 @@ public class PromotionsService extends BaseService {
     public static void validatePromotionsSoldiersDecisionCancellation(Long empId, List<PromotionTransactionData> promotionTransactionsData) throws BusinessException {
 	if (promotionTransactionsData.get(0).getPromotionTypeId() == PromotionsTypesEnum.RANK_REDUCE.getCode()) {
 	    throw new BusinessException("error_lastPromotionIsRankReduction");
+	} else if (promotionTransactionsData.get(0).getEflag() == FlagsEnum.OFF.getCode()) {
+	    throw new BusinessException("error_promotionTransactionMustBeElectronic");
 	} else {
 	    for (PromotionTransactionData promotionsTransactionData : promotionTransactionsData) {
 		if (promotionsTransactionData.getPromotionTypeId() == PromotionsTypesEnum.PROMOTION_CANCELLATION.getCode()) {
