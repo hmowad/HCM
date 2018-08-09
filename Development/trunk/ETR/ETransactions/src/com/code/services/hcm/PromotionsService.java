@@ -1784,11 +1784,11 @@ public class PromotionsService extends BaseService {
     public static void validatePromotionsSoldiersDecisionCancellationWithOtherTransactions(Long empId, Date decisiondate) throws BusinessException {
 
 	MovementTransactionData movementTransactionData = MovementsService.getLastMovementTransactionByEmployeeId(empId);
-	if (movementTransactionData.getDecisionDate() != null && movementTransactionData.getDecisionDate().after(decisiondate))
+	if (movementTransactionData != null && movementTransactionData.getDecisionDate() != null && movementTransactionData.getDecisionDate().after(decisiondate))
 	    throw new BusinessException("error_promotionCancellationNotValid");
 
 	VacationData vacationData = VacationsService.getLastVacationData(empId, FlagsEnum.ALL.getCode());
-	if (vacationData != null && vacationData.getDecisionDate().after(decisiondate))
+	if (vacationData != null && vacationData.getDecisionDate() != null && vacationData.getDecisionDate().after(decisiondate))
 	    throw new BusinessException("error_promotionCancellationNotValid");
 
 	List<MissionDetailData> missionDetailData = MissionsService.getMissionTransactionsForEmployeeAfterDecisionDate(empId, decisiondate);
@@ -1800,7 +1800,8 @@ public class PromotionsService extends BaseService {
 	    throw new BusinessException("error_promotionCancellationNotValid");
 
 	List<TrainingTransactionData> trainingTransactionData = TrainingEmployeesService.getJoinedOrNominatedTransactionsCoursesForEmployee(empId);
-	if (trainingTransactionData != null && trainingTransactionData.size() != 0 && trainingTransactionData.get(0).getActualStartDate().after(decisiondate))
+	if (trainingTransactionData != null && trainingTransactionData.size() != 0
+		&& trainingTransactionData.get(0).getActualStartDate() != null && trainingTransactionData.get(0).getActualStartDate().after(decisiondate))
 	    throw new BusinessException("error_promotionCancellationNotValid");
 
 	List<DisclaimerTransactionData> disclaimerTransactionData = RetirementsService.getDisclaimerTransactionsAfterDecisionDate(empId, decisiondate);
