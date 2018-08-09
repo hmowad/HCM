@@ -138,15 +138,16 @@ public class PromotionsSoldiersDecisionCancellation extends WFBaseBacking implem
 
     public String initProcess() throws BusinessException {
 	try {
-	    if (empNewJob == null) {
+	    if (empNewJob == null && !changeEmpJob()) {
 		empNewJob = JobsService.getJobById(promotionTransaction.getOldJobId());
 	    }
-	    promotionReportDetailData.setNewJobId(empNewJob.getId());
-	    promotionReportDetailData.setNewJobCode(empNewJob.getCode());
-	    promotionReportDetailData.setNewJobDesc(empNewJob.getName());
-	    promotionReportDetailData.setNewJobClassDesc(empNewJob.getClassificationJobDescription());
-	    promotionReportDetailData.setNewJobClassCode(empNewJob.getClassificationJobCode());
-
+	    if (empNewJob != null) {
+		promotionReportDetailData.setNewJobId(empNewJob.getId());
+		promotionReportDetailData.setNewJobCode(empNewJob.getCode());
+		promotionReportDetailData.setNewJobDesc(empNewJob.getName());
+		promotionReportDetailData.setNewJobClassDesc(empNewJob.getClassificationJobDescription());
+		promotionReportDetailData.setNewJobClassCode(empNewJob.getClassificationJobCode());
+	    }
 	    List<PromotionReportDetailData> promotionReportDetailsList = new ArrayList<PromotionReportDetailData>();
 	    promotionReportDetailsList.add(promotionReportDetailData);
 	    PromotionsWorkFlow.initPromotion(requester, promotionReportData, promotionReportDetailsList, processId, taskUrl, internalCopies);
