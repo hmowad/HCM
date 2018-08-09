@@ -103,7 +103,7 @@ public class DecisionTemplates extends BaseBacking {
 		    super.print(bytes);
 		} else if (template.getTransactionClass().intValue() == TransactionClassesEnum.PROMOTIONS.getCode()) {
 		    PromotionTransactionData promotion = PromotionsService.getPromotionTransactionById(template.getSampleTransactionId());
-		    byte[] bytes = PromotionsService.getPromotionBytes(promotion);
+		    byte[] bytes = PromotionsService.getPromotionBytes(promotion, null, null);
 		    super.print(bytes);
 		} else if (template.getTransactionClass().intValue() == TransactionClassesEnum.MISSIONS.getCode()) {
 		    MissionData mission = MissionsService.getMissionsById(template.getSampleTransactionId());

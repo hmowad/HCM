@@ -4047,7 +4047,7 @@ public class PromotionsService extends BaseService {
      * @throws BusinessException
      *             If an error occurred in get the report or report data
      */
-    public static byte[] getPromotionBytes(PromotionTransactionData promotionTransactionData) throws BusinessException {
+    public static byte[] getPromotionBytes(PromotionTransactionData promotionTransactionData, Date cancelledTransactionDecisionDate, String cancelledTransactionDecisionNumber) throws BusinessException {
 
 	String reportName = "";
 	try {
@@ -4060,6 +4060,8 @@ public class PromotionsService extends BaseService {
 
 		if (promotionTransactionData.getPromotionTypeId() == 6) {
 		    parameters.put("P_REFERRING", promotionTransactionData.getReferring());
+		    parameters.put("P_CANCELLED_TRANSACTION_DECISION_DATE", cancelledTransactionDecisionDate);
+		    parameters.put("P_CANCELLED_TRANSACTION_DECISION_NUMBER", cancelledTransactionDecisionNumber);
 		    reportName = ReportNamesEnum.PROMOTIONS_SOLDIERS_DECISION_CANCELLATION.getCode();
 		} else if (transactionsCount == 1) {
 		    reportName = ReportNamesEnum.PROMOTIONS_DECISION_SOLDIERS.getCode();
