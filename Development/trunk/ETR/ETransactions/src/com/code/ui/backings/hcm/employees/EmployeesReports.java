@@ -134,7 +134,7 @@ public class EmployeesReports extends BaseBacking implements Serializable {
 	try {
 	    byte[] bytes = null;
 	    if (reportType == 1) {
-		bytes = EmployeesService.getEmployeesDataBytes(officialPhysicalFlag, officialPhysicalSimilarityFlag, categoryId, regionId, unitHKey.equals("") ? null : unitHKey, rankId, minorSpecializationId, groupNumber == null || groupNumber.equals("") ? FlagsEnum.ALL.getCode() + "" : groupNumber, Arrays.asList(statusIds), rankTitleId, generalSpecialization, HijriDateService.getHijriDateString(recruitmentDateFrom), HijriDateService.getHijriDateString(recruitmentDateTo));
+		bytes = EmployeesService.getEmployeesDataBytes(officialPhysicalFlag, officialPhysicalSimilarityFlag, categoryId, regionId, unitHKey.equals("") ? null : unitHKey, rankId, minorSpecializationId, groupNumber == null || groupNumber.equals("") ? FlagsEnum.ALL.getCode() + "" : groupNumber, Arrays.asList(statusIds), rankTitleId, generalSpecialization, recruitmentDateFrom, recruitmentDateTo);
 	    } else if (reportType == 5) {
 		bytes = EmployeesService.getEmployeesStatisticsDataBytes(officialPhysicalFlag, officialPhysicalSimilarityFlag, categoryId, regionId, unitId, unitFullName, rankId, minorSpecializationId, groupNumber == null || groupNumber.equals("") ? FlagsEnum.ALL.getCode() + "" : groupNumber, Arrays.asList(statusIds), rankTitleId, generalSpecialization, HijriDateService.getHijriDateString(recruitmentDateFrom), HijriDateService.getHijriDateString(recruitmentDateTo));
 	    } else if (reportType == 8) {
