@@ -222,7 +222,7 @@
 											<f:selectItem itemLabel="#{msgs.label_soldiersStatisticalReport}" itemValue="5" />
 											<f:selectItem itemLabel="#{msgs.label_soldiersQualificationsReport}" itemValue="7" />
 											<f:selectItem itemLabel="#{msgs.label_soldiersWorkYears}" itemValue="8" />
-											<f:selectItem itemLabel="#{msgs.label_soldiersJobModification}" itemValue = "9"/>
+											<f:selectItem itemLabel="#{msgs.label_soldiersJobModification}" itemValue="9" />
 											<f:ajax event="change" execute="@this" listener="#{employeesReports.resetForm()}" render="employeesReportsFormId:searchPanelId" />
 										</h:selectOneRadio>
 
@@ -296,7 +296,7 @@
 										<h:panelGroup rendered="#{employeesReports.reportType == 9}">
 											<tr>
 												<th width="15%">#{msgs.label_isModifiedJob}</th>
-												<td width = "40%">
+												<td width="40%">
 													<h:selectOneMenu value="#{employeesReports.jobModifiedFlag}">
 														<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
 														<f:selectItem itemLabel="#{msgs.label_yes}" itemValue="1" />
@@ -449,19 +449,19 @@
 													</td>
 												</tr>
 											</h:panelGroup>
-										</h:panelGroup>
-										<tr>
-											<h:panelGroup rendered="#{employeesReports.mode == 1}">
-												<h:panelGroup rendered="#{employeesReports.reportType != 8}">
+
+											<h:panelGroup rendered="#{employeesReports.reportType != 8}">
+												<tr>
 													<th width="10%">#{msgs.label_groupNumber}</th>
 													<td width="40%">
 														<h:inputText value="#{employeesReports.groupNumber}" maxlength="2" onkeypress="return isDigit(event);" />
 													</td>
 
 													<td colspan="2" width="50%"></td>
-												</h:panelGroup>
+												</tr>
 											</h:panelGroup>
-										</tr>
+										</h:panelGroup>
+
 									</table>
 								</h:panelGroup>
 								<h:panelGroup id="qualificationPanelId" rendered="#{employeesReports.reportType == 7}">
