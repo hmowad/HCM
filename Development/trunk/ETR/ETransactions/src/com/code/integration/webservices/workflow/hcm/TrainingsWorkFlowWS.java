@@ -267,14 +267,14 @@ public class TrainingsWorkFlowWS {
 	    String unsuccessfulTaskIdsIfAny = "";
 	    String comma = "";
 	    int unsuccessfulTasksCount = 0;
-	    for (Object TrainingTaskObject : tasksAndTrainingsObjects) {
+	    for (Object trainingTaskObject : tasksAndTrainingsObjects) {
 		try {
-		    if (!taskIdsSet.contains(((WFTask) ((Object[]) TrainingTaskObject)[1]).getTaskId()) && tasksIds.contains("," + ((WFTask) ((Object[]) TrainingTaskObject)[1]).getTaskId() + ",")) {
-			taskIdsSet.add(((WFTask) ((Object[]) TrainingTaskObject)[1]).getTaskId());
-			TrainingEmployeesWorkFlow.doTrainingsCollectiveAction(TrainingTaskObject, tasksAndTrainingsObjects, actionTypeFlag);
+		    if (!taskIdsSet.contains(((WFTask) ((Object[]) trainingTaskObject)[1]).getTaskId()) && tasksIds.contains("," + ((WFTask) ((Object[]) trainingTaskObject)[1]).getTaskId() + ",")) {
+			taskIdsSet.add(((WFTask) ((Object[]) trainingTaskObject)[1]).getTaskId());
+			TrainingEmployeesWorkFlow.doTrainingsCollectiveAction(trainingTaskObject, tasksAndTrainingsObjects, actionTypeFlag);
 		    }
 		} catch (BusinessException e) {
-		    unsuccessfulTaskIdsIfAny += comma + ((WFTask) ((Object[]) TrainingTaskObject)[1]).getTaskId();
+		    unsuccessfulTaskIdsIfAny += comma + ((WFTask) ((Object[]) trainingTaskObject)[1]).getTaskId();
 		    unsuccessfulTasksCount++;
 		    comma = ", ";
 		}
