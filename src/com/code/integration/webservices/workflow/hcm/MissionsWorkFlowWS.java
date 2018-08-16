@@ -1,7 +1,10 @@
 package com.code.integration.webservices.workflow.hcm;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -177,31 +180,55 @@ public class MissionsWorkFlowWS {
 	    String comma = "";
 	    int unsuccessfulTasksCount = 0;
 
-	    String[] taskId = tasksIds.split(",");
-	    for (int i = 0; i < taskId.length; i++) {
-		WFTask task = null;
-		try {
-		    task = BaseWorkFlow.getWFTaskById(Long.parseLong(taskId[i]));
-		    if (task.getAssigneeId() != employeeId || task.getAction() != null || !task.getAssigneeWfRole().equals((actionTypeFlag == 2) ? WFTaskRolesEnum.SIGN_MANAGER.getCode() : WFTaskRolesEnum.DIRECT_MANAGER.getCode()))
-			continue;
-		    WFInstance instance = BaseWorkFlow.getWFInstanceById(task.getInstanceId());
-		    EmployeeData requester = EmployeesService.getEmployeeData(employeeId);
-		    List<WFMissionDetailData> wfMissionDetailDataList = MissionsWorkFlow.getWFMissionDetailsByInstanceId(instance.getInstanceId());
-		    WFMissionData missionRequest = MissionsWorkFlow.getWFMissionByInstanceId(instance.getInstanceId());
-		    if (wfMissionDetailDataList == null)
-			wfMissionDetailDataList = new ArrayList<WFMissionDetailData>();
-		    if (actionTypeFlag == 1) {
-			MissionsWorkFlow.doMissionDM(requester, instance, missionRequest, wfMissionDetailDataList, task, true);
-		    } else if (actionTypeFlag == 2) {
-			MissionsWorkFlow.doMissionSM(requester, instance, missionRequest, wfMissionDetailDataList, task, FlagsEnum.ON.getCode());
-		    }
+	    tasksIds = "," + tasksIds + ",";
+	    // object[0] - WFMissionData
+	    // object[1] - WFTask
+	    // object[2] - WFInstance
+	    // object[3] - processName
+	    // object[4] - requester
+	    // object[5] - delegatingName
+	    List<Long> selectedMissionRequestsInstanceIds = new ArrayList<Long>();
+	    Map<Long, List<WFMissionDetailData>> wfMissionDetails = null;
+	    ArrayList<Object> tasksAndMissionsObjects = (ArrayList<Object>) MissionsWorkFlow.getWFMissionsTasks(employeeId, actionTypeFlag == 1 ? WFTaskRolesEnum.DIRECT_MANAGER.getCode() : WFTaskRolesEnum.SIGN_MANAGER.getCode());
+	    Set<Long> taskIdsSet = new HashSet<Long>();
+	    for (Object missionTaskObject : tasksAndMissionsObjects) {
+		if (!taskIdsSet.contains(((WFTask) ((Object[]) missionTaskObject)[1]).getTaskId()) && tasksIds.contains("," + ((WFTask) ((Object[]) missionTaskObject)[1]).getTaskId() + ",")) {
+		    taskIdsSet.add(((WFTask) ((Object[]) missionTaskObject)[1]).getTaskId());
+		    selectedMissionRequestsInstanceIds.add(((WFMissionData) (((Object[]) missionTaskObject)[0])).getInstanceId());
+		}
+	    }
+	    if (taskIdsSet.isEmpty())
+		throw new BusinessException("error_general");
+	    Long[] selectedMissionRequestsInstanceIdsArray = new Long[selectedMissionRequestsInstanceIds.size()];
+	    wfMissionDetails = MissionsWorkFlow.getWFMissionDetailsByInstanceIds(selectedMissionRequestsInstanceIds.toArray(selectedMissionRequestsInstanceIdsArray));
 
+	    WFTask task = null;
+	    WFMissionData missionRequest = null;
+	    WFInstance instance = null;
+	    EmployeeData requester = null;
+	    for (Object missionTaskObject : tasksAndMissionsObjects) {
+		try {
+		    task = (WFTask) (((Object[]) missionTaskObject)[1]);
+		    if (taskIdsSet.contains(task.getTaskId())) {
+			missionRequest = (WFMissionData) ((Object[]) missionTaskObject)[0];
+			instance = (WFInstance) (((Object[]) missionTaskObject)[2]);
+			requester = (EmployeeData) (((Object[]) missionTaskObject)[4]);
+			List<WFMissionDetailData> wfMissionDetailDataList = wfMissionDetails.get(missionRequest.getInstanceId());
+			if (wfMissionDetailDataList == null)
+			    wfMissionDetailDataList = new ArrayList<WFMissionDetailData>();
+			if (actionTypeFlag == 1) {
+			    MissionsWorkFlow.doMissionDM(requester, instance, missionRequest, wfMissionDetailDataList, task, true);
+			} else if (actionTypeFlag == 2) {
+			    MissionsWorkFlow.doMissionSM(requester, instance, missionRequest, wfMissionDetailDataList, task, FlagsEnum.ON.getCode());
+			}
+		    }
 		} catch (BusinessException e) {
 		    unsuccessfulTaskIdsIfAny += comma + task.getTaskId();
 		    unsuccessfulTasksCount++;
 		    comma = ", ";
 		}
 	    }
+
 	    if (unsuccessfulTasksCount > 0) {
 		response.setStatus(WSResponseStatusEnum.FAILED.getCode());
 		response.setMessage(BaseService.getParameterizedMessage("error_thereAreErrorsForNOfTasks", new Object[] { unsuccessfulTasksCount, unsuccessfulTaskIdsIfAny }));
