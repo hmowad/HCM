@@ -124,7 +124,7 @@
 									</rich:column>
 									<rich:column style="width : 25%">
 										<f:facet name="header">#{msgs.label_delete}</f:facet>
-										<h:commandButton disabled="#{managerAssignmentManagement.employeePhysicalUnits.size() ==1}" action="#{managerAssignmentManagement.removePhysicalManagerFromlUnit(unit)}" value="#{msgs.fa_times}" onclick="return confirm('#{msgs.q_delete}');" title="#{msgs.label_delete}" styleClass="btn_icon">
+										<h:commandButton disabled="#{managerAssignmentManagement.employee.physicalUnitId==unit.id}" action="#{managerAssignmentManagement.removePhysicalManagerFromlUnit(unit)}" value="#{msgs.fa_times}" onclick="return confirm('#{msgs.q_delete}');" title="#{msgs.label_delete}" styleClass="btn_icon">
 											<f:ajax execute="managerAssignmentManagementId:employeePhysicalUnitsTableId" render="managerAssignmentManagementId:employeePhysicalUnitsTableId managerAssignmentManagementId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</rich:column>
