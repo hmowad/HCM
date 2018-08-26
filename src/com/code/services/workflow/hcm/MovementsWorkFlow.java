@@ -2463,6 +2463,16 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		if (informationSectionManager != null)
 		    dynamicCopiesList.add(informationSectionManager);
 	    }
+	    if (instance.getProcessId() == WFProcessesEnum.OFFICERS_SUBJOIN_EXTENSION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.OFFICERS_SUBJOIN_CANCELLATION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.OFFICERS_SUBJOIN_TERMINATION_REQUEST.getCode()) {
+		List<EmployeeData> employeesData = EmployeesService.getEmployeesByEmpsIds(beneficairyEmployeesIds.toArray(new Long[beneficairyEmployeesIds.size()]));
+		for (EmployeeData empData : employeesData) {
+		    List<UnitData> unitsData = UnitsService.getAncestorsUnitsByHKey(empData.getOfficialUnitHKey(), UnitsAncestorsLevelsEnum.LEVEL_TWO.getCode());
+		    for (UnitData unitData : unitsData) {
+			if (unitData.getPhysicalManagerId() != null)
+			    dynamicCopiesList.add(unitData.getPhysicalManagerId());
+		    }
+		}
+	    }
 
 	    List<Long> additionalIds = new ArrayList<Long>();
 	    additionalIds.addAll(internalCopiesList);
