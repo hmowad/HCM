@@ -3027,15 +3027,16 @@ public class MovementsService extends BaseService {
 	    throw new BusinessException("error_general");
 	}
     }
-    
+
     /**
      * Gets report bytes for subjoin transaction according to end date report by sending report parameters
+     * 
      * @param subjoinUnitFullName
-     *            employee subjoin unit full name 
+     *            employee subjoin unit full name
      * @param employeeUnitFullName
      *            employee official unit full name during the movement transaction
-	 * @param subjoinRegionDesc
-     *            employee subjoin region description 
+     * @param subjoinRegionDesc
+     *            employee subjoin region description
      * @param employeeRegionDesc
      *            employee official region description during the movement transaction
      * @param fromDate
@@ -3065,7 +3066,6 @@ public class MovementsService extends BaseService {
 	    throw new BusinessException("error_general");
 	}
     }
-
 
     /*
      * ************************************ Movement transaction joining date methods ****************************************
