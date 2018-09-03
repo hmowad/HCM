@@ -211,9 +211,9 @@ public class MovementsDataReports extends BaseBacking implements Serializable {
 		    bytes = MovementsService.getJoiningDocumentBytes(FlagsEnum.ALL.getCode(), MovementTypesEnum.MOVE.getCode());
 
 	    } else if (reportType == 7) {
-	    	resetMovementUnit();
-	 	    resetEmployeeUnit();
-			bytes = MovementsService.getReportOfSubjoinedEmployeesAccordingToTheirSubjoinEndDateBytes(movementUnitFullName,employeeUnitFullName,movementRegionDesc, employeeRegionDesc, fromDate, toDate);
+		resetMovementUnit();
+		resetEmployeeUnit();
+		bytes = MovementsService.getReportOfSubjoinedEmployeesAccordingToTheirSubjoinEndDateBytes(movementUnitFullName, employeeUnitFullName, movementRegionDesc, employeeRegionDesc, fromDate, toDate);
 	    }
 	    print(bytes);
 	} catch (BusinessException e) {
