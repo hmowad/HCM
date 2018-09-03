@@ -3030,9 +3030,10 @@ public class MovementsService extends BaseService {
     
     /**
      * Gets report bytes for subjoin transaction according to end date report by sending report parameters
-     * 
-     * @param categoryId
-     *            category id of the transactions
+     * @param subjoinUnitFullName
+     *            employee subjoin unit full name 
+     * @param employeeUnitFullName
+     *            employee official unit full name during the movement transaction
 	 * @param subjoinRegionDesc
      *            employee subjoin region description 
      * @param employeeRegionDesc
