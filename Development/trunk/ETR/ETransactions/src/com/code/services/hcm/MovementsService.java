@@ -3027,6 +3027,44 @@ public class MovementsService extends BaseService {
 	    throw new BusinessException("error_general");
 	}
     }
+    
+    /**
+     * Gets report bytes for subjoin transaction according to end date report by sending report parameters
+     * 
+     * @param categoryId
+     *            category id of the transactions
+	 * @param subjoinRegionDesc
+     *            employee subjoin region description 
+     * @param employeeRegionDesc
+     *            employee official region description during the movement transaction
+     * @param fromDate
+     *            start date period of the transactions
+     * @param toDate
+     *            end date period of the transactions
+     * @return array of report bytes
+     * @throws BusinessException
+     *             if any error occurs
+     */
+    public static byte[] getReportOfSubjoinedEmployeesAccordingToTheirSubjoinEndDateBytes(String subjoinUnitFullName, String employeeUnitFullName, String subjoinRegionDesc, String employeeRegionDesc, Date fromDate, Date toDate) throws BusinessException {
+	try {
+	    String reportName = "";
+	    Map<String, Object> parameters = new HashMap<String, Object>();
+
+	    reportName = ReportNamesEnum.MOVEMENTS_SUBJOIN_TRANSACTIONS_ACCORDING_TO_END_DATE.getCode();
+	    parameters.put("P_SUBJOIN_UNIT_FULL_NAME", (subjoinUnitFullName == null || subjoinUnitFullName.trim().isEmpty()) ? FlagsEnum.ALL.getCode() + "" : subjoinUnitFullName);
+	    parameters.put("P_EMPLOYEE_UNIT_FULL_NAME", (employeeUnitFullName == null || employeeUnitFullName.trim().isEmpty()) ? FlagsEnum.ALL.getCode() + "" : employeeUnitFullName);
+	    parameters.put("P_SUBJOIN_REGION_DESC", (subjoinRegionDesc == null || subjoinRegionDesc.trim().isEmpty()) ? FlagsEnum.ALL.getCode() + "" : subjoinRegionDesc);
+	    parameters.put("P_EMPLOYEE_REGION_DESC", (employeeRegionDesc == null || employeeRegionDesc.trim().isEmpty()) ? FlagsEnum.ALL.getCode() + "" : employeeRegionDesc);
+	    parameters.put("P_FROM_DATE", HijriDateService.getHijriDateString(fromDate));
+	    parameters.put("P_TO_DATE", HijriDateService.getHijriDateString(toDate));
+	    parameters.put("P_SYS_DATE", HijriDateService.getHijriSysDateString());
+	    return getReportData(reportName, parameters);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
 
     /*
      * ************************************ Movement transaction joining date methods ****************************************
