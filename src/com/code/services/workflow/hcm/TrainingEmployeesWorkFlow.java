@@ -1550,6 +1550,7 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 		TrainingEmployeesService.validateTrainingTransactions(Arrays.asList(constructTrainingTransaction(wfTraining, (processId == WFProcessesEnum.MILITARY_INTERNAL_TRAINING_REPLACEMENT_REQUEST.getCode()) ? WFProcessesEnum.MILITARY_INTERNAL_TRAINING_REQUEST.getCode() : WFProcessesEnum.MILITARY_EXTERNAL_TRAINING_REQUEST.getCode(), courseEventData == null ? null : courseEventData.getId())), courseEventData,
 			TrainingTransactionCategoryEnum.NOMINATION.getCode());
 	    }
+
 	    // TODO Fix , it validate list of Transactions for every wfTraining object should be validated after the loop
 	    TrainingEmployeesService.validateTrainingTransactions(transactionsList, courseEventData, trainingTransactionCategory);
 	}
