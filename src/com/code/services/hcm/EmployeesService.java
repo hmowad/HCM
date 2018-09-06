@@ -1040,7 +1040,7 @@ public class EmployeesService extends BaseService {
 	    parameters.put("P_RANK_TITLE_ID", rankTitleId);
 	    parameters.put("P_GENERAL_SPECIALIZATION", generalSpecialization);
 	    if (recruitmentDateFrom != null) {
-		parameters.put("P_PRECRUITMENT_DATE_FROM_FLAG", FlagsEnum.ON.getCode());
+		parameters.put("P_RECRUITMENT_DATE_FROM_FLAG", FlagsEnum.ON.getCode());
 		parameters.put("P_RECRUITMENT_DATE_FROM", HijriDateService.getHijriDateString(recruitmentDateFrom));
 	    } else {
 		parameters.put("P_RECRUITMENT_DATE_FROM_FLAG", FlagsEnum.ALL.getCode());
@@ -1154,7 +1154,7 @@ public class EmployeesService extends BaseService {
 	    parameters.put("P_RANK_TITLE_DESC", rankTitleId == FlagsEnum.ALL.getCode() ? getMessage("label_all") : CommonService.getRankTitleById(rankTitleId).getDescription());
 	    parameters.put("P_GENERAL_SPECIALIZATION", generalSpecialization);
 	    if (recruitmentDateFrom != null) {
-		parameters.put("P_PRECRUITMENT_DATE_FROM_FLAG", FlagsEnum.ON.getCode());
+		parameters.put("P_RECRUITMENT_DATE_FROM_FLAG", FlagsEnum.ON.getCode());
 		parameters.put("P_RECRUITMENT_DATE_FROM", recruitmentDateFrom);
 	    } else {
 		parameters.put("P_RECRUITMENT_DATE_FROM_FLAG", FlagsEnum.ALL.getCode());
