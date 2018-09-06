@@ -135,6 +135,8 @@ public abstract class BaseWorkFlow extends BaseService {
 
     public static void closeWFInstancesByNotification(List<WFInstance> instances, List<WFTask> tasks) throws BusinessException {
 
+	validateCloseWFInstancesByNotification(tasks);
+
 	CustomSession session = DataAccess.getSession();
 
 	try {
@@ -183,6 +185,13 @@ public abstract class BaseWorkFlow extends BaseService {
 	} finally {
 	    if (!isOpenedSession)
 		session.close();
+	}
+    }
+
+    private static void validateCloseWFInstancesByNotification(List<WFTask> tasks) throws BusinessException {
+	for (WFTask wfTask : tasks) {
+	    if (!wfTask.getAssigneeWfRole().equals(WFTaskRolesEnum.NOTIFICATION.getCode()) || wfTask.getAction() != null)
+		throw new BusinessException("error_cannotCloseInstancesByNotification");
 	}
     }
 
@@ -319,6 +328,7 @@ public abstract class BaseWorkFlow extends BaseService {
 
     /************************************** Instance Beneficiaries Methods ******************************************/
     // Should be used only if there is a chance to add a beneficiary without taking a WorkFlow action.
+
     public static void addWFInstanceBeneficiaries(long instanceId, List<Long> instanceBeneficiariesIds, CustomSession session) throws BusinessException {
 	if (instanceBeneficiariesIds == null || instanceBeneficiariesIds.isEmpty())
 	    throw new BusinessException("error_general");
