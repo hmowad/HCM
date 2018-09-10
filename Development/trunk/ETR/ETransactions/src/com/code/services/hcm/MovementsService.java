@@ -52,6 +52,7 @@ public class MovementsService extends BaseService {
      * 
      */
     private MovementsService() {
+
     }
 
     /*
