@@ -2464,18 +2464,18 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		    dynamicCopiesList.add(informationSectionManager);
 	    }
 
-	    if (instance.getProcessId() == WFProcessesEnum.OFFICERS_SUBJOIN_EXTENSION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.OFFICERS_SUBJOIN_TERMINATION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.OFFICERS_SUBJOIN_CANCELLATION_REQUEST.getCode()
-		    || instance.getProcessId() == WFProcessesEnum.SOLDIERS_SUBJOIN_EXTENSION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.SOLDIERS_SUBJOIN_TERMINATION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.SOLDIERS_SUBJOIN_CANCELLATION_REQUEST.getCode()
-		    || instance.getProcessId() == WFProcessesEnum.PERSONS_ASSIGNMENT_EXTENSION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.PERSONS_ASSIGNMENT_TERMINATION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.PERSONS_ASSIGNMENT_CANCELLATION_REQUEST.getCode()) {
-		List<EmployeeData> employeesData = EmployeesService.getEmployeesByEmpsIds(beneficairyEmployeesIds.toArray(new Long[beneficairyEmployeesIds.size()]));
-		for (EmployeeData empData : employeesData) {
-		    List<UnitData> unitsData = UnitsService.getAncestorsUnitsByHKey(empData.getOfficialUnitHKey(), UnitsAncestorsLevelsEnum.LEVEL_TWO.getCode());
-		    for (UnitData unitData : unitsData) {
-			if (unitData.getPhysicalManagerId() != null)
-			    dynamicCopiesList.add(unitData.getPhysicalManagerId());
-		    }
-		}
-	    }
+	    // if (instance.getProcessId() == WFProcessesEnum.OFFICERS_SUBJOIN_EXTENSION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.OFFICERS_SUBJOIN_TERMINATION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.OFFICERS_SUBJOIN_CANCELLATION_REQUEST.getCode()
+	    // || instance.getProcessId() == WFProcessesEnum.SOLDIERS_SUBJOIN_EXTENSION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.SOLDIERS_SUBJOIN_TERMINATION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.SOLDIERS_SUBJOIN_CANCELLATION_REQUEST.getCode()
+	    // || instance.getProcessId() == WFProcessesEnum.PERSONS_ASSIGNMENT_EXTENSION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.PERSONS_ASSIGNMENT_TERMINATION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.PERSONS_ASSIGNMENT_CANCELLATION_REQUEST.getCode()) {
+	    // List<EmployeeData> employeesData = EmployeesService.getEmployeesByEmpsIds(beneficairyEmployeesIds.toArray(new Long[beneficairyEmployeesIds.size()]));
+	    // for (EmployeeData empData : employeesData) {
+	    // List<UnitData> unitsData = UnitsService.getAncestorsUnitsByHKey(empData.getOfficialUnitHKey(), UnitsAncestorsLevelsEnum.LEVEL_TWO.getCode());
+	    // for (UnitData unitData : unitsData) {
+	    // if (unitData.getPhysicalManagerId() != null)
+	    // dynamicCopiesList.add(unitData.getPhysicalManagerId());
+	    // }
+	    // }
+	    // }
 
 	    List<Long> additionalIds = new ArrayList<Long>();
 	    additionalIds.addAll(internalCopiesList);
