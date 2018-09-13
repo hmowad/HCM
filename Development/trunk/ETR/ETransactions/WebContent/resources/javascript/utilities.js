@@ -503,8 +503,8 @@ function openTrainingIntCourseEventsMiniSearch(contextPath, miniSearchReturnHand
 function openTrainingExtCourseEventsMiniSearch(contextPath, miniSearchReturnHandler,statuses,externalPartyId) {
 	trainingCourseEventsMiniSearch(contextPath, miniSearchReturnHandler, 2, statuses, -1, -1, externalPartyId, -1, -1);
 }
-function openTrainingCivilCourseEventsMiniSearch(contextPath, miniSearchReturnHandler,trainingTypeId,externalPartyId) {
-	trainingCourseEventsMiniSearch(contextPath, miniSearchReturnHandler, trainingTypeId, 1 , -1, -1,externalPartyId , -1, -1);
+function openTrainingCivilCourseEventsMiniSearch(contextPath, miniSearchReturnHandler,trainingTypeId,externalPartyId,nominationFlag) {
+	trainingCourseEventsMiniSearch(contextPath, miniSearchReturnHandler, trainingTypeId, 1 , -1, -1,externalPartyId , -1, nominationFlag);
 }
 function trainingCourseEventsMiniSearch(contextPath, miniSearchReturnHandler, trainingTypeId, statuses, trainingYearId, trainingUnitId, externalPartyId, requestingRegionId, nominationFlag) {
     var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');

@@ -14,6 +14,7 @@ import com.code.enums.TrainingTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.TrainingCoursesEventsService;
 import com.code.services.hcm.TrainingSetupService;
+import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
 
 @SuppressWarnings("serial")
@@ -29,6 +30,7 @@ public class CoursesEventsMiniSearch extends BaseBacking {
     private long trainingTypeId = FlagsEnum.ALL.getCode();
     private Integer[] statusesIds = null;
     private int nominationFlag;
+    private String endDateFrom;
 
     // search fields
     private long selectedTrainingYearId = FlagsEnum.ALL.getCode();
@@ -105,6 +107,8 @@ public class CoursesEventsMiniSearch extends BaseBacking {
 			trainingUnits = TrainingSetupService.filterTrainingUnitsForCourseEventMiniSearch(requestingRegionId);
 		}
 	    } else {
+		if (nominationFlag == FlagsEnum.ON.getCode() && (trainingTypeId == TrainingTypesEnum.MORNING_COURSE.getCode() || trainingTypeId == TrainingTypesEnum.EXTERNAL_MILITARY_COURSE.getCode()))
+		     endDateFrom = HijriDateService.getHijriSysDateString();
 		if (externalPartyId != FlagsEnum.ALL.getCode())
 		    searchExternalPartyName = TrainingSetupService.getTrainingExternalPartyById(externalPartyId).getDescription();
 	    }
@@ -132,7 +136,7 @@ public class CoursesEventsMiniSearch extends BaseBacking {
 
     public void searchTrainingCoursesEvents() {
 	try {
-	    coursesEventsList = TrainingCoursesEventsService.getTrainingCoursesEvents(FlagsEnum.ALL.getCode(), selectedTrainingYearId, selectedTrainingUnitId, externalPartyId, externalPartyId == FlagsEnum.ALL.getCode() ? searchExternalPartyName : null, searchCourseName, trainingTypeId, statusesIds, null, null, searchCourseSerial.isEmpty() ? FlagsEnum.ALL.getCode() : Integer.parseInt(searchCourseSerial));
+	    coursesEventsList = TrainingCoursesEventsService.getTrainingCoursesEvents(FlagsEnum.ALL.getCode(), selectedTrainingYearId, selectedTrainingUnitId, externalPartyId, externalPartyId == FlagsEnum.ALL.getCode() ? searchExternalPartyName : null, searchCourseName, trainingTypeId, statusesIds, null, null, searchCourseSerial.isEmpty() ? FlagsEnum.ALL.getCode() : Integer.parseInt(searchCourseSerial), endDateFrom);
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}

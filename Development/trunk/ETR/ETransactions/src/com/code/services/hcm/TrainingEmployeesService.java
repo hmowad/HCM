@@ -491,7 +491,8 @@ public class TrainingEmployeesService extends BaseService {
 	if (trainingTransaction.getId() != null) {
 	    excludedIds = new Long[] { trainingTransaction.getId() };
 	}
-
+	if (HijriDateService.hijriDateDiff(courseEventData.getActualEndDate(), HijriDateService.getHijriSysDate()) < 0)
+	    throw new BusinessException("error_noNominationCourseEventEndDateBeforToday");
 	EmployeeData employee = EmployeesService.getEmployeeData(trainingTransactionCategory == TrainingTransactionCategoryEnum.NOMINATION_REPLACEMENT.getCode() ? trainingTransaction.getReplacementEmployeeId() : trainingTransaction.getEmployeeId());
 
 	if (employee.getJobId() == null)

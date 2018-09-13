@@ -176,7 +176,7 @@ public abstract class TrainingPlanBase extends WFBaseBacking {
 
     public void searchTrainingCourseEvents() {
 	try {
-	    coursesEvents = TrainingCoursesEventsService.getTrainingCoursesEvents(FlagsEnum.ALL.getCode(), trainingPlan.getTrainingYearId(), trainingPlan.getTrainingUnitId() == null ? selectedTrainingUnitId : trainingPlan.getTrainingUnitId(), FlagsEnum.ALL.getCode(), null, searchCourseName, FlagsEnum.ALL.getCode(), null, null, null, FlagsEnum.ALL.getCode());
+	    coursesEvents = TrainingCoursesEventsService.getTrainingCoursesEvents(FlagsEnum.ALL.getCode(), trainingPlan.getTrainingYearId(), trainingPlan.getTrainingUnitId() == null ? selectedTrainingUnitId : trainingPlan.getTrainingUnitId(), FlagsEnum.ALL.getCode(), null, searchCourseName, FlagsEnum.ALL.getCode(), null, null, null, FlagsEnum.ALL.getCode(), null);
 	    selectedTrainingCourseEvent = null;
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
