@@ -602,52 +602,52 @@ public class TrainingCoursesEventsService extends BaseService {
     }
 
     public static List<TrainingCourseEventData> getTrainingCoursesEventsWithStartDateRange(long courseEventId, long trainingYearId, long trainingUnitId, long externalPartyId, long trainingTypeId, String courseName, Integer[] statusesIds, String startDateFrom, String startDateTo, String externalPartyDesc) throws BusinessException {
-	return searchCoursesEventsData(courseEventId, FlagsEnum.ALL.getCode(), trainingTypeId, FlagsEnum.ALL.getCode(), trainingUnitId, externalPartyId, externalPartyDesc, null, null, trainingYearId, null, courseName, statusesIds, startDateFrom, startDateTo, FlagsEnum.ALL.getCode());
+	return searchCoursesEventsData(courseEventId, FlagsEnum.ALL.getCode(), trainingTypeId, FlagsEnum.ALL.getCode(), trainingUnitId, externalPartyId, externalPartyDesc, null, null, trainingYearId, null, courseName, statusesIds, startDateFrom, startDateTo, null, FlagsEnum.ALL.getCode());
     }
 
-    public static List<TrainingCourseEventData> getTrainingCoursesEvents(long courseEventId, long trainingYearId, long trainingUnitId, long externalPartyId, String externalPartyDesc, String courseName, long trainingTypeId, Integer[] statusesIds, String hijriStartDate, String hijriEndDate, int serial) throws BusinessException {
-	return searchCoursesEventsData(courseEventId, FlagsEnum.ALL.getCode(), trainingTypeId, serial, trainingUnitId, externalPartyId, externalPartyDesc, hijriStartDate, hijriEndDate, trainingYearId, null, courseName, statusesIds, null, null, FlagsEnum.ALL.getCode());
+    public static List<TrainingCourseEventData> getTrainingCoursesEvents(long courseEventId, long trainingYearId, long trainingUnitId, long externalPartyId, String externalPartyDesc, String courseName, long trainingTypeId, Integer[] statusesIds, String hijriStartDate, String hijriEndDate, int serial, String hijriEndDateFrom) throws BusinessException {
+	return searchCoursesEventsData(courseEventId, FlagsEnum.ALL.getCode(), trainingTypeId, serial, trainingUnitId, externalPartyId, externalPartyDesc, hijriStartDate, hijriEndDate, trainingYearId, null, courseName, statusesIds, null, null, hijriEndDateFrom, FlagsEnum.ALL.getCode());
     }
 
     public static boolean checkCourseEventForAutoGenerate(long trainingUnitId, long courseId) throws BusinessException {
-	return searchCoursesEventsData(FlagsEnum.ALL.getCode(), courseId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), trainingUnitId, FlagsEnum.ALL.getCode(), null, null, null, FlagsEnum.ALL.getCode(), new Integer[] { TrainingYearStatusEnum.TRAINING_PLAN_APPROVED.getCode() }, null, null, null, null, FlagsEnum.ALL.getCode()).size() > 0;
+	return searchCoursesEventsData(FlagsEnum.ALL.getCode(), courseId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), trainingUnitId, FlagsEnum.ALL.getCode(), null, null, null, FlagsEnum.ALL.getCode(), new Integer[] { TrainingYearStatusEnum.TRAINING_PLAN_APPROVED.getCode() }, null, null, null, null, null, FlagsEnum.ALL.getCode()).size() > 0;
     }
 
     public static TrainingCourseEventData getLastGeneratedCourseEvent(long trainingUnitId, long courseId) throws BusinessException {
-	List<TrainingCourseEventData> l = searchCoursesEventsData(FlagsEnum.ALL.getCode(), courseId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), trainingUnitId, FlagsEnum.ALL.getCode(), null, null, null, FlagsEnum.ALL.getCode(), new Integer[] { TrainingYearStatusEnum.TRAINING_PLAN_APPROVED.getCode() }, null, null, null, null, FlagsEnum.ALL.getCode());
+	List<TrainingCourseEventData> l = searchCoursesEventsData(FlagsEnum.ALL.getCode(), courseId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), trainingUnitId, FlagsEnum.ALL.getCode(), null, null, null, FlagsEnum.ALL.getCode(), new Integer[] { TrainingYearStatusEnum.TRAINING_PLAN_APPROVED.getCode() }, null, null, null, null, null, FlagsEnum.ALL.getCode());
 	return l.get(l.size() - 1);
     }
 
     public static List<TrainingCourseEventData> getCoursesEventsByTrainingYearId(long trainingYearId) throws BusinessException {
-	return searchCoursesEventsData(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, trainingYearId, null, null, null, null, null, FlagsEnum.ALL.getCode());
+	return searchCoursesEventsData(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, trainingYearId, null, null, null, null, null, null, FlagsEnum.ALL.getCode());
     }
 
     public static List<TrainingCourseEventData> getCoursesEventsByTrainingYearIdAndTrainingUnitId(long trainingYearId, long trainingUnitId) throws BusinessException {
-	return searchCoursesEventsData(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), trainingUnitId, FlagsEnum.ALL.getCode(), null, null, null, trainingYearId, null, null, null, null, null, FlagsEnum.ALL.getCode());
+	return searchCoursesEventsData(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), trainingUnitId, FlagsEnum.ALL.getCode(), null, null, null, trainingYearId, null, null, null, null, null, null, FlagsEnum.ALL.getCode());
     }
 
     public static boolean checkExistingCoursesEventsDataByCourseId(long courseId) throws BusinessException {
-	return searchCoursesEventsData(FlagsEnum.ALL.getCode(), courseId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, FlagsEnum.ALL.getCode(), null, null, null, null, null, FlagsEnum.ALL.getCode()).size() > 0;
+	return searchCoursesEventsData(FlagsEnum.ALL.getCode(), courseId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, FlagsEnum.ALL.getCode(), null, null, null, null, null, null, FlagsEnum.ALL.getCode()).size() > 0;
     }
 
     public static boolean checkExistingCoursesEventsDataByExteranlPartyId(long externalPartyId) throws BusinessException {
-	return searchCoursesEventsData(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), externalPartyId, null, null, null, FlagsEnum.ALL.getCode(), null, null, null, null, null, FlagsEnum.ALL.getCode()).size() > 0;
+	return searchCoursesEventsData(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), externalPartyId, null, null, null, FlagsEnum.ALL.getCode(), null, null, null, null, null, null, FlagsEnum.ALL.getCode()).size() > 0;
     }
 
     public static List<TrainingCourseEventData> getPreviousCourseEvents(long courseId, long trainingTypeId, Integer serial, Long trainingUnitId, Long externalPartyId, String startDate, String endDate, int eFlag) throws BusinessException {
-	return searchCoursesEventsData(FlagsEnum.ALL.getCode(), courseId, trainingTypeId, serial == null ? FlagsEnum.ALL.getCode() : serial, trainingUnitId == null ? FlagsEnum.ALL.getCode() : trainingUnitId, externalPartyId == null ? FlagsEnum.ALL.getCode() : externalPartyId, null, startDate, endDate, FlagsEnum.ALL.getCode(), null, null, null, null, null, eFlag);
+	return searchCoursesEventsData(FlagsEnum.ALL.getCode(), courseId, trainingTypeId, serial == null ? FlagsEnum.ALL.getCode() : serial, trainingUnitId == null ? FlagsEnum.ALL.getCode() : trainingUnitId, externalPartyId == null ? FlagsEnum.ALL.getCode() : externalPartyId, null, startDate, endDate, FlagsEnum.ALL.getCode(), null, null, null, null, null, null, eFlag);
     }
 
     public static TrainingCourseEventData getCourseEventById(long id) throws BusinessException {
-	List<TrainingCourseEventData> courseEventsList = searchCoursesEventsData(id, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, FlagsEnum.ALL.getCode(), null, null, null, null, null, FlagsEnum.ALL.getCode());
+	List<TrainingCourseEventData> courseEventsList = searchCoursesEventsData(id, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, FlagsEnum.ALL.getCode(), null, null, null, null, null, null, FlagsEnum.ALL.getCode());
 	return courseEventsList.isEmpty() ? null : courseEventsList.get(0);
     }
 
     public static boolean checkExistingCourseEventById(long id) throws BusinessException {
-	return searchCoursesEventsData(id, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, FlagsEnum.ALL.getCode(), null, null, null, null, null, FlagsEnum.ALL.getCode()).size() > 0;
+	return searchCoursesEventsData(id, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, FlagsEnum.ALL.getCode(), null, null, null, null, null, null, FlagsEnum.ALL.getCode()).size() > 0;
     }
 
-    private static List<TrainingCourseEventData> searchCoursesEventsData(long id, long courseId, long trainingTypeId, int serial, long trainingUnitId, long externalPartyId, String externalPartyDesc, String startDate, String endDate, long trainingYearId, Integer[] trainingYearStatusIds, String courseName, Integer[] statusesIds, String startDateFrom, String startDateTo, int eFlag) throws BusinessException {
+    private static List<TrainingCourseEventData> searchCoursesEventsData(long id, long courseId, long trainingTypeId, int serial, long trainingUnitId, long externalPartyId, String externalPartyDesc, String startDate, String endDate, long trainingYearId, Integer[] trainingYearStatusIds, String courseName, Integer[] statusesIds, String startDateFrom, String startDateTo, String endDateFrom, int eFlag) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_ID", id);
@@ -686,7 +686,13 @@ public class TrainingCoursesEventsService extends BaseService {
 		qParams.put("P_END_DATE_FLAG", FlagsEnum.ALL.getCode());
 		qParams.put("P_END_DATE", HijriDateService.getHijriSysDateString());
 	    }
+	    if (endDateFrom != null) {
+		qParams.put("P_END_DATE_FROM_FLAG", FlagsEnum.ON.getCode());
 
+	    } else {
+		qParams.put("P_END_DATE_FROM_FLAG", FlagsEnum.ALL.getCode());
+	    }
+	    qParams.put("P_END_DATE_FROM", HijriDateService.getHijriSysDateString());
 	    qParams.put("P_SERIAL", serial);
 	    qParams.put("P_TRAINING_YEAR_ID", trainingYearId);
 
