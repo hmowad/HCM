@@ -5,9 +5,72 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<h:outputStylesheet library="css" name="styles.css" />
 	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputStylesheet>
+		.tool-tip{
+			visibility: hidden;	
+			z-index: 999;	
+			position: absolute;
+		}
+		
+		.tool-tip,
+		.tool-tip.top{
+			top: 100%;
+			bottom: 114%;
+			right: 25%;
+		}
+		
+		
+		
+		
+		
+		/* on hover of element containing tooltip default*/
+		
+		*:not(.on-focus):hover > .tool-tip,
+		.on-focus input:focus + .tool-tip{
+			visibility: visible;
+			transition: all 240ms ease-in-out;		
+		}
+		
+		
+		/* tool tip slide out */
+		
+		*:not(.on-focus) > .tool-tip.slideIn,
+		.on-focus > .tool-tip{
+			display: block;
+		}
+		
+		.on-focus > .tool-tip.slideIn{
+			z-index: -1;
+		}
+		
+		.on-focus > input:focus + .tool-tip.slideIn{
+			z-index: 1;
+		}
+		
+		
+		
+		/* top slideIn */
+		
+		*:not(.on-focus) > .tool-tip.slideIn,
+		*:not(.on-focus) > .tool-tip.slideIn.top,
+		.on-focus > .tool-tip.slideIn,
+		.on-focus > .tool-tip.slideIn.top{
+			bottom: 50%;
+		}
+		
+		*:not(.on-focus):hover > .tool-tip.slideIn,
+		*:not(.on-focus):hover > .tool-tip.slideIn.top,
+		.on-focus > input:focus + .tool-tip.slideIn,
+		.on-focus > input:focus + .tool-tip.slideIn.top{
+			bottom: 110%;}
+	</h:outputStylesheet>
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<link rel="stylesheet" type="text/css" media="all" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" />
+
 	<script type="text/javascript">
+	
 	//<![CDATA[
+		
 	    function validateSearchPanel() {
 			nameValue = document.getElementById('employeesCommunicationDataFormId:nameId').value;
 			socialIdValue = document.getElementById('employeesCommunicationDataFormId:socialIDId').value;
@@ -164,14 +227,14 @@
 											<h:inputText id="searchOfficialMobileNumberId" value="#{employeesCommunicationData.searchOfficialMobileNumber}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
 										</td>
 										<th width="10%">#{msgs.label_directPhoneNumber}</th>
-										<td width="40%" >
+										<td width="40%">
 											<h:inputText id="searchDirectPhoneNumberId" value="#{employeesCommunicationData.searchDirectPhoneNumber}" maxlength="12" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
 										</td>
 									</tr>
 									<tr>
 										<th width="10%">#{msgs.label_privateMobileNumber}</th>
 										<td width="40%">
-											<h:inputText id="searchPrivateMobileNumberId" value="#{employeesCommunicationData.searchPrivateMobileNumber}" maxlength="10" styleClass="inputDataLarge" onkeypress="return isDigit(event);"/>
+											<h:inputText id="searchPrivateMobileNumberId" value="#{employeesCommunicationData.searchPrivateMobileNumber}" maxlength="10" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
 										</td>
 										<th width="10%">#{msgs.label_phoneExt}</th>
 										<td width="40%">
@@ -185,17 +248,64 @@
 										</td>
 										<th width="10%">#{msgs.label_ipPhoneExt}</th>
 										<td width="40%">
-											<h:inputText id="searchIpPhoneExtId" value="#{employeesCommunicationData.searchIpPhoneExt}" maxlength="8" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
+											<div class="on-focus clearfix" style="position: relative;">
+												<h:inputText id="searchIpPhoneExtId" value="#{employeesCommunicationData.searchIpPhoneExt}" maxlength="8" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
+												<div class="tool-tip slideIn top">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" style="border-style: solid; border-width: medium;">
+														<tr>
+															<th width="45%">#{msgs.label_thePresidency}</th>
+															<td width="5%">10</td>
+															<th width="45%">#{msgs.label_riyadhInstitute}</th>
+															<td width="5%">11</td>
+														</tr>
+														<tr>
+															<th width="45%">#{msgs.label_specialBorderSecurityForce}</th>
+															<td width="5%">12</td>
+															<th width="45%">#{msgs.label_borderGuardCommandInTheEasternProvince}</th>
+															<td width="5%">30</td>
+														</tr>
+														<tr>
+															<th width="45%">#{msgs.label_borderGuardCommandinNorthernBorderArea}</th>
+															<td width="5%">61</td>
+															<th width="45%">#{msgs.label_commandofborderguardsinAlJoufArea}</th>
+															<td width="5%">60</td>
+														</tr>
+														<tr>
+															<th width="45%">#{msgs.label_commandOfTheBorderGuardsInMedina}</th>
+															<td width="5%">40</td>
+															<th width="45%">#{msgs.label_borderGuardCommandInTabukRegion}</th>
+															<td width="5%">41</td>
+														</tr>
+														<tr>
+															<th width="45%">#{msgs.label_commandOfTheBorderGuardsInMakkah}</th>
+															<td width="5%">20</td>
+															<th width="45%">#{msgs.label_borderGuardCommandInAsirRegion}</th>
+															<td width="5%">70</td>
+														</tr>
+														<tr>
+															<th width="45%">#{msgs.label_commandOfBorderGuardsInNajran}</th>
+															<td width="5%">71</td>
+															<th width="45%">#{msgs.label_trainingCenterInNajran}</th>
+															<td width="5%">72</td>
+														</tr>
+														<tr>
+															<th width="45%">#{msgs.label_commandOfBorderGuardsInJazanRegion}</th>
+															<td colspan="3" width="5%">73</td>
+														</tr>
+													</table>
+												</div>
+											</div>
 										</td>
+
 									</tr>
 									<tr>
 										<th width="10%">#{msgs.label_email}</th>
 										<td width="40%">
-											<h:inputText id="searchEmailId" value="#{employeesCommunicationData.searchEmail}" maxlength="100" styleClass="inputDataLarge"/>
+											<h:inputText id="searchEmailId" value="#{employeesCommunicationData.searchEmail}" maxlength="100" styleClass="inputDataLarge" />
 										</td>
 										<th width="10%">#{msgs.label_userAccount}</th>
 										<td width="40%">
-											<h:inputText id="searchUserAccountId" value="#{employeesCommunicationData.searchUserAccount}" styleClass="inputDataLarge"/>
+											<h:inputText id="searchUserAccountId" value="#{employeesCommunicationData.searchUserAccount}" styleClass="inputDataLarge" />
 										</td>
 									</tr>
 								</h:panelGroup>
@@ -211,7 +321,7 @@
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{employeesCommunicationData.searchEmployees()}" title="#{msgs.label_searchByRoot}" styleClass="btn_normal_icon" onclick="return validateSearchPanel();" >
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{employeesCommunicationData.searchEmployees()}" title="#{msgs.label_searchByRoot}" styleClass="btn_normal_icon" onclick="return validateSearchPanel();">
 										<f:ajax execute="employeesCommunicationDataFormId:searchPanelId" render="employeesCommunicationDataFormId:searchPanelId employeesCommunicationDataFormId:actionsPanelId employeesCommunicationDataFormId:employeesTableId employeesCommunicationDataFormId:communicationPanelId" />
 									</h:commandButton>
 									<h:commandButton action="#{employeesCommunicationData.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
