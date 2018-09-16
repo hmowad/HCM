@@ -164,14 +164,14 @@
 											<h:inputText id="searchOfficialMobileNumberId" value="#{employeesCommunicationData.searchOfficialMobileNumber}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
 										</td>
 										<th width="10%">#{msgs.label_directPhoneNumber}</th>
-										<td width="40%" >
+										<td width="40%">
 											<h:inputText id="searchDirectPhoneNumberId" value="#{employeesCommunicationData.searchDirectPhoneNumber}" maxlength="12" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
 										</td>
 									</tr>
 									<tr>
 										<th width="10%">#{msgs.label_privateMobileNumber}</th>
 										<td width="40%">
-											<h:inputText id="searchPrivateMobileNumberId" value="#{employeesCommunicationData.searchPrivateMobileNumber}" maxlength="10" styleClass="inputDataLarge" onkeypress="return isDigit(event);"/>
+											<h:inputText id="searchPrivateMobileNumberId" value="#{employeesCommunicationData.searchPrivateMobileNumber}" maxlength="10" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
 										</td>
 										<th width="10%">#{msgs.label_phoneExt}</th>
 										<td width="40%">
@@ -191,11 +191,11 @@
 									<tr>
 										<th width="10%">#{msgs.label_email}</th>
 										<td width="40%">
-											<h:inputText id="searchEmailId" value="#{employeesCommunicationData.searchEmail}" maxlength="100" styleClass="inputDataLarge"/>
+											<h:inputText id="searchEmailId" value="#{employeesCommunicationData.searchEmail}" maxlength="100" styleClass="inputDataLarge" />
 										</td>
 										<th width="10%">#{msgs.label_userAccount}</th>
 										<td width="40%">
-											<h:inputText id="searchUserAccountId" value="#{employeesCommunicationData.searchUserAccount}" styleClass="inputDataLarge"/>
+											<h:inputText id="searchUserAccountId" value="#{employeesCommunicationData.searchUserAccount}" styleClass="inputDataLarge" />
 										</td>
 									</tr>
 								</h:panelGroup>
@@ -211,7 +211,7 @@
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{employeesCommunicationData.searchEmployees()}" title="#{msgs.label_searchByRoot}" styleClass="btn_normal_icon" onclick="return validateSearchPanel();" >
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{employeesCommunicationData.searchEmployees()}" title="#{msgs.label_searchByRoot}" styleClass="btn_normal_icon" onclick="return validateSearchPanel();">
 										<f:ajax execute="employeesCommunicationDataFormId:searchPanelId" render="employeesCommunicationDataFormId:searchPanelId employeesCommunicationDataFormId:actionsPanelId employeesCommunicationDataFormId:employeesTableId employeesCommunicationDataFormId:communicationPanelId" />
 									</h:commandButton>
 									<h:commandButton action="#{employeesCommunicationData.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
@@ -377,6 +377,57 @@
 								</tr>
 							</table>
 						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_internetCallKeys}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_thePresidency}</td>
+								<th>10</th>
+								<td>#{msgs.label_riyadhInstitute}</td>
+								<th>11</th>
+								<td>#{msgs.label_specialBorderSecurityForce}</td>
+								<th>12</th>
+							</tr>
+							<tr>
+								<td>#{msgs.label_borderGuardCommandInTheEasternProvince}</td>
+								<th>30</th>
+								<td>#{msgs.label_borderGuardCommandinNorthernBorderArea}</td>
+								<th>61</th>
+								<td>#{msgs.label_commandofborderguardsinAlJoufArea}</td>
+								<th>60</th>
+							</tr>
+							<tr>
+								<td>#{msgs.label_commandOfTheBorderGuardsInMedina}</td>
+								<th>40</th>
+								<td>#{msgs.label_borderGuardCommandInTabukRegion}</td>
+								<th>41</th>
+								<td>#{msgs.label_commandOfTheBorderGuardsInMakkah}</td>
+								<th>20</th>
+							</tr>
+							<tr>
+								<td>#{msgs.label_borderGuardCommandInAsirRegion}</td>
+								<th>70</th>
+								<td>#{msgs.label_commandOfBorderGuardsInNajran}</td>
+								<th>71</th>
+								<td>#{msgs.label_trainingCenterInNajran}</td>
+								<th>72</th>
+							</tr>
+							<tr>
+								<td>#{msgs.label_commandOfBorderGuardsInJazanRegion}</td>
+								<th>73</th>
+							</tr>
+						</table>
 					</td>
 				</tr>
 			</table>
