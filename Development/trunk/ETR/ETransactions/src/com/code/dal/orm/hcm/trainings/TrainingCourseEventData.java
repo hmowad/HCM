@@ -34,7 +34,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_END_DATE_FLAG = -1 or to_date(:P_END_DATE, 'MI/MM/YYYY') = e.actualEndDate)" +
 			" and (:P_START_DATE_FROM_FLAG = -1 or e.actualStartDate >= to_date(:P_START_DATE_FROM, 'MI/MM/YYYY') ) " +
 			" and (:P_START_DATE_TO_FLAG = -1 or e.actualStartDate <= to_date(:P_START_DATE_TO, 'MI/MM/YYYY'))" +
-			" and (:P_END_DATE_FROM_FLAG=-1 or e.actualEndDate >= to_date(:P_END_DATE_FROM,'MI/MM/YYYY'))" +
+			" and (:P_END_DATE_FROM_FLAG= -1 or e.actualEndDate >= to_date(:P_END_DATE_FROM,'MI/MM/YYYY'))" +
 			" and (:P_E_FLAG = -1 or e.eflag = :P_E_FLAG )" +
 			" order by e.actualStartDate,e.plannedStartDate,e.courseId,e.serial"),
 	@NamedQuery(name = "hcm_trainingCourseEventData_searchTrainingCourseEventDataForSerialGeneration",

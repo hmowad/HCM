@@ -11,7 +11,7 @@
 			if(#{militaryCourseEventJoiningRegistration.trainingType}==1)
 				openTrainingIntCourseEventsMiniSearch('#{request.contextPath}','handleCourseEventsMiniSearchResult(ret)', 2, -1, #{militaryCourseEventJoiningRegistration.trainingUnitId}, -1, -1);
 			else
-				openTrainingExtCourseEventsMiniSearch('#{request.contextPath}','handleCourseEventsMiniSearchResult(ret)','1',-1);
+				openTrainingExtCourseEventsMiniSearch('#{request.contextPath}','handleCourseEventsMiniSearchResult(ret)','1',-1,0);
 		}
 		
 		function handleCourseEventsMiniSearchResult(ret) {

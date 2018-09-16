@@ -500,8 +500,8 @@ function openTrainingIntCourseEventsMiniSearch(contextPath, miniSearchReturnHand
 	trainingCourseEventsMiniSearch(contextPath, miniSearchReturnHandler, 1, statuses, trainingYearId, trainingUnitId, -1, requestingRegionId, nominationFlag); 
 }
 
-function openTrainingExtCourseEventsMiniSearch(contextPath, miniSearchReturnHandler,statuses,externalPartyId) {
-	trainingCourseEventsMiniSearch(contextPath, miniSearchReturnHandler, 2, statuses, -1, -1, externalPartyId, -1, -1);
+function openTrainingExtCourseEventsMiniSearch(contextPath, miniSearchReturnHandler,statuses,externalPartyId, nominationFlag) {
+	trainingCourseEventsMiniSearch(contextPath, miniSearchReturnHandler, 2, statuses, -1, -1, externalPartyId, -1, -1, nominationFlag);
 }
 function openTrainingCivilCourseEventsMiniSearch(contextPath, miniSearchReturnHandler,trainingTypeId,externalPartyId,nominationFlag) {
 	trainingCourseEventsMiniSearch(contextPath, miniSearchReturnHandler, trainingTypeId, 1 , -1, -1,externalPartyId , -1, nominationFlag);
