@@ -574,9 +574,6 @@ public class TrainingCoursesEventsService extends BaseService {
 	    }
 	}
 
-	if (trainingTransactionCategory == TrainingTransactionCategoryEnum.CLAIM.getCode() && courseEvent.getActualEndDate().after(HijriDateService.getHijriSysDate()))
-	    throw new BusinessException("error_courseStartAndEndDateBeforeRequestDate", new String[] { getCourseEventCourseName(courseEvent.getCourseName(), courseEvent.getCourseId()) });
-
 	if (courseEvent.getTrainingTypeId() == TrainingTypesEnum.MORNING_COURSE.getCode()) {
 	    List<TrainingCourseEventData> courseEvents = TrainingCoursesEventsService.getPreviousCourseEvents(courseEvent.getCourseId(), courseEvent.getTrainingTypeId(), FlagsEnum.ALL.getCode(), (long) FlagsEnum.ALL.getCode(), courseEvent.getExternalPartyId(), HijriDateService.getHijriDateString(courseEvent.getActualStartDate()), HijriDateService.getHijriDateString(courseEvent.getActualEndDate()), FlagsEnum.OFF.getCode());
 	    if (courseEvents.size() > 0 && (courseEvent.getId() == null || !courseEvents.get(0).getId().equals(courseEvent.getId()))) {
