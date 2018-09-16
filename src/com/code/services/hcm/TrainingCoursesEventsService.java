@@ -686,13 +686,16 @@ public class TrainingCoursesEventsService extends BaseService {
 		qParams.put("P_END_DATE_FLAG", FlagsEnum.ALL.getCode());
 		qParams.put("P_END_DATE", HijriDateService.getHijriSysDateString());
 	    }
+
 	    if (endDateFrom != null) {
 		qParams.put("P_END_DATE_FROM_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_END_DATE_FROM", endDateFrom);
 
 	    } else {
 		qParams.put("P_END_DATE_FROM_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_END_DATE_FROM", HijriDateService.getHijriSysDateString());
 	    }
-	    qParams.put("P_END_DATE_FROM", HijriDateService.getHijriSysDateString());
+
 	    qParams.put("P_SERIAL", serial);
 	    qParams.put("P_TRAINING_YEAR_ID", trainingYearId);
 

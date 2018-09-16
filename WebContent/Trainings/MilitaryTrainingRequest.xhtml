@@ -35,7 +35,7 @@
 		if(#{militaryTrainingRequest.mode} == 0)
 			openTrainingIntCourseEventsMiniSearch('#{request.contextPath}', 'handleCourseEventsMiniSearchResult(ret)', '1,2,3', -1, -1, '#{militaryTrainingRequest.loginEmpData.physicalRegionId}', 1);
 		else
-			openTrainingExtCourseEventsMiniSearch('#{request.contextPath}', 'handleCourseEventsMiniSearchResult(ret)','1',-1); 
+			openTrainingExtCourseEventsMiniSearch('#{request.contextPath}', 'handleCourseEventsMiniSearchResult(ret)','1',-1,1); 
 	}
 	
 	function handleCourseEventsMiniSearchResult(ret){

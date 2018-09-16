@@ -108,7 +108,8 @@ public class CoursesEventsMiniSearch extends BaseBacking {
 		}
 	    } else {
 		if (nominationFlag == FlagsEnum.ON.getCode() && (trainingTypeId == TrainingTypesEnum.MORNING_COURSE.getCode() || trainingTypeId == TrainingTypesEnum.EXTERNAL_MILITARY_COURSE.getCode()))
-		     endDateFrom = HijriDateService.getHijriSysDateString();
+		    endDateFrom = HijriDateService.getHijriSysDateString();
+
 		if (externalPartyId != FlagsEnum.ALL.getCode())
 		    searchExternalPartyName = TrainingSetupService.getTrainingExternalPartyById(externalPartyId).getDescription();
 	    }

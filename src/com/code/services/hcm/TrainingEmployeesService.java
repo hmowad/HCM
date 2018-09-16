@@ -491,8 +491,7 @@ public class TrainingEmployeesService extends BaseService {
 	if (trainingTransaction.getId() != null) {
 	    excludedIds = new Long[] { trainingTransaction.getId() };
 	}
-	if (HijriDateService.hijriDateDiff(courseEventData.getActualEndDate(), HijriDateService.getHijriSysDate()) < 0)
-	    throw new BusinessException("error_noNominationCourseEventEndDateBeforToday");
+
 	EmployeeData employee = EmployeesService.getEmployeeData(trainingTransactionCategory == TrainingTransactionCategoryEnum.NOMINATION_REPLACEMENT.getCode() ? trainingTransaction.getReplacementEmployeeId() : trainingTransaction.getEmployeeId());
 
 	if (employee.getJobId() == null)
@@ -526,6 +525,9 @@ public class TrainingEmployeesService extends BaseService {
 
 		    if (!found)
 			throw new BusinessException("error_noNominationAuthority", new String[] { employee.getName(), courseEventData.getTrainingUnitName() });
+		} else {
+		    if (HijriDateService.hijriDateDiff(courseEventData.getActualEndDate(), HijriDateService.getHijriSysDate()) < 0)
+			throw new BusinessException("error_noNominationCourseEventEndDateBeforToday");
 		}
 	    }
 
@@ -536,6 +538,10 @@ public class TrainingEmployeesService extends BaseService {
 	    if (countConflictTrainingTransactions(trainingTransaction.getTrainingTypeId(), trainingTransaction.getEmployeeId(), courseEventData.getActualStartDateString(), courseEventData.getActualEndDateString(), trainingTransaction.getId() == null ? FlagsEnum.ALL.getCode() : trainingTransaction.getId()) > 0)
 		throw new BusinessException("error_trainingDatesConflict", new Object[] { trainingTransaction.getEmployeeName() == null ? EmployeesService.getEmployeeData(trainingTransaction.getEmployeeId()).getName() : trainingTransaction.getEmployeeName() });
 
+	    if (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.MORNING_COURSE.getCode() && trainingTransactionCategory == TrainingTransactionCategoryEnum.NOMINATION.getCode()) {
+		if (HijriDateService.hijriDateDiff(courseEventData.getActualEndDate(), HijriDateService.getHijriSysDate()) < 0)
+		    throw new BusinessException("error_noNominationCourseEventEndDateBeforToday");
+	    }
 	} else if (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.STUDY_ENROLLMENT.getCode() || trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.SCHOLARSHIP.getCode()) {
 	    if (trainingTransactionCategory != TrainingTransactionCategoryEnum.CLAIM.getCode() &&
 		    (trainingTransaction.getStatus() == TraineeStatusEnum.NOMINATION_ACCEPTED_FROM_FRONTIER_GAURDS.getCode() || trainingTransaction.getStatus() == TraineeStatusEnum.SCHOLARSHIP.getCode()))
