@@ -1191,4 +1191,25 @@ public class MissionsService extends BaseService {
 	}
     }
 
+    public static byte[] getMissionEmployeesStatisicalReport(int category, long regionId, Date toDate, Date fromDate, Long empId, String empName, Long unitId, String unitDesc) throws BusinessException {
+	try {
+
+	    String reportName = ReportNamesEnum.MISSIONS_EMPLOYEES_STATISICAL_REPORT.getCode();
+	    Map<String, Object> parameters = new HashMap<String, Object>();
+
+	    parameters.put("P_CATEGORY", category);
+	    parameters.put("P_REGION_ID", regionId);
+	    parameters.put("P_TO_DATE", HijriDateService.getHijriDateString(toDate));
+	    parameters.put("P_FROM_DATE", HijriDateService.getHijriDateString(fromDate));
+	    parameters.put("P_SYS_DATE", HijriDateService.getHijriSysDateString());
+	    parameters.put("P_EMP_ID", empId == null ? FlagsEnum.ALL.getCode() : empId);
+	    parameters.put("P_EMP_NAME", empName == null ? FlagsEnum.ALL.getCode() + "" : empName);
+	    parameters.put("P_UNIT_ID", unitId == null ? FlagsEnum.ALL.getCode() : unitId);
+	    parameters.put("P_UNIT_DESC", unitDesc == null ? FlagsEnum.ALL.getCode() + "" : unitDesc);
+	    return getReportData(reportName, parameters);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
 }
