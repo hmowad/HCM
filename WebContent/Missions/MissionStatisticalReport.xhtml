@@ -7,6 +7,30 @@
 	<h:outputStylesheet library="css" name="grid.css" />
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
 	<script type="text/javascript">   
+		function getUnit(contextPath) {
+			unitsMiniSearch(7, contextPath, 'handleUnitMiniSearchResult(ret)', -1, #{missionStatisticalReport.regionId}, -1 , '#{missionStatisticalReport.orgUnitHKey}' , 0);
+		}
+		
+		function handleUnitMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('missionStatisticalReportId:unitIDHId').value = ret[0];
+				document.getElementById('missionStatisticalReportId:unitFullNameHId').value = ret[1];
+				document.getElementById('missionStatisticalReportId:unitHKeyHId').value = ret[3];
+				document.getElementById('missionStatisticalReportId:unitFullNameId').innerHTML = ret[1];
+			}
+		}
+
+		function getEmployee(contextPath) {
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 17, -1, -1, -1, -1, -1, '#{missionStatisticalReport.orgUnitHKey}' , #{missionStatisticalReport.regionId});
+		}
+	
+		function handleEmpMiniSearchResult(ret) {
+			if(ret!=null) { 
+		         document.getElementById('missionStatisticalReportId:employeeIDHId').value=ret[0];
+		         document.getElementById('missionStatisticalReportId:employeeFullNameHId').value=ret[1];
+		         document.getElementById('missionStatisticalReportId:employeeNameId').innerHTML=ret[1];
+			}
+		}
 	</script>
 </h:head>
 <h:body styleClass="screenBg">
@@ -18,20 +42,40 @@
 				</tr>
 
 				<tr>
-					<td class="screenTitle">#{msgs.title_missionStatisticalReports}</td>
+					<td class="screenTitle">#{msgs.title_reports}</td>
 				</tr>
 
 				<tr>
 					<td width="100%" height="5" />
 				</tr>
+
 				<tr>
 					<td width="100%">
-
-						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 							<tr>
-								<td>#{msgs.label_searchData}</td>
+								<td width="100%">
+									<h:selectOneRadio value="#{missionStatisticalReport.reportType}" layout="pageDirection">
+										<f:selectItem itemLabel="#{msgs.title_missionStatisticalReports}" itemValue="1" />
+										<f:selectItem itemLabel="#{msgs.label_missionStatisticalInquiry}" itemValue="2" />
+										<f:ajax event="change" execute="@this" listener="#{missionStatisticalReport.resetForm()}" render="missionStatisticalReportId:searchPanelId missionStatisticalReportId:searchTitlePanelId" />
+									</h:selectOneRadio>
+								</td>
 							</tr>
 						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchTitlePanelId">
+							<h:panelGroup rendered="#{missionStatisticalReport.reportType == 1 or (missionStatisticalReport.reportType == 2 and (missionStatisticalReport.isAdmin or missionStatisticalReport.isManager))}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>#{msgs.label_searchData}</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
 					</td>
 				</tr>
 
@@ -42,50 +86,92 @@
 				<tr>
 					<td width="100%">
 						<h:panelGroup id="searchPanelId">
-							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<h:panelGroup rendered="#{missionStatisticalReport.reportType == 1 or (missionStatisticalReport.reportType == 2 and (missionStatisticalReport.isAdmin or missionStatisticalReport.isManager))}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<h:panelGroup rendered="#{missionStatisticalReport.reportType == 1}">
+										<tr>
+											<th width="15%">
+												<h:outputText value="#{msgs.label_region}" />
+												<font style="color: red;">*</font>
+											</th>
+											<td width="35%" colspan="3">
+												<h:selectOneMenu value="#{missionStatisticalReport.regionId}" disabled="#{missionStatisticalReport.getLoginEmpPhysicalRegionFlag(true) != -1}">
+													<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+													<f:selectItems value="#{missionStatisticalReport.regionsList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+												</h:selectOneMenu>
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{missionStatisticalReport.reportType == 2}">
+										<tr>
+											<th width="15%">#{msgs.label_orgUnit}</th>
+											<td colspan="3">
+												<h:outputText id="unitFullNameId" value="#{missionStatisticalReport.orgUnitFullName}" />
+												<h:inputHidden id="unitIDHId" value="#{missionStatisticalReport.orgUnitId}" />
+												<h:inputHidden id="unitFullNameHId" value="#{missionStatisticalReport.orgUnitFullName}" />
+												<h:inputHidden id="unitHKeyHId" value="#{missionStatisticalReport.orgUnitHKey}" />
+												<h:outputText value=" " />
+												<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit('#{request.contextPath}'); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{missionStatisticalReport.reportType == 2}">
+										<tr>
+											<th width="15%">#{msgs.label_emp}</th>
+											<td width="35%">
+												<h:outputText id="employeeNameId" value="#{missionStatisticalReport.empFullName}" />
+												<h:outputText value=" " />
+												<h:inputHidden id="employeeIDHId" value="#{missionStatisticalReport.empId}" />
+												<h:inputHidden id="employeeFullNameHId" value="#{missionStatisticalReport.empFullName}" />
+												<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<th width="20%">
+											#{msgs.label_fromDate}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="30%">
+											<util:hijri value="#{missionStatisticalReport.fromDate}" />
+										</td>
+										<th width="20%">
+											#{msgs.label_toDate}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="30%">
+											<util:hijri value="#{missionStatisticalReport.toDate}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_category}" />
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%" colspan="3">
+											<h:selectOneMenu value="#{missionStatisticalReport.category}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_officers}" />
+												<f:selectItem itemValue="2" itemLabel="#{msgs.label_soldiers}" />
+												<f:selectItem itemValue="3" itemLabel="#{msgs.label_employees}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+
+								</table>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{missionStatisticalReport.reportType != 1 and !(missionStatisticalReport.reportType == 2 and (missionStatisticalReport.isAdmin or missionStatisticalReport.isManager))}">
 								<tr>
-									<th width="15%">
-										<h:outputText value="#{msgs.label_region}" />
-										<font style="color: red;">*</font>
-									</th>
-									<td width="35%" colspan="3">
-										<h:selectOneMenu value="#{missionStatisticalReport.regionId}" disabled="#{missionStatisticalReport.getLoginEmpPhysicalRegionFlag(true) != -1}">
-											<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
-											<f:selectItems value="#{missionStatisticalReport.regionsList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
-										</h:selectOneMenu>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<th width="100%">#{msgs.error_privilegeError}</th>
+											</tr>
+										</table>
 									</td>
 								</tr>
-								<tr>
-									<th width="20%">
-										#{msgs.label_fromDate}
-										<font style="color: red;">*</font>
-									</th>
-									<td width="30%">
-										<util:hijri value="#{missionStatisticalReport.fromDate}" />
-									</td>
-									<th width="20%">
-										#{msgs.label_toDate}
-										<font style="color: red;">*</font>
-									</th>
-									<td width="30%">
-										<util:hijri value="#{missionStatisticalReport.toDate}" />
-									</td>
-								</tr>
-								<tr>
-									<th width="15%">
-										<h:outputText value="#{msgs.label_category}" />
-										<font style="color: red;">*</font>
-									</th>
-									<td width="35%" colspan="3">
-										<h:selectOneMenu value="#{missionStatisticalReport.category}">
-											<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
-											<f:selectItem itemValue="1" itemLabel="#{msgs.label_officers}" />
-											<f:selectItem itemValue="2" itemLabel="#{msgs.label_soldiers}" />
-											<f:selectItem itemValue="3" itemLabel="#{msgs.label_employees}" />
-										</h:selectOneMenu>
-									</td>
-								</tr>
-							</table>
+							</h:panelGroup>
 						</h:panelGroup>
 					</td>
 				</tr>
