@@ -501,7 +501,7 @@ function openTrainingIntCourseEventsMiniSearch(contextPath, miniSearchReturnHand
 }
 
 function openTrainingExtCourseEventsMiniSearch(contextPath, miniSearchReturnHandler,statuses,externalPartyId, nominationFlag) {
-	trainingCourseEventsMiniSearch(contextPath, miniSearchReturnHandler, 2, statuses, -1, -1, externalPartyId, -1, -1, nominationFlag);
+	trainingCourseEventsMiniSearch(contextPath, miniSearchReturnHandler, 2, statuses, -1, -1, externalPartyId, -1,  nominationFlag);
 }
 function openTrainingCivilCourseEventsMiniSearch(contextPath, miniSearchReturnHandler,trainingTypeId,externalPartyId,nominationFlag) {
 	trainingCourseEventsMiniSearch(contextPath, miniSearchReturnHandler, trainingTypeId, 1 , -1, -1,externalPartyId , -1, nominationFlag);
