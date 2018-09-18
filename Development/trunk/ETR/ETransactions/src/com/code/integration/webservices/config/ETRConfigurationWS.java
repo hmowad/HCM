@@ -40,7 +40,9 @@ public class ETRConfigurationWS {
 	YOUTUBE("HCM_YOUTUBE_URL"), // https://www.youtube.com/bg994/
 	CONTACT_US("HCM_CONTACT_US_URL"), // https://fg.gov.sa/Arabic/ContactUs.aspx
 
-	FG_EMAIL("HCM_EMAIL_URL"); // https://mail.fg.gov.sa
+	FG_EMAIL("HCM_EMAIL_URL"), // https://mail.fg.gov.sa
+
+	FG_ERESERVATION("HCM_ERESERVATION_URL"); // https://eservices.fg.gov.sa/EReservation/Main/Login.jsf
 
 	private String code;
 
@@ -63,22 +65,40 @@ public class ETRConfigurationWS {
 	try {
 	    List<WSConfigurationURLItem> configurationURLs = new ArrayList<WSConfigurationURLItem>();
 
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.MANAGERS.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.MANAGERS.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.TASKS.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.TASKS.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.ABOUT_US.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.ABOUT_US.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.BORDER_CROSSINGS.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.BORDER_CROSSINGS.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.PORT_SECURITY_SERVICES.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.PORT_SECURITY_SERVICES.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.FISHING_AND_PICNIC_SERVICES.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.FISHING_AND_PICNIC_SERVICES.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.EXPERIENCES.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.EXPERIENCES.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.JOBS.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.JOBS.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.BORDER_PERMISSION_REQUEST.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.BORDER_PERMISSION_REQUEST.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.SEARCH_EMPLOYEE.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.SEARCH_EMPLOYEE.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.MARITIME_SAFETY_INFORMATION.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.MARITIME_SAFETY_INFORMATION.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.MARITIME_SAFETY_GALLERY_DETAILS.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.MARITIME_SAFETY_GALLERY_DETAILS.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.TWITTER.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.TWITTER.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.YOUTUBE.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.YOUTUBE.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.CONTACT_US.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.CONTACT_US.getCode())));
-	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.FG_EMAIL.getCode(), ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.FG_EMAIL.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.MANAGERS.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.MANAGERS.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.TASKS.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.TASKS.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.ABOUT_US.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.ABOUT_US.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.BORDER_CROSSINGS.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.BORDER_CROSSINGS.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.PORT_SECURITY_SERVICES.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.PORT_SECURITY_SERVICES.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.FISHING_AND_PICNIC_SERVICES.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.FISHING_AND_PICNIC_SERVICES.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.EXPERIENCES.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.EXPERIENCES.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.JOBS.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.JOBS.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.BORDER_PERMISSION_REQUEST.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.BORDER_PERMISSION_REQUEST.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.SEARCH_EMPLOYEE.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.SEARCH_EMPLOYEE.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.MARITIME_SAFETY_INFORMATION.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.MARITIME_SAFETY_INFORMATION.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.MARITIME_SAFETY_GALLERY_DETAILS.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.MARITIME_SAFETY_GALLERY_DETAILS.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.TWITTER.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.TWITTER.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.YOUTUBE.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.YOUTUBE.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.CONTACT_US.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.CONTACT_US.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.FG_EMAIL.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.FG_EMAIL.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.FG_ERESERVATION.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.FG_ERESERVATION.getCode())));
 
 	    response.setConfigurationURLs(configurationURLs);
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
