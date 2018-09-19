@@ -359,6 +359,7 @@ public class EmployeeData extends BaseEntity implements Serializable {
     private Long categoryClassificationId;
     private String navyFormation;
     private String socialIdCopy;
+    private Date lastAnnualRaiseDate;
 
     private Employee employee;
 
@@ -1623,6 +1624,17 @@ public class EmployeeData extends BaseEntity implements Serializable {
     public void setSocialIdCopy(String socialIdCopy) {
 	this.socialIdCopy = socialIdCopy;
 	employee.setSocialIdCopy(socialIdCopy);
+    }
+
+    @Basic
+    @Column(name = "LAST_ANNUAL_RAISE_DATE")
+    @XmlTransient
+    public Date getLastAnnualRaiseDate() {
+	return lastAnnualRaiseDate;
+    }
+
+    public void setLastAnnualRaiseDate(Date lastAnnualRaiseDate) {
+	this.lastAnnualRaiseDate = lastAnnualRaiseDate;
     }
 
     @Transient
