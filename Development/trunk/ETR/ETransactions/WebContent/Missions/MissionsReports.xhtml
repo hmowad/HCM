@@ -8,7 +8,7 @@
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
 	<script type="text/javascript">   
 		function getUnit(contextPath) {
-			unitsMiniSearch(7, contextPath, 'handleUnitMiniSearchResult(ret)', -1, #{missionStatisticalReport.regionId}, -1 , '#{missionStatisticalReport.orgUnitHKey}' , 0);
+			unitsMiniSearch(7, contextPath, 'handleUnitMiniSearchResult(ret)', -1, #{missionsReports.regionId}, -1 , '#{missionsReports.orgUnitHKey}' , 0);
 		}
 		
 		function handleUnitMiniSearchResult(ret){
@@ -21,7 +21,7 @@
 		}
 
 		function getEmployee(contextPath) {
-			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 17, -1, -1, -1, -1, -1, '#{missionStatisticalReport.orgUnitHKey}' , #{missionStatisticalReport.regionId});
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 17, -1, -1, -1, -1, -1, '#{missionsReports.orgUnitHKey}' , #{missionsReports.regionId});
 		}
 	
 		function handleEmpMiniSearchResult(ret) {
@@ -54,10 +54,10 @@
 						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-									<h:selectOneRadio value="#{missionStatisticalReport.reportType}" layout="pageDirection">
+									<h:selectOneRadio value="#{missionsReports.reportType}" layout="pageDirection">
 										<f:selectItem itemLabel="#{msgs.title_missionStatisticalReports}" itemValue="1" />
 										<f:selectItem itemLabel="#{msgs.label_missionStatisticalInquiry}" itemValue="2" />
-										<f:ajax event="change" execute="@this" listener="#{missionStatisticalReport.resetForm()}" render="missionStatisticalReportId:searchPanelId missionStatisticalReportId:searchTitlePanelId" />
+										<f:ajax event="change" execute="@this" listener="#{missionsReports.resetForm()}" render="missionStatisticalReportId:searchPanelId missionStatisticalReportId:searchTitlePanelId" />
 									</h:selectOneRadio>
 								</td>
 							</tr>
@@ -68,7 +68,7 @@
 				<tr>
 					<td width="100%">
 						<h:panelGroup id="searchTitlePanelId">
-							<h:panelGroup rendered="#{missionStatisticalReport.reportType == 1 or (missionStatisticalReport.reportType == 2 and (missionStatisticalReport.isAdmin or missionStatisticalReport.isManager))}">
+							<h:panelGroup rendered="#{missionsReports.reportType == 1 or (missionsReports.reportType == 2 and (missionsReports.isAdmin or missionsReports.isManager))}">
 								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
 									<tr>
 										<td>#{msgs.label_searchData}</td>
@@ -86,43 +86,41 @@
 				<tr>
 					<td width="100%">
 						<h:panelGroup id="searchPanelId">
-							<h:panelGroup rendered="#{missionStatisticalReport.reportType == 1 or (missionStatisticalReport.reportType == 2 and (missionStatisticalReport.isAdmin or missionStatisticalReport.isManager))}">
+							<h:panelGroup rendered="#{missionsReports.reportType == 1 or (missionsReports.reportType == 2 and (missionsReports.isAdmin or missionsReports.isManager))}">
 								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-									<h:panelGroup rendered="#{missionStatisticalReport.reportType == 1}">
+									<h:panelGroup rendered="#{missionsReports.reportType == 1}">
 										<tr>
 											<th width="15%">
 												<h:outputText value="#{msgs.label_region}" />
 												<font style="color: red;">*</font>
 											</th>
 											<td width="35%" colspan="3">
-												<h:selectOneMenu value="#{missionStatisticalReport.regionId}" disabled="#{missionStatisticalReport.getLoginEmpPhysicalRegionFlag(true) != -1}">
+												<h:selectOneMenu value="#{missionsReports.regionId}" disabled="#{missionsReports.getLoginEmpPhysicalRegionFlag(true) != -1}">
 													<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
-													<f:selectItems value="#{missionStatisticalReport.regionsList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+													<f:selectItems value="#{missionsReports.regionsList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
 												</h:selectOneMenu>
 											</td>
 										</tr>
 									</h:panelGroup>
-									<h:panelGroup rendered="#{missionStatisticalReport.reportType == 2}">
+									<h:panelGroup rendered="#{missionsReports.reportType == 2}">
 										<tr>
 											<th width="15%">#{msgs.label_orgUnit}</th>
 											<td colspan="3">
-												<h:outputText id="unitFullNameId" value="#{missionStatisticalReport.orgUnitFullName}" />
-												<h:inputHidden id="unitIDHId" value="#{missionStatisticalReport.orgUnitId}" />
-												<h:inputHidden id="unitFullNameHId" value="#{missionStatisticalReport.orgUnitFullName}" />
-												<h:inputHidden id="unitHKeyHId" value="#{missionStatisticalReport.orgUnitHKey}" />
+												<h:outputText id="unitFullNameId" value="#{missionsReports.orgUnitFullName}" />
+												<h:inputHidden id="unitIDHId" value="#{missionsReports.orgUnitId}" />
+												<h:inputHidden id="unitFullNameHId" value="#{missionsReports.orgUnitFullName}" />
+												<h:inputHidden id="unitHKeyHId" value="#{missionsReports.orgUnitHKey}" />
 												<h:outputText value=" " />
 												<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit('#{request.contextPath}'); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
 											</td>
 										</tr>
-									</h:panelGroup>
-									<h:panelGroup rendered="#{missionStatisticalReport.reportType == 2}">
 										<tr>
 											<th width="15%">#{msgs.label_emp}</th>
 											<td width="35%">
-												<h:outputText id="employeeNameId" value="#{missionStatisticalReport.empFullName}" />
+												<h:outputText id="employeeNameId" value="#{missionsReports.empFullName}" />
 												<h:outputText value=" " />
-												<h:inputHidden id="employeeIDHId" value="#{missionStatisticalReport.empId}" />
-												<h:inputHidden id="employeeFullNameHId" value="#{missionStatisticalReport.empFullName}" />
+												<h:inputHidden id="employeeIDHId" value="#{missionsReports.empId}" />
+												<h:inputHidden id="employeeFullNameHId" value="#{missionsReports.empFullName}" />
 												<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
 											</td>
 										</tr>
@@ -133,14 +131,14 @@
 											<font style="color: red;">*</font>
 										</th>
 										<td width="30%">
-											<util:hijri value="#{missionStatisticalReport.fromDate}" />
+											<util:hijri value="#{missionsReports.fromDate}" />
 										</td>
 										<th width="20%">
 											#{msgs.label_toDate}
 											<font style="color: red;">*</font>
 										</th>
 										<td width="30%">
-											<util:hijri value="#{missionStatisticalReport.toDate}" />
+											<util:hijri value="#{missionsReports.toDate}" />
 										</td>
 									</tr>
 									<tr>
@@ -149,7 +147,7 @@
 											<font style="color: red;">*</font>
 										</th>
 										<td width="35%" colspan="3">
-											<h:selectOneMenu value="#{missionStatisticalReport.category}">
+											<h:selectOneMenu value="#{missionsReports.category}">
 												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
 												<f:selectItem itemValue="1" itemLabel="#{msgs.label_officers}" />
 												<f:selectItem itemValue="2" itemLabel="#{msgs.label_soldiers}" />
@@ -161,12 +159,12 @@
 								</table>
 							</h:panelGroup>
 
-							<h:panelGroup rendered="#{missionStatisticalReport.reportType != 1 and !(missionStatisticalReport.reportType == 2 and (missionStatisticalReport.isAdmin or missionStatisticalReport.isManager))}">
+							<h:panelGroup rendered="#{(missionsReports.reportType == 2 and !(missionsReports.isAdmin or missionsReports.isManager))}">
 								<tr>
 									<td width="100%">
 										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 											<tr>
-												<th width="100%">#{msgs.error_privilegeError}</th>
+												<th width="100%">#{msgs.error_privilegeErrorForManagersAndAdminsOnly}</th>
 											</tr>
 										</table>
 									</td>
@@ -185,8 +183,8 @@
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-									<h:commandButton id="printBtnId" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" action="#{missionStatisticalReport.print()}" styleClass="btn_normal_icon" />
-									<h:commandButton action="#{missionStatisticalReport.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+									<h:commandButton id="printBtnId" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" action="#{missionsReports.print()}" styleClass="btn_normal_icon" />
+									<h:commandButton action="#{missionsReports.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
 										<f:ajax render="missionStatisticalReportId:searchPanelId" />
 									</h:commandButton>
 								</td>

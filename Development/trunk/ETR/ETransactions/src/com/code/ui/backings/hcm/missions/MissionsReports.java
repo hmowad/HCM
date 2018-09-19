@@ -17,9 +17,9 @@ import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
 
-@ManagedBean(name = "missionStatisticalReport")
+@ManagedBean(name = "missionsReports")
 @ViewScoped
-public class MissionStatisticalReport extends BaseBacking {
+public class MissionsReports extends BaseBacking {
 
     private int reportType = 1;
     private Long empId;
@@ -37,7 +37,7 @@ public class MissionStatisticalReport extends BaseBacking {
     private Boolean isManager;
     private Boolean isAdmin;
 
-    public MissionStatisticalReport() {
+    public MissionsReports() {
 	regionsList = CommonService.getAllRegions();
 	resetForm();
     }
@@ -76,7 +76,7 @@ public class MissionStatisticalReport extends BaseBacking {
 
     public void print() {
 	try {
-	    if (reportType == FlagsEnum.ON.getCode()) {
+	    if (reportType == 1) {
 		byte[] bytes = MissionsService.getMissionStatisicalReport(category, regionId, toDate, fromDate);
 		super.print(bytes);
 	    } else if (reportType == 2) {
