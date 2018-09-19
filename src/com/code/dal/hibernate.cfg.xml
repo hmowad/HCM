@@ -241,6 +241,12 @@
 		<mapping class="com.code.dal.orm.workflow.hcm.trainings.WFTrainingCourse" />
 		<mapping class="com.code.dal.orm.workflow.hcm.trainings.WFTrainingCourseData" />
 		
+		<mapping class="com.code.dal.orm.hcm.raises.Raise"/>
+		<mapping class="com.code.dal.orm.hcm.raises.RaiseEmployee"/>
+		<mapping class="com.code.dal.orm.hcm.raises.RaiseEmployeeData"/>
+		<mapping class="com.code.dal.orm.hcm.raises.RaiseTransaction"/>
+		<mapping class="com.code.dal.orm.hcm.raises.RaiseTransactionData"/>
+		
 		<mapping class="com.code.dal.orm.hcm.exercises.Exercise"/>
 		<mapping class="com.code.dal.orm.hcm.exercises.ExerciseData"/>
 		<mapping class="com.code.dal.orm.hcm.exercises.EmployeeExercise"/>
