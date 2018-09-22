@@ -177,7 +177,7 @@ public class RaiseTransactionData extends BaseEntity {
 
     public void setRaiseDecisionDate(Date raiseDecisionDate) {
 	this.raiseDecisionDate = raiseDecisionDate;
-	this.raiseDecisionDate = HijriDateService.getHijriDate(raiseDecisionDateString);
+	this.raiseDecisionDateString = HijriDateService.getHijriDateString(raiseDecisionDate);
 	raiseTransaction.setDecisionDate(raiseDecisionDate);
     }
 
