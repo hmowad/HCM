@@ -147,6 +147,7 @@ public class RaiseEmployeeData extends BaseEntity {
 
     public void setRaiseExecutionDateString(String raiseExecutionDateString) {
 	this.raiseExecutionDateString = raiseExecutionDateString;
+	this.raiseExecutionDate = HijriDateService.getHijriDate(raiseExecutionDateString);
     }
 
     @Basic
@@ -177,6 +178,7 @@ public class RaiseEmployeeData extends BaseEntity {
 
     public void setRaiseDecisionDateString(String raiseDecisionDateString) {
 	this.raiseDecisionDateString = raiseDecisionDateString;
+	this.raiseDecisionDate = HijriDateService.getHijriDate(raiseDecisionDateString);
     }
 
     @Basic
