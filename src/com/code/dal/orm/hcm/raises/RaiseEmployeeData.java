@@ -30,7 +30,7 @@ public class RaiseEmployeeData extends BaseEntity {
     private String raiseDecisionDateString;
     private String raiseCategoryDesc;
     private Long raiseCategoryId;
-    private Long empMilitaryNumber;
+    private Integer empMilitaryNumber;
     private Long empNewDegreeId;
     private String empNewDegreeDesc;
     private Long empPhysicalUnitId;
@@ -203,11 +203,11 @@ public class RaiseEmployeeData extends BaseEntity {
 
     @Basic
     @Column(name = "EMP_MILITARY_NUMBER")
-    public Long getEmpMilitaryNumber() {
+    public Integer getEmpMilitaryNumber() {
 	return empMilitaryNumber;
     }
 
-    public void setEmpMilitaryNumber(Long empMilitaryNumber) {
+    public void setEmpMilitaryNumber(Integer empMilitaryNumber) {
 	this.empMilitaryNumber = empMilitaryNumber;
     }
 
