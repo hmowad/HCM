@@ -7,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -17,6 +19,20 @@ import com.code.dal.audit.UpdatableAuditEntity;
 import com.code.dal.orm.AuditEntity;
 import com.code.services.util.HijriDateService;
 
+@NamedQueries({
+	@NamedQuery(name = "hcm_raises_searchRaiseData",
+		query = "select r from Raise r" +
+			" where (:P_ID = -1 or r.id = :P_ID)" +
+			" and (:P_DECISION_NUMBER = '-1' or r.decisionNumber = :P_DECISION_NUMBER)" +
+			" and (:P_TYPE = -1 or r.type = :P_TYPE)" +
+			" and (:P_STATUS = -1 or r.status = :P_STATUS )" +
+			" and (:P_CATEGORY_ID = -1 or r.categoryId = :P_CATEGORY_ID)" +
+			" and (:P_DECISION_DATE_FROM_FLAG = -1 or r.decisionDate >= (TO_DATE(:P_DECISION_DATE_FROM, 'MI/MM/YYYY')))" +
+			" and (:P_DECISION_DATE_TO_FLAG = -1 or r.decisionDate <= (TO_DATE(:P_DECISION_DATE_TO, 'MI/MM/YYYY')))" +
+			" and (:P_EXECUTION_DATE_FROM_FLAG = -1 or r.executionDate >= (TO_DATE(:P_EXECUTION_DATE_FROM, 'MI/MM/YYYY')))" +
+			" and (:P_EXECUTION_DATE_TO_FLAG = -1 or r.executionDate <= (TO_DATE(:P_EXECUTION_DATE_TO,'MI/MM/YYYY')))" +
+			" order by r.id")
+})
 @Entity
 @Table(name = "HCM_RAISES")
 public class Raise extends AuditEntity implements InsertableAuditEntity, UpdatableAuditEntity, DeletableAuditEntity {
