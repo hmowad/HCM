@@ -9,11 +9,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.code.dal.audit.DeletableAuditEntity;
 import com.code.dal.audit.InsertableAuditEntity;
 import com.code.dal.audit.UpdatableAuditEntity;
 import com.code.dal.orm.AuditEntity;
+import com.code.services.util.HijriDateService;
 
 @Entity
 @Table(name = "HCM_RAISES")
@@ -26,6 +28,8 @@ public class Raise extends AuditEntity implements InsertableAuditEntity, Updatab
     private Integer status;
     private Long categoryId;
     private String remarks;
+    private String decisionDateString;
+    private String executionDateString;
 
     @SequenceGenerator(name = "HCMRaiseSeq",
 	    sequenceName = "HCM_RAISE_SEQ")
@@ -48,6 +52,7 @@ public class Raise extends AuditEntity implements InsertableAuditEntity, Updatab
 
     public void setDecisionDate(Date decisionDate) {
 	this.decisionDate = decisionDate;
+	this.decisionDateString = HijriDateService.getHijriDateString(decisionDate);
     }
 
     @Basic
@@ -68,6 +73,7 @@ public class Raise extends AuditEntity implements InsertableAuditEntity, Updatab
 
     public void setExecutionDate(Date executionDate) {
 	this.executionDate = executionDate;
+	this.executionDateString = HijriDateService.getHijriDateString(executionDate);
     }
 
     @Basic
@@ -108,6 +114,26 @@ public class Raise extends AuditEntity implements InsertableAuditEntity, Updatab
 
     public void setRemarks(String remarks) {
 	this.remarks = remarks;
+    }
+
+    @Transient
+    public String getDecisionDateString() {
+	return decisionDateString;
+    }
+
+    public void setDecisionDateString(String decisionDateString) {
+	this.decisionDateString = decisionDateString;
+	this.decisionDate = HijriDateService.getHijriDate(decisionDateString);
+    }
+
+    @Transient
+    public String getExecutionDateString() {
+	return executionDateString;
+    }
+
+    public void setExecutionDateString(String executionDateString) {
+	this.executionDateString = executionDateString;
+	this.executionDate = HijriDateService.getHijriDate(executionDateString);
     }
 
     @Override
