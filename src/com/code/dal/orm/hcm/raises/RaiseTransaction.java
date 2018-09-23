@@ -9,8 +9,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.code.dal.orm.BaseEntity;
+import com.code.services.util.HijriDateService;
 
 @Entity
 @Table(name = "HCM_RAISE_TRANSACTIONS")
@@ -23,8 +25,10 @@ public class RaiseTransaction extends BaseEntity {
     private String exclusionReason;
     private Long newDegreeId;
     private Date decisionDate;
+    private String decisionDateString;
     private String decisionNumber;
     private Date executionDate;
+    private String executionDateString;
     private String remarks;
     private Integer effectFlag;
     private Integer eFlag;
@@ -118,6 +122,7 @@ public class RaiseTransaction extends BaseEntity {
 
     public void setDecisionDate(Date decisionDate) {
 	this.decisionDate = decisionDate;
+	this.decisionDateString = HijriDateService.getHijriDateString(decisionDate);
     }
 
     @Basic
@@ -138,6 +143,7 @@ public class RaiseTransaction extends BaseEntity {
 
     public void setExecutionDate(Date executionDate) {
 	this.executionDate = executionDate;
+	this.executionDateString = HijriDateService.getHijriDateString(executionDate);
     }
 
     @Basic
@@ -248,6 +254,26 @@ public class RaiseTransaction extends BaseEntity {
 
     public void setTransEmpDegreeDesc(String transEmpDegreeDesc) {
 	this.transEmpDegreeDesc = transEmpDegreeDesc;
+    }
+
+    @Transient
+    public String getDecisionDateString() {
+	return decisionDateString;
+    }
+
+    public void setDecisionDateString(String decisionDateString) {
+	this.decisionDateString = decisionDateString;
+	this.decisionDate = HijriDateService.getHijriDate(decisionDateString);
+    }
+
+    @Transient
+    public String getExecutionDateString() {
+	return executionDateString;
+    }
+
+    public void setExecutionDateString(String executionDateString) {
+	this.executionDateString = executionDateString;
+	this.executionDate = HijriDateService.getHijriDate(executionDateString);
     }
 
 }
