@@ -50,6 +50,10 @@ public enum QueryNamesEnum {
     HCM_SEARCH_MARTYR_HONORS("hcm_martyrHonor_searchMartyrHonors"),
     HCM_SEARCH_MARTYRDOM_REASONS("hcm_martyrdomReason_searchMartyrdomReasons"),
 
+    /* ************************************************ Raises ********************************************** */
+
+    HCM_RAISE_TRANSACTION_DATA_GET_NOT_EXECUTED_RAISES_TRANSACTIONS("hcm_raiseTransactionData_getNotExecutedRaisesTransactions"),
+
     /* ************************************************ Navy Formations ********************************************** */
 
     HCM_SEARCH_NAVY_FORMATIONS("hcm_navyFormation_searchNavyFormations"),
