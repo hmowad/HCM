@@ -2,7 +2,9 @@ package com.code.services.hcm;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
@@ -10,10 +12,14 @@ import com.code.dal.orm.hcm.raises.Raise;
 import com.code.dal.orm.hcm.raises.RaiseEmployeeData;
 import com.code.dal.orm.hcm.raises.RaiseTransactionData;
 import com.code.enums.DegreesEnum;
+import com.code.enums.FlagsEnum;
+import com.code.enums.QueryNamesEnum;
 import com.code.enums.RaiseStatusEnum;
 import com.code.enums.RaiseTypesEnum;
 import com.code.exceptions.BusinessException;
+import com.code.exceptions.DatabaseException;
 import com.code.services.BaseService;
+import com.code.services.util.HijriDateService;
 
 public class RaisesService extends BaseService {
 
@@ -122,7 +128,26 @@ public class RaisesService extends BaseService {
      *             If any exceptions or errors occurs
      */
     public static void deleteRaise(Raise raise, CustomSession... useSession) throws BusinessException {
-	/* To Do */
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+
+	    DataAccess.deleteEntity(raise, session);
+
+	    if (!isOpenedSession)
+		session.commitTransaction();
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+
     }
 
     /*----------------------------------------Validations----------------------------------------------*/
@@ -136,7 +161,7 @@ public class RaisesService extends BaseService {
      *             If any exceptions or errors occurs
      */
     private static void validateRaise(Raise newRaise) throws BusinessException {
-	List<Raise> raisesList = getRaises(null, null, newRaise.getDecisionNumber(), newRaise.getExecutionDate(), null);
+	List<Raise> raisesList = getRaises(-1, null, null, newRaise.getDecisionNumber(), newRaise.getExecutionDate(), newRaise.getExecutionDate(), -1, -1, -1);
 	if (raisesList.size() != 0)
 	    throw new BusinessException("error_decisionNumberAndExecutionDateCannotBeRepeated");
 	if (newRaise.getDecisionNumber() == null)
@@ -157,23 +182,66 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      */
     public static List<Raise> getAllRaises() throws BusinessException {
-	return searchRaises(null, null, null, null, null);
+	return searchRaises(-1, null, null, null, null, null, -1, -1, -1);
 
     }
 
-    public static Raise getRaiseById(Long id) throws BusinessException {
-	List<Raise> result = searchRaises(id, null, null, null, null);
+    public static Raise getRaiseById(long id) throws BusinessException {
+	List<Raise> result = searchRaises(id, null, null, null, null, null, -1, -1, -1);
 	if (result == null || result.size() == 0)
 	    return null;
 	return result.get(0);
     }
 
-    public static List<Raise> getRaises(Long id, Date decisionDate, String decisionNumber, Date executionDate, Long categoryId) throws BusinessException {
-	return searchRaises(id, decisionDate, decisionNumber, executionDate, categoryId);
+    public static List<Raise> getRaises(long id, Date decisionDateFrom, Date decisionDateTo, String decisionNumber, Date executionDateFrom, Date executionDateTo, long categoryId, long type, long status) throws BusinessException {
+	return searchRaises(id, decisionDateFrom, decisionDateTo, decisionNumber, executionDateFrom, executionDateTo, categoryId, type, status);
     }
 
-    private static List<Raise> searchRaises(Long id, Date decisionDate, String decisionNumber, Date executionDate, Long categoryId) throws BusinessException {
-	return null;
+    private static List<Raise> searchRaises(long id, Date decisionDateFrom, Date decisionDateTo, String decisionNumber, Date executionDateFrom, Date executionDateTo, long categoryId, long type, long status) throws BusinessException {
+
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+
+	    qParams.put("P_ID", id);
+	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.length() == 0) ? FlagsEnum.ALL.getCode() + "" : '%' + decisionNumber + '%');
+	    qParams.put("P_CATEGORY_ID", categoryId);
+	    qParams.put("P_TYPE", type);
+	    qParams.put("P_STATUS", status);
+
+	    if (decisionDateFrom != null) {
+		qParams.put("P_DECISION_DATE_FROM_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_DECISION_DATE_FROM", decisionDateFrom);
+	    } else {
+		qParams.put("P_DECISION_DATE_FROM_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_DECISION_DATE_FROM", HijriDateService.getHijriSysDateString());
+	    }
+	    if (decisionDateTo != null) {
+		qParams.put("P_DECISION_DATE_TO_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_DECISION_DATE_TO", decisionDateTo);
+	    } else {
+		qParams.put("P_DECISION_DATE_TO_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_DECISION_DATE_TO", HijriDateService.getHijriSysDateString());
+	    }
+
+	    if (executionDateFrom != null) {
+		qParams.put("P_EXECUTION_DATE_FROM_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_EXECUTION_DATE_FROM", executionDateFrom);
+	    } else {
+		qParams.put("P_EXECUTION_DATE_FROM_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_EXECUTION_DATE_FROM", HijriDateService.getHijriSysDateString());
+	    }
+	    if (executionDateTo != null) {
+		qParams.put("P_EXECUTION_DATE_TO_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_EXECUTION_DATE_TO", executionDateTo);
+	    } else {
+		qParams.put("P_EXECUTION_DATE_TO_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_EXECUTION_DATE_TO", HijriDateService.getHijriSysDateString());
+	    }
+	    return DataAccess.executeNamedQuery(Raise.class, QueryNamesEnum.HCM_RAISES_SEARCH_DATA.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
     }
 
     /*************************************** Raise Employee ********************************************/
@@ -347,7 +415,7 @@ public class RaisesService extends BaseService {
     }
 
     /*------------------------------------------Reports------------------------------------------------*/
-    public static byte[] getRaiseEmployeesReportBytes(String decisionNumber, Date decisionDate, Integer deservedFlag) {
+    public static byte[] getRaiseEmployeesReportBytes(String decisionNumber, Date decisionDate, Integer deservedFlag) throws BusinessException {
 	return null;
     }
 
