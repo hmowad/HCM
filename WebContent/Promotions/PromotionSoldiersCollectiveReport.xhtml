@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">  
+
+		function getRank(contextPath) {
+			openRanksMiniSearch(contextPath, 'handleRankMiniSearchResult(ret)', 2 , 1);
+		}
+		
+		function handleRankMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('promotionSoldiersCollectiveReportFormId:ranksIDsHId').value = ret[0];
+				document.getElementById('promotionSoldiersCollectiveReportFormId:ranksNamesHId').value = ret[1];
+				document.getElementById('promotionSoldiersCollectiveReportFormId:ranksNamesId').innerHTML = ret[1];
+			}
+		}
+	
+		function getRegions(contextPath){
+	    	openSelectRegions(1, contextPath, 'handleRegionMiniSearchResult(ret)');
+	 	}
+	    
+	    function handleRegionMiniSearchResult(ret){
+	    	if(ret != null){
+	       		document.getElementById('promotionSoldiersCollectiveReportFormId:regionsCodesHId').value = ret[0];
+	       	  	document.getElementById('promotionSoldiersCollectiveReportFormId:regionsNamesHId').value = ret[1];
+	       	  	document.getElementById('promotionSoldiersCollectiveReportFormId:regionsNamesId').innerHTML = ret[1];
+	       	}	  
+	    }
+
+	    function validateMandatory(){
+			var ranks = document.getElementById('promotionSoldiersCollectiveReportFormId:ranksNamesId').innerHTML;
+			var regions = document.getElementById('promotionSoldiersCollectiveReportFormId:regionsNamesId').innerHTML;
+			if(ranks == null || ranks == ''){
+				alert("#{msgs.error_rankIsMandatory}");
+				return false;
+			}
+			if(regions == null || regions == '' ){
+				alert("#{msgs.error_regionMandatory}");
+				return false;
+			}
+		}
+    
+    </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="promotionSoldiersCollectiveReportFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{msgs.title_promotionSoldiersCollectiveReports}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="70%">
+									<h:outputText value="#{msgs.label_reportData}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="promotionReportDataId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_reportDate}" />
+										<font style="color: red;">*</font>
+									</th>
+									<td width="35%" colspan="2">
+										<util:hijri value="#{promotionSoldiersCollectiveReport.reportDate}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_promotionDueDate}" />
+										<h:outputText value="*" style="color: red;" />
+									</th>
+									<td width="35%">
+										<util:hijri id="dueDateId" value="#{promotionSoldiersCollectiveReport.promotionDueDate}" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_promotionDate}" />
+										<h:outputText value="*" style="color: red;" />
+									</th>
+									<td width="35%">
+										<util:hijri id="promotionDateId" value="#{promotionSoldiersCollectiveReport.promotionDate}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_rank}" />
+										<h:outputText value="*" style="color: red;" />
+									</th>
+									<td width="35%">
+										<h:outputText id="ranksNamesId" value="#{promotionSoldiersCollectiveReport.ranksNamesString}" />
+										<h:inputHidden id="ranksIDsHId" value="#{promotionSoldiersCollectiveReport.ranksIdsString}" />
+										<h:inputHidden id="ranksNamesHId" value="#{promotionSoldiersCollectiveReport.ranksNamesString}" />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getRank('#{request.contextPath}'); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+									</td>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_region}" />
+										<h:outputText value="*" style="color: red;" />
+									</th>
+									<td width="35%">
+										<h:outputText id="regionsNamesId" value="#{promotionSoldiersCollectiveReport.regionsNamesString}" />
+										<h:inputHidden id="regionsNamesHId" value="#{promotionSoldiersCollectiveReport.regionsNamesString}" />
+										<h:inputHidden id="regionsCodesHId" value="#{promotionSoldiersCollectiveReport.regionsIdsString}" />
+										<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getRegions('#{request.contextPath}'); return false;" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_scaleUpPromotion}" />
+									</th>
+									<td width="10%">
+										<h:commandButton action="#{promotionSoldiersCollectiveReport.toggleMainScaleUpFlag()}" title="#{promotionSoldiersCollectiveReport.scaleUpFlagBoolean ? msgs.label_cancelScaleUpFlag : msgs.label_scaleUpPromotion}" value="#{promotionSoldiersCollectiveReport.scaleUpFlagBoolean ? msgs.fa_toggle_on : msgs.fa_toggle_off}" styleClass="#{promotionSoldiersCollectiveReport.scaleUpFlagBoolean? 'btn_toggleOn' :  'btn_toggleOff'}" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:panelGroup id="addRemoveActionSectionId">
+										<h:commandButton action="#{promotionSoldiersCollectiveReport.addAll()}" value="#{msgs.label_add}" styleClass="btn_normal_icon" 
+										disabled="#{promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports != null and promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports.size() != 0}"
+										onclick="validateMandatory()">
+											<f:ajax execute="promotionSoldiersCollectiveReportFormId:promotionReportDataId" render="promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsTable promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsConstructBtn promotionSoldiersCollectiveReportFormId:addRemoveActionSectionId" 
+											onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+
+										<h:commandButton action="#{promotionSoldiersCollectiveReport.deleteAll()}" value="#{msgs.label_deleteAll}" styleClass="btn_normal_icon" disabled="#{promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports == null or promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports.size() == 0}">
+											<f:ajax execute="promotionSoldiersCollectiveReportFormId:promotionReportDataId" render="promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsTable promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsConstructBtn promotionSoldiersCollectiveReportFormId:addRemoveActionSectionId" 
+											onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+
+				<tr>
+					<td>
+						<h:panelGroup id="promotionSoldiersCollectiveReportsTable">
+							<rich:dataTable value="#{promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports}" var="promotionSoldierReport" rows="#{promotionSoldiersCollectiveReport.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+								<rich:column style="width : 3%">
+									<f:facet name="header">#</f:facet>
+													#{index + 1}
+												</rich:column>
+								<rich:column style="width : 15%">
+									<f:facet name="header">#{msgs.label_reportNumber}</f:facet>
+									<h:inputText value="#{promotionSoldierReport.reportNumber}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_reportDate}</f:facet>
+									<util:hijri value="#{promotionSoldierReport.reportDate}" />
+								</rich:column>
+								<rich:column style="width : 7%">
+									<f:facet name="header">#{msgs.label_promotionDueDate}</f:facet>
+									<util:hijri value="#{promotionSoldierReport.dueDate}" />
+								</rich:column>
+								<rich:column style="width : 7%">
+									<f:facet name="header">#{msgs.label_promotionDate}</f:facet>
+									<util:hijri value="#{promotionSoldierReport.promotionDate}" />
+								</rich:column>
+								<rich:column style="width : 8%">
+									<f:facet name="header">#{msgs.label_scaleUp}</f:facet>
+									<h:commandButton action="#{promotionSoldiersCollectiveReport.toggleScaleUpFlag(promotionSoldierReport)}" title="#{promotionSoldierReport.scaleUpFlagBoolean ? msgs.label_cancelScaleUpFlag : msgs.label_scaleUpPromotion}" value="#{promotionSoldierReport.scaleUpFlagBoolean ? msgs.fa_toggle_on : msgs.fa_toggle_off}" styleClass="#{promotionSoldierReport.scaleUpFlagBoolean? 'btn_toggleOn' :  'btn_toggleOff'}" />
+								</rich:column>
+								<rich:column style="width:8%">
+									<f:facet name="header">#{msgs.label_region}</f:facet>
+									<h:outputText value="#{promotionSoldierReport.regionDesc}" />
+								</rich:column>
+								<rich:column style="width:8%">
+									<f:facet name="header">#{msgs.label_rank}</f:facet>
+									<h:outputText value="#{promotionSoldierReport.rankDesc}" />
+								</rich:column>
+								<rich:column style="width : 3%;">
+									<f:facet name="header">#{msgs.label_delete}</f:facet>
+									<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{promotionSoldiersCollectiveReport.deletePromotionSoldierReport(promotionSoldierReport)}">
+										<f:ajax execute="promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsTable" render="promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsTable promotionSoldiersCollectiveReportFormId:addRemoveActionSectionId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller oncomplete="#{rich:component('reload')}.hide()" maxPages="5" fastControls="hide">
+										<f:facet name="first">#{msgs.label_first}</f:facet>
+										<f:facet name="last">#{msgs.label_last}</f:facet>
+										<f:facet name="next">#{msgs.label_next}</f:facet>
+										<f:facet name="previous">#{msgs.label_previous}</f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="promotionSoldiersCollectiveReportsConstructBtn">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton action="#{promotionSoldiersCollectiveReport.constructAllReports()}" value="#{msgs.label_createReports}" styleClass="btn_normal_icon" disabled="#{promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports == null or promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports.size() == 0}">
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>
