@@ -466,7 +466,7 @@ public class PromotionsService extends BaseService {
 	PromotionReportData promotionsReport = getPromotionReportDataByReportNumberAndCategory(newPromotionReportData.getReportNumber(), newPromotionReportData.getCategoryId());
 	if (promotionsReport != null) {
 	    if (newPromotionReportData.getId() == null || !promotionsReport.getId().equals(newPromotionReportData.getId()))
-		throw new BusinessException("error_promotionReportSaveError");
+		throw new BusinessException("error_promotionReportSaveError", new String[] { newPromotionReportData.getReportNumber() });
 	}
     }
 
