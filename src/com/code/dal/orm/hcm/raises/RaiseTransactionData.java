@@ -6,12 +6,18 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.code.dal.orm.BaseEntity;
 import com.code.services.util.HijriDateService;
 
+@NamedQueries({
+	@NamedQuery(name = "hcm_raiseTransactionData_getNotExecutedRaisesTransactions",
+		query = "select r from RaiseTransactionData r where r.effectFlag = 0 and r.executionDate <= to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY')")
+})
 @Entity
 @Table(name = "HCM_VW_RAISE_TRANSACTIONS")
 public class RaiseTransactionData extends BaseEntity {
