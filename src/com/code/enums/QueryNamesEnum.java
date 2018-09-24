@@ -54,6 +54,7 @@ public enum QueryNamesEnum {
 
     HCM_RAISE_TRANSACTION_DATA_GET_NOT_EXECUTED_RAISES_TRANSACTIONS("hcm_raiseTransactionData_getNotExecutedRaisesTransactions"),
     HCM_RAISES_SEARCH_DATA("hcm_raises_searchRaiseData"),
+    HCM_RAISES_GET_RAISE_EMPLOYEES_BY_RAISE_ID("hcm_raises_getRaiseEmployeesByRaiseId"),
 
     /* ************************************************ Navy Formations ********************************************** */
 
