@@ -133,7 +133,8 @@ public class RaisesService extends BaseService {
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
-
+	    List<RaiseEmployeeData> raiseEmployeeData = getRaiseEmployeeByRaiseId(raise.getId());
+	    deleteRaiseEmployees(raiseEmployeeData, session);
 	    DataAccess.deleteEntity(raise, session);
 
 	    if (!isOpenedSession)
@@ -210,14 +211,14 @@ public class RaisesService extends BaseService {
 
 	    if (decisionDateFrom != null) {
 		qParams.put("P_DECISION_DATE_FROM_FLAG", FlagsEnum.ON.getCode());
-		qParams.put("P_DECISION_DATE_FROM", decisionDateFrom);
+		qParams.put("P_DECISION_DATE_FROM", HijriDateService.getHijriDateString(decisionDateFrom));
 	    } else {
 		qParams.put("P_DECISION_DATE_FROM_FLAG", FlagsEnum.ALL.getCode());
 		qParams.put("P_DECISION_DATE_FROM", HijriDateService.getHijriSysDateString());
 	    }
 	    if (decisionDateTo != null) {
 		qParams.put("P_DECISION_DATE_TO_FLAG", FlagsEnum.ON.getCode());
-		qParams.put("P_DECISION_DATE_TO", decisionDateTo);
+		qParams.put("P_DECISION_DATE_TO", HijriDateService.getHijriDateString(decisionDateTo));
 	    } else {
 		qParams.put("P_DECISION_DATE_TO_FLAG", FlagsEnum.ALL.getCode());
 		qParams.put("P_DECISION_DATE_TO", HijriDateService.getHijriSysDateString());
@@ -225,14 +226,14 @@ public class RaisesService extends BaseService {
 
 	    if (executionDateFrom != null) {
 		qParams.put("P_EXECUTION_DATE_FROM_FLAG", FlagsEnum.ON.getCode());
-		qParams.put("P_EXECUTION_DATE_FROM", executionDateFrom);
+		qParams.put("P_EXECUTION_DATE_FROM", HijriDateService.getHijriDateString(executionDateFrom));
 	    } else {
 		qParams.put("P_EXECUTION_DATE_FROM_FLAG", FlagsEnum.ALL.getCode());
 		qParams.put("P_EXECUTION_DATE_FROM", HijriDateService.getHijriSysDateString());
 	    }
 	    if (executionDateTo != null) {
 		qParams.put("P_EXECUTION_DATE_TO_FLAG", FlagsEnum.ON.getCode());
-		qParams.put("P_EXECUTION_DATE_TO", executionDateTo);
+		qParams.put("P_EXECUTION_DATE_TO", HijriDateService.getHijriDateString(executionDateTo));
 	    } else {
 		qParams.put("P_EXECUTION_DATE_TO_FLAG", FlagsEnum.ALL.getCode());
 		qParams.put("P_EXECUTION_DATE_TO", HijriDateService.getHijriSysDateString());
@@ -366,7 +367,24 @@ public class RaisesService extends BaseService {
      *             If any exceptions or errors occurs
      */
     public static void deleteRaiseEmployee(RaiseEmployeeData raiseEmployeeData, CustomSession... useSession) throws BusinessException {
-	/* To Do */
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+	    DataAccess.deleteEntity(raiseEmployeeData.getRaiseEmployee());
+
+	    if (!isOpenedSession)
+		session.commitTransaction();
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
     }
 
     /**
@@ -381,7 +399,14 @@ public class RaisesService extends BaseService {
      *             If any exceptions or errors occurs
      */
     public static void deleteRaiseEmployees(List<RaiseEmployeeData> raiseEmployeeDataList, CustomSession... useSession) throws BusinessException {
-	/* To Do */
+	try {
+	    for (RaiseEmployeeData raiseEmployeeData : raiseEmployeeDataList) {
+		deleteRaiseEmployee(raiseEmployeeData);
+	    }
+	} catch (BusinessException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
     }
     /*----------------------------------------Validations----------------------------------------------*/
 
@@ -410,8 +435,16 @@ public class RaisesService extends BaseService {
      * @return array list of raiseEmployee objects
      * @throws BusinessException
      */
-    public static List<RaiseEmployeeData> getRaiseEmployeeByRaiseId(Long raiseId) throws BusinessException {
-	return null;
+    public static List<RaiseEmployeeData> getRaiseEmployeeByRaiseId(long raiseId) throws BusinessException {
+	Map<String, Object> qParams = new HashMap<String, Object>();
+
+	try {
+	    qParams.put("P_RAISE_ID", raiseId);
+	    return DataAccess.executeNamedQuery(RaiseEmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_RAISE_EMPLOYEES_BY_RAISE_ID.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
     }
 
     /*------------------------------------------Reports------------------------------------------------*/
