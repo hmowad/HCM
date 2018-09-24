@@ -8,12 +8,14 @@ import java.util.Map;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
+import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.raises.Raise;
 import com.code.dal.orm.hcm.raises.RaiseEmployeeData;
 import com.code.dal.orm.hcm.raises.RaiseTransactionData;
 import com.code.enums.DegreesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
+import com.code.enums.RaiseEmployeesTypesEnum;
 import com.code.enums.RaiseStatusEnum;
 import com.code.enums.RaiseTypesEnum;
 import com.code.exceptions.BusinessException;
@@ -467,7 +469,175 @@ public class RaisesService extends BaseService {
      *             If any exceptions or errors occurs
      */
     public static void addRaiseTransaction(RaiseTransactionData raiseTransactionData, CustomSession... useSession) throws BusinessException {
-	/* To Do */
+	validateRaiseTransactionData(raiseTransactionData);
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+
+	    DataAccess.addEntity(raiseTransactionData.getRaiseTransaction(), session);
+	    raiseTransactionData.setId(raiseTransactionData.getRaiseTransaction().getId());
+	    if (!isOpenedSession)
+		session.commitTransaction();
+	} catch (Exception e) {
+	    raiseTransactionData.setId(null);
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
+
+    public static void updateRaiseTransaction(RaiseTransactionData raiseTransactionData, CustomSession... useSession) throws BusinessException {
+	validateRaiseTransactionData(raiseTransactionData);
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+
+	    DataAccess.updateEntity(raiseTransactionData.getRaiseTransaction(), session);
+	    if (!isOpenedSession)
+		session.commitTransaction();
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
+
+    public static RaiseTransactionData constructRaiseTransaction(long managerId, Raise raise, long employeeId, int deservedFlag, Long newDegreeId, String exclusionReason) throws BusinessException {
+	RaiseTransactionData transaction = new RaiseTransactionData();
+
+	EmployeeData emp = EmployeesService.getEmployeeData(employeeId);
+
+	transaction.setRaiseCategoryId(raise.getCategoryId());
+	transaction.setRaiseType(raise.getType());
+	transaction.setRaiseDecisionNumber(raise.getDecisionNumber());
+	transaction.setRaiseDecisionDate(raise.getDecisionDate());
+	transaction.setRaiseExecutionDate(raise.getExecutionDate());
+
+	transaction.setEmpId(emp.getEmpId());
+	transaction.setDeservedFlag(deservedFlag);
+	if (deservedFlag == RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode())
+	    transaction.setExclusionReason(exclusionReason);
+
+	if (raise.getType().intValue() == RaiseTypesEnum.ANNUAL.getCode())
+	    transaction.setEmpNewDegreeId(emp.getDegreeId() + 1);
+	else
+	    transaction.setEmpNewDegreeId(newDegreeId);
+
+	transaction.setTransEmpDegreeDesc(emp.getDegreeDesc());
+	transaction.setTransEmpJobName(emp.getJobDesc());
+	transaction.setTransEmpRankDesc(emp.getRankDesc());
+	// TODO set transempjobrankdesc
+	transaction.setTransEmpUnitFullName(emp.getPhysicalUnitFullName());
+
+	transaction.setEmpDecisionApprovedId(managerId);
+	transaction.setEmpOriginalDecisionApprovedId(managerId);
+	transaction.seteFlag(FlagsEnum.OFF.getCode());
+	transaction.setMigFlag(FlagsEnum.OFF.getCode());
+
+	transaction.setEffectFlag(raise.getExecutionDate().after(HijriDateService.getHijriSysDate()) ? FlagsEnum.OFF.getCode() : FlagsEnum.ON.getCode());
+
+	return transaction;
+
+    }
+
+    public static void approve(Raise raise, long managerId, CustomSession... useSession) throws BusinessException {
+
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+
+	// TODO get employees
+	List<RaiseEmployeeData> deserved = new ArrayList<>();
+	List<RaiseEmployeeData> excluded = new ArrayList<>();
+	List<RaiseEmployeeData> anotherExcluded = new ArrayList<>();
+
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+	    for (RaiseEmployeeData raiseEmployee : deserved) {
+		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), raiseEmployee.getEmpNewDegreeId(), raiseEmployee.getExclusionReason());
+		addRaiseTransaction(transaction, session);
+		doRaiseEffect(transaction, session);
+	    }
+	    for (RaiseEmployeeData raiseEmployee : excluded) {
+		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode(), raiseEmployee.getEmpNewDegreeId(), raiseEmployee.getExclusionReason());
+		addRaiseTransaction(transaction, session);
+		doRaiseEffect(transaction, session);
+	    }
+	    for (RaiseEmployeeData raiseEmployee : anotherExcluded) {
+		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode(), raiseEmployee.getEmpNewDegreeId(), raiseEmployee.getExclusionReason());
+		addRaiseTransaction(transaction, session);
+		doRaiseEffect(transaction, session);
+	    }
+	    if (!isOpenedSession)
+		session.commitTransaction();
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+
+    }
+
+    private static void doRaiseEffect(RaiseTransactionData transaction, CustomSession session) throws BusinessException {
+	if (transaction.getEffectFlag().intValue() == FlagsEnum.ON.getCode()) {
+	    if (transaction.getRaiseType().intValue() == RaiseTypesEnum.ANNUAL.getCode()) {
+		EmployeeData emp = EmployeesService.getEmployeeData(transaction.getId());
+		emp.setLastAnnualRaiseDate(transaction.getRaiseExecutionDate());
+		EmployeesService.updateEmployee(emp, session);
+	    }
+	}
+    }
+
+    public static void executeScheduledRaiseTransactions() throws BusinessException {
+	List<RaiseTransactionData> list = getNotExecutedRaisesTransactions();
+	for (RaiseTransactionData transaction : list) {
+	    CustomSession session = DataAccess.getSession();
+	    try {
+		session.beginTransaction();
+
+		transaction.setEffectFlag(FlagsEnum.ON.getCode());
+		updateRaiseTransaction(transaction, session);
+		doRaiseEffect(transaction, session);
+
+		session.commitTransaction();
+	    } catch (Exception e) {
+		e.printStackTrace();
+		session.rollbackTransaction();
+	    } finally {
+		try {
+		    session.close();
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	    }
+
+	}
     }
 
     /*----------------------------------------Validations----------------------------------------------*/
@@ -482,6 +652,19 @@ public class RaisesService extends BaseService {
      */
     private static void validateRaiseTransactionData(RaiseTransactionData raiseTransactionData) throws BusinessException {
 	/* To Do */
+    }
+
+    /*------------------------------------------Queries------------------------------------------------*/
+    private static List<RaiseTransactionData> getNotExecutedRaisesTransactions() throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_EXECUTION_DATE", HijriDateService.getHijriSysDateString());
+	    return DataAccess.executeNamedQuery(RaiseTransactionData.class, QueryNamesEnum.HCM_RAISE_TRANSACTION_DATA_GET_NOT_EXECUTED_RAISES_TRANSACTIONS.getCode(), qParams);
+
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
     }
 
 }

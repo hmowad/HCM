@@ -7,6 +7,7 @@ import javax.jws.WebService;
 
 import com.code.services.hcm.MovementsService;
 import com.code.services.hcm.MovementsWishesService;
+import com.code.services.hcm.RaisesService;
 import com.code.services.hcm.TerminationsService;
 
 @WebService(targetNamespace = "http://integration.code.com/HCMScheduler",
@@ -33,6 +34,13 @@ public class HCMSchedulerWS {
 	try {
 	    System.out.println("Calling executeScheduledServiceTerminationTransactions()" + new Date());
 	    TerminationsService.executeScheduledServiceTerminationTransactions();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+
+	try {
+	    System.out.println("Calling executeScheduledRaiseTransactions()" + new Date());
+	    RaisesService.executeScheduledRaiseTransactions();
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
