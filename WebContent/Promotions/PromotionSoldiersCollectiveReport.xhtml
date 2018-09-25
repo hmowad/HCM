@@ -82,11 +82,9 @@
 										<h:outputText value="#{msgs.label_reportDate}" />
 										<font style="color: red;">*</font>
 									</th>
-									<td width="35%" colspan="2">
+									<td width="35%">
 										<util:hijri value="#{promotionSoldiersCollectiveReport.reportDate}" />
 									</td>
-								</tr>
-								<tr>
 									<th width="15%">
 										<h:outputText value="#{msgs.label_promotionDueDate}" />
 										<h:outputText value="*" style="color: red;" />
@@ -94,6 +92,8 @@
 									<td width="35%">
 										<util:hijri id="dueDateId" value="#{promotionSoldiersCollectiveReport.promotionDueDate}" />
 									</td>
+								</tr>
+								<tr>
 									<th width="15%">
 										<h:outputText value="#{msgs.label_promotionDate}" />
 										<h:outputText value="*" style="color: red;" />
@@ -101,8 +101,6 @@
 									<td width="35%">
 										<util:hijri id="promotionDateId" value="#{promotionSoldiersCollectiveReport.promotionDate}" />
 									</td>
-								</tr>
-								<tr>
 									<th width="15%">
 										<h:outputText value="#{msgs.label_rank}" />
 										<h:outputText value="*" style="color: red;" />
@@ -113,6 +111,8 @@
 										<h:inputHidden id="ranksNamesHId" value="#{promotionSoldiersCollectiveReport.ranksNamesString}" />
 										<h:commandButton value="#{msgs.fa_external_link}" onclick="getRank('#{request.contextPath}'); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
 									</td>
+								</tr>
+								<tr>
 									<th width="15%">
 										<h:outputText value="#{msgs.label_region}" />
 										<h:outputText value="*" style="color: red;" />
@@ -123,13 +123,12 @@
 										<h:inputHidden id="regionsCodesHId" value="#{promotionSoldiersCollectiveReport.regionsIdsString}" />
 										<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getRegions('#{request.contextPath}'); return false;" />
 									</td>
-								</tr>
-								<tr>
 									<th width="15%">
 										<h:outputText value="#{msgs.label_scaleUpPromotion}" />
 									</th>
 									<td width="10%">
-										<h:commandButton action="#{promotionSoldiersCollectiveReport.toggleMainScaleUpFlag()}" title="#{promotionSoldiersCollectiveReport.scaleUpFlagBoolean ? msgs.label_cancelScaleUpFlag : msgs.label_scaleUpPromotion}" value="#{promotionSoldiersCollectiveReport.scaleUpFlagBoolean ? msgs.fa_toggle_on : msgs.fa_toggle_off}" styleClass="#{promotionSoldiersCollectiveReport.scaleUpFlagBoolean? 'btn_toggleOn' :  'btn_toggleOff'}" />
+										<h:commandButton id="searchScaleUpBtn" action="#{promotionSoldiersCollectiveReport.toggleAllPromotionSoldiersReportsScaleUpFlag()}" title="#{promotionSoldiersCollectiveReport.scaleUpFlagBoolean ? msgs.label_cancelScaleUpFlag : msgs.label_scaleUpPromotion}" value="#{promotionSoldiersCollectiveReport.scaleUpFlagBoolean ? msgs.fa_toggle_on : msgs.fa_toggle_off}" styleClass="#{promotionSoldiersCollectiveReport.scaleUpFlagBoolean? 'btn_toggleOn' :  'btn_toggleOff'}">
+										</h:commandButton>
 									</td>
 								</tr>
 							</table>
@@ -146,16 +145,12 @@
 							<tr>
 								<td width="100%">
 									<h:panelGroup id="addRemoveActionSectionId">
-										<h:commandButton action="#{promotionSoldiersCollectiveReport.addAll()}" value="#{msgs.label_add}" styleClass="btn_normal_icon" 
-										disabled="#{promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports != null and promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports.size() != 0}"
-										onclick="validateMandatory()">
-											<f:ajax execute="promotionSoldiersCollectiveReportFormId:promotionReportDataId" render="promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsTable promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsConstructBtn promotionSoldiersCollectiveReportFormId:addRemoveActionSectionId" 
-											onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										<h:commandButton action="#{promotionSoldiersCollectiveReport.addAllPromotionSoldiersReports()}" value="#{msgs.label_add}" styleClass="btn_normal_icon" disabled="#{promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports != null and promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports.size() != 0}" onclick="validateMandatory()">
+											<f:ajax execute="promotionSoldiersCollectiveReportFormId:promotionReportDataId" render="promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsTable promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsConstructBtn promotionSoldiersCollectiveReportFormId:addRemoveActionSectionId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 
-										<h:commandButton action="#{promotionSoldiersCollectiveReport.deleteAll()}" value="#{msgs.label_deleteAll}" styleClass="btn_normal_icon" disabled="#{promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports == null or promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports.size() == 0}">
-											<f:ajax execute="promotionSoldiersCollectiveReportFormId:promotionReportDataId" render="promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsTable promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsConstructBtn promotionSoldiersCollectiveReportFormId:addRemoveActionSectionId" 
-											onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										<h:commandButton action="#{promotionSoldiersCollectiveReport.deleteAllPromotionSoldiersReports()}" value="#{msgs.label_deleteAll}" styleClass="btn_normal_icon" disabled="#{promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports == null or promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports.size() == 0}">
+											<f:ajax execute="promotionSoldiersCollectiveReportFormId:promotionReportDataId" render="promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsTable promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsConstructBtn promotionSoldiersCollectiveReportFormId:addRemoveActionSectionId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</h:panelGroup>
 								</td>
@@ -193,7 +188,8 @@
 								</rich:column>
 								<rich:column style="width : 8%">
 									<f:facet name="header">#{msgs.label_scaleUp}</f:facet>
-									<h:commandButton action="#{promotionSoldiersCollectiveReport.toggleScaleUpFlag(promotionSoldierReport)}" title="#{promotionSoldierReport.scaleUpFlagBoolean ? msgs.label_cancelScaleUpFlag : msgs.label_scaleUpPromotion}" value="#{promotionSoldierReport.scaleUpFlagBoolean ? msgs.fa_toggle_on : msgs.fa_toggle_off}" styleClass="#{promotionSoldierReport.scaleUpFlagBoolean? 'btn_toggleOn' :  'btn_toggleOff'}" />
+									<h:commandButton id="tableScaleUpBtn" action="#{promotionSoldiersCollectiveReport.togglePomotionSoldiersReportScaleUpFlag(promotionSoldierReport)}" title="#{promotionSoldierReport.scaleUpFlagBoolean ? msgs.label_cancelScaleUpFlag : msgs.label_scaleUpPromotion}" value="#{promotionSoldierReport.scaleUpFlagBoolean ? msgs.fa_toggle_on : msgs.fa_toggle_off}" styleClass="#{promotionSoldierReport.scaleUpFlagBoolean? 'btn_toggleOn' :  'btn_toggleOff'}">
+									</h:commandButton>
 								</rich:column>
 								<rich:column style="width:8%">
 									<f:facet name="header">#{msgs.label_region}</f:facet>
@@ -205,7 +201,7 @@
 								</rich:column>
 								<rich:column style="width : 3%;">
 									<f:facet name="header">#{msgs.label_delete}</f:facet>
-									<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{promotionSoldiersCollectiveReport.deletePromotionSoldierReport(promotionSoldierReport)}">
+									<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{promotionSoldiersCollectiveReport.deletePromotionSoldiersReport(promotionSoldierReport)}">
 										<f:ajax execute="promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsTable" render="promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsTable promotionSoldiersCollectiveReportFormId:addRemoveActionSectionId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 									</h:commandButton>
 								</rich:column>
@@ -230,7 +226,7 @@
 							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="100%">
-										<h:commandButton action="#{promotionSoldiersCollectiveReport.constructAllReports()}" value="#{msgs.label_createReports}" styleClass="btn_normal_icon" disabled="#{promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports == null or promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports.size() == 0}">
+										<h:commandButton action="#{promotionSoldiersCollectiveReport.saveAllPromotionSoldiersReports()}" value="#{msgs.label_createReports}" styleClass="btn_normal_icon" disabled="#{promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports == null or promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports.size() == 0}">
 										</h:commandButton>
 									</td>
 								</tr>
