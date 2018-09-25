@@ -6,12 +6,19 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.code.dal.orm.BaseEntity;
 import com.code.services.util.HijriDateService;
 
+//hcm_raises_getRaiseEmployeesByRaiseId -> execluded for another reason
+@NamedQueries({
+	@NamedQuery(name = "hcm_raises_getRaiseEmployeesByRaiseId",
+		query = "select r from RaiseEmployeeData r where r.raiseId = :P_RAISE_ID")
+})
 @Entity
 @Table(name = "HCM_VW_RAISES_EMPLOYEES")
 public class RaiseEmployeeData extends BaseEntity {
