@@ -256,7 +256,11 @@ public class RaisesService extends BaseService {
      *             If any exceptions or errors occurs
      */
     private static void validateRaise(Raise newRaise) throws BusinessException {
-	List<Raise> raisesList = getRaises(newRaise.getId(), -1, null, null, newRaise.getDecisionNumber(), newRaise.getExecutionDate(), newRaise.getExecutionDate(), -1, -1, -1);
+	List<Raise> raisesList;
+	if (newRaise.getId() == null)
+	    raisesList = getRaises(-1, -1, null, null, newRaise.getDecisionNumber(), newRaise.getExecutionDate(), newRaise.getExecutionDate(), -1, -1, -1);
+	else
+	    raisesList = getRaises(newRaise.getId(), -1, null, null, newRaise.getDecisionNumber(), newRaise.getExecutionDate(), newRaise.getExecutionDate(), -1, -1, -1);
 	if (raisesList.size() != 0)
 	    throw new BusinessException("error_decisionNumberAndExecutionDateCannotBeRepeated");
 	if (newRaise.getDecisionNumber() == null)
@@ -367,6 +371,7 @@ public class RaisesService extends BaseService {
 		session.beginTransaction();
 	    updateRaise(raise, session);
 	    for (RaiseEmployeeData raiseEmployeeDataToAdd : raiseEmployeeDataToAddList) {
+		raiseEmployeeDataToAdd.setRaiseId(raise.getId());
 		addRaiseEmployee(raiseEmployeeDataToAdd, session);
 	    }
 
