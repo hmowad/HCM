@@ -277,27 +277,27 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      */
     public static List<Raise> getAllRaises() throws BusinessException {
-	return searchRaises(null, -1, null, null, null, null, null, -1, -1, -1);
+	return searchRaises(-1, -1, null, null, null, null, null, -1, -1, -1);
 
     }
 
     public static Raise getRaiseById(long id) throws BusinessException {
-	List<Raise> result = searchRaises(null, id, null, null, null, null, null, -1, -1, -1);
+	List<Raise> result = searchRaises(-1, id, null, null, null, null, null, -1, -1, -1);
 	if (result == null || result.size() == 0)
 	    return null;
 	return result.get(0);
     }
 
-    public static List<Raise> getRaises(Long excludedId, long id, Date decisionDateFrom, Date decisionDateTo, String decisionNumber, Date executionDateFrom, Date executionDateTo, long categoryId, long type, long status) throws BusinessException {
+    public static List<Raise> getRaises(long excludedId, long id, Date decisionDateFrom, Date decisionDateTo, String decisionNumber, Date executionDateFrom, Date executionDateTo, long categoryId, long type, long status) throws BusinessException {
 	return searchRaises(excludedId, id, decisionDateFrom, decisionDateTo, decisionNumber, executionDateFrom, executionDateTo, categoryId, type, status);
     }
 
-    private static List<Raise> searchRaises(Long excludedId, long id, Date decisionDateFrom, Date decisionDateTo, String decisionNumber, Date executionDateFrom, Date executionDateTo, long categoryId, long type, long status) throws BusinessException {
+    private static List<Raise> searchRaises(long excludedId, long id, Date decisionDateFrom, Date decisionDateTo, String decisionNumber, Date executionDateFrom, Date executionDateTo, long categoryId, long type, long status) throws BusinessException {
 
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 
-	    qParams.put("P_EXCLUDED_ID", excludedId == null ? FlagsEnum.ALL.getCode() : excludedId);
+	    qParams.put("P_EXCLUDED_ID", excludedId);
 	    qParams.put("P_ID", id);
 	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.length() == 0) ? FlagsEnum.ALL.getCode() + "" : '%' + decisionNumber + '%');
 	    qParams.put("P_CATEGORY_ID", categoryId);
