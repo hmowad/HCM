@@ -22,7 +22,7 @@ import com.code.services.util.HijriDateService;
 @NamedQueries({
 	@NamedQuery(name = "hcm_raises_searchRaiseData",
 		query = "select r from Raise r" +
-			" where (:P_EXCLUDED_ID = -1 or d.id <> :P_EXCLUDED_ID)" +
+			" where (:P_EXCLUDED_ID = -1 or r.id <> :P_EXCLUDED_ID)" +
 			" and (:P_ID = -1 or r.id = :P_ID)" +
 			" and (:P_DECISION_NUMBER = '-1' or r.decisionNumber like :P_DECISION_NUMBER)" +
 			" and (:P_TYPE = -1 or r.type = :P_TYPE)" +
