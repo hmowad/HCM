@@ -67,6 +67,7 @@ public class RaisesService extends BaseService {
 	    if (!isOpenedSession)
 		session.commitTransaction();
 	} catch (Exception e) {
+	    raise.setId(null);
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
 	    e.printStackTrace();
@@ -255,7 +256,7 @@ public class RaisesService extends BaseService {
      *             If any exceptions or errors occurs
      */
     private static void validateRaise(Raise newRaise) throws BusinessException {
-	List<Raise> raisesList = getRaises(-1, null, null, newRaise.getDecisionNumber(), newRaise.getExecutionDate(), newRaise.getExecutionDate(), -1, -1, -1);
+	List<Raise> raisesList = getRaises(newRaise.getId(), -1, null, null, newRaise.getDecisionNumber(), newRaise.getExecutionDate(), newRaise.getExecutionDate(), -1, -1, -1);
 	if (raisesList.size() != 0)
 	    throw new BusinessException("error_decisionNumberAndExecutionDateCannotBeRepeated");
 	if (newRaise.getDecisionNumber() == null)
@@ -276,26 +277,27 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      */
     public static List<Raise> getAllRaises() throws BusinessException {
-	return searchRaises(-1, null, null, null, null, null, -1, -1, -1);
+	return searchRaises(null, -1, null, null, null, null, null, -1, -1, -1);
 
     }
 
     public static Raise getRaiseById(long id) throws BusinessException {
-	List<Raise> result = searchRaises(id, null, null, null, null, null, -1, -1, -1);
+	List<Raise> result = searchRaises(null, id, null, null, null, null, null, -1, -1, -1);
 	if (result == null || result.size() == 0)
 	    return null;
 	return result.get(0);
     }
 
-    public static List<Raise> getRaises(long id, Date decisionDateFrom, Date decisionDateTo, String decisionNumber, Date executionDateFrom, Date executionDateTo, long categoryId, long type, long status) throws BusinessException {
-	return searchRaises(id, decisionDateFrom, decisionDateTo, decisionNumber, executionDateFrom, executionDateTo, categoryId, type, status);
+    public static List<Raise> getRaises(Long excludedId, long id, Date decisionDateFrom, Date decisionDateTo, String decisionNumber, Date executionDateFrom, Date executionDateTo, long categoryId, long type, long status) throws BusinessException {
+	return searchRaises(excludedId, id, decisionDateFrom, decisionDateTo, decisionNumber, executionDateFrom, executionDateTo, categoryId, type, status);
     }
 
-    private static List<Raise> searchRaises(long id, Date decisionDateFrom, Date decisionDateTo, String decisionNumber, Date executionDateFrom, Date executionDateTo, long categoryId, long type, long status) throws BusinessException {
+    private static List<Raise> searchRaises(Long excludedId, long id, Date decisionDateFrom, Date decisionDateTo, String decisionNumber, Date executionDateFrom, Date executionDateTo, long categoryId, long type, long status) throws BusinessException {
 
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 
+	    qParams.put("P_EXCLUDED_ID", excludedId == null ? FlagsEnum.ALL.getCode() : excludedId);
 	    qParams.put("P_ID", id);
 	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.length() == 0) ? FlagsEnum.ALL.getCode() + "" : '%' + decisionNumber + '%');
 	    qParams.put("P_CATEGORY_ID", categoryId);
@@ -453,6 +455,28 @@ public class RaisesService extends BaseService {
 	    if (!isOpenedSession)
 		session.close();
 	}
+    }
+
+    /**
+     * construct a new deserved Employee object
+     * 
+     * @param employeeId
+     *            deserved employee id
+     * @throws BusinessException
+     *             If any exceptions or errors occurs
+     */
+    public static RaiseEmployeeData constructDeservedEmployee(Long employeeId) throws BusinessException {
+	RaiseEmployeeData newDeservedEmployee = new RaiseEmployeeData();
+	EmployeeData employee = EmployeesService.getEmployeeData(employeeId);
+	if (employee == null)
+	    throw new BusinessException("error_general");
+	newDeservedEmployee.setEmpId(employeeId);
+	newDeservedEmployee.setEmpJobName(employee.getJobDesc());
+	newDeservedEmployee.setEmpName(employee.getName());
+	newDeservedEmployee.setEmpDegreeId(employee.getDegreeId());
+	newDeservedEmployee.setEmpDegreeDesc(employee.getDegreeDesc());
+	newDeservedEmployee.setEmpRankDesc(employee.getRankDesc());
+	return newDeservedEmployee;
     }
     /*----------------------------------------Validations----------------------------------------------*/
 
