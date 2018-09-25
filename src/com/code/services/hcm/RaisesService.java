@@ -1,6 +1,6 @@
 package com.code.services.hcm;
 
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -639,27 +639,27 @@ public class RaisesService extends BaseService {
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 
 	// TODO get employees
-	List<RaiseEmployeeData> deserved = new ArrayList<>();
-	List<RaiseEmployeeData> excluded = new ArrayList<>();
-	List<RaiseEmployeeData> anotherExcluded = new ArrayList<>();
+	List<EmployeeData> deserved = getDeservedEmployees(raise.getId(), DegreesEnum.FIFTEENTH.getCode(), raise.getExecutionDate());
+	List<EmployeeData> excluded = getExcludedEmployeesForEndOfLadder(raise.getId(), DegreesEnum.FIFTEENTH.getCode());
+	List<RaiseEmployeeData> anotherExcluded = getRaiseEmployeeByRaiseId(raise.getId());
 
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
-	    for (RaiseEmployeeData raiseEmployee : deserved) {
-		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), raiseEmployee.getEmpNewDegreeId(), raiseEmployee.getExclusionReason());
+	    for (EmployeeData raiseEmployee : deserved) {
+		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), raiseEmployee.getDegreeId() + 1, null);
 		addRaiseTransaction(transaction, session);
 		doRaiseEffect(transaction, session);
 	    }
-	    for (RaiseEmployeeData raiseEmployee : excluded) {
-		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode(), raiseEmployee.getEmpNewDegreeId(), raiseEmployee.getExclusionReason());
+	    for (EmployeeData raiseEmployee : excluded) {
+		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode(), raiseEmployee.getDegreeId(), null);
 		addRaiseTransaction(transaction, session);
-		doRaiseEffect(transaction, session);
+
 	    }
 	    for (RaiseEmployeeData raiseEmployee : anotherExcluded) {
 		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode(), raiseEmployee.getEmpNewDegreeId(), raiseEmployee.getExclusionReason());
 		addRaiseTransaction(transaction, session);
-		doRaiseEffect(transaction, session);
+
 	    }
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -682,6 +682,7 @@ public class RaisesService extends BaseService {
 	    if (transaction.getRaiseType().intValue() == RaiseTypesEnum.ANNUAL.getCode()) {
 		EmployeeData emp = EmployeesService.getEmployeeData(transaction.getId());
 		emp.setLastAnnualRaiseDate(transaction.getRaiseExecutionDate());
+		emp.getEmployee().setDegreeId(transaction.getEmpNewDegreeId());
 		EmployeesService.updateEmployee(emp, session);
 	    }
 	}
@@ -738,6 +739,44 @@ public class RaisesService extends BaseService {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
+    }
+
+    private static List<EmployeeData> getExcludedEmployeesForEndOfLadder(long raiseId, long degreeId) throws BusinessException {
+	try {
+
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put(":P_END_OF_LADDER_DEGREE", degreeId);
+	    qParams.put(":P_Raise_ID", raiseId);
+
+	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode(), qParams);
+
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    private static List<EmployeeData> getDeservedEmployees(long raiseId, long degreeId, Date executionDate) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put(":P_Raise_ID", raiseId);
+	    qParams.put(":P_END_OF_LADDER_DEGREE", degreeId);
+	    qParams.put("P_EXECUTION_DATE", calculateExecutionBeforeYear(executionDate));
+
+	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_DESERVED_EMPLOYEES.getCode(), qParams);
+
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    private static Date calculateExecutionBeforeYear(Date executionDate) {
+	HijriDateService.hijriToGregDate(executionDate);
+	Calendar c = Calendar.getInstance();
+	c.setTime(executionDate);
+	c.set(Calendar.YEAR, c.get(Calendar.YEAR) - 1);
+	return HijriDateService.gregToHijriDate(c.getTime());
     }
 
 }
