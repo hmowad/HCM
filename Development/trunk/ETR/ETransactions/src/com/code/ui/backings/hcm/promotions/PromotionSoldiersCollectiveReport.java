@@ -16,6 +16,8 @@ import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.PromotionReportStatusEnum;
 import com.code.enums.PromotionsTypesEnum;
+import com.code.enums.RanksEnum;
+import com.code.enums.RegionsEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.PromotionsService;
 import com.code.services.util.CommonService;
@@ -60,42 +62,54 @@ public class PromotionSoldiersCollectiveReport extends PromotionsBase {
 	}
     }
 
-    public void toggleMainScaleUpFlag() {
+    public void toggleAllPromotionSoldiersReportsScaleUpFlag() {
 	scaleUpFlagBoolean = !scaleUpFlagBoolean;
     }
 
-    public void toggleScaleUpFlag(PromotionReportData promotionSoldierReport) {
+    public void togglePomotionSoldiersReportScaleUpFlag(PromotionReportData promotionSoldierReport) {
 	promotionSoldierReport.setScaleUpFlagBoolean(!promotionSoldierReport.getScaleUpFlagBoolean());
     }
 
-    public void deleteAll() {
+    public void deleteAllPromotionSoldiersReports() {
 	regionsIds.clear();
 	ranksIds.clear();
 	promotionSoldiersCollectiveReports.clear();
     }
 
-    private void preparingIds() {
+    private void setupRegionsIds() {
 	String[] regionIdsStrings = regionsIdsString.split(",");
+	Boolean allRegionsIdSelected = false;
+	Boolean generalDirectorateOfBorderGuardsIdSelected = false;
+
 	for (int i = 0; i < regionIdsStrings.length; i++) {
 	    regionsIds.add(new Long(regionIdsStrings[i]));
+	    if (new Long(regionIdsStrings[i]) == FlagsEnum.ALL.getCode())
+		allRegionsIdSelected = true;
+	    if (new Long(regionIdsStrings[i]) == RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode())
+		generalDirectorateOfBorderGuardsIdSelected = true;
 	}
 
-	if (regionsIds.get(0) == FlagsEnum.ALL.getCode()) {
+	if (allRegionsIdSelected) {
 	    List<Region> allRegions = CommonService.getAllRegions();
-	    allRegions.remove(CommonService.getRegionById(FlagsEnum.ON.getCode()));
-	    regionsIds.clear();
-	    for (Region region : allRegions) {
-		regionsIds.add(region.getId());
-	    }
-	}
+	    if (!generalDirectorateOfBorderGuardsIdSelected)
+		allRegions.remove(CommonService.getRegionById(FlagsEnum.ON.getCode()));
 
+	    regionsIds.clear();
+	    for (Region region : allRegions)
+		regionsIds.add(region.getId());
+	}
+    }
+
+    private void setupRanksIds() {
 	String[] ranksIdsStrings = ranksIdsString.split(",");
 	for (int i = 0; i < ranksIdsStrings.length; i++) {
+	    if (new Long(ranksIdsStrings[i]) == RanksEnum.STUDENT_SOLDIER.getCode())
+		continue;
 	    ranksIds.add(new Long(ranksIdsStrings[i]));
 	}
     }
 
-    public void constructPromotionSoldierReportData(PromotionReportData promotionReportData, Long regionId, Long rankId) {
+    public void constructPromotionSoldiersReportData(PromotionReportData promotionReportData, Long regionId, Long rankId) {
 	promotionReportData.setReportDate(reportDate);
 	promotionReportData.setPromotionDate(promotionDate);
 	promotionReportData.setDueDate(promotionDueDate);
@@ -110,12 +124,13 @@ public class PromotionSoldiersCollectiveReport extends PromotionsBase {
 	promotionReportData.setPromotionTypeId(PromotionsTypesEnum.NORMAL_PROMOTION.getCode());
     }
 
-    public void addAll() {
-	preparingIds();
+    public void addAllPromotionSoldiersReports() {
+	setupRanksIds();
+	setupRegionsIds();
 	for (Long regionId : regionsIds) {
 	    for (Long rankId : ranksIds) {
 		PromotionReportData promotionReportData = new PromotionReportData();
-		constructPromotionSoldierReportData(promotionReportData, regionId, rankId);
+		constructPromotionSoldiersReportData(promotionReportData, regionId, rankId);
 		promotionSoldiersCollectiveReports.add(promotionReportData);
 	    }
 	}
@@ -123,18 +138,21 @@ public class PromotionSoldiersCollectiveReport extends PromotionsBase {
 	ranksIds.clear();
     }
 
-    public void deletePromotionSoldierReport(PromotionReportData promotionSoldierReport) {
+    public void deletePromotionSoldiersReport(PromotionReportData promotionSoldierReport) {
 	promotionSoldiersCollectiveReports.remove(promotionSoldierReport);
     }
 
-    public void constructAllReports() {
+    public void saveAllPromotionSoldiersReports() {
 	try {
 	    Set<String> reportNumbers = new HashSet<String>();
+	    int reportNumbersSetSize = 0;
 	    for (PromotionReportData promotionSoldierReport : promotionSoldiersCollectiveReports) {
 		reportNumbers.add(promotionSoldierReport.getReportNumber());
-	    }
-	    if (reportNumbers != null && reportNumbers.size() != promotionSoldiersCollectiveReports.size()) {
-		throw new BusinessException("error_promotionReportNumberError");
+		reportNumbersSetSize = reportNumbersSetSize + 1;
+		if (reportNumbersSetSize > reportNumbers.size()) {
+		    reportNumbersSetSize = 0;
+		    throw new BusinessException("error_promotionReportSaveError", new String[] { promotionSoldierReport.getReportNumber() });
+		}
 	    }
 
 	    for (PromotionReportData promotionReportData : promotionSoldiersCollectiveReports) {
