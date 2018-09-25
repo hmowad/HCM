@@ -619,7 +619,7 @@ public class RaisesService extends BaseService {
 	transaction.setTransEmpDegreeDesc(emp.getDegreeDesc());
 	transaction.setTransEmpJobName(emp.getJobDesc());
 	transaction.setTransEmpRankDesc(emp.getRankDesc());
-	// TODO set transempjobrankdesc
+	transaction.setTransEmpJobRankDesc(JobsService.getJobById(emp.getJobId()).getRankDescription());
 	transaction.setTransEmpUnitFullName(emp.getPhysicalUnitFullName());
 
 	transaction.setEmpDecisionApprovedId(managerId);
