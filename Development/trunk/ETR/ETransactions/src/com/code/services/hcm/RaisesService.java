@@ -741,7 +741,11 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    private static List<EmployeeData> getExcludedEmployeesForEndOfLadder(long raiseId, long degreeId) throws BusinessException {
+    public static List<EmployeeData> getExcludedEmployeesForEndOfLadder(long raiseId, long degreeId) throws BusinessException {
+	return searchExcludedEmployeesForEndOfLadder(raiseId, degreeId);
+    }
+
+    private static List<EmployeeData> searchExcludedEmployeesForEndOfLadder(long raiseId, long degreeId) throws BusinessException {
 	try {
 
 	    Map<String, Object> qParams = new HashMap<String, Object>();
@@ -761,7 +765,7 @@ public class RaisesService extends BaseService {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put(":P_Raise_ID", raiseId);
 	    qParams.put(":P_END_OF_LADDER_DEGREE", degreeId);
-	    qParams.put("P_EXECUTION_DATE", calculateExecutionBeforeYear(executionDate));
+	    qParams.put("P_EXECUTION_DATE", HijriDateService.getHijriDateString(calculateExecutionBeforeYear(executionDate)));
 
 	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_DESERVED_EMPLOYEES.getCode(), qParams);
 
