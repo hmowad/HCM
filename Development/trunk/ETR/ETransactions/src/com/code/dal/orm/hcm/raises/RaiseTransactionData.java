@@ -16,7 +16,9 @@ import com.code.services.util.HijriDateService;
 
 @NamedQueries({
 	@NamedQuery(name = "hcm_raiseTransactionData_getNotExecutedRaisesTransactions",
-		query = "select r from RaiseTransactionData r where r.effectFlag = 0 and r.raiseExecutionDate <= to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY')")
+		query = "select r from RaiseTransactionData r where r.effectFlag = 0 and r.raiseExecutionDate <= to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY')"),
+	@NamedQuery(name = "hcm_raiseTransactionData_getRaiseEmployeesByDeservedFlag",
+		query = "select r from RaiseTransactionData r where r.raiseDecisionNumber = :P_RAISE_DECISION_NUMBER and r.raiseDecisionDate <= to_date(:P_DECISION_DATE, 'MI/MM/YYYY') and r.deservedFlag = :P_DESERVED_FLAG")
 })
 @Entity
 @Table(name = "HCM_VW_RAISE_TRANSACTIONS")

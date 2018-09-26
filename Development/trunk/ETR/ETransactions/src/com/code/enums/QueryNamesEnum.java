@@ -57,7 +57,7 @@ public enum QueryNamesEnum {
     HCM_RAISES_GET_RAISE_EMPLOYEES_BY_RAISE_ID("hcm_raises_getRaiseEmployeesByRaiseId"),
     HCM_RAISES_GET_DESERVED_EMPLOYEES("hcm_raises_searchDeservedEmployees"),
     HCM_RAISES_GET_EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER("hcm_raises_searchExcludedEmployeesForEndOfLadder"),
-
+    HCM_RAISE_TRANSACTION_DATA_GET_EMPLOYEES_BY_DESERVED_FLAG("hcm_raiseTransactionData_getRaiseEmployeesByDeservedFlag"),
     /* ************************************************ Navy Formations ********************************************** */
 
     HCM_SEARCH_NAVY_FORMATIONS("hcm_navyFormation_searchNavyFormations"),
