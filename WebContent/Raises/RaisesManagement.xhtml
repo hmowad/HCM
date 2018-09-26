@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="raisesManagementFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{raisesManagement.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_searchData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+					    <h:panelGroup id="searchPanelId">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th>#{msgs.label_decisionNumber}</th>
+								<td>
+									<h:inputText id="searchDecisionNumber" value="#{raisesManagement.decisionNumber}" ></h:inputText>
+								</td>
+								<th width="15%">
+									#{msgs.label_jobCategory}
+								</th>
+								<td width="35%">
+									<h:selectOneMenu value="#{raisesManagement.jobCategory}" >
+										<f:selectItem itemLabel= "#{msgs.label_all}" itemValue = "-1" />
+										<f:selectItems value="#{raisesManagement.employeesCategories}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+									</h:selectOneMenu>
+								</td>
+							</tr>				
+							<tr>
+								<th width="15%">#{msgs.label_decisionDateFrom}</th>
+									<td width="35%">
+										<util:hijri value="#{raisesManagement.decisionDateFrom}" nullable="true" />
+									</td>
+									<th width="15%">#{msgs.label_decisionDateTo}</th>
+									<td width="35%">
+										<util:hijri value="#{raisesManagement.decisionDateTo}" nullable="true" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_raiseDateFrom}</th>
+									<td width="35%">
+										<util:hijri value="#{raisesManagement.executionDateFrom}" nullable="true" />
+									</td>
+									<th width="15%">#{msgs.label_raiseDateTo}</th>
+									<td width="35%">
+										<util:hijri value="#{raisesManagement.executionDateTo}" nullable="true" />
+									</td>
+								</tr>
+						</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton action="#{raisesManagement.search()}" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon">
+										<f:ajax execute="raisesManagementFormId:searchPanelId" render="raisesManagementFormId:raisesPanelId"/>
+									</h:commandButton>
+									<h:commandButton action="#{raisesManagement.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+										<f:ajax render="raisesManagementFormId:searchPanelId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">#{raisesManagement.screenTitle}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="raisesPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td align="center" width="100%">
+										<rich:dataTable id="raisesTableId" rows="#{raisesManagement.pageSize}" rowKeyVar="index" var="raise" value="#{raisesManagement.raises}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											
+											<rich:column style="width:5%">
+													<f:facet name="header">#</f:facet> #{index + 1}
+	                                        </rich:column>
+
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+												<h:outputText value="#{raise.decisionNumber}" styleClass="inputDataSuperLarge" />
+											</rich:column>
+											
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+												<h:outputText value="#{raise.decisionDateString}" styleClass="inputDataSuperLarge"/>
+												
+											</rich:column>
+											
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_jobCategory}</f:facet>
+												<h:outputText value="#{raisesManagement.getcategoryName(raise.categoryId)}" styleClass="inputDataSuperLarge" />
+											</rich:column>
+											
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_raiseDate}</f:facet>
+												<h:outputText value="#{raise.executionDateString}" styleClass="inputDataSuperLarge" />
+												
+											</rich:column>
+							
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_eligible}</f:facet>
+												<h:commandButton action="#{raisesManagement.printEligible(raise)}" value="#{msgs.fa_print}" styleClass="btn_icon" title="#{msgs.label_eligible}">
+													<f:ajax execute="raisesManagementFormId:raisesPanelId" render="raisesManagementFormId:raisesPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											
+											<rich:column style="width:5%" rendered="#{raisesManagement.mode == 0}">
+												<f:facet name="header">#{msgs.label_excluded}</f:facet>
+												<h:commandButton action="#{raisesManagement.printExcluded(raise)}" value="#{msgs.fa_print}" styleClass="btn_icon" title="#{msgs.label_excluded}">
+													<f:ajax execute="raisesManagementFormId:raisesPanelId" render="raisesManagementFormId:raisesPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_approvalStatus}</f:facet>
+												<h:outputText value="#{msgs.label_initial}" styleClass="inputDataSuperLarge" maxlength="200" rendered="#{raise.status == 1}"/>
+												<h:outputText value="#{msgs.label_superSign}" styleClass="inputDataSuperLarge" maxlength="200" rendered="#{raise.status == 2}"/>
+											</rich:column>
+							
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_details}</f:facet>
+												<h:panelGroup rendered = "#{raise.status == 2}">
+													<a target="_blank" href="#{request.contextPath}/Raises/raisesRegistration.jsf?raiseId=#{raise.id}" style="text-decoration: none;">
+														<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_showAndUpdate}"></i>
+													</a>
+												</h:panelGroup>
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_update}</f:facet>
+												<h:panelGroup rendered = "#{raise.status == 1}">
+													<a target="_blank" href="#{request.contextPath}/Raises/raisesRegistration.jsf?raiseId=#{raise.id}" style="text-decoration: none;">
+														<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_showAndUpdate}"></i>
+													</a>
+												</h:panelGroup>
+											</rich:column>
+											<rich:column style="width:5%">
+												<f:facet name="header">#{msgs.label_delete}</f:facet>
+
+												<h:commandButton action="#{raisesManagement.deleteRaise(raise)}" value="#{msgs.fa_times}" onclick="return confirm('#{msgs.q_delete}');" title="#{msgs.label_delete}" styleClass="btn_icon" rendered = "#{raise.status == 1}">
+													<f:ajax execute="raisesManagementFormId:raisesPanelId" render="raisesManagementFormId:raisesPanelId raisesManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+
+											</rich:column>
+
+											<f:facet name="footer">
+												<rich:dataScroller page="#{raisesManagement.raisesPageNum}" execute="raisesManagementFormId:raisesPanelId" fastControls="hide" oncomplete="unMaskScreen()" maxPages="5">
+													<f:facet name="first"> #{msgs.label_first} </f:facet>
+													<f:facet name="last"> #{msgs.label_last} </f:facet>
+													<f:facet name="next"> #{msgs.label_next} </f:facet>
+													<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+												</rich:dataScroller>
+											</f:facet>
+										</rich:dataTable>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>
