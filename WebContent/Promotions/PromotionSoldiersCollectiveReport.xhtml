@@ -128,6 +128,7 @@
 									</th>
 									<td width="10%">
 										<h:commandButton id="searchScaleUpBtn" action="#{promotionSoldiersCollectiveReport.toggleAllPromotionSoldiersReportsScaleUpFlag()}" title="#{promotionSoldiersCollectiveReport.scaleUpFlagBoolean ? msgs.label_cancelScaleUpFlag : msgs.label_scaleUpPromotion}" value="#{promotionSoldiersCollectiveReport.scaleUpFlagBoolean ? msgs.fa_toggle_on : msgs.fa_toggle_off}" styleClass="#{promotionSoldiersCollectiveReport.scaleUpFlagBoolean? 'btn_toggleOn' :  'btn_toggleOff'}">
+										<f:ajax execute="promotionSoldiersCollectiveReportFormId:promotionReportDataId"  render="promotionSoldiersCollectiveReportFormId:promotionReportDataId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</td>
 								</tr>
@@ -188,7 +189,8 @@
 								</rich:column>
 								<rich:column style="width : 8%">
 									<f:facet name="header">#{msgs.label_scaleUp}</f:facet>
-									<h:commandButton id="tableScaleUpBtn" action="#{promotionSoldiersCollectiveReport.togglePomotionSoldiersReportScaleUpFlag(promotionSoldierReport)}" title="#{promotionSoldierReport.scaleUpFlagBoolean ? msgs.label_cancelScaleUpFlag : msgs.label_scaleUpPromotion}" value="#{promotionSoldierReport.scaleUpFlagBoolean ? msgs.fa_toggle_on : msgs.fa_toggle_off}" styleClass="#{promotionSoldierReport.scaleUpFlagBoolean? 'btn_toggleOn' :  'btn_toggleOff'}">
+									<h:commandButton action="#{promotionSoldiersCollectiveReport.togglePomotionSoldiersReportScaleUpFlag(promotionSoldierReport)}" title="#{promotionSoldierReport.scaleUpFlagBoolean ? msgs.label_cancelScaleUpFlag : msgs.label_scaleUpPromotion}" value="#{promotionSoldierReport.scaleUpFlagBoolean ? msgs.fa_toggle_on : msgs.fa_toggle_off}" styleClass="#{promotionSoldierReport.scaleUpFlagBoolean? 'btn_toggleOn' :  'btn_toggleOff'}">
+										<f:ajax execute="promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsTable" render="promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsTable" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 									</h:commandButton>
 								</rich:column>
 								<rich:column style="width:8%">
@@ -227,6 +229,7 @@
 								<tr>
 									<td width="100%">
 										<h:commandButton action="#{promotionSoldiersCollectiveReport.saveAllPromotionSoldiersReports()}" value="#{msgs.label_createReports}" styleClass="btn_normal_icon" disabled="#{promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports == null or promotionSoldiersCollectiveReport.promotionSoldiersCollectiveReports.size() == 0}">
+											<f:ajax execute="promotionSoldiersCollectiveReportFormId:promotionSoldiersCollectiveReportsTable" render="promotionSoldiersCollectiveReportFormId:notifyMessagesId" />
 										</h:commandButton>
 									</td>
 								</tr>
