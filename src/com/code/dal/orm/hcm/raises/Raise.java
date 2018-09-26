@@ -40,6 +40,14 @@ import com.code.services.util.HijriDateService;
 			" and (ed.statusId between 15 and 45)" +
 			" and (r.categoryId = ed.categoryId)" +
 			" and (ed.degreeId = :P_END_OF_LADDER_DEGREE)" +
+			" and (r.executionDate >" +
+			" (select CASE WHEN max(rt.executionDate) IS NULL " +
+			" then to_date('1/1/1300', 'MI/MM/YYYY') " +
+			" ELSE max(rt.executionDate) END " +
+			" from RaiseTransaction rt" +
+			" where rt.empId = ed.empId and rt.type = 2) )" +
+			" and ((ed.lastAnnualRaiseDate is null) or (to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY') > ed.lastAnnualRaiseDate))" +
+			" and ((ed.lastPromotionDate is null) or (r.executionDate > ed.lastPromotionDate))" +
 			" order by ed.empId"),
 
 	@NamedQuery(name = "hcm_raises_searchDeservedEmployees",
