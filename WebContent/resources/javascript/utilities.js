@@ -453,10 +453,10 @@ function openNavyFormationsMiniSearch(contextPath , miniSearchReturnHandler,regi
     unMaskOnPopupClose(childWindow);
 }
 
-function openRanksMiniSearch(contextPath, miniSearchReturnHandler, category, multipleSelectFlag){
+function openRanksMiniSearch(contextPath, mode ,  miniSearchReturnHandler, category, multipleSelectFlag){
 	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
 	maskOpenerScreen();
-	var childWindow = window.open(contextPath+'/MiniSearch/RanksMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&category='+category+'&multipleSelectFlag='+ multipleSelectFlag, null, specsStr);
+	var childWindow = window.open(contextPath+'/MiniSearch/RanksMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&mode='+mode+'&category='+category+'&multipleSelectFlag='+ multipleSelectFlag, null, specsStr);
 	unMaskOnPopupClose(childWindow);
 }
 
