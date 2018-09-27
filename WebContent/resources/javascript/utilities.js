@@ -340,10 +340,20 @@ function openEmployeesMiniSearchByOfficialRegionId(contextPath, miniSearchReturn
 function openEmpsMiniSearchByPhysicalRegionForMultipleEmployees(contextPath, miniSearchReturnHandler, mode, categoryMode,physicalRegionId){
 	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, -1, -1 , -1, -1, -1, -1, -1, -1, physicalRegionId,-1, -1, -1, -1, 1);
 }
+function openEmpsMiniSearchForAdditionalRaises(contextPath, miniSearchReturnHandler, mode, categoryMode, physicalRegionId, statusIds){
+	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, -1, -1 , -1, -1, -1, -1, -1, -1, physicalRegionId,-1, -1, statusIds, -1, 0);
+}
 function empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankId, managerPhysicalUnitHKey, rankId, promotionDueDate, recruitmentTrainingUnitId, physicalRegionId, officialRegionId, gender, statusIds, exceptionalRecruitmentFlag, multipleSelectFlag){
 	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
 	maskOpenerScreen();
 	var childWindow = window.open(contextPath+'/MiniSearch/EmpsMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&mode=' + mode+'&categoryMode=' + categoryMode+'&recruitmentRegionId='+recruitmentRegionId+'&graduationGroupNumber='+graduationGroupNumber+'&graduationGroupPlace='+graduationGroupPlace+'&recruitmentRankId='+recruitmentRankId+'&managerPhysicalUnitHKey='+managerPhysicalUnitHKey+'&rankId='+rankId+'&promotionDueDate='+promotionDueDate+'&recruitmentTrainingUnitId='+recruitmentTrainingUnitId+'&physicalRegionId='+physicalRegionId+'&officialRegionId='+officialRegionId+'&gender='+gender+'&statusIds='+statusIds+'&exceptionalRecruitmentFlag='+exceptionalRecruitmentFlag+'&multipleSelectFlag='+multipleSelectFlag, null, specsStr);
+    unMaskOnPopupClose(childWindow);
+}
+
+function deservedEmpsForAnnualRaiseMiniSearch(contextPath, miniSearchReturnHandler, decisionDate, decisionNumber){
+	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
+	maskOpenerScreen();
+	var childWindow = window.open(contextPath+'/MiniSearch/DeservedEmpsForAnnualRaiseMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&decisionDate='+decisionDate+'&decisionNumber='+decisionNumber, null, specsStr);
     unMaskOnPopupClose(childWindow);
 }
 
