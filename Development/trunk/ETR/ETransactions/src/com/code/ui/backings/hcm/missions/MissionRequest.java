@@ -143,6 +143,9 @@ public class MissionRequest extends WFBaseBacking {
 
     public void deleteEmp(WFMissionDetailData wfMissionDetailData) {
 	try {
+	    if (wfMissionDetailDataList.size() == FlagsEnum.ON.getCode())
+		throw new BusinessException("error_mustHaveAtLeastOnlyOne");
+
 	    wfMissionDetailData.getWfMissionDetail().setSystemUser(this.loginEmpData.getEmpId() + "");
 	    MissionsWorkFlow.deleteWFMissionDetail(wfMissionDetailData, wfMissionDetailDataList);
 	    checkOutOfRequesterUnit();

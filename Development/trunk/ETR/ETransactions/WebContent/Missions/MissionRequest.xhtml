@@ -703,7 +703,7 @@
 											<rich:column style="width : 5%;">
 												<h:panelGroup rendered="#{missionRequest.role == 'Requester' or missionRequest.role == 'DirectManager' or missionRequest.role == 'ReviewerEmp'}">
 													<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{missionRequest.deleteEmp(wfMissionDetail)}" onclick="if(confirm('#{msgs.q_delete}') == false) return false;">
-														<f:ajax execute="missionRequestForm:selectPanelEmp" render="missionRequestForm:missionDetailsTableId missionRequestForm:selectPanelEmp missionRequestForm:outOfRequesterUnitFlagId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														<f:ajax execute="missionRequestForm:selectPanelEmp" render="missionRequestForm:missionDetailsTableId missionRequestForm:selectPanelEmp missionRequestForm:outOfRequesterUnitFlagId missionRequestForm:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 													</h:commandButton>
 												</h:panelGroup>
 											</rich:column>
