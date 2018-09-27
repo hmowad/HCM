@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+		 window.onkeypress = function(e) {
+			  // window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			  var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+		      if (keyCode == '13') {
+		    	  	document.getElementById('searchDeservedEmpForm:searchBtnId').click();
+		    	  return false;
+		      }
+		  };
+	
+		  function validateSearchParameter() {
+			  var searchNameValue = document.getElementById('searchDeservedEmpForm:searchNameId').value;
+			  var searchSocialIDValue = document.getElementById('searchDeservedEmpForm:searchSocialIDId').value;
+			  var searchsearchJobDescValue = document.getElementById('searchDeservedEmpForm:searchJobDescId').value;
+			  var searchsearchPhysicalUnitDescValue = document.getElementById('searchDeservedEmpForm:searchUnitDescId').value;
+			  var searchMilitaryNumber = document.getElementById('searchDeservedEmpForm:searchMilitaryNumberId').value;
+			  
+			  if((searchNameValue == null || searchNameValue == '') &amp;&amp; 
+			  	(searchSocialIDValue == null || searchSocialIDValue == '') &amp;&amp;
+			  	(searchMilitaryNumber == null || searchMilitaryNumber == '') &amp;&amp;
+			  	(searchsearchJobDescValue == null || searchsearchJobDescValue == '') &amp;&amp;
+			  	(searchsearchPhysicalUnitDescValue == null || searchsearchPhysicalUnitDescValue == '')) {
+				  alert("#{msgs.error_oneSearchFieldNeededAtLeast}");
+				  return false;
+			  }
+	
+			  if (searchSocialIDValue != null &amp;&amp; searchSocialIDValue != '' &amp;&amp; searchSocialIDValue.length != 10) {
+				  alert("#{msgs.error_socialIdNotValid}");
+		    	  return false;
+		      }
+			  
+			  if (searchMilitaryNumber != null &amp;&amp; searchMilitaryNumber != '' &amp;&amp; searchMilitaryNumber.length != 6) {
+				  alert("#{msgs.error_militaryNumberNotValid}");
+		    	  return false;
+		      }
+			  
+			  if (searchSocialIDValue != null &amp;&amp; searchSocialIDValue != '' &amp;&amp; searchSocialIDValue.length == 10) {
+				  return true;
+			  } else if (searchMilitaryNumber != null &amp;&amp; searchMilitaryNumber != '' &amp;&amp; searchMilitaryNumber.length == 6) {
+				  return true;
+			  } else if(searchNameValue != null &amp;&amp; searchNameValue != '' &amp;&amp; searchNameValue.length &gt; 2) {
+				  return true;
+		      } else if (searchsearchJobDescValue != null &amp;&amp; searchsearchJobDescValue != '' &amp;&amp; searchsearchJobDescValue.length &gt; 2) {
+		    	  return true;
+		      } else if (searchsearchPhysicalUnitDescValue != null &amp;&amp; searchsearchPhysicalUnitDescValue != '' &amp;&amp; searchsearchPhysicalUnitDescValue.length &gt; 2) {
+		    	  return true;
+			  } else {
+				  alert("#{msgs.error_cannotSearchByLessThanThreeCharacters}");
+				  return false;
+			  }
+		  }
+		  
+		  function selectEmployee(callerId){
+	            var idTokens = callerId.split(':');
+	            var empId = document.getElementById('searchDeservedEmpForm:empList:'+idTokens[2]+':empId').value;
+	            ret = new Array();
+	            ret[0] = empId;
+	            window.close();
+	     	    eval('(' + window.opener.#{param['miniSearchReturnHandler']} + ')');
+
+	          }
+    </script>
+</h:head>
+<h:body onload="document.getElementById('searchDeservedEmpForm:searchNameId').focus();" onunload="window.opener.unMaskOpenerScreen();">
+	<h:form id="searchDeservedEmpForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/PlainTemplate.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{msgs.title_empsInquiry}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">#{msgs.label_name}</th>
+								<td width="35%">
+									<h:inputText id="searchNameId" value="#{deservedEmpsMiniSearch.searchEmpName}" styleClass="inputDataLarge" />
+								</td>
+								<th width="15%">#{msgs.label_socialId}</th>
+								<td width="35%">
+									<h:inputText id="searchSocialIDId" value="#{deservedEmpsMiniSearch.searchSocialId}" styleClass="inputDataLarge" onkeypress="return isDigit(event);" maxlength="10" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">#{msgs.label_job}</th>
+								<td width="35%">
+									<h:inputText id="searchJobDescId" value="#{deservedEmpsMiniSearch.searchJobDesc}" styleClass="inputDataLarge" />
+								</td>
+								<th width="15%"> #{msgs.label_physicalUnit}</th> 
+								<td width="35%">
+									<h:inputText id="searchUnitDescId" value="#{deservedEmpsMiniSearch.searchUnitFullName}" styleClass="inputDataLarge" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">#{msgs.label_militaryNumaberForOfficiersOnly}</th>
+								<td width="35%">
+									<h:inputText id="searchMilitaryNumberId" value="#{deservedEmpsMiniSearch.searchMilitaryNumber}" styleClass="inputDataLarge" onkeypress="return isDigit(event);" maxlength="6"/>
+								</td>
+								<td width="50%"  colspan="2"/>																	
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon" onclick="return validateSearchParameter();" action="#{deservedEmpsMiniSearch.searchEmployee}" title="#{msgs.label_searchByRoot}" >
+										<f:ajax render="empList notifyMessagesId" execute="searchDeservedEmpForm:searchNameId searchDeservedEmpForm:searchSocialIDId searchDeservedEmpForm:searchJobDescId searchDeservedEmpForm:searchUnitDescId searchDeservedEmpForm:searchMilitaryNumberId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="empList" rows="#{deservedEmpsMiniSearch.rowsCount}" rowKeyVar="index" var="row" value="#{deservedEmpsMiniSearch.searchEmployeeList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+							<rich:column style="width : 5%">
+								<f:facet name="header">#</f:facet>
+								<h:outputText value="#{index + 1}" title="#{msgs.label_tableId} : #{row.empId}" />
+                            </rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_empNo}</f:facet>
+								<h:outputText value="#{row.empNumber}" />
+								<h:inputHidden id="empId" value="#{row.empId}" />
+							</rich:column>
+							<rich:column style="width : 20%">
+								<f:facet name="header">#{msgs.label_name}</f:facet>
+								<h:outputText id="empName" value="#{row.empName}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">
+									<h:outputText value="#{deservedEmpsMiniSearch.categoryMode == 3 ? msgs.label_personRank : msgs.label_rank}" />
+								</f:facet>
+								<h:outputText value="#{row.empRankDesc}" />
+							</rich:column>
+							<rich:column style="width : 15%">
+								<f:facet name="header">#{msgs.label_job}</f:facet>
+								<h:outputText value="#{row.empJobName}" />
+							</rich:column>
+							<rich:column style="width : 20%">
+								<f:facet name="header">#{msgs.label_currentDegree}</f:facet>
+								<h:outputText value="#{row.empDegreeDesc}" />
+							</rich:column>
+							<rich:column style="width : 20%">
+								<f:facet name="header">#{msgs.label_physicalUnit}</f:facet>
+								<h:outputText value="#{row.empPhysicalUnitName}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_selectEmp}</f:facet>
+								<h:commandButton onclick="selectEmployee(this.id); return false;" value="#{msgs.fa_check_square}" title="#{msgs.label_selectEmp}" styleClass="btn_icon" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()" id="empsScroller" maxPages="5">
+									<f:facet name="first"> #{msgs.label_first} </f:facet>
+									<f:facet name="last"> #{msgs.label_last} </f:facet>
+									<f:facet name="next"> #{msgs.label_next} </f:facet>
+									<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+				
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>
