@@ -104,7 +104,6 @@ public enum QueryNamesEnum {
     HCM_SEARCH_PAYROLL_SALARIES("hcm_payrollSalary_searchPayrollSalary"),
     HCM_SEARCH_PAYROLL_NEW_SALARIES("hcm_payrollSalary_searchPayrollNewSalary"),
     HCM_SEARCH_PAYROLL_NEW_SALARIES_DEMOTING("hcm_payrollSalary_searchPayrollNewSalary_demoting"),
-    HCM_GET_END_OF_LADDER_OF_RANK("hcm_payrollSalary_getEndOfLadderOfRank"),
 
     HCM_GET_EMPLOYEE_PENALITIES_BY_ID("hcm_employeePenalitiesData_getEmployeePenalitiesData"),
     HCM_GET_EMPLOYEE_BONUSES_BY_ID("hcm_employeeBonusesData_getEmployeeBonusesData"),
