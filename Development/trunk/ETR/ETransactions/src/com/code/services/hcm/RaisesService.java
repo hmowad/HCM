@@ -1,5 +1,6 @@
 package com.code.services.hcm;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -522,6 +523,68 @@ public class RaisesService extends BaseService {
 	}
     }
 
+    public static RaiseEmployeeData constructRaiseEmployeeData(EmployeeData empData, long raiseId, int deservedFlag) {
+
+	RaiseEmployeeData raiseEmployeeData = new RaiseEmployeeData();
+	raiseEmployeeData.setRaiseId(raiseId);
+	raiseEmployeeData.setEmpDeservedFlag(RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode());
+	raiseEmployeeData.setEmpId(empData.getEmpId());
+	raiseEmployeeData.setEmpDegreeId(empData.getDegreeId());
+	raiseEmployeeData.setEmpDegreeDesc(empData.getDegreeDesc());
+	raiseEmployeeData.setEmpName(empData.getName());
+	raiseEmployeeData.setEmpJobId(empData.getJobId());
+	raiseEmployeeData.setEmpJobName(empData.getJobDesc());
+	raiseEmployeeData.setEmpRankId(empData.getRankId());
+	raiseEmployeeData.setEmpRankDesc(empData.getRankDesc());
+	raiseEmployeeData.setEmpDeservedFlag(deservedFlag);
+	return raiseEmployeeData;
+    }
+
+    public static List<RaiseEmployeeData> saveAllEmployeesgeAndGetEmployeesEndOfLadder(Raise raise, Date executionDate) {
+
+	List<RaiseEmployeeData> deservedEmpRaiseData = new ArrayList<>();
+	List<RaiseEmployeeData> endOfLadderEmpRaiseData = new ArrayList<>();
+	List<RaiseEmployeeData> unDeservedEmpRaiseData = new ArrayList<>();
+
+	List<EmployeeData> unDeservedEmpData = new ArrayList<>();
+	try {
+	    List<EmployeeData> allDeservedEmpData = getAllDeservedEmployees(raise.getId(), executionDate);
+	    unDeservedEmpData = getAllUnDeservedEmployees(raise.getId(), executionDate);
+	    for (EmployeeData emp : allDeservedEmpData) {
+		if (emp.getDegreeId() == PayrollsService.getEndOfLadderOfRank(emp.getRankId())) {
+		    // convert list of EmployeeData to RaiseEmployeeData
+		    endOfLadderEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode()));
+		} else {
+		    deservedEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode()));
+		}
+
+	    }
+	    for (EmployeeData emp : unDeservedEmpData)
+		unDeservedEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.NOT_DESERVED_EMPLOYEES.getCode()));
+	    // add deserved , undeserved and end of ladder employees
+	    updateRaiseAndEmployees(raise, deservedEmpRaiseData, null);
+	    updateRaiseAndEmployees(raise, endOfLadderEmpRaiseData, null);
+	    updateRaiseAndEmployees(raise, unDeservedEmpRaiseData, null);
+	} catch (BusinessException e) {
+	    e.printStackTrace();
+	}
+	return endOfLadderEmpRaiseData;
+    }
+
+    public static List<RaiseEmployeeData> manipulationRaiseEmployees(Raise raise, Date executionDate) {
+	List<RaiseEmployeeData> endOfLadderRaiseEmpData = new ArrayList<>();
+	try {
+	    // delete the old records in DB
+	    deleteRaiseEmployees(getRaiseEmployeeByRaiseId(raise.getId()));
+	    // re-calculate all employees
+	    return saveAllEmployeesgeAndGetEmployeesEndOfLadder(raise, executionDate);
+
+	} catch (BusinessException e) {
+	    e.printStackTrace();
+	}
+	return endOfLadderRaiseEmpData;
+    }
+
     /**
      * get annual raise deserved employees
      * 
@@ -797,6 +860,42 @@ public class RaisesService extends BaseService {
 	}
     }
 
+    private static List<EmployeeData> getAllDeservedEmployees(long raiseId, Date executionDate) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_Raise_ID", raiseId);
+	    qParams.put("P_EXECUTION_DATE", calculateExecutionBeforeYear(executionDate));
+
+	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_ALL_DESERVED_EMPLOYEES.getCode(), qParams);
+
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    private static List<EmployeeData> getAllUnDeservedEmployees(long raiseId, Date executionDate) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_Raise_ID", raiseId);
+	    qParams.put("P_EXECUTION_DATE", calculateExecutionBeforeYear(executionDate));
+
+	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_ALL_UNDESERVED_EMPLOYEES.getCode(), qParams);
+
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    private static Date calculateExecutionBeforeYear(Date executionDate) {
+
+	Calendar c = Calendar.getInstance();
+	c.setTime(HijriDateService.hijriToGregDate(executionDate));
+	c.set(Calendar.YEAR, c.get(Calendar.YEAR) - 1);
+	return HijriDateService.gregToHijriDate(c.getTime());
+    }
+
     public static List<RaiseTransactionData> getRaiseEmployeesByDeservedFlag(String decisionNumber, Date decisionDate, long deservedFlag) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
@@ -845,14 +944,6 @@ public class RaisesService extends BaseService {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
-    }
-
-    private static Date calculateExecutionBeforeYear(Date executionDate) {
-	HijriDateService.hijriToGregDate(executionDate);
-	Calendar c = Calendar.getInstance();
-	c.setTime(executionDate);
-	c.set(Calendar.YEAR, c.get(Calendar.YEAR) - 1);
-	return HijriDateService.gregToHijriDate(c.getTime());
     }
 
 }

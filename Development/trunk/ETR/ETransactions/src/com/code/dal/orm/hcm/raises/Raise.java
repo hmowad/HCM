@@ -50,6 +50,38 @@ import com.code.services.util.HijriDateService;
 			" and ((ed.lastPromotionDate is null) or (r.executionDate > ed.lastPromotionDate))" +
 			" order by ed.empId"),
 
+	@NamedQuery(name = "hcm_raises_searchAllDeservedEmployees",
+		query = "select ed from Raise r, EmployeeData ed" +
+			" where (r.id = :P_RAISE_ID)" +
+			" and (ed.statusId between 15 and 45)" +
+			" and (r.categoryId = ed.categoryId)" +
+			" and (r.executionDate >" +
+			" (select CASE WHEN max(rt.executionDate) IS NULL " +
+			" then to_date('1/1/1300', 'MI/MM/YYYY') " +
+			" ELSE max(rt.executionDate) END " +
+			" from RaiseTransaction rt" +
+			" where rt.empId = ed.empId and rt.type = 2) )" +
+			" and ((ed.lastAnnualRaiseDate is null) or (to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY') > ed.lastAnnualRaiseDate))" +
+			" and ((ed.lastPromotionDate is null) or (r.executionDate > ed.lastPromotionDate))" +
+			" order by ed.empId"),
+
+	@NamedQuery(name = "hcm_raises_searchUnDeservedEmployees",
+		query = "select ed from Raise r, EmployeeData ed" +
+			" where (r.id = :P_RAISE_ID)" +
+			" and (ed.statusId between 15 and 45)" +
+			" and (r.categoryId = ed.categoryId)" +
+			"and (" +
+			" and (r.executionDate <" +
+			" (select CASE WHEN max(rt.executionDate) IS NULL " +
+			" then to_date('1/1/1300', 'MI/MM/YYYY') " +
+			" ELSE max(rt.executionDate) END " +
+			" from RaiseTransaction rt" +
+			" where rt.empId = ed.empId and rt.type = 2) )" +
+			" or ((ed.lastAnnualRaiseDate is not null) and (to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY') <= ed.lastAnnualRaiseDate))" +
+			" or ((ed.lastPromotionDate is not null) and (r.executionDate <= ed.lastPromotionDate))" +
+			" )" +
+			" order by ed.empId"),
+
 	@NamedQuery(name = "hcm_raises_searchDeservedEmployees",
 		query = "select ed from Raise r, EmployeeData ed" +
 			" where (r.id = :P_RAISE_ID)" +
