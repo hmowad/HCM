@@ -143,7 +143,7 @@ public class MissionRequest extends WFBaseBacking {
 
     public void deleteEmp(WFMissionDetailData wfMissionDetailData) {
 	try {
-	    if (wfMissionDetailDataList.size() == FlagsEnum.ON.getCode())
+	    if (wfMissionDetailDataList.size() == 1)
 		throw new BusinessException("error_mustHaveAtLeastOnlyOne");
 
 	    wfMissionDetailData.getWfMissionDetail().setSystemUser(this.loginEmpData.getEmpId() + "");
