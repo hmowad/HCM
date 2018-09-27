@@ -43,9 +43,7 @@ public class RaiseTransactionData extends BaseEntity {
     private Integer eFlag;
     private Integer migFlag;
     private Long empDecisionApprovedId;
-    private String empDecisionApprovedName;
     private Long empOriginalDecisionApprovedId;
-    private String empOriginalDecisionApprovedName;
     private String transEmpJobName;
     private String transEmpUnitFullName;
     private String transEmpJobRankDesc;
@@ -277,16 +275,6 @@ public class RaiseTransactionData extends BaseEntity {
     }
 
     @Basic
-    @Column(name = "EMP_DECS_APPROVED_NAME")
-    public String getEmpDecisionApprovedName() {
-	return empDecisionApprovedName;
-    }
-
-    public void setEmpDecisionApprovedName(String empDecisionApprovedName) {
-	this.empDecisionApprovedName = empDecisionApprovedName;
-    }
-
-    @Basic
     @Column(name = "EMP_ORG_DECS_APPROVED_ID")
     public Long getEmpOriginalDecisionApprovedId() {
 	return empOriginalDecisionApprovedId;
@@ -295,16 +283,6 @@ public class RaiseTransactionData extends BaseEntity {
     public void setEmpOriginalDecisionApprovedId(Long empOriginalDecisionApprovedId) {
 	this.empOriginalDecisionApprovedId = empOriginalDecisionApprovedId;
 	raiseTransaction.setOriginalDecisionApprovedId(empOriginalDecisionApprovedId);
-    }
-
-    @Basic
-    @Column(name = "EMP_ORG_DECS_APPROVED_NAME")
-    public String getEmpOriginalDecisionApprovedName() {
-	return empOriginalDecisionApprovedName;
-    }
-
-    public void setEmpOriginalDecisionApprovedName(String empOriginalDecisionApprovedName) {
-	this.empOriginalDecisionApprovedName = empOriginalDecisionApprovedName;
     }
 
     @Basic

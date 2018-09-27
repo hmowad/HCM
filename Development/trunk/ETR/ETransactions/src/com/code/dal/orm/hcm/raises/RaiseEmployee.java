@@ -21,6 +21,7 @@ public class RaiseEmployee extends AuditEntity implements InsertableAuditEntity,
     private Long empId;
     private String exclusionReason;
     private Long newDegreeId;
+    private Integer deservedFlag;
 
     @SequenceGenerator(name = "HCMRaiseSeq",
 	    sequenceName = "HCM_RAISE_SEQ")
@@ -73,6 +74,16 @@ public class RaiseEmployee extends AuditEntity implements InsertableAuditEntity,
 
     public void setNewDegreeId(Long newDegreeId) {
 	this.newDegreeId = newDegreeId;
+    }
+
+    @Basic
+    @Column(name = "DESERVED_FLAG")
+    public Integer getDeservedFlag() {
+	return deservedFlag;
+    }
+
+    public void setDeservedFlag(Integer deservedFlag) {
+	this.deservedFlag = deservedFlag;
     }
 
     @Override
