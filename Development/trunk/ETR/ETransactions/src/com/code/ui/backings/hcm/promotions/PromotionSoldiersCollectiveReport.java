@@ -30,8 +30,11 @@ public class PromotionSoldiersCollectiveReport extends PromotionsBase {
     private int pageSize = 10;
 
     private Date reportDate;
+    private String reportDateString;
     private Date promotionDate;
+    private String promotionDateString;
     private Date promotionDueDate;
+    private String promotionDueDateString;
 
     private String ranksNamesString;
     private String ranksIdsString;
@@ -125,8 +128,13 @@ public class PromotionSoldiersCollectiveReport extends PromotionsBase {
     }
 
     public void addAllPromotionSoldiersReports() {
+	reportDateString = HijriDateService.getHijriDateString(reportDate);
+	promotionDateString = HijriDateService.getHijriDateString(promotionDate);
+	promotionDueDateString = HijriDateService.getHijriDateString(promotionDueDate);
+
 	setupRanksIds();
 	setupRegionsIds();
+
 	for (Long regionId : regionsIds) {
 	    for (Long rankId : ranksIds) {
 		PromotionReportData promotionReportData = new PromotionReportData();
@@ -259,6 +267,30 @@ public class PromotionSoldiersCollectiveReport extends PromotionsBase {
 
     public void setRegionsIds(List<Long> regionsIds) {
 	this.regionsIds = regionsIds;
+    }
+
+    public String getReportDateString() {
+	return reportDateString;
+    }
+
+    public void setReportDateString(String reportDateString) {
+	this.reportDateString = reportDateString;
+    }
+
+    public String getPromotionDateString() {
+	return promotionDateString;
+    }
+
+    public void setPromotionDateString(String promotionDateString) {
+	this.promotionDateString = promotionDateString;
+    }
+
+    public String getPromotionDueDateString() {
+	return promotionDueDateString;
+    }
+
+    public void setPromotionDueDateString(String promotionDueDateString) {
+	this.promotionDueDateString = promotionDueDateString;
     }
 
 }
