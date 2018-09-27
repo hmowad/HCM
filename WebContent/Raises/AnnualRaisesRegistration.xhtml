@@ -9,8 +9,8 @@
 	<script type="text/javascript">
 		//<![CDATA[
 		function getEmployee(contextPath) {
-			openEmpsMiniSearchByRaiseDeserved(contextPath,
-					'handleEmpMiniSearhResult(ret)', 19, #{annualRaiseRegistration.annualRaise.id});
+			deservedEmpsForAnnualRaiseMiniSearch(contextPath,
+					'handleEmpMiniSearhResult(ret)', #{annualRaiseRegistration.annualRaise.decisionNumber}, #{annualRaiseRegistration.annualRaise.decisionDateString});
 		}
 
 		function handleEmpMiniSearhResult(ret) {
@@ -221,12 +221,14 @@
 															</rich:column>
 															<rich:column>
 																<f:facet name="header">#{msgs.label_exclusionReason}</f:facet>
-																<h:outputText rendered="#{raiseEmp.raiseEmployeeType ==3} " value="#{msgs.label_excluded_employees_for_end_of_ladder}"/>
-																<h:outputText rendered="#{raiseEmp.raiseEmployeeType ==4}" value="#{msgs.label_excluded_employees_for_another_reason}"/>
+																<h:outputText rendered="#{raiseEmp.raiseEmployeeType ==1} " value="#{msgs.label_deserved_employees}"/>
+																<h:outputText rendered="#{raiseEmp.raiseEmployeeType ==2} " value="#{msgs.label_excluded_employees_for_end_of_ladder}"/>
+																<h:outputText rendered="#{raiseEmp.raiseEmployeeType ==3}" value="#{msgs.label_excluded_employees_for_another_reason}"/>
+																<h:outputText rendered="#{raiseEmp.raiseEmployeeType ==4} " value="#{msgs.label_not_deserved_employees}"/>
 															</rich:column>
 															<rich:column>
 																<f:facet name="header">#{msgs.label_anotherReason}</f:facet>
-																<h:inputText value="#{raiseEmp.exclusionReason}"  readonly="#{annualRaiseRegistration.deservedFlag!=4}"/>
+																<h:inputText value="#{raiseEmp.exclusionReason}"  readonly="#{annualRaiseRegistration.deservedFlag!=3}"/>
 															</rich:column>
 															<rich:column>
 																<f:facet name="header">#{msgs.label_exclusionCancellation}</f:facet>
