@@ -25,12 +25,17 @@ import com.code.dal.orm.BaseEntity;
 			" where s.rankId = :P_RANK_ID " +
 			"   and s.basicSalary >= :P_BASIC_SALARY " +
 			" order by s.basicSalary "),
+
 	@NamedQuery(name = "hcm_payrollSalary_searchPayrollNewSalary_demoting",
 		query = " select s " +
 			" from PayrollSalary s " +
 			" where s.rankId = :P_RANK_ID " +
 			"   and s.basicSalary <= :P_BASIC_SALARY " +
-			" order by s.basicSalary DESC ")
+			" order by s.basicSalary DESC "),
+	@NamedQuery(name = "hcm_payrollSalary_getEndOfLadderOfRank",
+		query = " select s.degreeId from PayrollSalary s " +
+			" where s.rankId = :P_RANK_ID " +
+			" and s.degreeId = (select max(m.degreeIdd) from PayrollSalary m where m.rankId = s.rankId)")
 })
 @SuppressWarnings("serial")
 @Entity
