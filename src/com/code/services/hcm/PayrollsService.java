@@ -44,6 +44,19 @@ public class PayrollsService extends BaseService {
 	return searchDegrees();
     }
 
+    public static Long getEndOfLadderOfRank(long rankId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_RANK_ID", rankId);
+
+	    List<PayrollSalary> payrollSalaries = DataAccess.executeNamedQuery(PayrollSalary.class, QueryNamesEnum.HCM_GET_END_OF_LADDER_OF_RANK.getCode(), qParams);
+	    return payrollSalaries.isEmpty() ? null : payrollSalaries.get(0).getDegreeId();
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
     private static List<Degree> searchDegrees() throws BusinessException {
 	try {
 	    return DataAccess.executeNamedQuery(Degree.class, QueryNamesEnum.HCM_GET_ALL_DEGREES.getCode(), null);
