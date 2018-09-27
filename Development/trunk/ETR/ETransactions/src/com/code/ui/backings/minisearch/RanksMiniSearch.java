@@ -25,22 +25,25 @@ public class RanksMiniSearch extends BaseBacking implements Serializable {
     private List<Rank> selectedRankList;
     private boolean multipleSelectFlag;
     private String comma;
+    private int mode;
 
     public RanksMiniSearch() {
 	try {
 	    category = Long.valueOf(getRequest().getParameter("category"));
 	    if (getRequest().getParameter("multipleSelectFlag") != null) {
 		multipleSelectFlag = Integer.parseInt(getRequest().getParameter("multipleSelectFlag")) == 1;
+		if (getRequest().getParameter("mode") != null)
+		    mode = Integer.parseInt(getRequest().getParameter("mode"));
 		selectedRankList = new ArrayList<Rank>();
 		selectedRanksIds = "";
 		selectedRanksDescriptions = "";
 		comma = "";
-		searchRankList = CommonService.getRanks(null, new Long[] { category });
+		searchRank();
 		if (multipleSelectFlag) {
 		    rowsCount = 5;
 		}
 	    }
-	} catch (BusinessException e) {
+	} catch (Exception e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
@@ -48,7 +51,14 @@ public class RanksMiniSearch extends BaseBacking implements Serializable {
     public void searchRank() {
 	try {
 	    searchRankList = null;
-	    searchRankList = CommonService.getRanks(searchRankFullName, new Long[] { category });
+	    switch (mode) {
+	    case 1: /* Get all ranks */
+		searchRankList = CommonService.getRanks(searchRankFullName, new Long[] { category });
+		break;
+	    case 2: /* Get all ranks except PRIME_SERGEANTS and STUDENT_SOLDIER - this mode is made for promotions */
+		searchRankList = CommonService.getRanksExceptPrimeSergantAndStudentSoldier(searchRankFullName, new Long[] { category });
+		break;
+	    }
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
