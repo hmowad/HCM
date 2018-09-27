@@ -522,6 +522,30 @@ public class RaisesService extends BaseService {
 	}
     }
 
+    /**
+     * get annual raise deserved employees
+     * 
+     * @return array list of raiseEmployee objects
+     * @throws BusinessException
+     */
+    public static List<RaiseEmployeeData> getAnnualRaiseDeservedEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, int empNumber, String decisionDate, String decisionNumber, Integer deservedFlag) throws BusinessException {
+	Map<String, Object> qParams = new HashMap<String, Object>();
+	try {
+	    qParams.put("P_SOCIAL_ID", (socialId == null || socialId.equals("")) ? FlagsEnum.ALL.getCode() + "" : socialId);
+	    qParams.put("P_EMP_NAME", (empName == null || empName.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + empName + "%");
+	    qParams.put("P_JOB_DESC", (jobDesc == null || jobDesc.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + jobDesc + "%");
+	    qParams.put("P_PHYSICAL_UNIT_FULL_NAME", (physicalUnitFullName == null || physicalUnitFullName.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + physicalUnitFullName + "%");
+	    qParams.put("P_EMP_NUMBER", empNumber);
+	    qParams.put("P_DECISION_DATE", (decisionDate == null || decisionDate.equals("")) ? FlagsEnum.ALL.getCode() + "" : decisionDate);
+	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || socialId.equals("")) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
+	    qParams.put(":P_DESERVED_FLAG", deservedFlag);
+	    return DataAccess.executeNamedQuery(RaiseEmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_ANNUAL_RAISE_DESERVED_EMPLOYEES.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
     /*------------------------------------------Reports------------------------------------------------*/
     public static byte[] getRaiseEmployeesReportBytes(String decisionNumber, Date decisionDate, Integer deservedFlag) throws BusinessException {
 	return null;
