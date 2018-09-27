@@ -6,7 +6,8 @@ public enum PromotionMedicalTestStatusEnum {
     CURRENTLY_TESTING(15),
     NEGATIVE(20),
     POSITIVE(25),
-    SENT_TO_HOSPITAL(30);
+    SENT_TO_HOSPITAL(30),
+    SAMPLE_CHEATING(35);
 
     private int code;
 

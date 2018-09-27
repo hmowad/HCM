@@ -516,6 +516,7 @@
 															<f:selectItem itemLabel="#{msgs.label_negative}" itemValue="20" />
 															<f:selectItem itemLabel="#{msgs.label_positive}" itemValue="25" />
 															<f:selectItem itemLabel="#{msgs.label_sentToHospital}" itemValue="30" />
+															<f:selectItem itemLabel="#{msgs.label_sampleCheating}" itemValue="35" />
 														</h:selectOneMenu>
 													</td>
 													<td width="5%">
@@ -576,6 +577,7 @@
 										<h:outputText rendered="#{reportDetail.medicalTest == 20}" value="#{msgs.label_negative}" />
 										<h:outputText rendered="#{reportDetail.medicalTest == 25}" value="#{msgs.label_positive}" />
 										<h:outputText rendered="#{reportDetail.medicalTest == 30}" value="#{msgs.label_sentToHospital}" />
+										<h:outputText rendered="#{reportDetail.medicalTest == 35}" value="#{msgs.label_sampleCheating}" />
 									</rich:column>
 									<rich:column style="width : 3%;" rendered="#{promotionSoldiersReport.role == 'ReviewerEmp' or (promotionSoldiersReport.role == 'Requester' and promotionSoldiersReport.promotionReportData.status == 5)}">
 										<f:facet name="header">#{msgs.label_delete}</f:facet>
@@ -680,6 +682,7 @@
 																<h:outputText value="#{msgs.label_negative}" rendered="#{promotionSoldiersReport.selectedPromotionReportDetailData.medicalTest == 20}" />
 																<h:outputText value="#{msgs.label_positive}" rendered="#{promotionSoldiersReport.selectedPromotionReportDetailData.medicalTest == 25}" />
 																<h:outputText value="#{msgs.label_sentToHospital}" rendered="#{promotionSoldiersReport.selectedPromotionReportDetailData.medicalTest == 30}" />
+																<h:outputText value="#{msgs.label_sampleCheating}" rendered="#{promotionSoldiersReport.selectedPromotionReportDetailData.medicalTest == 35}" />
 															</td>
 															<th width="15%">
 																<h:outputText value="#{msgs.label_militaryProvisions}" />

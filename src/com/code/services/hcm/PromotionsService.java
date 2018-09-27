@@ -50,6 +50,8 @@ import com.code.enums.TerminationReasonsEnum;
 import com.code.enums.TransactionClassesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.webservicesclients.infosys.HCMWebService;
+import com.code.integration.webservicesclients.infosys.HCMWebServiceService;
 import com.code.integration.webservicesclients.promotiondrugtest.DrugsTestJMSClient;
 import com.code.services.BaseService;
 import com.code.services.buswfcoop.BusinessWorkflowCooperation;
@@ -941,6 +943,30 @@ public class PromotionsService extends BaseService {
 	    throw new BusinessException("error_invalidEmployeeDegreeZero");
     }
 
+    private static void modifyReportDetailsDrugTestResult(List<PromotionReportDetailData> promotionReportDetailDataList) {
+
+	if (promotionReportDetailDataList == null || promotionReportDetailDataList.size() == 0)
+	    return;
+	String comma = "";
+	String socialIds = "";
+	for (PromotionReportDetailData promotionReportDetailData : promotionReportDetailDataList) {
+	    socialIds += comma + promotionReportDetailData.getEmpSocialID();
+	    comma = ",";
+	}
+	HCMWebServiceService infoSysGetDrugTestResultsWS = new HCMWebServiceService();
+	HCMWebService webService = infoSysGetDrugTestResultsWS.getHCMWebServicePort();
+	String result = webService.getLabCheckResults(socialIds);
+	String[] resultParts = result.split(",");
+	Map<String, Integer> empsSocialIdsResultsMap = new HashMap<>();
+	for (String resultPart : resultParts) {
+	    String[] socialIdResult = resultPart.split("_");
+	    empsSocialIdsResultsMap.put(socialIdResult[0], Integer.parseInt(socialIdResult[1]));
+	}
+	for (PromotionReportDetailData promotionReportDetailData : promotionReportDetailDataList) {
+	    promotionReportDetailData.setMedicalTest(empsSocialIdsResultsMap.get(promotionReportDetailData.getEmpSocialID() + ""));
+	}
+    }
+
     /**
      * Construct new promotion report details from employee data and calculate the degrees for soldiers and persons and others.
      * 
@@ -1452,7 +1478,7 @@ public class PromotionsService extends BaseService {
 	    // 4- In case of equality for drugRequestId in both promotionReprotDetail and received message, update medicalTest value
 	    if (index == null || !isValidPromotionMedicalTestStatus(statusIds[index])) {
 		invalidDataFlag = true;
-	    } else if (promotionReportDetailData.getMedicalTest().equals(PromotionMedicalTestStatusEnum.NEGATIVE.getCode()) || promotionReportDetailData.getMedicalTest().equals(PromotionMedicalTestStatusEnum.POSITIVE.getCode())) {
+	    } else if (promotionReportDetailData.getMedicalTest().equals(PromotionMedicalTestStatusEnum.NEGATIVE.getCode()) || promotionReportDetailData.getMedicalTest().equals(PromotionMedicalTestStatusEnum.POSITIVE.getCode()) || promotionReportDetailData.getMedicalTest().equals(PromotionMedicalTestStatusEnum.SAMPLE_CHEATING.getCode())) {
 		invalidDataFlag = true;
 	    } else {
 		if (promotionReportDetailData.getDrugsRequestId() == null && promotionReportDetailData.getMedicalTest().equals(PromotionMedicalTestStatusEnum.CURRENTLY_TESTING.getCode())) {
@@ -1485,6 +1511,8 @@ public class PromotionsService extends BaseService {
 	else if (medicalTest.equals(PromotionMedicalTestStatusEnum.POSITIVE.getCode()))
 	    return true;
 	else if (medicalTest.equals(PromotionMedicalTestStatusEnum.SENT_TO_HOSPITAL.getCode()))
+	    return true;
+	else if (medicalTest.equals(PromotionMedicalTestStatusEnum.SAMPLE_CHEATING.getCode()))
 	    return true;
 	else
 	    return false;
@@ -1667,7 +1695,7 @@ public class PromotionsService extends BaseService {
 	List<EmployeeData> employeeList = EmployeesService.getPromotionEligibleEmployees(ranksIds, promotionReportData.getDueDate(), categoryId, regionId);
 
 	constructNewPromotionReportDetails(promotionReportData, reportDetailDataList, employeeList, null);
-
+	modifyReportDetailsDrugTestResult(reportDetailDataList);
 	return reportDetailDataList;
     }
 
@@ -1935,7 +1963,7 @@ public class PromotionsService extends BaseService {
 	    if (promotionReportDetailData.getJudgmentFlagBoolean() != null && promotionReportDetailData.getJudgmentFlagBoolean())
 		throw new BusinessException("error_judgementRequired", new Object[] { promotionReportDetailData.getEmpName() });
 
-	    if (promotionReportDetailData.getMedicalTest() != null && promotionReportDetailData.getMedicalTest().equals(PromotionMedicalTestStatusEnum.POSITIVE.getCode()))
+	    if (promotionReportDetailData.getMedicalTest() != null && (promotionReportDetailData.getMedicalTest().equals(PromotionMedicalTestStatusEnum.POSITIVE.getCode()) || promotionReportDetailData.getMedicalTest().equals(PromotionMedicalTestStatusEnum.SAMPLE_CHEATING.getCode())))
 		throw new BusinessException("error_invalidPromotionDrugTestResult", new Object[] { promotionReportDetailData.getEmpName() });
 
 	    if (promotionReportDetailData.getMedicalTest() != null && promotionReportDetailData.getMedicalTest().equals(PromotionMedicalTestStatusEnum.EXEMPT.getCode()) && (promotionReportDetailData.getMedicalTestExemptionReason() == null || promotionReportDetailData.getMedicalTestExemptionReason().trim().isEmpty()))
@@ -2085,7 +2113,7 @@ public class PromotionsService extends BaseService {
 		    continue;
 		}
 
-		if ((errorString.isEmpty() || errorString.equals("error_medicalRequired")) && promotionReportDetailDataItr.getMedicalTest().equals(PromotionMedicalTestStatusEnum.POSITIVE.getCode())) {
+		if ((errorString.isEmpty() || errorString.equals("error_medicalRequired")) && (promotionReportDetailDataItr.getMedicalTest().equals(PromotionMedicalTestStatusEnum.POSITIVE.getCode()) || promotionReportDetailDataItr.getMedicalTest().equals(PromotionMedicalTestStatusEnum.SAMPLE_CHEATING.getCode()))) {
 		    errorString = "error_medicalRequired";
 		    employeesString += comma + promotionReportDetailDataItr.getEmpName();
 		    comma = ", ";
