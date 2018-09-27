@@ -70,16 +70,13 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	    statusBuilder.append(",");
 	    statusBuilder.append(EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode());
 	    statusIds = statusBuilder.toString();
-	    // 7atet value 34an a test el update bs
-	    raiseId = (long) 26;
-	    // raiseId = Long.parseLong(getRequest().getParameter("raiseId"));// get raiseId value from get request paramter mn page 5aled
+	    raiseId = Long.parseLong(getRequest().getParameter("raiseId"));
 	    if (raiseId == null) {
 		addAdminFlag = true;
 		raise = new Raise();
 		deservedEmployeesList = new ArrayList<RaiseEmployeeData>();
 		if (!categories.isEmpty())
-		    raise.setCategoryId(categories.get(0).getId());// 34an a7ot default value ll select one menu lw ma e5tar4y 7aga
-		// 3amla comment 34an a test el save bs
+		    raise.setCategoryId(categories.get(0).getId());
 		if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ADDITIONAL_RAISES_REGISTERATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ADDITIONAL_RAISE.getCode()))
 		    approveAdminFlag = true;
 	    } else {
@@ -88,10 +85,8 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 		categoryDesc = CommonService.getCategoryById(raise.getCategoryId()).getDescription();
 		if (raise.getStatus() == RaiseStatusEnum.INITIAL.getCode()) {
 		    modifyAdminFlag = true;
-		    // 3amla comment 34an a test el update bs
-		    // if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ADDITIONAL_RAISES_REGISTERATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ADDITIONAL_RAISE.getCode()))
-		    // approveAdminFlag = true;
-
+		    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ADDITIONAL_RAISES_REGISTERATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ADDITIONAL_RAISE.getCode()))
+			approveAdminFlag = true;
 		}
 	    }
 	} catch (
