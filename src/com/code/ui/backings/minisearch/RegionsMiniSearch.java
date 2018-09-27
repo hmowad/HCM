@@ -23,19 +23,35 @@ public class RegionsMiniSearch extends BaseBacking {
 
     private String totalRegionsNames;
 
+    private int mode;
+
     public RegionsMiniSearch() {
 	super.init();
-	
+
+	if (getRequest().getParameter("mode") != null)
+	    mode = Integer.parseInt(getRequest().getParameter("mode"));
+
 	List<Region> tempRegionsList = CommonService.getAllRegions();
-	for (Region region : tempRegionsList) {
-	    regionsList.add(region);
+
+	switch (mode) {
+	case 1: /* Get all regions */
+	    for (Region region : tempRegionsList) {
+		regionsList.add(region);
+	    }
+	    break;
+	case 2: /* Get all regions plus other region */
+
+	    for (Region region : tempRegionsList) {
+		regionsList.add(region);
+	    }
+	    Region otherRegion = new Region();
+	    otherRegion.setId((long) FlagsEnum.ALL.getCode());
+	    otherRegion.setCode(FlagsEnum.ALL.getCode() + "");
+	    otherRegion.setDescription(getMessage("lable_otherRegions"));
+	    regionsList.add(otherRegion);
+	    break;
 	}
 
-	Region otherRegion = new Region();
-	otherRegion.setId((long) FlagsEnum.ALL.getCode());
-	otherRegion.setCode(FlagsEnum.ALL.getCode() + "");
-	otherRegion.setDescription(getMessage("lable_otherRegions"));
-	regionsList.add(otherRegion);
     }
 
     public void addSelectedRegion(Region region) {
