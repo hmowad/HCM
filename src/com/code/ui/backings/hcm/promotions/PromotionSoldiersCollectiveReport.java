@@ -9,7 +9,6 @@ import java.util.Set;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import com.code.dal.orm.hcm.organization.Region;
 import com.code.dal.orm.hcm.promotions.PromotionReportData;
 import com.code.dal.orm.hcm.promotions.PromotionReportDetailData;
 import com.code.enums.CategoriesEnum;
@@ -17,7 +16,6 @@ import com.code.enums.FlagsEnum;
 import com.code.enums.PromotionReportStatusEnum;
 import com.code.enums.PromotionsTypesEnum;
 import com.code.enums.RanksEnum;
-import com.code.enums.RegionsEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.PromotionsService;
 import com.code.services.util.CommonService;
@@ -81,26 +79,9 @@ public class PromotionSoldiersCollectiveReport extends PromotionsBase {
 
     private void setupRegionsIds() {
 	String[] regionIdsStrings = regionsIdsString.split(",");
-	Boolean allRegionsIdSelected = false;
-	Boolean generalDirectorateOfBorderGuardsIdSelected = false;
 
-	for (int i = 0; i < regionIdsStrings.length; i++) {
+	for (int i = 0; i < regionIdsStrings.length; i++)
 	    regionsIds.add(new Long(regionIdsStrings[i]));
-	    if (new Long(regionIdsStrings[i]) == FlagsEnum.ALL.getCode())
-		allRegionsIdSelected = true;
-	    if (new Long(regionIdsStrings[i]) == RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode())
-		generalDirectorateOfBorderGuardsIdSelected = true;
-	}
-
-	if (allRegionsIdSelected) {
-	    List<Region> allRegions = CommonService.getAllRegions();
-	    if (!generalDirectorateOfBorderGuardsIdSelected)
-		allRegions.remove(CommonService.getRegionById(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()));
-
-	    regionsIds.clear();
-	    for (Region region : allRegions)
-		regionsIds.add(region.getId());
-	}
     }
 
     private void setupRanksIds() {
