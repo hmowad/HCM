@@ -82,9 +82,12 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 		raiseEmployees = RaisesService.saveAllEmployeesgeAndGetEmployeesEndOfLadder(annualRaise, annualRaise.getExecutionDate());
 	    }
 	    // the raise is updated
-	    else {
+	    else if (modifyAdminFlag) {
 		RaisesService.updateRaise(annualRaise);
 		raiseEmployees = RaisesService.manipulationRaiseEmployees(annualRaise, annualRaise.getExecutionDate());
+	    } else // view only
+	    {
+		// raiseEmployees=
 	    }
 	} catch (BusinessException e) {
 	    e.printStackTrace();
@@ -126,7 +129,12 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     public void approveRaise() {
 
 	saveRaiseEmployees();
-	// RaisesService.addRaiseTransaction(RaisesService.constructRaiseTransaction(loginEmpData.getEmpId(), annualRaise, raiseEmployee.getEmpDeservedFlag(), null, raiseEmployee.getExclusionReason()));
+	try {
+	    RaisesService.approveAnnualRaise(annualRaise, loginEmpData.getEmpId());
+	} catch (BusinessException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
     }
 
     public void printRaiseEmployeesReport() {
