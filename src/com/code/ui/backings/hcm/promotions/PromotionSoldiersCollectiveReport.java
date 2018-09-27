@@ -92,7 +92,7 @@ public class PromotionSoldiersCollectiveReport extends PromotionsBase {
 	if (allRegionsIdSelected) {
 	    List<Region> allRegions = CommonService.getAllRegions();
 	    if (!generalDirectorateOfBorderGuardsIdSelected)
-		allRegions.remove(CommonService.getRegionById(FlagsEnum.ON.getCode()));
+		allRegions.remove(CommonService.getRegionById(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()));
 
 	    regionsIds.clear();
 	    for (Region region : allRegions)
