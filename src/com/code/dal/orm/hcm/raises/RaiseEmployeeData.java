@@ -29,7 +29,9 @@ public class RaiseEmployeeData extends BaseEntity {
     private String empJobName;
     private Long empJobId;
     private String empName;
+    private String empSocialID;
     private Integer raiseType;
+    private Integer empDeservedFlag;
     private Date raiseExecutionDate;
     private String raiseExecutionDateString;
     private String raiseDecisionNumber;
@@ -127,6 +129,16 @@ public class RaiseEmployeeData extends BaseEntity {
     }
 
     @Basic
+    @Column(name = "EMP_SOCIAL_ID")
+    public String getEmpSocialID() {
+	return empSocialID;
+    }
+
+    public void setEmpSocialID(String empSocialID) {
+	this.empSocialID = empSocialID;
+    }
+
+    @Basic
     @Column(name = "RAISE_TYPE")
     public Integer getRaiseType() {
 	return raiseType;
@@ -134,6 +146,18 @@ public class RaiseEmployeeData extends BaseEntity {
 
     public void setRaiseType(Integer raiseType) {
 	this.raiseType = raiseType;
+    }
+
+    @Basic
+    @Column(name = "DESERVED_FLAG")
+    public Integer getEmpDeservedFlag() {
+	return empDeservedFlag;
+    }
+
+    public void setEmpDeservedFlag(Integer empDeservedFlag) {
+	this.empDeservedFlag = empDeservedFlag;
+	raiseEmployee.setDeservedFlag(empDeservedFlag);
+
     }
 
     @Basic
