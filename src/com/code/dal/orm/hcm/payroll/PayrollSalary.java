@@ -35,7 +35,7 @@ import com.code.dal.orm.BaseEntity;
 	@NamedQuery(name = "hcm_payrollSalary_getEndOfLadderOfRank",
 		query = " select s.degreeId from PayrollSalary s " +
 			" where s.rankId = :P_RANK_ID " +
-			" and s.degreeId = (select max(m.degreeIdd) from PayrollSalary m where m.rankId = s.rankId)")
+			" and s.degreeId = (select max(m.degreeId) from PayrollSalary m where m.rankId = s.rankId)")
 })
 @SuppressWarnings("serial")
 @Entity

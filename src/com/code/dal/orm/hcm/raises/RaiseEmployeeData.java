@@ -20,14 +20,14 @@ import com.code.services.util.HijriDateService;
 		query = "select r from RaiseEmployeeData r where r.raiseId = :P_RAISE_ID"),
 	@NamedQuery(name = "hcm_raiseEmployeeData_getAnnualRaiseDeservedEmployees",
 		query = "select r from RaiseEmployeeData r " +
-			" where (:P_SOCIAL_ID = '-1' or r.socialID = :P_SOCIAL_ID) " +
+			" where (:P_SOCIAL_ID = '-1' or r.empSocialID = :P_SOCIAL_ID) " +
 			" and (:P_EMP_NAME = '-1' or r.empName like :P_EMP_NAME ) " +
 			" and (:P_JOB_DESC = '-1' or r.empJobName like :P_JOB_DESC ) " +
 			" and (:P_PHYSICAL_UNIT_FULL_NAME = '-1' or r.empPhysicalUnitName like :P_PHYSICAL_UNIT_FULL_NAME ) " +
 			" and (:P_EMP_NUMBER = -1 or r.empNumber = :P_EMP_NUMBER) " +
 			" and (:P_DECISION_NUMBER = '-1' or r.raiseDecisionNumber = :P_DECISION_NUMBER) " +
 			" and (:P_DECISION_DATE = '-1' or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') = r.raiseDecisionDate) " +
-			" and r.deservedFlag = :P_DESERVED_FLAG " +
+			" and r.empDeservedFlag = :P_DESERVED_FLAG " +
 			" order by r.empNumber, r.empName ")
 })
 @Entity
