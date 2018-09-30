@@ -49,8 +49,8 @@ public class PayrollsService extends BaseService {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_RANK_ID", rankId);
 
-	    List<PayrollSalary> payrollSalaries = DataAccess.executeNamedQuery(PayrollSalary.class, QueryNamesEnum.HCM_GET_END_OF_LADDER_OF_RANK.getCode(), qParams);
-	    return payrollSalaries.isEmpty() ? null : payrollSalaries.get(0).getDegreeId();
+	    List<Long> degree = DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_GET_END_OF_LADDER_OF_RANK.getCode(), qParams);
+	    return degree.isEmpty() ? null : degree.get(0);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
