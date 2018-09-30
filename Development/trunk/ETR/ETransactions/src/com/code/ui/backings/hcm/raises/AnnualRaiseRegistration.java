@@ -46,7 +46,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 	// raiseIdParam = Long.parseLong(getRequest().getParameter("raiseId"));
 	// raiseIdParam = (long) 33;
 	if (raiseIdParam == null) {
-	    annualRaise = new Raise();
+	    annualRaise = RaisesService.constructRaise(RaiseTypesEnum.ANNUAL.getCode());
 	    modifyAdminFlag = true;
 	} else {
 	    try {
@@ -76,18 +76,14 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
 	try {
 	    // a new raise is created for the first time
-	    if (raiseIdParam == null) {
-		annualRaise.setType(RaiseTypesEnum.ANNUAL.getCode());
-		RaisesService.addAnnualRaise(annualRaise);
+	    if (annualRaise.getId() == null) {
+		RaisesService.addRaise(annualRaise);
 		raiseEmployees = RaisesService.saveAllEmployeesgeAndGetEmployeesEndOfLadder(annualRaise, annualRaise.getExecutionDate());
 	    }
 	    // the raise is updated
-	    else if (modifyAdminFlag) {
+	    else {
 		RaisesService.updateRaise(annualRaise);
 		raiseEmployees = RaisesService.manipulationRaiseEmployees(annualRaise, annualRaise.getExecutionDate());
-	    } else // view only
-	    {
-		// raiseEmployees=
 	    }
 	} catch (BusinessException e) {
 	    e.printStackTrace();
