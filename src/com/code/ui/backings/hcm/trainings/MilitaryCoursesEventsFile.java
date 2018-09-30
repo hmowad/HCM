@@ -1,6 +1,7 @@
 package com.code.ui.backings.hcm.trainings;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
@@ -74,17 +75,25 @@ public class MilitaryCoursesEventsFile extends BaseBacking {
     public void reset() {
 	try {
 	    if (trainingTypeId == TrainingTypesEnum.INTERNAL_MILITARY_COURSE.getCode()) {
-		if (this.loginEmpData.getPhysicalRegionId() == RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() && TrainingSetupService.getTrainingUnitByPhysicalUnitHKey(this.loginEmpData.getPhysicalUnitHKey()) == null) {
-		    trainingUnitId = trainingUnits.get(0).getUnitId();
+
+		TrainingUnitData loginEmployeeTrainingUnit = TrainingSetupService.getTrainingUnitByPhysicalUnitHKey(this.loginEmpData.getPhysicalUnitHKey());
+		if (loginEmployeeTrainingUnit == null) {
+		    if (this.loginEmpData.getPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) {
+			Iterator<TrainingUnitData> i = trainingUnits.iterator();
+			TrainingUnitData trainingUnit;
+			while (i.hasNext()) {
+			    trainingUnit = i.next();
+			    if (trainingUnit.getRegionId().longValue() != loginEmpData.getPhysicalRegionId().longValue()) {
+				i.remove();
+			    }
+			}
+		    }
 		    admin = true;
 		} else {
-		    for (TrainingUnitData trainingUnit : trainingUnits)
-			if (trainingUnit.getRegionId().equals(this.loginEmpData.getPhysicalRegionId())) {
-			    trainingUnitId = trainingUnit.getUnitId();
-			    break;
-			}
+		    trainingUnitId = loginEmployeeTrainingUnit.getUnitId();
 		    admin = false;
 		}
+
 		if (trainingYears.size() != 0)
 		    trainingYearId = trainingYears.get(trainingYears.size() - 1).getId();
 	    }
