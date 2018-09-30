@@ -15,9 +15,11 @@ import com.code.dal.orm.hcm.raises.RaiseTransactionData;
 import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
+import com.code.enums.RaiseEmployeesTypesEnum;
 import com.code.enums.RaiseStatusEnum;
 import com.code.enums.RaiseTypesEnum;
 import com.code.exceptions.BusinessException;
+import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.PayrollsService;
 import com.code.services.hcm.RaisesService;
 import com.code.services.security.SecurityService;
@@ -73,7 +75,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	    raiseId = Long.parseLong(getRequest().getParameter("raiseId"));
 	    if (raiseId == null) {
 		addAdminFlag = true;
-		raise = new Raise();
+		raise = RaisesService.constructRaise(RaiseTypesEnum.ADDITIONAL.getCode());
 		deservedEmployeesList = new ArrayList<RaiseEmployeeData>();
 		if (!categories.isEmpty())
 		    raise.setCategoryId(categories.get(0).getId());
@@ -98,7 +100,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 
     public void addNewDeservedEmployee() {
 	try {
-	    RaiseEmployeeData newDeservedEmployee = RaisesService.constructDeservedEmployee(selectedEmpId);
+	    RaiseEmployeeData newDeservedEmployee = RaisesService.constructRaiseEmployeeData(EmployeesService.getEmployeeData(selectedEmpId), null, RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode());
 	    deservedEmployeesList.add(newDeservedEmployee);
 	    if (modifyAdminFlag) {
 		if (newDeservedEmployee.getId() == null)
@@ -140,7 +142,6 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
     public void save() {
 	try {
 	    if (addAdminFlag) {
-		raise.setType(RaiseTypesEnum.ADDITIONAL.getCode());
 		RaisesService.addAdditionalRaise(raise, deservedEmployeesList);
 	    } else if (modifyAdminFlag) {
 		RaisesService.updateRaiseAndEmployees(raise, addedEmployeesList, deletedEmployeesList);
