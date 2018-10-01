@@ -94,7 +94,7 @@
 											
 										</td>
 										<th>
-											#{msgs.label_annualRaiseDate}
+											#{msgs.label_raiseDate}
 											<h:outputText value=" " />
 											<font style="color: red;">*</font>
 										</th>
@@ -151,10 +151,10 @@
 													<th width="10%">#{msgs.label_printingOptions}</th>
 													<td width="50">
 														<h:selectOneRadio value="#{annualRaiseRegistration.empPrintType}">
-															<f:selectItem itemLabel="#{msgs.label_deserved_employees}" itemValue="1" />
-															<f:selectItem itemLabel="#{msgs.label_excluded_employees_for_end_of_ladder}" itemValue="3" />
-															<f:selectItem itemLabel="#{msgs.label_excluded_employees_for_another_reason}" itemValue="4" />
-															<f:selectItem itemLabel="#{msgs.label_not_deserved_employees}" itemValue="5" />
+															<f:selectItem itemLabel="#{msgs.label_eligible}" itemValue="1" />
+															<f:selectItem itemLabel="#{msgs.label_excludedForEndOfLadder}" itemValue="3" />
+															<f:selectItem itemLabel="#{msgs.label_excludedForAnotherReason}" itemValue="4" />
+															<f:selectItem itemLabel="#{msgs.label_notDeserved}" itemValue="5" />
 
 														</h:selectOneRadio>
 													</td>

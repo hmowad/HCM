@@ -61,7 +61,8 @@ public enum QueryNamesEnum {
     HCM_RAISES_GET_EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER("hcm_raises_searchExcludedEmployeesForEndOfLadder"),
     HCM_RAISE_TRANSACTION_DATA_GET_EMPLOYEES_BY_DESERVED_FLAG("hcm_raiseTransactionData_getRaiseEmployeesByDeservedFlag"),
     HCM_RAISES_GET_ANNUAL_RAISE_DESERVED_EMPLOYEES("hcm_raiseEmployeeData_getAnnualRaiseDeservedEmployees"),
-   
+    HCM_RAISES_VALIDATE_RAISE("hcm_raises_validateRaise"),
+
     /* ************************************************ Navy Formations ********************************************** */
 
     HCM_SEARCH_NAVY_FORMATIONS("hcm_navyFormation_searchNavyFormations"),
@@ -112,6 +113,7 @@ public enum QueryNamesEnum {
     HCM_GET_EMPLOYEE_PENALITIES_BY_ID("hcm_employeePenalitiesData_getEmployeePenalitiesData"),
     HCM_GET_EMPLOYEE_BONUSES_BY_ID("hcm_employeeBonusesData_getEmployeeBonusesData"),
     HCM_GET_EMPLOYEE_ALLOWANCES_BY_ID("hcm_employeeAllowancesData_getEmployeeAllowancesData"),
+    HCM_GET_END_OF_LADDER_FOR_ALL_RANKS_OFF_CATEGORY("hcm_payrollSalary_getEndOfLadderForAllRanksOfCategory"),
     /* ************************************************ Finance ****************************************************** */
     FIN_GET_PAID_ISSUE_ORDERS("fin_PaidIssueOrderData_getPaidIssueOrder"),
 

@@ -34,12 +34,22 @@ import com.code.services.util.HijriDateService;
 			" and (:P_EXECUTION_DATE_TO_FLAG = -1 or r.executionDate <= (TO_DATE(:P_EXECUTION_DATE_TO,'MI/MM/YYYY')))" +
 			" order by r.id"),
 
+	@NamedQuery(name = "hcm_raises_validateRaise",
+		query = "select r from Raise r" +
+			" where (:P_EXCLUDED_ID = -1 or r.id <> :P_EXCLUDED_ID)" +
+			" and (r.decisionNumber = :P_DECISION_NUMBER)" +
+			" and (r.type = :P_TYPE)" +
+			" and (r.decisionDate = (TO_DATE(:P_DECISION_DATE, 'MI/MM/YYYY')))" +
+			" order by r.id"),
+
 	@NamedQuery(name = "hcm_raises_searchExcludedEmployeesForEndOfLadder",
-		query = "select r from Raise r, EmployeeData ed" +
+		query = "select ed from Raise r, EmployeeData ed" +
 			" where (r.id = :P_Raise_ID)" +
 			" and (ed.statusId between 15 and 45)" +
 			" and (r.categoryId = ed.categoryId)" +
-			" and (ed.degreeId = :P_END_OF_LADDER_DEGREE)" +
+			" and (ed.degreeId = (select s.degreeId from PayrollSalary s " +
+			" where s.rankId = :P_RANK_ID " +
+			" and s.degreeId = (select max(m.degreeId) from PayrollSalary m where m.rankId = ed.rankId)))" +
 			" and (r.executionDate >" +
 			" (select CASE WHEN max(rt.executionDate) IS NULL " +
 			" then to_date('1/1/1300', 'MI/MM/YYYY') " +
@@ -87,7 +97,9 @@ import com.code.services.util.HijriDateService;
 			" where (r.id = :P_RAISE_ID)" +
 			" and (ed.statusId between 15 and 45)" +
 			" and (r.categoryId = ed.categoryId)" +
-			" and (ed.degreeId <> :P_END_OF_LADDER_DEGREE)" +
+			" and (ed.degreeId <> (select s.degreeId from PayrollSalary s " +
+			" where s.rankId = :P_RANK_ID " +
+			" and s.degreeId = (select max(m.degreeId) from PayrollSalary m where m.rankId = ed.rankId)))" +
 			" and (r.executionDate >" +
 			" (select CASE WHEN max(rt.executionDate) IS NULL " +
 			" then to_date('1/1/1300', 'MI/MM/YYYY') " +

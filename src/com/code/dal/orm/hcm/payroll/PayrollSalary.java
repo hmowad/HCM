@@ -35,6 +35,10 @@ import com.code.dal.orm.BaseEntity;
 	@NamedQuery(name = "hcm_payrollSalary_getEndOfLadderOfRank",
 		query = " select s.degreeId from PayrollSalary s " +
 			" where s.rankId = :P_RANK_ID " +
+			" and s.degreeId = (select max(m.degreeId) from PayrollSalary m where m.rankId = s.rankId)"),
+	@NamedQuery(name = "hcm_payrollSalary_getEndOfLadderForAllRanksOfCategory",
+		query = " select s from PayrollSalary s" +
+			" where s.rankId in (select r.id from Rank r where r.categoryId = :P_CATEGORY_ID ) " +
 			" and s.degreeId = (select max(m.degreeId) from PayrollSalary m where m.rankId = s.rankId)")
 })
 @SuppressWarnings("serial")
