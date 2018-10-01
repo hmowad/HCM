@@ -10,6 +10,7 @@ import java.util.Map;
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.employees.EmployeeData;
+import com.code.dal.orm.hcm.payroll.PayrollSalary;
 import com.code.dal.orm.hcm.raises.Raise;
 import com.code.dal.orm.hcm.raises.RaiseEmployeeData;
 import com.code.dal.orm.hcm.raises.RaiseTransactionData;
@@ -19,12 +20,15 @@ import com.code.enums.QueryNamesEnum;
 import com.code.enums.RaiseEmployeesTypesEnum;
 import com.code.enums.RaiseStatusEnum;
 import com.code.enums.RaiseTypesEnum;
+import com.code.enums.ReportNamesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.services.BaseService;
 import com.code.services.util.HijriDateService;
 
 public class RaisesService extends BaseService {
+
+    private static int x = 0;
 
     /**
      * private constructor to prevent instantiation
@@ -221,7 +225,7 @@ public class RaisesService extends BaseService {
      *             If any exceptions or errors occurs
      */
     private static void validateRaise(Raise newRaise) throws BusinessException {
-	List<Raise> raisesList = getRaises(newRaise.getId() == null ? FlagsEnum.ALL.getCode() : newRaise.getId(), FlagsEnum.ALL.getCode(), null, null, newRaise.getDecisionNumber(), newRaise.getExecutionDate(), null, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode());
+	List<Raise> raisesList = validateRaiseData(newRaise.getId() == null ? FlagsEnum.ALL.getCode() : newRaise.getId(), newRaise.getDecisionDate(), newRaise.getDecisionNumber(), newRaise.getType());
 	if (raisesList.size() != 0)
 	    throw new BusinessException("error_decisionNumberAndExecutionDateCannotBeRepeated");
 	if (newRaise.getDecisionNumber() == null)
@@ -303,6 +307,23 @@ public class RaisesService extends BaseService {
 	}
     }
 
+    private static List<Raise> validateRaiseData(long excludedId, Date decisionDate, String decisionNumber, long type) throws BusinessException {
+
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+
+	    qParams.put("P_EXCLUDED_ID", excludedId);
+	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.length() == 0) ? FlagsEnum.ALL.getCode() + "" : '%' + decisionNumber + '%');
+	    qParams.put("P_DECISION_DATE", HijriDateService.getHijriDateString(decisionDate));
+	    qParams.put("P_TYPE", type);
+
+	    return DataAccess.executeNamedQuery(Raise.class, QueryNamesEnum.HCM_RAISES_VALIDATE_RAISE.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
     /*************************************** Raise Employee ********************************************/
     /*----------------------------------------Operations----------------------------------------------*/
 
@@ -317,7 +338,7 @@ public class RaisesService extends BaseService {
      *             If any exceptions or errors occurs
      */
     private static void addRaiseEmployee(RaiseEmployeeData raiseEmployeeData, CustomSession... useSession) throws BusinessException {
-	validateRaiseEmployee(raiseEmployeeData);
+	// validateRaiseEmployee(raiseEmployeeData);
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -368,8 +389,8 @@ public class RaisesService extends BaseService {
 		raiseEmployeeDataToAdd.setRaiseId(raise.getId());
 		addRaiseEmployee(raiseEmployeeDataToAdd, session);
 	    }
-
-	    deleteRaiseEmployees(raiseEmployeeDataToDeleteList, session);
+	    if (raiseEmployeeDataToDeleteList != null && !raiseEmployeeDataToDeleteList.isEmpty())
+		deleteRaiseEmployees(raiseEmployeeDataToDeleteList, session);
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -484,17 +505,26 @@ public class RaisesService extends BaseService {
 	return raiseEmployeeData;
     }
 
-    public static List<RaiseEmployeeData> saveAllEmployeesgeAndGetEmployeesEndOfLadder(Raise raise, Date executionDate) {
+    public static List<RaiseEmployeeData> saveAllEmployeesAndGetEmployeesEndOfLadder(Raise raise, Date executionDate) {
 	List<RaiseEmployeeData> endOfLadderEmpRaiseData = new ArrayList<>();
 	try {
+	    boolean endOfLadder = false;
 	    List<RaiseEmployeeData> deservedEmpRaiseData = new ArrayList<>();
 	    List<RaiseEmployeeData> unDeservedEmpRaiseData = new ArrayList<>();
 	    List<EmployeeData> unDeservedEmpData = new ArrayList<>();
+	    List<PayrollSalary> allEndOfLadderDegreesForCategory = PayrollsService.getEndOfLadderForAllRanksOfCategory(raise.getCategoryId());
 
 	    List<EmployeeData> allDeservedEmpData = getAllDeservedEmployees(raise.getId(), executionDate);
 	    unDeservedEmpData = getAllUnDeservedEmployees(raise.getId(), executionDate);
 	    for (EmployeeData emp : allDeservedEmpData) {
-		if (emp.getDegreeId() == PayrollsService.getEndOfLadderOfRank(emp.getRankId())) {
+		endOfLadder = false;
+		for (PayrollSalary endOfLadderDegree : allEndOfLadderDegreesForCategory) {
+		    if (emp.getDegreeId() == endOfLadderDegree.getDegreeId() && emp.getRankId() == endOfLadderDegree.getRankId()) {
+			endOfLadder = true;
+			break;
+		    }
+		}
+		if (endOfLadder) {
 		    // convert list of EmployeeData to RaiseEmployeeData
 		    endOfLadderEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode()));
 		} else {
@@ -519,7 +549,7 @@ public class RaisesService extends BaseService {
 	    // delete the old records in DB
 	    deleteRaiseEmployees(getRaiseEmployeeByRaiseId(raise.getId()));
 	    // re-calculate all employees
-	    return saveAllEmployeesgeAndGetEmployeesEndOfLadder(raise, executionDate);
+	    return saveAllEmployeesAndGetEmployeesEndOfLadder(raise, executionDate);
 	} catch (BusinessException e) {
 	    e.printStackTrace();
 	}
@@ -538,8 +568,10 @@ public class RaisesService extends BaseService {
      */
     private static void validateRaiseEmployee(RaiseEmployeeData raiseEmployeeData) throws BusinessException {
 	Raise raise = getRaiseById(raiseEmployeeData.getRaiseId());
-	if (raiseEmployeeData.getEmpDegreeId() == PayrollsService.getEndOfLadderOfRank(raiseEmployeeData.getEmpRankId()).longValue())
-	    throw new BusinessException("error_thisEmployeeMustBeExcludedForEndOfLadder");
+	System.out.println(x++);
+	/*
+	 * if (raiseEmployeeData.getEmpDegreeId() == PayrollsService.getEndOfLadderOfRank(raiseEmployeeData.getEmpRankId()).longValue()) throw new BusinessException("error_thisEmployeeMustBeExcludedForEndOfLadder");
+	 */
 	if (raise.getType() == RaiseTypesEnum.ADDITIONAL.getCode()) {
 	    if (raiseEmployeeData.getEmpNewDegreeId() <= raiseEmployeeData.getEmpDegreeId())
 		throw new BusinessException("error_newDegreeOfEmployeeMustBeBiggerThanCurrentDegreeOfEmployee");
@@ -581,7 +613,7 @@ public class RaisesService extends BaseService {
 	    qParams.put("P_EMP_NUMBER", empNumber);
 	    qParams.put("P_DECISION_DATE", (decisionDate == null || decisionDate.equals("")) ? FlagsEnum.ALL.getCode() + "" : decisionDate);
 	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || socialId.equals("")) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
-	    qParams.put(":P_DESERVED_FLAG", deservedFlag);
+	    qParams.put("P_DESERVED_FLAG", deservedFlag);
 	    return DataAccess.executeNamedQuery(RaiseEmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_ANNUAL_RAISE_DESERVED_EMPLOYEES.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
@@ -590,8 +622,33 @@ public class RaisesService extends BaseService {
     }
 
     /*------------------------------------------Reports------------------------------------------------*/
-    public static byte[] getRaiseEmployeesReportBytes(String decisionNumber, Date decisionDate, Integer deservedFlag) throws BusinessException {
-	return null;
+    public static byte[] getRaiseEmployeesReportBytes(String decisionNumber, Date decisionDate, int deservedFlag, int type) throws BusinessException {
+	try {
+	    String reportName = "";
+	    Map<String, Object> parameters = new HashMap<String, Object>();
+
+	    if (type == RaiseTypesEnum.ADDITIONAL.getCode())
+		reportName = ReportNamesEnum.ADDITIONAL_RAISE_DESERVED_EMPLOYEES.getCode();
+	    else {
+		if (deservedFlag == RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode())
+		    reportName = ReportNamesEnum.ANNUAL_RAISE_DESERVED_EMPLOYEES.getCode();
+		else if (deservedFlag == RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode())
+		    reportName = ReportNamesEnum.ANNUAL_RAISE_EXCLUDED_FOR_END_LADDER_EMPLOYEES.getCode();
+		else if (deservedFlag == RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode())
+		    reportName = ReportNamesEnum.ANNUAL_RAISE_EXCLUDED_FOR_ANOTHER_REASON_EMPLOYEES.getCode();
+		else if (deservedFlag == RaiseEmployeesTypesEnum.NOT_DESERVED_EMPLOYEES.getCode())
+		    reportName = ReportNamesEnum.ANNUAL_RAISE_NOT_DESERVED_EMPLOYEES.getCode();
+		else if (deservedFlag == RaiseEmployeesTypesEnum.ALL_EXCLUDED_EMPLOYEES.getCode())
+		    reportName = ReportNamesEnum.ANNUAL_RAISE_ALL_EXCLUDED_EMPLOYEES.getCode();
+	    }
+	    parameters.put("P_DECISION_DATE", HijriDateService.getHijriDateString(decisionDate));
+	    parameters.put("P_DECISION_NUMBER", decisionNumber);
+	    return getReportData(reportName, parameters);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+
     }
 
     /*************************************** Raise Transaction *****************************************/
@@ -843,7 +900,7 @@ public class RaisesService extends BaseService {
     private static List<EmployeeData> getAllDeservedEmployees(long raiseId, Date executionDate) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put("P_Raise_ID", raiseId);
+	    qParams.put("P_RAISE_ID", raiseId);
 	    qParams.put("P_EXECUTION_DATE", calculateExecutionBeforeYear(executionDate));
 
 	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_ALL_DESERVED_EMPLOYEES.getCode(), qParams);
@@ -857,7 +914,7 @@ public class RaisesService extends BaseService {
     private static List<EmployeeData> getAllUnDeservedEmployees(long raiseId, Date executionDate) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put("P_Raise_ID", raiseId);
+	    qParams.put("P_RAISE_ID", raiseId);
 	    qParams.put("P_EXECUTION_DATE", calculateExecutionBeforeYear(executionDate));
 
 	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_ALL_UNDESERVED_EMPLOYEES.getCode(), qParams);
@@ -879,8 +936,8 @@ public class RaisesService extends BaseService {
     public static List<RaiseTransactionData> getRaiseEmployeesByDeservedFlag(String decisionNumber, Date decisionDate, long deservedFlag) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put(":P_DESERVED_FLAG", deservedFlag);
-	    qParams.put(":P_RAISE_DECISION_NUMBER", decisionNumber);
+	    qParams.put("P_DESERVED_FLAG", deservedFlag);
+	    qParams.put("P_RAISE_DECISION_NUMBER", decisionNumber);
 	    qParams.put("P_DECISION_DATE", HijriDateService.getHijriDateString(decisionDate));
 
 	    return DataAccess.executeNamedQuery(RaiseTransactionData.class, QueryNamesEnum.HCM_RAISE_TRANSACTION_DATA_GET_EMPLOYEES_BY_DESERVED_FLAG.getCode(), qParams);
@@ -899,8 +956,7 @@ public class RaisesService extends BaseService {
 	try {
 
 	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put(":P_END_OF_LADDER_DEGREE", degreeId);
-	    qParams.put(":P_RAISE_ID", raiseId);
+	    qParams.put("P_RAISE_ID", raiseId);
 	    qParams.put("P_EXECUTION_DATE", HijriDateService.getHijriDateString(calculateExecutionBeforeYear(executionDate)));
 
 	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode(), qParams);
@@ -914,8 +970,7 @@ public class RaisesService extends BaseService {
     private static List<EmployeeData> getDeservedEmployees(long raiseId, long degreeId, Date executionDate) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put(":P_RAISE_ID", raiseId);
-	    qParams.put(":P_END_OF_LADDER_DEGREE", degreeId);
+	    qParams.put("P_RAISE_ID", raiseId);
 	    qParams.put("P_EXECUTION_DATE", HijriDateService.getHijriDateString(calculateExecutionBeforeYear(executionDate)));
 
 	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_DESERVED_EMPLOYEES.getCode(), qParams);

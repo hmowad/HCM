@@ -78,7 +78,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 	    // a new raise is created for the first time
 	    if (annualRaise.getId() == null) {
 		RaisesService.addRaise(annualRaise);
-		raiseEmployees = RaisesService.saveAllEmployeesgeAndGetEmployeesEndOfLadder(annualRaise, annualRaise.getExecutionDate());
+		raiseEmployees = RaisesService.saveAllEmployeesAndGetEmployeesEndOfLadder(annualRaise, annualRaise.getExecutionDate());
 	    }
 	    // the raise is updated
 	    else {
@@ -134,7 +134,11 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     }
 
     public void printRaiseEmployeesReport() {
-
+	try {
+	    byte[] bytes = RaisesService.getRaiseEmployeesReportBytes(annualRaise.getDecisionNumber(), annualRaise.getDecisionDate(), empPrintType, annualRaise.getType());
+	    super.print(bytes);
+	} catch (BusinessException e) {
+	}
     }
 
     public void togglePanels() {

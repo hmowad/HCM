@@ -8,6 +8,7 @@ import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.Category;
 import com.code.dal.orm.hcm.raises.Raise;
+import com.code.enums.RaiseEmployeesTypesEnum;
 import com.code.enums.RaiseTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.RaisesService;
@@ -73,7 +74,7 @@ public class RaisesManagement extends BaseBacking {
 
     public void printEligible(Raise raise) {
 	try {
-	    byte[] bytes = RaisesService.getRaiseEmployeesReportBytes(raise.getDecisionNumber(), raise.getDecisionDate(), 1);
+	    byte[] bytes = RaisesService.getRaiseEmployeesReportBytes(raise.getDecisionNumber(), raise.getDecisionDate(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), raise.getType());
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	}
@@ -82,7 +83,7 @@ public class RaisesManagement extends BaseBacking {
 
     public void printExcluded(Raise raise) {
 	try {
-	    byte[] bytes = RaisesService.getRaiseEmployeesReportBytes(raise.getDecisionNumber(), raise.getDecisionDate(), 2);
+	    byte[] bytes = RaisesService.getRaiseEmployeesReportBytes(raise.getDecisionNumber(), raise.getDecisionDate(), RaiseEmployeesTypesEnum.ALL_EXCLUDED_EMPLOYEES.getCode(), raise.getType());
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	}
