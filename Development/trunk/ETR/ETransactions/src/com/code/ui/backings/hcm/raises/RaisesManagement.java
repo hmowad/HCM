@@ -21,7 +21,7 @@ public class RaisesManagement extends BaseBacking {
     private int pageSize = 10;
     private int raisesPageNum = 1;
     private int mode = 0;
-
+    private String pageName;
     private String decisionNumber;
     private Long jobCategory;
     private Date decisionDateFrom;
@@ -42,10 +42,13 @@ public class RaisesManagement extends BaseBacking {
 		if (Integer.parseInt(getRequest().getParameter("mode")) == RaiseTypesEnum.ANNUAL.getCode()) {
 		    mode = RaiseTypesEnum.ANNUAL.getCode();
 		    setScreenTitle(getMessage("title_annualRaisesManagement"));
+		    pageName = "Annual";
 
 		} else {
 		    mode = RaiseTypesEnum.ADDITIONAL.getCode();
 		    setScreenTitle(getMessage("title_additionalRaisesManagement"));
+		    pageName = "Additional";
+
 		}
 
 		raises = RaisesService.getRaises(-1, -1, null, null, null, null, null, -1, mode, -1);
@@ -195,5 +198,13 @@ public class RaisesManagement extends BaseBacking {
 
     public void setMode(int mode) {
 	this.mode = mode;
+    }
+
+    public String getPageName() {
+	return pageName;
+    }
+
+    public void setPageName(String pageName) {
+	this.pageName = pageName;
     }
 }
