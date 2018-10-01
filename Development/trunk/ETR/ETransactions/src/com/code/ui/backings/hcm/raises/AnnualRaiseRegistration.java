@@ -107,7 +107,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     // press save button
     public void saveRaiseEmployees() {
 	try {
-	    RaisesService.updateRaiseAndEmployees(annualRaise, addedRaiseEmployees, deletedRaiseEmployees);
+	    RaisesService.updateRaiseAndEmployees(annualRaise, addedRaiseEmployees, deletedRaiseEmployees, null);
 	} catch (BusinessException e) {
 	    e.printStackTrace();
 	}

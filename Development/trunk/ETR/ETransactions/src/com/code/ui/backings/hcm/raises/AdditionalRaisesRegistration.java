@@ -144,7 +144,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	    if (addAdminFlag) {
 		RaisesService.addAdditionalRaise(raise, deservedEmployeesList);
 	    } else if (modifyAdminFlag) {
-		RaisesService.updateRaiseAndEmployees(raise, addedEmployeesList, deletedEmployeesList);
+		RaisesService.updateRaiseAndEmployees(raise, addedEmployeesList, deletedEmployeesList, null);
 	    }
 	    if (!approveAdminFlag)
 		super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
