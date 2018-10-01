@@ -10,7 +10,7 @@
 		//<![CDATA[
 		function getEmployee(contextPath) {
 			deservedEmpsForAnnualRaiseMiniSearch(contextPath,
-					'handleEmpMiniSearhResult(ret)', #{annualRaiseRegistration.annualRaise.decisionNumber}, #{annualRaiseRegistration.annualRaise.decisionDateString});
+					'handleEmpMiniSearhResult(ret)',#{annualRaiseRegistration.annualRaise.decisionDateString}, #{annualRaiseRegistration.annualRaise.decisionNumber});
 		}
 
 		function handleEmpMiniSearhResult(ret) {
@@ -208,11 +208,11 @@
 															</rich:column>
 															<rich:column>
 																<f:facet name="header">#{msgs.label_job}</f:facet>
-																<h:outputText value="#{raiseEmp.jobDesc}" />
+																<h:outputText value="#{raiseEmp.empJobName}" />
 															</rich:column>
 															<rich:column>
 																<f:facet name="header">#{msgs.label_rank}</f:facet>
-																<h:outputText value="#{raiseEmp.rankDesc}" />
+																<h:outputText value="#{raiseEmp.empRankDesc}" />
 															</rich:column>
 
 															<rich:column>
@@ -221,14 +221,14 @@
 															</rich:column>
 															<rich:column>
 																<f:facet name="header">#{msgs.label_exclusionReason}</f:facet>
-																<h:outputText rendered="#{raiseEmp.raiseEmployeeType ==1} " value="#{msgs.label_deserved_employees}"/>
-																<h:outputText rendered="#{raiseEmp.raiseEmployeeType ==2} " value="#{msgs.label_excluded_employees_for_end_of_ladder}"/>
-																<h:outputText rendered="#{raiseEmp.raiseEmployeeType ==3}" value="#{msgs.label_excluded_employees_for_another_reason}"/>
-																<h:outputText rendered="#{raiseEmp.raiseEmployeeType ==4} " value="#{msgs.label_not_deserved_employees}"/>
+																<h:outputText rendered="#{raiseEmp.empDeservedFlag ==1} " value="#{msgs.label_eligible}"/>
+																<h:outputText rendered="#{raiseEmp.empDeservedFlag ==2} " value="#{msgs.label_excludedForEndOfLadder}"/>
+																<h:outputText rendered="#{raiseEmp.empDeservedFlag ==3}" value="#{msgs.label_excludedForAnotherReason}"/>
+																<h:outputText rendered="#{raiseEmp.empDeservedFlag ==4} " value="#{msgs.label_notDeserved}"/>
 															</rich:column>
 															<rich:column>
 																<f:facet name="header">#{msgs.label_anotherReason}</f:facet>
-																<h:inputText value="#{raiseEmp.exclusionReason}"  readonly="#{annualRaiseRegistration.deservedFlag!=3}"/>
+																<h:inputText value="#{raiseEmp.exclusionReason}"  readonly="#{raiseEmp.empDeservedFlag !=3}"/>
 															</rich:column>
 															<rich:column>
 																<f:facet name="header">#{msgs.label_exclusionCancellation}</f:facet>
