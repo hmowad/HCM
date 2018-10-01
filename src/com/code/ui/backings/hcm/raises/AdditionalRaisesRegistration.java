@@ -72,8 +72,8 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	    statusBuilder.append(",");
 	    statusBuilder.append(EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode());
 	    statusIds = statusBuilder.toString();
-	    raiseId = Long.parseLong(getRequest().getParameter("raiseId"));
-	    if (raiseId == null) {
+
+	    if (getRequest().getParameter("raiseId") == null) {
 		addAdminFlag = true;
 		raise = RaisesService.constructRaise(RaiseTypesEnum.ADDITIONAL.getCode());
 		deservedEmployeesList = new ArrayList<RaiseEmployeeData>();
@@ -82,6 +82,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 		if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ADDITIONAL_RAISES_REGISTERATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ADDITIONAL_RAISE.getCode()))
 		    approveAdminFlag = true;
 	    } else {
+		raiseId = Long.parseLong(getRequest().getParameter("raiseId"));
 		raise = RaisesService.getRaiseById(raiseId);
 		deservedEmployeesList = RaisesService.getRaiseEmployeeByRaiseId(raiseId);
 		categoryDesc = CommonService.getCategoryById(raise.getCategoryId()).getDescription();
