@@ -154,7 +154,8 @@
 							</rich:column>
 							<rich:column style="width : 5%">
 								<f:facet name="header">
-									<h:outputText value="#{(row.raiseCategoryId == 1 or row.raiseCategoryId ==2) ? msgs.label_rank:msgs.label_personRank}" />
+									<h:outputText rendered="#{row.raiseCategoryId == 1 or row.raiseCategoryId == 2}" value="#{msgs.label_rank}" />
+									<h:outputText rendered="#{row.raiseCategoryId != 1 and row.raiseCategoryId != 2}" value="#{msgs.label_personRank}" />
 								</f:facet>
 								<h:outputText value="#{row.empRankDesc}" />
 							</rich:column>
