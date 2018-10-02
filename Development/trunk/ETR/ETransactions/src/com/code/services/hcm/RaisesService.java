@@ -744,7 +744,7 @@ public class RaisesService extends BaseService {
 	if (deservedFlag == RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode())
 	    transaction.setExclusionReason(exclusionReason);
 
-	if (raise.getType().intValue() == RaiseTypesEnum.ANNUAL.getCode())
+	if (raise.getType().intValue() == RaiseTypesEnum.ANNUAL.getCode() && deservedFlag == RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode())
 	    transaction.setEmpNewDegreeId(emp.getDegreeId() + 1);
 	else
 	    transaction.setEmpNewDegreeId(newDegreeId);
@@ -803,25 +803,42 @@ public class RaisesService extends BaseService {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 
-	List<EmployeeData> deserved = getDeservedEmployees(raise.getId(), raise.getExecutionDate());
-	List<EmployeeData> excluded = getExcludedEmployeesForEndOfLadder(raise.getId(), raise.getExecutionDate());
-	List<RaiseEmployeeData> anotherExcluded = getRaiseEmployeeByRaiseId(raise.getId());
+	List<RaiseEmployeeData> deservedEmployees = new ArrayList<>();
+	List<RaiseEmployeeData> notDeservedEmployees = new ArrayList<>();
+	List<RaiseEmployeeData> excludedForAnotherEmployees = new ArrayList<>();
+	List<RaiseEmployeeData> endOfLadderEmployees = new ArrayList<>();
+	List<RaiseEmployeeData> allEmployees = getRaiseEmployeeByRaiseId(raise.getId());
+	for (RaiseEmployeeData raiseEmp : allEmployees) {
+	    if (raiseEmp.getEmpDeservedFlag() == RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode()) // 1
+		deservedEmployees.add(raiseEmp);
+	    else if (raiseEmp.getEmpDeservedFlag() == RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode()) // 2
+		endOfLadderEmployees.add(raiseEmp);
+	    else if (raiseEmp.getEmpDeservedFlag() == RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode()) // 4
+		excludedForAnotherEmployees.add(raiseEmp);
+	    else // excluded for another reason //3
+		notDeservedEmployees.add(raiseEmp);
+	}
 
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
-	    for (EmployeeData raiseEmployee : deserved) {
-		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), raiseEmployee.getDegreeId() + 1, null);
+	    for (RaiseEmployeeData raiseEmployee : deservedEmployees) {
+		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), raiseEmployee.getEmpDegreeId() + 1, null);
 		addRaiseTransaction(transaction, session);
 		doRaiseEffect(transaction, session);
 	    }
-	    for (EmployeeData raiseEmployee : excluded) {
-		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode(), raiseEmployee.getDegreeId(), null);
+	    for (RaiseEmployeeData raiseEmployee : notDeservedEmployees) {
+		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.NOT_DESERVED_EMPLOYEES.getCode(), raiseEmployee.getEmpDegreeId(), null);
 		addRaiseTransaction(transaction, session);
 
 	    }
-	    for (RaiseEmployeeData raiseEmployee : anotherExcluded) {
-		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode(), raiseEmployee.getEmpNewDegreeId(), raiseEmployee.getExclusionReason());
+	    for (RaiseEmployeeData raiseEmployee : excludedForAnotherEmployees) {
+		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode(), raiseEmployee.getEmpDegreeId(), raiseEmployee.getExclusionReason());
+		addRaiseTransaction(transaction, session);
+
+	    }
+	    for (RaiseEmployeeData raiseEmployee : endOfLadderEmployees) {
+		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode(), raiseEmployee.getEmpDegreeId(), raiseEmployee.getExclusionReason());
 		addRaiseTransaction(transaction, session);
 
 	    }
@@ -846,7 +863,7 @@ public class RaisesService extends BaseService {
     private static void doRaiseEffect(RaiseTransactionData transaction, CustomSession session) throws BusinessException {
 	if (transaction.getEffectFlag().intValue() == FlagsEnum.ON.getCode()) {
 	    if (transaction.getRaiseType().intValue() == RaiseTypesEnum.ANNUAL.getCode()) {
-		EmployeeData emp = EmployeesService.getEmployeeData(transaction.getId());
+		EmployeeData emp = EmployeesService.getEmployeeData(transaction.getEmpId());
 		emp.setLastAnnualRaiseDate(transaction.getRaiseExecutionDate());
 		emp.getEmployee().setDegreeId(transaction.getEmpNewDegreeId());
 		EmployeesService.updateEmployee(emp, session);

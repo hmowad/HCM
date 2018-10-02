@@ -98,7 +98,7 @@ import com.code.services.util.HijriDateService;
 			" and (ed.statusId between 15 and 45)" +
 			" and (r.categoryId = ed.categoryId)" +
 			" and (ed.degreeId <> (select s.degreeId from PayrollSalary s " +
-			" where s.rankId = :P_RANK_ID " +
+			" where s.rankId = ed.rankId " +
 			" and s.degreeId = (select max(m.degreeId) from PayrollSalary m where m.rankId = ed.rankId)))" +
 			" and (r.executionDate >" +
 			" (select CASE WHEN max(rt.executionDate) IS NULL " +
