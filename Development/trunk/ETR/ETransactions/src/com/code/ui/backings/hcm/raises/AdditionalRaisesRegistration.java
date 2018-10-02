@@ -52,7 +52,6 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	    categories = CommonService.getAllCategories();
 	    degrees = PayrollsService.getAllDegrees();
 	    physicalRegionId = loginEmpData.getPhysicalRegionId();
-	    setScreenTitle(getMessage("title_additionalRaisesRegistration"));
 	    addedEmployeesList = new ArrayList<RaiseEmployeeData>();
 	    deletedEmployeesList = new ArrayList<RaiseEmployeeData>();
 	    StringBuilder statusBuilder = new StringBuilder();
@@ -72,8 +71,9 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	    statusBuilder.append(",");
 	    statusBuilder.append(EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode());
 	    statusIds = statusBuilder.toString();
-
+	    // raiseId = (long) 26;
 	    if (getRequest().getParameter("raiseId") == null) {
+		setScreenTitle(getMessage("title_additionalRaisesRegistration"));
 		addAdminFlag = true;
 		raise = RaisesService.constructRaise(RaiseTypesEnum.ADDITIONAL.getCode());
 		deservedEmployeesList = new ArrayList<RaiseEmployeeData>();
@@ -87,10 +87,12 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 		deservedEmployeesList = RaisesService.getRaiseEmployeeByRaiseId(raiseId);
 		categoryDesc = CommonService.getCategoryById(raise.getCategoryId()).getDescription();
 		if (raise.getStatus() == RaiseStatusEnum.INITIAL.getCode()) {
+		    setScreenTitle(getMessage("title_additionalRaisesModification"));
 		    modifyAdminFlag = true;
 		    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ADDITIONAL_RAISES_REGISTERATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ADDITIONAL_RAISE.getCode()))
 			approveAdminFlag = true;
-		}
+		} else
+		    setScreenTitle(getMessage("title_additionalRaisesView"));
 	    }
 	} catch (
 
