@@ -8,6 +8,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.Rank;
+import com.code.enums.RanksEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.util.CommonService;
 import com.code.ui.backings.base.BaseBacking;
@@ -56,7 +57,13 @@ public class RanksMiniSearch extends BaseBacking implements Serializable {
 		searchRankList = CommonService.getRanks(searchRankFullName, new Long[] { category });
 		break;
 	    case 2: /* Get all ranks except PRIME_SERGEANTS and STUDENT_SOLDIER - this mode is made for promotions */
-		searchRankList = CommonService.getRanksExceptPrimeSergantAndStudentSoldier(searchRankFullName, new Long[] { category });
+		List<Rank> allRanksList = CommonService.getRanks(searchRankFullName, new Long[] { category });
+		searchRankList = new ArrayList<>();
+		for (Rank rank : allRanksList) {
+		    if (!(rank.getId() == RanksEnum.PRIME_SERGEANTS.getCode() || rank.getId() == RanksEnum.STUDENT_SOLDIER.getCode())) {
+			searchRankList.add(rank);
+		    }
+		}
 		break;
 	    }
 	} catch (BusinessException e) {
