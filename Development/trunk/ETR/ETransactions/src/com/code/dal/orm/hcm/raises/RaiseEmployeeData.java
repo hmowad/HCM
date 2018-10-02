@@ -14,10 +14,10 @@ import javax.persistence.Transient;
 import com.code.dal.orm.BaseEntity;
 import com.code.services.util.HijriDateService;
 
-//hcm_raises_getRaiseEmployeesByRaiseId -> execluded for another reason
 @NamedQueries({
 	@NamedQuery(name = "hcm_raises_getRaiseEmployeesByRaiseId",
 		query = "select r from RaiseEmployeeData r where r.raiseId = :P_RAISE_ID"),
+
 	@NamedQuery(name = "hcm_raiseEmployeeData_getAnnualRaiseDeservedEmployees",
 		query = "select r from RaiseEmployeeData r " +
 			" where (:P_SOCIAL_ID = '-1' or r.empSocialID = :P_SOCIAL_ID) " +
