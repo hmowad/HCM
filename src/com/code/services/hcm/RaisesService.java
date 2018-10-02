@@ -27,8 +27,6 @@ import com.code.services.util.HijriDateService;
 
 public class RaisesService extends BaseService {
 
-    private static int x = 0;
-
     /**
      * private constructor to prevent instantiation
      * 
