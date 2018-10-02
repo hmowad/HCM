@@ -17,7 +17,6 @@ import com.code.dal.orm.hcm.organization.Region;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
-import com.code.enums.RanksEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.services.BaseService;
@@ -242,17 +241,6 @@ public class CommonService extends BaseService {
     /* The description is not used in any reference also we can manipulate the map and get the needed values instead of loading from DB */
     public static List<Rank> getRanks(String description, Long[] categoriesIds) throws BusinessException {
 	return searchRanks(FlagsEnum.ALL.getCode(), description, categoriesIds);
-    }
-
-    public static List<Rank> getRanksExceptPrimeSergantAndStudentSoldier(String description, Long[] categoriesIds) throws BusinessException {
-	List<Rank> searchList = searchRanks(FlagsEnum.ALL.getCode(), description, categoriesIds);
-	List<Rank> ranksListExceptPrimeSergantAndStudentSoldier = new ArrayList<>();
-	for (Rank rank : searchList) {
-	    if (!(rank.getId() == RanksEnum.PRIME_SERGEANTS.getCode() || rank.getId() == RanksEnum.STUDENT_SOLDIER.getCode())) {
-		ranksListExceptPrimeSergantAndStudentSoldier.add(rank);
-	    }
-	}
-	return ranksListExceptPrimeSergantAndStudentSoldier;
     }
 
     public static Rank getRankById(long id) {

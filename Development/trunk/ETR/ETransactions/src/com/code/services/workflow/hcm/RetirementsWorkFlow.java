@@ -492,6 +492,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	wfDisclaimerDetail.setManagerRankDesc(employeeData.getRankDesc());
 	wfDisclaimerDetail.setManagerUnitFullName(employeeData.getPhysicalUnitFullName());
 	wfDisclaimerDetail.setInstanceId(instanceId);
+	wfDisclaimerDetail.setClaimedFlag(FlagsEnum.OFF.getCode());
 	return wfDisclaimerDetail;
     }
 

@@ -9,6 +9,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.code.dal.orm.BaseEntity;
+import com.code.enums.FlagsEnum;
 
 @Entity
 @Table(name = "HCM_RET_DISCLAIMER_TRN_DTLS")
@@ -104,6 +105,8 @@ public class DisclaimerTransactionDetail extends BaseEntity {
     }
 
     public void setClaimedFlag(Integer claimedFlag) {
+	if (claimedFlag == null)
+	    claimedFlag = FlagsEnum.OFF.getCode();
 	this.claimedFlag = claimedFlag;
     }
 
