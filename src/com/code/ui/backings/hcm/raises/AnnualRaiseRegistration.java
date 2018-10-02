@@ -16,6 +16,7 @@ import com.code.enums.RaiseEmployeesTypesEnum;
 import com.code.enums.RaiseStatusEnum;
 import com.code.enums.RaiseTypesEnum;
 import com.code.exceptions.BusinessException;
+import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.RaisesService;
 import com.code.services.security.SecurityService;
 import com.code.services.util.CommonService;
@@ -41,6 +42,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     private boolean switchPanels;
     private Long raiseIdParam;
     private final int pageSize = 10;
+    private Long selectedEmpId;
 
     public AnnualRaiseRegistration() {
 
@@ -94,11 +96,18 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     }
 
     public void addExcludedForAnotherReason() {
-	if (!raiseEmployees.contains(raiseEmployee)) {
-	    raiseEmployee.setEmpDeservedFlag(RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode());
-	    raiseEmployees.add(raiseEmployee);
-	    addedRaiseEmployees.add(raiseEmployee);
+	try {
+	    RaiseEmployeeData newExcludedEmployee = RaisesService.constructRaiseEmployeeData(EmployeesService.getEmployeeData(selectedEmpId), null, RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode());
+	    raiseEmployees.add(newExcludedEmployee);
+	    addedRaiseEmployees.add(newExcludedEmployee);
+	} catch (BusinessException e) {
+	    setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
+	// if (!raiseEmployees.contains(raiseEmployee)) {
+	// raiseEmployee.setEmpDeservedFlag(RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode());
+	// raiseEmployees.add(raiseEmployee);
+	// addedRaiseEmployees.add(raiseEmployee);
+	// }
     }
 
     public void deleteExcludedForAnotherReason() {
@@ -221,6 +230,14 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
     public int getPageSize() {
 	return pageSize;
+    }
+
+    public Long getSelectedEmpId() {
+	return selectedEmpId;
+    }
+
+    public void setSelectedEmpId(Long selectedEmpId) {
+	this.selectedEmpId = selectedEmpId;
     }
 
 }
