@@ -8,17 +8,17 @@
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
 	<script type="text/javascript">
 		//<![CDATA[
-		function getEmployee(contextPath) {
-			deservedEmpsForAnnualRaiseMiniSearch(contextPath,
-					'handleEmpMiniSearhResult(ret)',#{annualRaiseRegistration.annualRaise.decisionDateString}, #{annualRaiseRegistration.annualRaise.decisionNumber});
+		function getEmployee(){
+			var decisionDateString = document.getElementById('annualRaiseRegistrationFormId:raiseDecisionDateStringId').value;
+			var decisionNumber = document.getElementById('annualRaiseRegistrationFormId:raiseDecisionNumberId').value;
+			deservedEmpsForAnnualRaiseMiniSearch('#{request.contextPath}',
+					'handleEmpMiniSearhResult(ret)', decisionDateString, decisionNumber);
 		}
 
 		function handleEmpMiniSearhResult(ret) {
 			if (ret != null) {
-				document
-						.getElementById('annualRaiseRegistrationFormId:employeeIDId').value = ret[0];
-				document.getElementById(
-						'annualRaiseRegistrationFormId:searchEmpBtnId').click();
+				document.getElementById('annualRaiseRegistrationFormId:employeeIDId').value = ret[0];
+				document.getElementById('annualRaiseRegistrationFormId:searchEmpBtnId').click();
 
 			}
 		}
@@ -176,13 +176,13 @@
 												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 													<tr>
 														<td>
-															<h:outputText id="employeeNameId" value="#{annualRaiseRegistration.raiseEmployee.empName}" />
-															<h:inputHidden id="employeeIDId" value="#{annualRaiseRegistration.raiseEmployee.empId}" />
-															<h:commandButton id="addEmpId" value="#{msgs.label_add}" styleClass="btn_normal" onclick="getEmployee('#{request.contextPath}'); return false;" />
+															<h:commandButton id="addEmpId" value="#{msgs.label_add}" styleClass="btn_normal" onclick="getEmployee(); return false;" />
 															<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{annualRaiseRegistration.addExcludedForAnotherReason()}">
-																<f:ajax execute="annualRaiseRegistrationFormId:employeeIDId" render="annualRaiseRegistrationFormId:employeeNameId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																<f:ajax execute="annualRaiseRegistrationFormId:employeeIDId annualRaiseRegistrationFormId:annualRaiseEmpTableId" render="annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" />
 															</h:commandButton>
-
+															<h:inputHidden id="employeeIDId" value="#{annualRaiseRegistration.selectedEmpId}" />
+															<h:inputHidden id="raiseDecisionDateStringId" value="#{annualRaiseRegistration.annualRaise.decisionDateString}" />
+															<h:inputHidden id="raiseDecisionNumberId" value="#{annualRaiseRegistration.annualRaise.decisionNumber}" />
 														</td>
 													</tr>
 
