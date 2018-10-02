@@ -350,10 +350,10 @@ function empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode
     unMaskOnPopupClose(childWindow);
 }
 
-function deservedEmpsForAnnualRaiseMiniSearch(contextPath, miniSearchReturnHandler, decisionDate, decisionNumber){
+function deservedEmpsForAnnualRaiseMiniSearch(contextPath, miniSearchReturnHandler, decisionDateString, decisionNumber){
 	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
 	maskOpenerScreen();
-	var childWindow = window.open(contextPath+'/MiniSearch/DeservedEmpsForAnnualRaiseMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&decisionDate='+decisionDate+'&decisionNumber='+decisionNumber, null, specsStr);
+	var childWindow = window.open(contextPath+'/MiniSearch/DeservedEmpsForAnnualRaiseMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&decisionDateString='+decisionDateString+'&decisionNumber='+decisionNumber, null, specsStr);
     unMaskOnPopupClose(childWindow);
 }
 
