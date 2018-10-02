@@ -204,7 +204,7 @@
 															</rich:column>
 															<rich:column>
 																<f:facet name="header">#{msgs.label_name}</f:facet>
-																<h:outputText value="#{allocationEmp.name}" />
+																<h:outputText value="#{raiseEmp.empName}" />
 															</rich:column>
 															<rich:column>
 																<f:facet name="header">#{msgs.label_job}</f:facet>
@@ -232,7 +232,7 @@
 															</rich:column>
 															<rich:column>
 																<f:facet name="header">#{msgs.label_exclusionCancellation}</f:facet>
-																<h:commandButton value="#{msgs.fa_times}" action="#{annualRaiseRegistration.deleteExcludedForAnotherReason(raiseEmp)}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="return confirm('#{msgs.q_delete}');">
+																<h:commandButton rendered="{raiseEmp.empDeservedFlag==3 and modifyAdminFlag}" value="#{msgs.fa_times}" action="#{annualRaiseRegistration.deleteExcludedForAnotherReason(raiseEmp)}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="return confirm('#{msgs.q_delete}');">
 																	<f:ajax render="annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 																</h:commandButton>
 															</rich:column>

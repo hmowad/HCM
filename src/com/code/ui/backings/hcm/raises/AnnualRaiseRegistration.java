@@ -43,7 +43,9 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     private final int pageSize = 10;
 
     public AnnualRaiseRegistration() {
-	// raiseIdParam = Long.parseLong(getRequest().getParameter("raiseId"));
+
+	if (getRequest().getParameter("raiseId") != null)
+	    raiseIdParam = Long.parseLong(getRequest().getParameter("raiseId"));
 	// raiseIdParam = (long) 33;
 	if (raiseIdParam == null) {
 	    annualRaise = RaisesService.constructRaise(RaiseTypesEnum.ANNUAL.getCode());
