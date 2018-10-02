@@ -32,15 +32,15 @@ public class DeservedEmpsForAnnualRaiseMiniSearch extends BaseBacking implements
     public DeservedEmpsForAnnualRaiseMiniSearch() {
 	deservedFlag = RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode();
 	searchEmployeeList = new ArrayList<RaiseEmployeeData>();
-	if (getRequest().getParameter("decisionDate") != null)
-	    decisionDate = getRequest().getParameter("decisionDate");
+	if (getRequest().getParameter("decisionDateString") != null)
+	    decisionDate = getRequest().getParameter("decisionDateString");
 	if (getRequest().getParameter("decisionNumber") != null)
 	    decisionNumber = getRequest().getParameter("decisionNumber");
     }
 
     public void searchEmployee() {
 	try {
-	    int militaryNumber = (searchMilitaryNumber == null || searchMilitaryNumber.isEmpty()) ? FlagsEnum.ALL.getCode() : Integer.parseInt(searchMilitaryNumber);
+	    Long militaryNumber = (long) ((searchMilitaryNumber == null || searchMilitaryNumber.isEmpty()) ? FlagsEnum.ALL.getCode() : Integer.parseInt(searchMilitaryNumber));
 	    searchEmployeeList = RaisesService.getAnnualRaiseDeservedEmployees(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, militaryNumber, decisionDate, decisionNumber, deservedFlag);
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
