@@ -5,6 +5,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -12,6 +14,11 @@ import com.code.dal.audit.DeletableAuditEntity;
 import com.code.dal.audit.InsertableAuditEntity;
 import com.code.dal.audit.UpdatableAuditEntity;
 import com.code.dal.orm.AuditEntity;
+
+@NamedQueries({
+	@NamedQuery(name = "hcm_raises_deleteRaiseEmployeesByRaiseId",
+		query = "delete from RaiseEmployee r where r.raiseId = :P_RAISE_ID")
+})
 
 @Entity
 @Table(name = "HCM_RAISES_EMPLOYEES")
