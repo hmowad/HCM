@@ -16,7 +16,6 @@ import com.code.enums.RaiseEmployeesTypesEnum;
 import com.code.enums.RaiseStatusEnum;
 import com.code.enums.RaiseTypesEnum;
 import com.code.exceptions.BusinessException;
-import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.RaisesService;
 import com.code.services.security.SecurityService;
 import com.code.services.util.CommonService;
@@ -30,32 +29,41 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     // private long category;
 
     private Raise annualRaise;
+    private Raise loadedAnnualRaise;
     private List<Category> categoriesList;
     private List<RaiseEmployeeData> raiseEmployees;
     private RaiseEmployeeData raiseEmployee;
-    private List<RaiseEmployeeData> addedRaiseEmployees; // excluded for another reason
-    private List<RaiseEmployeeData> deletedRaiseEmployees; // excluded for another reason
+    private List<RaiseEmployeeData> updateRaiseEmployees;
     private int empPrintType;
     private boolean approveAdminFlag;
     private boolean modifyAdminFlag;
     private boolean viewAdminFlag;
     private boolean switchPanels;
     private Long raiseIdParam;
+    private String decisionDateString;
+    private String decisionNumber;
     private final int pageSize = 10;
     private Long selectedEmpId;
 
     public AnnualRaiseRegistration() {
-
+	setScreenTitle(getMessage("title_annualRaiseAddition"));
 	if (getRequest().getParameter("raiseId") != null)
 	    raiseIdParam = Long.parseLong(getRequest().getParameter("raiseId"));
-	// raiseIdParam = (long) 33;
+
 	if (raiseIdParam == null) {
 	    annualRaise = RaisesService.constructRaise(RaiseTypesEnum.ANNUAL.getCode());
+
 	    modifyAdminFlag = true;
+	    try {
+		if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ANNUAL_RAISES_REGISTRATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ANNUAL_RAISE_REGISTRATION.getCode()))
+		    approveAdminFlag = true;
+	    } catch (BusinessException e) {
+		e.printStackTrace();
+	    }
 	} else {
 	    try {
 		annualRaise = RaisesService.getRaiseById(raiseIdParam);
-		if (annualRaise.getType() == RaiseStatusEnum.INITIAL.getCode()) {
+		if (annualRaise.getStatus() == RaiseStatusEnum.INITIAL.getCode()) {
 		    modifyAdminFlag = true;
 		    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ANNUAL_RAISES_REGISTRATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ANNUAL_RAISE_REGISTRATION.getCode()))
 			approveAdminFlag = true;
@@ -68,8 +76,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
 	categoriesList = CommonService.getAllCategories();
 	raiseEmployees = new ArrayList<>();
-	addedRaiseEmployees = new ArrayList<>();
-	deletedRaiseEmployees = new ArrayList<>();
+	updateRaiseEmployees = new ArrayList<>();
 	raiseEmployee = new RaiseEmployeeData();
 	switchPanels = false;
 	empPrintType = RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode();
@@ -82,12 +89,21 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 	    // a new raise is created for the first time
 	    if (annualRaise.getId() == null) {
 		RaisesService.addRaise(annualRaise);
-		raiseEmployees = RaisesService.saveAllEmployeesAndGetEmployeesEndOfLadder(annualRaise, annualRaise.getExecutionDate());
+		raiseEmployees = RaisesService.generateRaiseEmployees(annualRaise, annualRaise.getExecutionDate());
 	    }
 	    // the raise is updated
-	    else {
+	    else if (modifyAdminFlag) {
+		// check if there are any changes in execution date or category
+		loadedAnnualRaise = RaisesService.getRaiseById(annualRaise.getId());
 		RaisesService.updateRaise(annualRaise);
-		raiseEmployees = RaisesService.manipulationRaiseEmployees(annualRaise, annualRaise.getExecutionDate());
+		if ((loadedAnnualRaise.getCategoryId() == annualRaise.getCategoryId()) && (loadedAnnualRaise.getExecutionDateString().equals(annualRaise.getExecutionDateString())))
+		    raiseEmployees = RaisesService.getEndOfLadderAndExcludedForAnotherReason(annualRaise.getId());
+		else
+		    raiseEmployees = RaisesService.regenerateRaiseEmployees(annualRaise, annualRaise.getExecutionDate());
+	    }
+	    // view mode is on
+	    else {
+		raiseEmployees = RaisesService.getEndOfLadderAndExcludedForAnotherReason(annualRaise.getId());
 	    }
 	} catch (BusinessException e) {
 	    e.printStackTrace();
@@ -96,50 +112,40 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     }
 
     public void addExcludedForAnotherReason() {
+
 	try {
-	    RaiseEmployeeData newExcludedEmployee = RaisesService.constructRaiseEmployeeData(EmployeesService.getEmployeeData(selectedEmpId), null, RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode());
-	    raiseEmployees.add(newExcludedEmployee);
-	    addedRaiseEmployees.add(newExcludedEmployee);
+	    raiseEmployee = RaisesService.getRaiseEmployeeByRaiseId(annualRaise.getId(), selectedEmpId).get(0);
+	    if (!raiseEmployees.contains(raiseEmployee)) {
+		raiseEmployee.setEmpDeservedFlag(RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode());
+		raiseEmployees.add(raiseEmployee);
+		updateRaiseEmployees.add(raiseEmployee);
+	    }
 	} catch (BusinessException e) {
-	    setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    e.printStackTrace();
 	}
-	// if (!raiseEmployees.contains(raiseEmployee)) {
-	// raiseEmployee.setEmpDeservedFlag(RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode());
-	// raiseEmployees.add(raiseEmployee);
-	// addedRaiseEmployees.add(raiseEmployee);
-	// }
+
     }
 
     public void deleteExcludedForAnotherReason() {
 	raiseEmployees.remove(raiseEmployee);
-	deletedRaiseEmployees.add(raiseEmployee);
+	raiseEmployee.setEmpDeservedFlag(RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode());
+	updateRaiseEmployees.add(raiseEmployee);
     }
 
     // press save button
     public void saveRaiseEmployees() {
 	try {
-	    RaisesService.updateRaiseAndEmployees(annualRaise, addedRaiseEmployees, deletedRaiseEmployees, null);
-	} catch (BusinessException e) {
-	    e.printStackTrace();
-	}
-    }
-
-    public void search() {
-
-	try {
-	    raiseEmployees = RaisesService.getRaiseEmployeeByRaiseId(annualRaise.getId());
+	    RaisesService.updateRaiseEmployeesList(updateRaiseEmployees);
 	} catch (BusinessException e) {
 	    e.printStackTrace();
 	}
     }
 
     public void approveRaise() {
-
-	saveRaiseEmployees();
 	try {
+	    saveRaiseEmployees();
 	    RaisesService.approveAnnualRaise(annualRaise, loginEmpData.getEmpId());
 	} catch (BusinessException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
     }
@@ -186,6 +192,22 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
     public void setAnnualRaise(Raise annualRaise) {
 	this.annualRaise = annualRaise;
+    }
+
+    public String getDecisionDateString() {
+	return decisionDateString;
+    }
+
+    public void setDecisionDateString(String decisionDateString) {
+	this.decisionDateString = decisionDateString;
+    }
+
+    public String getDecisionNumber() {
+	return decisionNumber;
+    }
+
+    public void setDecisionNumber(String decisionNumber) {
+	this.decisionNumber = decisionNumber;
     }
 
     public int getEmpPrintType() {
