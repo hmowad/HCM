@@ -62,6 +62,8 @@ public enum QueryNamesEnum {
     HCM_RAISE_TRANSACTION_DATA_GET_EMPLOYEES_BY_DESERVED_FLAG("hcm_raiseTransactionData_getRaiseEmployeesByDeservedFlag"),
     HCM_RAISES_GET_ANNUAL_RAISE_DESERVED_EMPLOYEES("hcm_raiseEmployeeData_getAnnualRaiseDeservedEmployees"),
     HCM_RAISES_VALIDATE_RAISE("hcm_raises_validateRaise"),
+    HCM_RAISES_END_OF_LADDER_EXCLUDED_FOR_ANOTHER_REASON_EMPLOYEES("hcm_raises_getEndOfLadderAndExcludedForAnotherReasonRaiseEmployeesByRaiseId"),
+    HCM_RAISES_GET_RAISE_EMPLOYEE_BY_RAISE_ID("hcm_raises_getRaiseEmployeeByRaiseId"),
 
     /* ************************************************ Navy Formations ********************************************** */
 

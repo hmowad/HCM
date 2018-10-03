@@ -28,7 +28,17 @@ import com.code.services.util.HijriDateService;
 			" and (:P_DECISION_NUMBER = '-1' or r.raiseDecisionNumber = :P_DECISION_NUMBER) " +
 			" and (:P_DECISION_DATE = '-1' or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') = r.raiseDecisionDate) " +
 			" and r.empDeservedFlag = :P_DESERVED_FLAG " +
-			" order by r.empNumber, r.empName ")
+			" order by r.empNumber, r.empName "),
+	@NamedQuery(name = "hcm_raises_getEndOfLadderAndExcludedForAnotherReasonRaiseEmployeesByRaiseId",
+		query = "select r from RaiseEmployeeData r " +
+			" where r.raiseId = :P_RAISE_ID " +
+			" and r.empDeservedFlag in (3 , 4) " +
+			" order by r.empDeservedFlag, r.empNumber "),
+	@NamedQuery(name = "hcm_raises_getRaiseEmployeeByRaiseId",
+		query = "select r from RaiseEmployeeData r " +
+			" where r.raiseId = :P_RAISE_ID " +
+			" and r.empId = :P_RAISE_EMP_ID "),
+
 })
 @Entity
 @Table(name = "HCM_VW_RAISES_EMPLOYEES")
