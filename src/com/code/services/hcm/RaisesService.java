@@ -180,8 +180,8 @@ public class RaisesService extends BaseService {
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
-	    List<RaiseEmployeeData> raiseEmployeeData = getRaiseEmployeeByRaiseId(raise.getId());
-	    deleteRaiseEmployees(raiseEmployeeData, session);
+
+	    deleteRaiseEmployeesByRaiseId(raise.getId(), session);
 	    DataAccess.deleteEntity(raise, session);
 
 	    if (!isOpenedSession)
@@ -571,7 +571,8 @@ public class RaisesService extends BaseService {
     public static List<RaiseEmployeeData> regenerateRaiseEmployees(Raise raise, Date executionDate) {
 	try {
 	    // delete the old records in DB
-	    deleteRaiseEmployees(getRaiseEmployeeByRaiseId(raise.getId()));
+	    // deleteRaiseEmployees(getRaiseEmployeeByRaiseId(raise.getId()));
+	    deleteRaiseEmployeesByRaiseId(raise.getId(), null);
 	    // re-calculate all employees
 	    return generateRaiseEmployees(raise, executionDate);
 	} catch (BusinessException e) {
@@ -643,6 +644,17 @@ public class RaisesService extends BaseService {
 	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.equals("")) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
 	    qParams.put("P_DESERVED_FLAG", deservedFlag);
 	    return DataAccess.executeNamedQuery(RaiseEmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_ANNUAL_RAISE_DESERVED_EMPLOYEES.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static void deleteRaiseEmployeesByRaiseId(long raiseId, CustomSession session) throws BusinessException {
+	Map<String, Object> qParams = new HashMap<String, Object>();
+	try {
+	    qParams.put("P_RAISE_ID", raiseId);
+	    DataAccess.executeDeleteQuery(QueryNamesEnum.HCM_RAISES_DELETE_RAISE_EMPLOYEES_BY_RAISE_ID.getCode(), qParams, session);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
