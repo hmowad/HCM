@@ -166,6 +166,7 @@ public enum QueryNamesEnum {
     HCM_COUNT_JOBS_BY_UNIT_HKEY_AND_MINOR_SPECS_IDS("hcm_jobData_countJobsByUnitHKeyAndMinorSpecsIds"),
     HCM_GET_JOBS_BY_DECISION_INFO("hcm_jobData_getJobsByDecisionInfo"),
 
+    HCM_COUNT_JOBS_BY_BASIC_JOB_NAME_ID("hcm_job_countJobsByBasicJobNameId"),
     HCM_COUNT_JOBS_BY_UNITS_IDS_AND_CATEGORIES_IDS("hcm_job_countJobsByUnitsIdsAndCategoriesIds"),
     HCM_COUNT_JOBS_BY_SERIALS("hcm_job_countJobsBySerials"),
     HCM_GET_JOBS_SERIALS_WHERE_GAPS_AFTER_THEM("hcm_job_getJobsSerialsWhereGapsAfterThem"),
@@ -174,6 +175,7 @@ public enum QueryNamesEnum {
     HCM_GET_JOBS_DECISIONS("hcm_jobTransaction_getJobsDecisions"),
     /* ****************************************** Job Transactions **************************************************** */
     HCM_GET_JOB_TRANSACTIONS_DATA_BY_JOB_ID("hcm_jobTransactionData_getJobTransactionsByJobId"),
+    HCM_COUNT_JOBS_TRANSACTIONS_BY_BASIC_JOB_NAME_ID("hcm_job_countJobsTransactionsByBasicJobNameId"),
     /* ****************************************** Job Classifications ************************************************* */
     HCM_SEARCH_JOB_CLASSIFICATION("hcm_jobClassification_searchJobClassification"),
     HCM_GET_JOB_CLASSIFICATION_MAJOR_GROUP_DESC("hcm_jobClassification_getJobClassificationMajorGroupDesc"),
@@ -188,6 +190,7 @@ public enum QueryNamesEnum {
     HCM_GET_JOBS_BALANCE_BY_REGIONS_AND_RANKS("hcm_jobsBalanceData_getJobsBalanceDataByRegionsAndRanks"),
     /* ****************************************** WF Jobs ******************************************* */
     WF_GET_RUNNING_JOBS_REQUESTS("wf_job_getRunningJobsRequests"),
+    WF_COUNT_JOBS_REQUESTS_BY_BASIC_JOB_NAME_ID("wf_job_countJobsRequestsByBasicJobNameId"),
     WF_GET_WFJOBS_BY_INSTANCE_ID("wf_jobData_getWFJobsByInstanceId"),
     /* ****************************************** Manpower Needs **************************************************** */
     HCM_GET_MANPOWER_NEED_REQUESTS_AND_STUDIES("hcm_manpowerNeedData_getManpowerNeedsRequestsAndStudies"),
