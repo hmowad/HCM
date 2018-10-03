@@ -40,8 +40,6 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     private boolean viewAdminFlag;
     private boolean switchPanels;
     private Long raiseIdParam;
-    private String decisionDateString;
-    private String decisionNumber;
     private final int pageSize = 10;
     private Long selectedEmpId;
 
@@ -192,22 +190,6 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
     public void setAnnualRaise(Raise annualRaise) {
 	this.annualRaise = annualRaise;
-    }
-
-    public String getDecisionDateString() {
-	return decisionDateString;
-    }
-
-    public void setDecisionDateString(String decisionDateString) {
-	this.decisionDateString = decisionDateString;
-    }
-
-    public String getDecisionNumber() {
-	return decisionNumber;
-    }
-
-    public void setDecisionNumber(String decisionNumber) {
-	this.decisionNumber = decisionNumber;
     }
 
     public int getEmpPrintType() {
