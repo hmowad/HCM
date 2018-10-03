@@ -217,11 +217,11 @@
 												</rich:column>
 												<rich:column>
 													<f:facet name="header">#{msgs.label_otherExcludeReasons}</f:facet>
-													<h:inputText value="#{raiseEmp.exclusionReason}" readonly="#{raiseEmp.empDeservedFlag !=3}" />
+													<h:inputText value="#{raiseEmp.exclusionReason}" readonly="#{raiseEmp.empDeservedFlag !=3 or annualRaiseRegistration.viewAdminFlag}" />
 												</rich:column>
 												<rich:column>
 													<f:facet name="header">#{msgs.label_exclusionCancellation}</f:facet>
-													<h:commandButton rendered="{raiseEmp.empDeservedFlag == 3 and annualRaiseRegistration.modifyAdminFlag}" value="#{msgs.fa_times}" action="#{annualRaiseRegistration.deleteExcludedForAnotherReason(raiseEmp)}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="return confirm('#{msgs.q_delete}');">
+													<h:commandButton rendered="{raiseEmp.empDeservedFlag == 3 and annualRaiseRegistration.modifyAdminFlag}" value="#{msgs.fa_times}" action="#{annualRaiseRegistration.deleteExcludedForAnotherReason(raiseEmp)}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="var r = confirm('#{msgs.q_delete}');if (r == false){return false;}">
 														<f:ajax render="annualRaiseRegistrationFormId:annualRaiseDInfoTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 													</h:commandButton>
 												</rich:column>
@@ -254,12 +254,12 @@
 											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 												<tr>
 													<td >
-														<h:commandButton id="saveId" onclick="return handleOnAction('#{msgs.label_save}');" action="#{annualRaiseRegistration.saveRaiseEmployees()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" style="float: left;" rendered="#{!annualRaiseRegistration.approveAdminFlag}">
-															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														<h:commandButton id="saveId" onclick="return handleOnAction('#{msgs.label_save}');" action="#{annualRaiseRegistration.saveRaiseEmployees()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" style="float: left;" rendered="#{!annualRaiseRegistration.approveAdminFlag and annualRaiseRegistration.modifyAdminFlag}">
+															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
 
 														<h:commandButton id="approvetnId" onclick="return handleOnAction('#{msgs.q_superSign})" action="#{annualRaiseRegistration.approveRaise()}" value="#{msgs.label_saveAndSuperSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.approveAdminFlag}">
-															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
 													</td>
 												</tr>
