@@ -8,7 +8,7 @@
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
 	<script type="text/javascript">   
 		function getUnit(contextPath) {
-			unitsMiniSearch(7, contextPath, 'handleUnitMiniSearchResult(ret)', -1, #{missionsReports.regionId}, -1 , '#{missionsReports.orgUnitHKey}' , 0);
+			unitsMiniSearch(2, contextPath, 'handleUnitMiniSearchResult(ret)', -1, #{missionsReports.regionId}, -1 , -1 , 0);
 		}
 		
 		function handleUnitMiniSearchResult(ret){
@@ -20,8 +20,11 @@
 			}
 		}
 
-		function getEmployee(contextPath) {
-			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 17, -1, -1, -1, -1, -1, '#{missionsReports.orgUnitHKey}' , #{missionsReports.regionId});
+		function getEmployee(contextPath, isAdmin, isManager) {
+			if(isManager)
+				openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 9, -1, -1, -1, -1, -1,#{missionsReports.orgUnitHKey},-1);
+			else if(isAdmin)
+				openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 9, -1, -1, -1, -1, -1, -1 , #{missionsReports.regionId});
 		}
 	
 		function handleEmpMiniSearchResult(ret) {
@@ -107,10 +110,10 @@
 											<th width="15%">#{msgs.label_orgUnit}</th>
 											<td colspan="3">
 												<h:outputText id="unitFullNameId" value="#{missionsReports.orgUnitFullName}" />
+												<h:outputText value=" " />
 												<h:inputHidden id="unitIDHId" value="#{missionsReports.orgUnitId}" />
 												<h:inputHidden id="unitFullNameHId" value="#{missionsReports.orgUnitFullName}" />
 												<h:inputHidden id="unitHKeyHId" value="#{missionsReports.orgUnitHKey}" />
-												<h:outputText value=" " />
 												<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit('#{request.contextPath}'); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
 											</td>
 										</tr>
@@ -121,7 +124,7 @@
 												<h:outputText value=" " />
 												<h:inputHidden id="employeeIDHId" value="#{missionsReports.empId}" />
 												<h:inputHidden id="employeeFullNameHId" value="#{missionsReports.empFullName}" />
-												<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+												<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}' , #{missionsReports.isAdmin} , #{missionsReports.isManager} );return false;" />
 											</td>
 										</tr>
 									</h:panelGroup>
