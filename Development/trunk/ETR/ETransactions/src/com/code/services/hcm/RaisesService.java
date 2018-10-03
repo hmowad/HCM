@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -180,8 +181,8 @@ public class RaisesService extends BaseService {
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
-
-	    deleteRaiseEmployeesByRaiseId(raise.getId(), session);
+	    List<RaiseEmployeeData> raiseEmployeeData = getRaiseEmployeeByRaiseId(raise.getId());
+	    deleteRaiseEmployees(raiseEmployeeData, session);
 	    DataAccess.deleteEntity(raise, session);
 
 	    if (!isOpenedSession)
@@ -408,6 +409,34 @@ public class RaisesService extends BaseService {
 
     }
 
+    public static void addRaiseEmployees(List<RaiseEmployeeData> raiseEmployeeData, CustomSession... useSession) throws BusinessException {
+
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+	    for (RaiseEmployeeData raiseEmp : raiseEmployeeData) {
+		DataAccess.addEntity(raiseEmp.getRaiseEmployee(), session);
+		raiseEmp.setId(raiseEmp.getRaiseEmployee().getId());
+	    }
+	    if (!isOpenedSession)
+		session.commitTransaction();
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
+
     /**
      * Deletes a raiseEmployeeData object from database
      * 
@@ -531,37 +560,39 @@ public class RaisesService extends BaseService {
 
     public static List<RaiseEmployeeData> generateRaiseEmployees(Raise raise, Date executionDate) {
 	List<RaiseEmployeeData> endOfLadderEmpRaiseData = new ArrayList<>();
+	List<RaiseEmployeeData> allRaiseEmployees = new ArrayList<>();
 	try {
-	    boolean endOfLadder = false;
 	    List<RaiseEmployeeData> deservedEmpRaiseData = new ArrayList<>();
 	    List<RaiseEmployeeData> unDeservedEmpRaiseData = new ArrayList<>();
 	    List<EmployeeData> unDeservedEmpData = new ArrayList<>();
-	    List<PayrollSalary> allEndOfLadderDegreesForCategory = PayrollsService.getEndOfLadderForAllRanksOfCategory(raise.getCategoryId());
-
 	    List<EmployeeData> allDeservedEmpData = getAllDeservedEmployees(raise.getId(), executionDate);
 	    unDeservedEmpData = getAllUnDeservedEmployees(raise.getId(), executionDate);
+	    List<PayrollSalary> allEndOfLadderDegreesForCategory = PayrollsService.getEndOfLadderForAllRanksOfCategory(raise.getCategoryId());
+	    // insert rankId as a key and degreeId as a value
+	    Hashtable<Long, Long> allEndOfLadderDegrees = new Hashtable<Long, Long>();
+	    for (PayrollSalary endOfLadderDegree : allEndOfLadderDegreesForCategory) {
+		allEndOfLadderDegrees.put(endOfLadderDegree.getRankId(), endOfLadderDegree.getDegreeId());
+	    }
+
 	    for (EmployeeData emp : allDeservedEmpData) {
-		endOfLadder = false;
-		for (PayrollSalary endOfLadderDegree : allEndOfLadderDegreesForCategory) {
-		    if (emp.getDegreeId() == endOfLadderDegree.getDegreeId() && emp.getRankId() == endOfLadderDegree.getRankId()) {
-			endOfLadder = true;
-			break;
-		    }
-		}
-		if (endOfLadder) {
+		// end of ladder
+		if (allEndOfLadderDegrees.contains(emp.getDegreeId())) {
 		    // convert list of EmployeeData to RaiseEmployeeData
 		    endOfLadderEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode()));
-		} else {
+		} else { // deserved
 		    deservedEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode()));
 		}
 
 	    }
 	    for (EmployeeData emp : unDeservedEmpData)
+
 		unDeservedEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.NOT_DESERVED_EMPLOYEES.getCode()));
 	    // add deserved , undeserved and end of ladder employees
-	    /*
-	     * updateRaiseAndEmployees(raise, deservedEmpRaiseData, null, allEndOfLadderDegreesForCategory); updateRaiseAndEmployees(raise, endOfLadderEmpRaiseData, null, allEndOfLadderDegreesForCategory); updateRaiseAndEmployees(raise, unDeservedEmpRaiseData, null, allEndOfLadderDegreesForCategory);
-	     */
+	    allRaiseEmployees.addAll(deservedEmpRaiseData);
+	    allRaiseEmployees.addAll(unDeservedEmpRaiseData);
+	    allRaiseEmployees.addAll(endOfLadderEmpRaiseData);
+	    addRaiseEmployees(allRaiseEmployees);
+
 	} catch (BusinessException e) {
 	    e.printStackTrace();
 	}
@@ -571,8 +602,7 @@ public class RaisesService extends BaseService {
     public static List<RaiseEmployeeData> regenerateRaiseEmployees(Raise raise, Date executionDate) {
 	try {
 	    // delete the old records in DB
-	    // deleteRaiseEmployees(getRaiseEmployeeByRaiseId(raise.getId()));
-	    deleteRaiseEmployeesByRaiseId(raise.getId(), null);
+	    deleteRaiseEmployees(getRaiseEmployeeByRaiseId(raise.getId()));
 	    // re-calculate all employees
 	    return generateRaiseEmployees(raise, executionDate);
 	} catch (BusinessException e) {
@@ -644,17 +674,6 @@ public class RaisesService extends BaseService {
 	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.equals("")) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
 	    qParams.put("P_DESERVED_FLAG", deservedFlag);
 	    return DataAccess.executeNamedQuery(RaiseEmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_ANNUAL_RAISE_DESERVED_EMPLOYEES.getCode(), qParams);
-	} catch (DatabaseException e) {
-	    e.printStackTrace();
-	    throw new BusinessException("error_general");
-	}
-    }
-
-    public static void deleteRaiseEmployeesByRaiseId(long raiseId, CustomSession session) throws BusinessException {
-	Map<String, Object> qParams = new HashMap<String, Object>();
-	try {
-	    qParams.put("P_RAISE_ID", raiseId);
-	    DataAccess.executeDeleteQuery(QueryNamesEnum.HCM_RAISES_DELETE_RAISE_EMPLOYEES_BY_RAISE_ID.getCode(), qParams, session);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
