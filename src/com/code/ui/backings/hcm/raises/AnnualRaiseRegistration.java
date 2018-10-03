@@ -94,13 +94,13 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 		loadedAnnualRaise = RaisesService.getRaiseById(annualRaise.getId());
 		RaisesService.updateRaise(annualRaise);
 		if ((loadedAnnualRaise.getCategoryId() == annualRaise.getCategoryId()) && (loadedAnnualRaise.getExecutionDateString().equals(annualRaise.getExecutionDateString())))
-		    raiseEmployees = RaisesService.getEndOfLadderAndExcludedForAnotherReason(annualRaise.getId());
+		    raiseEmployees = RaisesService.getEndOfLadderAndExcludedForAnotherReasonEmployees(annualRaise.getId());
 		else
 		    raiseEmployees = RaisesService.regenerateRaiseEmployees(annualRaise, annualRaise.getExecutionDate());
 	    }
 	    // view mode is on
 	    else {
-		raiseEmployees = RaisesService.getRaiseEmployeeByRaiseId(annualRaise.getId());
+		raiseEmployees = RaisesService.getEndOfLadderAndExcludedForAnotherReasonEmployees(annualRaise.getId());
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
@@ -111,7 +111,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     public void addExcludedForAnotherReason() {
 
 	try {
-	    raiseEmployee = RaisesService.getRaiseEmployeeByRaiseId(annualRaise.getId(), selectedEmpId).get(0);
+	    raiseEmployee = RaisesService.getRaiseEmployeeByRaiseIdAndEmpId(annualRaise.getId(), selectedEmpId).get(0);
 	    if (!raiseEmployees.contains(raiseEmployee)) {
 		raiseEmployee.setEmpDeservedFlag(RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode());
 		raiseEmployees.add(raiseEmployee);
