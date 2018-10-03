@@ -61,13 +61,14 @@ public class JobsCollectiveService extends BaseService {
     }
 
     public static void renameScaleJobs(String decisionNumber, Date decisionDate, Date executionDate,
-	    List<JobData> selectedJobs, String newJobName, Long newRankId, Long newClassificationId, String reasons,
+	    List<JobData> selectedJobs, Long newBasicJobNameId, String newJobName, Long newRankId, Long newClassificationId, String reasons,
 	    Long userId, CustomSession... useSession) throws BusinessException {
 
 	List<JobData> jobsToRename = new ArrayList<JobData>();
 	List<JobData> jobsToScale = new ArrayList<JobData>();
 	for (JobData job : selectedJobs) {
 	    // add all data required for service
+	    job.setNewBasicJobNameId(newBasicJobNameId);
 	    job.setNewName(newJobName);
 	    job.setNewRankId(newRankId);
 	    job.setNewClassificationId(newClassificationId);
@@ -97,6 +98,7 @@ public class JobsCollectiveService extends BaseService {
 
 	} catch (BusinessException e) {
 	    for (JobData job : selectedJobs) {
+		job.setNewBasicJobNameId(null);
 		job.setNewName(null);
 		job.setNewRankId(null);
 		job.setNewClassificationId(null);
@@ -107,6 +109,7 @@ public class JobsCollectiveService extends BaseService {
 	    throw e;
 	} catch (Exception e) {
 	    for (JobData job : selectedJobs) {
+		job.setNewBasicJobNameId(null);
 		job.setNewName(null);
 		job.setNewRankId(null);
 		job.setNewClassificationId(null);
@@ -213,6 +216,7 @@ public class JobsCollectiveService extends BaseService {
 	    for (JobData job : jobs) {
 		for (int i = 0; i < job.getJobsCount().intValue(); i++) {
 		    JobData jobToAdd = new JobData();
+		    jobToAdd.setBasicJobNameId(job.getBasicJobNameId());
 		    jobToAdd.setName(job.getName());
 		    jobToAdd.setCategoryId(job.getCategoryId());
 		    jobToAdd.setRankId(job.getRankId());

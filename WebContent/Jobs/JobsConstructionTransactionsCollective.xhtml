@@ -26,6 +26,7 @@
 	function handleBasicJobsNamesMiniSearchResult(ret){
 		
 		if (ret != null) {
+			document.getElementById('jobsConstructionTransactionsCollectiveFormId:selectedBasicJobsNamesIdsHId').value = ret[0];
 			document.getElementById('jobsConstructionTransactionsCollectiveFormId:selectedBasicJobsNamesNamesHId').value = ret[1];
 			document.getElementById('jobsConstructionTransactionsCollectiveFormId:selectedBasicJobNamesCategoriesIdsHId').value = ret[2];
 
@@ -252,10 +253,10 @@
 											<td width="100%">
 												<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getBasicJobsName('#{request.contextPath}');return false;" />
 												<h:commandButton id="addJobNameBtnId" style="display: none;" action="#{jobsConstructionTransactionsCollective.addNewJobs()}">
-													<f:ajax execute="jobsConstructionTransactionsCollectiveFormId:selectedBasicJobsNamesNamesHId jobsConstructionTransactionsCollectiveFormId:selectedBasicJobNamesCategoriesIdsHId jobsConstructionTransactionsCollectiveFormId:newJobsTableId jobsConstructionTransactionsCollectiveFormId:newJobDetailsPanelId" render="jobsConstructionTransactionsCollectiveFormId:newJobsTableId jobsConstructionTransactionsCollectiveFormId:jobsListSizeHId jobsConstructionTransactionsCollectiveFormId:newJobDetailsPanelId jobsConstructionTransactionsCollectiveFormId:notifyMessagesId"
+													<f:ajax execute="jobsConstructionTransactionsCollectiveFormId:selectedBasicJobsNamesIdsHId jobsConstructionTransactionsCollectiveFormId:selectedBasicJobsNamesNamesHId jobsConstructionTransactionsCollectiveFormId:selectedBasicJobNamesCategoriesIdsHId jobsConstructionTransactionsCollectiveFormId:newJobsTableId jobsConstructionTransactionsCollectiveFormId:newJobDetailsPanelId" render="jobsConstructionTransactionsCollectiveFormId:newJobsTableId jobsConstructionTransactionsCollectiveFormId:jobsListSizeHId jobsConstructionTransactionsCollectiveFormId:newJobDetailsPanelId jobsConstructionTransactionsCollectiveFormId:notifyMessagesId"
 														onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 												</h:commandButton>
-
+												<h:inputHidden id="selectedBasicJobsNamesIdsHId" value="#{jobsConstructionTransactionsCollective.selectedBasicJobsNamesIds}" />
 												<h:inputHidden id="selectedBasicJobsNamesNamesHId" value="#{jobsConstructionTransactionsCollective.selectedBasicJobsNamesNames}" />
 												<h:inputHidden id="selectedBasicJobNamesCategoriesIdsHId" value="#{jobsConstructionTransactionsCollective.selectedBasicJobNamesCategoriesIds}" />
 												<h:inputHidden id="jobsListSizeHId" value="#{jobsConstructionTransactionsCollective.newJobs.size()}" />

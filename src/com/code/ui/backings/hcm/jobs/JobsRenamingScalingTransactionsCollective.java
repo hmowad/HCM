@@ -34,6 +34,7 @@ public class JobsRenamingScalingTransactionsCollective extends BaseBacking {
     private String selectedJobsIds;
     private List<JobData> selectedJobs;
 
+    private Long newBasicJobNameId;
     private String newJobName;
     private Long newRankId;
     private Long newClassificationId;
@@ -84,6 +85,7 @@ public class JobsRenamingScalingTransactionsCollective extends BaseBacking {
 	    selectedJobsIds = null;
 	    selectedJobs = new ArrayList<JobData>();
 
+	    newBasicJobNameId = null;
 	    newJobName = null;
 	    newRankId = -1L;
 	    newClassificationId = null;
@@ -120,8 +122,7 @@ public class JobsRenamingScalingTransactionsCollective extends BaseBacking {
 	    if (selectedJobs.isEmpty()) {
 		currentJobName = jobs.get(0).getName();
 		currentRankId = jobs.get(0).getRankId();
-	    }
-	    else {
+	    } else {
 		currentJobName = selectedJobs.get(0).getName();
 		currentRankId = selectedJobs.get(0).getRankId();
 	    }
@@ -181,7 +182,7 @@ public class JobsRenamingScalingTransactionsCollective extends BaseBacking {
 		throw new BusinessException("error_emptyJobsTransactionsCollective");
 
 	    JobsCollectiveService.renameScaleJobs(decisionNumber, decisionDate, executionDate,
-		    selectedJobs, newJobName, newRankId, newClassificationId, reasons, this.loginEmpData.getEmpId());
+		    selectedJobs, newBasicJobNameId, newJobName, newRankId, newClassificationId, reasons, this.loginEmpData.getEmpId());
 
 	    done = true;
 
@@ -257,6 +258,14 @@ public class JobsRenamingScalingTransactionsCollective extends BaseBacking {
 	    return null;
 	else
 	    return selectedJobs.get(0).getRankId();
+    }
+
+    public Long getNewBasicJobNameId() {
+	return newBasicJobNameId;
+    }
+
+    public void setNewBasicJobNameId(Long newBasicJobNameId) {
+	this.newBasicJobNameId = newBasicJobNameId;
     }
 
     public String getNewJobName() {

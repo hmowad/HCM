@@ -23,6 +23,10 @@ import com.code.services.util.HijriDateService;
  * 
  */
 @NamedQueries({
+	@NamedQuery(name = "hcm_job_countJobsByBasicJobNameId",
+		query = " select count(j.id) from Job j " +
+			"where j.basicJobNameId = :P_BASIC_JOB_NAME_ID "),
+
 	@NamedQuery(name = "hcm_job_countJobsByUnitsIdsAndCategoriesIds",
 		query = " select count(j.id) from Job j where j.unitId in ( :P_UNITS_IDS ) " +
 			" and (:P_CATEGORIES_IDS_FLAG = -1 or j.categoryId in ( :P_CATEGORIES_IDS )) " +
@@ -57,6 +61,7 @@ public class Job extends BaseEntity {
     private Long id;
     private String code;
     private String serial;
+    private Long basicJobNameId;
     private String name;
     private Long categoryId;
     private Long rankId;
@@ -107,6 +112,16 @@ public class Job extends BaseEntity {
 
     public void setSerial(String serial) {
 	this.serial = serial;
+    }
+
+    @Basic
+    @Column(name = "BASIC_JOB_NAME_ID")
+    public Long getBasicJobNameId() {
+	return basicJobNameId;
+    }
+
+    public void setBasicJobNameId(Long basicJobNameId) {
+	this.basicJobNameId = basicJobNameId;
     }
 
     @Basic

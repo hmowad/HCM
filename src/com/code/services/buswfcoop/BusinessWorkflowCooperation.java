@@ -6,6 +6,7 @@ import com.code.enums.WFInstanceStatusEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.BaseService;
 import com.code.services.workflow.BaseWorkFlow;
+import com.code.services.workflow.hcm.JobsWorkFlow;
 import com.code.services.workflow.hcm.PromotionsWorkFlow;
 import com.code.services.workflow.hcm.TerminationsWorkflow;
 
@@ -51,5 +52,9 @@ public class BusinessWorkflowCooperation extends BaseService {
     public static long countRunningProcesses(Long[] processesIds) throws BusinessException {
 	Integer[] statusesIds = { WFInstanceStatusEnum.RUNNING.getCode() };
 	return BaseWorkFlow.countWFInstancesByProcessesIds(processesIds, statusesIds);
+    }
+
+    public static long countJobsRequestsByBasicJobNameId(Long basicJobNameId) throws BusinessException {
+	return JobsWorkFlow.countJobsRequestsByBasicJobNameId(basicJobNameId);
     }
 }

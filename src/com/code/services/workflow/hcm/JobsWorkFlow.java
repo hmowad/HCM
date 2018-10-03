@@ -506,6 +506,18 @@ public class JobsWorkFlow extends BaseWorkFlow {
 	}
     }
 
+    public static Long countJobsRequestsByBasicJobNameId(Long basicJobNameId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_BASIC_JOB_NAME_ID", basicJobNameId);
+
+	    return DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.WF_COUNT_JOBS_REQUESTS_BY_BASIC_JOB_NAME_ID.getCode(), qParams).get(0);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
     public static void deleteWFJob(WFJobData wfJobData, long userId, CustomSession... useSession) throws BusinessException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -535,6 +547,7 @@ public class JobsWorkFlow extends BaseWorkFlow {
 	WFJobData wfJobData = new WFJobData();
 	wfJobData.setJobId(jobData.getId());
 	wfJobData.setCode(jobData.getCode());
+	wfJobData.setBasicJobNameId(jobData.getBasicJobNameId());
 	wfJobData.setName(jobData.getName());
 	wfJobData.setRankId(jobData.getRankId());
 	wfJobData.setRankDesc(jobData.getRankDescription());
@@ -584,6 +597,7 @@ public class JobsWorkFlow extends BaseWorkFlow {
 			    JobData jobData = new JobData();
 			    jobData.setStatus(JobStatusEnum.VACANT.getCode());
 			    jobData.setCategoryId(categoryId);
+			    jobData.setBasicJobNameId(wfJob.getNewBasicJobNameId());
 			    jobData.setName(wfJob.getNewName());
 			    jobData.setRankId(wfJob.getNewRankId());
 			    jobData.setRegionId(wfJob.getNewRegionId());
@@ -605,6 +619,7 @@ public class JobsWorkFlow extends BaseWorkFlow {
 		    for (WFJobData wfJob : entry.getValue()) {
 			JobData jobData = jobsInWorkflowIdsMap.get(wfJob.getJobId());
 
+			jobData.setNewBasicJobNameId(wfJob.getNewBasicJobNameId());
 			jobData.setNewName(wfJob.getNewName());
 			jobData.setNewRankId(wfJob.getNewRankId());
 			jobData.setNewMinorSpecializationId(wfJob.getNewMinorSpecializationId());

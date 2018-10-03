@@ -23,6 +23,11 @@ import com.code.services.util.HijriDateService;
  * 
  */
 @NamedQueries({
+	@NamedQuery(name = "hcm_job_countJobsTransactionsByBasicJobNameId",
+		query = " select count(jt.id) from JobTransaction jt "
+			+ "where jt.basicJobNameId = :P_BASIC_JOB_NAME_ID "
+			+ "and jt.status <> 4"),
+
 	@NamedQuery(name = "hcm_jobTransaction_getJobsDecisions",
 		query = "select jt from JobTransaction jt, Rank r" +
 			" where jt.rankId = r.id " +
@@ -47,6 +52,7 @@ public class JobTransaction extends BaseEntity {
     private String decisionDateString;
     private Long transactionTypeId;
     private String code;
+    private Long basicJobNameId;
     private String name;
     private Long rankId;
     private Long regionId;
@@ -77,6 +83,7 @@ public class JobTransaction extends BaseEntity {
     private Integer eFlag;
     private Integer migFlag;
     private String transCode;
+    private Long transBasicJobNameId;
     private String transName;
     private Long transUnitId;
     private String transUnitFullName;
@@ -159,6 +166,16 @@ public class JobTransaction extends BaseEntity {
 
     public void setCode(String code) {
 	this.code = code;
+    }
+
+    @Basic
+    @Column(name = "BASIC_JOB_NAME_ID")
+    public Long getBasicJobNameId() {
+	return basicJobNameId;
+    }
+
+    public void setBasicJobNameId(Long basicJobNameId) {
+	this.basicJobNameId = basicJobNameId;
     }
 
     @Basic
@@ -452,6 +469,16 @@ public class JobTransaction extends BaseEntity {
 
     public void setTransCode(String transCode) {
 	this.transCode = transCode;
+    }
+
+    @Basic
+    @Column(name = "TRANS_BASIC_JOB_NAME_ID")
+    public Long getTransBasicJobNameId() {
+	return transBasicJobNameId;
+    }
+
+    public void setTransBasicJobNameId(Long transBasicJobNameId) {
+	this.transBasicJobNameId = transBasicJobNameId;
     }
 
     @Basic
