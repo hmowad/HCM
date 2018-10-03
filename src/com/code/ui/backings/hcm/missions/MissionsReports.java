@@ -47,9 +47,7 @@ public class MissionsReports extends BaseBacking {
 	    category = FlagsEnum.ALL.getCode();
 	    regionId = getLoginEmpPhysicalRegionFlag(true);
 	    fromDate = toDate = HijriDateService.getHijriSysDate();
-	    if (reportType == 2) {
-		getInquiryReportPrivileges();
-	    }
+	    getInquiryReportPrivileges();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -64,10 +62,11 @@ public class MissionsReports extends BaseBacking {
 		regionId = getLoginEmpPhysicalRegionFlag(isAdmin);
 	    } else if (isManager) {
 		regionId = loginEmpData.getPhysicalRegionId();
-		orgUnitId = loginEmpData.getPhysicalUnitId();
-		orgUnitFullName = loginEmpData.getPhysicalUnitFullName();
-		orgUnitHKey = loginEmpData.getPhysicalUnitHKey();
 	    }
+
+	    orgUnitId = loginEmpData.getPhysicalUnitId();
+	    orgUnitFullName = loginEmpData.getPhysicalUnitFullName();
+	    orgUnitHKey = loginEmpData.getPhysicalUnitHKey();
 
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
