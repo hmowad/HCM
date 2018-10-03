@@ -412,6 +412,8 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    disclaimerTransactionDetail.setTransManagerName(wfDisclaimerDetail.getManagerName());
 	    disclaimerTransactionDetail.setTransManagerUnitFullName(wfDisclaimerDetail.getManagerUnitFullName());
 	    disclaimerTransactionDetail.setTransManagerRankDesc(wfDisclaimerDetail.getManagerRankDesc());
+	    if (wfDisclaimerDetail.getClaimedFlag() == null)
+		wfDisclaimerDetail.setClaimedFlag(FlagsEnum.OFF.getCode());
 	    disclaimerTransactionDetail.setClaimedFlag(wfDisclaimerDetail.getClaimedFlag());
 
 	    disclaimerTransactionDetails.add(disclaimerTransactionDetail);
