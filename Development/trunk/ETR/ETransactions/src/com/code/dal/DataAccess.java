@@ -193,6 +193,7 @@ public class DataAccess {
     }
 
     public static void executeDeleteQuery(String queryName, Map<String, Object> parameters, CustomSession... useSession) throws DatabaseException {
+
 	boolean isOpenedSession = false;
 	if (useSession != null && useSession.length > 0)
 	    isOpenedSession = true;
