@@ -53,18 +53,13 @@ public enum QueryNamesEnum {
     /* ************************************************ Raises ********************************************** */
 
     HCM_RAISE_TRANSACTION_DATA_GET_NOT_EXECUTED_RAISES_TRANSACTIONS("hcm_raiseTransactionData_getNotExecutedRaisesTransactions"),
-    HCM_RAISES_SEARCH_DATA("hcm_raises_searchRaiseData"),
-    HCM_RAISES_GET_RAISE_EMPLOYEES_BY_RAISE_ID("hcm_raises_getRaiseEmployeesByRaiseId"),
-    HCM_RAISES_GET_DESERVED_EMPLOYEES("hcm_raises_searchDeservedEmployees"),
-    HCM_RAISES_GET_ALL_DESERVED_EMPLOYEES("hcm_raises_searchAllDeservedEmployees"),
-    HCM_RAISES_GET_ALL_UNDESERVED_EMPLOYEES("hcm_raises_searchUnDeservedEmployees"),
-    HCM_RAISES_GET_EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER("hcm_raises_searchExcludedEmployeesForEndOfLadder"),
-    HCM_RAISE_TRANSACTION_DATA_GET_EMPLOYEES_BY_DESERVED_FLAG("hcm_raiseTransactionData_getRaiseEmployeesByDeservedFlag"),
-    HCM_RAISES_GET_ANNUAL_RAISE_DESERVED_EMPLOYEES("hcm_raiseEmployeeData_getAnnualRaiseDeservedEmployees"),
-    HCM_RAISES_VALIDATE_RAISE("hcm_raises_validateRaise"),
-    HCM_RAISES_DELETE_RAISE_EMPLOYEES_BY_RAISE_ID("hcm_raises_deleteRaiseEmployeesByRaiseId"),
-    HCM_RAISES_END_OF_LADDER_EXCLUDED_FOR_ANOTHER_REASON_EMPLOYEES("hcm_raises_getEndOfLadderAndExcludedForAnotherReasonRaiseEmployeesByRaiseId"),
-    HCM_RAISES_GET_RAISE_EMPLOYEE_BY_RAISE_ID("hcm_raises_getRaiseEmployeeByRaiseId"),
+    HCM_RAISES_SEARCH_RAISES("hcm_raises_searchRaises"),
+    HCM_RAISES_GET_DESERVED_EMPLOYEES_WITHOUT_EXCLUDED_FOR_END_OF_LADDER("hcm_raises_getDeservedEmployeesWithoutExcludedForEndOfLadder"),
+    HCM_RAISES_GET_DESERVED_EMPLOYEES("hcm_raises_getDeservedEmployees"),
+    HCM_RAISES_GET_UNDESERVED_EMPLOYEES("hcm_raises_getUnDeservedEmployees"),
+    HCM_RAISES_GET_EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER("hcm_raises_getExcludedEmployeesForEndOfLadder"),
+    HCM_RAISE_TRANSACTION_DATA_SEARCH_RAISE_TRANSACTIONS("hcm_raiseTransactionData_searchRaiseTransactions"),
+    HCM_RAISES_SEARCH_RAISE_EMPLOYEES("hcm_raiseEmployeeData_searchRaiseEmployees"),
 
     /* ************************************************ Navy Formations ********************************************** */
 

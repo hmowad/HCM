@@ -15,29 +15,19 @@ import com.code.dal.orm.BaseEntity;
 import com.code.services.util.HijriDateService;
 
 @NamedQueries({
-	@NamedQuery(name = "hcm_raises_getRaiseEmployeesByRaiseId",
-		query = "select r from RaiseEmployeeData r where r.raiseId = :P_RAISE_ID"),
-
-	@NamedQuery(name = "hcm_raiseEmployeeData_getAnnualRaiseDeservedEmployees",
+	@NamedQuery(name = "hcm_raiseEmployeeData_searchRaiseEmployees",
 		query = "select r from RaiseEmployeeData r " +
 			" where (:P_SOCIAL_ID = '-1' or r.empSocialID = :P_SOCIAL_ID) " +
+			" and (:P_RAISE_ID = -1 or r.raiseId = :P_RAISE_ID) " +
+			" and (:P_RAISE_EMP_ID = -1 or r.empId = :P_RAISE_EMP_ID) " +
 			" and (:P_EMP_NAME = '-1' or r.empName like :P_EMP_NAME ) " +
 			" and (:P_JOB_DESC = '-1' or r.empJobName like :P_JOB_DESC ) " +
 			" and (:P_PHYSICAL_UNIT_FULL_NAME = '-1' or r.empPhysicalUnitName like :P_PHYSICAL_UNIT_FULL_NAME ) " +
 			" and (:P_EMP_NUMBER = -1 or r.empNumber = :P_EMP_NUMBER) " +
 			" and (:P_DECISION_NUMBER = '-1' or r.raiseDecisionNumber = :P_DECISION_NUMBER) " +
 			" and (:P_DECISION_DATE = '-1' or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') = r.raiseDecisionDate) " +
-			" and r.empDeservedFlag = :P_DESERVED_FLAG " +
-			" order by r.empNumber, r.empName "),
-	@NamedQuery(name = "hcm_raises_getEndOfLadderAndExcludedForAnotherReasonRaiseEmployeesByRaiseId",
-		query = "select r from RaiseEmployeeData r " +
-			" where r.raiseId = :P_RAISE_ID " +
-			" and r.empDeservedFlag in (3 , 4) " +
-			" order by r.empDeservedFlag, r.empNumber "),
-	@NamedQuery(name = "hcm_raises_getRaiseEmployeeByRaiseId",
-		query = "select r from RaiseEmployeeData r " +
-			" where r.raiseId = :P_RAISE_ID " +
-			" and r.empId = :P_RAISE_EMP_ID "),
+			" and ((:P_ALL_EMP_TYPES_FLAG = 1 and (:P_DESERVED_FLAG = -1 or r.empDeservedFlag = :P_DESERVED_FLAG)) or (:P_ALL_EMP_TYPES_FLAG = 0 and (:P_DESERVED_FLAG = -1 or r.empDeservedFlag in (2 , 3)))) " +
+			" order by r.empNumber, r.empName ")
 
 })
 @Entity
