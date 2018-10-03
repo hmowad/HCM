@@ -28,6 +28,7 @@ import com.code.enums.TransactionTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.services.BaseService;
+import com.code.services.buswfcoop.BusinessWorkflowCooperation;
 import com.code.services.buswfcoop.EmployeesJobsConflictValidator;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
@@ -283,7 +284,7 @@ public class JobsService extends BaseService {
 		DataAccess.addEntity(jobData.getJob(), session);
 		jobData.setId(jobData.getJob().getId());
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_CONSTRUCTION.getCode(), decisionData,
-			jobData.getCode(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), useSession);
+			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), useSession);
 	    }
 
 	    if (!isOpenedSession)
@@ -333,9 +334,11 @@ public class JobsService extends BaseService {
 		session.beginTransaction();
 
 	    for (JobData jobData : jobsData) {
+		Long transBasicJobNameId = jobData.getBasicJobNameId();
 		String transName = jobData.getName();
 		String transCode = jobData.getCode();
 
+		jobData.setBasicJobNameId(jobData.getNewBasicJobNameId());
 		jobData.setName(jobData.getNewName());
 		jobsOriginalCodes.put(jobData.getId(), jobData.getCode());
 
@@ -349,7 +352,7 @@ public class JobsService extends BaseService {
 		jobData.setExecutionDate(decisionData.getExecutionDate());
 		DataAccess.updateEntity(jobData.getJob(), session);
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_RENAME.getCode(), decisionData,
-			transCode, transName, jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
+			transCode, transBasicJobNameId, transName, jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 	    }
 
 	    if (!isOpenedSession)
@@ -401,7 +404,7 @@ public class JobsService extends BaseService {
 		jobData.setExecutionDate(decisionData.getExecutionDate());
 		DataAccess.updateEntity(jobData.getJob(), session);
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_CANCELLATION.getCode(), decisionData,
-			jobData.getCode(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
+			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 	    }
 
 	    if (!isOpenedSession)
@@ -453,7 +456,7 @@ public class JobsService extends BaseService {
 
 		DataAccess.updateEntity(jobData.getJob(), session);
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_FREEZE.getCode(), decisionData,
-			jobData.getCode(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
+			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 	    }
 
 	    if (!isOpenedSession)
@@ -500,7 +503,7 @@ public class JobsService extends BaseService {
 		jobData.setExecutionDate(decisionData.getExecutionDate());
 		DataAccess.updateEntity(jobData.getJob(), session);
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_UNFREEZE.getCode(), decisionData,
-			jobData.getCode(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
+			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 	    }
 
 	    if (!isOpenedSession)
@@ -547,6 +550,7 @@ public class JobsService extends BaseService {
 		// Note: The greater the rank code the lower the rank
 		boolean isScaleUp = (jobData.getRankId().longValue() > jobData.getNewRankId().longValue()) ? true : false;
 
+		Long transBasicJobNameId = jobData.getBasicJobNameId();
 		String transName = jobData.getName();
 		String transCode = jobData.getCode();
 		Long transRankId = jobData.getRankId();
@@ -566,13 +570,15 @@ public class JobsService extends BaseService {
 
 		jobData.setExecutionDate(decisionData.getExecutionDate());
 
-		if (jobData.getNewName() != null && jobData.getNewName().length() > 0)
+		if (jobData.getNewName() != null && jobData.getNewName().length() > 0) {
+		    jobData.setBasicJobNameId(jobData.getNewBasicJobNameId());
 		    jobData.setName(jobData.getNewName());
+		}
 
 		DataAccess.updateEntity(jobData.getJob(), session);
 
 		addJobTransaction(jobData, isScaleUp ? TransactionTypesEnum.JOB_SCALE_UP.getCode() : TransactionTypesEnum.JOB_SCALE_DOWN.getCode(), decisionData,
-			transCode, transName, jobData.getUnitId(), jobData.getUnitFullName(), transRankId, jobData.getMinorSpecializationId(), session);
+			transCode, transBasicJobNameId, transName, jobData.getUnitId(), jobData.getUnitFullName(), transRankId, jobData.getMinorSpecializationId(), session);
 	    }
 
 	    if (!isOpenedSession)
@@ -644,7 +650,7 @@ public class JobsService extends BaseService {
 		DataAccess.updateEntity(jobData.getJob(), session);
 
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_MOVE.getCode(), decisionData,
-			transCode, jobData.getName(), transUnitId, transUnitFullName, jobData.getRankId(), jobData.getMinorSpecializationId(), session);
+			transCode, jobData.getBasicJobNameId(), jobData.getName(), transUnitId, transUnitFullName, jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 	    }
 
 	    if (!isOpenedSession)
@@ -671,15 +677,19 @@ public class JobsService extends BaseService {
 
 	    for (JobData jobData : jobsData) {
 		Long transMinorSpecId = jobData.getMinorSpecializationId();
+		Long transBasicJobNameId = jobData.getBasicJobNameId();
 		String transName = jobData.getName();
 
 		jobData.setMinorSpecializationId(jobData.getNewMinorSpecializationId());
 		jobData.setExecutionDate(decisionData.getExecutionDate());
-		if (jobData.getNewName() != null && jobData.getNewName().length() > 0)
+
+		if (jobData.getNewName() != null && jobData.getNewName().length() > 0) {
+		    jobData.setBasicJobNameId(jobData.getNewBasicJobNameId());
 		    jobData.setName(jobData.getNewName());
+		}
 		DataAccess.updateEntity(jobData.getJob(), session);
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_MODIFY_MINOR_SPECIALIZATION.getCode(), decisionData,
-			jobData.getCode(), transName, jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), transMinorSpecId, session);
+			jobData.getCode(), transBasicJobNameId, transName, jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), transMinorSpecId, session);
 	    }
 
 	    if (!isOpenedSession)
@@ -724,7 +734,7 @@ public class JobsService extends BaseService {
 		jobData.setReservationStatus(reservationStatus);
 		DataAccess.updateEntity(jobData.getJob(), session);
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_RESERVE.getCode(), decisionData,
-			jobData.getCode(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
+			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 	    }
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -766,7 +776,7 @@ public class JobsService extends BaseService {
 		jobData.setReservationStatus(JobReservationStatusEnum.UN_RESERVED.getCode());
 		DataAccess.updateEntity(jobData.getJob(), session);
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_UNRESERVE.getCode(), decisionData,
-			jobData.getCode(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
+			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 	    }
 
 	    if (!isOpenedSession)
@@ -1968,6 +1978,24 @@ public class JobsService extends BaseService {
     }
 
     /**
+     * Gets the number of jobs within specific basic job name id.
+     * 
+     * @param basicJobNameId
+     * @return the number of jobs found in the input basicJobNameId
+     * @throws BusinessException
+     */
+    public static long countJobsByBasicJobNameId(Long basicJobNameId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_BASIC_JOB_NAME_ID", basicJobNameId);
+	    return DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_JOBS_BY_BASIC_JOB_NAME_ID.getCode(), qParams).get(0);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    /**
      * Gets the number of jobs within specific units.
      * 
      * @param unitsIds
@@ -2244,7 +2272,7 @@ public class JobsService extends BaseService {
      *             if any error occurs
      */
     private static void addJobTransaction(JobData jobData, Integer transactionType, JobTransaction decisionData,
-	    String transCode, String transName, Long transUnitId, String transUnitFullName, Long transRankId, Long transMinorSpecId, CustomSession... useSession) throws BusinessException {
+	    String transCode, Long transBasicJobNameId, String transName, Long transUnitId, String transUnitFullName, Long transRankId, Long transMinorSpecId, CustomSession... useSession) throws BusinessException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -2257,6 +2285,7 @@ public class JobsService extends BaseService {
 	    jobTransaction.setDecisionDate(decisionData.getDecisionDate());
 	    jobTransaction.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(transactionType, TransactionClassesEnum.JOBS.getCode()).getId());
 	    jobTransaction.setCode(jobData.getCode());
+	    jobTransaction.setBasicJobNameId(jobData.getBasicJobNameId());
 	    jobTransaction.setName(jobData.getName());
 	    jobTransaction.setRankId(jobData.getRankId());
 	    jobTransaction.setRegionId(jobData.getRegionId());
@@ -2286,6 +2315,7 @@ public class JobsService extends BaseService {
 	    jobTransaction.setMigFlag(FlagsEnum.OFF.getCode());
 	    jobTransaction.seteFlag(decisionData.geteFlag() == null ? FlagsEnum.OFF.getCode() : decisionData.geteFlag());
 	    jobTransaction.setTransCode(transCode);
+	    jobTransaction.setTransBasicJobNameId(transBasicJobNameId);
 	    jobTransaction.setTransName(transName);
 	    jobTransaction.setTransUnitId(transUnitId);
 	    jobTransaction.setTransUnitFullName(transUnitFullName);
@@ -2402,6 +2432,24 @@ public class JobsService extends BaseService {
 	}
     }
 
+    /**
+     * Gets the number of jobs transactions within specific basic job name id.
+     * 
+     * @param basicJobNameId
+     * @return the number of jobs found in the input basicJobNameId
+     * @throws BusinessException
+     */
+    public static long countJobsTransactionsByBasicJobNameId(Long basicJobNameId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_BASIC_JOB_NAME_ID", basicJobNameId);
+	    return DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_JOBS_TRANSACTIONS_BY_BASIC_JOB_NAME_ID.getCode(), qParams).get(0);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
     /*---------------------------------------------- Basic Jobs Names ----------------------------------------------------------*/
 
     /**
@@ -2456,9 +2504,10 @@ public class JobsService extends BaseService {
      * @throws BusinessException
      *             if any error occurs
      */
-    public static void ModifyBasicJobName(BasicJobNameData basicJobNameData, long userId, CustomSession... useSession) throws BusinessException {
+    public static void modifyBasicJobName(BasicJobNameData basicJobNameData, long userId, CustomSession... useSession) throws BusinessException {
 
 	validateBasicJobName(basicJobNameData);
+	checkBasicJobNameConflicts(basicJobNameData);
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -2495,6 +2544,9 @@ public class JobsService extends BaseService {
      *             if any error occurs
      */
     public static void deleteBasicJobName(BasicJobNameData basicJobNameData, long userId, CustomSession... useSession) throws BusinessException {
+
+	checkBasicJobNameConflicts(basicJobNameData);
+
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -2543,6 +2595,14 @@ public class JobsService extends BaseService {
 	// check the uniqueness of the basic job name within the same category.
 	if (countBasicJobsNames(basicJobNameData.getBasicJobName().trim(), basicJobNameData.getCategoryId()) > 0)
 	    throw new BusinessException("error_basicJobNameUniqueWithCategory");
+    }
+
+    private static void checkBasicJobNameConflicts(BasicJobNameData basicJobNameData) throws BusinessException {
+
+	if (JobsService.countJobsByBasicJobNameId(basicJobNameData.getId()) > 0 ||
+		JobsService.countJobsTransactionsByBasicJobNameId(basicJobNameData.getId()) > 0 ||
+		BusinessWorkflowCooperation.countJobsRequestsByBasicJobNameId(basicJobNameData.getId()) > 0)
+	    throw new BusinessException("error_basicJobNameConflicts");
     }
 
     /**

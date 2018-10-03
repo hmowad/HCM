@@ -39,6 +39,7 @@ public class JobsConstructionTransactionsCollective extends BaseBacking {
     private String selectedUnitsIds;
 
     private JobData selectedJob;
+    private String selectedBasicJobsNamesIds;
     private String selectedBasicJobsNamesNames;
     private String selectedBasicJobNamesCategoriesIds;
 
@@ -88,6 +89,7 @@ public class JobsConstructionTransactionsCollective extends BaseBacking {
 	    selectedUnitsIds = null;
 	    selectedJob = null;
 
+	    selectedBasicJobsNamesIds = null;
 	    selectedBasicJobsNamesNames = null;
 	    selectedBasicJobNamesCategoriesIds = null;
 
@@ -142,12 +144,14 @@ public class JobsConstructionTransactionsCollective extends BaseBacking {
 
     public void addNewJobs() {
 
+	String[] basicJobNamesIds = selectedBasicJobsNamesIds.split(",");
 	String[] basicJobsNamesNames = selectedBasicJobsNamesNames.split(",");
 	String[] basicJobNamesCategoriesIds = selectedBasicJobNamesCategoriesIds.split(",");
 
 	for (int i = 0; i < basicJobsNamesNames.length; i++) {
 	    // initialize data
 	    JobData job = new JobData();
+	    job.setBasicJobNameId(Long.parseLong(basicJobNamesIds[i]));
 	    job.setName(basicJobsNamesNames[i]);
 	    job.setCategoryId(Long.parseLong(basicJobNamesCategoriesIds[i]));
 
@@ -269,6 +273,14 @@ public class JobsConstructionTransactionsCollective extends BaseBacking {
 
     public void setSelectedJob(JobData selectedJob) {
 	this.selectedJob = selectedJob;
+    }
+
+    public String getSelectedBasicJobsNamesIds() {
+	return selectedBasicJobsNamesIds;
+    }
+
+    public void setSelectedBasicJobsNamesIds(String selectedBasicJobsNamesIds) {
+	this.selectedBasicJobsNamesIds = selectedBasicJobsNamesIds;
     }
 
     public String getSelectedBasicJobsNamesNames() {

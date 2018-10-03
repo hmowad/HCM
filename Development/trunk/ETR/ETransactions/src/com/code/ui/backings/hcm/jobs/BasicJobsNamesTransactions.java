@@ -79,7 +79,7 @@ public class BasicJobsNamesTransactions extends BaseBacking {
     public void saveJobName(BasicJobNameData j) {
 	try {
 	    if (j.getId() != null)
-		JobsService.ModifyBasicJobName(j, this.loginEmpData.getEmpId());
+		JobsService.modifyBasicJobName(j, this.loginEmpData.getEmpId());
 	    else
 		JobsService.addBasicJobName(j, this.loginEmpData.getEmpId());
 

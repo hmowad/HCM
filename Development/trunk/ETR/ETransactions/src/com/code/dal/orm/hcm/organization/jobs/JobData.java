@@ -86,6 +86,7 @@ public class JobData extends BaseEntity {
     private String serial;
     private String sequence; // Transient
 
+    private Long basicJobNameId;
     private String name;
     private Long employeeId;
     private String employeeFullName;
@@ -130,6 +131,7 @@ public class JobData extends BaseEntity {
     /**
      * Transient : Used to hold the new job name for the rename transaction
      */
+    private Long newBasicJobNameId;
     private String newName;
 
     /**
@@ -207,6 +209,17 @@ public class JobData extends BaseEntity {
 
     public void setSequence(String sequence) {
 	this.sequence = sequence;
+    }
+
+    @Basic
+    @Column(name = "BASIC_JOB_NAME_ID")
+    public Long getBasicJobNameId() {
+	return basicJobNameId;
+    }
+
+    public void setBasicJobNameId(Long basicJobNameId) {
+	this.basicJobNameId = basicJobNameId;
+	job.setBasicJobNameId(basicJobNameId);
     }
 
     @Basic
@@ -575,6 +588,15 @@ public class JobData extends BaseEntity {
 
     public void setReasons(String reasons) {
 	this.reasons = reasons;
+    }
+
+    @Transient
+    public Long getNewBasicJobNameId() {
+	return newBasicJobNameId;
+    }
+
+    public void setNewBasicJobNameId(Long newBasicJobNameId) {
+	this.newBasicJobNameId = newBasicJobNameId;
     }
 
     @Transient

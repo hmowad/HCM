@@ -63,7 +63,8 @@
 	}
 	 
 	function handleBasicJobNameForConstructionMiniSearchResult(ret){
-		if(ret != null){						
+		if(ret != null){			
+			document.getElementById('jobsTransactionsDecisionRequestFormId:selectedBasicJobsNamesIdsForConstructionHId').value = ret[0];			
 			document.getElementById('jobsTransactionsDecisionRequestFormId:selectedBasicJobsNamesForConstructionHId').value = ret[1];	
 			document.getElementById('jobsTransactionsDecisionRequestFormId:addBasicJobsNamesForConstructionBtnId').click();					
 	    }
@@ -111,6 +112,7 @@
 	 
 	function handleBasicJobNameForModifiedJobsMiniSearchResult(ret){
 		if(ret != null){
+			document.getElementById('jobsTransactionsDecisionRequestFormId:basicJobNameIdForModifiedJobsHId').value = ret[0];
 			document.getElementById('jobsTransactionsDecisionRequestFormId:basicJobNameForModifiedJobsHId').value = ret[1];
 			document.getElementById('jobsTransactionsDecisionRequestFormId:basicJobNameForModifiedJobsId').innerHTML = ret[1];
 			document.getElementById('jobsTransactionsDecisionRequestFormId:removeSelectedBasicJobNameButtonId').style.display = '';
@@ -119,6 +121,7 @@
 	}
 
 	function resetSelectedBasicJobNameForModifiedJobs() {
+		document.getElementById('jobsTransactionsDecisionRequestFormId:basicJobNameIdForModifiedJobsHId').value = '';
 		document.getElementById('jobsTransactionsDecisionRequestFormId:basicJobNameForModifiedJobsHId').value = '';
 		document.getElementById('jobsTransactionsDecisionRequestFormId:basicJobNameForModifiedJobsId').innerHTML = '';
 		document.getElementById('jobsTransactionsDecisionRequestFormId:removeSelectedBasicJobNameButtonId').style.display = 'none';
@@ -145,6 +148,7 @@
 	function handleBasicJobNameForModifiedJobMiniSearchResult(ret){
 		if(ret != null){
 			var idTokens = callerId.split(':');
+			document.getElementById(idTokens[0] + ':' + idTokens[1] + ':' + idTokens[2] + ':basicJobNameIdForModifiedJobHId').value = ret[0];
 			document.getElementById(idTokens[0] + ':' + idTokens[1] + ':' + idTokens[2] + ':jobNameForModifiedJobHId').value = ret[1];
 			document.getElementById(idTokens[0] + ':' + idTokens[1] + ':' + idTokens[2] + ':jobNameForModifiedJobId').innerHTML = ret[1];
 	    }
@@ -183,6 +187,7 @@
 	 
 	function handleBasicJobNameForModifiedMinorSpecJobsMiniSearchResult(ret){
 		if(ret != null){
+			document.getElementById('jobsTransactionsDecisionRequestFormId:basicJobNameIdForModifiedMinorSpecJobsHId').value = ret[0];
 			document.getElementById('jobsTransactionsDecisionRequestFormId:jobNameForModifiedMinorSpecJobsHId').value = ret[1];
 			document.getElementById('jobsTransactionsDecisionRequestFormId:jobNameForModifiedMinorSpecJobsId').innerHTML = ret[1];
 			document.getElementById('jobsTransactionsDecisionRequestFormId:removeSelectedBasicJobNameForModifiedMinorSpecButtonId').style.display = '';
@@ -190,6 +195,7 @@
 	}
 
 	function resetSelectedBasicJobNameForModifiedMinorSpecJobs() {
+		document.getElementById('jobsTransactionsDecisionRequestFormId:basicJobNameIdForModifiedMinorSpecJobsHId').value = '';
 		document.getElementById('jobsTransactionsDecisionRequestFormId:jobNameForModifiedMinorSpecJobsHId').value = '';
 		document.getElementById('jobsTransactionsDecisionRequestFormId:jobNameForModifiedMinorSpecJobsId').innerHTML = '';
 		document.getElementById('jobsTransactionsDecisionRequestFormId:removeSelectedBasicJobNameForModifiedMinorSpecButtonId').style.display = 'none';
@@ -233,6 +239,7 @@
 	function handlegetBasicJobNameForModifiedMinorSpecJobMiniSearchResult(ret){
 		if(ret != null){
 			var idTokens = callerId.split(':');
+			document.getElementById(idTokens[0] + ':' + idTokens[1] + ':' + idTokens[2] + ':basicJobNameIdForMdifiedMinorSpecJobHId').value = ret[0];
 			document.getElementById(idTokens[0] + ':' + idTokens[1] + ':' + idTokens[2] + ':jobNameForMdifiedMinorSpecJobHId').value = ret[1];
 			document.getElementById(idTokens[0] + ':' + idTokens[1] + ':' + idTokens[2] + ':jobNameForMdifiedMinorSpecJobId').innerHTML = ret[1];
 	    }
@@ -487,6 +494,7 @@
 																	<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
 																		<tr>
 																			<td width="100%">
+																				<h:inputHidden id="selectedBasicJobsNamesIdsForConstructionHId" value="#{jobsTransactionsDecisionRequest.selectedBasicJobsNamesIds}" />
 																				<h:inputHidden id="selectedBasicJobsNamesForConstructionHId" value="#{jobsTransactionsDecisionRequest.selectedBasicJobsNames}" />
 																				<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getBasicJobNameForConstruction('#{request.contextPath}');return false;" />
 																				<h:commandButton id="addBasicJobsNamesForConstructionBtnId" action="#{jobsTransactionsDecisionRequest.addNewJobs()}" style="display: none;">
@@ -615,6 +623,7 @@
 															<tr>
 																<th width="15%">#{msgs.label_jobsNewName}</th>
 																<td width="#{jobsTransactionsDecisionRequest.mode == 1 ? 85 : 35}%;">
+																	<h:inputHidden id="basicJobNameIdForModifiedJobsHId" value="#{jobsTransactionsDecisionRequest.selectedNewBasicJobNameId}" />
 																	<h:outputText id="basicJobNameForModifiedJobsId" value="#{jobsTransactionsDecisionRequest.selectedNewName}" />
 																	<h:inputHidden id="basicJobNameForModifiedJobsHId" value="#{jobsTransactionsDecisionRequest.selectedNewName}" />
 																	<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getBasicJobNameForModifiedJobs('#{request.contextPath}');return false;" />
@@ -680,6 +689,7 @@
 																	<rich:column style="width : #{jobsTransactionsDecisionRequest.mode == 2 ? 15 : 25}%;">
 																		<f:facet name="header"> #{msgs.label_jobNewName} <font style="color: red;">*</font>
 																		</f:facet>
+																		<h:inputHidden id="basicJobNameIdForModifiedJobHId" value="#{job.newBasicJobNameId}" />
 																		<h:outputText id="jobNameForModifiedJobId" value="#{job.newName}" />
 																		<h:inputHidden id="jobNameForModifiedJobHId" value="#{job.newName}" />
 																		<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getBasicJobNameForModifiedJob('#{request.contextPath}',this.id);return false;" rendered="#{jobsTransactionsDecisionRequest.role == 'Requester' or jobsTransactionsDecisionRequest.role == 'ReviewerEmp' or jobsTransactionsDecisionRequest.role == 'SecondaryReviewerEmp'}" />
@@ -752,6 +762,7 @@
 
 																<th width="15%">#{msgs.label_jobsNewName}</th>
 																<td width="35%">
+																	<h:inputHidden id="basicJobNameIdForModifiedMinorSpecJobsHId" value="#{jobsTransactionsDecisionRequest.selectedNewBasicJobNameForModifyMinorSpec}" />
 																	<h:outputText id="jobNameForModifiedMinorSpecJobsId" value="#{jobsTransactionsDecisionRequest.selectedNewNameForModifyMinorSpec}" />
 																	<h:inputHidden id="jobNameForModifiedMinorSpecJobsHId" value="#{jobsTransactionsDecisionRequest.selectedNewNameForModifyMinorSpec}" />
 																	<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getBasicJobNameForModifiedMinorSpecJobs('#{request.contextPath}');return false;" />
@@ -817,6 +828,7 @@
 																	</rich:column>
 																	<rich:column style="width : 15%;">
 																		<f:facet name="header"> #{msgs.label_jobNewName} </f:facet>
+																		<h:inputHidden id="basicJobNameIdForMdifiedMinorSpecJobHId" value="#{job.newBasicJobNameId}" />
 																		<h:outputText id="jobNameForMdifiedMinorSpecJobId" value="#{job.newName}" />
 																		<h:inputHidden id="jobNameForMdifiedMinorSpecJobHId" value="#{job.newName}" />
 																		<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getBasicJobNameForModifiedMinorSpecJob('#{request.contextPath}',this.id);return false;" rendered="#{jobsTransactionsDecisionRequest.role == 'Requester' or jobsTransactionsDecisionRequest.role == 'ReviewerEmp' or jobsTransactionsDecisionRequest.role == 'SecondaryReviewerEmp'}" />

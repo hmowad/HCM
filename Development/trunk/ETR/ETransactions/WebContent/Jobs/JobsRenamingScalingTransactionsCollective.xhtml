@@ -28,6 +28,7 @@
 		 
 		function handleNewBasicJobsNamesMiniSearchResult(ret){
 			if(ret != null){
+				document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:basicJobNewNameIdHId').value = ret[0];
 				document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:jobNewNameId').innerHTML = ret[1];
 				document.getElementById('jobsRenamingScalingTransactionsCollectiveFormId:jobNewNameHId').value = ret[1];
 		    }
@@ -244,6 +245,7 @@
 											<font style="color: red;">*</font>
 										</th>
 										<td width="80%">
+											<h:inputHidden id="basicJobNewNameIdHId" value="#{jobsRenamingScalingTransactionsCollective.newBasicJobNameId}" />
 											<h:outputText id="jobNewNameId" value="#{jobsRenamingScalingTransactionsCollective.newJobName}" />
 											<h:inputHidden id="jobNewNameHId" value="#{jobsRenamingScalingTransactionsCollective.newJobName}" />
 											<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getNewBasicJobName('#{request.contextPath}');return false;" />

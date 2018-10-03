@@ -70,10 +70,12 @@ public class JobsTransactionsDecisionRequest extends WFBaseBacking {
     private String selectedMinorSpecDesc;
     private Integer selectedGeneralSpec;
     private Integer selectedGeneralType;
+    private String selectedBasicJobsNamesIds;
     private String selectedBasicJobsNames;
     private final int initialJobsCount = 1;
 
     // optional data used for jobs renaming/scaling
+    private Long selectedNewBasicJobNameId;
     private String selectedNewName;
     private Long selectedNewRankId;
 
@@ -82,6 +84,7 @@ public class JobsTransactionsDecisionRequest extends WFBaseBacking {
     private String selectedNewMinorSpecDesc;
     private Integer selectedNewGeneralSpecId;
     private Integer selectedNewGeneralTypeId;
+    private Long selectedNewBasicJobNameForModifyMinorSpec;
     private String selectedNewNameForModifyMinorSpec;
 
     // optional data used for jobs moving
@@ -215,12 +218,14 @@ public class JobsTransactionsDecisionRequest extends WFBaseBacking {
 	if (selectedBasicJobsNames != null && !selectedBasicJobsNames.isEmpty()) {
 
 	    String[] basicJobsNames = selectedBasicJobsNames.split(",");
+	    String[] basicJobsNamesIds = selectedBasicJobsNamesIds.split(",");
 
 	    if (selectedUnits != null && selectedUnits.size() > 0) {
 		for (UnitData unit : selectedUnits) {
-		    for (String basicJobName : basicJobsNames) {
+		    for (int i = 0; i < basicJobsNames.length; i++) {
 			WFJobData wfJobData = new WFJobData();
-			wfJobData.setNewName(basicJobName);
+			wfJobData.setNewName(basicJobsNames[i]);
+			wfJobData.setNewBasicJobNameId(Long.parseLong(basicJobsNamesIds[i]));
 			wfJobData.setNewUnitId(unit.getId());
 			wfJobData.setNewUnitFullName(unit.getFullName());
 			wfJobData.setNewRegionId(unit.getRegionId());
@@ -237,9 +242,10 @@ public class JobsTransactionsDecisionRequest extends WFBaseBacking {
 		    }
 		}
 	    } else {
-		for (String basicJobName : basicJobsNames) {
+		for (int i = 0; i < basicJobsNames.length; i++) {
 		    WFJobData wfJobData = new WFJobData();
-		    wfJobData.setNewName(basicJobName);
+		    wfJobData.setNewName(basicJobsNames[i]);
+		    wfJobData.setNewBasicJobNameId(Long.parseLong(basicJobsNamesIds[i]));
 		    wfJobData.setNewRankId(selectedRankId);
 		    wfJobData.setNewMinorSpecializationId(selectedMinorSpecId);
 		    wfJobData.setNewMinorSpecializationDesc(selectedMinorSpecDesc);
@@ -324,6 +330,7 @@ public class JobsTransactionsDecisionRequest extends WFBaseBacking {
 		    WFJobData wfJobData = JobsWorkFlow.constructWFJob(job, transactionTypeCode);
 
 		    if (transactionTypeCode == TransactionTypesEnum.JOB_RENAME.getCode()) {
+			wfJobData.setNewBasicJobNameId(selectedNewBasicJobNameId);
 			wfJobData.setNewName(selectedNewName);
 			if (selectedNewRankId != null && !selectedNewRankId.equals((long) FlagsEnum.ALL.getCode())
 				&& !wfJobData.getRankId().equals(selectedNewRankId) && job.getApprovedFlag() == FlagsEnum.OFF.getCode()) {
@@ -334,6 +341,7 @@ public class JobsTransactionsDecisionRequest extends WFBaseBacking {
 			wfJobData.setNewMinorSpecializationDesc(selectedNewMinorSpecDesc);
 			wfJobData.setNewGeneralSpecialization(selectedNewGeneralSpecId);
 			wfJobData.setNewGeneralType(selectedNewGeneralTypeId);
+			wfJobData.setNewBasicJobNameId(selectedNewBasicJobNameForModifyMinorSpec);
 			wfJobData.setNewName(selectedNewNameForModifyMinorSpec);
 
 		    } else if (transactionTypeCode == TransactionTypesEnum.JOB_MOVE.getCode()) {
@@ -844,12 +852,28 @@ public class JobsTransactionsDecisionRequest extends WFBaseBacking {
 	this.selectedGeneralType = selectedGeneralType;
     }
 
+    public String getSelectedBasicJobsNamesIds() {
+	return selectedBasicJobsNamesIds;
+    }
+
+    public void setSelectedBasicJobsNamesIds(String selectedBasicJobsNamesIds) {
+	this.selectedBasicJobsNamesIds = selectedBasicJobsNamesIds;
+    }
+
     public String getSelectedBasicJobsNames() {
 	return selectedBasicJobsNames;
     }
 
     public void setSelectedBasicJobsNames(String selectedBasicJobsNames) {
 	this.selectedBasicJobsNames = selectedBasicJobsNames;
+    }
+
+    public Long getSelectedNewBasicJobNameId() {
+	return selectedNewBasicJobNameId;
+    }
+
+    public void setSelectedNewBasicJobNameId(Long selectedNewBasicJobNameId) {
+	this.selectedNewBasicJobNameId = selectedNewBasicJobNameId;
     }
 
     public String getSelectedNewName() {
@@ -898,6 +922,14 @@ public class JobsTransactionsDecisionRequest extends WFBaseBacking {
 
     public void setSelectedNewGeneralTypeId(Integer selectedNewGeneralTypeId) {
 	this.selectedNewGeneralTypeId = selectedNewGeneralTypeId;
+    }
+
+    public Long getSelectedNewBasicJobNameForModifyMinorSpec() {
+	return selectedNewBasicJobNameForModifyMinorSpec;
+    }
+
+    public void setSelectedNewBasicJobNameForModifyMinorSpec(Long selectedNewBasicJobNameForModifyMinorSpec) {
+	this.selectedNewBasicJobNameForModifyMinorSpec = selectedNewBasicJobNameForModifyMinorSpec;
     }
 
     public String getSelectedNewNameForModifyMinorSpec() {

@@ -21,7 +21,11 @@ import com.code.dal.orm.AuditEntity;
 			" where j.instanceId = i.id " +
 			" and i.status = 1 " +
 			" and j.jobId in ( :P_JOBS_IDS ) " +
-			" and (:P_EXCLUDED_INSTANCE_ID = -1 or j.instanceId <> :P_EXCLUDED_INSTANCE_ID) ")
+			" and (:P_EXCLUDED_INSTANCE_ID = -1 or j.instanceId <> :P_EXCLUDED_INSTANCE_ID) "),
+
+	@NamedQuery(name = "wf_job_countJobsRequestsByBasicJobNameId",
+		query = " select count(j.id) from WFJob j " +
+			" where j.newBasicJobNameId = :P_BASIC_JOB_NAME_ID ")
 })
 @Entity
 @Table(name = "WF_JOBS")
@@ -32,6 +36,7 @@ public class WFJob extends AuditEntity implements InsertableAuditEntity, Updatab
     private Long jobId;
     private Integer jobsCount;
     private Long transactionTypeId;
+    private Long newBasicJobNameId;
     private String newName;
     private Long newRankId;
     private Long newUnitId;
@@ -96,6 +101,16 @@ public class WFJob extends AuditEntity implements InsertableAuditEntity, Updatab
 
     public void setTransactionTypeId(Long transactionTypeId) {
 	this.transactionTypeId = transactionTypeId;
+    }
+
+    @Basic
+    @Column(name = "NEW_BASIC_JOB_NAME_ID")
+    public Long getNewBasicJobNameId() {
+	return newBasicJobNameId;
+    }
+
+    public void setNewBasicJobNameId(Long newBasicJobNameId) {
+	this.newBasicJobNameId = newBasicJobNameId;
     }
 
     @Basic

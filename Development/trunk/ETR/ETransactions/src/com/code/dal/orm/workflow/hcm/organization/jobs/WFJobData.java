@@ -26,6 +26,7 @@ public class WFJobData extends BaseEntity {
     private Long instanceId;
     private Long jobId;
     private String code;
+    private Long basicJobNameId;
     private String name;
     private Long rankId;
     private String rankDesc;
@@ -37,6 +38,7 @@ public class WFJobData extends BaseEntity {
 
     private Integer jobsCount;
     private Long transactionTypeId;
+    private Long newBasicJobNameId;
     private String newName;
     private Long newUnitId;
     private String newUnitFullName;
@@ -103,6 +105,16 @@ public class WFJobData extends BaseEntity {
 
     public void setCode(String code) {
 	this.code = code;
+    }
+
+    @Basic
+    @Column(name = "BASIC_JOB_NAME_ID")
+    public Long getBasicJobNameId() {
+	return basicJobNameId;
+    }
+
+    public void setBasicJobNameId(Long basicJobNameId) {
+	this.basicJobNameId = basicJobNameId;
     }
 
     @Basic
@@ -205,6 +217,17 @@ public class WFJobData extends BaseEntity {
     public void setTransactionTypeId(Long transactionTypeId) {
 	this.transactionTypeId = transactionTypeId;
 	this.wfJob.setTransactionTypeId(transactionTypeId);
+    }
+
+    @Basic
+    @Column(name = "NEW_BASIC_JOB_NAME_ID")
+    public Long getNewBasicJobNameId() {
+	return newBasicJobNameId;
+    }
+
+    public void setNewBasicJobNameId(Long newBasicJobNameId) {
+	this.newBasicJobNameId = newBasicJobNameId;
+	this.wfJob.setNewBasicJobNameId(newBasicJobNameId);
     }
 
     @Basic

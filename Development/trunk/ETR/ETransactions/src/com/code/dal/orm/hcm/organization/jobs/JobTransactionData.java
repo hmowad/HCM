@@ -39,6 +39,7 @@ public class JobTransactionData extends BaseEntity {
     private String transactionTypeDescription;
     private Integer transactionClass;
     private String code;
+    private Long basicJobNameId;
     private String name;
     private Long rankId;
     private String rankDescription;
@@ -78,6 +79,7 @@ public class JobTransactionData extends BaseEntity {
     private Integer eFlag;
     private Integer migFlag;
     private String transCode;
+    private Long transBasicJobNameId;
     private String transName;
     private Long transUnitId;
     private String transUnitFullName;
@@ -189,6 +191,16 @@ public class JobTransactionData extends BaseEntity {
 
     public void setCode(String code) {
 	this.code = code;
+    }
+
+    @Basic
+    @Column(name = "BASIC_JOB_NAME_ID")
+    public Long getBasicJobNameId() {
+	return basicJobNameId;
+    }
+
+    public void setBasicJobNameId(Long basicJobNameId) {
+	this.basicJobNameId = basicJobNameId;
     }
 
     @Basic
@@ -573,6 +585,16 @@ public class JobTransactionData extends BaseEntity {
 
     public void setTransCode(String transCode) {
 	this.transCode = transCode;
+    }
+
+    @Basic
+    @Column(name = "TRANS_BASIC_JOB_NAME_ID")
+    public Long getTransBasicJobNameId() {
+	return transBasicJobNameId;
+    }
+
+    public void setTransBasicJobNameId(Long transBasicJobNameId) {
+	this.transBasicJobNameId = transBasicJobNameId;
     }
 
     @Basic
