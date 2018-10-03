@@ -192,6 +192,52 @@ public class DataAccess {
 	}
     }
 
+    public static void executeDeleteQuery(String queryName, Map<String, Object> parameters, CustomSession... useSession) throws DatabaseException {
+	boolean isOpenedSession = false;
+	if (useSession != null && useSession.length > 0)
+	    isOpenedSession = true;
+
+	Session session = isOpenedSession ? useSession[0].getSession() : sessionFactory.openSession();
+
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+
+	    Query q = session.getNamedQuery(queryName);
+	    if (parameters != null) {
+		for (String paramName : parameters.keySet()) {
+		    Object value = parameters.get(paramName);
+
+		    if (value instanceof Integer)
+			q.setInteger(paramName, (Integer) value);
+		    else if (value instanceof String)
+			q.setString(paramName, (String) value);
+		    else if (value instanceof Long)
+			q.setLong(paramName, (Long) value);
+		    else if (value instanceof Float)
+			q.setFloat(paramName, (Float) value);
+		    else if (value instanceof Double)
+			q.setDouble(paramName, (Double) value);
+		    else if (value instanceof Date)
+			q.setDate(paramName, (Date) value);
+		    else if (value instanceof Object[])
+			q.setParameterList(paramName, (Object[]) value);
+		}
+	    }
+	    q.executeUpdate();
+
+	    if (!isOpenedSession)
+		session.getTransaction().commit();
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.getTransaction().rollback();
+	    throw new DatabaseException(e.getMessage());
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
+
     private static void audit(BaseEntity bean, AuditOperationsEnum operation, Session session) {
 	if ((AuditOperationsEnum.INSERT.equals(operation) && bean instanceof InsertableAuditEntity) ||
 		(AuditOperationsEnum.UPDATE.equals(operation) && bean instanceof UpdatableAuditEntity) ||
