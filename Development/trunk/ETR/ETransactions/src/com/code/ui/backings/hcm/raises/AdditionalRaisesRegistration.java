@@ -12,6 +12,7 @@ import com.code.dal.orm.hcm.payroll.Degree;
 import com.code.dal.orm.hcm.raises.Raise;
 import com.code.dal.orm.hcm.raises.RaiseEmployeeData;
 import com.code.dal.orm.hcm.raises.RaiseTransactionData;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
@@ -50,6 +51,10 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	try {
 	    raiseTransactionData = new RaiseTransactionData();
 	    categories = CommonService.getAllCategories();
+	    for (Category category : categories) {
+		if (category.getId() == CategoriesEnum.CONTRACTORS.getCode())
+		    categories.remove(category);
+	    }
 	    degrees = PayrollsService.getAllDegrees();
 	    physicalRegionId = loginEmpData.getPhysicalRegionId();
 	    addedEmployeesList = new ArrayList<RaiseEmployeeData>();
