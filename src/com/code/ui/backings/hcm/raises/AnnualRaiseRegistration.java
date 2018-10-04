@@ -72,6 +72,8 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 	}
 
 	categoriesList = CommonService.getAllCategories();
+	categoriesList.remove(5);
+
 	raiseEmployees = new ArrayList<>();
 	updateRaiseEmployees = new ArrayList<>();
 	raiseEmployee = new RaiseEmployeeData();

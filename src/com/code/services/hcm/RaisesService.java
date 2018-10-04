@@ -609,7 +609,7 @@ public class RaisesService extends BaseService {
 	    for (EmployeeData emp : allDeservedEmpData) {
 		endOfLadder = false;
 		for (PayrollSalary endOfLadderDegree : allEndOfLadderDegreesForCategory) {
-		    if (emp.getDegreeId() == endOfLadderDegree.getDegreeId() && emp.getRankId() == endOfLadderDegree.getRankId()) {
+		    if (emp.getDegreeId().equals(endOfLadderDegree.getDegreeId()) && emp.getRankId().equals(endOfLadderDegree.getRankId())) {
 			endOfLadder = true;
 			break;
 		    }

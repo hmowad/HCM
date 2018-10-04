@@ -205,7 +205,7 @@
 												<rich:column>
 													<f:facet name="header">#{msgs.label_exclusionCancellation}</f:facet>
 													<h:commandButton disabled="#{raiseEmp.empDeservedFlag !=3 or annualRaiseRegistration.viewAdminFlag}" value="#{msgs.fa_times}" action="#{annualRaiseRegistration.deleteExcludedForAnotherReason(raiseEmp)}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="var r = confirm('#{msgs.q_employeeExclusionCancellation}');if (r == false){return false;}">
-														<f:ajax render="annualRaiseRegistrationFormId:annualRaiseDInfoTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														<f:ajax render="annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 													</h:commandButton>
 												</rich:column>
 
