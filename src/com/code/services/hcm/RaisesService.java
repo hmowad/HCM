@@ -684,7 +684,7 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      */
     public static List<RaiseEmployeeData> getRaiseEmployeeByRaiseId(long raiseId) throws BusinessException {
-	return searchRaiseEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), null, null, FlagsEnum.ALL.getCode(), raiseId, FlagsEnum.ALL.getCode(), FlagsEnum.ON.getCode());
+	return searchRaiseEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), null, null, null, raiseId, FlagsEnum.ALL.getCode());
     }
 
     /**
@@ -695,7 +695,8 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      */
     public static List<RaiseEmployeeData> getEndOfLadderAndExcludedForAnotherReasonEmployees(long raiseId) throws BusinessException {
-	return searchRaiseEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), null, null, FlagsEnum.ALL.getCode(), raiseId, FlagsEnum.ALL.getCode(), FlagsEnum.OFF.getCode());
+	Integer[] deservedFlagValues = new Integer[] { RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode() };
+	return searchRaiseEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), null, null, deservedFlagValues, raiseId, FlagsEnum.ALL.getCode());
     }
 
     /**
@@ -707,7 +708,7 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      */
     public static List<RaiseEmployeeData> getRaiseEmployeeByRaiseIdAndEmpId(long raiseId, long empId) throws BusinessException {
-	return searchRaiseEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), null, null, FlagsEnum.ALL.getCode(), raiseId, empId, FlagsEnum.ON.getCode());
+	return searchRaiseEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), null, null, null, raiseId, empId);
     }
 
     /**
@@ -720,12 +721,12 @@ public class RaisesService extends BaseService {
      * @param empNumber
      * @param decisionDate
      * @param decisionNumber
-     * @param deservedFlag
+     * @param deservedFlagValues
      * @return array list of raiseEmployee objects
      * @throws BusinessException
      */
-    public static List<RaiseEmployeeData> getAnnualRaiseDeservedEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, String decisionDate, String decisionNumber, Integer deservedFlag) throws BusinessException {
-	return searchRaiseEmployees(socialId, empName, jobDesc, physicalUnitFullName, empNumber, decisionDate, decisionNumber, deservedFlag, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ON.getCode());
+    public static List<RaiseEmployeeData> getAnnualRaiseDeservedEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, String decisionDate, String decisionNumber, Integer[] deservedFlagValues) throws BusinessException {
+	return searchRaiseEmployees(socialId, empName, jobDesc, physicalUnitFullName, empNumber, decisionDate, decisionNumber, deservedFlagValues, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode());
     }
 
     /**
@@ -738,14 +739,13 @@ public class RaisesService extends BaseService {
      * @param empNumber
      * @param decisionDate
      * @param decisionNumber
-     * @param deservedFlag
+     * @param deservedFlagValues
      * @param raiseId
      * @param empId
-     * @param allEmpTypesFalg
      * @return array list of raiseEmployee objects
      * @throws BusinessException
      */
-    public static List<RaiseEmployeeData> searchRaiseEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, String decisionDate, String decisionNumber, Integer deservedFlag, long raiseId, long empId, int allEmpTypesFalg) throws BusinessException {
+    public static List<RaiseEmployeeData> searchRaiseEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, String decisionDate, String decisionNumber, Integer[] deservedFlagValues, long raiseId, long empId) throws BusinessException {
 	Map<String, Object> qParams = new HashMap<String, Object>();
 	try {
 	    qParams.put("P_SOCIAL_ID", (socialId == null || socialId.equals("")) ? FlagsEnum.ALL.getCode() + "" : socialId);
@@ -755,10 +755,15 @@ public class RaisesService extends BaseService {
 	    qParams.put("P_EMP_NUMBER", empNumber);
 	    qParams.put("P_DECISION_DATE", (decisionDate == null || decisionDate.equals("")) ? FlagsEnum.ALL.getCode() + "" : decisionDate);
 	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.equals("")) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
-	    qParams.put("P_DESERVED_FLAG", deservedFlag);
+	    if (deservedFlagValues != null && deservedFlagValues.length > 0) {
+		qParams.put("P_DESERVED_FLAG_VALUES_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_DESERVED_FLAG_VALUES", deservedFlagValues);
+	    } else {
+		qParams.put("P_DESERVED_FLAG_VALUES_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_DESERVED_FLAG_VALUES", new Integer[] { FlagsEnum.ALL.getCode() });
+	    }
 	    qParams.put("P_RAISE_ID", raiseId);
 	    qParams.put("P_RAISE_EMP_ID", empId);
-	    qParams.put("P_ALL_EMP_TYPES_FLAG", allEmpTypesFalg);
 	    return DataAccess.executeNamedQuery(RaiseEmployeeData.class, QueryNamesEnum.HCM_RAISES_SEARCH_RAISE_EMPLOYEES.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();

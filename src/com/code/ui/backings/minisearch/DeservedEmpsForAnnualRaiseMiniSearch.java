@@ -25,12 +25,12 @@ public class DeservedEmpsForAnnualRaiseMiniSearch extends BaseBacking implements
     private String searchSocialId;
     private String decisionDate;
     private String decisionNumber;
-    private Integer deservedFlag;
+    private Integer[] deservedFlagValues;
     private int rowsCount = 10;
     private List<RaiseEmployeeData> searchEmployeeList;
 
     public DeservedEmpsForAnnualRaiseMiniSearch() {
-	deservedFlag = RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode();
+	deservedFlagValues = new Integer[] { RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode() };
 	searchEmployeeList = new ArrayList<RaiseEmployeeData>();
 	if (getRequest().getParameter("decisionDateString") != null)
 	    decisionDate = getRequest().getParameter("decisionDateString");
@@ -41,7 +41,7 @@ public class DeservedEmpsForAnnualRaiseMiniSearch extends BaseBacking implements
     public void searchEmployee() {
 	try {
 	    Long militaryNumber = (long) ((searchMilitaryNumber == null || searchMilitaryNumber.isEmpty()) ? FlagsEnum.ALL.getCode() : Integer.parseInt(searchMilitaryNumber));
-	    searchEmployeeList = RaisesService.getAnnualRaiseDeservedEmployees(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, militaryNumber, decisionDate, decisionNumber, deservedFlag);
+	    searchEmployeeList = RaisesService.getAnnualRaiseDeservedEmployees(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, militaryNumber, decisionDate, decisionNumber, deservedFlagValues);
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -111,12 +111,12 @@ public class DeservedEmpsForAnnualRaiseMiniSearch extends BaseBacking implements
 	this.searchEmployeeList = searchEmployeeList;
     }
 
-    public Integer getDeservedFlag() {
-	return deservedFlag;
+    public Integer[] getDeservedFlagValues() {
+	return deservedFlagValues;
     }
 
-    public void setDeservedFlag(Integer deservedFlag) {
-	this.deservedFlag = deservedFlag;
+    public void setDeservedFlagValues(Integer[] deservedFlagValues) {
+	this.deservedFlagValues = deservedFlagValues;
     }
 
     public int getRowsCount() {

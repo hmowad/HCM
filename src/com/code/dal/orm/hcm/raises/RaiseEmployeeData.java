@@ -26,7 +26,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_EMP_NUMBER = -1 or r.empNumber = :P_EMP_NUMBER) " +
 			" and (:P_DECISION_NUMBER = '-1' or r.raiseDecisionNumber = :P_DECISION_NUMBER) " +
 			" and (:P_DECISION_DATE = '-1' or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') = r.raiseDecisionDate) " +
-			" and ((:P_ALL_EMP_TYPES_FLAG = 1 and (:P_DESERVED_FLAG = -1 or r.empDeservedFlag = :P_DESERVED_FLAG)) or (:P_ALL_EMP_TYPES_FLAG = 0 and (:P_DESERVED_FLAG = -1 or r.empDeservedFlag in (2 , 3)))) " +
+			" and (:P_DESERVED_FLAG_VALUES_FLAG = -1 or r.empDeservedFlag in ( :P_DESERVED_FLAG_VALUES )) " +
 			" order by r.empNumber, r.empName ")
 
 })
