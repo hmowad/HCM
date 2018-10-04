@@ -80,9 +80,9 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     }
 
     public void saveRaise() {
-	togglePanels();
 
 	try {
+	    
 	    // a new raise is created for the first time
 	    if (annualRaise.getId() == null) {
 		RaisesService.addRaise(annualRaise);
@@ -100,8 +100,9 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 	    }
 	    // view mode is on
 	    else {
-		raiseEmployees = RaisesService.getEndOfLadderAndExcludedForAnotherReasonEmployees(annualRaise.getId());
+		raiseEmployees = RaisesService.getRaiseEmployeeByRaiseId(annualRaise.getId());
 	    }
+	    togglePanels();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
@@ -127,6 +128,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 	raiseEmployees.remove(raiseEmp);
 	raiseEmp.setEmpDeservedFlag(RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode());
 	updateRaiseEmployees.add(raiseEmp);
+	super.setServerSideSuccessMessages(getMessage("notify_employeeExclusionCancellationSuccessfully"));
     }
 
     // press save button
