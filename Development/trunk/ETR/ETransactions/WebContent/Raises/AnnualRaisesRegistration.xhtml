@@ -129,7 +129,7 @@
 							<h:panelGroup rendered="#{annualRaiseRegistration.switchPanels}">
 								<table class="sectionContent" style="margin-top: 0" border="0" cellpadding="0" cellspacing="0">
 									<tr>
-										<td height="5" />
+										<td colspan="3" height="5" />
 									</tr>
 									<tr>
 										<th width="10%">#{msgs.label_printingOptions}</th>
@@ -176,7 +176,7 @@
 
 									<tr>
 										<td colspan="4">
-											<rich:dataTable id="annualRaiseEmpTableId" rowKeyVar="index" var="raiseEmp" value="#{annualRaiseRegistration.raiseEmployees}" rows="#{cc.attrs.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+											<rich:dataTable id="annualRaiseEmpTableId" rowKeyVar="index" var="raiseEmp" value="#{annualRaiseRegistration.raiseEmployees}" rows="#{annualRaiseRegistration.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
 												<rich:column style="width : 5%">
 													<f:facet name="header">#</f:facet>
 													<h:outputText value="#{index + 1}" />
@@ -211,7 +211,7 @@
 												</rich:column>
 												<rich:column>
 													<f:facet name="header">#{msgs.label_exclusionCancellation}</f:facet>
-													<h:commandButton disabled="{raiseEmp.empDeservedFlag !=3 or annualRaiseRegistration.viewAdminFlag}" value="#{msgs.fa_times}" action="#{annualRaiseRegistration.deleteExcludedForAnotherReason(raiseEmp)}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="var r = confirm('#{msgs.q_employeeExclusionCancellation}');if (r == false){return false;}">
+													<h:commandButton disabled="#{raiseEmp.empDeservedFlag !=3 or annualRaiseRegistration.viewAdminFlag}" value="#{msgs.fa_times}" action="#{annualRaiseRegistration.deleteExcludedForAnotherReason(raiseEmp)}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="var r = confirm('#{msgs.q_employeeExclusionCancellation}');if (r == false){return false;}">
 														<f:ajax render="annualRaiseRegistrationFormId:annualRaiseDInfoTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 													</h:commandButton>
 												</rich:column>
