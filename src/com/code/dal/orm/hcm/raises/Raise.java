@@ -34,24 +34,6 @@ import com.code.services.util.HijriDateService;
 			" and (:P_EXECUTION_DATE_TO_FLAG = -1 or r.executionDate <= (TO_DATE(:P_EXECUTION_DATE_TO,'MI/MM/YYYY')))" +
 			" order by r.id"),
 
-	@NamedQuery(name = "hcm_raises_getExcludedEmployeesForEndOfLadder",
-		query = "select ed from Raise r, EmployeeData ed" +
-			" where (r.id = :P_Raise_ID)" +
-			" and (ed.statusId between 15 and 45)" +
-			" and (r.categoryId = ed.categoryId)" +
-			" and (ed.degreeId = (select s.degreeId from PayrollSalary s " +
-			" where s.rankId = :P_RANK_ID " +
-			" and s.degreeId = (select max(m.degreeId) from PayrollSalary m where m.rankId = ed.rankId)))" +
-			" and (r.executionDate >" +
-			" (select CASE WHEN max(rt.executionDate) IS NULL " +
-			" then to_date('1/1/1300', 'MI/MM/YYYY') " +
-			" ELSE max(rt.executionDate) END " +
-			" from RaiseTransaction rt" +
-			" where rt.empId = ed.empId and rt.type = 2) )" +
-			" and ((ed.lastAnnualRaiseDate is null) or (to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY') > ed.lastAnnualRaiseDate))" +
-			" and ((ed.lastPromotionDate is null) or (r.executionDate > ed.lastPromotionDate))" +
-			" order by ed.empId"),
-
 	@NamedQuery(name = "hcm_raises_getDeservedEmployees",
 		query = "select ed from Raise r, EmployeeData ed" +
 			" where (r.id = :P_RAISE_ID)" +
@@ -82,27 +64,7 @@ import com.code.services.util.HijriDateService;
 			" or ((ed.lastAnnualRaiseDate is not null) and (to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY') <= ed.lastAnnualRaiseDate))" +
 			" or ((ed.lastPromotionDate is not null) and (r.executionDate <= ed.lastPromotionDate))" +
 			" )" +
-			" order by ed.id"),
-
-	@NamedQuery(name = "hcm_raises_getDeservedEmployeesWithoutExcludedForEndOfLadder",
-		query = "select ed from Raise r, EmployeeData ed" +
-			" where (r.id = :P_RAISE_ID)" +
-			" and (ed.statusId between 15 and 45)" +
-			" and (r.categoryId = ed.categoryId)" +
-			" and (ed.degreeId <> (select s.degreeId from PayrollSalary s " +
-			" where s.rankId = ed.rankId " +
-			" and s.degreeId = (select max(m.degreeId) from PayrollSalary m where m.rankId = ed.rankId)))" +
-			" and (r.executionDate >" +
-			" (select CASE WHEN max(rt.executionDate) IS NULL " +
-			" then to_date('1/1/1300', 'MI/MM/YYYY') " +
-			" ELSE max(rt.executionDate) END " +
-			" from RaiseTransaction rt" +
-			" where rt.empId = ed.empId and rt.type = 2) )" +
-			" and ((ed.lastAnnualRaiseDate is null) or (to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY') > ed.lastAnnualRaiseDate))" +
-			" and ((ed.lastPromotionDate is null) or (r.executionDate > ed.lastPromotionDate))" +
-			" and (ed.empId not in (select re.empId from RaiseEmployee re where re.raiseId = :P_RAISE_ID))" +
-			" order by ed.empId"),
-
+			" order by ed.id")
 })
 
 @Entity
