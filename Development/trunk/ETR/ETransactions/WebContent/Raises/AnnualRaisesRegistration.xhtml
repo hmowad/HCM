@@ -149,25 +149,15 @@
 									<tr>
 										<td width="100%" height="5" />
 									</tr>
-<tr>
-										<td width="100%" colspan="4">
-											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
-												<tr>
-													<td>
-															<h:outputText value="#{msgs.label_excludedEmployees}" />
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
+
 									<tr>
-										<td width="100%">
-											<h:panelGroup rendered="#{annualRaiseRegistration.modifyAdminFlag}">
-												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+										<td width="100%" colspan="4">
+											
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
 													<tr>
 														<td>
-													
-															<h:commandButton id="addEmpId" value="#{msgs.label_add}" styleClass="btn_normal" onclick="getEmployee(); return false;" />
+													<h:outputText value="#{msgs.label_excludedEmployees}" />
+															<h:commandButton id="addEmpId" value="#{msgs.label_add}" rendered="#{annualRaiseRegistration.modifyAdminFlag}" styleClass="btn_normal" onclick="getEmployee(); return false;" />
 															<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{annualRaiseRegistration.addExcludedForAnotherReason()}">
 																<f:ajax execute="annualRaiseRegistrationFormId:employeeIDId annualRaiseRegistrationFormId:annualRaiseEmpTableId" render="annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" />
 															</h:commandButton>
@@ -178,7 +168,7 @@
 													</tr>
 
 												</table>
-											</h:panelGroup>
+											
 
 
 										</td>
@@ -210,10 +200,10 @@
 												</rich:column>
 												<rich:column>
 													<f:facet name="header">#{msgs.label_exclusionReason}</f:facet>
-													<h:outputText rendered="#{raiseEmp.empDeservedFlag ==1} " value="#{msgs.label_eligible}" />
-													<h:outputText rendered="#{raiseEmp.empDeservedFlag ==2} " value="#{msgs.label_excludedForEndOfLadder}" />
+													<h:outputText rendered="#{raiseEmp.empDeservedFlag ==1}" value="#{msgs.label_eligible}" />
+													<h:outputText rendered="#{raiseEmp.empDeservedFlag ==2}" value="#{msgs.label_excludedForEndOfLadder}" />
 													<h:outputText rendered="#{raiseEmp.empDeservedFlag ==3}" value="#{msgs.label_excludedForAnotherReason}" />
-													<h:outputText rendered="#{raiseEmp.empDeservedFlag ==4} " value="#{msgs.label_notDeserved}" />
+													<h:outputText rendered="#{raiseEmp.empDeservedFlag ==4}" value="#{msgs.label_notDeserved}" />
 												</rich:column>
 												<rich:column>
 													<f:facet name="header">#{msgs.label_otherExcludeReasons}</f:facet>
@@ -221,7 +211,7 @@
 												</rich:column>
 												<rich:column>
 													<f:facet name="header">#{msgs.label_exclusionCancellation}</f:facet>
-													<h:commandButton rendered="{raiseEmp.empDeservedFlag == 3 and annualRaiseRegistration.modifyAdminFlag}" value="#{msgs.fa_times}" action="#{annualRaiseRegistration.deleteExcludedForAnotherReason(raiseEmp)}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="var r = confirm('#{msgs.q_delete}');if (r == false){return false;}">
+													<h:commandButton disabled="{raiseEmp.empDeservedFlag !=3 or annualRaiseRegistration.viewAdminFlag}" value="#{msgs.fa_times}" action="#{annualRaiseRegistration.deleteExcludedForAnotherReason(raiseEmp)}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="var r = confirm('#{msgs.q_employeeExclusionCancellation}');if (r == false){return false;}">
 														<f:ajax render="annualRaiseRegistrationFormId:annualRaiseDInfoTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 													</h:commandButton>
 												</rich:column>
