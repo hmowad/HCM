@@ -54,11 +54,9 @@ public enum QueryNamesEnum {
 
     HCM_RAISE_TRANSACTION_DATA_GET_NOT_EXECUTED_RAISES_TRANSACTIONS("hcm_raiseTransactionData_getNotExecutedRaisesTransactions"),
     HCM_RAISES_SEARCH_RAISES("hcm_raises_searchRaises"),
-    HCM_RAISES_GET_DESERVED_EMPLOYEES_WITHOUT_EXCLUDED_FOR_END_OF_LADDER("hcm_raises_getDeservedEmployeesWithoutExcludedForEndOfLadder"),
     HCM_RAISES_GET_DESERVED_EMPLOYEES("hcm_raises_getDeservedEmployees"),
     HCM_RAISES_GET_UNDESERVED_EMPLOYEES("hcm_raises_getUnDeservedEmployees"),
-    HCM_RAISES_GET_EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER("hcm_raises_getExcludedEmployeesForEndOfLadder"),
-    HCM_RAISE_TRANSACTION_DATA_SEARCH_RAISE_TRANSACTIONS("hcm_raiseTransactionData_searchRaiseTransactions"),
+    HCM_RAISES_SEARCH_RAISE_TRANSACTIONS("hcm_raiseTransactionData_searchRaiseTransactions"),
     HCM_RAISES_SEARCH_RAISE_EMPLOYEES("hcm_raiseEmployeeData_searchRaiseEmployees"),
 
     /* ************************************************ Navy Formations ********************************************** */

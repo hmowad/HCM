@@ -818,53 +818,6 @@ public class RaisesService extends BaseService {
 	return HijriDateService.gregToHijriDate(c.getTime());
     }
 
-    /////////// unused function
-    /**
-     * get excluded employees for end of ladder
-     * 
-     * @param raiseId
-     * @param executionDate
-     * @return array list of employees objects
-     * @throws BusinessException
-     */
-    private static List<EmployeeData> getExcludedEmployeesForEndOfLadder(long raiseId, Date executionDate) throws BusinessException {
-	try {
-
-	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put("P_RAISE_ID", raiseId);
-	    qParams.put("P_EXECUTION_DATE", HijriDateService.getHijriDateString(calculateExecutionBeforeYear(executionDate)));
-
-	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode(), qParams);
-
-	} catch (DatabaseException e) {
-	    e.printStackTrace();
-	    throw new BusinessException("error_general");
-	}
-    }
-
-    /////////// unused function
-    /**
-     * get deserved employees without excluded for end of ladder
-     * 
-     * @param raiseId
-     * @param executionDate
-     * @return array list of employees objects
-     * @throws BusinessException
-     */
-    private static List<EmployeeData> getDeservedEmployeesWithoutExcludedForEndOfLadder(long raiseId, Date executionDate) throws BusinessException {
-	try {
-	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put("P_RAISE_ID", raiseId);
-	    qParams.put("P_EXECUTION_DATE", HijriDateService.getHijriDateString(calculateExecutionBeforeYear(executionDate)));
-
-	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_DESERVED_EMPLOYEES_WITHOUT_EXCLUDED_FOR_END_OF_LADDER.getCode(), qParams);
-
-	} catch (DatabaseException e) {
-	    e.printStackTrace();
-	    throw new BusinessException("error_general");
-	}
-    }
-
     /*------------------------------------------Reports------------------------------------------------*/
     public static byte[] getRaiseEmployeesReportBytes(String decisionNumber, Date decisionDate, int deservedFlag, int type) throws BusinessException {
 	try {
@@ -1179,7 +1132,7 @@ public class RaisesService extends BaseService {
 	    qParams.put("P_RAISE_DECISION_NUMBER", decisionNumber);
 	    qParams.put("P_DECISION_DATE", HijriDateService.getHijriDateString(decisionDate));
 
-	    return DataAccess.executeNamedQuery(RaiseTransactionData.class, QueryNamesEnum.HCM_RAISE_TRANSACTION_DATA_SEARCH_RAISE_TRANSACTIONS.getCode(), qParams);
+	    return DataAccess.executeNamedQuery(RaiseTransactionData.class, QueryNamesEnum.HCM_RAISES_SEARCH_RAISE_TRANSACTIONS.getCode(), qParams);
 
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
