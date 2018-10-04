@@ -82,7 +82,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     public void saveRaise() {
 
 	try {
-	    
+
 	    // a new raise is created for the first time
 	    if (annualRaise.getId() == null) {
 		RaisesService.addRaise(annualRaise);
@@ -100,7 +100,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 	    }
 	    // view mode is on
 	    else {
-		raiseEmployees = RaisesService.getRaiseEmployeeByRaiseId(annualRaise.getId());
+		raiseEmployees = RaisesService.getEndOfLadderAndExcludedForAnotherReasonEmployees(annualRaise.getId());
 	    }
 	    togglePanels();
 	} catch (BusinessException e) {
