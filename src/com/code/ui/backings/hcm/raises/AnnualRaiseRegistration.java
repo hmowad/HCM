@@ -27,7 +27,6 @@ import com.code.ui.backings.base.BaseBacking;
 public class AnnualRaiseRegistration extends BaseBacking implements Serializable {
 
     // private long category;
-
     private Raise annualRaise;
     private Raise loadedAnnualRaise;
     private List<Category> categoriesList;
@@ -45,6 +44,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
     public AnnualRaiseRegistration() {
 	setScreenTitle(getMessage("title_annualRaiseAddition"));
+
 	if (getRequest().getParameter("raiseId") != null)
 	    raiseIdParam = Long.parseLong(getRequest().getParameter("raiseId"));
 
