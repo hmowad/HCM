@@ -285,6 +285,10 @@ public class ETRConfigurationService extends BaseService {
 	return Float.parseFloat(configurationMap.get("PRM_SOLDIERS_EXTRA_NON_CANDIDATES_DRUGS_TEST_PERCENTAGE"));
     }
 
+    public static String getHCMWebServiceWSDLLocation() {
+	return configurationMap.get("HCM_WEBSERVICE_WSDL_LOCATION");
+    }
+
     /*------------------------------------------------------Missions Configurations------------------------------------------------------*/
     public static String getMissionActivationStartDate() {
 	return configurationMap.get("MSN_ACTIVATION_START_DATE");
