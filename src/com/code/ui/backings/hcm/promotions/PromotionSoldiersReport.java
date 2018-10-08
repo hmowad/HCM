@@ -157,6 +157,17 @@ public class PromotionSoldiersReport extends PromotionsBase {
 	}
     }
 
+    public void updatePromotionList() {
+	detailSearchStatusesList = new ArrayList<String>();
+	detailSearchStatusesList.add(PromotionCandidateStatusEnum.CANDIDATE.getCode() + "");
+	detailSearchStatusesList.add(PromotionCandidateStatusEnum.NON_CANDIDATE.getCode() + "");
+	detailSearchStatusesList.add(PromotionCandidateStatusEnum.PROMOTED.getCode() + "");
+	medicalTest = FlagsEnum.ALL.getCode();
+	detailSearchEmpName = "";
+	searchPromotionDetails();
+	this.setServerSideSuccessMessages(getMessage("notify_drugTestDataUpdatedSuccessfully"));
+    }
+
     public void handleReportDetailsFreezedJobs(boolean addFreezedJobsFlag) {
 	try {
 	    clearSearch();
@@ -185,19 +196,12 @@ public class PromotionSoldiersReport extends PromotionsBase {
 	}
     }
 
-    public String sendDrugsTestRequest() throws BusinessException {
-
+    public void sendDrugsTestRequest() throws BusinessException {
 	try {
 	    PromotionsService.sendPromotionsSoldiersDrugsTestRequest(promotionReportData, this.loginEmpData.getEmpId());
-	    getRequest().setAttribute("mode", CategoriesEnum.SOLDIERS.getCode());
-	    return NavigationEnum.REPORT_MANAGMENT.toString();
+	    this.setServerSideSuccessMessages(getMessage("notify_drugTestRequestSentSuccessfully"));
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-	    return null;
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    e.printStackTrace();
-	    return null;
 	}
     }
 

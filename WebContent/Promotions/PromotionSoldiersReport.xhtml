@@ -435,6 +435,10 @@
 											<h:commandButton action="#{promotionSoldiersReport.sendDrugsTestRequest()}" onclick="if(confirm('#{msgs.q_confirmSendDrugsTestRequest}') == false) return false;" value="#{msgs.label_promotionDrugTest} &nbsp; #{msgs.fa_flask}" title="#{msgs.label_promotionDrugTest}" styleClass="btn_normal_icon">
 												<f:ajax render="promotionSoldiersReportsFormId:newReportDetailsTableId promotionSoldiersReportsFormId:newReportDetailsDataPanelId promotionSoldiersReportsFormId:notifyMessagesId" />
 											</h:commandButton>
+											<h:outputText value=" " />
+											<h:commandButton action="#{promotionSoldiersReport.updatePromotionList()}" value="#{msgs.label_updateDrugTestData} &nbsp; #{msgs.fa_refresh}" title="#{msgs.label_updateDrugTestData}" styleClass="btn_normal_icon">
+												<f:ajax render="promotionSoldiersReportsFormId:detailSearchEmpNameId promotionSoldiersReportsFormId:detailSearchStatusId promotionSoldiersReportsFormId:detailSearchMedicalStatusId promotionSoldiersReportsFormId:newReportDetailsTableId promotionSoldiersReportsFormId:newReportDetailsDataPanelId promotionSoldiersReportsFormId:notifyMessagesId" />
+											</h:commandButton>
 										</td>
 										<td width="50%" colspan="2" style="text-align: left;">
 											<h:commandButton value="#{msgs.label_deleteCollective} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon"  onclick="return validateDeleteAllDetails();" action="#{promotionSoldiersReport.deletePromotionReportDetailsDataBySearch()}" disabled = "#{promotionSoldiersReport.promotionReportDetailDataList.size() == 0}" >
