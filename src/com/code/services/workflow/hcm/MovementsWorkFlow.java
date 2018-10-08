@@ -2464,6 +2464,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		    dynamicCopiesList.add(informationSectionManager);
 	    }
 
+	    // TODO Not included 11/10/2018
 	    // if (instance.getProcessId() == WFProcessesEnum.OFFICERS_SUBJOIN_EXTENSION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.OFFICERS_SUBJOIN_TERMINATION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.OFFICERS_SUBJOIN_CANCELLATION_REQUEST.getCode()
 	    // || instance.getProcessId() == WFProcessesEnum.SOLDIERS_SUBJOIN_EXTENSION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.SOLDIERS_SUBJOIN_TERMINATION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.SOLDIERS_SUBJOIN_CANCELLATION_REQUEST.getCode()
 	    // || instance.getProcessId() == WFProcessesEnum.PERSONS_ASSIGNMENT_EXTENSION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.PERSONS_ASSIGNMENT_TERMINATION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.PERSONS_ASSIGNMENT_CANCELLATION_REQUEST.getCode()) {
