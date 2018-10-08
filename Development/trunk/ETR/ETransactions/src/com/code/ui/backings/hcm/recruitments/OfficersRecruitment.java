@@ -95,12 +95,17 @@ public class OfficersRecruitment extends RecruitmentsBase implements Serializabl
 	}
     }
 
+    public void setDegree() {
+	selectedRec.setDegreeId(new Long((selectedRec.getSeniorityMonths() % 12) + 1));
+    }
+
     public void saveWFRecruitment() {
 	if (!validateJobsConflict(selectedRec)) {
 	    setServerSideErrorMessages(getMessage("error_recruitmentJobRepeated"));
 	    return;
 	}
 
+	setDegree();
 	setRankDescription();
 	setRankTitle();
     }

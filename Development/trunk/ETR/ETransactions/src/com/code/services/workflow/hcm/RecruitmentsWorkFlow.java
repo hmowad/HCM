@@ -686,10 +686,12 @@ public class RecruitmentsWorkFlow extends BaseWorkFlow {
 	recRequest.setMilitaryNumber(empData.getMilitaryNumber());
 	recRequest.setQualificationLevelReward(QualificationLevelReward);
 
-	if (empData.getStatusId().equals(EmployeeStatusEnum.ON_DUTY_UNDER_RECRUITMENT.getCode()))
-	    recRequest.setDegreeId(empData.getDegreeId());
-	else
-	    recRequest.setDegreeId(degreeId);
+	if (empData.getCategoryId() != CategoriesEnum.OFFICERS.getCode()) {
+	    if (empData.getStatusId().equals(EmployeeStatusEnum.ON_DUTY_UNDER_RECRUITMENT.getCode()))
+		recRequest.setDegreeId(empData.getDegreeId());
+	    else
+		recRequest.setDegreeId(degreeId);
+	}
 
 	if (processId == WFProcessesEnum.SOLDIERS_SOLDIER_OR_FIRST_SOLDIER_RECRUITMENT.getCode() || processId == WFProcessesEnum.SOLDIERS_SOLDIER_OR_FIRST_SOLDIER_EXCEPTIONAL_RECRUITMENT.getCode())
 	    recRequest.setRecruitmentDate(empData.getRecTrainingJoiningDate());
