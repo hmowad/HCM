@@ -2,6 +2,7 @@ package com.code.ui.backings.hcm.raises;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
@@ -51,9 +52,10 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	try {
 	    raiseTransactionData = new RaiseTransactionData();
 	    categories = CommonService.getAllCategories();
-	    for (Category category : categories) {
-		if (category.getId() == CategoriesEnum.CONTRACTORS.getCode())
-		    categories.remove(category);
+	    for (Iterator<Category> i = categories.iterator(); i.hasNext();) {
+		Category category = i.next();
+		if ((category.getId() == CategoriesEnum.CONTRACTORS.getCode()) || (category.getId() == CategoriesEnum.OFFICERS.getCode()) || (category.getId() == CategoriesEnum.SOLDIERS.getCode()))
+		    i.remove();
 	    }
 	    degrees = PayrollsService.getAllDegrees();
 	    physicalRegionId = loginEmpData.getPhysicalRegionId();
