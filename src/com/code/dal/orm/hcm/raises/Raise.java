@@ -37,6 +37,7 @@ import com.code.services.util.HijriDateService;
 	@NamedQuery(name = "hcm_raises_getDeservedEmployees",
 		query = "select ed from Raise r, EmployeeData ed" +
 			" where (r.id = :P_RAISE_ID)" +
+			" and (:P_EMP_ID = -1 or ed.empId = :P_EMP_ID ) " +
 			" and (ed.statusId between 15 and 45)" +
 			" and (r.categoryId = ed.categoryId)" +
 			" and (r.executionDate >" +

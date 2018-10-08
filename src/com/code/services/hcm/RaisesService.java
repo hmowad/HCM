@@ -598,23 +598,20 @@ public class RaisesService extends BaseService {
 	List<RaiseEmployeeData> endOfLadderEmpRaiseData = new ArrayList<>();
 	List<RaiseEmployeeData> allRaiseEmployees = new ArrayList<>();
 	try {
-	    boolean endOfLadder = false;
+	    HashMap<Long, Long> hm = new HashMap<Long, Long>();
 	    List<RaiseEmployeeData> deservedEmpRaiseData = new ArrayList<>();
 	    List<RaiseEmployeeData> unDeservedEmpRaiseData = new ArrayList<>();
 	    List<EmployeeData> unDeservedEmpData = new ArrayList<>();
 	    List<PayrollSalary> allEndOfLadderDegreesForCategory = PayrollsService.getEndOfLadderForAllRanksOfCategory(raise.getCategoryId());
+	    for (PayrollSalary endOfLadderDegree : allEndOfLadderDegreesForCategory) {
+		hm.put(endOfLadderDegree.getRankId(), endOfLadderDegree.getDegreeId());
+	    }
 
-	    List<EmployeeData> allDeservedEmpData = getDeservedEmployees(raise.getId(), executionDate);
+	    List<EmployeeData> allDeservedEmpData = getDeservedEmployees(raise.getId(), executionDate, null);
 	    unDeservedEmpData = getUnDeservedEmployees(raise.getId(), executionDate);
 	    for (EmployeeData emp : allDeservedEmpData) {
-		endOfLadder = false;
-		for (PayrollSalary endOfLadderDegree : allEndOfLadderDegreesForCategory) {
-		    if (emp.getDegreeId().equals(endOfLadderDegree.getDegreeId()) && emp.getRankId().equals(endOfLadderDegree.getRankId())) {
-			endOfLadder = true;
-			break;
-		    }
-		}
-		if (endOfLadder) {
+
+		if (emp.getDegreeId().equals(hm.get(emp.getRankId()))) {
 		    // convert list of EmployeeData to RaiseEmployeeData
 		    endOfLadderEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode()));
 		} else {
@@ -622,6 +619,7 @@ public class RaisesService extends BaseService {
 		}
 
 	    }
+
 	    for (EmployeeData emp : unDeservedEmpData)
 
 		unDeservedEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.NOT_DESERVED_EMPLOYEES.getCode()));
@@ -662,16 +660,20 @@ public class RaisesService extends BaseService {
     private static void validateRaiseEmployee(RaiseEmployeeData raiseEmployeeData, List<PayrollSalary> allEndOfLadderDegreesForCategory) throws BusinessException {
 	Raise raise = getRaiseById(raiseEmployeeData.getRaiseId());
 
-	if (raise.getType() == RaiseTypesEnum.ANNUAL.getCode()) {
-	    for (PayrollSalary endOfLadderDegree : allEndOfLadderDegreesForCategory) {
-		if (raiseEmployeeData.getEmpNewDegreeId() == endOfLadderDegree.getDegreeId() && raiseEmployeeData.getEmpRankId() == endOfLadderDegree.getRankId()) {
-		    throw new BusinessException("error_thisEmployeeMustBeExcludedForEndOfLadder");
-		}
-	    }
-	}
 	if (raise.getType() == RaiseTypesEnum.ADDITIONAL.getCode()) {
 	    if (raiseEmployeeData.getEmpNewDegreeId() <= raiseEmployeeData.getEmpDegreeId())
 		throw new BusinessException("error_newDegreeOfEmployeeMustBeBiggerThanCurrentDegreeOfEmployee");
+	}
+    }
+
+    private static void IsStillValidRaiseEmployee(RaiseEmployeeData raiseEmployeeData) throws BusinessException {
+	List<EmployeeData> employeeData = getDeservedEmployees(raiseEmployeeData.getRaiseId(), raiseEmployeeData.getRaiseExecutionDate(), raiseEmployeeData.getEmpId());
+	if (employeeData.size() == 0)
+	    throw new BusinessException("emp_isNotDeserved");
+	else {
+	    EmployeeData empData = employeeData.get(0);
+	    if (empData.getDegreeId().equals(PayrollsService.getEndOfLadderOfRank(empData.getRankId())))
+		throw new BusinessException("error_thisEmployeeMustBeExcludedForEndOfLadder");
 	}
     }
 
@@ -779,12 +781,12 @@ public class RaisesService extends BaseService {
      * @return array list of employees objects
      * @throws BusinessException
      */
-    private static List<EmployeeData> getDeservedEmployees(long raiseId, Date executionDate) throws BusinessException {
+    private static List<EmployeeData> getDeservedEmployees(long raiseId, Date executionDate, Long empId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_RAISE_ID", raiseId);
 	    qParams.put("P_EXECUTION_DATE", calculateExecutionBeforeYear(executionDate));
-
+	    qParams.put("P_EMP_ID", (empId == null) ? FlagsEnum.ALL.getCode() + "" : empId);
 	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_DESERVED_EMPLOYEES.getCode(), qParams);
 
 	} catch (DatabaseException e) {
@@ -1017,6 +1019,7 @@ public class RaisesService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 	    for (RaiseEmployeeData raiseEmployee : deservedEmployees) {
+		IsStillValidRaiseEmployee(raiseEmployee);
 		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), raiseEmployee.getEmpDegreeId() + 1, null);
 		addRaiseTransaction(transaction, session);
 		doRaiseEffect(transaction, session);
@@ -1101,7 +1104,23 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      */
     private static void validateRaiseTransactionData(RaiseTransactionData raiseTransactionData) throws BusinessException {
-	/* To Do */
+	if (raiseTransactionData.getEmpId() == null)
+	    throw new BusinessException("error_general");
+	if (raiseTransactionData.getRaiseCategoryId() == null)
+	    throw new BusinessException("error_general");
+	if (raiseTransactionData.getRaiseType() == null)
+	    throw new BusinessException("error_general");
+	if (raiseTransactionData.getDeservedFlag() == null)
+	    throw new BusinessException("error_general");
+	if (raiseTransactionData.getEmpNewDegreeId() == null)
+	    throw new BusinessException("error_general");
+	if (raiseTransactionData.getRaiseDecisionDate() == null)
+	    throw new BusinessException("error_general");
+	if (raiseTransactionData.getRaiseDecisionNumber() == null)
+	    throw new BusinessException("error_general");
+	if (raiseTransactionData.getRaiseExecutionDate() == null)
+	    throw new BusinessException("error_general");
+
     }
 
     /*------------------------------------------Queries------------------------------------------------*/
