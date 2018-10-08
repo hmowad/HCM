@@ -498,16 +498,16 @@ public class TrainingEmployeesService extends BaseService {
 	    throw new BusinessException("error_employeeSpecifiedStatusIsServiceTerminated", new Object[] { employee.getName() });
 
 	if (trainingTransactionCategory == TrainingTransactionCategoryEnum.NOMINATION.getCode() || trainingTransactionCategory == TrainingTransactionCategoryEnum.NOMINATION_APOLOGY.getCode() || trainingTransactionCategory == TrainingTransactionCategoryEnum.NOMINATION_REPLACEMENT.getCode()) {
-	    if (courseEventData.getTrainingTypeId() == TrainingTypesEnum.INTERNAL_MILITARY_COURSE.getCode()) {
+	    if (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.INTERNAL_MILITARY_COURSE.getCode()) {
 		if (courseEventData.getStatus().intValue() != TrainingCourseEventStatusEnum.PLANNED_TO_BE_HELD.getCode() && courseEventData.getStatus().intValue() != TrainingCourseEventStatusEnum.COURSE_EVENT_HOLDING_DECISION_ISSUED.getCode() && courseEventData.getStatus().intValue() != TrainingCourseEventStatusEnum.COURSE_EVENT_POSTPONEMENT_DECISION_ISSUED.getCode())
 		    throw new BusinessException("error_trainingCourseStatusNotValid", new String[] { courseEventData.getCourseName() });
-	    } else if (courseEventData.getTrainingTypeId() == TrainingTypesEnum.EXTERNAL_MILITARY_COURSE.getCode()) {
+	    } else if (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.EXTERNAL_MILITARY_COURSE.getCode()) {
 		if (courseEventData.getStatus().intValue() != TrainingCourseEventStatusEnum.PLANNED_TO_BE_HELD.getCode())
 		    throw new BusinessException("error_trainingCourseStatusNotValid", new String[] { courseEventData.getCourseName() });
 	    }
 	}
 
-	if (trainingTransactionCategory == TrainingTransactionCategoryEnum.CLAIM.getCode() && courseEventData.getActualEndDate().after(HijriDateService.getHijriSysDate()))
+	if (trainingTransactionCategory == TrainingTransactionCategoryEnum.CLAIM.getCode() && courseEventData != null && courseEventData.getActualEndDate().after(HijriDateService.getHijriSysDate()))
 	    throw new BusinessException("error_courseStartAndEndDateBeforeRequestDate", new String[] { courseEventData.getCourseName() });
 
 	if (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.INTERNAL_MILITARY_COURSE.getCode()
