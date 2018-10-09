@@ -7,8 +7,11 @@
 	<h:outputStylesheet library="css" name="grid.css" />
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
 	<script type="text/javascript">   
-		function getUnit(contextPath) {
-			unitsMiniSearch(2, contextPath, 'handleUnitMiniSearchResult(ret)', -1, #{missionsReports.regionId}, -1 , -1 , 0);
+		function getUnit(contextPath , isManager) {
+			if(isManager)
+				unitsMiniSearch(7, contextPath, 'handleUnitMiniSearchResult(ret)', -1, #{missionsReports.regionId}, -1 , #{missionsReports.orgUnitHKey}, 0);
+			else
+				unitsMiniSearch(2, contextPath, 'handleUnitMiniSearchResult(ret)', -1, #{missionsReports.regionId}, -1 , -1 , 0);
 		}
 		
 		function handleUnitMiniSearchResult(ret){
@@ -114,7 +117,7 @@
 												<h:inputHidden id="unitIDHId" value="#{missionsReports.orgUnitId}" />
 												<h:inputHidden id="unitFullNameHId" value="#{missionsReports.orgUnitFullName}" />
 												<h:inputHidden id="unitHKeyHId" value="#{missionsReports.orgUnitHKey}" />
-												<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit('#{request.contextPath}'); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+												<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit('#{request.contextPath}' , #{missionsReports.isManager}); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
 											</td>
 										</tr>
 										<tr>
