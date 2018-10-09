@@ -165,7 +165,10 @@ public class PromotionSoldiersReport extends PromotionsBase {
 	medicalTest = FlagsEnum.ALL.getCode();
 	detailSearchEmpName = "";
 	searchPromotionDetails();
-	this.setServerSideSuccessMessages(getMessage("notify_drugTestDataUpdatedSuccessfully"));
+	if (promotionReportDetailDataList != null && promotionReportDetailDataList.size() != FlagsEnum.OFF.getCode())
+	    this.setServerSideSuccessMessages(getMessage("notify_drugTestDataUpdatedSuccessfully"));
+	else
+	    this.setServerSideErrorMessages(getMessage("error_promotionNoSoldiersToUpdateDrugTest"));
     }
 
     public void handleReportDetailsFreezedJobs(boolean addFreezedJobsFlag) {
