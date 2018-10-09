@@ -445,7 +445,7 @@
 										</td>
 										<th>#{msgs.label_socialStatus}</th>
 										<td>
-											<h:selectOneMenu value="#{newEmployeeRegistration.employee.socialStatus}" disabled="#{newEmployeeRegistration.viewOnly or newEmployeeRegistration.updateMode}">
+											<h:selectOneMenu value="#{newEmployeeRegistration.employee.socialStatus}" disabled="#{newEmployeeRegistration.viewOnly}">
 												<f:selectItem itemLabel="" />
 												<f:selectItem itemLabel="#{msgs.label_single}" itemValue="1" />
 												<f:selectItem itemLabel="#{msgs.label_married}" itemValue="2" />
@@ -532,7 +532,7 @@
 												<font style="color: red;">*</font>
 											</th>
 											<td width="20%">
-												<h:selectOneMenu id="generalSpecializationId" value="#{newEmployeeRegistration.employee.generalSpecialization}" disabled="#{newEmployeeRegistration.viewOnly or newEmployeeRegistration.updateMode}">
+												<h:selectOneMenu id="generalSpecializationId" value="#{newEmployeeRegistration.employee.generalSpecialization}" disabled="#{newEmployeeRegistration.viewOnly}">
 													<f:selectItem itemValue="1" itemLabel="#{msgs.label_overland}" />
 													<f:selectItem itemValue="2" itemLabel="#{msgs.label_naval}" />
 													<f:selectItem itemValue="3" itemLabel="#{msgs.label_aerial}" />

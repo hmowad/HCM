@@ -366,6 +366,9 @@ public class EmployeesService extends BaseService {
 	if (!HijriDateService.isValidHijriDate(emp.getSocialIDIssueDate()))
 	    throw new BusinessException("error_invalidHijriSocialIdIssueDate");
 
+	if (!HijriDateService.isValidHijriDate(emp.getLastAnnualRaiseDate()))
+	    throw new BusinessException("error_invalidHijriLastAnnualRaiseDate");
+
 	Date sysDate = HijriDateService.getHijriSysDate();
 
 	if (HijriDateService.hijriDateDiff(emp.getBirthDate(), sysDate) <= 0)

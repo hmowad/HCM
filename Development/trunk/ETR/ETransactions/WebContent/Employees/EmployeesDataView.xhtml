@@ -402,13 +402,8 @@
 									</td>
 									<th width="15%">#{msgs.label_socialStatus}</th>
 									<td width="10%">
-										<h:selectOneMenu value="#{employeesDataView.employee.socialStatus}" rendered="#{not employeesDataView.viewOnly}">
-											<f:selectItem itemLabel="" />
-											<f:selectItem itemLabel="#{msgs.label_single}" itemValue="1" />
-											<f:selectItem itemLabel="#{msgs.label_married}" itemValue="2" />
-										</h:selectOneMenu>
-										<h:outputText value="#{msgs.label_single}" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.socialStatus == 1}" />
-										<h:outputText value="#{msgs.label_married}" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.socialStatus == 2}" />
+										<h:outputText value="#{msgs.label_single}" rendered="#{employeesDataView.employee.socialStatus == 1}" />
+										<h:outputText value="#{msgs.label_married}" rendered="#{employeesDataView.employee.socialStatus == 2}" />
 									</td>
 								</tr>
 							</table>
@@ -500,21 +495,14 @@
 										</td>
 										<th width="15%">#{msgs.label_degree}</th>
 										<td width="#{employeesDataView.mode == 1 ? 15 : 50}%" colspan="#{employeesDataView.mode == 1 ? 1 : 3}">
-											<h:selectOneMenu value="#{employeesDataView.employee.degreeId}" rendered="#{not employeesDataView.viewOnly}">
-												<f:selectItems value="#{employeesDataView.degrees}" var="degree" itemValue="#{degree.id}" itemLabel="#{degree.description}" />
-											</h:selectOneMenu>
-											<h:outputText value="#{employeesDataView.employee.degreeDesc}" rendered="#{employeesDataView.viewOnly}" />
+											<h:outputText value="#{employeesDataView.employee.degreeDesc}" />
 										</td>
 										<h:panelGroup rendered="#{employeesDataView.mode == 1}">
 											<th width="15%">
 												<h:outputText value="#{msgs.label_rankTitle}" />
 											</th>
 											<td width="20%">
-												<h:selectOneMenu value="#{employeesDataView.employee.rankTitleId}" rendered="#{not employeesDataView.viewOnly}">
-													<f:selectItem itemLabel="" />
-													<f:selectItems value="#{employeesDataView.officersRanksTitles}" var="rankTitle" itemLabel="#{rankTitle.description}" itemValue="#{rankTitle.id}" />
-												</h:selectOneMenu>
-												<h:outputText value="#{employeesDataView.employee.rankTitleDesc}" rendered="#{employeesDataView.viewOnly}" />
+												<h:outputText value="#{employeesDataView.employee.rankTitleDesc}" />
 											</td>
 										</h:panelGroup>
 									</tr>
@@ -585,8 +573,12 @@
 
 									<tr>
 										<th width="15%">#{msgs.label_officialUnit}</th>
-										<td width="85%" colspan="5">
+										<td width="50">
 											<h:outputText value="#{employeesDataView.employee.officialUnitFullName}" />
+										</td>
+										<th width="15">#{msgs.label_lastAnnualRaiseDate}</th>
+										<td width="20%">
+											<h:outputText value="#{employeesDataView.employee.lastAnnualRaiseDateString}" />
 										</td>
 									</tr>
 
