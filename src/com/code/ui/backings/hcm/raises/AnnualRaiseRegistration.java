@@ -2,6 +2,7 @@ package com.code.ui.backings.hcm.raises;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
@@ -10,6 +11,7 @@ import javax.faces.bean.ViewScoped;
 import com.code.dal.orm.hcm.Category;
 import com.code.dal.orm.hcm.raises.Raise;
 import com.code.dal.orm.hcm.raises.RaiseEmployeeData;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
 import com.code.enums.RaiseEmployeesTypesEnum;
@@ -73,6 +75,13 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
 	categoriesList = CommonService.getAllCategories();
 	categoriesList.remove(5);
+	for (Iterator<Category> i = categoriesList.iterator(); i.hasNext();) {
+	    Category category = i.next();
+	    if ((category.getId() == CategoriesEnum.CONTRACTORS.getCode())) {
+		i.remove();
+		break;
+	    }
+	}
 
 	raiseEmployees = new ArrayList<>();
 	updateRaiseEmployees = new ArrayList<>();
