@@ -9,7 +9,7 @@
 	<script type="text/javascript">   
 		function getUnit(contextPath , isManager) {
 			if(isManager)
-				unitsMiniSearch(7, contextPath, 'handleUnitMiniSearchResult(ret)', -1, #{missionsReports.regionId}, -1 , #{missionsReports.orgUnitHKey}, 0);
+				unitsMiniSearch(7, contextPath, 'handleUnitMiniSearchResult(ret)', -1, #{missionsReports.regionId}, -1 , #{missionsReports.orgUnitHKeyPrefix}, 0);
 			else
 				unitsMiniSearch(2, contextPath, 'handleUnitMiniSearchResult(ret)', -1, #{missionsReports.regionId}, -1 , -1 , 0);
 		}
