@@ -666,7 +666,7 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    private static void IsStillValidRaiseEmployee(RaiseEmployeeData raiseEmployeeData) throws BusinessException {
+    private static void isStillValidRaiseEmployee(RaiseEmployeeData raiseEmployeeData) throws BusinessException {
 	List<EmployeeData> employeeData = getDeservedEmployees(raiseEmployeeData.getRaiseId(), raiseEmployeeData.getRaiseExecutionDate(), raiseEmployeeData.getEmpId());
 	if (employeeData.size() == 0)
 	    throw new BusinessException("emp_isNotDeserved");
@@ -870,7 +870,7 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static void addRaiseTransaction(RaiseTransactionData raiseTransactionData, CustomSession... useSession) throws BusinessException {
+    private static void addRaiseTransaction(RaiseTransactionData raiseTransactionData, CustomSession... useSession) throws BusinessException {
 	validateRaiseTransactionData(raiseTransactionData);
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -898,7 +898,7 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    public static void updateRaiseTransaction(RaiseTransactionData raiseTransactionData, CustomSession... useSession) throws BusinessException {
+    private static void updateRaiseTransaction(RaiseTransactionData raiseTransactionData, CustomSession... useSession) throws BusinessException {
 	validateRaiseTransactionData(raiseTransactionData);
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -1019,7 +1019,7 @@ public class RaisesService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 	    for (RaiseEmployeeData raiseEmployee : deservedEmployees) {
-		IsStillValidRaiseEmployee(raiseEmployee);
+		// isStillValidRaiseEmployee(raiseEmployee);
 		RaiseTransactionData transaction = constructRaiseTransaction(managerId, raise, raiseEmployee.getEmpId(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), raiseEmployee.getEmpDegreeId() + 1, null);
 		addRaiseTransaction(transaction, session);
 		doRaiseEffect(transaction, session);
@@ -1120,7 +1120,6 @@ public class RaisesService extends BaseService {
 	    throw new BusinessException("error_general");
 	if (raiseTransactionData.getRaiseExecutionDate() == null)
 	    throw new BusinessException("error_general");
-
     }
 
     /*------------------------------------------Queries------------------------------------------------*/
