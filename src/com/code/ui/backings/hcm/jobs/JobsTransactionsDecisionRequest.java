@@ -84,7 +84,7 @@ public class JobsTransactionsDecisionRequest extends WFBaseBacking {
     private String selectedNewMinorSpecDesc;
     private Integer selectedNewGeneralSpecId;
     private Integer selectedNewGeneralTypeId;
-    private Long selectedNewBasicJobNameForModifyMinorSpec;
+    private Long selectedNewBasicJobNameIdForModifyMinorSpec;
     private String selectedNewNameForModifyMinorSpec;
 
     // optional data used for jobs moving
@@ -215,7 +215,7 @@ public class JobsTransactionsDecisionRequest extends WFBaseBacking {
     /*****************************************************************************************************************/
     // Add jobs
     public void addNewJobs() {
-	if (selectedBasicJobsNames != null && !selectedBasicJobsNames.isEmpty()) {
+	if (selectedBasicJobsNamesIds != null && !selectedBasicJobsNamesIds.isEmpty()) {
 
 	    String[] basicJobsNames = selectedBasicJobsNames.split(",");
 	    String[] basicJobsNamesIds = selectedBasicJobsNamesIds.split(",");
@@ -341,7 +341,7 @@ public class JobsTransactionsDecisionRequest extends WFBaseBacking {
 			wfJobData.setNewMinorSpecializationDesc(selectedNewMinorSpecDesc);
 			wfJobData.setNewGeneralSpecialization(selectedNewGeneralSpecId);
 			wfJobData.setNewGeneralType(selectedNewGeneralTypeId);
-			wfJobData.setNewBasicJobNameId(selectedNewBasicJobNameForModifyMinorSpec);
+			wfJobData.setNewBasicJobNameId(selectedNewBasicJobNameIdForModifyMinorSpec);
 			wfJobData.setNewName(selectedNewNameForModifyMinorSpec);
 
 		    } else if (transactionTypeCode == TransactionTypesEnum.JOB_MOVE.getCode()) {
@@ -924,12 +924,12 @@ public class JobsTransactionsDecisionRequest extends WFBaseBacking {
 	this.selectedNewGeneralTypeId = selectedNewGeneralTypeId;
     }
 
-    public Long getSelectedNewBasicJobNameForModifyMinorSpec() {
-	return selectedNewBasicJobNameForModifyMinorSpec;
+    public Long getSelectedNewBasicJobNameIdForModifyMinorSpec() {
+	return selectedNewBasicJobNameIdForModifyMinorSpec;
     }
 
-    public void setSelectedNewBasicJobNameForModifyMinorSpec(Long selectedNewBasicJobNameForModifyMinorSpec) {
-	this.selectedNewBasicJobNameForModifyMinorSpec = selectedNewBasicJobNameForModifyMinorSpec;
+    public void setSelectedNewBasicJobNameIdForModifyMinorSpec(Long selectedNewBasicJobNameIdForModifyMinorSpec) {
+	this.selectedNewBasicJobNameIdForModifyMinorSpec = selectedNewBasicJobNameIdForModifyMinorSpec;
     }
 
     public String getSelectedNewNameForModifyMinorSpec() {

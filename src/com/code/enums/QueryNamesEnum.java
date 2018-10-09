@@ -165,10 +165,10 @@ public enum QueryNamesEnum {
     HCM_GET_JOBS_SERIALS_WHERE_GAPS_AFTER_THEM("hcm_job_getJobsSerialsWhereGapsAfterThem"),
     HCM_GET_JOBS_SERIALS_WHERE_GAPS_BEFORE_THEM("hcm_job_getJobsSerialsWhereGapsBeforeThem"),
 
+    HCM_COUNT_JOBS_TRANSACTIONS_BY_BASIC_JOB_NAME_ID("hcm_jobTransaction_countJobsTransactionsByBasicJobNameId"),
     HCM_GET_JOBS_DECISIONS("hcm_jobTransaction_getJobsDecisions"),
     /* ****************************************** Job Transactions **************************************************** */
     HCM_GET_JOB_TRANSACTIONS_DATA_BY_JOB_ID("hcm_jobTransactionData_getJobTransactionsByJobId"),
-    HCM_COUNT_JOBS_TRANSACTIONS_BY_BASIC_JOB_NAME_ID("hcm_job_countJobsTransactionsByBasicJobNameId"),
     /* ****************************************** Job Classifications ************************************************* */
     HCM_SEARCH_JOB_CLASSIFICATION("hcm_jobClassification_searchJobClassification"),
     HCM_GET_JOB_CLASSIFICATION_MAJOR_GROUP_DESC("hcm_jobClassification_getJobClassificationMajorGroupDesc"),

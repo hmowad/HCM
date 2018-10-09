@@ -116,20 +116,20 @@ public class JobsRenamingScalingTransactionsCollective extends BaseBacking {
 
 	    List<JobData> currentJobsToAdd = new ArrayList<JobData>();
 
-	    String currentJobName;
+	    Long currentBasicJobNameId;
 	    Long currentRankId;
 
 	    if (selectedJobs.isEmpty()) {
-		currentJobName = jobs.get(0).getName();
+		currentBasicJobNameId = jobs.get(0).getBasicJobNameId();
 		currentRankId = jobs.get(0).getRankId();
 	    } else {
-		currentJobName = selectedJobs.get(0).getName();
+		currentBasicJobNameId = selectedJobs.get(0).getBasicJobNameId();
 		currentRankId = selectedJobs.get(0).getRankId();
 	    }
 
 	    // Validate Job Names
 	    for (JobData job : jobs) {
-		if (!job.getName().equals(currentJobName)) {
+		if (!job.getBasicJobNameId().equals(currentBasicJobNameId)) {
 		    this.setServerSideErrorMessages(getMessage("error_differentBasicJobName"));
 		    return;
 		}

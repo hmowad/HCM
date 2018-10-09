@@ -23,10 +23,10 @@ import com.code.services.util.HijriDateService;
  * 
  */
 @NamedQueries({
-	@NamedQuery(name = "hcm_job_countJobsTransactionsByBasicJobNameId",
-		query = " select count(jt.id) from JobTransaction jt "
-			+ "where jt.basicJobNameId = :P_BASIC_JOB_NAME_ID "
-			+ "and jt.status <> 4"),
+	@NamedQuery(name = "hcm_jobTransaction_countJobsTransactionsByBasicJobNameId",
+		query = " select count(jt.id) from JobTransaction jt " +
+			" where jt.basicJobNameId = :P_BASIC_JOB_NAME_ID " +
+			" or jt.transBasicJobNameId = :P_BASIC_JOB_NAME_ID "),
 
 	@NamedQuery(name = "hcm_jobTransaction_getJobsDecisions",
 		query = "select jt from JobTransaction jt, Rank r" +
