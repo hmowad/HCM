@@ -12,6 +12,7 @@ import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.MissionsService;
+import com.code.services.hcm.UnitsService;
 import com.code.services.security.SecurityService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
@@ -27,6 +28,7 @@ public class MissionsReports extends BaseBacking {
     private Long orgUnitId;
     private String orgUnitFullName;
     private String orgUnitHKey;
+    private String orgUnitHKeyPrefix;
 
     private List<Region> regionsList;
     private int category;
@@ -67,6 +69,7 @@ public class MissionsReports extends BaseBacking {
 	    orgUnitId = loginEmpData.getPhysicalUnitId();
 	    orgUnitFullName = loginEmpData.getPhysicalUnitFullName();
 	    orgUnitHKey = loginEmpData.getPhysicalUnitHKey();
+	    orgUnitHKeyPrefix = UnitsService.getHKeyPrefix(orgUnitHKey);
 
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -189,6 +192,14 @@ public class MissionsReports extends BaseBacking {
 
     public void setIsAdmin(Boolean isAdmin) {
 	this.isAdmin = isAdmin;
+    }
+
+    public String getOrgUnitHKeyPrefix() {
+	return orgUnitHKeyPrefix;
+    }
+
+    public void setOrgUnitHKeyPrefix(String orgUnitHKeyPrefix) {
+	this.orgUnitHKeyPrefix = orgUnitHKeyPrefix;
     }
 
 }
