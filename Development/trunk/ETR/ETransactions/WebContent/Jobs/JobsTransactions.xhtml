@@ -199,7 +199,7 @@
 		function handleBasicJobsNamesMiniSearchResult(ret){
 			if(ret != null){
 				var idTokens = callerId.split(':');
-				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':basicJobNameHId').value = ret[0];
+				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':basicJobNameIdHId').value = ret[0];
 				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobNameId').innerHTML = ret[1];
 				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobNameHId').value = ret[1];
 				document.getElementById('jobsTransactionsFormId:newJobsTableId:' + idTokens[2] + ':jobCategoryHId').value = ret[2];
@@ -219,9 +219,9 @@
 		function handleNewBasicJobsNamesMiniSearchResult(ret){
 			if(ret != null){
 				var idTokens = callerId.split(':');
+				document.getElementById(idTokens[0] + ':' + idTokens[1] + ':' + idTokens[2] + ':newBasicJobNameIdHId').value = ret[0];
 				document.getElementById(idTokens[0] + ':' + idTokens[1] + ':' + idTokens[2] + ':jobNewNameId').innerHTML = ret[1];
 				document.getElementById(idTokens[0] + ':' + idTokens[1] + ':' + idTokens[2] + ':jobNewNameHId').value = ret[1];
-				document.getElementById(idTokens[0] + ':' + idTokens[1] + ':' + idTokens[2] + ':basicJobNewNameHId').value = ret[0];
 		    }
 		}
 
@@ -320,8 +320,8 @@
 														</f:facet>
 														<h:outputText id="jobNameId" value="#{job.name}" />
 														<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getBasicJobName('#{request.contextPath}',this.id);return false;" />
+														<h:inputHidden id="basicJobNameIdHId" value="#{job.basicJobNameId}" />
 														<h:inputHidden id="jobNameHId" value="#{job.name}" />
-														<h:inputHidden id="basicJobNameHId" value="#{job.basicJobNameId}" />
 														<h:inputHidden id="jobCategoryHId" value="#{job.categoryId}" />
 														<h:commandButton id="changeJobNameBtnId" style="display: none;" action="#{jobsTransactions.jobNameChanged(job)}">
 															<f:ajax execute="jobsTransactionsFormId:newJobsTableId jobsTransactionsFormId:newJobDetailsPanelId" render="jobsTransactionsFormId:newJobsTableId jobsTransactionsFormId:newJobDetailsPanelId jobsTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
@@ -515,8 +515,8 @@
 														</f:facet>
 														<h:outputText id="jobNewNameId" value="#{job.newName}" />
 														<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getNewBasicJobName('#{request.contextPath}',this.id);return false;" />
+														<h:inputHidden id="newBasicJobNameIdHId" value="#{job.newBasicJobNameId}" />
 														<h:inputHidden id="jobNewNameHId" value="#{job.newName}" />
-														<h:inputHidden id="basicJobNewNameHId" value="#{job.newBasicJobNameId}" />
 														<h:inputHidden id="jobCategoryHId" value="#{job.categoryId}" />
 													</rich:column>
 													<rich:column rendered="#{(jobsTransactions.mode!=1)}" style="width : 10%;">
@@ -624,8 +624,8 @@
 														<f:facet name="header"> #{msgs.label_jobNewName} </f:facet>
 														<h:outputText id="jobNewNameId" value="#{job.newName}" />
 														<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getNewBasicJobName('#{request.contextPath}',this.id);return false;" />
+														<h:inputHidden id="newBasicJobNameIdHId" value="#{job.newBasicJobNameId}" />
 														<h:inputHidden id="jobNewNameHId" value="#{job.newName}" />
-														<h:inputHidden id="basicJobNewNameHId" value="#{job.newBasicJobNameId}" />
 														<h:inputHidden id="jobCategoryHId" value="#{job.categoryId}" />
 													</rich:column>
 													<rich:column style="width : 10%;">

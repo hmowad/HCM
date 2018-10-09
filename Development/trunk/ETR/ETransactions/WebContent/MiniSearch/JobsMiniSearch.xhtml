@@ -23,14 +23,14 @@
                   var jobNameValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobNameID').innerHTML;
                   var jobMinorSpecIdValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobMinorSpecIDId').value;
                   var jobMinorSpecDescValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobMinorSpecDescId').innerHTML;
-                  var jobRegionDescValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobRegionDescId').value;
-                  var jobRankIdValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobRankIDId').value;
-                  var jobRankDescValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobRankDescId').value;   
+                  var jobRegionDescValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobRegionDescHId').value;
+                  var jobRankIdValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobRankIdHId').value;
+                  var jobRankDescValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobRankDescHId').value;   
                   var jobUnitIdValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobUnitIDId').value;           
                   var jobUnitFullNameValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobUnitFullNameId').innerHTML;
-                  var jobClassificationCodeValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobClassificationCodeId').value;
-                  var jobClassificationDescValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobClassificationDescId').value;
-                  var basicJobNameIdValue = document.getElementById('searchJobFormId:jobList:' + index + ':basicJobNameId').value;
+                  var jobClassificationCodeValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobClassificationCodeHId').value;
+                  var jobClassificationDescValue = document.getElementById('searchJobFormId:jobList:' + index + ':jobClassificationDescHId').value;
+                  var basicJobNameIdValue = document.getElementById('searchJobFormId:jobList:' + index + ':basicJobNameIdHId').value;
                   																
                   ret = new Array();
                   ret[0] = jobIdValue;
@@ -140,12 +140,12 @@
 								<f:facet name="header">#{msgs.label_jobCode}</f:facet>
 								<h:outputText id="jobCodeID" value="#{row.code}" />
 								<h:outputText style="display:none" id="jobIdID" value="#{row.id}" />
-								<h:inputHidden id="basicJobNameId" value="#{row.basicJobNameId}" />
-								<h:inputHidden id="jobRegionDescId" value="#{row.regionDescription}" />
-								<h:inputHidden id="jobRankIDId" value="#{row.rankId}" />
-								<h:inputHidden id="jobRankDescId" value="#{row.rankDescription}" />
-								<h:inputHidden id="jobClassificationCodeId" value="#{row.classificationJobCode}" />
-								<h:inputHidden id="jobClassificationDescId" value="#{row.classificationJobDescription}" />
+								<h:inputHidden id="basicJobNameIdHId" value="#{row.basicJobNameId}" />
+								<h:inputHidden id="jobRegionDescHId" value="#{row.regionDescription}" />
+								<h:inputHidden id="jobRankIdHId" value="#{row.rankId}" />
+								<h:inputHidden id="jobRankDescHId" value="#{row.rankDescription}" />
+								<h:inputHidden id="jobClassificationCodeHId" value="#{row.classificationJobCode}" />
+								<h:inputHidden id="jobClassificationDescHId" value="#{row.classificationJobDescription}" />
 							</rich:column>
 
 							<rich:column style="width : 15%;">

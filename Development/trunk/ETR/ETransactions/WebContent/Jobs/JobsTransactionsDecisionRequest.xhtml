@@ -63,8 +63,8 @@
 	}
 	 
 	function handleBasicJobNameForConstructionMiniSearchResult(ret){
-		if(ret != null){			
-			document.getElementById('jobsTransactionsDecisionRequestFormId:selectedBasicJobsNamesIdsForConstructionHId').value = ret[0];			
+		if(ret != null){
+			document.getElementById('jobsTransactionsDecisionRequestFormId:selectedBasicJobsNamesIdsForConstructionHId').value = ret[0];
 			document.getElementById('jobsTransactionsDecisionRequestFormId:selectedBasicJobsNamesForConstructionHId').value = ret[1];	
 			document.getElementById('jobsTransactionsDecisionRequestFormId:addBasicJobsNamesForConstructionBtnId').click();					
 	    }
@@ -233,10 +233,10 @@
 	// get basic job name for specific job to be modified
 	function getBasicJobNameForModifiedMinorSpecJob(contextPath, cId){
 		callerId = cId;
-		openBasicJobsNamesMiniSearch(contextPath, 'handlegetBasicJobNameForModifiedMinorSpecJobMiniSearchResult(ret)', 1, #{jobsTransactionsDecisionRequest.mode}, 0);
+		openBasicJobsNamesMiniSearch(contextPath, 'handleBasicJobNameForModifiedMinorSpecJobMiniSearchResult(ret)', 1, #{jobsTransactionsDecisionRequest.mode}, 0);
 	}
 	 
-	function handlegetBasicJobNameForModifiedMinorSpecJobMiniSearchResult(ret){
+	function handleBasicJobNameForModifiedMinorSpecJobMiniSearchResult(ret){
 		if(ret != null){
 			var idTokens = callerId.split(':');
 			document.getElementById(idTokens[0] + ':' + idTokens[1] + ':' + idTokens[2] + ':basicJobNameIdForMdifiedMinorSpecJobHId').value = ret[0];
@@ -762,7 +762,7 @@
 
 																<th width="15%">#{msgs.label_jobsNewName}</th>
 																<td width="35%">
-																	<h:inputHidden id="basicJobNameIdForModifiedMinorSpecJobsHId" value="#{jobsTransactionsDecisionRequest.selectedNewBasicJobNameForModifyMinorSpec}" />
+																	<h:inputHidden id="basicJobNameIdForModifiedMinorSpecJobsHId" value="#{jobsTransactionsDecisionRequest.selectedNewBasicJobNameIdForModifyMinorSpec}" />
 																	<h:outputText id="jobNameForModifiedMinorSpecJobsId" value="#{jobsTransactionsDecisionRequest.selectedNewNameForModifyMinorSpec}" />
 																	<h:inputHidden id="jobNameForModifiedMinorSpecJobsHId" value="#{jobsTransactionsDecisionRequest.selectedNewNameForModifyMinorSpec}" />
 																	<h:commandButton title="#{msgs.label_select}" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getBasicJobNameForModifiedMinorSpecJobs('#{request.contextPath}');return false;" />

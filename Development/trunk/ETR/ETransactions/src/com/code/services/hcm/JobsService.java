@@ -570,7 +570,7 @@ public class JobsService extends BaseService {
 
 		jobData.setExecutionDate(decisionData.getExecutionDate());
 
-		if (jobData.getNewName() != null && jobData.getNewName().length() > 0) {
+		if (jobData.getNewBasicJobNameId() != null) {
 		    jobData.setBasicJobNameId(jobData.getNewBasicJobNameId());
 		    jobData.setName(jobData.getNewName());
 		}
@@ -683,7 +683,7 @@ public class JobsService extends BaseService {
 		jobData.setMinorSpecializationId(jobData.getNewMinorSpecializationId());
 		jobData.setExecutionDate(decisionData.getExecutionDate());
 
-		if (jobData.getNewName() != null && jobData.getNewName().length() > 0) {
+		if (jobData.getNewBasicJobNameId() != null) {
 		    jobData.setBasicJobNameId(jobData.getNewBasicJobNameId());
 		    jobData.setName(jobData.getNewName());
 		}
@@ -1176,7 +1176,7 @@ public class JobsService extends BaseService {
 	HashSet<String> jobsSerialsSet = new HashSet<String>();
 	for (JobData jobData : jobsData) {
 	    // check mandatory fields
-	    if (jobData.getCategoryId() == null || jobData.getName() == null || jobData.getName().length() == 0)
+	    if (jobData.getCategoryId() == null || jobData.getBasicJobNameId() == null)
 		throw new BusinessException("error_jobNameIsMandatory");
 
 	    if (jobData.getCategoryId() != null && !jobData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !jobData.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
@@ -1240,9 +1240,10 @@ public class JobsService extends BaseService {
 
 	HashSet<String> jobsSerialsSet = new HashSet<String>();
 	for (JobData jobData : jobsData) {
-	    if (jobData.getNewName() == null || jobData.getNewName().length() == 0)
+	    if (jobData.getNewBasicJobNameId() == null)
 		throw new BusinessException("error_newNameIsMandatory");
-	    if (jobData.getNewName().trim().equalsIgnoreCase(jobData.getName().trim()))
+
+	    if (jobData.getNewBasicJobNameId().equals(jobData.getBasicJobNameId()))
 		throw new BusinessException("error_newNameMustBeDifferentFromOriginalName");
 
 	    if (!jobData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !jobData.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
@@ -1419,6 +1420,7 @@ public class JobsService extends BaseService {
 	for (JobData jobData : jobsData) {
 	    if (jobData.getNewUnitId() == null)
 		throw new BusinessException("error_newUnitIsMandatory");
+
 	    if (jobData.getNewUnitId().equals(jobData.getUnitId()))
 		throw new BusinessException("error_newUnitMustBeDifferent");
 
@@ -1451,11 +1453,14 @@ public class JobsService extends BaseService {
 	for (JobData jobData : jobsData) {
 	    if (jobData.getNewMinorSpecializationId() == null)
 		throw new BusinessException("error_newMinorSpecIsMandatory");
+
 	    if (jobData.getNewMinorSpecializationId().equals(jobData.getMinorSpecializationId()))
 		throw new BusinessException("error_newMinorSpecMustBeDifferentFromOriginalMinorSpec");
+
 	    if (jobData.getApprovedFlag().intValue() != FlagsEnum.ON.getCode())
 		throw new BusinessException("error_modifyMinorSpecsAllowedOnlyForApprovedJobs");
-	    if (jobData.getNewName() != null && jobData.getNewName().length() > 0 && jobData.getNewName().trim().equalsIgnoreCase(jobData.getName().trim()))
+
+	    if (jobData.getNewBasicJobNameId() != null && jobData.getNewBasicJobNameId().equals(jobData.getBasicJobNameId()))
 		throw new BusinessException("error_newNameMustBeDifferentFromOriginalName");
 	}
     }
@@ -1984,10 +1989,11 @@ public class JobsService extends BaseService {
      * @return the number of jobs found in the input basicJobNameId
      * @throws BusinessException
      */
-    public static long countJobsByBasicJobNameId(Long basicJobNameId) throws BusinessException {
+    public static long countJobsByBasicJobNameId(long basicJobNameId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_BASIC_JOB_NAME_ID", basicJobNameId);
+
 	    return DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_JOBS_BY_BASIC_JOB_NAME_ID.getCode(), qParams).get(0);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
@@ -2439,10 +2445,11 @@ public class JobsService extends BaseService {
      * @return the number of jobs found in the input basicJobNameId
      * @throws BusinessException
      */
-    public static long countJobsTransactionsByBasicJobNameId(Long basicJobNameId) throws BusinessException {
+    public static long countJobsTransactionsByBasicJobNameId(long basicJobNameId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_BASIC_JOB_NAME_ID", basicJobNameId);
+
 	    return DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_JOBS_TRANSACTIONS_BY_BASIC_JOB_NAME_ID.getCode(), qParams).get(0);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();

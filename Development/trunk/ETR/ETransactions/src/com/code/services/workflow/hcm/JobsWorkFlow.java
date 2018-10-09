@@ -506,7 +506,7 @@ public class JobsWorkFlow extends BaseWorkFlow {
 	}
     }
 
-    public static Long countJobsRequestsByBasicJobNameId(Long basicJobNameId) throws BusinessException {
+    public static long countJobsRequestsByBasicJobNameId(long basicJobNameId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_BASIC_JOB_NAME_ID", basicJobNameId);

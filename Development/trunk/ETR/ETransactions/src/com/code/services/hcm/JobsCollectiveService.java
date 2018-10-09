@@ -184,12 +184,12 @@ public class JobsCollectiveService extends BaseService {
 	    throw new BusinessException("error_unitsListEmpty");
 
 	for (JobData job : jobsToAdd) {
-	    if (job.getName() == null || job.getName().length() == 0)
+	    if (job.getBasicJobNameId() == null)
 		throw new BusinessException("error_jobNameIsMandatory");
 	    if (job.getRankId() == null)
 		throw new BusinessException("error_rankIsMandatory");
-	    if ((job.getCategoryId().longValue() == CategoriesEnum.OFFICERS.getCode() || job.getCategoryId().longValue() == CategoriesEnum.SOLDIERS
-		    .getCode()) && job.getGeneralSpecialization() == null)
+	    if ((job.getCategoryId().longValue() == CategoriesEnum.OFFICERS.getCode() || job.getCategoryId().longValue() == CategoriesEnum.SOLDIERS.getCode())
+		    && job.getGeneralSpecialization() == null)
 		throw new BusinessException("error_generalSpecializationIsMandatory");
 	    if (job.getMinorSpecializationId() == null)
 		throw new BusinessException("error_minorSpecializationIsMandatory");
