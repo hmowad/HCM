@@ -8,6 +8,7 @@ import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.Category;
 import com.code.dal.orm.hcm.raises.Raise;
+import com.code.enums.FlagsEnum;
 import com.code.enums.RaiseEmployeesTypesEnum;
 import com.code.enums.RaiseTypesEnum;
 import com.code.exceptions.BusinessException;
@@ -51,7 +52,7 @@ public class RaisesManagement extends BaseBacking {
 
 		}
 
-		raises = RaisesService.getRaises(-1, -1, null, null, null, null, null, -1, mode, -1);
+		raises = RaisesService.getRaises(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, null, null, FlagsEnum.ALL.getCode(), mode, FlagsEnum.ALL.getCode());
 		employeesCategories = CommonService.getAllCategories();
 		reset();
 	    }
@@ -63,7 +64,7 @@ public class RaisesManagement extends BaseBacking {
 
     public void search() {
 	try {
-	    raises = RaisesService.getRaises(-1, -1, decisionDateFrom, decisionDateTo, decisionNumber, executionDateFrom, executionDateTo, jobCategory, mode, -1);
+	    raises = RaisesService.getRaises(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), decisionDateFrom, decisionDateTo, decisionNumber, executionDateFrom, executionDateTo, jobCategory, mode, FlagsEnum.ALL.getCode());
 	} catch (BusinessException e) {
 	    e.printStackTrace();
 	}

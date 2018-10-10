@@ -20,7 +20,7 @@ import com.code.dal.orm.AuditEntity;
 import com.code.services.util.HijriDateService;
 
 @NamedQueries({
-	@NamedQuery(name = "hcm_raises_searchRaises",
+	@NamedQuery(name = "hcm_raise_searchRaises",
 		query = "select r from Raise r" +
 			" where (:P_EXCLUDED_ID = -1 or r.id <> :P_EXCLUDED_ID)" +
 			" and(:P_ID = -1 or r.id = :P_ID)" +
@@ -34,7 +34,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_EXECUTION_DATE_TO_FLAG = -1 or r.executionDate <= (TO_DATE(:P_EXECUTION_DATE_TO,'MI/MM/YYYY')))" +
 			" order by r.id"),
 
-	@NamedQuery(name = "hcm_raises_getDeservedEmployees",
+	@NamedQuery(name = "hcm_raise_getDeservedEmployees",
 		query = "select ed from Raise r, EmployeeData ed" +
 			" where (r.id = :P_RAISE_ID)" +
 			" and (:P_EMP_ID = -1 or ed.empId = :P_EMP_ID ) " +
@@ -50,7 +50,7 @@ import com.code.services.util.HijriDateService;
 			" and ((ed.lastPromotionDate is null) or (r.executionDate > ed.lastPromotionDate))" +
 			" order by ed.empId"),
 
-	@NamedQuery(name = "hcm_raises_getUnDeservedEmployees",
+	@NamedQuery(name = "hcm_raise_getUnDeservedEmployees",
 		query = "select ed from Raise r, EmployeeData ed" +
 			" where (r.id = :P_RAISE_ID)" +
 			" and (ed.statusId between 15 and 45)" +
