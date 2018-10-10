@@ -1561,7 +1561,6 @@ public class PromotionsService extends BaseService {
 	if (candidatePromotionReportDetailDataList.isEmpty())
 	    throw new BusinessException("error_noCandidatesInReportDidntPerformDrugTest");
 
-	List<PromotionReportDetailData> updatedPromotionReportDetailDataList = new ArrayList<PromotionReportDetailData>();
 	String employeesSocialIDs = "";
 	String comma = "";
 	for (PromotionReportDetailData promotionReportDetailDataItr : candidatePromotionReportDetailDataList) {
@@ -1569,17 +1568,14 @@ public class PromotionsService extends BaseService {
 	    empSocialID += promotionReportDetailDataItr.getDrugsRequestId() != null ? promotionReportDetailDataItr.getDrugsRequestId() : PROMOTION_DRUGS_TEST_REQUEST_SYMBOL;
 	    employeesSocialIDs += comma + empSocialID;
 	    comma = ",";
-
-	    if (promotionReportDetailDataItr.getMedicalTest().equals(PromotionMedicalTestStatusEnum.NON_TESTED.getCode())) {
-		promotionReportDetailDataItr.setMedicalTest(PromotionMedicalTestStatusEnum.CURRENTLY_TESTING.getCode());
-		updatedPromotionReportDetailDataList.add(promotionReportDetailDataItr);
-	    }
 	}
 
 	if (!employeesSocialIDs.isEmpty())
 	    DrugsTestJMSClient.sendTextMessage(employeesSocialIDs);
 
-	addModifyPromotionReportDetails(promotionReportData.getId(), updatedPromotionReportDetailDataList, loginEmpId);
+	modifyReportDetailsDrugTestResult(candidatePromotionReportDetailDataList);
+
+	addModifyPromotionReportDetails(promotionReportData.getId(), candidatePromotionReportDetailDataList, loginEmpId);
     }
 
     /**
