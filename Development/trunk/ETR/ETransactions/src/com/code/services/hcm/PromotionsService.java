@@ -1532,7 +1532,7 @@ public class PromotionsService extends BaseService {
      */
     public static void sendPromotionsSoldiersDrugsTestRequest(PromotionReportData promotionReportData, long loginEmpId) throws BusinessException {
 
-	Integer[] medicalTestStatuses = new Integer[] { PromotionMedicalTestStatusEnum.NON_TESTED.getCode(), PromotionMedicalTestStatusEnum.CURRENTLY_TESTING.getCode(), PromotionMedicalTestStatusEnum.SENT_TO_HOSPITAL.getCode() };
+	Integer[] medicalTestStatuses = new Integer[] { PromotionMedicalTestStatusEnum.NON_TESTED.getCode() };
 	List<PromotionReportDetailData> candidatePromotionReportDetailDataList = getPromotionReportDetailsDataForDrugsTest(promotionReportData.getId(), new Long[] { PromotionCandidateStatusEnum.CANDIDATE.getCode() }, medicalTestStatuses);
 
 	if (promotionReportData.getRankId().equals(RanksEnum.SOLDIER.getCode()) || promotionReportData.getRankId().equals(RanksEnum.FIRST_SOLDIER.getCode()) || promotionReportData.getRankId().equals(RanksEnum.CORPORAL.getCode())) {
@@ -1559,7 +1559,7 @@ public class PromotionsService extends BaseService {
 	}
 
 	if (candidatePromotionReportDetailDataList.isEmpty())
-	    throw new BusinessException("error_promotionNoSoldiersToSendForDrugsTest");
+	    throw new BusinessException("error_noCandidatesInReportDidntPerformDrugTest");
 
 	List<PromotionReportDetailData> updatedPromotionReportDetailDataList = new ArrayList<PromotionReportDetailData>();
 	String employeesSocialIDs = "";

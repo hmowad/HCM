@@ -164,6 +164,9 @@ public class PromotionSoldiersReport extends PromotionsBase {
 	detailSearchStatusesList.add(PromotionCandidateStatusEnum.PROMOTED.getCode() + "");
 	medicalTest = FlagsEnum.ALL.getCode();
 	detailSearchEmpName = "";
+	enrollNumber = null;
+	medicalTestExemptionReason = "";
+
 	searchPromotionDetails();
 	if (promotionReportDetailDataList != null && promotionReportDetailDataList.size() != FlagsEnum.OFF.getCode())
 	    this.setServerSideSuccessMessages(getMessage("notify_drugTestDataUpdatedSuccessfully"));
@@ -202,6 +205,7 @@ public class PromotionSoldiersReport extends PromotionsBase {
     public void sendDrugsTestRequest() throws BusinessException {
 	try {
 	    PromotionsService.sendPromotionsSoldiersDrugsTestRequest(promotionReportData, this.loginEmpData.getEmpId());
+	    searchPromotionDetails();
 	    this.setServerSideSuccessMessages(getMessage("notify_drugTestRequestSentSuccessfully"));
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
