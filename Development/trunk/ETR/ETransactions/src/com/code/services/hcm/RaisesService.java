@@ -107,7 +107,7 @@ public class RaisesService extends BaseService {
 	    addRaise(raise);
 	    for (RaiseEmployeeData raiseEmployeeData : raiseEmployeeDataList) {
 		raiseEmployeeData.setRaiseId(raise.getId());
-		addRaiseEmployee(raiseEmployeeData, null, session);
+		addRaiseEmployee(raiseEmployeeData, session);
 	    }
 
 	    if (!isOpenedSession)
