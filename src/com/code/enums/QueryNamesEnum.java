@@ -53,10 +53,9 @@ public enum QueryNamesEnum {
     /* ************************************************ Raises ********************************************** */
 
     HCM_RAISE_TRANSACTION_DATA_GET_NOT_EXECUTED_RAISES_TRANSACTIONS("hcm_raiseTransactionData_getNotExecutedRaisesTransactions"),
-    HCM_RAISES_SEARCH_RAISES("hcm_raises_searchRaises"),
-    HCM_RAISES_GET_DESERVED_EMPLOYEES("hcm_raises_getDeservedEmployees"),
-    HCM_RAISES_GET_UNDESERVED_EMPLOYEES("hcm_raises_getUnDeservedEmployees"),
-    HCM_RAISES_SEARCH_RAISE_TRANSACTIONS("hcm_raiseTransactionData_searchRaiseTransactions"),
+    HCM_RAISES_SEARCH_RAISES("hcm_raise_searchRaises"),
+    HCM_RAISES_GET_DESERVED_EMPLOYEES("hcm_raise_getDeservedEmployees"),
+    HCM_RAISES_GET_UNDESERVED_EMPLOYEES("hcm_raise_getUnDeservedEmployees"),
     HCM_RAISES_SEARCH_RAISE_EMPLOYEES("hcm_raiseEmployeeData_searchRaiseEmployees"),
 
     /* ************************************************ Navy Formations ********************************************** */
