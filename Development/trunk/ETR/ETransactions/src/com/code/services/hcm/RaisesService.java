@@ -581,57 +581,49 @@ public class RaisesService extends BaseService {
     }
 
     public static List<RaiseEmployeeData> generateRaiseEmployees(Raise raise, Date executionDate) throws BusinessException {
-	try {
-	    List<RaiseEmployeeData> endOfLadderEmpRaiseData = new ArrayList<>();
-	    List<RaiseEmployeeData> allRaiseEmployees = new ArrayList<>();
-	    List<RaiseEmployeeData> deservedEmpRaiseData = new ArrayList<>();
-	    List<RaiseEmployeeData> unDeservedEmpRaiseData = new ArrayList<>();
-	    List<EmployeeData> unDeservedEmpData = new ArrayList<>();
+	List<RaiseEmployeeData> endOfLadderEmpRaiseData = new ArrayList<>();
+	List<RaiseEmployeeData> allRaiseEmployees = new ArrayList<>();
+	List<RaiseEmployeeData> deservedEmpRaiseData = new ArrayList<>();
+	List<RaiseEmployeeData> unDeservedEmpRaiseData = new ArrayList<>();
+	List<EmployeeData> unDeservedEmpData = new ArrayList<>();
 
-	    Map<Long, Long> rankDegressHashMap = new HashMap<Long, Long>();
+	Map<Long, Long> rankDegressHashMap = new HashMap<Long, Long>();
 
-	    List<PayrollSalary> allEndOfLadderDegreesForCategory = PayrollsService.getEndOfLadderForAllRanksOfCategory(raise.getCategoryId());
-	    for (PayrollSalary endOfLadderDegree : allEndOfLadderDegreesForCategory) {
-		rankDegressHashMap.put(endOfLadderDegree.getRankId(), endOfLadderDegree.getDegreeId());
-	    }
-
-	    List<EmployeeData> allDeservedEmpData = getDeservedEmployees(raise.getId(), executionDate, null);
-	    unDeservedEmpData = getUnDeservedEmployees(raise.getId(), executionDate);
-
-	    for (EmployeeData emp : allDeservedEmpData) {
-		if (emp.getDegreeId().equals(rankDegressHashMap.get(emp.getRankId()))) {
-		    // convert list of EmployeeData to RaiseEmployeeData
-		    endOfLadderEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode()));
-		} else {
-		    deservedEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode()));
-		}
-	    }
-
-	    for (EmployeeData emp : unDeservedEmpData) {
-		unDeservedEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.NOT_DESERVED_EMPLOYEES.getCode()));
-	    }
-
-	    // add deserved , undeserved and end of ladder employees
-	    allRaiseEmployees.addAll(deservedEmpRaiseData);
-	    allRaiseEmployees.addAll(unDeservedEmpRaiseData);
-	    allRaiseEmployees.addAll(endOfLadderEmpRaiseData);
-	    addRaiseEmployees(allRaiseEmployees);
-
-	    return endOfLadderEmpRaiseData;
-	} catch (BusinessException e) {
-	    throw e;
+	List<PayrollSalary> allEndOfLadderDegreesForCategory = PayrollsService.getEndOfLadderForAllRanksOfCategory(raise.getCategoryId());
+	for (PayrollSalary endOfLadderDegree : allEndOfLadderDegreesForCategory) {
+	    rankDegressHashMap.put(endOfLadderDegree.getRankId(), endOfLadderDegree.getDegreeId());
 	}
+
+	List<EmployeeData> allDeservedEmpData = getDeservedEmployees(raise.getId(), executionDate, null);
+	unDeservedEmpData = getUnDeservedEmployees(raise.getId(), executionDate);
+
+	for (EmployeeData emp : allDeservedEmpData) {
+	    if (emp.getDegreeId().equals(rankDegressHashMap.get(emp.getRankId()))) {
+		// convert list of EmployeeData to RaiseEmployeeData
+		endOfLadderEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode()));
+	    } else {
+		deservedEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode()));
+	    }
+	}
+
+	for (EmployeeData emp : unDeservedEmpData) {
+	    unDeservedEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseEmployeesTypesEnum.NOT_DESERVED_EMPLOYEES.getCode()));
+	}
+
+	// add deserved , undeserved and end of ladder employees
+	allRaiseEmployees.addAll(deservedEmpRaiseData);
+	allRaiseEmployees.addAll(unDeservedEmpRaiseData);
+	allRaiseEmployees.addAll(endOfLadderEmpRaiseData);
+	addRaiseEmployees(allRaiseEmployees);
+
+	return endOfLadderEmpRaiseData;
     }
 
     public static List<RaiseEmployeeData> regenerateRaiseEmployees(Raise raise, Date executionDate) throws BusinessException {
-	try {
-	    // delete the old records in DB
-	    deleteRaiseEmployees(getRaiseEmployeeByRaiseId(raise.getId()));
-	    // re-calculate all employees
-	    return generateRaiseEmployees(raise, executionDate);
-	} catch (BusinessException e) {
-	    throw e;
-	}
+	// delete the old records in DB
+	deleteRaiseEmployees(getRaiseEmployeeByRaiseId(raise.getId()));
+	// re-calculate all employees
+	return generateRaiseEmployees(raise, executionDate);
     }
 
     /*----------------------------------------Validations----------------------------------------------*/
