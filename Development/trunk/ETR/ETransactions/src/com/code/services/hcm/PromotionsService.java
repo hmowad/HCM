@@ -943,7 +943,7 @@ public class PromotionsService extends BaseService {
 	    throw new BusinessException("error_invalidEmployeeDegreeZero");
     }
 
-    private static void modifyReportDetailsDrugTestResult(List<PromotionReportDetailData> promotionReportDetailDataList) {
+    public static void modifyReportDetailsDrugTestResult(List<PromotionReportDetailData> promotionReportDetailDataList) {
 
 	if (promotionReportDetailDataList == null || promotionReportDetailDataList.size() == 0)
 	    return;
@@ -1574,7 +1574,11 @@ public class PromotionsService extends BaseService {
 	    DrugsTestJMSClient.sendTextMessage(employeesSocialIDs);
 
 	modifyReportDetailsDrugTestResult(candidatePromotionReportDetailDataList);
-
+	for (PromotionReportDetailData promotionReportDetailDataItr : candidatePromotionReportDetailDataList) {
+	    if (promotionReportDetailDataItr.getMedicalTest().equals(PromotionMedicalTestStatusEnum.NON_TESTED.getCode())) {
+		promotionReportDetailDataItr.setMedicalTest(PromotionMedicalTestStatusEnum.CURRENTLY_TESTING.getCode());
+	    }
+	}
 	addModifyPromotionReportDetails(promotionReportData.getId(), candidatePromotionReportDetailDataList, loginEmpId);
     }
 

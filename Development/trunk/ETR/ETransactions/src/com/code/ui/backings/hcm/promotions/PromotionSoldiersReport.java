@@ -1,6 +1,7 @@
 package com.code.ui.backings.hcm.promotions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
@@ -97,6 +98,26 @@ public class PromotionSoldiersReport extends PromotionsBase {
 	    setServerSideSuccessMessages(getMessage("notify_promotionReportAddModifySuccess"));
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	}
+    }
+
+    @Override
+    public void addPromotionReportDetail() {
+	try {
+	    if (empId != FlagsEnum.ALL.getCode()) {
+		PromotionsService.modifyReportDetailsDrugTestResult(Arrays.asList(selectedPromotionReportDetailData));
+		selectedPromotionReportDetailData = PromotionsWorkFlow.addPromotionReportDetail(instance, empId, promotionReportData, loginEmpData.getEmpId());
+
+		promotionReportDetailDataList.add(selectedPromotionReportDetailData);
+
+		this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	    }
+	} catch (BusinessException e) {
+	    empId = FlagsEnum.ALL.getCode();
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	} catch (Exception e) {
+	    empId = FlagsEnum.ALL.getCode();
+	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 
