@@ -1987,7 +1987,7 @@ public class PromotionsService extends BaseService {
 
 	if (!promotionReportData.getPromotionTypeId().equals(PromotionsTypesEnum.EXCEPTIONAL_PROMOTION.getCode()) && !promotionReportData.getPromotionTypeId().equals(PromotionsTypesEnum.PROMOTION_CANCELLATION.getCode())) {
 	    if (promotionReportDetailDataList == null || promotionReportDetailDataList.size() == 0)
-		throw new BusinessException("error_NoOneToPromote");
+		throw new BusinessException("error_NoOneToPromote", new String[] { promotionReportData.getReportNumber() });
 	}
 
 	// Validate business
