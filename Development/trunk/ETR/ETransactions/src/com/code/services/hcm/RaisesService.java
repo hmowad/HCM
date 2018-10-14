@@ -702,7 +702,8 @@ public class RaisesService extends BaseService {
      * @return array list of raiseEmployee objects
      * @throws BusinessException
      */
-    public static List<RaiseEmployeeData> getAnnualRaiseDeservedEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, String decisionDate, String decisionNumber, Integer[] deservedFlagValues) throws BusinessException {
+    public static List<RaiseEmployeeData> getAnnualRaiseDeservedEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, String decisionDateString, String decisionNumber, Integer[] deservedFlagValues) throws BusinessException {
+	Date decisionDate = HijriDateService.getHijriDate(decisionDateString);
 	return searchRaiseEmployees(socialId, empName, jobDesc, physicalUnitFullName, empNumber, decisionDate, decisionNumber, deservedFlagValues, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode());
     }
 
@@ -722,7 +723,7 @@ public class RaisesService extends BaseService {
      * @return array list of raiseEmployee objects
      * @throws BusinessException
      */
-    public static List<RaiseEmployeeData> searchRaiseEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, String decisionDate, String decisionNumber, Integer[] deservedFlagValues, long raiseId, long empId) throws BusinessException {
+    public static List<RaiseEmployeeData> searchRaiseEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, Date decisionDate, String decisionNumber, Integer[] deservedFlagValues, long raiseId, long empId) throws BusinessException {
 	Map<String, Object> qParams = new HashMap<String, Object>();
 	try {
 	    qParams.put("P_SOCIAL_ID", (socialId == null || socialId.equals("")) ? FlagsEnum.ALL.getCode() + "" : socialId);
@@ -730,7 +731,13 @@ public class RaisesService extends BaseService {
 	    qParams.put("P_JOB_DESC", (jobDesc == null || jobDesc.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + jobDesc + "%");
 	    qParams.put("P_PHYSICAL_UNIT_FULL_NAME", (physicalUnitFullName == null || physicalUnitFullName.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + physicalUnitFullName + "%");
 	    qParams.put("P_EMP_NUMBER", empNumber);
-	    qParams.put("P_DECISION_DATE", (decisionDate == null || decisionDate.equals("")) ? FlagsEnum.ALL.getCode() + "" : decisionDate);
+	    if (decisionDate != null) {
+		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_DECISION_DATE", HijriDateService.getHijriDateString(decisionDate));
+	    } else {
+		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_DECISION_DATE", HijriDateService.getHijriSysDateString());
+	    }
 	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.equals("")) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
 	    if (deservedFlagValues != null && deservedFlagValues.length > 0) {
 		qParams.put("P_DESERVED_FLAG_VALUES_FLAG", FlagsEnum.ON.getCode());
