@@ -326,8 +326,6 @@ public class EmployeesService extends BaseService {
 	    throw new BusinessException("error_socialIDMandatory");
 	if (empData.getSocialID().length() != 10)
 	    throw new BusinessException("error_invalidSocialID");
-	if (empData.getSocialIDIssuePlaceID() == null)
-	    throw new BusinessException("error_socialIDIssuePlaceMandatory");
 
 	EmployeeData conflictEmp = getEmployeeBySocialID(empData.getSocialID());
 	if (conflictEmp != null && (empData.getEmpId() == null || !conflictEmp.getEmpId().equals(empData.getEmpId())))
@@ -358,16 +356,11 @@ public class EmployeesService extends BaseService {
     private static void validateDates(EmployeeData emp) throws BusinessException {
 	if (emp.getBirthDate() == null)
 	    throw new BusinessException("error_birthDateMandatory");
-	if (emp.getSocialIDIssueDate() == null)
-	    throw new BusinessException("error_socialIDIssueDateMandatory");
 
 	if (!HijriDateService.isValidHijriDate(emp.getBirthDate()))
 	    throw new BusinessException("error_invalidHijriBirthDate");
 	if (!HijriDateService.isValidHijriDate(emp.getSocialIDIssueDate()))
 	    throw new BusinessException("error_invalidHijriSocialIdIssueDate");
-
-	if (!HijriDateService.isValidHijriDate(emp.getLastAnnualRaiseDate()))
-	    throw new BusinessException("error_invalidHijriLastAnnualRaiseDate");
 
 	Date sysDate = HijriDateService.getHijriSysDate();
 

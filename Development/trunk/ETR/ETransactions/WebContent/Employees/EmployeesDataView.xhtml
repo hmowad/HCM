@@ -154,8 +154,6 @@
 			birthDate = document.getElementById('employeesDataViewFormId:birthDateId:day');
 			birthPlaceValue = document.getElementById('employeesDataViewFormId:birthPlaceId').value;
 			socialIdValue = document.getElementById('employeesDataViewFormId:socialIDId').value;
-			socialIDIssueDate = document.getElementById('employeesDataViewFormId:socialIdIssueDateId:day');
-			socialIDIssuePlaceIdValue = document.getElementById('employeesDataViewFormId:socialIdIssuePlaceIDId').value;
 			recQualificationLevelId = document.getElementById('employeesDataViewFormId:recQualificationLevelIDId');
 			curQualificationLevelId = document.getElementById('employeesDataViewFormId:curQualificationLevelIDId');
 			privateMobileNumberValue = document.getElementById('employeesDataViewFormId:privateMobileNumberId').value;
@@ -174,8 +172,6 @@
 					|| (birthDate != null && birthDate.value == 0)
 					|| (birthPlaceValue == null || birthPlaceValue == '')
 					|| (socialIdValue == null || socialIdValue == '')
-					|| (socialIDIssueDate != null && socialIDIssueDate.value == 0)
-					|| (socialIDIssuePlaceIdValue == null || socialIDIssuePlaceIdValue == '')
 					|| (recQualificationLevelId != null && !recQualificationLevelId.value)
 					|| (curQualificationLevelId != null && !curQualificationLevelId.value)) {
 				if (mode==1)
@@ -349,7 +345,6 @@
 									<th width="15%">
 										#{msgs.label_issueDate}
 										<h:outputText value=" " />
-										<font style="color: red;">*</font>
 									</th>
 									<td width="15%">
 										<util:hijri id="socialIdIssueDateId" value="#{employeesDataView.employee.socialIDIssueDate}" rendered="#{!employeesDataView.viewOnly}" nullable="true" viewOldRange="true" />
@@ -358,7 +353,6 @@
 									<th width="15%">
 										#{msgs.label_issuePlace}
 										<h:outputText value=" " />
-										<font style="color: red;">*</font>
 									</th>
 									<td width="10%">
 										<h:outputText id="socialIdIssuePlaceDescId" value="#{employeesDataView.employee.socialIDIssuePlaceDesc}" />
