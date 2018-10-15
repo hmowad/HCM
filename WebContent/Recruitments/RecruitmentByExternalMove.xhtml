@@ -81,8 +81,6 @@
 		var birthDate = document.getElementById('recruitmentByExternalMoveFormId:birthDateId:day');
 		var birthPlace = document.getElementById('recruitmentByExternalMoveFormId:birthPlaceId');
 		var socialId = document.getElementById('recruitmentByExternalMoveFormId:socialIDId');
-		var socialIDIssueDate = document.getElementById('recruitmentByExternalMoveFormId:socialIdIssueDateId:day');
-		var socialIDIssuePlaceId = document.getElementById('recruitmentByExternalMoveFormId:socialIdIssuePlaceIDId');
 		var genderId = document.getElementById('recruitmentByExternalMoveFormId:genderId');
 		var	rankIdOfficers = document.getElementById('recruitmentByExternalMoveFormId:rankId');
 		var qualificationLevelId = document.getElementById('recruitmentByExternalMoveFormId:qualificationLevelIDId');
@@ -129,14 +127,6 @@
 		}
 		else if(socialId != null &amp;&amp; !socialId.value) {
 			alert("#{msgs.error_socialIDMandatory}");
-			return false;
-		}
-		else if(socialIDIssueDate!= null &amp;&amp; socialIDIssueDate == 0) {
-			alert("#{msgs.error_socialIDIssueDateMandatory}");
-			return false;
-		}
-		else if(socialIDIssuePlaceId != null &amp;&amp; !socialIDIssuePlaceId.value) {
-			alert("#{msgs.error_socialIDIssuePlaceMandatory}");
 			return false;
 		}
 		else if(qualificationLevelId != null &amp;&amp; !qualificationLevelId.value ) {
@@ -360,15 +350,13 @@
 										<th>
 											#{msgs.label_issueDate}
 											<h:outputText value=" " />
-											<font style="color: red;">*</font>
 										</th>
 										<td>
-											<util:hijri id="socialIdIssueDateId" value="#{recruitmentByExternalMove.employee.socialIDIssueDate}" viewOldRange="true" />
+											<util:hijri value="#{recruitmentByExternalMove.employee.socialIDIssueDate}" viewOldRange="true" />
 										</td>
 										<th>
 											#{msgs.label_issuePlace}
 											<h:outputText value=" " />
-											<font style="color: red;">*</font>
 										</th>
 										<td>
 											<h:outputText id="socialIdIssuePlaceDescId" value="#{recruitmentByExternalMove.employee.socialIDIssuePlaceDesc}" />

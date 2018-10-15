@@ -114,8 +114,6 @@
 			birthDateValue = document.getElementById('newEmployeeRegistrationFormId:birthDateId:day').value;
 			birthPlaceValue = document.getElementById('newEmployeeRegistrationFormId:birthPlaceId').value;
 			socialIdValue = document.getElementById('newEmployeeRegistrationFormId:socialIDId').value;
-			socialIDIssueDateValue = document.getElementById('newEmployeeRegistrationFormId:socialIdIssueDateId:day').value;
-			socialIDIssuePlaceIdValue = document.getElementById('newEmployeeRegistrationFormId:socialIdIssuePlaceIDId').value;
 			soldierGender = document.getElementById('newEmployeeRegistrationFormId:soldierGenderId');
 
 			generalSpecialization = document.getElementById('newEmployeeRegistrationFormId:generalSpecializationId');
@@ -167,16 +165,6 @@
 			
 			if(socialIdValue == null || socialIdValue == '') {
 				alert("#{msgs.error_socialIDMandatory}");
-				return false;
-			}
-
-			if(socialIDIssueDateValue == 0) {
-				alert("#{msgs.error_socialIDIssueDateMandatory}");
-				return false;
-			}
-
-			if(socialIDIssuePlaceIdValue == null || socialIDIssuePlaceIdValue == '') {
-				alert("#{msgs.error_socialIDIssuePlaceMandatory}");
 				return false;
 			}
 
@@ -381,16 +369,14 @@
 										<th>
 											#{msgs.label_issueDate}
 											<h:outputText value=" " />
-											<font style="color: red;">*</font>
 										</th>
 										<td>
-											<util:hijri id="socialIdIssueDateId" value="#{newEmployeeRegistration.employee.socialIDIssueDate}" rendered="#{!newEmployeeRegistration.viewOnly}" viewOldRange="true" />
+											<util:hijri value="#{newEmployeeRegistration.employee.socialIDIssueDate}" rendered="#{!newEmployeeRegistration.viewOnly}" viewOldRange="true" />
 											<h:outputText value="#{newEmployeeRegistration.employee.socialIDIssueDateString}" rendered="#{newEmployeeRegistration.viewOnly}" />
 										</td>
 										<th>
 											#{msgs.label_issuePlace}
 											<h:outputText value=" " />
-											<font style="color: red;">*</font>
 										</th>
 										<td>
 											<h:outputText id="socialIdIssuePlaceDescId" value="#{newEmployeeRegistration.employee.socialIDIssuePlaceDesc}" />
