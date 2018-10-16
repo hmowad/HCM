@@ -104,6 +104,7 @@ public class RaisesManagement extends BaseBacking {
 
     public void deleteRaise(Raise raise) {
 	try {
+	    raise.setSystemUser(loginEmpData.getEmpId() + "");
 	    RaisesService.deleteRaise(raise);
 	    raises.remove(raise);
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));

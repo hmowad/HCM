@@ -93,7 +93,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     public void saveRaise() {
 
 	try {
-
+	    annualRaise.setSystemUser(loginEmpData.getEmpId() + "");
 	    // a new raise is created for the first time
 	    if (annualRaise.getId() == null) {
 		RaisesService.addRaise(annualRaise);
@@ -145,7 +145,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     // press save button
     public void saveRaiseEmployees() {
 	try {
-	    RaisesService.updateRaiseEmployeesList(updateRaiseEmployees);
+	    RaisesService.updateRaiseEmployeesList(updateRaiseEmployees, loginEmpData.getEmpId() + "");
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	    modifyAdminFlag = false;
 	    approveAdminFlag = false;
@@ -159,7 +159,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     public void approveRaise() {
 	try {
 	    saveRaiseEmployees();
-	    RaisesService.approveAnnualRaise(annualRaise, loginEmpData.getEmpId());
+	    RaisesService.approveAnnualRaise(annualRaise, loginEmpData.getEmpId(), loginEmpData.getEmpId() + "");
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	    modifyAdminFlag = false;
 	    approveAdminFlag = false;

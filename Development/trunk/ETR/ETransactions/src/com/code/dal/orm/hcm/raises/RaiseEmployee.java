@@ -4,11 +4,13 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 
 import com.code.dal.audit.DeletableAuditEntity;
 import com.code.dal.audit.InsertableAuditEntity;
@@ -16,8 +18,12 @@ import com.code.dal.audit.UpdatableAuditEntity;
 import com.code.dal.orm.AuditEntity;
 
 @NamedQueries({
-	@NamedQuery(name = "hcm_raises_deleteRaiseEmployeesByRaiseId",
-		query = "delete from RaiseEmployee r where r.raiseId = :P_RAISE_ID")
+	@NamedQuery(name = "hcm_raiseEmployee_deleteRaiseEmployeesByRaiseId",
+		query = "delete from RaiseEmployee r where r.raiseId = :P_RAISE_ID"),
+	@NamedQuery(name = "hcm_raiseEmployee_updateEmployeesAfterAnnualRaise",
+		query = "update Employee e set e.degreeId = e.degreeId + 1 , e.lastAnnualRaiseDate = to_date(:P_LAST_ANNUAL_RAISE_DATE, 'MI/MM/YYYY') where id in(select r.empId from RaiseEmployee r where raiseId = :P_RAISE_ID and deservedFlag = 1)"),
+	@NamedQuery(name = "hcm_raiseEmployee_getEmployeesByRaiseId",
+		query = "select e from Employee e where id in(select r.empId from RaiseEmployee r where raiseId = :P_RAISE_ID and deservedFlag = 1)")
 })
 
 @Entity
@@ -30,10 +36,21 @@ public class RaiseEmployee extends AuditEntity implements InsertableAuditEntity,
     private Long newDegreeId;
     private Integer deservedFlag;
 
-    @SequenceGenerator(name = "HCMRaiseSeq",
-	    sequenceName = "HCM_RAISE_SEQ")
+    @GenericGenerator(name = "HCMRaiseSeq",
+	    strategy = "enhanced-sequence",
+	    parameters = {
+		    @org.hibernate.annotations.Parameter(
+			    name = "sequence_name",
+			    value = "HCM_RAISE_SEQ"),
+		    @org.hibernate.annotations.Parameter(
+			    name = "optimizer",
+			    value = "pooled-lo"),
+		    @org.hibernate.annotations.Parameter(
+			    name = "increment_size",
+			    value = "30") })
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+	    generator = "HCMRaiseSeq")
     @Id
-    @GeneratedValue(generator = "HCMRaiseSeq")
     @Column(name = "ID")
     public Long getId() {
 	return id;

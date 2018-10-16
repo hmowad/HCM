@@ -6,13 +6,15 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.GenericGenerator;
 
 import com.code.dal.orm.BaseEntity;
 
@@ -44,9 +46,20 @@ public class AuditLog extends BaseEntity {
     private Long contentId;
     private String content;
 
-    @SequenceGenerator(name = "EtrAuditsSeq",
-	    sequenceName = "ETR_AUDITS_SEQ")
-    @GeneratedValue(generator = "EtrAuditsSeq")
+    @GenericGenerator(name = "EtrAuditsSeq",
+	    strategy = "enhanced-sequence",
+	    parameters = {
+		    @org.hibernate.annotations.Parameter(
+			    name = "sequence_name",
+			    value = "ETR_AUDITS_SEQ"),
+		    @org.hibernate.annotations.Parameter(
+			    name = "optimizer",
+			    value = "pooled-lo"),
+		    @org.hibernate.annotations.Parameter(
+			    name = "increment_size",
+			    value = "30") })
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+	    generator = "EtrAuditsSeq")
     @Id
     @Column(name = "ID")
     public Long getId() {
