@@ -6,17 +6,21 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.code.dal.orm.BaseEntity;
+import org.hibernate.annotations.GenericGenerator;
+
+import com.code.dal.audit.InsertableAuditEntity;
+import com.code.dal.audit.UpdatableAuditEntity;
+import com.code.dal.orm.AuditEntity;
 import com.code.services.util.HijriDateService;
 
 @Entity
 @Table(name = "HCM_RAISE_TRANSACTIONS")
-public class RaiseTransaction extends BaseEntity {
+public class RaiseTransaction extends AuditEntity implements InsertableAuditEntity, UpdatableAuditEntity {
     private Long id;
     private Long empId;
     private Long categoryId;
@@ -41,10 +45,21 @@ public class RaiseTransaction extends BaseEntity {
     private String transEmpRankDesc;
     private String transEmpDegreeDesc;
 
-    @SequenceGenerator(name = "HCMRaiseSeq",
-	    sequenceName = "HCM_RAISE_SEQ")
+    @GenericGenerator(name = "HCMRaiseSeq",
+	    strategy = "enhanced-sequence",
+	    parameters = {
+		    @org.hibernate.annotations.Parameter(
+			    name = "sequence_name",
+			    value = "HCM_RAISE_SEQ"),
+		    @org.hibernate.annotations.Parameter(
+			    name = "optimizer",
+			    value = "pooled-lo"),
+		    @org.hibernate.annotations.Parameter(
+			    name = "increment_size",
+			    value = "30") })
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+	    generator = "HCMRaiseSeq")
     @Id
-    @GeneratedValue(generator = "HCMRaiseSeq")
     @Column(name = "ID")
     public Long getId() {
 	return id;
@@ -274,6 +289,35 @@ public class RaiseTransaction extends BaseEntity {
     public void setExecutionDateString(String executionDateString) {
 	this.executionDateString = executionDateString;
 	this.executionDate = HijriDateService.getHijriDate(executionDateString);
+    }
+
+    @Override
+    public Long calculateContentId() {
+	return id;
+    }
+
+    @Override
+    public String calculateContent() {
+	return "empId:" + empId + AUDIT_SEPARATOR +
+		"categoryId:" + categoryId + AUDIT_SEPARATOR +
+		"type:" + type + AUDIT_SEPARATOR +
+		"exclusionReason:" + exclusionReason + AUDIT_SEPARATOR +
+		"decisionDate:" + decisionDate + AUDIT_SEPARATOR +
+		"newDegreeId:" + newDegreeId + AUDIT_SEPARATOR +
+		"deservedFlag:" + deservedFlag + AUDIT_SEPARATOR +
+		"decisionNumber:" + decisionNumber + AUDIT_SEPARATOR +
+		"executionDate:" + executionDate + AUDIT_SEPARATOR +
+		"remarks:" + remarks + AUDIT_SEPARATOR +
+		"effectFlag:" + effectFlag + AUDIT_SEPARATOR +
+		"eFlag:" + eFlag + AUDIT_SEPARATOR +
+		"migFlag:" + migFlag + AUDIT_SEPARATOR +
+		"decisionApprovedId:" + decisionApprovedId + AUDIT_SEPARATOR +
+		"originalDecisionApprovedId:" + originalDecisionApprovedId + AUDIT_SEPARATOR +
+		"transEmpJobName:" + transEmpJobName + AUDIT_SEPARATOR +
+		"transEmpJobRankDesc:" + transEmpJobRankDesc + AUDIT_SEPARATOR +
+		"transEmpRankDesc:" + transEmpRankDesc + AUDIT_SEPARATOR +
+		"transEmpDegreeDesc:" + transEmpDegreeDesc + AUDIT_SEPARATOR +
+		"transEmpUnitFullName:" + transEmpUnitFullName + AUDIT_SEPARATOR;
     }
 
 }

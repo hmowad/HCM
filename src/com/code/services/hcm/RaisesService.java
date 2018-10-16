@@ -9,11 +9,14 @@ import java.util.Map;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
+import com.code.dal.orm.BaseEntity;
+import com.code.dal.orm.hcm.employees.Employee;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.payroll.PayrollSalary;
 import com.code.dal.orm.hcm.raises.Raise;
 import com.code.dal.orm.hcm.raises.RaiseEmployeeData;
 import com.code.dal.orm.hcm.raises.RaiseTransactionData;
+import com.code.enums.AuditOperationsEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.RaiseEmployeesTypesEnum;
@@ -104,17 +107,15 @@ public class RaisesService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
-	    addRaise(raise);
-	    for (RaiseEmployeeData raiseEmployeeData : raiseEmployeeDataList) {
-		raiseEmployeeData.setRaiseId(raise.getId());
-		addRaiseEmployee(raiseEmployeeData, session);
-	    }
+	    addRaise(raise, session);
+	    addRaiseEmployees(raiseEmployeeDataList, raise.getId(), raise.getSystemUser(), session);
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -177,8 +178,8 @@ public class RaisesService extends BaseService {
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
-	    List<RaiseEmployeeData> raiseEmployeeData = getRaiseEmployeeByRaiseId(raise.getId());
-	    deleteRaiseEmployees(raiseEmployeeData, session);
+
+	    deleteRaiseEmployeesByRaiseIdAndAudit(raise.getId(), raise.getSystemUser(), session);
 	    DataAccess.deleteEntity(raise, session);
 
 	    if (!isOpenedSession)
@@ -346,42 +347,6 @@ public class RaisesService extends BaseService {
     /*----------------------------------------Operations----------------------------------------------*/
 
     /**
-     * Add a raise employee object to database
-     * 
-     * @param raiseEmployeeData
-     *            The raise employee will be added in DB
-     * @param useSession
-     *            Optional parameter used to access the database if no other session opened
-     * @throws BusinessException
-     *             If any exceptions or errors occurs
-     */
-    private static void addRaiseEmployee(RaiseEmployeeData raiseEmployeeData, CustomSession... useSession) throws BusinessException {
-	validateRaiseEmployee(raiseEmployeeData);
-	boolean isOpenedSession = isSessionOpened(useSession);
-	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
-	try {
-	    if (!isOpenedSession)
-		session.beginTransaction();
-
-	    DataAccess.addEntity(raiseEmployeeData.getRaiseEmployee(), session);
-	    raiseEmployeeData.setId(raiseEmployeeData.getRaiseEmployee().getId());
-
-	    if (!isOpenedSession)
-		session.commitTransaction();
-	} catch (Exception e) {
-	    if (!isOpenedSession)
-		session.rollbackTransaction();
-	    raiseEmployeeData.setId(null);
-
-	    e.printStackTrace();
-	    throw new BusinessException("error_general");
-	} finally {
-	    if (!isOpenedSession)
-		session.close();
-	}
-    }
-
-    /**
      * Updates a raiseEmployeeData object in database
      * 
      * @param raise
@@ -403,14 +368,10 @@ public class RaisesService extends BaseService {
 		session.beginTransaction();
 
 	    updateRaise(raise, session);
-
-	    for (RaiseEmployeeData raiseEmployeeDataToAdd : raiseEmployeeDataToAddList) {
-		raiseEmployeeDataToAdd.setRaiseId(raise.getId());
-		addRaiseEmployee(raiseEmployeeDataToAdd, session);
-	    }
+	    addRaiseEmployees(raiseEmployeeDataToAddList, raise.getId(), raise.getSystemUser(), session);
 
 	    if (raiseEmployeeDataToDeleteList != null && !raiseEmployeeDataToDeleteList.isEmpty()) {
-		deleteRaiseEmployees(raiseEmployeeDataToDeleteList, session);
+		deleteRaiseEmployees(raiseEmployeeDataToDeleteList, raise.getSystemUser(), session);
 	    }
 
 	    if (!isOpenedSession)
@@ -430,16 +391,23 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    public static void addRaiseEmployees(List<RaiseEmployeeData> raiseEmployeeData, CustomSession... useSession) throws BusinessException {
+    public static void addRaiseEmployees(List<RaiseEmployeeData> raiseEmployeesData, long raiseId, String loginEmpId, CustomSession... useSession) throws BusinessException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
-	    for (RaiseEmployeeData raiseEmp : raiseEmployeeData) {
-		DataAccess.addEntity(raiseEmp.getRaiseEmployee(), session);
-		raiseEmp.setId(raiseEmp.getRaiseEmployee().getId());
+	    List<BaseEntity> beans = new ArrayList<>();
+	    for (RaiseEmployeeData raiseEmployeeData : raiseEmployeesData) {
+		raiseEmployeeData.setRaiseId(raiseId);
+		raiseEmployeeData.getRaiseEmployee().setSystemUser(loginEmpId);
+		beans.add(raiseEmployeeData.getRaiseEmployee());
+	    }
+	    DataAccess.addMultipleEntitiesWithoutAudit(beans, session);
+	    DataAccess.addAudit(beans, AuditOperationsEnum.INSERT, session);
+	    for (RaiseEmployeeData raiseEmployeeData : raiseEmployeesData) {
+		raiseEmployeeData.setId(raiseEmployeeData.getRaiseEmployee().getId());
 	    }
 
 	    if (!isOpenedSession)
@@ -448,7 +416,9 @@ public class RaisesService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
-
+	    for (RaiseEmployeeData raiseEmployeeData : raiseEmployeesData) {
+		raiseEmployeeData.setId(null);
+	    }
 	    if (e instanceof BusinessException)
 		throw (BusinessException) e;
 
@@ -471,13 +441,14 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static void updateRaiseEmployeesList(List<RaiseEmployeeData> raiseEmployeeDataToUpdateList, CustomSession... useSession) throws BusinessException {
+    public static void updateRaiseEmployeesList(List<RaiseEmployeeData> raiseEmployeeDataToUpdateList, String loginEmpId, CustomSession... useSession) throws BusinessException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 	    for (RaiseEmployeeData raiseEmp : raiseEmployeeDataToUpdateList) {
+		raiseEmp.getRaiseEmployee().setSystemUser(loginEmpId);
 		DataAccess.updateEntity(raiseEmp.getRaiseEmployee(), session);
 	    }
 	    if (!isOpenedSession)
@@ -497,27 +468,6 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    public static void deleteRaiseEmployee(RaiseEmployeeData raiseEmployeeData, CustomSession... useSession) throws BusinessException {
-	boolean isOpenedSession = isSessionOpened(useSession);
-	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
-	try {
-	    if (!isOpenedSession)
-		session.beginTransaction();
-	    DataAccess.deleteEntity(raiseEmployeeData.getRaiseEmployee(), session);
-
-	    if (!isOpenedSession)
-		session.commitTransaction();
-	} catch (Exception e) {
-	    if (!isOpenedSession)
-		session.rollbackTransaction();
-	    e.printStackTrace();
-	    throw new BusinessException("error_general");
-	} finally {
-	    if (!isOpenedSession)
-		session.close();
-	}
-    }
-
     /**
      * Deletes raiseEmployeeDataList of objects from database
      * 
@@ -529,7 +479,7 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static void deleteRaiseEmployees(List<RaiseEmployeeData> raiseEmployeeDataList, CustomSession... useSession) throws BusinessException {
+    public static void deleteRaiseEmployees(List<RaiseEmployeeData> raiseEmployeeDataList, String loginEmpId, CustomSession... useSession) throws BusinessException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -537,7 +487,8 @@ public class RaisesService extends BaseService {
 		session.beginTransaction();
 
 	    for (RaiseEmployeeData raiseEmployeeData : raiseEmployeeDataList) {
-		deleteRaiseEmployee(raiseEmployeeData, session);
+		raiseEmployeeData.getRaiseEmployee().setSystemUser(loginEmpId);
+		DataAccess.deleteEntity(raiseEmployeeData.getRaiseEmployee(), session);
 	    }
 
 	    if (!isOpenedSession)
@@ -614,14 +565,36 @@ public class RaisesService extends BaseService {
 	allRaiseEmployees.addAll(deservedEmpRaiseData);
 	allRaiseEmployees.addAll(unDeservedEmpRaiseData);
 	allRaiseEmployees.addAll(endOfLadderEmpRaiseData);
-	addRaiseEmployees(allRaiseEmployees);
+	addRaiseEmployees(allRaiseEmployees, raise.getId(), raise.getSystemUser());
 
 	return endOfLadderEmpRaiseData;
     }
 
-    public static List<RaiseEmployeeData> regenerateRaiseEmployees(Raise raise, Date executionDate) throws BusinessException {
+    public static List<RaiseEmployeeData> regenerateRaiseEmployees(Raise raise, Date executionDate, CustomSession... useSession) throws BusinessException {
 	// delete the old records in DB
-	deleteRaiseEmployees(getRaiseEmployeeByRaiseId(raise.getId()));
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+
+	    deleteRaiseEmployeesByRaiseIdAndAudit(raise.getId(), raise.getSystemUser(), session);
+	    if (!isOpenedSession)
+		session.commitTransaction();
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+
 	// re-calculate all employees
 	return generateRaiseEmployees(raise, executionDate);
     }
@@ -703,8 +676,7 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      */
     public static List<RaiseEmployeeData> getAnnualRaiseDeservedEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, String decisionDateString, String decisionNumber, Integer[] deservedFlagValues) throws BusinessException {
-	Date decisionDate = HijriDateService.getHijriDate(decisionDateString);
-	return searchRaiseEmployees(socialId, empName, jobDesc, physicalUnitFullName, empNumber, decisionDate, decisionNumber, deservedFlagValues, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode());
+	return searchRaiseEmployees(socialId, empName, jobDesc, physicalUnitFullName, empNumber, HijriDateService.getHijriDate(decisionDateString), decisionNumber, deservedFlagValues, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode());
     }
 
     /**
@@ -749,6 +721,28 @@ public class RaisesService extends BaseService {
 	    qParams.put("P_RAISE_ID", raiseId);
 	    qParams.put("P_RAISE_EMP_ID", empId);
 	    return DataAccess.executeNamedQuery(RaiseEmployeeData.class, QueryNamesEnum.HCM_RAISES_SEARCH_RAISE_EMPLOYEES.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static void deleteRaiseEmployeesByRaiseIdAndAudit(long raiseId, String loginEmpId, CustomSession session) throws BusinessException, DatabaseException {
+	List<RaiseEmployeeData> raiseEmployeesData = getRaiseEmployeeByRaiseId(raiseId);
+	List<BaseEntity> beans = new ArrayList<>();
+	for (RaiseEmployeeData raiseEmployeeData : raiseEmployeesData) {
+	    raiseEmployeeData.getRaiseEmployee().setSystemUser(loginEmpId);
+	    beans.add(raiseEmployeeData.getRaiseEmployee());
+	}
+	deleteRaiseEmployeesByRaiseId(raiseId, session);
+	DataAccess.addAudit(beans, AuditOperationsEnum.DELETE, session);
+    }
+
+    public static void deleteRaiseEmployeesByRaiseId(long raiseId, CustomSession session) throws BusinessException {
+	Map<String, Object> qParams = new HashMap<String, Object>();
+	try {
+	    qParams.put("P_RAISE_ID", raiseId);
+	    DataAccess.executeUpdateAndDelete(QueryNamesEnum.HCM_RAISES_DELETE_RAISE_EMPLOYEES_BY_RAISE_ID.getCode(), qParams, session);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
@@ -840,48 +834,6 @@ public class RaisesService extends BaseService {
     /*************************************** Raise Transaction *****************************************/
     /*----------------------------------------Operations----------------------------------------------*/
 
-    /**
-     * Add a raiseTransactionData object to database
-     * 
-     * @param raiseTransactionData
-     *            The raiseTransactionData will be added in DB
-     * 
-     * @param useSession
-     *            Optional parameter used to access the database if no other session opened
-     * @throws BusinessException
-     *             If any exceptions or errors occurs
-     */
-    private static void addRaiseTransaction(RaiseTransactionData raiseTransactionData, CustomSession... useSession) throws BusinessException {
-	validateRaiseTransactionData(raiseTransactionData);
-
-	boolean isOpenedSession = isSessionOpened(useSession);
-	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
-	try {
-	    if (!isOpenedSession)
-		session.beginTransaction();
-
-	    DataAccess.addEntity(raiseTransactionData.getRaiseTransaction(), session);
-	    raiseTransactionData.setId(raiseTransactionData.getRaiseTransaction().getId());
-
-	    if (!isOpenedSession)
-		session.commitTransaction();
-
-	} catch (Exception e) {
-	    raiseTransactionData.setId(null);
-	    if (!isOpenedSession)
-		session.rollbackTransaction();
-
-	    if (e instanceof BusinessException)
-		throw (BusinessException) e;
-
-	    e.printStackTrace();
-	    throw new BusinessException("error_general");
-	} finally {
-	    if (!isOpenedSession)
-		session.close();
-	}
-    }
-
     private static void updateRaiseTransaction(RaiseTransactionData raiseTransactionData, CustomSession... useSession) throws BusinessException {
 	validateRaiseTransactionData(raiseTransactionData);
 
@@ -925,17 +877,18 @@ public class RaisesService extends BaseService {
 	if (raiseEmployeeData.getEmpDeservedFlag().intValue() == RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode())
 	    transaction.setExclusionReason(raiseEmployeeData.getExclusionReason());
 
-	if (raiseEmployeeData.getEmpDeservedFlag().intValue() == RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode()) {
-	    if (raise.getType().intValue() == RaiseTypesEnum.ANNUAL.getCode())
-		transaction.setEmpNewDegreeId(raiseEmployeeData.getEmpDegreeId() + 1);
-	    else
-		transaction.setEmpNewDegreeId(raiseEmployeeData.getEmpNewDegreeId());
-	}
+	// TODO set newDegree in raiseEmployee
+	if (raise.getType().intValue() == RaiseTypesEnum.ANNUAL.getCode() && raiseEmployeeData.getEmpDeservedFlag() == RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode())
+	    transaction.setEmpNewDegreeId(raiseEmployeeData.getEmpDegreeId() + 1);
+	else if (raise.getType().intValue() == RaiseTypesEnum.ADDITIONAL.getCode())
+	    transaction.setEmpNewDegreeId(raiseEmployeeData.getEmpNewDegreeId());
+	else
+	    transaction.setEmpNewDegreeId(raiseEmployeeData.getEmpDegreeId());
 
 	transaction.setTransEmpDegreeDesc(raiseEmployeeData.getEmpDegreeDesc());
 	transaction.setTransEmpJobName(raiseEmployeeData.getEmpJobName());
 	transaction.setTransEmpRankDesc(raiseEmployeeData.getEmpRankDesc());
-	transaction.setTransEmpJobRankDesc(JobsService.getJobById(raiseEmployeeData.getEmpJobId()).getRankDescription());
+	transaction.setTransEmpJobRankDesc(raiseEmployeeData.getEmpJobRankDesc());
 	transaction.setTransEmpUnitFullName(raiseEmployeeData.getEmpPhysicalUnitName());
 
 	transaction.setEmpDecisionApprovedId(approvedEmployeeId);
@@ -949,19 +902,30 @@ public class RaisesService extends BaseService {
 	return transaction;
     }
 
-    public static void approveAdditionalRaise(Raise raise, long approvedEmployeeId, CustomSession... useSession) throws BusinessException {
+    // TODO LIST<RAISEEMPLOYEE> AS A PARAMETER
+    public static void approveAdditionalRaise(Raise raise, long managerId, String loginEmpId, CustomSession... useSession) throws BusinessException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	List<RaiseTransactionData> raiseTransactionsData = new ArrayList<>();
+	List<RaiseEmployeeData> deserved = getRaiseEmployeeByRaiseId(raise.getId());
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
-
-	    List<RaiseEmployeeData> deserved = getRaiseEmployeeByRaiseId(raise.getId());
+	    int i = 0;
+	    List<BaseEntity> beans = new ArrayList<>();
 	    for (RaiseEmployeeData raiseEmployee : deserved) {
-		RaiseTransactionData transaction = constructRaiseTransaction(raise, raiseEmployee, approvedEmployeeId);
-		addRaiseTransaction(transaction, session);
+		RaiseTransactionData transaction = constructRaiseTransaction(raise, raiseEmployee, managerId);
+		validateRaiseTransactionData(transaction);
+		transaction.getRaiseTransaction().setSystemUser(raise.getSystemUser());
+		raiseTransactionsData.add(transaction);
 		doRaiseEffect(transaction, session);
+		beans.add(transaction.getRaiseTransaction());
 	    }
+	    DataAccess.addMultipleEntitiesWithoutAudit(beans, session);
+	    for (RaiseTransactionData raiseTransactionData : raiseTransactionsData) {
+		raiseTransactionData.setId(raiseTransactionData.getRaiseTransaction().getId());
+	    }
+	    DataAccess.addAudit(beans, AuditOperationsEnum.INSERT, session); // all audit in once
 	    raise.setStatus(RaiseStatusEnum.APPROVED.getCode());
 	    updateRaise(raise, session);
 	    if (!isOpenedSession)
@@ -969,6 +933,9 @@ public class RaisesService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+	    for (RaiseTransactionData raiseTransactionData : raiseTransactionsData) {
+		raiseTransactionData.setId(null);
+	    }
 	    if (e instanceof BusinessException)
 		throw (BusinessException) e;
 	    e.printStackTrace();
@@ -980,30 +947,52 @@ public class RaisesService extends BaseService {
 
     }
 
-    public static void approveAnnualRaise(Raise raise, long approvedEmployeeId, CustomSession... useSession) throws BusinessException {
+    public static void approveAnnualRaise(Raise raise, long managerId, String loginEmpId, CustomSession... useSession) throws BusinessException {
+
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+
+	List<RaiseEmployeeData> allEmployees = getRaiseEmployeeByRaiseId(raise.getId());
+	List<RaiseTransactionData> raiseTransactionsData = new ArrayList<>();
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
-	    List<RaiseEmployeeData> allRaiseEmployees = getRaiseEmployeeByRaiseId(raise.getId());
+	    List<BaseEntity> beans = new ArrayList<>();
 
-	    for (RaiseEmployeeData raiseEmployee : allRaiseEmployees) {
-		RaiseTransactionData transaction = constructRaiseTransaction(raise, raiseEmployee, approvedEmployeeId);
-		addRaiseTransaction(transaction, session);
-		if (raiseEmployee.getEmpDeservedFlag().intValue() == RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode())
-		    doRaiseEffect(transaction, session);
+	    for (RaiseEmployeeData raiseEmployee : allEmployees) {
+		RaiseTransactionData transaction = constructRaiseTransaction(raise, raiseEmployee, managerId);
+		transaction.getRaiseTransaction().setSystemUser(loginEmpId);
+		beans.add(transaction.getRaiseTransaction());
+		raiseTransactionsData.add(transaction);
+	    }
+	    DataAccess.addMultipleEntitiesWithoutAudit(beans, session);
+
+	    for (RaiseTransactionData raiseTransactionData : raiseTransactionsData) {
+		raiseTransactionData.setId(raiseTransactionData.getRaiseTransaction().getId());
 	    }
 
-	    raise.setStatus(RaiseStatusEnum.APPROVED.getCode());
-	    updateRaise(raise, session);
+	    DataAccess.addAudit(beans, AuditOperationsEnum.INSERT, session);
 
+	    raise.setStatus(RaiseStatusEnum.APPROVED.getCode());
+
+	    updateRaise(raise, session);
+	    updateEmployeesAfterAnnualRaise(raise.getExecutionDate(), raise.getId(), session);
+	    List<Employee> employees = getEmployeesToAudit(raise.getId());
+	    beans.clear();
+	    for (int x = 0; x < employees.size(); x++) {
+		employees.get(x).setSystemUser(loginEmpId);
+	    }
+	    beans.addAll(employees);
+	    DataAccess.addAudit(beans, AuditOperationsEnum.UPDATE, session);
 	    if (!isOpenedSession)
 		session.commitTransaction();
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+	    for (RaiseTransactionData raiseTransactionData : raiseTransactionsData) {
+		raiseTransactionData.setId(null);
+	    }
 	    if (e instanceof BusinessException)
 		throw (BusinessException) e;
 	    e.printStackTrace();
@@ -1012,6 +1001,7 @@ public class RaisesService extends BaseService {
 	    if (!isOpenedSession)
 		session.close();
 	}
+
     }
 
     private static void doRaiseEffect(RaiseTransactionData transaction, CustomSession session) throws BusinessException {
@@ -1092,6 +1082,33 @@ public class RaisesService extends BaseService {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EXECUTION_DATE", HijriDateService.getHijriSysDateString());
 	    return DataAccess.executeNamedQuery(RaiseTransactionData.class, QueryNamesEnum.HCM_RAISE_TRANSACTION_DATA_GET_NOT_EXECUTED_RAISES_TRANSACTIONS.getCode(), qParams);
+
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static void updateEmployeesAfterAnnualRaise(Date lastAnnualRaiseDate, long raiseId, CustomSession session) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_RAISE_ID", raiseId);
+	    qParams.put("P_LAST_ANNUAL_RAISE_DATE", HijriDateService.getHijriDateString(lastAnnualRaiseDate));
+
+	    DataAccess.executeUpdateAndDelete(QueryNamesEnum.HCM_RAISES_UPDATE_EMPLOYEES_AFTER_ANNUAL_RAISE.getCode(), qParams, session);
+
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static List<Employee> getEmployeesToAudit(long raiseId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_RAISE_ID", raiseId);
+
+	    return DataAccess.executeNamedQuery(Employee.class, QueryNamesEnum.HCM_RAISES_SELECT_EMPLOYEES_TO_AUDIT.getCode(), qParams);
 
 	} catch (DatabaseException e) {
 	    e.printStackTrace();

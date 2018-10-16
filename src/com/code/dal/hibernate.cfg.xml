@@ -8,6 +8,10 @@
 		<property name="connection.datasource">jdbc/BGETR</property>
 		<property name="transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</property>
 		<property name="transaction.manager_lookup_class">org.hibernate.transaction.WeblogicTransactionManagerLookup</property>
+		<property name="hibernate.jdbc.batch_size">30</property>
+		<!--CHECK THIS PROPERTY-->
+		<property name="hibernate.id.new_generator_mappings">true</property>
+		
 		
 		<!-- Direct connection        
 		<property name="connection.driver_class">oracle.jdbc.driver.OracleDriver</property>

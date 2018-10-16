@@ -25,6 +25,7 @@ import com.code.exceptions.DatabaseException;
 
 public class DataAccess {
     protected static SessionFactory sessionFactory;
+    protected static int batchSize;
 
     protected DataAccess() {
     }
@@ -35,6 +36,7 @@ public class DataAccess {
 	    configuration.configure("com/code/dal/hibernate.cfg.xml");
 	    ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();
 	    sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+	    batchSize = Integer.parseInt(configuration.getProperty("hibernate.jdbc.batch_size"));
 	} catch (HibernateException exception) {
 	    System.out.println("Problem creating session Factory!");
 	    exception.printStackTrace();
@@ -60,6 +62,36 @@ public class DataAccess {
 	    session.save(bean);
 	    audit(bean, AuditOperationsEnum.INSERT, session);
 
+	    if (!isOpenedSession)
+		session.getTransaction().commit();
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.getTransaction().rollback();
+	    throw new DatabaseException(e.getMessage());
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
+
+    public static void addMultipleEntitiesWithoutAudit(List<BaseEntity> beans, CustomSession... useSession) throws DatabaseException {
+	boolean isOpenedSession = false;
+	if (useSession != null && useSession.length > 0)
+	    isOpenedSession = true;
+
+	Session session = isOpenedSession ? useSession[0].getSession() : sessionFactory.openSession();
+
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+
+	    for (int i = 0; i < beans.size(); i++) {
+		session.save(beans.get(i));
+		if (i % batchSize == 0 && i != 0) {
+		    session.flush();
+		    session.clear();
+		}
+	    }
 	    if (!isOpenedSession)
 		session.getTransaction().commit();
 	} catch (Exception e) {
@@ -192,7 +224,7 @@ public class DataAccess {
 	}
     }
 
-    public static void executeDeleteQuery(String queryName, Map<String, Object> parameters, CustomSession... useSession) throws DatabaseException {
+    public static void executeUpdateAndDelete(String queryName, Map<String, Object> parameters, CustomSession... useSession) throws DatabaseException {
 
 	boolean isOpenedSession = false;
 	if (useSession != null && useSession.length > 0)
@@ -257,6 +289,37 @@ public class DataAccess {
 		log.setContentId(auditableBean.calculateContentId());
 		log.setContent(auditableBean.calculateContent());
 		session.save(log);
+	    }
+	}
+    }
+
+    public static void addAudit(List<BaseEntity> beans, AuditOperationsEnum operation, CustomSession useSession) throws DatabaseException {
+	int i = 0;
+	for (BaseEntity bean : beans) {
+	    i++;
+	    if ((AuditOperationsEnum.INSERT.equals(operation) && bean instanceof InsertableAuditEntity) ||
+		    (AuditOperationsEnum.UPDATE.equals(operation) && bean instanceof UpdatableAuditEntity) ||
+		    (AuditOperationsEnum.DELETE.equals(operation) && bean instanceof DeletableAuditEntity)) {
+
+		Session session = useSession.getSession();
+		// It is intended not to check for the cast exception here to announce the wrong usage.
+		AuditEntity auditableBean = (AuditEntity) bean;
+
+		// If the system user has a value, this means that this transaction will audit this entity.
+		if (auditableBean.getSystemUser() != null) {
+		    AuditLog log = new AuditLog();
+		    log.setSystemUser(Long.parseLong(auditableBean.getSystemUser()));
+		    log.setOperation(operation.toString());
+		    log.setOperationDate(new Date());
+		    log.setContentEntity(auditableBean.getClass().getCanonicalName());
+		    log.setContentId(auditableBean.calculateContentId());
+		    log.setContent(auditableBean.calculateContent());
+		    session.save(log);
+		}
+		if (i % batchSize == 0 && i != 0) {
+		    session.flush();
+		    session.clear();
+		}
 	    }
 	}
     }

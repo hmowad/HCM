@@ -27,7 +27,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_DECISION_NUMBER = '-1' or r.raiseDecisionNumber = :P_DECISION_NUMBER) " +
 			" and (:P_DECISION_DATE_FLAG = -1 or r.raiseDecisionDate = (TO_DATE(:P_DECISION_DATE, 'MI/MM/YYYY')))" +
 			" and (:P_DESERVED_FLAG_VALUES_FLAG = -1 or r.empDeservedFlag in ( :P_DESERVED_FLAG_VALUES )) " +
-			" order by r.empNumber, r.empName ")
+			" order by r.empNumber")
 
 })
 @Entity
@@ -59,6 +59,7 @@ public class RaiseEmployeeData extends BaseEntity {
     private String empDegreeDesc;
     private Long empRankId;
     private String empRankDesc;
+    private String empJobRankDesc;
     private RaiseEmployee raiseEmployee;
 
     public RaiseEmployeeData() {
@@ -322,6 +323,16 @@ public class RaiseEmployeeData extends BaseEntity {
 
     public void setEmpRankId(Long empRankId) {
 	this.empRankId = empRankId;
+    }
+
+    public void setEmpJobRankDesc(String empJobRankDesc) {
+	this.empJobRankDesc = empJobRankDesc;
+    }
+
+    @Basic
+    @Column(name = "EMP_JOB_RANK_DESC")
+    public String getEmpJobRankDesc() {
+	return empJobRankDesc;
     }
 
     @Basic

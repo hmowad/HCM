@@ -138,7 +138,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 		    for (int i = deservedEmployeesList.size() - 1; i >= 0; i--) {
 			deleteDeservedEmployee(deservedEmployeesList.get(i));
 		    }
-		    RaisesService.deleteRaiseEmployees(deletedEmployeesList);
+		    RaisesService.deleteRaiseEmployees(deletedEmployeesList, loginEmpData.getEmpId() + "");
 		    deletedEmployeesList.clear();
 		}
 	    }
@@ -151,6 +151,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 
     public void save() {
 	try {
+	    raise.setSystemUser(loginEmpData.getEmpId() + "");
 	    if (addAdminFlag) {
 		RaisesService.addAdditionalRaise(raise, deservedEmployeesList);
 	    } else if (modifyAdminFlag) {
@@ -166,7 +167,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
     public void saveAndApprove() {
 	try {
 	    save();
-	    RaisesService.approveAdditionalRaise(raise, loginEmpData.getEmpId());
+	    RaisesService.approveAdditionalRaise(raise, loginEmpData.getEmpId(), loginEmpData.getEmpId() + "");
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
