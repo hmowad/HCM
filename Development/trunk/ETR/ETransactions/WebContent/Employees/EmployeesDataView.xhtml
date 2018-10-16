@@ -396,8 +396,13 @@
 									</td>
 									<th width="15%">#{msgs.label_socialStatus}</th>
 									<td width="10%">
-										<h:outputText value="#{msgs.label_single}" rendered="#{employeesDataView.employee.socialStatus == 1}" />
-										<h:outputText value="#{msgs.label_married}" rendered="#{employeesDataView.employee.socialStatus == 2}" />
+										<h:selectOneMenu value="#{employeesDataView.employee.socialStatus}" rendered="#{not employeesDataView.viewOnly}">
+											<f:selectItem itemLabel="" />
+											<f:selectItem itemLabel="#{msgs.label_single}" itemValue="1" />
+											<f:selectItem itemLabel="#{msgs.label_married}" itemValue="2" />
+										</h:selectOneMenu>
+										<h:outputText value="#{msgs.label_single}" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.socialStatus == 1}" />
+										<h:outputText value="#{msgs.label_married}" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.socialStatus == 2}" />
 									</td>
 								</tr>
 							</table>
@@ -496,7 +501,11 @@
 												<h:outputText value="#{msgs.label_rankTitle}" />
 											</th>
 											<td width="20%">
-												<h:outputText value="#{employeesDataView.employee.rankTitleDesc}" />
+												<h:selectOneMenu value="#{employeesDataView.employee.rankTitleId}" rendered="#{not employeesDataView.viewOnly}">
+													<f:selectItem itemLabel="" />
+													<f:selectItems value="#{employeesDataView.officersRanksTitles}" var="rankTitle" itemLabel="#{rankTitle.description}" itemValue="#{rankTitle.id}" />
+												</h:selectOneMenu>
+												<h:outputText value="#{employeesDataView.employee.rankTitleDesc}" rendered="#{employeesDataView.viewOnly}" />
 											</td>
 										</h:panelGroup>
 									</tr>
