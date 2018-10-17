@@ -7,6 +7,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.Category;
+import com.code.dal.orm.hcm.Rank;
 import com.code.dal.orm.hcm.RankTitle;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.employees.EmployeePhoto;
@@ -43,6 +44,7 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
     private List<RankTitle> officersRanksTitles;
     private List<QualificationLevel> qualificationLevels;
     private List<Degree> degrees;
+    private List<Rank> salaryRanks;
     private List<Category> categories;
     private int pageSize = 10;
     private boolean viewOnly;
@@ -126,6 +128,7 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 		default:
 		    throw new BusinessException("error_general");
 		}
+		salaryRanks = CommonService.getRanks(null, new Long[] { empParam.getCategoryId() });
 	    }
 
 	    switch (employee.getCategoryId().intValue()) {
@@ -269,6 +272,14 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 
     public void setDegrees(List<Degree> degrees) {
 	this.degrees = degrees;
+    }
+
+    public List<Rank> getSalaryRanks() {
+	return salaryRanks;
+    }
+
+    public void setSalaryRanks(List<Rank> salaryRanks) {
+	this.salaryRanks = salaryRanks;
     }
 
     public List<RankTitle> getOfficersRanksTitles() {
