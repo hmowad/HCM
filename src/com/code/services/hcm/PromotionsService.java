@@ -22,6 +22,7 @@ import com.code.dal.orm.hcm.promotions.PromotionReport;
 import com.code.dal.orm.hcm.promotions.PromotionReportData;
 import com.code.dal.orm.hcm.promotions.PromotionReportDetail;
 import com.code.dal.orm.hcm.promotions.PromotionReportDetailData;
+import com.code.dal.orm.hcm.promotions.PromotionRetroactiveData;
 import com.code.dal.orm.hcm.promotions.PromotionSeniortyPoints;
 import com.code.dal.orm.hcm.promotions.PromotionTransactionData;
 import com.code.dal.orm.hcm.promotions.RankPowerData;
@@ -350,6 +351,26 @@ public class PromotionsService extends BaseService {
 	updatePromotionReportStatus(promotionReportData, PromotionReportStatusEnum.CLOSED.getCode(), session);
     }
 
+    public static void doRetroactivePromotionEffect(List<PromotionReportDetailData> reportDetailDataList) throws BusinessException {
+
+	try {
+	    for (PromotionReportDetailData reportDetailData : reportDetailDataList) {
+
+		List<PromotionRetroactiveData> promotionRetroactiveDataList = getEffectiveRetroactivePromotion(reportDetailData.getEmpId(), reportDetailData.getPromotionDueDate());
+		if (promotionRetroactiveDataList != null && promotionRetroactiveDataList.size() != 0) {
+		    PromotionRetroactiveData effectiveRetroactivePromotion = promotionRetroactiveDataList.get(0);
+		    if (effectiveRetroactivePromotion.getDegreeId() == null || effectiveRetroactivePromotion.getRankId() == null) {
+			throw new BusinessException("error_general");
+		    }
+		    Long degreesToBePromoted = reportDetailData.getOldDegreeId() - effectiveRetroactivePromotion.getDegreeId();
+		    reportDetailData.setNewDegreeId(reportDetailData.getNewDegreeId() + degreesToBePromoted);
+		}
+	    }
+	} catch (BusinessException e) {
+	    throw e;
+	}
+    }
+
     private static void handlePromotionOfficersReportClosing(PromotionReportData promotionReportData, Long[] excludedIds, long loginEmpId, CustomSession session) throws BusinessException {
 
 	Long[] notRoyalOrderedStatuses = new Long[] { PromotionCandidateStatusEnum.CANDIDATE.getCode(), PromotionCandidateStatusEnum.NON_CANDIDATE.getCode() };
@@ -529,6 +550,27 @@ public class PromotionsService extends BaseService {
     private static PromotionReportData getPromotionReportDataByReportNumberAndCategory(String reportNumber, long categoryId) throws BusinessException {
 	List<PromotionReportData> promotionReportDataList = searchPromotionReportsData(FlagsEnum.ALL.getCode(), reportNumber, null, null, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, FlagsEnum.ALL.getCode(), false, categoryId, FlagsEnum.ALL.getCode());
 	return promotionReportDataList.isEmpty() ? null : promotionReportDataList.get(0);
+    }
+
+    private static List<PromotionRetroactiveData> getEffectiveRetroactivePromotion(Long empId, Date promotionDueDate) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+
+	    qParams.put("P_EMP_ID", empId);
+
+	    if (promotionDueDate != null) {
+		qParams.put("P_EFFECTIVE_DATE_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_EFFECTIVE_DATE", HijriDateService.getHijriDateString(promotionDueDate));
+	    } else {
+		qParams.put("P_EFFECTIVE_DATE_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_EFFECTIVE_DATE", HijriDateService.getHijriSysDateString());
+	    }
+
+	    return DataAccess.executeNamedQuery(PromotionRetroactiveData.class, QueryNamesEnum.HCM_GET_EFFICTIVE_RETROACTIVE_PROMOTION.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
     }
 
     /**
@@ -1695,8 +1737,9 @@ public class PromotionsService extends BaseService {
 	List<EmployeeData> employeeList = EmployeesService.getPromotionEligibleEmployees(ranksIds, promotionReportData.getDueDate(), categoryId, regionId);
 
 	constructNewPromotionReportDetails(promotionReportData, reportDetailDataList, employeeList, null);
-	if (promotionReportData.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()))
-	    modifyReportDetailsDrugTestResult(reportDetailDataList);
+	doRetroactivePromotionEffect(reportDetailDataList);
+	// if (promotionReportData.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()))
+	// modifyReportDetailsDrugTestResult(reportDetailDataList);
 	return reportDetailDataList;
     }
 
