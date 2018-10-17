@@ -169,6 +169,9 @@
 		<mapping class="com.code.dal.orm.hcm.promotions.PromotionEmployeeDegreeData" />
 		<mapping class="com.code.dal.orm.hcm.promotions.PromotionRankingData" />
 		<mapping class="com.code.dal.orm.workflow.hcm.promotions.WFPromotion" />
+		<mapping class="com.code.dal.orm.hcm.promotions.PromotionRetroactive" />
+		<mapping class="com.code.dal.orm.hcm.promotions.PromotionRetroactiveData" />
+		
 		
 		<mapping class="com.code.dal.orm.hcm.terminations.TerminationReason" />
 		<mapping class="com.code.dal.orm.hcm.terminations.TerminationRecord" />

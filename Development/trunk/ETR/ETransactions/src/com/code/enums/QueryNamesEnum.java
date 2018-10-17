@@ -390,10 +390,12 @@ public enum QueryNamesEnum {
     HCM_GET_PROMOTION_TRANSACTIONS("hcm_promotionTransactionData_searchPromotionTransactions"),
     HCM_GET_PROMOTIONS_DECISIONS("hcm_promotionTransactionData_searchPromotionTransactionsDecisions"),
     HCM_COUNT_PROMOTION_TRANSACTIONS("hcm_promotionTransaction_countPromotionTransactions"),
+    HCM_GET_EFFICTIVE_RETROACTIVE_PROMOTION("hcm_promotionRetroactive_getEffectiveRetroactivePromotion"),
 
     WF_GET_WFPROMOTION_BY_INSTANCE_ID("wf_wfPromotion_getWFPromotionByInstanceId"),
     WF_GET_WFPROMOTIONS_TASKS("wf_wfPromotion_getWFPromotionsTasks"),
     WF_GET_PROMOTIONS_REPORTS_IDS_BY_INSTANCES_IDS("wf_wfPromotion_getPromotionsReportsIdsByInstancesIds"),
+
     /* ***************************************** Terminations *************************************************** */
     HCM_GET_TERMINATION_REASONS("hcm_terminationReason_getReasons"),
 
