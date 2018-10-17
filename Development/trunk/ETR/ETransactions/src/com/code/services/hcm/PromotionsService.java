@@ -1695,7 +1695,8 @@ public class PromotionsService extends BaseService {
 	List<EmployeeData> employeeList = EmployeesService.getPromotionEligibleEmployees(ranksIds, promotionReportData.getDueDate(), categoryId, regionId);
 
 	constructNewPromotionReportDetails(promotionReportData, reportDetailDataList, employeeList, null);
-	modifyReportDetailsDrugTestResult(reportDetailDataList);
+	if (promotionReportData.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()))
+	    modifyReportDetailsDrugTestResult(reportDetailDataList);
 	return reportDetailDataList;
     }
 
