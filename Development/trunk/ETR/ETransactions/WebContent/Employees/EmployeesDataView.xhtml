@@ -575,13 +575,23 @@
 									</h:panelGroup>
 
 									<tr>
-										<th width="15%">#{msgs.label_officialUnit}</th>
-										<td width="50">
-											<h:outputText value="#{employeesDataView.employee.officialUnitFullName}" />
-										</td>
 										<th width="15">#{msgs.label_lastAnnualRaiseDate}</th>
 										<td width="20%">
 											<h:outputText value="#{employeesDataView.employee.lastAnnualRaiseDateString}" />
+										</td>
+										<th width="15%">#{msgs.label_salaryRank}</th>
+										<td width="20%">
+											<h:selectOneMenu value="#{employeesDataView.employee.salaryRankId}" disabled="#{employeesDataView.viewOnly}">
+												<f:selectItem itemLabel="" />
+												<f:selectItems value="#{employeesDataView.salaryRanks}" var="salaryRank" itemLabel="#{salaryRank.description}" itemValue="#{salaryRank.id}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+									
+									<tr>
+										<th width="15%">#{msgs.label_officialUnit}</th>
+										<td width="85%" colspan="5">
+											<h:outputText value="#{employeesDataView.employee.officialUnitFullName}" />
 										</td>
 									</tr>
 

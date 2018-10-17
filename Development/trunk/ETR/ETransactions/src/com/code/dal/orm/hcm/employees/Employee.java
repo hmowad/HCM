@@ -43,6 +43,7 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
     private String lastName;
     private Long categoryId;
     private Long rankId;
+    private Long salaryRankId;
     private Long countryId;
     private Date birthDate;
     private String birthPlace;
@@ -166,6 +167,16 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
     @Column(name = "RANK_ID")
     public Long getRankId() {
 	return rankId;
+    }
+
+    @Basic
+    @Column(name = "SALARY_RANK_ID")
+    public Long getSalaryRankId() {
+	return salaryRankId;
+    }
+
+    public void setSalaryRankId(Long salaryRankId) {
+	this.salaryRankId = salaryRankId;
     }
 
     public void setCountryId(Long countryId) {
@@ -753,4 +764,5 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
 		"navyFormation:" + navyFormation + AUDIT_SEPARATOR +
 		"lastAnnualRaiseDate" + lastAnnualRaiseDate + AUDIT_SEPARATOR;
     }
+
 }
