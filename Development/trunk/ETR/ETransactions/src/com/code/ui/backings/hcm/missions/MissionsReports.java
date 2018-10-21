@@ -82,7 +82,7 @@ public class MissionsReports extends BaseBacking {
 		byte[] bytes = MissionsService.getMissionStatisicalReport(category, regionId, toDate, fromDate);
 		super.print(bytes);
 	    } else if (reportType == 2) {
-		byte[] bytes = MissionsService.getMissionEmployeesStatisicalReport(category, regionId, toDate, fromDate, empId, empFullName, orgUnitId, orgUnitFullName);
+		byte[] bytes = MissionsService.getMissionEmployeesStatisicalReport(category, regionId, toDate, fromDate, empId, empFullName, orgUnitHKeyPrefix, orgUnitFullName);
 		super.print(bytes);
 	    }
 	} catch (BusinessException e) {
