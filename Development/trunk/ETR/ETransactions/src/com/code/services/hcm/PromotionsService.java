@@ -351,26 +351,6 @@ public class PromotionsService extends BaseService {
 	updatePromotionReportStatus(promotionReportData, PromotionReportStatusEnum.CLOSED.getCode(), session);
     }
 
-    public static void doRetroactivePromotionEffect(List<PromotionReportDetailData> reportDetailDataList) throws BusinessException {
-
-	try {
-	    for (PromotionReportDetailData reportDetailData : reportDetailDataList) {
-
-		List<PromotionRetroactiveData> promotionRetroactiveDataList = getEffectiveRetroactivePromotion(reportDetailData.getEmpId(), reportDetailData.getPromotionDueDate());
-		if (promotionRetroactiveDataList != null && promotionRetroactiveDataList.size() != 0) {
-		    PromotionRetroactiveData effectiveRetroactivePromotion = promotionRetroactiveDataList.get(0);
-		    if (effectiveRetroactivePromotion.getDegreeId() == null || effectiveRetroactivePromotion.getRankId() == null) {
-			throw new BusinessException("error_general");
-		    }
-		    Long degreesToBePromoted = reportDetailData.getOldDegreeId() - effectiveRetroactivePromotion.getDegreeId();
-		    reportDetailData.setNewDegreeId(reportDetailData.getNewDegreeId() + degreesToBePromoted);
-		}
-	    }
-	} catch (BusinessException e) {
-	    throw e;
-	}
-    }
-
     private static void handlePromotionOfficersReportClosing(PromotionReportData promotionReportData, Long[] excludedIds, long loginEmpId, CustomSession session) throws BusinessException {
 
 	Long[] notRoyalOrderedStatuses = new Long[] { PromotionCandidateStatusEnum.CANDIDATE.getCode(), PromotionCandidateStatusEnum.NON_CANDIDATE.getCode() };
@@ -552,12 +532,12 @@ public class PromotionsService extends BaseService {
 	return promotionReportDataList.isEmpty() ? null : promotionReportDataList.get(0);
     }
 
-    private static List<PromotionRetroactiveData> getEffectiveRetroactivePromotion(Long empId, Date promotionDueDate) throws BusinessException {
+    private static List<PromotionRetroactiveData> getEffectiveRetroactivePromotion(Long empId, Long empRankId, Date promotionDueDate) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 
 	    qParams.put("P_EMP_ID", empId);
-
+	    qParams.put("P_RANK_ID", empRankId == null ? FlagsEnum.ALL.getCode() : empRankId);
 	    if (promotionDueDate != null) {
 		qParams.put("P_EFFECTIVE_DATE_FLAG", FlagsEnum.ON.getCode());
 		qParams.put("P_EFFECTIVE_DATE", HijriDateService.getHijriDateString(promotionDueDate));
@@ -1056,7 +1036,21 @@ public class PromotionsService extends BaseService {
 
 	    reportDetailData.setOldDegreeId(employee.getDegreeId());
 	    reportDetailData.setOldDegreeDesc(employee.getDegreeDesc());
-	    reportDetailData.setNewDegreeId(newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId());
+	    if (promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+		List<PromotionRetroactiveData> promotionRetroactiveDataList = getEffectiveRetroactivePromotion(reportDetailData.getEmpId(), reportDetailData.getOldRankId(), reportDetailData.getPromotionDueDate());
+		if (promotionRetroactiveDataList != null && promotionRetroactiveDataList.size() != 0) {
+		    PromotionRetroactiveData effectiveRetroactivePromotion = promotionRetroactiveDataList.get(0);
+		    if (effectiveRetroactivePromotion.getDegreeId() != null) {
+			reportDetailData.setNewDegreeId(effectiveRetroactivePromotion.getDegreeId() + employee.getDegreeId());
+		    } else {
+			reportDetailData.setNewDegreeId(newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId());
+		    }
+		} else {
+		    reportDetailData.setNewDegreeId(newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId());
+		}
+	    } else {
+		reportDetailData.setNewDegreeId(newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId());
+	    }
 
 	    reportDetailData.setOldJobId(employee.getJobId());
 	    reportDetailData.setOldJobCode(employee.getJobCode());
@@ -1737,9 +1731,8 @@ public class PromotionsService extends BaseService {
 	List<EmployeeData> employeeList = EmployeesService.getPromotionEligibleEmployees(ranksIds, promotionReportData.getDueDate(), categoryId, regionId);
 
 	constructNewPromotionReportDetails(promotionReportData, reportDetailDataList, employeeList, null);
-	doRetroactivePromotionEffect(reportDetailDataList);
-	// if (promotionReportData.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()))
-	// modifyReportDetailsDrugTestResult(reportDetailDataList);
+	if (promotionReportData.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()))
+	    modifyReportDetailsDrugTestResult(reportDetailDataList);
 	return reportDetailDataList;
     }
 

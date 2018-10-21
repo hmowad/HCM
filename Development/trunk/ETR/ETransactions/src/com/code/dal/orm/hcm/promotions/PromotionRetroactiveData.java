@@ -14,6 +14,7 @@ import com.code.dal.orm.BaseEntity;
 @NamedQuery(name = "hcm_promotionRetroactive_getEffectiveRetroactivePromotion",
 	query = " select rp from PromotionRetroactiveData rp " +
 		" where rp.empId = :P_EMP_ID " +
+		" and (:P_RANK_ID = -1 or rp.rankId = :P_RANK_ID) " +
 		" and (:P_EFFECTIVE_DATE_FLAG = -1 or to_date(:P_EFFECTIVE_DATE, 'MI/MM/YYYY') >= rp.effectiveDate) " +
 		" order by rp.effectiveDate ")
 
