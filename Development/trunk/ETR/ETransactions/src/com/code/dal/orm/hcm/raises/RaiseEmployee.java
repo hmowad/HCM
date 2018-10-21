@@ -12,10 +12,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.code.dal.audit.DeletableAuditEntity;
-import com.code.dal.audit.InsertableAuditEntity;
-import com.code.dal.audit.UpdatableAuditEntity;
-import com.code.dal.orm.AuditEntity;
+import com.code.dal.orm.BaseEntity;
 
 @NamedQueries({
 	@NamedQuery(name = "hcm_raiseEmployee_deleteRaiseEmployeesByRaiseId",
@@ -28,7 +25,7 @@ import com.code.dal.orm.AuditEntity;
 
 @Entity
 @Table(name = "HCM_RAISES_EMPLOYEES")
-public class RaiseEmployee extends AuditEntity implements InsertableAuditEntity, UpdatableAuditEntity, DeletableAuditEntity {
+public class RaiseEmployee extends BaseEntity {
     private Long id;
     private Long raiseId;
     private Long empId;
@@ -108,18 +105,5 @@ public class RaiseEmployee extends AuditEntity implements InsertableAuditEntity,
 
     public void setDeservedFlag(Integer deservedFlag) {
 	this.deservedFlag = deservedFlag;
-    }
-
-    @Override
-    public Long calculateContentId() {
-	return id;
-    }
-
-    @Override
-    public String calculateContent() {
-	return "raiseId:" + raiseId + AUDIT_SEPARATOR +
-		"empId:" + empId + AUDIT_SEPARATOR +
-		"exclusionReason:" + exclusionReason + AUDIT_SEPARATOR +
-		"newDegreeId:" + newDegreeId + AUDIT_SEPARATOR;
     }
 }
