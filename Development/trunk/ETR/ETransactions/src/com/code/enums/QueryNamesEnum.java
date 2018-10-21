@@ -493,7 +493,9 @@ public enum QueryNamesEnum {
     /* ****************************************** Audit ******************************************************* */
     ETR_GET_CONTENT_ENTITIES("etr_auditLog_getContentEntities"),
     ETR_GET_AUDIT_LOGS("etr_auditLog_getAuditLogs"),
-
+    
+    /* ****************************************** EmployeesLog ******************************************************* */
+    HCM_EMPLOYEE_LOG_DATA_SEARCH_EMPLOYEES_LOG("hcm_employeeLogData_searchEmployeesLog"),
     /* ****************************************** General News ************************************************ */
     HCM_GET_GENERAL_NEWS("hcm_generalNews_getGeneralNews");
 
