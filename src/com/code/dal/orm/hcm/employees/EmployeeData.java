@@ -549,7 +549,7 @@ public class EmployeeData extends BaseEntity implements Serializable {
 
     @Basic
     @Column(name = "SALARY_RANK_ID")
-    @XmlElement(nillable = true)
+    @XmlTransient
     public Long getSalaryRankId() {
 	return salaryRankId;
     }
@@ -561,7 +561,7 @@ public class EmployeeData extends BaseEntity implements Serializable {
 
     @Basic
     @Column(name = "SALARY_RANK_DESC")
-    @XmlElement(nillable = true)
+    @XmlTransient
     public String getSalaryRankDesc() {
 	return salaryRankDesc;
     }
