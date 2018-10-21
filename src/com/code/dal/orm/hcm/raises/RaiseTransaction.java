@@ -14,13 +14,12 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.code.dal.audit.InsertableAuditEntity;
-import com.code.dal.audit.UpdatableAuditEntity;
 import com.code.dal.orm.AuditEntity;
 import com.code.services.util.HijriDateService;
 
 @Entity
 @Table(name = "HCM_RAISE_TRANSACTIONS")
-public class RaiseTransaction extends AuditEntity implements InsertableAuditEntity, UpdatableAuditEntity {
+public class RaiseTransaction extends AuditEntity implements InsertableAuditEntity {
     private Long id;
     private Long empId;
     private Long categoryId;

@@ -10,9 +10,9 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
 
 import com.code.dal.audit.DeletableAuditEntity;
 import com.code.dal.audit.InsertableAuditEntity;
@@ -25,17 +25,16 @@ import com.code.exceptions.DatabaseException;
 
 public class DataAccess {
     protected static SessionFactory sessionFactory;
-    protected static int batchSize;
+    private static int batchSize;
 
     protected DataAccess() {
     }
 
     public static void init() {
 	try {
-	    Configuration configuration = new Configuration();
-	    configuration.configure("com/code/dal/hibernate.cfg.xml");
-	    ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();
-	    sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+	    Configuration configuration = new Configuration().configure("com/code/dal/hibernate.cfg.xml");
+	    StandardServiceRegistry standardRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+	    sessionFactory = configuration.buildSessionFactory(standardRegistry);
 	    batchSize = Integer.parseInt(configuration.getProperty("hibernate.jdbc.batch_size"));
 	} catch (HibernateException exception) {
 	    System.out.println("Problem creating session Factory!");
@@ -74,7 +73,7 @@ public class DataAccess {
 	}
     }
 
-    public static void addMultipleEntitiesWithoutAudit(List<BaseEntity> beans, CustomSession... useSession) throws DatabaseException {
+    public static void addMultipleEntities(List<BaseEntity> beans, CustomSession... useSession) throws DatabaseException {
 	boolean isOpenedSession = false;
 	if (useSession != null && useSession.length > 0)
 	    isOpenedSession = true;
@@ -92,6 +91,8 @@ public class DataAccess {
 		    session.clear();
 		}
 	    }
+
+	    auditMultipleEntities(beans, AuditOperationsEnum.INSERT, session);
 	    if (!isOpenedSession)
 		session.getTransaction().commit();
 	} catch (Exception e) {
@@ -118,6 +119,38 @@ public class DataAccess {
 	    session.saveOrUpdate(bean);
 	    audit(bean, AuditOperationsEnum.UPDATE, session);
 
+	    if (!isOpenedSession)
+		session.getTransaction().commit();
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.getTransaction().rollback();
+	    throw new DatabaseException(e.getMessage());
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
+
+    public static void updateMultipleEntities(List<BaseEntity> beans, CustomSession... useSession) throws DatabaseException {
+	boolean isOpenedSession = false;
+	if (useSession != null && useSession.length > 0)
+	    isOpenedSession = true;
+
+	Session session = isOpenedSession ? useSession[0].getSession() : sessionFactory.openSession();
+
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+
+	    for (int i = 0; i < beans.size(); i++) {
+		session.saveOrUpdate(beans.get(i));
+		if (i % batchSize == 0 && i != 0) {
+		    session.flush();
+		    session.clear();
+		}
+	    }
+
+	    DataAccess.auditMultipleEntities(beans, AuditOperationsEnum.UPDATE, session);
 	    if (!isOpenedSession)
 		session.getTransaction().commit();
 	} catch (Exception e) {
@@ -224,7 +257,7 @@ public class DataAccess {
 	}
     }
 
-    public static void executeUpdateAndDelete(String queryName, Map<String, Object> parameters, CustomSession... useSession) throws DatabaseException {
+    public static void executeUpdateAndDelete(String queryName, Map<String, Object> parameters, List<BaseEntity> auditBeans, CustomSession... useSession) throws DatabaseException {
 
 	boolean isOpenedSession = false;
 	if (useSession != null && useSession.length > 0)
@@ -258,7 +291,7 @@ public class DataAccess {
 		}
 	    }
 	    q.executeUpdate();
-
+	    auditMultipleEntities(auditBeans, AuditOperationsEnum.UPDATE, session);
 	    if (!isOpenedSession)
 		session.getTransaction().commit();
 	} catch (Exception e) {
@@ -293,32 +326,32 @@ public class DataAccess {
 	}
     }
 
-    public static void addAudit(List<BaseEntity> beans, AuditOperationsEnum operation, CustomSession useSession) throws DatabaseException {
+    public static void auditMultipleEntities(List<BaseEntity> beans, AuditOperationsEnum operation, Session session) throws DatabaseException {
 	int i = 0;
-	for (BaseEntity bean : beans) {
-	    i++;
-	    if ((AuditOperationsEnum.INSERT.equals(operation) && bean instanceof InsertableAuditEntity) ||
-		    (AuditOperationsEnum.UPDATE.equals(operation) && bean instanceof UpdatableAuditEntity) ||
-		    (AuditOperationsEnum.DELETE.equals(operation) && bean instanceof DeletableAuditEntity)) {
+	if (beans != null && !beans.isEmpty()) {
+	    if ((AuditOperationsEnum.INSERT.equals(operation) && beans.get(0) instanceof InsertableAuditEntity) ||
+		    (AuditOperationsEnum.UPDATE.equals(operation) && beans.get(0) instanceof UpdatableAuditEntity) ||
+		    (AuditOperationsEnum.DELETE.equals(operation) && beans.get(0) instanceof DeletableAuditEntity)) {
+		for (BaseEntity bean : beans) {
+		    // It is intended not to check for the cast exception here to announce the wrong usage.
+		    AuditEntity auditableBean = (AuditEntity) bean;
 
-		Session session = useSession.getSession();
-		// It is intended not to check for the cast exception here to announce the wrong usage.
-		AuditEntity auditableBean = (AuditEntity) bean;
-
-		// If the system user has a value, this means that this transaction will audit this entity.
-		if (auditableBean.getSystemUser() != null) {
-		    AuditLog log = new AuditLog();
-		    log.setSystemUser(Long.parseLong(auditableBean.getSystemUser()));
-		    log.setOperation(operation.toString());
-		    log.setOperationDate(new Date());
-		    log.setContentEntity(auditableBean.getClass().getCanonicalName());
-		    log.setContentId(auditableBean.calculateContentId());
-		    log.setContent(auditableBean.calculateContent());
-		    session.save(log);
-		}
-		if (i % batchSize == 0 && i != 0) {
-		    session.flush();
-		    session.clear();
+		    // If the system user has a value, this means that this transaction will audit this entity.
+		    if (auditableBean.getSystemUser() != null) {
+			AuditLog log = new AuditLog();
+			log.setSystemUser(Long.parseLong(auditableBean.getSystemUser()));
+			log.setOperation(operation.toString());
+			log.setOperationDate(new Date());
+			log.setContentEntity(auditableBean.getClass().getCanonicalName());
+			log.setContentId(auditableBean.calculateContentId());
+			log.setContent(auditableBean.calculateContent());
+			session.save(log);
+			i++;
+		    }
+		    if (i % batchSize == 0 && i != 0) {
+			session.flush();
+			session.clear();
+		    }
 		}
 	    }
 	}
