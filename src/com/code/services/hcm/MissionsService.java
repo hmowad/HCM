@@ -1204,7 +1204,7 @@ public class MissionsService extends BaseService {
 	    parameters.put("P_SYS_DATE", HijriDateService.getHijriSysDateString());
 	    parameters.put("P_EMP_ID", empId == null ? FlagsEnum.ALL.getCode() : empId);
 	    parameters.put("P_EMP_NAME", empName == null ? FlagsEnum.ALL.getCode() + "" : empName);
-	    parameters.put("P_UNIT_HKEY_PREFIX", unitHKeyPrefix == null ? FlagsEnum.ALL.getCode() : unitHKeyPrefix);
+	    parameters.put("P_UNIT_HKEY_PREFIX", unitHKeyPrefix == null ? FlagsEnum.ALL.getCode() + "" : unitHKeyPrefix);
 	    parameters.put("P_UNIT_DESC", unitDesc == null ? FlagsEnum.ALL.getCode() + "" : unitDesc);
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
