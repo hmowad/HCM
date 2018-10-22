@@ -22,10 +22,11 @@ import com.code.dal.orm.hcm.promotions.PromotionReport;
 import com.code.dal.orm.hcm.promotions.PromotionReportData;
 import com.code.dal.orm.hcm.promotions.PromotionReportDetail;
 import com.code.dal.orm.hcm.promotions.PromotionReportDetailData;
-import com.code.dal.orm.hcm.promotions.PromotionRetroactiveData;
 import com.code.dal.orm.hcm.promotions.PromotionSeniortyPoints;
 import com.code.dal.orm.hcm.promotions.PromotionTransactionData;
 import com.code.dal.orm.hcm.promotions.RankPowerData;
+import com.code.dal.orm.hcm.promotions.RetroactivePromotionDAO;
+import com.code.dal.orm.hcm.promotions.RetroactivePromotionProxy;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransactionData;
 import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
 import com.code.dal.orm.hcm.trainings.TrainingTransactionData;
@@ -532,27 +533,6 @@ public class PromotionsService extends BaseService {
 	return promotionReportDataList.isEmpty() ? null : promotionReportDataList.get(0);
     }
 
-    private static List<PromotionRetroactiveData> getEffectiveRetroactivePromotion(Long empId, Long empRankId, Date promotionDueDate) throws BusinessException {
-	try {
-	    Map<String, Object> qParams = new HashMap<String, Object>();
-
-	    qParams.put("P_EMP_ID", empId);
-	    qParams.put("P_RANK_ID", empRankId == null ? FlagsEnum.ALL.getCode() : empRankId);
-	    if (promotionDueDate != null) {
-		qParams.put("P_EFFECTIVE_DATE_FLAG", FlagsEnum.ON.getCode());
-		qParams.put("P_EFFECTIVE_DATE", HijriDateService.getHijriDateString(promotionDueDate));
-	    } else {
-		qParams.put("P_EFFECTIVE_DATE_FLAG", FlagsEnum.ALL.getCode());
-		qParams.put("P_EFFECTIVE_DATE", HijriDateService.getHijriSysDateString());
-	    }
-
-	    return DataAccess.executeNamedQuery(PromotionRetroactiveData.class, QueryNamesEnum.HCM_GET_EFFICTIVE_RETROACTIVE_PROMOTION.getCode(), qParams);
-	} catch (DatabaseException e) {
-	    e.printStackTrace();
-	    throw new BusinessException("error_general");
-	}
-    }
-
     /**
      * Wrapper for{@link #searchPromotionReportsWithoutWorkFlow(long, String, Date, Date, long, long, String, Date, long, boolean, long, long)} to get the List of promotion report data which filtered by report date promotion due date, rank , promotion report status, promotion report decision number , promotion report decision date, Employee Id, category Id or at least has one employee
      * 
@@ -1037,26 +1017,21 @@ public class PromotionsService extends BaseService {
 	    reportDetailData.setOldDegreeId(employee.getDegreeId());
 	    reportDetailData.setOldDegreeDesc(employee.getDegreeDesc());
 	    if (promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
-		List<PromotionRetroactiveData> promotionRetroactiveDataList = getEffectiveRetroactivePromotion(reportDetailData.getEmpId(), reportDetailData.getOldRankId(), reportDetailData.getPromotionDueDate());
-		if (promotionRetroactiveDataList != null && promotionRetroactiveDataList.size() != 0) {
-		    PromotionRetroactiveData effectiveRetroactivePromotion = promotionRetroactiveDataList.get(0);
-		    if (effectiveRetroactivePromotion.getDegreeId() != null) {
-			Long differenceBetweenCurrentDegreeAndRetroactiveDegree = employee.getDegreeId() - effectiveRetroactivePromotion.getDegreeId();
-			PayrollSalary oldRetroactivePayrollSalary = PayrollsService.getPayrollSalary(effectiveRetroactivePromotion.getRankId(), effectiveRetroactivePromotion.getDegreeId());
-			PayrollSalary newRetroactivePayrollSalary = PayrollsService.getPayrollNewSalary(getNextRank(effectiveRetroactivePromotion.getRankId()), oldRetroactivePayrollSalary.getBasicSalary());
-			Long deservedDegree = differenceBetweenCurrentDegreeAndRetroactiveDegree + newRetroactivePayrollSalary.getDegreeId();
-			Long endOfLadderOfRank = PayrollsService.getEndOfLadderOfRank(getNextRank(effectiveRetroactivePromotion.getRankId()));
-			reportDetailData.setNewDegreeId(deservedDegree > endOfLadderOfRank ? endOfLadderOfRank : deservedDegree);
-		    } else {
-			reportDetailData.setNewDegreeId(newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId());
-		    }
+		RetroactivePromotionDAO retroactivePromotion = new RetroactivePromotionProxy();
+		Long promotionRetroactiveDegreeId = retroactivePromotion.calculateNewDegree(reportDetailData.getEmpId(), reportDetailData.getOldRankId(), reportDetailData.getPromotionDueDate());
+		if (promotionRetroactiveDegreeId != null) {
+		    Long differenceBetweenCurrentDegreeAndRetroactiveDegree = employee.getDegreeId() - promotionRetroactiveDegreeId;
+		    PayrollSalary oldRetroactivePayrollSalary = PayrollsService.getPayrollSalary(reportDetailData.getOldRankId(), promotionRetroactiveDegreeId);
+		    PayrollSalary newRetroactivePayrollSalary = PayrollsService.getPayrollNewSalary(getNextRank(reportDetailData.getOldRankId()), oldRetroactivePayrollSalary.getBasicSalary());
+		    Long deservedDegree = differenceBetweenCurrentDegreeAndRetroactiveDegree + newRetroactivePayrollSalary.getDegreeId();
+		    Long endOfLadderOfRank = PayrollsService.getEndOfLadderOfRank(getNextRank(reportDetailData.getOldRankId()));
+		    reportDetailData.setNewDegreeId(deservedDegree > endOfLadderOfRank ? endOfLadderOfRank : deservedDegree);
 		} else {
 		    reportDetailData.setNewDegreeId(newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId());
 		}
 	    } else {
 		reportDetailData.setNewDegreeId(newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId());
 	    }
-
 	    reportDetailData.setOldJobId(employee.getJobId());
 	    reportDetailData.setOldJobCode(employee.getJobCode());
 	    reportDetailData.setOldJobDesc(employee.getJobDesc());
