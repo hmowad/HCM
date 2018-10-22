@@ -335,7 +335,7 @@ public class RaisesService extends BaseService {
 		qParams.put("P_EXECUTION_DATE_TO_FLAG", FlagsEnum.ALL.getCode());
 		qParams.put("P_EXECUTION_DATE_TO", HijriDateService.getHijriSysDateString());
 	    }
-	    return DataAccess.executeNamedQuery(Raise.class, QueryNamesEnum.HCM_RAISES_SEARCH_RAISES.getCode(), qParams);
+	    return DataAccess.executeNamedQuery(Raise.class, QueryNamesEnum.HCM_SEARCH_RAISES.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
@@ -346,7 +346,7 @@ public class RaisesService extends BaseService {
     /*----------------------------------------Operations----------------------------------------------*/
 
     /**
-     * Updates a raiseEmployeeData object in database
+     * Saves additional raise in database by updating raise and manipulating raise employees
      * 
      * @param raise
      *            The raise will be updated in DB
@@ -359,7 +359,7 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static void updateRaiseAndEmployees(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataToAddList, List<RaiseEmployeeData> raiseEmployeeDataToDeleteList, CustomSession... useSession) throws BusinessException {
+    public static void saveAdditionalRaiseData(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataToAddList, List<RaiseEmployeeData> raiseEmployeeDataToDeleteList, CustomSession... useSession) throws BusinessException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -428,7 +428,7 @@ public class RaisesService extends BaseService {
     }
 
     /**
-     * Deletes a raiseEmployeeData object from database
+     * Updates a raiseEmployeeData list from database
      * 
      * @param raiseEmployeeData
      *            The raiseEmployeeData will be deleted from DB
@@ -532,7 +532,7 @@ public class RaisesService extends BaseService {
 	return raiseEmployeeData;
     }
 
-    public static List<RaiseEmployeeData> generateRaiseEmployees(Raise raise, Date executionDate) throws BusinessException {
+    public static List<RaiseEmployeeData> generateRaiseEmployeesForAnnualRaise(Raise raise, Date executionDate) throws BusinessException {
 	List<RaiseEmployeeData> endOfLadderEmpRaiseData = new ArrayList<>();
 	List<RaiseEmployeeData> allRaiseEmployees = new ArrayList<>();
 	List<RaiseEmployeeData> deservedEmpRaiseData = new ArrayList<>();
@@ -546,8 +546,8 @@ public class RaisesService extends BaseService {
 	    rankDegressHashMap.put(endOfLadderDegree.getRankId(), endOfLadderDegree.getDegreeId());
 	}
 
-	List<EmployeeData> allDeservedEmpData = getDeservedEmployees(raise.getId(), executionDate, null);
-	unDeservedEmpData = getUnDeservedEmployees(raise.getId(), executionDate);
+	List<EmployeeData> allDeservedEmpData = getDeservedEmployeesForAnnualRaise(raise.getId(), executionDate, null);
+	unDeservedEmpData = getUnDeservedEmployeesForAnnualRaise(raise.getId(), executionDate);
 
 	for (EmployeeData emp : allDeservedEmpData) {
 	    if (emp.getDegreeId().equals(rankDegressHashMap.get(emp.getRankId()))) {
@@ -571,7 +571,7 @@ public class RaisesService extends BaseService {
 	return endOfLadderEmpRaiseData;
     }
 
-    public static List<RaiseEmployeeData> regenerateRaiseEmployees(Raise raise, Date executionDate, CustomSession... useSession) throws BusinessException {
+    public static List<RaiseEmployeeData> regenerateRaiseEmployeesForAnnualRaise(Raise raise, Date executionDate, CustomSession... useSession) throws BusinessException {
 	// delete the old records in DB
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -597,7 +597,7 @@ public class RaisesService extends BaseService {
 	}
 
 	// re-calculate all employees
-	return generateRaiseEmployees(raise, executionDate);
+	return generateRaiseEmployeesForAnnualRaise(raise, executionDate);
     }
 
     /*----------------------------------------Validations----------------------------------------------*/
@@ -616,7 +616,7 @@ public class RaisesService extends BaseService {
     }
 
     private static void isStillValidRaiseEmployee(RaiseEmployeeData raiseEmployeeData) throws BusinessException {
-	List<EmployeeData> employeeData = getDeservedEmployees(raiseEmployeeData.getRaiseId(), raiseEmployeeData.getRaiseExecutionDate(), raiseEmployeeData.getEmpId());
+	List<EmployeeData> employeeData = getDeservedEmployeesForAnnualRaise(raiseEmployeeData.getRaiseId(), raiseEmployeeData.getRaiseExecutionDate(), raiseEmployeeData.getEmpId());
 	if (employeeData.size() == 0)
 	    throw new BusinessException("emp_isNotDeserved");
 	else {
@@ -721,7 +721,7 @@ public class RaisesService extends BaseService {
 	    }
 	    qParams.put("P_RAISE_ID", raiseId);
 	    qParams.put("P_RAISE_EMP_ID", empId);
-	    return DataAccess.executeNamedQuery(RaiseEmployeeData.class, QueryNamesEnum.HCM_RAISES_SEARCH_RAISE_EMPLOYEES.getCode(), qParams);
+	    return DataAccess.executeNamedQuery(RaiseEmployeeData.class, QueryNamesEnum.HCM_SEARCH_RAISE_EMPLOYEES.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
@@ -732,7 +732,7 @@ public class RaisesService extends BaseService {
 	Map<String, Object> qParams = new HashMap<String, Object>();
 	try {
 	    qParams.put("P_RAISE_ID", raiseId);
-	    DataAccess.executeUpdateAndDelete(QueryNamesEnum.HCM_RAISES_DELETE_RAISE_EMPLOYEES_BY_RAISE_ID.getCode(), qParams, null, session);
+	    DataAccess.executeDeleteNamedQuery(QueryNamesEnum.HCM_DELETE_RAISE_EMPLOYEES_BY_RAISE_ID.getCode(), qParams, null, session);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
@@ -747,13 +747,13 @@ public class RaisesService extends BaseService {
      * @return array list of employees objects
      * @throws BusinessException
      */
-    private static List<EmployeeData> getDeservedEmployees(long raiseId, Date executionDate, Long empId) throws BusinessException {
+    private static List<EmployeeData> getDeservedEmployeesForAnnualRaise(long raiseId, Date executionDate, Long empId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_RAISE_ID", raiseId);
-	    qParams.put("P_EXECUTION_DATE", calculateExecutionBeforeYear(executionDate));
+	    qParams.put("P_EXECUTION_DATE", calculateDateBeforeGivenExecutionDateByOneYear(executionDate));
 	    qParams.put("P_EMP_ID", (empId == null) ? FlagsEnum.ALL.getCode() + "" : empId);
-	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_DESERVED_EMPLOYEES.getCode(), qParams);
+	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_GET_DESERVED_EMPLOYEES.getCode(), qParams);
 
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
@@ -769,13 +769,13 @@ public class RaisesService extends BaseService {
      * @return array list of employees objects
      * @throws BusinessException
      */
-    private static List<EmployeeData> getUnDeservedEmployees(long raiseId, Date executionDate) throws BusinessException {
+    private static List<EmployeeData> getUnDeservedEmployeesForAnnualRaise(long raiseId, Date executionDate) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_RAISE_ID", raiseId);
-	    qParams.put("P_EXECUTION_DATE", calculateExecutionBeforeYear(executionDate));
+	    qParams.put("P_EXECUTION_DATE", calculateDateBeforeGivenExecutionDateByOneYear(executionDate));
 
-	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_RAISES_GET_UNDESERVED_EMPLOYEES.getCode(), qParams);
+	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_GET_UNDESERVED_EMPLOYEES.getCode(), qParams);
 
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
@@ -783,7 +783,7 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    private static Date calculateExecutionBeforeYear(Date executionDate) {
+    private static Date calculateDateBeforeGivenExecutionDateByOneYear(Date executionDate) {
 
 	Calendar c = Calendar.getInstance();
 	c.setTime(HijriDateService.hijriToGregDate(executionDate));
@@ -892,7 +892,7 @@ public class RaisesService extends BaseService {
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
-	    int i = 0;
+
 	    List<BaseEntity> beans = new ArrayList<>();
 	    for (RaiseEmployeeData raiseEmployee : deserved) {
 		RaiseTransactionData transaction = constructRaiseTransaction(raise, raiseEmployee, managerId);
@@ -925,7 +925,6 @@ public class RaisesService extends BaseService {
 	    if (!isOpenedSession)
 		session.close();
 	}
-
     }
 
     public static void approveAnnualRaise(Raise raise, long managerId, String loginEmpId, CustomSession... useSession) throws BusinessException {
@@ -999,7 +998,7 @@ public class RaisesService extends BaseService {
 		employees.get(x).setSystemUser(loginEmpId);
 	    }
 	    beans.addAll(employees);
-	    updateEmployeesAfterAnnualRaise(beans, raise.getExecutionDate(), raise.getId(), session);
+	    updateEmployeesDueToAnnualRaiseEffect(beans, raise.getExecutionDate(), raise.getId(), session);
 
 	}
     }
@@ -1068,7 +1067,7 @@ public class RaisesService extends BaseService {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EXECUTION_DATE", HijriDateService.getHijriSysDateString());
-	    return DataAccess.executeNamedQuery(RaiseTransactionData.class, QueryNamesEnum.HCM_RAISE_TRANSACTION_DATA_GET_NOT_EXECUTED_RAISES_TRANSACTIONS.getCode(), qParams);
+	    return DataAccess.executeNamedQuery(RaiseTransactionData.class, QueryNamesEnum.HCM_GET_NOT_EXECUTED_RAISES_TRANSACTIONS.getCode(), qParams);
 
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
@@ -1076,13 +1075,13 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    public static void updateEmployeesAfterAnnualRaise(List<BaseEntity> auditBeans, Date lastAnnualRaiseDate, long raiseId, CustomSession session) throws BusinessException {
+    public static void updateEmployeesDueToAnnualRaiseEffect(List<BaseEntity> auditBeans, Date lastAnnualRaiseDate, long raiseId, CustomSession session) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_RAISE_ID", raiseId);
 	    qParams.put("P_LAST_ANNUAL_RAISE_DATE", HijriDateService.getHijriDateString(lastAnnualRaiseDate));
 
-	    DataAccess.executeUpdateAndDelete(QueryNamesEnum.HCM_RAISES_UPDATE_EMPLOYEES_AFTER_ANNUAL_RAISE.getCode(), qParams, auditBeans, session);
+	    DataAccess.executeUpdateNamedQuery(QueryNamesEnum.HCM_UPDATE_EMPLOYEES_DUE_TO_ANNUAL_RAISE_EFFECT.getCode(), qParams, auditBeans, session);
 
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
@@ -1095,7 +1094,7 @@ public class RaisesService extends BaseService {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_RAISE_ID", raiseId);
 
-	    return DataAccess.executeNamedQuery(Employee.class, QueryNamesEnum.HCM_RAISES_SELECT_EMPLOYEES_TO_AUDIT.getCode(), qParams);
+	    return DataAccess.executeNamedQuery(Employee.class, QueryNamesEnum.HCM_GET_DESERVED_EMPLOYEES_BY_RAISE_ID.getCode(), qParams);
 
 	} catch (DatabaseException e) {
 	    e.printStackTrace();

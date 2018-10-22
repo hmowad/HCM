@@ -1,4 +1,4 @@
-package com.code.dal.orm.hcm.log;
+package com.code.dal.orm.log;
 
 import java.util.Date;
 
@@ -38,14 +38,14 @@ import com.code.dal.orm.BaseEntity;
 public class EmployeeLogData extends BaseEntity {
     private Long id;
     private Long empId;
-    private Long rankId;
     private Long jobId;
     private Long basicJobNameId;
     private Long physicalUnitId;
-    private Long degreeId;
-    private Long salaryRankId;
-    private Integer socialStatus;
+    private Long rankId;
     private Long rankTitleId;
+    private Long salaryRankId;
+    private Long degreeId;
+    private Integer socialStatus;
     private Integer generalSpecialization;
     private Date effectiveDate;
     private String decisionNumber;
@@ -76,17 +76,6 @@ public class EmployeeLogData extends BaseEntity {
     public void setEmpId(Long empId) {
 	this.empId = empId;
 	employeelog.setEmpId(empId);
-    }
-
-    @Basic
-    @Column(name = "RANK_ID")
-    public Long getRankId() {
-	return rankId;
-    }
-
-    public void setRankId(Long rankId) {
-	this.rankId = rankId;
-	employeelog.setRankId(rankId);
     }
 
     @Basic
@@ -123,14 +112,25 @@ public class EmployeeLogData extends BaseEntity {
     }
 
     @Basic
-    @Column(name = "DEGREE_ID")
-    public Long getDegreeId() {
-	return degreeId;
+    @Column(name = "RANK_ID")
+    public Long getRankId() {
+	return rankId;
     }
 
-    public void setDegreeId(Long degreeId) {
-	this.degreeId = degreeId;
-	employeelog.setDegreeId(degreeId);
+    public void setRankId(Long rankId) {
+	this.rankId = rankId;
+	employeelog.setRankId(rankId);
+    }
+
+    @Basic
+    @Column(name = "RANK_TITLE_ID")
+    public Long getRankTitleId() {
+	return rankTitleId;
+    }
+
+    public void setRankTitleId(Long rankTitleId) {
+	this.rankTitleId = rankTitleId;
+	employeelog.setRankTitleId(rankTitleId);
     }
 
     @Basic
@@ -145,6 +145,17 @@ public class EmployeeLogData extends BaseEntity {
     }
 
     @Basic
+    @Column(name = "DEGREE_ID")
+    public Long getDegreeId() {
+	return degreeId;
+    }
+
+    public void setDegreeId(Long degreeId) {
+	this.degreeId = degreeId;
+	employeelog.setDegreeId(degreeId);
+    }
+
+    @Basic
     @Column(name = "SOCIAL_STATUS")
     public Integer getSocialStatus() {
 	return socialStatus;
@@ -153,17 +164,6 @@ public class EmployeeLogData extends BaseEntity {
     public void setSocialStatus(Integer socialStatus) {
 	this.socialStatus = socialStatus;
 	employeelog.setSocialStatus(socialStatus);
-    }
-
-    @Basic
-    @Column(name = "RANK_TITLE_ID")
-    public Long getRankTitleId() {
-	return rankTitleId;
-    }
-
-    public void setRankTitleId(Long rankTitleId) {
-	this.rankTitleId = rankTitleId;
-	employeelog.setRankTitleId(rankTitleId);
     }
 
     @Basic
@@ -218,5 +218,4 @@ public class EmployeeLogData extends BaseEntity {
     public void setEmployeelog(EmployeeLog employeelog) {
 	this.employeelog = employeelog;
     }
-
 }

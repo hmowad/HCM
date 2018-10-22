@@ -6,8 +6,8 @@
 
 		<!-- Data Source -->
 		<property name="connection.datasource">jdbc/BGETR</property>
-		<property name="hibernate.transaction.jta.platform">org.hibernate.engine.transaction.jta.platform.internal.WeblogicJtaPlatform</property>
 		<property name="transaction.factory_class">org.hibernate.engine.transaction.internal.jta.JtaTransactionFactory</property>
+		<property name="hibernate.transaction.jta.platform">org.hibernate.engine.transaction.jta.platform.internal.WeblogicJtaPlatform</property>
 		<property name="hibernate.jdbc.batch_size">30</property>
 		
 		
