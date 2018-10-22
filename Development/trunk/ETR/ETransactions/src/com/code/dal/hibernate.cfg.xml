@@ -281,8 +281,8 @@
 		
 		<mapping class="com.code.dal.orm.hcm.pushServer.PushServerLog" />
 		
-		<mapping class="com.code.dal.orm.hcm.log.EmployeeLog" />
-		<mapping class="com.code.dal.orm.hcm.log.EmployeeLogData" />
+		<mapping class="com.code.dal.orm.log.EmployeeLog" />
+		<mapping class="com.code.dal.orm.log.EmployeeLogData" />
 		
 	</session-factory>
 </hibernate-configuration>
