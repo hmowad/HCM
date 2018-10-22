@@ -230,6 +230,8 @@ public class RaisesService extends BaseService {
 	    throw new BusinessException("error_categoryIdIsMandatory");
 	if (newRaise.getExecutionDate() == null)
 	    throw new BusinessException("error_raiseDateIsMandatory");
+
+	// We can’t save two initial annual raises for the same category.
     }
 
     /*------------------------------------------Queries------------------------------------------------*/
@@ -616,8 +618,7 @@ public class RaisesService extends BaseService {
 
 	// validate mandatory fields
 	// Check that raise has at least one deserved employee
-	// In addition raise that employee didn't reach end of ladder
-	// TODO check if addition raise for employee is the last raise/promotion
+	// TODO check if additional raise for employee is the last raise/promotion, didn't reach end of ladder, employee not service terminated
     }
 
     private static void isStillValidRaiseEmployee(RaiseEmployeeData raiseEmployeeData) throws BusinessException {
