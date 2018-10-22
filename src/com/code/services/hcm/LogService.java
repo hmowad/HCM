@@ -87,12 +87,14 @@ public class LogService extends BaseService {
 	    employeeLogData.setEmpId(empData.getEmpId());
 	    employeeLogData.setRankId(empData.getRankId());
 	    employeeLogData.setJobId(empData.getJobId());
-	    Long[] jobsIds = new Long[] { empData.getJobId() };
-	    employeeLogData.setBasicJobNameId(JobsService.getJobsByJobsIds(jobsIds).get(0).getBasicJobNameId());
+	    if (empData.getJobId() != null) {
+		Long[] jobsIds = new Long[] { empData.getJobId() };
+		employeeLogData.setBasicJobNameId(JobsService.getJobsByJobsIds(jobsIds).get(0).getBasicJobNameId());
+	    } else
+		employeeLogData.setBasicJobNameId(null);
 	    employeeLogData.setPhysicalUnitId(empData.getPhysicalUnitId());
 	    employeeLogData.setDegreeId(empData.getDegreeId());
-	    // employeeLogData.setSalaryRankId(empData.getSalaryRankId());// lesa hydaf fe orm el empData
-	    employeeLogData.setSalaryRankId(empData.getRankId());// de mbda2yan l7ad ma ydaf fe orm el empData
+	    employeeLogData.setSalaryRankId(empData.getSalaryRankId());
 	    employeeLogData.setSocialStatus(empData.getSocialStatus());
 	    employeeLogData.setRankTitleId(empData.getRankTitleId());
 	    employeeLogData.setGeneralSpecialization(empData.getGeneralSpecialization());
