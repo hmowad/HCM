@@ -1044,7 +1044,9 @@ public class PromotionsService extends BaseService {
 			Long differenceBetweenCurrentDegreeAndRetroactiveDegree = employee.getDegreeId() - effectiveRetroactivePromotion.getDegreeId();
 			PayrollSalary oldRetroactivePayrollSalary = PayrollsService.getPayrollSalary(effectiveRetroactivePromotion.getRankId(), effectiveRetroactivePromotion.getDegreeId());
 			PayrollSalary newRetroactivePayrollSalary = PayrollsService.getPayrollNewSalary(getNextRank(effectiveRetroactivePromotion.getRankId()), oldRetroactivePayrollSalary.getBasicSalary());
-			reportDetailData.setNewDegreeId(differenceBetweenCurrentDegreeAndRetroactiveDegree + newRetroactivePayrollSalary.getDegreeId());
+			Long deservedDegree = differenceBetweenCurrentDegreeAndRetroactiveDegree + newRetroactivePayrollSalary.getDegreeId();
+			Long endOfLadderOfRank = PayrollsService.getEndOfLadderOfRank(getNextRank(effectiveRetroactivePromotion.getRankId()));
+			reportDetailData.setNewDegreeId(deservedDegree > endOfLadderOfRank ? endOfLadderOfRank : deservedDegree);
 		    } else {
 			reportDetailData.setNewDegreeId(newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId());
 		    }
