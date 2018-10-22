@@ -97,7 +97,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 	    // a new raise is created for the first time
 	    if (annualRaise.getId() == null) {
 		RaisesService.addRaise(annualRaise);
-		raiseEmployees = RaisesService.generateRaiseEmployees(annualRaise, annualRaise.getExecutionDate());
+		raiseEmployees = RaisesService.generateRaiseEmployeesForAnnualRaise(annualRaise, annualRaise.getExecutionDate());
 	    }
 	    // the raise is updated
 	    else if (modifyAdminFlag) {
@@ -107,7 +107,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 		if ((loadedAnnualRaise.getCategoryId() == annualRaise.getCategoryId()) && (loadedAnnualRaise.getExecutionDateString().equals(annualRaise.getExecutionDateString())))
 		    raiseEmployees = RaisesService.getEndOfLadderAndExcludedForAnotherReasonEmployees(annualRaise.getId());
 		else
-		    raiseEmployees = RaisesService.regenerateRaiseEmployees(annualRaise, annualRaise.getExecutionDate());
+		    raiseEmployees = RaisesService.regenerateRaiseEmployeesForAnnualRaise(annualRaise, annualRaise.getExecutionDate());
 	    }
 	    // view mode is on
 	    else {

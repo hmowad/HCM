@@ -257,8 +257,15 @@ public class DataAccess {
 	}
     }
 
-    public static void executeUpdateAndDelete(String queryName, Map<String, Object> parameters, List<BaseEntity> auditBeans, CustomSession... useSession) throws DatabaseException {
+    public static void executeUpdateNamedQuery(String queryName, Map<String, Object> parameters, List<BaseEntity> auditBeans, CustomSession... useSession) throws DatabaseException {
+	executeTransactionalNamedQuery(queryName, parameters, auditBeans, useSession);
+    }
 
+    public static void executeDeleteNamedQuery(String queryName, Map<String, Object> parameters, List<BaseEntity> auditBeans, CustomSession... useSession) throws DatabaseException {
+	executeTransactionalNamedQuery(queryName, parameters, auditBeans, useSession);
+    }
+
+    private static void executeTransactionalNamedQuery(String queryName, Map<String, Object> parameters, List<BaseEntity> auditBeans, CustomSession... useSession) throws DatabaseException {
 	boolean isOpenedSession = false;
 	if (useSession != null && useSession.length > 0)
 	    isOpenedSession = true;

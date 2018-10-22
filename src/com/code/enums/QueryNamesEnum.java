@@ -52,14 +52,14 @@ public enum QueryNamesEnum {
 
     /* ************************************************ Raises ********************************************** */
 
-    HCM_RAISE_TRANSACTION_DATA_GET_NOT_EXECUTED_RAISES_TRANSACTIONS("hcm_raiseTransactionData_getNotExecutedRaisesTransactions"),
-    HCM_RAISES_SEARCH_RAISES("hcm_raise_searchRaises"),
-    HCM_RAISES_GET_DESERVED_EMPLOYEES("hcm_raise_getDeservedEmployees"),
-    HCM_RAISES_GET_UNDESERVED_EMPLOYEES("hcm_raise_getUnDeservedEmployees"),
-    HCM_RAISES_SEARCH_RAISE_EMPLOYEES("hcm_raiseEmployeeData_searchRaiseEmployees"),
-    HCM_RAISES_SELECT_EMPLOYEES_TO_AUDIT("hcm_raiseEmployee_getEmployeesByRaiseId"),
-    HCM_RAISES_UPDATE_EMPLOYEES_AFTER_ANNUAL_RAISE("hcm_raiseEmployee_updateEmployeesAfterAnnualRaise"),
-    HCM_RAISES_DELETE_RAISE_EMPLOYEES_BY_RAISE_ID("hcm_raiseEmployee_deleteRaiseEmployeesByRaiseId"),
+    HCM_GET_NOT_EXECUTED_RAISES_TRANSACTIONS("hcm_raiseTransactionData_getNotExecutedRaisesTransactions"),
+    HCM_SEARCH_RAISES("hcm_raise_searchRaises"),
+    HCM_GET_DESERVED_EMPLOYEES("hcm_raise_getDeservedEmployees"),
+    HCM_GET_UNDESERVED_EMPLOYEES("hcm_raise_getUnDeservedEmployees"),
+    HCM_SEARCH_RAISE_EMPLOYEES("hcm_raiseEmployeeData_searchRaiseEmployees"),
+    HCM_GET_DESERVED_EMPLOYEES_BY_RAISE_ID("hcm_raiseEmployee_getDeservedEmployeesByRaiseId"),
+    HCM_UPDATE_EMPLOYEES_DUE_TO_ANNUAL_RAISE_EFFECT("hcm_raiseEmployee_updateEmployeesDueToAnnualRaiseEffect"),
+    HCM_DELETE_RAISE_EMPLOYEES_BY_RAISE_ID("hcm_raiseEmployee_deleteRaiseEmployeesByRaiseId"),
 
     /* ************************************************ Navy Formations ********************************************** */
 
@@ -493,7 +493,7 @@ public enum QueryNamesEnum {
     /* ****************************************** Audit ******************************************************* */
     ETR_GET_CONTENT_ENTITIES("etr_auditLog_getContentEntities"),
     ETR_GET_AUDIT_LOGS("etr_auditLog_getAuditLogs"),
-    
+
     /* ****************************************** EmployeesLog ******************************************************* */
     HCM_EMPLOYEE_LOG_DATA_SEARCH_EMPLOYEES_LOG("hcm_employeeLogData_searchEmployeesLog"),
     /* ****************************************** General News ************************************************ */

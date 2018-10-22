@@ -1,4 +1,4 @@
-package com.code.services.hcm;
+package com.code.services.log;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -8,12 +8,13 @@ import java.util.Map;
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.employees.EmployeeData;
-import com.code.dal.orm.hcm.log.EmployeeLogData;
+import com.code.dal.orm.log.EmployeeLogData;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.services.BaseService;
+import com.code.services.hcm.JobsService;
 import com.code.services.util.HijriDateService;
 
 public class LogService extends BaseService {
@@ -85,23 +86,27 @@ public class LogService extends BaseService {
 	try {
 	    EmployeeLogData employeeLogData = new EmployeeLogData();
 	    employeeLogData.setEmpId(empData.getEmpId());
-	    employeeLogData.setRankId(empData.getRankId());
 	    employeeLogData.setJobId(empData.getJobId());
+
 	    if (empData.getJobId() == null)
 		employeeLogData.setBasicJobNameId(null);
 	    else {
 		Long[] jobsIds = new Long[] { empData.getJobId() };
 		employeeLogData.setBasicJobNameId(JobsService.getJobsByJobsIds(jobsIds).get(0).getBasicJobNameId());
 	    }
+
 	    employeeLogData.setPhysicalUnitId(empData.getPhysicalUnitId());
-	    employeeLogData.setDegreeId(empData.getDegreeId());
-	    employeeLogData.setSalaryRankId(empData.getSalaryRankId());
-	    employeeLogData.setSocialStatus(empData.getSocialStatus());
+	    employeeLogData.setRankId(empData.getRankId());
 	    employeeLogData.setRankTitleId(empData.getRankTitleId());
+	    employeeLogData.setSalaryRankId(empData.getSalaryRankId());
+	    employeeLogData.setDegreeId(empData.getDegreeId());
+	    employeeLogData.setSocialStatus(empData.getSocialStatus());
 	    employeeLogData.setGeneralSpecialization(empData.getGeneralSpecialization());
+
 	    employeeLogData.setEffectiveDate(effectiveDate);
 	    employeeLogData.setDecisionNumber(decisionNumber);
 	    employeeLogData.setDecisionDate(decisionDate);
+
 	    return employeeLogData;
 	} catch (Exception e) {
 	    e.printStackTrace();
