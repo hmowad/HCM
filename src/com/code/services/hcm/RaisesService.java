@@ -613,6 +613,11 @@ public class RaisesService extends BaseService {
     private static void validateRaiseEmployee(RaiseEmployeeData raiseEmployeeData) throws BusinessException {
 	if (raiseEmployeeData.getEmpNewDegreeId() <= raiseEmployeeData.getEmpDegreeId())
 	    throw new BusinessException("error_newDegreeOfEmployeeMustBeBiggerThanCurrentDegreeOfEmployee");
+
+	// validate mandatory fields
+	// Check that raise has at least one deserved employee
+	// In addition raise that employee didn't reach end of ladder
+	// TODO check if addition raise for employee is the last raise/promotion
     }
 
     private static void isStillValidRaiseEmployee(RaiseEmployeeData raiseEmployeeData) throws BusinessException {
@@ -1054,6 +1059,8 @@ public class RaisesService extends BaseService {
 	    throw new BusinessException("error_general");
 	if (raiseTransactionData.getRaiseExecutionDate() == null)
 	    throw new BusinessException("error_general");
+
+	// Check if employees are still valid(Not reached end of ladder, has no promotion/raise after execution date, not service terminated)
     }
 
     /*------------------------------------------Queries------------------------------------------------*/
