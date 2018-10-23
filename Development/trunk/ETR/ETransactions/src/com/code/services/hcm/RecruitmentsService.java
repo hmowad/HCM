@@ -32,6 +32,7 @@ import com.code.exceptions.DatabaseException;
 import com.code.services.BaseService;
 import com.code.services.buswfcoop.EmployeesJobsConflictValidator;
 import com.code.services.cor.ETRCorrespondence;
+import com.code.services.log.LogService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
 
@@ -887,6 +888,7 @@ public class RecruitmentsService extends BaseService {
 			EmployeesService.updateEmployee(emp, session);
 		    else
 			EmployeesService.updateEmployeeAndHisQualifications(emp, employeeQualificationsData, session);
+		    LogService.logEmployeeData(emp, recruitmentTransaction.getRecruitmentDate(), recruitmentTransaction.getDecisionNumber(), recruitmentTransaction.getDecisionDate(), session);
 		}
 	    }
 	} catch (BusinessException e) {
@@ -1757,7 +1759,7 @@ public class RecruitmentsService extends BaseService {
 		EmployeesService.addEmployee(empData, employeeQualificationsData, session);
 	    else
 		EmployeesService.updateEmployee(empData, session);
-
+	    LogService.logEmployeeData(empData, recruitmentTransaction.getRecruitmentDate(), recruitmentTransaction.getDecisionNumber(), recruitmentTransaction.getDecisionDate(), session);
 	    JobsService.changeJobStatus(job, JobStatusEnum.OCCUPIED.getCode(), session);
 
 	    // set employee in case it did't exist before
