@@ -371,7 +371,7 @@
 											<h:outputText value=" " />
 										</th>
 										<td>
-											<util:hijri value="#{newEmployeeRegistration.employee.socialIDIssueDate}" rendered="#{!newEmployeeRegistration.viewOnly}" viewOldRange="true" />
+											<util:hijri value="#{newEmployeeRegistration.employee.socialIDIssueDate}" rendered="#{!newEmployeeRegistration.viewOnly}" viewOldRange="true" nullable="true"/>
 											<h:outputText value="#{newEmployeeRegistration.employee.socialIDIssueDateString}" rendered="#{newEmployeeRegistration.viewOnly}" />
 										</td>
 										<th>
