@@ -60,6 +60,7 @@ import com.code.services.buswfcoop.BusinessWorkflowCooperation;
 import com.code.services.buswfcoop.EmployeesJobsConflictValidator;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.cor.ETRCorrespondence;
+import com.code.services.log.LogService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
 
@@ -3504,6 +3505,8 @@ public class PromotionsService extends BaseService {
 
 		JobData newJob = JobsService.getJobById(promotionTransactionData.getNewJobId());
 		EmployeesService.updateEmployeePromotionData(employee, promotionTransactionData.getNewJobId(), promotionTransactionData.getNewRankId(), null, promotionTransactionData.getNewDegreeId(), null, promotionTransactionData.getNewDueDate(), null, session);
+		LogService.logEmployeeData(employee, promotionTransactionData.getNewLastPromotionDate(), promotionTransactionData.getDecisionNumber(), promotionTransactionData.getDecisionDate(), session);
+
 		// old job
 		JobData oldJob = JobsService.getJobById(promotionTransactionData.getOldJobId());
 		JobsService.changeJobStatus(oldJob, JobStatusEnum.VACANT.getCode(), session);
@@ -3643,6 +3646,7 @@ public class PromotionsService extends BaseService {
 
 		    // Effect in employee
 		    EmployeesService.updateEmployeePromotionData(employee, null, getNextRank(employee.getRankId()), promotionTransactionDataItr.getRankTitleId(), promotionTransactionDataItr.getNewDegreeId(), promotionTransactionDataItr.getNewMilitaryNumber(), promotionTransactionDataItr.getNewDueDate(), promotionTransactionDataItr.getNewLastPromotionDate(), session);
+		    LogService.logEmployeeData(employee, promotionTransactionDataItr.getNewLastPromotionDate(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), session);
 
 		} else if (employee.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 		    promotionTransactionDataItr.setNewDueDate(HijriDateService.addSubHijriDays(promotionTransactionDataItr.getDecisionDate(), PromotionRankDaysEnum.LIEUTENANT.getCode(), true));
@@ -3660,6 +3664,7 @@ public class PromotionsService extends BaseService {
 		    employee.setRecruitmentAsOfficerDate(promotionTransactionDataItr.getDecisionDate());
 
 		    EmployeesService.updateEmployeePromotionData(employee, promotionTransactionDataItr.getNewJobId(), getNextRank(employee.getRankId()), promotionTransactionDataItr.getRankTitleId(), promotionTransactionDataItr.getNewDegreeId(), promotionTransactionDataItr.getNewMilitaryNumber(), promotionTransactionDataItr.getNewDueDate(), promotionTransactionDataItr.getNewLastPromotionDate(), session);
+		    LogService.logEmployeeData(employee, promotionTransactionDataItr.getNewLastPromotionDate(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), session);
 
 		} else if (employee.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && subject != null) {
 		    // check this when the commit
@@ -3677,6 +3682,7 @@ public class PromotionsService extends BaseService {
 
 		    // effect in employee
 		    EmployeesService.updateEmployeePromotionData(employee, promotionTransactionDataItr.getNewJobId(), getNextRank(employee.getRankId()), null, promotionTransactionDataItr.getNewDegreeId(), null, promotionTransactionDataItr.getNewDueDate(), promotionTransactionDataItr.getNewLastPromotionDate(), session);
+		    LogService.logEmployeeData(employee, promotionTransactionDataItr.getNewLastPromotionDate(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), session);
 
 		} else if (employee.getCategoryId().equals(CategoriesEnum.PERSONS.getCode()) && subject != null) {
 		    // NewDueDate needed to updated (calculated) when set joining date set by user from Master Data
@@ -3698,6 +3704,7 @@ public class PromotionsService extends BaseService {
 		    JobsService.changeJobStatus(newJob, JobStatusEnum.OCCUPIED.getCode(), session);
 
 		    EmployeesService.updateEmployeePromotionData(employee, promotionTransactionDataItr.getNewJobId(), getNextRank(employee.getRankId()), null, promotionTransactionDataItr.getNewDegreeId(), null, null, null, session);
+		    LogService.logEmployeeData(employee, promotionTransactionDataItr.getNewLastPromotionDate(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), session);
 		}
 		// add promotion transaction
 		DataAccess.addEntity(promotionTransactionDataItr.getPromotionTransaction(), session);
