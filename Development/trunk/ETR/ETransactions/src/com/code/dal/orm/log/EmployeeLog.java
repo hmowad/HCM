@@ -27,7 +27,8 @@ public class EmployeeLog extends BaseEntity {
     private Long degreeId;
     private Integer socialStatus;
     private Integer generalSpecialization;
-    private Date effectiveDate;
+    private Date effectiveGregDate;
+    private Date effectiveHijriDate;
     private String decisionNumber;
     private Date decisionDate;
 
@@ -147,13 +148,23 @@ public class EmployeeLog extends BaseEntity {
     }
 
     @Basic
-    @Column(name = "EFFECTIVE_DATE")
-    public Date getEffectiveDate() {
-	return effectiveDate;
+    @Column(name = "EFFECTIVE_GREG_DATE")
+    public Date getEffectiveGregDate() {
+	return effectiveGregDate;
     }
 
-    public void setEffectiveDate(Date effectiveDate) {
-	this.effectiveDate = effectiveDate;
+    public void setEffectiveGregDate(Date effectiveGregDate) {
+	this.effectiveGregDate = effectiveGregDate;
+    }
+
+    @Basic
+    @Column(name = "EFFECTIVE_HIJRI_DATE")
+    public Date getEffectiveHijriDate() {
+	return effectiveHijriDate;
+    }
+
+    public void setEffectiveHijriDate(Date effectiveHijriDate) {
+	this.effectiveHijriDate = effectiveHijriDate;
     }
 
     @Basic

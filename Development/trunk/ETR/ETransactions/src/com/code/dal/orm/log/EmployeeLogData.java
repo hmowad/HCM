@@ -27,7 +27,7 @@ import com.code.dal.orm.BaseEntity;
 			" and (:P_SOCIAL_STATUS = -1 or e.socialStatus = :P_SOCIAL_STATUS) " +
 			" and (:P_RANK_TITLE_ID = -1 or e.rankTitleId = :P_RANK_TITLE_ID) " +
 			" and (:P_GENERAL_SPECIALIZATION = -1 or e.generalSpecialization = :P_GENERAL_SPECIALIZATION) " +
-			" and (:P_EFFECTIVE_DATE_FLAG = -1 or e.effectiveDate = (TO_DATE(:P_EFFECTIVE_DATE, 'MI/MM/YYYY')))" +
+			" and (:P_EFFECTIVE_DATE_FLAG = -1 or e.effectiveHijriDate = (TO_DATE(:P_EFFECTIVE_DATE, 'MI/MM/YYYY')))" +
 			" and (:P_DECISION_NUMBER = '-1' or e.decisionNumber = :P_DECISION_NUMBER) " +
 			" and (:P_DECISION_DATE_FLAG = -1 or e.decisionDate = (TO_DATE(:P_DECISION_DATE, 'MI/MM/YYYY')))" +
 			" order by e.empId")
@@ -47,7 +47,8 @@ public class EmployeeLogData extends BaseEntity {
     private Long degreeId;
     private Integer socialStatus;
     private Integer generalSpecialization;
-    private Date effectiveDate;
+    private Date effectiveGregDate;
+    private Date effectiveHijriDate;
     private String decisionNumber;
     private Date decisionDate;
     private EmployeeLog employeelog;
@@ -178,14 +179,23 @@ public class EmployeeLogData extends BaseEntity {
     }
 
     @Basic
-    @Column(name = "EFFECTIVE_DATE")
-    public Date getEffectiveDate() {
-	return effectiveDate;
+    @Column(name = "EFFECTIVE_GREG_DATE")
+    public Date getEffectiveGregDate() {
+	return effectiveGregDate;
     }
 
-    public void setEffectiveDate(Date effectiveDate) {
-	this.effectiveDate = effectiveDate;
-	employeelog.setEffectiveDate(effectiveDate);
+    public void setEffectiveGregDate(Date effectiveGregDate) {
+	this.effectiveGregDate = effectiveGregDate;
+    }
+
+    @Basic
+    @Column(name = "EFFECTIVE_HIJRI_DATE")
+    public Date getEffectiveHijriDate() {
+	return effectiveHijriDate;
+    }
+
+    public void setEffectiveHijriDate(Date effectiveHijriDate) {
+	this.effectiveHijriDate = effectiveHijriDate;
     }
 
     @Basic

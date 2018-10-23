@@ -240,7 +240,7 @@
 															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
 
-														<h:commandButton id="approvetnId" onclick="return handleOnAction('#{msgs.q_superSign})" action="#{annualRaiseRegistration.approveRaise()}" value="#{msgs.label_saveAndSuperSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.approveAdminFlag}">
+														<h:commandButton id="approvetnId" onclick="return handleOnAction('#{msgs.q_superSign}')" action="#{annualRaiseRegistration.approveRaise()}" value="#{msgs.label_saveAndSuperSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.approveAdminFlag}">
 															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
 													</td>
