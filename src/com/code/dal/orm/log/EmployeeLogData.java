@@ -27,7 +27,8 @@ import com.code.dal.orm.BaseEntity;
 			" and (:P_SOCIAL_STATUS = -1 or e.socialStatus = :P_SOCIAL_STATUS) " +
 			" and (:P_RANK_TITLE_ID = -1 or e.rankTitleId = :P_RANK_TITLE_ID) " +
 			" and (:P_GENERAL_SPECIALIZATION = -1 or e.generalSpecialization = :P_GENERAL_SPECIALIZATION) " +
-			" and (:P_EFFECTIVE_DATE_FLAG = -1 or e.effectiveHijriDate = (TO_DATE(:P_EFFECTIVE_DATE, 'MI/MM/YYYY')))" +
+			" and (:P_EFFECTIVE_HIJRI_DATE_FLAG = -1 or e.effectiveHijriDate = (TO_DATE(:P_EFFECTIVE_HIJRI_DATE, 'MI/MM/YYYY')))" +
+			" and (:P_EFFECTIVE_GREG_DATE_FLAG = -1 or e.effectiveGregDate = (TO_DATE(:P_EFFECTIVE_GREG_DATE, 'MI/MM/YYYY')))" +
 			" and (:P_DECISION_NUMBER = '-1' or e.decisionNumber = :P_DECISION_NUMBER) " +
 			" and (:P_DECISION_DATE_FLAG = -1 or e.decisionDate = (TO_DATE(:P_DECISION_DATE, 'MI/MM/YYYY')))" +
 			" order by e.empId")
@@ -186,6 +187,7 @@ public class EmployeeLogData extends BaseEntity {
 
     public void setEffectiveGregDate(Date effectiveGregDate) {
 	this.effectiveGregDate = effectiveGregDate;
+	employeelog.setEffectiveGregDate(effectiveGregDate);
     }
 
     @Basic
@@ -196,6 +198,7 @@ public class EmployeeLogData extends BaseEntity {
 
     public void setEffectiveHijriDate(Date effectiveHijriDate) {
 	this.effectiveHijriDate = effectiveHijriDate;
+	employeelog.setEffectiveHijriDate(effectiveHijriDate);
     }
 
     @Basic
