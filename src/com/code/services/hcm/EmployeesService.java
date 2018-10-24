@@ -28,6 +28,7 @@ import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.services.BaseService;
 import com.code.services.buswfcoop.BusinessWorkflowCooperation;
+import com.code.services.log.LogService;
 import com.code.services.util.CommonService;
 import com.code.services.util.CountryService;
 import com.code.services.util.HijriDateService;
@@ -210,7 +211,7 @@ public class EmployeesService extends BaseService {
 	updateEmployee(empData, useSession);
     }
 
-    public static void moveAllEmployeesFromUnitsToUnit(Long[] unitsIds, Long toUnitId, CustomSession... useSession) throws BusinessException {
+    public static void moveAllEmployeesFromUnitsToUnit(Long[] unitsIds, Long toUnitId, Date effectiveDate, String decisionNumber, Date decisionDate, CustomSession... useSession) throws BusinessException {
 	List<EmployeeData> unitsEmployees = getEmployeesByUnitsIds(unitsIds);
 	if (unitsEmployees.size() == 0)
 	    return;
@@ -224,6 +225,7 @@ public class EmployeesService extends BaseService {
 	    for (EmployeeData emp : unitsEmployees) {
 		emp.setPhysicalUnitId(toUnitId);
 		DataAccess.updateEntity(emp.getEmployee(), session);
+		LogService.logEmployeeData(emp, effectiveDate, decisionNumber, decisionDate, session);
 	    }
 
 	    if (!isOpenedSession)
