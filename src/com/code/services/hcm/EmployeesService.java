@@ -127,6 +127,20 @@ public class EmployeesService extends BaseService {
 	}
     }
 
+//    public static void logEmployeeData(EmployeeData empData, Date effectiveDate, Date decisionDate) throws BusinessException {
+//	EmployeeData empOldData = getEmployeeData(empData.getEmpId());
+//	if (empOldData.getJobId() != empData.getJobId() ||
+//		empOldData.getPhysicalUnitId() != empData.getPhysicalUnitId() ||
+//		empOldData.getRankId() != empData.getRankId() ||
+//		empOldData.getRankTitleId() != empData.getRankTitleId() ||
+//		empOldData.getSalaryRankId() != empData.getSalaryRankId() ||
+//		empOldData.getDegreeId() != empData.getDegreeId() ||
+//		empOldData.getSocialStatus() != empData.getSocialStatus() ||
+//		empOldData.getGeneralSpecialization() != empData.getGeneralSpecialization()) {
+//	    LogService.logEmployeeData(empData, effectiveDate, null, decisionDate);
+//	}
+//    }
+//
     public static void updateEmployee(EmployeeData empData, CustomSession... useSession) throws BusinessException {
 	validateEmployee(empData);
 
@@ -361,14 +375,14 @@ public class EmployeesService extends BaseService {
 
 	if (!HijriDateService.isValidHijriDate(emp.getBirthDate()))
 	    throw new BusinessException("error_invalidHijriBirthDate");
-	if (!HijriDateService.isValidHijriDate(emp.getSocialIDIssueDate()))
+	if (emp.getSocialIDIssueDate() != null && !HijriDateService.isValidHijriDate(emp.getSocialIDIssueDate()))
 	    throw new BusinessException("error_invalidHijriSocialIdIssueDate");
 
 	Date sysDate = HijriDateService.getHijriSysDate();
 
 	if (HijriDateService.hijriDateDiff(emp.getBirthDate(), sysDate) <= 0)
 	    throw new BusinessException("error_invalidBirthDate");
-	if (HijriDateService.hijriDateDiff(emp.getBirthDate(), emp.getSocialIDIssueDate()) <= 0)
+	if (emp.getSocialIDIssueDate() != null && HijriDateService.hijriDateDiff(emp.getBirthDate(), emp.getSocialIDIssueDate()) <= 0)
 	    throw new BusinessException("error_invalidSocialIdIssueDate");
     }
 
