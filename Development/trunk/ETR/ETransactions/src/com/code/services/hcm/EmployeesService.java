@@ -127,20 +127,20 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-//    public static void logEmployeeData(EmployeeData empData, Date effectiveDate, Date decisionDate) throws BusinessException {
-//	EmployeeData empOldData = getEmployeeData(empData.getEmpId());
-//	if (empOldData.getJobId() != empData.getJobId() ||
-//		empOldData.getPhysicalUnitId() != empData.getPhysicalUnitId() ||
-//		empOldData.getRankId() != empData.getRankId() ||
-//		empOldData.getRankTitleId() != empData.getRankTitleId() ||
-//		empOldData.getSalaryRankId() != empData.getSalaryRankId() ||
-//		empOldData.getDegreeId() != empData.getDegreeId() ||
-//		empOldData.getSocialStatus() != empData.getSocialStatus() ||
-//		empOldData.getGeneralSpecialization() != empData.getGeneralSpecialization()) {
-//	    LogService.logEmployeeData(empData, effectiveDate, null, decisionDate);
-//	}
-//    }
-//
+    public static void logEmployeeData(EmployeeData empData, Date effectiveDate, Date decisionDate) throws BusinessException {
+	EmployeeData empOldData = getEmployeeData(empData.getEmpId());
+	if ((empOldData.getJobId() != null && !empOldData.getJobId().equals(empData.getJobId())) ||
+		(empOldData.getPhysicalUnitId() != null && !empOldData.getPhysicalUnitId().equals(empData.getPhysicalUnitId())) ||
+		(empOldData.getRankId() != null && !empOldData.getRankId().equals(empData.getRankId())) ||
+		(empOldData.getRankTitleId() != null && !empOldData.getRankTitleId().equals(empData.getRankTitleId())) ||
+		(empOldData.getSalaryRankId() != null && !empOldData.getSalaryRankId().equals(empData.getSalaryRankId())) ||
+		(empOldData.getDegreeId() != null && !empOldData.getDegreeId().equals(empData.getDegreeId())) ||
+		(empOldData.getSocialStatus() != null && !empOldData.getSocialStatus().equals(empData.getSocialStatus())) ||
+		(empOldData.getGeneralSpecialization() != null && !empOldData.getGeneralSpecialization().equals(empData.getGeneralSpecialization()))) {
+	    LogService.logEmployeeData(empData, effectiveDate, null, decisionDate);
+	}
+    }
+
     public static void updateEmployee(EmployeeData empData, CustomSession... useSession) throws BusinessException {
 	validateEmployee(empData);
 
