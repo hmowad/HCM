@@ -1,6 +1,7 @@
 package com.code.ui.backings.hcm.employees;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
@@ -175,6 +176,8 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 		employee.setCategoryClassificationId(CategoryClassificationEnum.NON_SAUDI_DOCOTRS_CONTRACTORS.getCode());
 	    else
 		employee.setCategoryClassificationId(null);
+
+	    EmployeesService.logEmployeeData(employee, new Date(), new Date());
 	    EmployeesService.updateEmployeeAndHisQualifications(employee, employeeQualificationsData);
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
