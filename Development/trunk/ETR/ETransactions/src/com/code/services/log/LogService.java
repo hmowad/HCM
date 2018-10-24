@@ -14,7 +14,6 @@ import com.code.enums.QueryNamesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.services.BaseService;
-import com.code.services.hcm.JobsService;
 import com.code.services.util.HijriDateService;
 
 public class LogService extends BaseService {
@@ -47,8 +46,8 @@ public class LogService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static void logEmployeeData(EmployeeData empData, Date effectiveDate, String decisionNumber, Date decisionDate, CustomSession... useSession) throws BusinessException {
-	EmployeeLogData employeeLogData = constructEmployeeLogData(empData, effectiveDate, decisionNumber, decisionDate);
+    public static void logEmployeeData(EmployeeData empData, Date effectiveGregDate, String decisionNumber, Date decisionDate, CustomSession... useSession) throws BusinessException {
+	EmployeeLogData employeeLogData = constructEmployeeLogData(empData, effectiveGregDate, decisionNumber, decisionDate);
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -82,7 +81,7 @@ public class LogService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    private static EmployeeLogData constructEmployeeLogData(EmployeeData empData, Date effectiveDate, String decisionNumber, Date decisionDate) throws BusinessException {
+    private static EmployeeLogData constructEmployeeLogData(EmployeeData empData, Date effectiveGregDate, String decisionNumber, Date decisionDate) throws BusinessException {
 	try {
 	    EmployeeLogData employeeLogData = new EmployeeLogData();
 	    employeeLogData.setEmpId(empData.getEmpId());
@@ -91,8 +90,8 @@ public class LogService extends BaseService {
 	    if (empData.getJobId() == null)
 		employeeLogData.setBasicJobNameId(null);
 	    else {
-		Long[] jobsIds = new Long[] { empData.getJobId() };
-		employeeLogData.setBasicJobNameId(JobsService.getJobsByJobsIds(jobsIds).get(0).getBasicJobNameId());
+		// TODO wait until we move basic job name to test branch
+		// employeeLogData.setBasicJobNameId(JobsService.getJobById(empData.getJobId()).getBasicJobNameId());
 	    }
 
 	    employeeLogData.setPhysicalUnitId(empData.getPhysicalUnitId());
@@ -103,8 +102,8 @@ public class LogService extends BaseService {
 	    employeeLogData.setSocialStatus(empData.getSocialStatus());
 	    employeeLogData.setGeneralSpecialization(empData.getGeneralSpecialization());
 
-	    employeeLogData.setEffectiveHijriDate(effectiveDate);
-	    employeeLogData.setEffectiveGregDate(HijriDateService.gregToHijriDate(effectiveDate));
+	    employeeLogData.setEffectiveGregDate(effectiveGregDate);
+	    employeeLogData.setEffectiveHijriDate(HijriDateService.gregToHijriDate(effectiveGregDate));
 	    employeeLogData.setDecisionNumber(decisionNumber);
 	    employeeLogData.setDecisionDate(decisionDate);
 
@@ -137,8 +136,8 @@ public class LogService extends BaseService {
      * @return array list of employeesLogData objects
      * @throws BusinessException
      */
-    public static List<EmployeeLogData> getEmployeesLog(long id, long empId, long rankId, long jobId, long basicJobNameId, long physicalUnitId, long degreeId, long salaryRankId, int socialStatus, long rankTitleId, int generalSpecialization, Date effectiveDate, String decisionNumber, Date decisionDate) throws BusinessException {
-	return searchEmployeesLog(id, empId, rankId, jobId, basicJobNameId, physicalUnitId, degreeId, salaryRankId, socialStatus, rankTitleId, generalSpecialization, effectiveDate, decisionNumber, decisionDate);
+    public static List<EmployeeLogData> getEmployeesLog(long id, long empId, long rankId, long jobId, long basicJobNameId, long physicalUnitId, long degreeId, long salaryRankId, int socialStatus, long rankTitleId, int generalSpecialization, Date effectiveHijriDate, Date effectiveGregDate, String decisionNumber, Date decisionDate) throws BusinessException {
+	return searchEmployeesLog(id, empId, rankId, jobId, basicJobNameId, physicalUnitId, degreeId, salaryRankId, socialStatus, rankTitleId, generalSpecialization, effectiveHijriDate, effectiveGregDate, decisionNumber, decisionDate);
     }
 
     /**
@@ -155,13 +154,13 @@ public class LogService extends BaseService {
      * @param socialStatus
      * @param rankTitleId
      * @param generalSpecialization
-     * @param effectiveDate
+     * @param effectiveHijriDate
      * @param decisionNumber
      * @param decisionDate
      * @return array list of employeesLogData objects
      * @throws BusinessException
      */
-    private static List<EmployeeLogData> searchEmployeesLog(long id, long empId, long rankId, long jobId, long basicJobNameId, long physicalUnitId, long degreeId, long salaryRankId, int socialStatus, long rankTitleId, int generalSpecialization, Date effectiveDate, String decisionNumber, Date decisionDate) throws BusinessException {
+    private static List<EmployeeLogData> searchEmployeesLog(long id, long empId, long rankId, long jobId, long basicJobNameId, long physicalUnitId, long degreeId, long salaryRankId, int socialStatus, long rankTitleId, int generalSpecialization, Date effectiveHijriDate, Date effectiveGregDate, String decisionNumber, Date decisionDate) throws BusinessException {
 	Map<String, Object> qParams = new HashMap<String, Object>();
 	try {
 	    qParams.put("P_ID", id);
@@ -175,14 +174,25 @@ public class LogService extends BaseService {
 	    qParams.put("P_SOCIAL_STATUS", socialStatus);
 	    qParams.put("P_RANK_TITLE_ID", rankTitleId);
 	    qParams.put("P_GENERAL_SPECIALIZATION", generalSpecialization);
-	    if (effectiveDate != null) {
-		qParams.put("P_EFFECTIVE_DATE_FLAG", FlagsEnum.ON.getCode());
-		qParams.put("P_EFFECTIVE_DATE", HijriDateService.getHijriDateString(effectiveDate));
+
+	    if (effectiveHijriDate != null) {
+		qParams.put("P_EFFECTIVE_HIJRI_DATE_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_EFFECTIVE_HIJRI_DATE", HijriDateService.getHijriDateString(effectiveHijriDate));
 	    } else {
-		qParams.put("P_EFFECTIVE_DATE_FLAG", FlagsEnum.ALL.getCode());
-		qParams.put("P_EFFECTIVE_DATE", HijriDateService.getHijriSysDateString());
+		qParams.put("P_EFFECTIVE_HIJRI_DATE_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_EFFECTIVE_HIJRI_DATE", HijriDateService.getHijriSysDateString());
 	    }
+
+	    if (effectiveGregDate != null) {
+		qParams.put("P_EFFECTIVE_GREG_DATE_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_EFFECTIVE_GREG_DATE", HijriDateService.getHijriDateString(effectiveGregDate));
+	    } else {
+		qParams.put("P_EFFECTIVE_GREG_DATE_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_EFFECTIVE_GREG_DATE", HijriDateService.getHijriSysDateString());
+	    }
+
 	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.equals("")) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
+
 	    if (decisionDate != null) {
 		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ON.getCode());
 		qParams.put("P_DECISION_DATE", HijriDateService.getHijriDateString(decisionDate));
@@ -190,6 +200,7 @@ public class LogService extends BaseService {
 		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ALL.getCode());
 		qParams.put("P_DECISION_DATE", HijriDateService.getHijriSysDateString());
 	    }
+
 	    return DataAccess.executeNamedQuery(EmployeeLogData.class, QueryNamesEnum.HCM_EMPLOYEE_LOG_DATA_SEARCH_EMPLOYEES_LOG.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
