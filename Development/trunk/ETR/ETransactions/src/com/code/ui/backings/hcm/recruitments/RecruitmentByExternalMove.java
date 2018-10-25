@@ -10,6 +10,7 @@ import com.code.dal.orm.hcm.GraduationGroupPlace;
 import com.code.dal.orm.hcm.Rank;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.employees.EmployeeQualificationsData;
+import com.code.dal.orm.hcm.payroll.Degree;
 import com.code.dal.orm.hcm.recruitments.RecruitmentTransactionData;
 import com.code.dal.orm.hcm.trainings.QualificationLevel;
 import com.code.enums.CategoriesEnum;
@@ -22,6 +23,7 @@ import com.code.enums.TransactionClassesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.buswfcoop.EmployeesJobsConflictValidator;
 import com.code.services.hcm.EmployeesService;
+import com.code.services.hcm.PayrollsService;
 import com.code.services.hcm.RecruitmentsService;
 import com.code.services.hcm.TrainingSetupService;
 import com.code.services.util.CommonService;
@@ -40,6 +42,7 @@ public class RecruitmentByExternalMove extends BaseBacking {
     private List<Rank> recruitmentRanks;
     private List<QualificationLevel> qualificationLevels;
     private List<Category> categories;
+    private List<Degree> degrees;
 
     public RecruitmentByExternalMove() {
 	super();
@@ -91,6 +94,7 @@ public class RecruitmentByExternalMove extends BaseBacking {
 
 	    officersGraduationGroupPlaces = CommonService.getAllGraduationGroupPlaces();
 	    qualificationLevels = TrainingSetupService.getAllQualificationLevels();
+	    degrees = PayrollsService.getAllDegrees();
 
 	    reset();
 
@@ -246,6 +250,14 @@ public class RecruitmentByExternalMove extends BaseBacking {
 
     public void setCategories(List<Category> categories) {
 	this.categories = categories;
+    }
+
+    public List<Degree> getDegrees() {
+	return degrees;
+    }
+
+    public void setDegrees(List<Degree> degrees) {
+	this.degrees = degrees;
     }
 
 }

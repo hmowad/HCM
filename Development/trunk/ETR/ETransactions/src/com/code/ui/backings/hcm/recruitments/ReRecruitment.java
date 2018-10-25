@@ -7,6 +7,7 @@ import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.Rank;
 import com.code.dal.orm.hcm.employees.EmployeeData;
+import com.code.dal.orm.hcm.payroll.Degree;
 import com.code.dal.orm.hcm.recruitments.RecruitmentTransactionData;
 import com.code.dal.orm.hcm.trainings.QualificationLevel;
 import com.code.enums.CategoriesEnum;
@@ -18,6 +19,7 @@ import com.code.enums.TransactionClassesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.buswfcoop.EmployeesJobsConflictValidator;
 import com.code.services.hcm.EmployeesService;
+import com.code.services.hcm.PayrollsService;
 import com.code.services.hcm.RecruitmentsService;
 import com.code.services.hcm.TrainingSetupService;
 import com.code.services.util.CommonService;
@@ -32,6 +34,7 @@ public class ReRecruitment extends BaseBacking {
     private RecruitmentTransactionData recruitment;
     private List<Rank> officersRanks;
     private List<QualificationLevel> qualificationLevels;
+    private List<Degree> degrees;
 
     public ReRecruitment() {
 	super();
@@ -61,6 +64,7 @@ public class ReRecruitment extends BaseBacking {
 	    }
 
 	    qualificationLevels = TrainingSetupService.getAllQualificationLevels();
+	    degrees = PayrollsService.getAllDegrees();
 
 	    resetForm();
 	} catch (BusinessException e) {
@@ -152,6 +156,14 @@ public class ReRecruitment extends BaseBacking {
 
     public void setQualificationLevels(List<QualificationLevel> qualificationLevels) {
 	this.qualificationLevels = qualificationLevels;
+    }
+
+    public List<Degree> getDegrees() {
+	return degrees;
+    }
+
+    public void setDegrees(List<Degree> degrees) {
+	this.degrees = degrees;
     }
 
 }

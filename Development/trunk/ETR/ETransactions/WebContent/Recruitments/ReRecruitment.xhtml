@@ -44,6 +44,7 @@
 		var jobIdValue = document.getElementById('rerecruitmentFormId:jobIDId').value;
 		var employeeIdValue = document.getElementById('rerecruitmentFormId:employeeIDId').value;
 		var	rankIdOfficers = document.getElementById('rerecruitmentFormId:recruitmentRankId');
+		var	degreeId = document.getElementById('rerecruitmentFormId:recruitmentDegreeId');
 		var promotionDueDate = document.getElementById('rerecruitmentFormId:promotionDueDate:day').value;
 		var decisionNumberId = document.getElementById('rerecruitmentFormId:decisionNumberId');
 		var decisionDate = document.getElementById('rerecruitmentFormId:decisionDate:day').value;
@@ -56,6 +57,9 @@
 			return false;
 		} else if(rankIdOfficers != null &amp;&amp; !rankIdOfficers.value) {
 			alert("#{msgs.error_rankIsMandatory}");
+			return false;
+		} else if(degreeId != null &amp;&amp; !degreeId.value) {
+			alert("#{msgs.error_degreeMandatory}");
 			return false;
 		} else if(rerecruitmentDate==0){
 			alert("#{msgs.error_rerecruitmentDateMandatory}");
@@ -183,6 +187,19 @@
 										</td>
 									</tr>
 								</h:panelGroup>
+								<tr>
+									<th>
+										#{msgs.label_degree}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td>
+										<h:selectOneMenu id="recruitmentDegreeId" value="#{reRecruitment.recruitment.degreeId}">
+											<f:selectItem itemLabel="" />
+											<f:selectItems value="#{reRecruitment.degrees}" var="degree" itemLabel="#{degree.description}" itemValue="#{degree.id}" />
+										</h:selectOneMenu>
+									</td>
+								</tr>
 								<tr>
 									<th width="15%">
 										#{msgs.label_rerecruitmentDate}
