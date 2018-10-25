@@ -1805,6 +1805,8 @@ public class RecruitmentsService extends BaseService {
 	    throw new BusinessException("error_jobIsMandatory");
 	if (recruitmentTransaction.getRankId() == null)
 	    throw new BusinessException("error_rankIsMandatory");
+	if (recruitmentTransaction.getDegreeId() == null)
+	    throw new BusinessException("error_degreeMandatory");
 	if (recruitmentTransaction.getDecisionNumber() == null || recruitmentTransaction.getDecisionNumber().trim().isEmpty())
 	    throw new BusinessException("error_decisionNumberMandatory");
 	if (recruitmentTransaction.getRecruitmentType() == RecruitmentTypeEnum.RECRUITMENT_BY_EXTERNAL_MOVE.getCode()) {

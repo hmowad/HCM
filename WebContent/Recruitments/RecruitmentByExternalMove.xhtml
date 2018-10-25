@@ -83,6 +83,8 @@
 		var socialId = document.getElementById('recruitmentByExternalMoveFormId:socialIDId');
 		var genderId = document.getElementById('recruitmentByExternalMoveFormId:genderId');
 		var	rankIdOfficers = document.getElementById('recruitmentByExternalMoveFormId:rankId');
+		var	degreeId = document.getElementById('recruitmentByExternalMoveFormId:degreeId');
+		var degreeMId = document.getElementById('recruitmentByExternalMoveFormId:degreeMId');
 		var qualificationLevelId = document.getElementById('recruitmentByExternalMoveFormId:qualificationLevelIDId');
 		var militaryNumber = document.getElementById('recruitmentByExternalMoveFormId:militaryNumberId');
 		var graduationGroupNumber = document.getElementById('recruitmentByExternalMoveFormId:graduationGroupNumberId');
@@ -143,6 +145,14 @@
 		}
 		else if(rankIdOfficers != null &amp;&amp; !rankIdOfficers.value) {
 			alert("#{msgs.error_rankIsMandatory}");
+			return false;
+		} 
+		else if(degreeId != null &amp;&amp; !degreeId.value) {
+			alert("#{msgs.error_degreeMandatory}");
+			return false;
+		}
+		else if(degreeMId != null &amp;&amp; !degreeMId.value) {
+			alert("#{msgs.error_degreeMandatory}");
 			return false;
 		}
 		if(socialId!=null)
@@ -286,6 +296,25 @@
 									<tr>
 										<td colspan="2" width="100%">
 											<code:emp id="employeeDataId" value="#{recruitmentByExternalMove.employee}" />
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="15%">
+														#{msgs.label_degree}
+														<h:outputText value=" " />
+														<font style="color: red;">*</font>
+													</th>
+													<td width="85%">
+														<h:selectOneMenu id="degreeMId" value="#{recruitmentByExternalMove.recruitment.degreeId}">
+															<f:selectItem itemLabel="" />
+															<f:selectItems value="#{recruitmentByExternalMove.degrees}" var="degree" itemLabel="#{degree.description}" itemValue="#{degree.id}" />
+														</h:selectOneMenu>
+													</td>
+												</tr>
+											</table>
 										</td>
 									</tr>
 								</table>
@@ -453,6 +482,17 @@
 												</h:selectOneMenu>
 											</td>
 										</h:panelGroup>
+										<th>
+											#{msgs.label_degree}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<h:selectOneMenu id="degreeId" value="#{recruitmentByExternalMove.recruitment.degreeId}">
+												<f:selectItem itemLabel="" />
+												<f:selectItems value="#{recruitmentByExternalMove.degrees}" var="degree" itemLabel="#{degree.description}" itemValue="#{degree.id}" />
+											</h:selectOneMenu>
+										</td>
 									</tr>
 								</table>
 							</h:panelGroup>
