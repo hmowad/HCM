@@ -25,6 +25,7 @@ import com.code.enums.ReportNamesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.services.BaseService;
+import com.code.services.log.LogService;
 import com.code.services.util.HijriDateService;
 
 public class RaisesService extends BaseService {
@@ -993,6 +994,8 @@ public class RaisesService extends BaseService {
 	    emp.getEmployee().setDegreeId(transaction.getEmpNewDegreeId());
 	    emp.getEmployee().setSystemUser(systemUser);
 	    EmployeesService.updateEmployee(emp, session);
+	    emp.setDegreeId(transaction.getEmpNewDegreeId());
+	    LogService.logEmployeeData(emp, transaction.getRaiseExecutionDate(), transaction.getRaiseDecisionNumber(), transaction.getRaiseDecisionDate());
 	}
     }
 
@@ -1005,7 +1008,11 @@ public class RaisesService extends BaseService {
 	    }
 	    beans.addAll(employees);
 	    updateEmployeesDueToAnnualRaiseEffect(beans, raise.getExecutionDate(), raise.getId(), session);
-
+	    for (Employee employee : employees) {
+		EmployeeData emp = EmployeesService.getEmployeeData(employee.getId());
+		emp.setDegreeId(emp.getDegreeId() + 1);
+		LogService.logEmployeeData(emp, raise.getExecutionDate(), raise.getDecisionNumber(), raise.getDecisionDate());
+	    }
 	}
     }
 

@@ -38,7 +38,7 @@ public class LogService extends BaseService {
      * 
      * @param empDate
      *            employee object
-     * @param effectiveDate
+     * @param effectiveHijriDate
      * @param decisionNumber
      * @param decisionDate
      * @param useSession
@@ -46,8 +46,8 @@ public class LogService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static void logEmployeeData(EmployeeData empData, Date effectiveGregDate, String decisionNumber, Date decisionDate, CustomSession... useSession) throws BusinessException {
-	EmployeeLogData employeeLogData = constructEmployeeLogData(empData, effectiveGregDate, decisionNumber, decisionDate);
+    public static void logEmployeeData(EmployeeData empData, Date effectiveHijriDate, String decisionNumber, Date decisionDate, CustomSession... useSession) throws BusinessException {
+	EmployeeLogData employeeLogData = constructEmployeeLogData(empData, effectiveHijriDate, decisionNumber, decisionDate);
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -75,13 +75,13 @@ public class LogService extends BaseService {
      * 
      * @param empDate
      *            employee object
-     * @param effectiveDate
+     * @param effectiveHijriDate
      * @param decisionNumber
      * @param decisionDate
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    private static EmployeeLogData constructEmployeeLogData(EmployeeData empData, Date effectiveGregDate, String decisionNumber, Date decisionDate) throws BusinessException {
+    private static EmployeeLogData constructEmployeeLogData(EmployeeData empData, Date effectiveHijriDate, String decisionNumber, Date decisionDate) throws BusinessException {
 	try {
 	    EmployeeLogData employeeLogData = new EmployeeLogData();
 	    employeeLogData.setEmpId(empData.getEmpId());
@@ -102,10 +102,12 @@ public class LogService extends BaseService {
 	    employeeLogData.setSocialStatus(empData.getSocialStatus());
 	    employeeLogData.setGeneralSpecialization(empData.getGeneralSpecialization());
 
-	    employeeLogData.setEffectiveGregDate(effectiveGregDate);
-	    employeeLogData.setEffectiveHijriDate(HijriDateService.gregToHijriDate(effectiveGregDate));
+	    employeeLogData.setEffectiveGregDate(HijriDateService.hijriToGregDate(effectiveHijriDate));
+	    employeeLogData.setEffectiveHijriDate(effectiveHijriDate);
 	    employeeLogData.setDecisionNumber(decisionNumber);
 	    employeeLogData.setDecisionDate(decisionDate);
+
+	    employeeLogData.getEmployeelog().setInsertionTime(System.currentTimeMillis());
 
 	    return employeeLogData;
 	} catch (Exception e) {
@@ -130,7 +132,8 @@ public class LogService extends BaseService {
      * @param socialStatus
      * @param rankTitleId
      * @param generalSpecialization
-     * @param effectiveDate
+     * @param effectiveHijriDate
+     * @param effectiveGregDate
      * @param decisionNumber
      * @param decisionDate
      * @return array list of employeesLogData objects
@@ -155,6 +158,7 @@ public class LogService extends BaseService {
      * @param rankTitleId
      * @param generalSpecialization
      * @param effectiveHijriDate
+     * @param effectiveGregDate
      * @param decisionNumber
      * @param decisionDate
      * @return array list of employeesLogData objects

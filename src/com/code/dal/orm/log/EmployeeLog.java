@@ -31,6 +31,7 @@ public class EmployeeLog extends BaseEntity {
     private Date effectiveHijriDate;
     private String decisionNumber;
     private Date decisionDate;
+    private Long insertionTime;
 
     @SequenceGenerator(name = "HCMLogSeq",
 	    sequenceName = "HCM_LOG_SEQ",
@@ -186,4 +187,15 @@ public class EmployeeLog extends BaseEntity {
     public void setDecisionDate(Date decisionDate) {
 	this.decisionDate = decisionDate;
     }
+
+    @Basic
+    @Column(name = "INSERTION_TIME")
+    public Long getInsertionTime() {
+	return insertionTime;
+    }
+
+    public void setInsertionTime(Long insertionTime) {
+	this.insertionTime = insertionTime;
+    }
+
 }
