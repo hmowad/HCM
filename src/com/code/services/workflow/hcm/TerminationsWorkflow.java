@@ -48,6 +48,7 @@ import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.JobsService;
 import com.code.services.hcm.MovementsService;
 import com.code.services.hcm.TerminationsService;
+import com.code.services.log.LogService;
 import com.code.services.util.HijriDateService;
 import com.code.services.workflow.BaseWorkFlow;
 
@@ -790,7 +791,7 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 	try {
 	    Long[] empsIds = new Long[terminationRecordDetailDataList.size()];
 	    HashMap<Long, TerminationRecordDetailData> employeesTerminationRecordDetailDataMap = new HashMap<Long, TerminationRecordDetailData>();
-
+	    HashMap<Long, TerminationTransactionData> employeesTerminationTransactionMap = new HashMap<>();
 	    for (int i = 0; i < terminationRecordDetailDataList.size(); i++) {
 		empsIds[i] = terminationRecordDetailDataList.get(i).getEmpId();
 		employeesTerminationRecordDetailDataMap.put(empsIds[i], terminationRecordDetailDataList.get(i));
@@ -832,7 +833,7 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 	    TerminationsService.addModifyTerminationRecordDetail(terminationRecordData, terminationRecordDetailDataList, loginEmpId, session);
 
 	    // construct transaction
-	    List<TerminationTransactionData> terminationTransactionList = TerminationsService.constructTerminationTransactions(terminationRecordData, terminationRecordDetailDataList, tansactionTypeId);
+	    List<TerminationTransactionData> terminationTransactionList = TerminationsService.constructTerminationTransactions(terminationRecordData, employeesTerminationTransactionMap, terminationRecordDetailDataList, tansactionTypeId);
 
 	    // set Decision Region Id
 	    for (TerminationTransactionData terminationTransaction : terminationTransactionList) {
@@ -849,13 +850,13 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 		requester.setServiceTerminationDate(terminationRecordDetailDataList.get(0).getServiceTerminationDate());
 		tempEmployees = new ArrayList<EmployeeData>(1);
 		tempEmployees.add(requester);
-		TerminationsService.terminateEmployeeService(tempEmployees, session);
+		TerminationsService.terminateEmployeeService(tempEmployees, employeesTerminationTransactionMap, session);
 	    } else {
 
 		for (EmployeeData emp : tempEmployees)
 		    emp.setServiceTerminationDate(employeesTerminationRecordDetailDataMap.get(emp.getEmpId()).getServiceTerminationDate());
 
-		TerminationsService.terminateEmployeeService(tempEmployees, session);
+		TerminationsService.terminateEmployeeService(tempEmployees, employeesTerminationTransactionMap, session);
 	    }
 
 	} catch (BusinessException e) {
@@ -1265,6 +1266,7 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 	    if (processId.equals(WFProcessesEnum.SOLDIERS_TERMINATION_CANCELLATION.getCode()) || processId.equals(WFProcessesEnum.CIVILIANS_TERMINATION_CANCELLATION.getCode())) {
 		// in case of cancellation, employee status, job id, and unit should be changed again !
 
+		Date empServiceTerminationDate = employee.getServiceTerminationDate();
 		employee.setStatusId(EmployeeStatusEnum.ON_DUTY.getCode());
 		JobsService.changeJobStatus(empJob, JobStatusEnum.OCCUPIED.getCode(), session);
 		employee.setJobId(empJob.getId());
@@ -1272,6 +1274,8 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 		employee.setPhysicalUnitId(empJob.getUnitId());
 		employee.setServiceTerminationDate(null);
 		EmployeesService.updateEmployee(employee, session);
+		if (!empServiceTerminationDate.after(HijriDateService.getHijriSysDate()))
+		    LogService.logEmployeeData(employee, empServiceTerminationDate, terminationTransaction.getDecisionNumber(), terminationTransaction.getDecisionDate(), session);
 	    }
 
 	} catch (BusinessException e) {
