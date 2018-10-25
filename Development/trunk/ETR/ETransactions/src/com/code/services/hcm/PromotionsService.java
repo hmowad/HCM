@@ -3682,7 +3682,10 @@ public class PromotionsService extends BaseService {
 
 		    // effect in employee
 		    EmployeesService.updateEmployeePromotionData(employee, promotionTransactionDataItr.getNewJobId(), getNextRank(employee.getRankId()), null, promotionTransactionDataItr.getNewDegreeId(), null, promotionTransactionDataItr.getNewDueDate(), promotionTransactionDataItr.getNewLastPromotionDate(), session);
-		    LogService.logEmployeeData(employee, promotionTransactionDataItr.getNewLastPromotionDate(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), session);
+		    if (promotionReportData.getPromotionTypeId().equals(PromotionsTypesEnum.PROMOTION_CANCELLATION.getCode()))
+			LogService.logEmployeeData(employee, promotionTransactionDataItr.getOldLastPromotionDate(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), session);
+		    else
+			LogService.logEmployeeData(employee, promotionTransactionDataItr.getNewLastPromotionDate(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), session);
 
 		} else if (employee.getCategoryId().equals(CategoriesEnum.PERSONS.getCode()) && subject != null) {
 		    // NewDueDate needed to updated (calculated) when set joining date set by user from Master Data
