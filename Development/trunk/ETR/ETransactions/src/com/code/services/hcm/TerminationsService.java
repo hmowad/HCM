@@ -47,6 +47,7 @@ import com.code.services.buswfcoop.BusinessWorkflowCooperation;
 import com.code.services.buswfcoop.EmployeesJobsConflictValidator;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.cor.ETRCorrespondence;
+import com.code.services.log.LogService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
 
@@ -167,7 +168,7 @@ public class TerminationsService extends BaseService {
 	return terminationRecordDetailDataList;
     }
 
-    public static List<TerminationTransactionData> constructTerminationTransactions(TerminationRecordData terminationRecordData, List<TerminationRecordDetailData> terminationRecordDetailDataList, long tansactionTypeId) throws BusinessException {
+    public static List<TerminationTransactionData> constructTerminationTransactions(TerminationRecordData terminationRecordData, Map<Long, TerminationTransactionData> employeesIdsTerminationTransactionDataMap, List<TerminationRecordDetailData> terminationRecordDetailDataList, long tansactionTypeId) throws BusinessException {
 
 	List<TerminationTransactionData> terminationTransactionList = new ArrayList<TerminationTransactionData>();
 
@@ -267,6 +268,7 @@ public class TerminationsService extends BaseService {
 	    terminationTransaction.setOriginalDecisionApprovedId(terminationRecordData.getOriginalDecisionApprovedId());
 
 	    terminationTransactionList.add(terminationTransaction);
+	    employeesIdsTerminationTransactionDataMap.put(terminationRecordDetailData.getEmpId(), terminationTransaction);
 	}
 	return terminationTransactionList;
 
@@ -882,6 +884,7 @@ public class TerminationsService extends BaseService {
 
 	    Long[] empsIds = new Long[terminationRecordDetailDataList.size()];
 	    HashMap<Long, TerminationRecordDetailData> employeesTerminationRecordDetailDataMap = new HashMap<Long, TerminationRecordDetailData>();
+	    HashMap<Long, TerminationTransactionData> employeesIdsTerminationTransactionDataMap = new HashMap<>();
 
 	    for (int i = 0; i < terminationRecordDetailDataList.size(); i++) {
 		empsIds[i] = terminationRecordDetailDataList.get(i).getEmpId();
@@ -898,7 +901,7 @@ public class TerminationsService extends BaseService {
 	    validateTerminationsPromotionsIntegration(tempEmployees, empsRanksIds);
 	    EmployeesJobsConflictValidator.validateEmployeesJobsConflicts(empsIds, null, TransactionClassesEnum.TERMINATIONS.getCode(), false, terminationRecordData.getId() * -1, terminationRecordData.getCategoryId());
 
-	    List<TerminationTransactionData> terminationTransactionDataList = constructTerminationTransactions(terminationRecordData, terminationRecordDetailDataList, tansactionTypeId);
+	    List<TerminationTransactionData> terminationTransactionDataList = constructTerminationTransactions(terminationRecordData, employeesIdsTerminationTransactionDataMap, terminationRecordDetailDataList, tansactionTypeId);
 
 	    // save transaction
 	    addTerminationTransaction(terminationTransactionDataList, loginEmpId, null, session);
@@ -911,7 +914,7 @@ public class TerminationsService extends BaseService {
 		for (int i = 0; i < tempEmployees.size(); i++) {
 		    tempEmployees.get(i).setServiceTerminationDate(employeesTerminationRecordDetailDataMap.get(tempEmployees.get(i).getEmpId()).getServiceTerminationDate());
 		}
-		terminateEmployeeService(tempEmployees, session);
+		terminateEmployeeService(tempEmployees, employeesIdsTerminationTransactionDataMap, session);
 	    }
 
 	    if (!isOpenedSession)
@@ -1777,7 +1780,12 @@ public class TerminationsService extends BaseService {
 		CustomSession session = DataAccess.getSession();
 		try {
 		    session.beginTransaction();
-		    doEmployeesServiceTerminationEffect(employees, session);
+		    Map<Long, TerminationTransactionData> employeeIdsTerminationTransactionsMap = new HashMap<>();
+		    for (EmployeeData employeeData : employees) {
+			TerminationTransactionData effectiveTerminationTransaction = getEffectiveTerminationTransaction(employeeData.getEmpId());
+			employeeIdsTerminationTransactionsMap.put(employeeData.getEmpId(), effectiveTerminationTransaction);
+		    }
+		    doEmployeesServiceTerminationEffect(employees, employeeIdsTerminationTransactionsMap, session);
 		    session.commitTransaction();
 		} catch (Exception e) {
 		    e.printStackTrace();
@@ -1800,7 +1808,7 @@ public class TerminationsService extends BaseService {
      *            optional CustomSession to be used with database transaction
      * @throws BusinessException
      */
-    public static void terminateEmployeeService(List<EmployeeData> employees, CustomSession... useSession) throws BusinessException {
+    public static void terminateEmployeeService(List<EmployeeData> employees, Map<Long, TerminationTransactionData> employeesTerminationRecordDetailDataMap, CustomSession... useSession) throws BusinessException {
 	validateTerminateEmployeeService(employees);
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -1817,7 +1825,7 @@ public class TerminationsService extends BaseService {
 		    EmployeesService.updateEmployee(emp, session);
 	    }
 
-	    doEmployeesServiceTerminationEffect(effectedTerminatedEmployees, session);
+	    doEmployeesServiceTerminationEffect(effectedTerminatedEmployees, employeesTerminationRecordDetailDataMap, session);
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -1834,7 +1842,7 @@ public class TerminationsService extends BaseService {
 	}
     }
 
-    private static void doEmployeesServiceTerminationEffect(List<EmployeeData> employees, CustomSession session) throws BusinessException {
+    private static void doEmployeesServiceTerminationEffect(List<EmployeeData> employees, Map<Long, TerminationTransactionData> employeeIdsTerminationTransactionsMap, CustomSession session) throws BusinessException {
 	if (employees == null || employees.size() == 0)
 	    return;
 	try {
@@ -1855,6 +1863,7 @@ public class TerminationsService extends BaseService {
 		employees.get(i).setPhysicalUnitId(null);
 		employees.get(i).setJobId(null);
 		EmployeesService.updateEmployee(employees.get(i), session);
+		LogService.logEmployeeData(employees.get(i), employeeIdsTerminationTransactionsMap.get(employees.get(i).getEmpId()).getServiceTerminationDate(), employeeIdsTerminationTransactionsMap.get(employees.get(i).getEmpId()).getDecisionNumber(), employeeIdsTerminationTransactionsMap.get(employees.get(i).getEmpId()).getDecisionDate(), session);
 
 		JobsService.changeJobStatus(empJob, JobStatusEnum.VACANT.getCode(), session);
 
