@@ -791,7 +791,6 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 	try {
 	    Long[] empsIds = new Long[terminationRecordDetailDataList.size()];
 	    HashMap<Long, TerminationRecordDetailData> employeesTerminationRecordDetailDataMap = new HashMap<Long, TerminationRecordDetailData>();
-	    HashMap<Long, TerminationTransactionData> employeesTerminationTransactionMap = new HashMap<>();
 	    for (int i = 0; i < terminationRecordDetailDataList.size(); i++) {
 		empsIds[i] = terminationRecordDetailDataList.get(i).getEmpId();
 		employeesTerminationRecordDetailDataMap.put(empsIds[i], terminationRecordDetailDataList.get(i));
@@ -833,8 +832,12 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 	    TerminationsService.addModifyTerminationRecordDetail(terminationRecordData, terminationRecordDetailDataList, loginEmpId, session);
 
 	    // construct transaction
-	    List<TerminationTransactionData> terminationTransactionList = TerminationsService.constructTerminationTransactions(terminationRecordData, employeesTerminationTransactionMap, terminationRecordDetailDataList, tansactionTypeId);
-
+	    List<TerminationTransactionData> terminationTransactionList = TerminationsService.constructTerminationTransactions(terminationRecordData, terminationRecordDetailDataList, tansactionTypeId);
+	    List<TerminationTransactionData> nonFutureTerminationTransaction = new ArrayList<>();
+	    for (TerminationTransactionData terminationTransactionData : terminationTransactionList) {
+		if (!terminationTransactionData.getServiceTerminationDate().after(HijriDateService.getHijriSysDate()))
+		    nonFutureTerminationTransaction.add(terminationTransactionData);
+	    }
 	    // set Decision Region Id
 	    for (TerminationTransactionData terminationTransaction : terminationTransactionList) {
 		terminationTransaction.setDecisionRegionId(signManager.getPhysicalRegionId());
@@ -850,14 +853,15 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 		requester.setServiceTerminationDate(terminationRecordDetailDataList.get(0).getServiceTerminationDate());
 		tempEmployees = new ArrayList<EmployeeData>(1);
 		tempEmployees.add(requester);
-		TerminationsService.terminateEmployeeService(tempEmployees, employeesTerminationTransactionMap, session);
+		TerminationsService.terminateEmployeeService(tempEmployees, session);
 	    } else {
 
 		for (EmployeeData emp : tempEmployees)
 		    emp.setServiceTerminationDate(employeesTerminationRecordDetailDataMap.get(emp.getEmpId()).getServiceTerminationDate());
 
-		TerminationsService.terminateEmployeeService(tempEmployees, employeesTerminationTransactionMap, session);
+		TerminationsService.terminateEmployeeService(tempEmployees, session);
 	    }
+	    TerminationsService.logTerminatedEmployeeData(nonFutureTerminationTransaction, session);
 
 	} catch (BusinessException e) {
 	    throw e;
