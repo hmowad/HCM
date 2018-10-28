@@ -1009,7 +1009,7 @@ public class MovementsService extends BaseService {
 		emp.setPhysicalUnitId(emp.getOfficialUnitId());
 		emp.setStatusId(EmployeeStatusEnum.ON_DUTY.getCode());
 		EmployeesService.updateEmployee(emp, session);
-		LogService.logEmployeeData(emp, predecessorTrans.getEffectFlag().intValue() == FlagsEnum.ON.getCode() && !isTermination ? predecessorTrans.getExecutionDate() : movementTransaction.getEndDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate());
+		LogService.logEmployeeData(emp, !isTermination ? movementTransaction.getExecutionDate() : movementTransaction.getEndDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate());
 
 		// add empId to the affected list to do changes after effect like invalidating the inbox
 		affectedEmployeesIds.add(emp.getEmpId());

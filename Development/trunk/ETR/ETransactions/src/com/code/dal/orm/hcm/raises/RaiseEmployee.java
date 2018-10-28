@@ -20,7 +20,7 @@ import com.code.dal.orm.BaseEntity;
 	@NamedQuery(name = "hcm_raiseEmployee_updateEmployeesDueToAnnualRaiseEffect",
 		query = "update Employee e set e.degreeId = e.degreeId + 1 , e.lastAnnualRaiseDate = to_date(:P_LAST_ANNUAL_RAISE_DATE, 'MI/MM/YYYY') where id in(select r.empId from RaiseEmployee r where raiseId = :P_RAISE_ID and deservedFlag = 1)"),
 	@NamedQuery(name = "hcm_raiseEmployee_getDeservedEmployeesByRaiseId",
-		query = "select e from Employee e where id in(select r.empId from RaiseEmployee r where raiseId = :P_RAISE_ID and deservedFlag = 1)")
+		query = "select e from EmployeeData e where id in(select r.empId from RaiseEmployee r where raiseId = :P_RAISE_ID and deservedFlag = 1)")
 })
 
 @Entity

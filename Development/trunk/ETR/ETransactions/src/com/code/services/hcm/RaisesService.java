@@ -10,7 +10,6 @@ import java.util.Map;
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.BaseEntity;
-import com.code.dal.orm.hcm.employees.Employee;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.payroll.PayrollSalary;
 import com.code.dal.orm.hcm.raises.Raise;
@@ -991,27 +990,28 @@ public class RaisesService extends BaseService {
 	    if (transaction.getRaiseType().intValue() == RaiseTypesEnum.ANNUAL.getCode()) {
 		emp.getEmployee().setLastAnnualRaiseDate(transaction.getRaiseExecutionDate());
 	    }
-	    emp.getEmployee().setDegreeId(transaction.getEmpNewDegreeId());
+	    emp.setDegreeId(transaction.getEmpNewDegreeId());
 	    emp.getEmployee().setSystemUser(systemUser);
 	    EmployeesService.updateEmployee(emp, session);
-	    emp.setDegreeId(transaction.getEmpNewDegreeId());
 	    LogService.logEmployeeData(emp, transaction.getRaiseExecutionDate(), transaction.getRaiseDecisionNumber(), transaction.getRaiseDecisionDate());
 	}
     }
 
     private static void doAnnualRaiseEffect(Raise raise, String loginEmpId, CustomSession session) throws BusinessException, DatabaseException {
 	if (!raise.getExecutionDate().after(HijriDateService.getHijriSysDate())) {
-	    List<Employee> employees = getEmployeesByRaiseId(raise.getId());
+	    List<EmployeeData> employees = getEmployeesByRaiseId(raise.getId());
 	    List<BaseEntity> beans = new ArrayList<>();
 	    for (int x = 0; x < employees.size(); x++) {
-		employees.get(x).setSystemUser(loginEmpId);
+		employees.get(x).getEmployee().setSystemUser(loginEmpId);
 	    }
 	    beans.addAll(employees);
+	    for (int i = 0; i < beans.size(); i++) {
+		beans.set(i, ((EmployeeData) beans.get(i)).getEmployee());
+	    }
 	    updateEmployeesDueToAnnualRaiseEffect(beans, raise.getExecutionDate(), raise.getId(), session);
-	    for (Employee employee : employees) {
-		EmployeeData emp = EmployeesService.getEmployeeData(employee.getId());
-		emp.setDegreeId(emp.getDegreeId() + 1);
-		LogService.logEmployeeData(emp, raise.getExecutionDate(), raise.getDecisionNumber(), raise.getDecisionDate());
+	    for (EmployeeData employee : employees) {
+		employee.setDegreeId(employee.getDegreeId() + 1);
+		LogService.logEmployeeData(employee, raise.getExecutionDate(), raise.getDecisionNumber(), raise.getDecisionDate());
 	    }
 	}
     }
@@ -1104,12 +1104,12 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    public static List<Employee> getEmployeesByRaiseId(long raiseId) throws BusinessException {
+    public static List<EmployeeData> getEmployeesByRaiseId(long raiseId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_RAISE_ID", raiseId);
 
-	    return DataAccess.executeNamedQuery(Employee.class, QueryNamesEnum.HCM_GET_DESERVED_EMPLOYEES_BY_RAISE_ID.getCode(), qParams);
+	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_GET_DESERVED_EMPLOYEES_BY_RAISE_ID.getCode(), qParams);
 
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
