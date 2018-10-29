@@ -20,6 +20,7 @@
 				document.getElementById('missionStatisticalReportId:unitFullNameHId').value = ret[1];
 				document.getElementById('missionStatisticalReportId:unitHKeyHId').value = ret[3];
 				document.getElementById('missionStatisticalReportId:unitFullNameId').innerHTML = ret[1];
+				document.getElementById('missionStatisticalReportId:searchOrgUnitBtnId').click();
 			}
 		}
 
@@ -117,6 +118,9 @@
 												<h:inputHidden id="unitIDHId" value="#{missionsReports.orgUnitId}" />
 												<h:inputHidden id="unitFullNameHId" value="#{missionsReports.orgUnitFullName}" />
 												<h:inputHidden id="unitHKeyHId" value="#{missionsReports.orgUnitHKey}" />
+												<h:commandButton id="searchOrgUnitBtnId" style="display:none;" action="#{missionsReports.getOrgUnit()}">
+													<f:ajax execute="missionStatisticalReportId:unitIDHId missionStatisticalReportId:unitFullNameHId missionStatisticalReportId:unitHKeyHId" />
+												</h:commandButton>
 												<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit('#{request.contextPath}' , #{missionsReports.isManager}); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
 											</td>
 										</tr>

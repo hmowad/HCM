@@ -76,6 +76,10 @@ public class MissionsReports extends BaseBacking {
 	}
     }
 
+    public void getOrgUnit() {
+	orgUnitHKeyPrefix = UnitsService.getHKeyPrefix(orgUnitHKey);
+    }
+
     public void print() {
 	try {
 	    if (reportType == 1) {
