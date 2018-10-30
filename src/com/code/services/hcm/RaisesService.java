@@ -730,7 +730,7 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    public static boolean isStillValidAnnualRaiseEmployee(Raise raise) throws BusinessException {
+    public static void isStillValidAnnualRaiseEmployee(Raise raise) throws BusinessException {
 	try {
 	    Map<Long, Long> rankDegreesHashMap = new HashMap<Long, Long>();
 	    List<EmployeeData> allDeservedEmployees = getDeservedEmployees(raise.getExecutionDate(), FlagsEnum.ALL.getCode(), raise.getType(), raise.getCategoryId());
@@ -758,16 +758,20 @@ public class RaisesService extends BaseService {
 			    break;
 			}
 		    }
-		    if (!found)
-			return false;
+		    if (!found) {
+			raise.setDirtyFlag(true);
+			throw new BusinessException("error_deservedEmployeesHaveChanged");
+		    }
 		}
 	    }
-	    if (excludedForEndOfLadderCount != excludedforEndOfLadder.size())
-		return false;
-
-	    if (currDeservedEmpData.size() != (prevDeservedEmpData.size() - excludedForEndOfLadderCount))
-		return false;
-
+	    if (excludedForEndOfLadderCount != excludedforEndOfLadder.size()) {
+		raise.setDirtyFlag(true);
+		throw new BusinessException("error_deservedEmployeesHaveChanged");
+	    }
+	    if (currDeservedEmpData.size() != (prevDeservedEmpData.size() - excludedForEndOfLadderCount)) {
+		raise.setDirtyFlag(true);
+		throw new BusinessException("error_deservedEmployeesHaveChanged");
+	    }
 	    for (EmployeeData emp : currDeservedEmpData) {
 		boolean found = false;
 		for (RaiseEmployeeData raiseEmp : prevDeservedEmpData) {
@@ -776,14 +780,16 @@ public class RaisesService extends BaseService {
 			break;
 		    }
 		}
-		if (!found)
-		    return false;
+		if (!found) {
+		    raise.setDirtyFlag(true);
+		    throw new BusinessException("error_deservedEmployeesHaveChanged");
+		}
 	    }
 
 	    // check if annual raise still has deserved employees
 	    boolean atLeastOneDeserved = false;
 	    for (RaiseEmployeeData raiseEmp : prevDeservedEmpData) {
-		if (raiseEmp.getRaiseType() == RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode()) {
+		if (raiseEmp.getEmpDeservedFlag().equals(RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode())) {
 		    atLeastOneDeserved = true;
 		    break;
 		}
@@ -792,8 +798,10 @@ public class RaisesService extends BaseService {
 		throw new BusinessException("error_annualRaiseMustHaveAtLeastOneDeservedEmployee");
 	    }
 
-	    return true;
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -1105,8 +1113,6 @@ public class RaisesService extends BaseService {
     }
 
     public static boolean approveAnnualRaise(Raise raise, long managerId, String loginEmpId, CustomSession... useSession) throws BusinessException {
-	boolean stillValid = false;
-
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 
@@ -1115,9 +1121,8 @@ public class RaisesService extends BaseService {
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
-	    if (isStillValidAnnualRaiseEmployee(raise)) {
-		stillValid = true;
-	    }
+
+	    isStillValidAnnualRaiseEmployee(raise);
 	    List<BaseEntity> beans = new ArrayList<>();
 
 	    for (RaiseEmployeeData raiseEmployee : allEmployees) {
@@ -1147,17 +1152,14 @@ public class RaisesService extends BaseService {
 	    for (RaiseTransactionData raiseTransactionData : raiseTransactionsData) {
 		raiseTransactionData.setId(null);
 	    }
-	    if (stillValid) {
-		if (e instanceof BusinessException)
-		    throw (BusinessException) e;
-		e.printStackTrace();
-		throw new BusinessException("error_general");
-	    }
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
 	} finally {
 	    if (!isOpenedSession)
 		session.close();
 	}
-	return stillValid;
     }
 
     private static void doRaiseEffect(RaiseTransactionData transaction, String systemUser, CustomSession session) throws BusinessException {

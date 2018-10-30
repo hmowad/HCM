@@ -146,10 +146,12 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     public void saveRaiseEmployees() throws BusinessException {
 	try {
 	    RaisesService.updateRaiseEmployeesList(updateRaiseEmployees, loginEmpData.getEmpId() + "");
-	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
-	    modifyAdminFlag = false;
-	    approveAdminFlag = false;
-	    viewAdminFlag = true;
+	    if (!approveAdminFlag) {
+		super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
+		modifyAdminFlag = false;
+		approveAdminFlag = false;
+		viewAdminFlag = true;
+	    }
 	} catch (BusinessException e) {
 	    if (approveAdminFlag) {
 		throw (BusinessException) e;
@@ -162,16 +164,16 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     public void approveRaise() {
 	try {
 	    saveRaiseEmployees();
-	    if (!RaisesService.approveAnnualRaise(annualRaise, loginEmpData.getEmpId(), loginEmpData.getEmpId() + "")) {
-		regenerateFlag = true;
-		throw new BusinessException("error_deservedEmployeesHaveChanged");
-	    }
+	    RaisesService.approveAnnualRaise(annualRaise, loginEmpData.getEmpId(), loginEmpData.getEmpId() + "");
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	    modifyAdminFlag = false;
 	    approveAdminFlag = false;
 	    viewAdminFlag = true;
 	} catch (BusinessException e) {
+	    if (annualRaise.isDirtyFlag())
+		regenerateFlag = true;
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+
 	}
 
     }
