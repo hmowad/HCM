@@ -358,7 +358,7 @@ public class JobsService extends BaseService {
 
 		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode()) {
 		    EmployeeData empData = EmployeesService.getEmployeesByEmpsIds(new Long[] { jobData.getEmployeeId() }).get(0);
-		    LogService.logEmployeeData(empData, new Date(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), session);
+		    LogService.logEmployeeData(empData, HijriDateService.getHijriSysDate(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), session);
 		}
 	    }
 
@@ -589,7 +589,7 @@ public class JobsService extends BaseService {
 
 		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode()) {
 		    EmployeeData empData = EmployeesService.getEmployeesByEmpsIds(new Long[] { jobData.getEmployeeId() }).get(0);
-		    LogService.logEmployeeData(empData, new Date(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), session);
+		    LogService.logEmployeeData(empData, HijriDateService.getHijriSysDate(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), session);
 		}
 	    }
 
@@ -705,7 +705,7 @@ public class JobsService extends BaseService {
 
 		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode()) {
 		    EmployeeData empData = EmployeesService.getEmployeesByEmpsIds(new Long[] { jobData.getEmployeeId() }).get(0);
-		    LogService.logEmployeeData(empData, new Date(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), session);
+		    LogService.logEmployeeData(empData, HijriDateService.getHijriSysDate(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), session);
 		}
 	    }
 
