@@ -57,7 +57,7 @@ public class RaisesManagement extends BaseBacking {
 		reset();
 	    }
 	} catch (BusinessException e) {
-	    e.printStackTrace();
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
 
     }
@@ -66,7 +66,7 @@ public class RaisesManagement extends BaseBacking {
 	try {
 	    raises = RaisesService.getRaises(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), decisionDateFrom, decisionDateTo, decisionNumber, executionDateFrom, executionDateTo, jobCategory, mode, FlagsEnum.ALL.getCode());
 	} catch (BusinessException e) {
-	    e.printStackTrace();
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
     }
 
@@ -81,6 +81,7 @@ public class RaisesManagement extends BaseBacking {
 	    byte[] bytes = RaisesService.getRaiseEmployeesReportBytes(raise.getDecisionNumber(), raise.getDecisionDate(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), raise.getType());
 	    super.print(bytes);
 	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
 
     }
@@ -90,6 +91,7 @@ public class RaisesManagement extends BaseBacking {
 	    byte[] bytes = RaisesService.getRaiseEmployeesReportBytes(raise.getDecisionNumber(), raise.getDecisionDate(), RaiseEmployeesTypesEnum.ALL_EXCLUDED_EMPLOYEES.getCode(), raise.getType());
 	    super.print(bytes);
 	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
 
     }
@@ -108,9 +110,8 @@ public class RaisesManagement extends BaseBacking {
 	    RaisesService.deleteRaise(raise);
 	    raises.remove(raise);
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
-
 	} catch (BusinessException e) {
-	    e.printStackTrace();
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
     }
 

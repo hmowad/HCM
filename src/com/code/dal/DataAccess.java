@@ -333,7 +333,7 @@ public class DataAccess {
 	}
     }
 
-    public static void auditMultipleEntities(List<BaseEntity> beans, AuditOperationsEnum operation, Session session) throws DatabaseException {
+    private static void auditMultipleEntities(List<BaseEntity> beans, AuditOperationsEnum operation, Session session) throws DatabaseException {
 	int i = 0;
 	if (beans != null && !beans.isEmpty()) {
 	    if ((AuditOperationsEnum.INSERT.equals(operation) && beans.get(0) instanceof InsertableAuditEntity) ||
