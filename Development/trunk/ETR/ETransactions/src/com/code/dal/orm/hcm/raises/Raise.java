@@ -35,35 +35,33 @@ import com.code.services.util.HijriDateService;
 			" order by r.id"),
 
 	@NamedQuery(name = "hcm_raise_getDeservedEmployees",
-		query = "select ed from Raise r, EmployeeData ed" +
-			" where (r.id = :P_RAISE_ID)" +
-			" and (:P_EMP_ID = -1 or ed.empId = :P_EMP_ID ) " +
+		query = "select ed from EmployeeData ed" +
+			" where (:P_EMP_ID = -1 or ed.empId = :P_EMP_ID ) " +
 			" and (ed.statusId between 15 and 45)" +
-			" and (r.categoryId = ed.categoryId)" +
-			" and (r.executionDate >" +
+			" and (:P_CATEGORY_ID = ed.categoryId)" +
+			" and (to_date(:P_ACTUAL_EXECUTION_DATE, 'MI/MM/YYYY') >" +
 			" (select CASE WHEN max(rt.executionDate) IS NULL " +
 			" then to_date('1/1/1300', 'MI/MM/YYYY') " +
 			" ELSE max(rt.executionDate) END " +
 			" from RaiseTransaction rt" +
 			" where rt.empId = ed.empId and rt.type = 2) )" +
 			" and ((ed.lastAnnualRaiseDate is null) or (to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY') > ed.lastAnnualRaiseDate))" +
-			" and ((ed.lastPromotionDate is null) or (r.executionDate > ed.lastPromotionDate))" +
+			" and ((ed.lastPromotionDate is null) or (to_date(:P_ACTUAL_EXECUTION_DATE, 'MI/MM/YYYY') > ed.lastPromotionDate))" +
 			" order by ed.empId"),
 
 	@NamedQuery(name = "hcm_raise_getUnDeservedEmployees",
-		query = "select ed from Raise r, EmployeeData ed" +
-			" where (r.id = :P_RAISE_ID)" +
-			" and (ed.statusId between 15 and 45)" +
-			" and (r.categoryId = ed.categoryId)" +
-			"and (" +
-			" (r.executionDate <" +
+		query = "select ed from EmployeeData ed" +
+			" where (ed.statusId between 15 and 45)" +
+			" and (:P_CATEGORY_ID= ed.categoryId)" +
+			" and (" +
+			" (to_date(:P_ACTUAL_EXECUTION_DATE, 'MI/MM/YYYY') <" +
 			" (select CASE WHEN max(rt.executionDate) IS NULL " +
 			" then to_date('1/1/1300', 'MI/MM/YYYY') " +
 			" ELSE max(rt.executionDate) END " +
 			" from RaiseTransaction rt" +
 			" where rt.empId = ed.id and rt.type = 2) )" +
 			" or ((ed.lastAnnualRaiseDate is not null) and (to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY') <= ed.lastAnnualRaiseDate))" +
-			" or ((ed.lastPromotionDate is not null) and (r.executionDate <= ed.lastPromotionDate))" +
+			" or ((ed.lastPromotionDate is not null) and (to_date(:P_ACTUAL_EXECUTION_DATE, 'MI/MM/YYYY') <= ed.lastPromotionDate))" +
 			" )" +
 			" order by ed.id")
 })

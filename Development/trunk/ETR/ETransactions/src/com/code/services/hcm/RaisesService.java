@@ -107,20 +107,58 @@ public class RaisesService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 	    addRaise(raise, session);
+	    for (RaiseEmployeeData raiseEmployee : raiseEmployeeDataList) {
+		raiseEmployee.setRaiseExecutionDate(raise.getExecutionDate());
+		raiseEmployee.setRaiseCategoryId(raise.getCategoryId());
+	    }
 	    addRaiseEmployees(raiseEmployeeDataList, raise.getId(), session);
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
 	} catch (Exception e) {
+
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+	    e.printStackTrace();
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
 
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
+
+    public static List<RaiseEmployeeData> addAnnualRaise(Raise raise, CustomSession... useSession) throws BusinessException {
+	List<RaiseEmployeeData> raiseEmployees = new ArrayList<>();
+	if (raise.getType() != RaiseTypesEnum.ANNUAL.getCode())
+	    throw new BusinessException("error_general");
+
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	try {
+
+	    if (!isOpenedSession)
+		session.beginTransaction();
+	    addRaise(raise, session);
+	    raiseEmployees = generateRaiseEmployeesForAnnualRaise(raise, session);
+	    if (!isOpenedSession)
+		session.commitTransaction();
+	} catch (Exception e) {
+	    raise.setId(null);
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
 	    if (!isOpenedSession)
 		session.close();
 	}
+	return raiseEmployees;
+
     }
 
     /**
@@ -149,6 +187,8 @@ public class RaisesService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -219,19 +259,29 @@ public class RaisesService extends BaseService {
      *             If any exceptions or errors occurs
      */
     private static void validateRaise(Raise newRaise) throws BusinessException {
-	List<Raise> raisesList = getRaises(newRaise.getId() == null ? FlagsEnum.ALL.getCode() : newRaise.getId(), newRaise.getDecisionDate(), newRaise.getDecisionNumber(), newRaise.getType());
-	if (raisesList.size() != 0)
-	    throw new BusinessException("error_decisionNumberAndExecutionDateCannotBeRepeated");
-	if (newRaise.getDecisionNumber() == null)
-	    throw new BusinessException("error_decisionNumberIsMandatory");
-	if (newRaise.getDecisionDate() == null)
-	    throw new BusinessException("error_decisionDateIsMandatory");
-	if (newRaise.getCategoryId() == null)
-	    throw new BusinessException("error_categoryIdIsMandatory");
-	if (newRaise.getExecutionDate() == null)
-	    throw new BusinessException("error_raiseDateIsMandatory");
+	validateRaiseMandatoryFields(newRaise);
+	validateRaiseBusiness(newRaise);
+    }
 
-	// We can’t save two initial annual raises for the same category.
+    private static void validateRaiseBusiness(Raise raise) throws BusinessException {
+	List<Raise> raisesList = getRaises(raise.getId() == null ? FlagsEnum.ALL.getCode() : raise.getId(), raise.getDecisionDate(), raise.getDecisionNumber(), raise.getType());
+	List<Raise> initialRaise = getInitialRaiseForTheSameCategory(raise.getCategoryId());
+	if (raisesList.size() != 0)
+	    throw new BusinessException("error_decisionNumberAndDecisionDateCannotBeRepeated");
+	if (!initialRaise.isEmpty() && raise.getId() == null)
+	    throw new BusinessException("error_cannotSaveTwoInitialAnnualRaiseForTheSameCategory");
+
+    }
+
+    private static void validateRaiseMandatoryFields(Raise raise) throws BusinessException {
+	if (raise.getDecisionNumber() == null)
+	    throw new BusinessException("error_decisionNumberIsMandatory");
+	if (raise.getDecisionDate() == null)
+	    throw new BusinessException("error_decisionDateIsMandatory");
+	if (raise.getCategoryId() == null)
+	    throw new BusinessException("error_categoryIdIsMandatory");
+	if (raise.getExecutionDate() == null)
+	    throw new BusinessException("error_raiseDateIsMandatory");
     }
 
     /*------------------------------------------Queries------------------------------------------------*/
@@ -259,6 +309,10 @@ public class RaisesService extends BaseService {
      */
     private static List<Raise> getRaises(long excludedId, Date decisionDate, String decisionNumber, long type) throws BusinessException {
 	return searchRaises(excludedId, FlagsEnum.ALL.getCode(), decisionDate, decisionDate, decisionNumber, null, null, FlagsEnum.ALL.getCode(), type, FlagsEnum.ALL.getCode());
+    }
+
+    private static List<Raise> getInitialRaiseForTheSameCategory(long categoryId) throws BusinessException {
+	return searchRaises(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, null, null, categoryId, RaiseTypesEnum.ANNUAL.getCode(), RaiseStatusEnum.INITIAL.getCode());
     }
 
     /**
@@ -369,6 +423,10 @@ public class RaisesService extends BaseService {
 		session.beginTransaction();
 
 	    updateRaise(raise, session);
+	    for (RaiseEmployeeData raiseEmployee : raiseEmployeeDataToAddList) {
+		raiseEmployee.setRaiseExecutionDate(raise.getExecutionDate());
+		raiseEmployee.setRaiseCategoryId(raise.getCategoryId());
+	    }
 	    addRaiseEmployees(raiseEmployeeDataToAddList, raise.getId(), session);
 
 	    if (raiseEmployeeDataToDeleteList != null && !raiseEmployeeDataToDeleteList.isEmpty()) {
@@ -393,6 +451,10 @@ public class RaisesService extends BaseService {
     }
 
     public static void addRaiseEmployees(List<RaiseEmployeeData> raiseEmployeesData, long raiseId, CustomSession... useSession) throws BusinessException {
+	for (RaiseEmployeeData raiseEmployee : raiseEmployeesData) {
+	    validateRaiseEmployee(raiseEmployee);
+	}
+
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -441,6 +503,9 @@ public class RaisesService extends BaseService {
      *             If any exceptions or errors occurs
      */
     public static void updateRaiseEmployeesList(List<RaiseEmployeeData> raiseEmployeeDataToUpdateList, String loginEmpId, CustomSession... useSession) throws BusinessException {
+	for (RaiseEmployeeData raiseEmployee : raiseEmployeeDataToUpdateList) {
+	    validateRaiseEmployee(raiseEmployee);
+	}
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -513,12 +578,15 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static RaiseEmployeeData constructRaiseEmployeeData(EmployeeData empData, Long raiseId, long raiseType, int deservedFlag) throws BusinessException {
+    public static RaiseEmployeeData constructRaiseEmployeeData(EmployeeData empData, Long raiseId, int raiseType, int deservedFlag, Date raiseExecutionDate) throws BusinessException {
 	RaiseEmployeeData raiseEmployeeData = new RaiseEmployeeData();
 	raiseEmployeeData.setRaiseId(raiseId);
+	raiseEmployeeData.setRaiseCategoryId(empData.getCategoryId());
+	raiseEmployeeData.setRaiseExecutionDate(raiseExecutionDate);
 	raiseEmployeeData.setEmpId(empData.getEmpId());
 	raiseEmployeeData.setEmpDegreeId(empData.getDegreeId());
 	raiseEmployeeData.setEmpDegreeDesc(empData.getDegreeDesc());
+	raiseEmployeeData.setRaiseType(raiseType);
 	if (raiseType == RaiseTypesEnum.ANNUAL.getCode()) {
 	    if (deservedFlag == RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode())
 		raiseEmployeeData.setEmpNewDegreeId(empData.getDegreeId() + 1);
@@ -534,7 +602,7 @@ public class RaisesService extends BaseService {
 	return raiseEmployeeData;
     }
 
-    public static List<RaiseEmployeeData> generateRaiseEmployeesForAnnualRaise(Raise raise, Date executionDate) throws BusinessException {
+    public static List<RaiseEmployeeData> generateRaiseEmployeesForAnnualRaise(Raise raise, CustomSession session) throws BusinessException {
 	List<RaiseEmployeeData> endOfLadderEmpRaiseData = new ArrayList<>();
 	List<RaiseEmployeeData> allRaiseEmployees = new ArrayList<>();
 	List<RaiseEmployeeData> deservedEmpRaiseData = new ArrayList<>();
@@ -548,33 +616,34 @@ public class RaisesService extends BaseService {
 	    rankDegressHashMap.put(endOfLadderDegree.getRankId(), endOfLadderDegree.getDegreeId());
 	}
 
-	List<EmployeeData> allDeservedEmpData = getDeservedEmployeesForAnnualRaise(raise.getId(), executionDate, null);
-	unDeservedEmpData = getUnDeservedEmployeesForAnnualRaise(raise.getId(), executionDate);
+	List<EmployeeData> allDeservedEmpData = getDeservedEmployees(raise.getExecutionDate(), FlagsEnum.ALL.getCode(), raise.getType(), raise.getCategoryId());
+	unDeservedEmpData = getUnDeservedEmployeesForAnnualRaise(raise.getExecutionDate(), raise.getCategoryId());
 
 	for (EmployeeData emp : allDeservedEmpData) {
 	    if (emp.getDegreeId().equals(rankDegressHashMap.get(emp.getRankId()))) {
-		// convert list of EmployeeData to RaiseEmployeeData
-		endOfLadderEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseTypesEnum.ANNUAL.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode()));
+		endOfLadderEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseTypesEnum.ANNUAL.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode(), raise.getExecutionDate()));
 	    } else {
-		deservedEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseTypesEnum.ANNUAL.getCode(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode()));
+		deservedEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseTypesEnum.ANNUAL.getCode(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), raise.getExecutionDate()));
 	    }
+	}
+	if (deservedEmpRaiseData.isEmpty()) {
+	    throw new BusinessException("error_annualRaiseMustHaveAtLeastOneDeservedEmployee");
 	}
 
 	for (EmployeeData emp : unDeservedEmpData) {
-	    unDeservedEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseTypesEnum.ANNUAL.getCode(), RaiseEmployeesTypesEnum.NOT_DESERVED_EMPLOYEES.getCode()));
+	    unDeservedEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseTypesEnum.ANNUAL.getCode(), RaiseEmployeesTypesEnum.NOT_DESERVED_EMPLOYEES.getCode(), raise.getExecutionDate()));
 	}
 
-	// add deserved , undeserved and end of ladder employees
 	allRaiseEmployees.addAll(deservedEmpRaiseData);
 	allRaiseEmployees.addAll(unDeservedEmpRaiseData);
 	allRaiseEmployees.addAll(endOfLadderEmpRaiseData);
-	addRaiseEmployees(allRaiseEmployees, raise.getId());
+	addRaiseEmployees(allRaiseEmployees, raise.getId(), session);
 
 	return endOfLadderEmpRaiseData;
     }
 
-    public static List<RaiseEmployeeData> regenerateRaiseEmployeesForAnnualRaise(Raise raise, Date executionDate, CustomSession... useSession) throws BusinessException {
-	// delete the old records in DB
+    public static List<RaiseEmployeeData> regenerateRaiseEmployeesForAnnualRaise(Raise raise, CustomSession... useSession) throws BusinessException {
+	List<RaiseEmployeeData> raiseEmployees = new ArrayList<>();
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -582,6 +651,7 @@ public class RaisesService extends BaseService {
 		session.beginTransaction();
 
 	    deleteRaiseEmployeesByRaiseId(raise.getId(), session);
+	    raiseEmployees = generateRaiseEmployeesForAnnualRaise(raise, session);
 	    if (!isOpenedSession)
 		session.commitTransaction();
 	} catch (Exception e) {
@@ -598,8 +668,7 @@ public class RaisesService extends BaseService {
 		session.close();
 	}
 
-	// re-calculate all employees
-	return generateRaiseEmployeesForAnnualRaise(raise, executionDate);
+	return raiseEmployees;
     }
 
     /*----------------------------------------Validations----------------------------------------------*/
@@ -613,22 +682,107 @@ public class RaisesService extends BaseService {
      *             If any exceptions or errors occurs
      */
     private static void validateRaiseEmployee(RaiseEmployeeData raiseEmployeeData) throws BusinessException {
-	if (raiseEmployeeData.getEmpNewDegreeId() <= raiseEmployeeData.getEmpDegreeId())
-	    throw new BusinessException("error_newDegreeOfEmployeeMustBeBiggerThanCurrentDegreeOfEmployee");
-
-	// validate mandatory fields
-	// Check that raise has at least one deserved employee
-	// TODO check if additional raise for employee is the last raise/promotion, didn't reach end of ladder, employee not service terminated
+	validateRaiseEmployeeMandatoryFields(raiseEmployeeData);
+	validateRaiseEmployeeBusiness(raiseEmployeeData);
     }
 
-    private static void isStillValidRaiseEmployee(RaiseEmployeeData raiseEmployeeData) throws BusinessException {
-	List<EmployeeData> employeeData = getDeservedEmployeesForAnnualRaise(raiseEmployeeData.getRaiseId(), raiseEmployeeData.getRaiseExecutionDate(), raiseEmployeeData.getEmpId());
-	if (employeeData.size() == 0)
-	    throw new BusinessException("emp_isNotDeserved");
-	else {
-	    EmployeeData empData = employeeData.get(0);
-	    if (empData.getDegreeId().equals(PayrollsService.getEndOfLadderOfRank(empData.getRankId())))
-		throw new BusinessException("error_thisEmployeeMustBeExcludedForEndOfLadder");
+    private static void validateRaiseEmployeeMandatoryFields(RaiseEmployeeData raiseEmployeeData) throws BusinessException {
+	if ((raiseEmployeeData.getExclusionReason() == null || raiseEmployeeData.getExclusionReason().equals("")) && raiseEmployeeData.getEmpDeservedFlag() == RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode())
+	    throw new BusinessException("error_exclusionReasonIsMandatory");
+	if (raiseEmployeeData.getEmpDeservedFlag() == null)
+	    throw new BusinessException("error_deservedFlagIsMandatory");
+    }
+
+    private static void validateRaiseEmployeeBusiness(RaiseEmployeeData raiseEmployeeData) throws BusinessException {
+	if (raiseEmployeeData.getRaiseType() == RaiseTypesEnum.ADDITIONAL.getCode()) {
+	    List<EmployeeData> employeeData = getDeservedEmployees(raiseEmployeeData.getRaiseExecutionDate(), raiseEmployeeData.getEmpId(), raiseEmployeeData.getRaiseType(), raiseEmployeeData.getRaiseCategoryId());
+	    if (employeeData == null || employeeData.isEmpty())
+		throw new BusinessException("error_employeeIsUndeservedForAdditionalRaise");
+	    if (PayrollsService.getEndOfLadderOfRank(raiseEmployeeData.getEmpRankId()) == raiseEmployeeData.getEmpNewDegreeId())
+		throw new BusinessException("error_employeeNewDegreeIsHigherThanEndOfLadderDegreeOfRank");
+	}
+	if (raiseEmployeeData.getEmpNewDegreeId() <= raiseEmployeeData.getEmpDegreeId() && raiseEmployeeData.getEmpDeservedFlag() == RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode())
+	    throw new BusinessException("error_newDegreeOfEmployeeMustBeBiggerThanCurrentDegreeOfEmployee");
+
+    }
+
+    public static void isStillValidAdditionalRaiseEmployee(List<RaiseEmployeeData> raiseEmployees) throws BusinessException {
+	Map<Long, Long> rankDegreesHashMap = new HashMap<Long, Long>();
+	List<PayrollSalary> allEndOfLadderDegreesForCategory = PayrollsService.getEndOfLadderForAllRanksOfCategory(raiseEmployees.get(0).getRaiseCategoryId());
+	List<EmployeeData> allDeservedEmployees = getDeservedEmployees(raiseEmployees.get(0).getRaiseExecutionDate(), FlagsEnum.ALL.getCode(), raiseEmployees.get(0).getRaiseType(), raiseEmployees.get(0).getRaiseCategoryId());
+	for (PayrollSalary endOfLadderDegree : allEndOfLadderDegreesForCategory) {
+	    rankDegreesHashMap.put(endOfLadderDegree.getRankId(), endOfLadderDegree.getDegreeId());
+	}
+	for (RaiseEmployeeData raiseEmp : raiseEmployees) {
+	    if (raiseEmp.getEmpDegreeId().equals(rankDegreesHashMap.get(raiseEmp.getEmpRankId())))
+		throw new BusinessException("error_deservedEmployeesHaveChanged");
+	}
+	for (RaiseEmployeeData raiseEmp : raiseEmployees) {
+	    boolean found = false;
+	    for (EmployeeData emp : allDeservedEmployees) {
+		if (raiseEmp.getEmpId().equals(emp.getEmpId())) {
+		    found = true;
+		    break;
+		}
+	    }
+	    if (!found)
+		throw new BusinessException("error_deservedEmployeesHaveChanged");
+	}
+    }
+
+    public static boolean isStillValidAnnualRaiseEmployee(Raise raise) throws BusinessException {
+	try {
+	    Map<Long, Long> rankDegreesHashMap = new HashMap<Long, Long>();
+	    List<EmployeeData> allDeservedEmployees = getDeservedEmployees(raise.getExecutionDate(), FlagsEnum.ALL.getCode(), raise.getType(), raise.getCategoryId());
+	    List<EmployeeData> currDeservedEmpData = new ArrayList<>();
+	    List<RaiseEmployeeData> excludedforEndOfLadder = new ArrayList<>();
+	    List<RaiseEmployeeData> prevDeservedEmpData = getAnnualRaiseDeservedEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), raise.getDecisionDateString(), raise.getDecisionNumber(), new Integer[] { RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode() });
+	    List<PayrollSalary> allEndOfLadderDegreesForCategory = PayrollsService.getEndOfLadderForAllRanksOfCategory(raise.getCategoryId());
+	    for (RaiseEmployeeData raiseEmployee : prevDeservedEmpData) {
+		if (raiseEmployee.getEmpDeservedFlag() == RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode())
+		    excludedforEndOfLadder.add(raiseEmployee);
+	    }
+	    for (PayrollSalary endOfLadderDegree : allEndOfLadderDegreesForCategory) {
+		rankDegreesHashMap.put(endOfLadderDegree.getRankId(), endOfLadderDegree.getDegreeId());
+	    }
+	    int excludedForEndOfLadderCount = 0;
+	    for (EmployeeData emp : allDeservedEmployees) {
+		boolean found = false;
+		if (!emp.getDegreeId().equals(rankDegreesHashMap.get(emp.getRankId()))) {
+		    currDeservedEmpData.add(emp);
+		} else {
+		    excludedForEndOfLadderCount++;
+		    for (RaiseEmployeeData raiseEmployee : excludedforEndOfLadder) {
+			if (raiseEmployee.getEmpId().equals(emp.getEmpId())) {
+			    found = true;
+			    break;
+			}
+		    }
+		    if (!found)
+			return false;
+		}
+	    }
+	    if (excludedForEndOfLadderCount != excludedforEndOfLadder.size())
+		return false;
+
+	    if (currDeservedEmpData.size() != (prevDeservedEmpData.size() - excludedForEndOfLadderCount))
+		return false;
+	    for (EmployeeData emp : currDeservedEmpData) {
+		boolean found = false;
+		for (RaiseEmployeeData raiseEmp : prevDeservedEmpData) {
+		    if (raiseEmp.getEmpId().equals(emp.getEmpId())) {
+			found = true;
+			break;
+		    }
+		}
+		if (!found)
+		    return false;
+	    }
+
+	    return true;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
 	}
     }
 
@@ -753,12 +907,13 @@ public class RaisesService extends BaseService {
      * @return array list of employees objects
      * @throws BusinessException
      */
-    private static List<EmployeeData> getDeservedEmployeesForAnnualRaise(long raiseId, Date executionDate, Long empId) throws BusinessException {
+    private static List<EmployeeData> getDeservedEmployees(Date executionDate, long empId, long raiseType, long categoryId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put("P_RAISE_ID", raiseId);
-	    qParams.put("P_EXECUTION_DATE", calculateDateBeforeGivenExecutionDateByOneYear(executionDate));
-	    qParams.put("P_EMP_ID", (empId == null) ? FlagsEnum.ALL.getCode() + "" : empId);
+	    qParams.put("P_EXECUTION_DATE", raiseType == RaiseTypesEnum.ADDITIONAL.getCode() ? HijriDateService.getHijriDateString(executionDate) : HijriDateService.getHijriDateString(calculateDateBeforeGivenExecutionDateByOneYear(executionDate)));
+	    qParams.put("P_ACTUAL_EXECUTION_DATE", HijriDateService.getHijriDateString(executionDate));
+	    qParams.put("P_EMP_ID", empId);
+	    qParams.put("P_CATEGORY_ID", categoryId);
 	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_GET_DESERVED_EMPLOYEES.getCode(), qParams);
 
 	} catch (DatabaseException e) {
@@ -775,12 +930,12 @@ public class RaisesService extends BaseService {
      * @return array list of employees objects
      * @throws BusinessException
      */
-    private static List<EmployeeData> getUnDeservedEmployeesForAnnualRaise(long raiseId, Date executionDate) throws BusinessException {
+    private static List<EmployeeData> getUnDeservedEmployeesForAnnualRaise(Date executionDate, long categoryId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put("P_RAISE_ID", raiseId);
-	    qParams.put("P_EXECUTION_DATE", calculateDateBeforeGivenExecutionDateByOneYear(executionDate));
-
+	    qParams.put("P_EXECUTION_DATE", HijriDateService.getHijriDateString(calculateDateBeforeGivenExecutionDateByOneYear(executionDate)));
+	    qParams.put("P_ACTUAL_EXECUTION_DATE", HijriDateService.getHijriDateString(executionDate));
+	    qParams.put("P_CATEGORY_ID", categoryId);
 	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_GET_UNDESERVED_EMPLOYEES.getCode(), qParams);
 
 	} catch (DatabaseException e) {
@@ -831,7 +986,7 @@ public class RaisesService extends BaseService {
     /*----------------------------------------Operations----------------------------------------------*/
 
     private static void updateRaiseTransaction(RaiseTransactionData raiseTransactionData, CustomSession... useSession) throws BusinessException {
-	validateRaiseTransactionData(raiseTransactionData);
+	validateRaiseTransactionMandatoryFields(raiseTransactionData);
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -891,7 +1046,8 @@ public class RaisesService extends BaseService {
 	return transaction;
     }
 
-    public static void approveAdditionalRaise(Raise raise, List<RaiseEmployeeData> deserved, long managerId, String loginEmpId, CustomSession... useSession) throws BusinessException {
+    public static List<RaiseEmployeeData> approveAdditionalRaise(Raise raise, long managerId, String loginEmpId, CustomSession... useSession) throws BusinessException {
+	List<RaiseEmployeeData> deserved = getRaiseEmployeeByRaiseId(raise.getId());
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	List<RaiseTransactionData> raiseTransactionsData = new ArrayList<>();
@@ -899,10 +1055,11 @@ public class RaisesService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
+	    isStillValidAdditionalRaiseEmployee(deserved);
 	    List<BaseEntity> beans = new ArrayList<>();
 	    for (RaiseEmployeeData raiseEmployee : deserved) {
 		RaiseTransactionData transaction = constructRaiseTransaction(raise, raiseEmployee, managerId);
-		validateRaiseTransactionData(transaction);
+		validateRaiseTransactionMandatoryFields(transaction);
 		transaction.getRaiseTransaction().setSystemUser(raise.getSystemUser());
 		raiseTransactionsData.add(transaction);
 		doRaiseEffect(transaction, loginEmpId, session);
@@ -931,9 +1088,11 @@ public class RaisesService extends BaseService {
 	    if (!isOpenedSession)
 		session.close();
 	}
+	return deserved;
     }
 
-    public static void approveAnnualRaise(Raise raise, long managerId, String loginEmpId, CustomSession... useSession) throws BusinessException {
+    public static boolean approveAnnualRaise(Raise raise, long managerId, String loginEmpId, CustomSession... useSession) throws BusinessException {
+	boolean stillValid = false;
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -943,11 +1102,14 @@ public class RaisesService extends BaseService {
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
-
+	    if (isStillValidAnnualRaiseEmployee(raise)) {
+		stillValid = true;
+	    }
 	    List<BaseEntity> beans = new ArrayList<>();
 
 	    for (RaiseEmployeeData raiseEmployee : allEmployees) {
 		RaiseTransactionData transaction = constructRaiseTransaction(raise, raiseEmployee, managerId);
+		validateRaiseTransactionMandatoryFields(transaction);
 		transaction.getRaiseTransaction().setSystemUser(loginEmpId);
 		beans.add(transaction.getRaiseTransaction());
 		raiseTransactionsData.add(transaction);
@@ -965,21 +1127,24 @@ public class RaisesService extends BaseService {
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
+	    return true;
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
 	    for (RaiseTransactionData raiseTransactionData : raiseTransactionsData) {
 		raiseTransactionData.setId(null);
 	    }
-	    if (e instanceof BusinessException)
-		throw (BusinessException) e;
-	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    if (stillValid) {
+		if (e instanceof BusinessException)
+		    throw (BusinessException) e;
+		e.printStackTrace();
+		throw new BusinessException("error_general");
+	    }
 	} finally {
 	    if (!isOpenedSession)
 		session.close();
 	}
-
+	return stillValid;
     }
 
     private static void doRaiseEffect(RaiseTransactionData transaction, String systemUser, CustomSession session) throws BusinessException {
@@ -990,7 +1155,7 @@ public class RaisesService extends BaseService {
 	    if (transaction.getRaiseType().intValue() == RaiseTypesEnum.ANNUAL.getCode()) {
 		emp.getEmployee().setLastAnnualRaiseDate(transaction.getRaiseExecutionDate());
 	    }
-	    emp.setDegreeId(transaction.getEmpNewDegreeId());
+	    emp.getEmployee().setDegreeId(transaction.getEmpNewDegreeId());
 	    emp.getEmployee().setSystemUser(systemUser);
 	    EmployeesService.updateEmployee(emp, session);
 	    LogService.logEmployeeData(emp, transaction.getRaiseExecutionDate(), transaction.getRaiseDecisionNumber(), transaction.getRaiseDecisionDate());
@@ -1050,7 +1215,7 @@ public class RaisesService extends BaseService {
      * 
      * @throws BusinessException
      */
-    private static void validateRaiseTransactionData(RaiseTransactionData raiseTransactionData) throws BusinessException {
+    private static void validateRaiseTransactionMandatoryFields(RaiseTransactionData raiseTransactionData) throws BusinessException {
 	if (raiseTransactionData.getEmpId() == null)
 	    throw new BusinessException("error_general");
 	if (raiseTransactionData.getRaiseCategoryId() == null)
@@ -1067,8 +1232,6 @@ public class RaisesService extends BaseService {
 	    throw new BusinessException("error_general");
 	if (raiseTransactionData.getRaiseExecutionDate() == null)
 	    throw new BusinessException("error_general");
-
-	// Check if employees are still valid(Not reached end of ladder, has no promotion/raise after execution date, not service terminated)
     }
 
     /*------------------------------------------Queries------------------------------------------------*/

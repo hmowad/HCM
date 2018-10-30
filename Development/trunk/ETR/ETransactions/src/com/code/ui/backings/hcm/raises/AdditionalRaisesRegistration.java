@@ -101,16 +101,14 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 		} else
 		    setScreenTitle(getMessage("title_additionalRaisesView"));
 	    }
-	} catch (
-
-	BusinessException e) {
+	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
     public void addNewDeservedEmployee() {
 	try {
-	    RaiseEmployeeData newDeservedEmployee = RaisesService.constructRaiseEmployeeData(EmployeesService.getEmployeeData(selectedEmpId), null, RaiseTypesEnum.ADDITIONAL.getCode(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode());
+	    RaiseEmployeeData newDeservedEmployee = RaisesService.constructRaiseEmployeeData(EmployeesService.getEmployeeData(selectedEmpId), null, RaiseTypesEnum.ADDITIONAL.getCode(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), raise.getExecutionDate());
 	    deservedEmployeesList.add(newDeservedEmployee);
 	    if (modifyAdminFlag) {
 		if (newDeservedEmployee.getId() == null)
@@ -133,23 +131,19 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 
     public void deleteAllDeservedEmployee() {
 	try {
-	    if (modifyAdminFlag) {
-		if (!deservedEmployeesList.isEmpty()) {
-		    for (int i = deservedEmployeesList.size() - 1; i >= 0; i--) {
-			deleteDeservedEmployee(deservedEmployeesList.get(i));
-		    }
-		    RaisesService.deleteRaiseEmployees(deletedEmployeesList);
-		    deletedEmployeesList.clear();
+	    if (!deservedEmployeesList.isEmpty()) {
+		for (int i = deservedEmployeesList.size() - 1; i >= 0; i--) {
+		    deleteDeservedEmployee(deservedEmployeesList.get(i));
 		}
+		RaisesService.deleteRaiseEmployees(deletedEmployeesList);
+		deletedEmployeesList.clear();
 	    }
-	} catch (
-
-	BusinessException e) {
+	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
     }
 
-    public void save() {
+    public void save() throws BusinessException {
 	try {
 	    raise.setSystemUser(loginEmpData.getEmpId() + "");
 	    if (addAdminFlag) {
@@ -160,6 +154,9 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	    if (!approveAdminFlag)
 		super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
+	    if (approveAdminFlag) {
+		throw (BusinessException) e;
+	    }
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
     }
@@ -167,12 +164,19 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
     public void saveAndApprove() {
 	try {
 	    save();
-	    RaisesService.approveAdditionalRaise(raise, deservedEmployeesList, loginEmpData.getEmpId(), loginEmpData.getEmpId() + "");
+	    deservedEmployeesList = RaisesService.approveAdditionalRaise(raise, loginEmpData.getEmpId(), loginEmpData.getEmpId() + "");
+	    changeScreen();
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
 
+    }
+
+    private void changeScreen() {
+	setScreenTitle(getMessage("title_additionalRaisesModification"));
+	addAdminFlag = false;
+	modifyAdminFlag = false;
     }
 
     public Long getRaiseId() {

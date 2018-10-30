@@ -194,7 +194,7 @@
 											<f:ajax execute="additionalRaisesRegistrationFormId:additionalRaiseDataPanelId additionalRaisesRegistrationFormId:addedEmployeesListId" render="additionalRaisesRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 										<h:commandButton action="#{additionalRaisesRegistration.saveAndApprove()}" value="#{msgs.label_approveAndCloseRaise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{additionalRaisesRegistration.approveAdminFlag}">
-											<f:ajax execute="additionalRaisesRegistrationFormId:additionalRaiseDataPanelId additionalRaisesRegistrationFormId:addedEmployeesListId" render="additionalRaisesRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											<f:ajax execute="additionalRaisesRegistrationFormId:additionalRaiseDataPanelId additionalRaisesRegistrationFormId:addedEmployeesListId" render="additionalRaisesRegistrationFormId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</td>
 								</tr>
