@@ -474,7 +474,7 @@ public class UnitsService extends BaseService {
 
 	    // Integration points with jobs and employees services
 	    JobsService.moveAllJobsFromUnitsToUnit(mergedUnitsIds, unit.getId(), unit.getFullName(), decisionNumber, decisionDate, userId, session);
-	    EmployeesService.moveAllEmployeesFromUnitsToUnit(mergedUnitsIds, unit.getId(), new Date(), decisionNumber, decisionDate, session);
+	    EmployeesService.moveAllEmployeesFromUnitsToUnit(mergedUnitsIds, unit.getId(), HijriDateService.getHijriSysDate(), decisionNumber, decisionDate, session);
 
 	    unit.setName(unit.getNewName().trim());
 	    renameUnit(unit, decisionDate, decisionNumber, TransactionTypesEnum.UNIT_MERGE.getCode(), userId, session);

@@ -225,7 +225,7 @@ public class EmployeesService extends BaseService {
 	updateEmployee(empData, useSession);
     }
 
-    public static void moveAllEmployeesFromUnitsToUnit(Long[] unitsIds, Long toUnitId, Date effectiveDate, String decisionNumber, Date decisionDate, CustomSession... useSession) throws BusinessException {
+    public static void moveAllEmployeesFromUnitsToUnit(Long[] unitsIds, Long toUnitId, Date effectiveHijriDate, String decisionNumber, Date decisionDate, CustomSession... useSession) throws BusinessException {
 	List<EmployeeData> unitsEmployees = getEmployeesByUnitsIds(unitsIds);
 	if (unitsEmployees.size() == 0)
 	    return;
@@ -239,7 +239,7 @@ public class EmployeesService extends BaseService {
 	    for (EmployeeData emp : unitsEmployees) {
 		emp.setPhysicalUnitId(toUnitId);
 		DataAccess.updateEntity(emp.getEmployee(), session);
-		LogService.logEmployeeData(emp, effectiveDate, decisionNumber, decisionDate, session);
+		LogService.logEmployeeData(emp, effectiveHijriDate, decisionNumber, decisionDate, session);
 	    }
 
 	    if (!isOpenedSession)
