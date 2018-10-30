@@ -79,6 +79,7 @@ public class Raise extends AuditEntity implements InsertableAuditEntity, Updatab
     private String remarks;
     private String decisionDateString;
     private String executionDateString;
+    private boolean dirtyFlag;
 
     @SequenceGenerator(name = "HCMRaiseSeq",
 	    sequenceName = "HCM_RAISE_SEQ")
@@ -183,6 +184,15 @@ public class Raise extends AuditEntity implements InsertableAuditEntity, Updatab
     public void setExecutionDateString(String executionDateString) {
 	this.executionDateString = executionDateString;
 	this.executionDate = HijriDateService.getHijriDate(executionDateString);
+    }
+
+    @Transient
+    public boolean isDirtyFlag() {
+	return dirtyFlag;
+    }
+
+    public void setDirtyFlag(boolean dirtyFlag) {
+	this.dirtyFlag = dirtyFlag;
     }
 
     @Override
