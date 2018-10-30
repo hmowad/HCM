@@ -767,6 +767,7 @@ public class RaisesService extends BaseService {
 
 	    if (currDeservedEmpData.size() != (prevDeservedEmpData.size() - excludedForEndOfLadderCount))
 		return false;
+
 	    for (EmployeeData emp : currDeservedEmpData) {
 		boolean found = false;
 		for (RaiseEmployeeData raiseEmp : prevDeservedEmpData) {
@@ -777,6 +778,18 @@ public class RaisesService extends BaseService {
 		}
 		if (!found)
 		    return false;
+	    }
+
+	    // check if annual raise still has deserved employees
+	    boolean atLeastOneDeserved = false;
+	    for (RaiseEmployeeData raiseEmp : prevDeservedEmpData) {
+		if (raiseEmp.getRaiseType() == RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode()) {
+		    atLeastOneDeserved = true;
+		    break;
+		}
+	    }
+	    if (!atLeastOneDeserved) {
+		throw new BusinessException("error_annualRaiseMustHaveAtLeastOneDeservedEmployee");
 	    }
 
 	    return true;
