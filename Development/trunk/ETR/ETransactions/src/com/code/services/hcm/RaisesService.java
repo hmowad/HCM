@@ -263,16 +263,6 @@ public class RaisesService extends BaseService {
 	validateRaiseBusiness(newRaise);
     }
 
-    private static void validateRaiseBusiness(Raise raise) throws BusinessException {
-	List<Raise> raisesList = getRaises(raise.getId() == null ? FlagsEnum.ALL.getCode() : raise.getId(), raise.getDecisionDate(), raise.getDecisionNumber(), raise.getType());
-	List<Raise> initialRaise = getInitialRaiseForTheSameCategory(raise.getCategoryId());
-	if (raisesList.size() != 0)
-	    throw new BusinessException("error_decisionNumberAndDecisionDateCannotBeRepeated");
-	if (!initialRaise.isEmpty() && raise.getId() == null)
-	    throw new BusinessException("error_cannotSaveTwoInitialAnnualRaiseForTheSameCategory");
-
-    }
-
     private static void validateRaiseMandatoryFields(Raise raise) throws BusinessException {
 	if (raise.getDecisionNumber() == null)
 	    throw new BusinessException("error_decisionNumberIsMandatory");
@@ -282,6 +272,16 @@ public class RaisesService extends BaseService {
 	    throw new BusinessException("error_categoryIdIsMandatory");
 	if (raise.getExecutionDate() == null)
 	    throw new BusinessException("error_raiseDateIsMandatory");
+    }
+
+    private static void validateRaiseBusiness(Raise raise) throws BusinessException {
+	List<Raise> raisesList = getRaises(raise.getId() == null ? FlagsEnum.ALL.getCode() : raise.getId(), raise.getDecisionDate(), raise.getDecisionNumber(), raise.getType());
+	List<Raise> initialRaise = getInitialRaiseForTheSameCategory(raise.getCategoryId());
+	if (raisesList.size() != 0)
+	    throw new BusinessException("error_decisionNumberAndDecisionDateCannotBeRepeated");
+	if (!initialRaise.isEmpty() && raise.getId() == null)
+	    throw new BusinessException("error_cannotSaveTwoInitialAnnualRaiseForTheSameCategory");
+
     }
 
     /*------------------------------------------Queries------------------------------------------------*/
