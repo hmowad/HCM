@@ -946,27 +946,31 @@ public class PromotionsService extends BaseService {
 	    throw new BusinessException("error_invalidEmployeeDegreeZero");
     }
 
-    public static void modifyReportDetailsDrugTestResult(List<PromotionReportDetailData> promotionReportDetailDataList) {
+    public static void modifyReportDetailsDrugTestResult(List<PromotionReportDetailData> promotionReportDetailDataList) throws BusinessException {
 
-	if (promotionReportDetailDataList == null || promotionReportDetailDataList.size() == 0)
-	    return;
-	String comma = "";
-	String socialIds = "";
-	for (PromotionReportDetailData promotionReportDetailData : promotionReportDetailDataList) {
-	    socialIds += comma + promotionReportDetailData.getEmpSocialID();
-	    comma = ",";
-	}
-	HCMWebServiceService infoSysGetDrugTestResultsWS = new HCMWebServiceService();
-	HCMWebService webService = infoSysGetDrugTestResultsWS.getHCMWebServicePort();
-	String result = webService.getLabCheckResults(socialIds);
-	String[] resultParts = result.split(",");
-	Map<String, Integer> empsSocialIdsResultsMap = new HashMap<>();
-	for (String resultPart : resultParts) {
-	    String[] socialIdResult = resultPart.split("_");
-	    empsSocialIdsResultsMap.put(socialIdResult[0], Integer.parseInt(socialIdResult[1]));
-	}
-	for (PromotionReportDetailData promotionReportDetailData : promotionReportDetailDataList) {
-	    promotionReportDetailData.setMedicalTest(empsSocialIdsResultsMap.get(promotionReportDetailData.getEmpSocialID() + ""));
+	try {
+	    if (promotionReportDetailDataList == null || promotionReportDetailDataList.size() == 0)
+		return;
+	    String comma = "";
+	    String socialIds = "";
+	    for (PromotionReportDetailData promotionReportDetailData : promotionReportDetailDataList) {
+		socialIds += comma + promotionReportDetailData.getEmpSocialID();
+		comma = ",";
+	    }
+	    HCMWebServiceService infoSysGetDrugTestResultsWS = new HCMWebServiceService();
+	    HCMWebService webService = infoSysGetDrugTestResultsWS.getHCMWebServicePort();
+	    String result = webService.getLabCheckResults(socialIds);
+	    String[] resultParts = result.split(",");
+	    Map<String, Integer> empsSocialIdsResultsMap = new HashMap<>();
+	    for (String resultPart : resultParts) {
+		String[] socialIdResult = resultPart.split("_");
+		empsSocialIdsResultsMap.put(socialIdResult[0], Integer.parseInt(socialIdResult[1]));
+	    }
+	    for (PromotionReportDetailData promotionReportDetailData : promotionReportDetailDataList) {
+		promotionReportDetailData.setMedicalTest(empsSocialIdsResultsMap.get(promotionReportDetailData.getEmpSocialID() + ""));
+	    }
+	} catch (Exception e) {
+	    throw new BusinessException("error_promotionConnectionToInfoSysFailed");
 	}
     }
 
