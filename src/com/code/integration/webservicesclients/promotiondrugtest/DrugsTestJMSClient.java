@@ -40,7 +40,7 @@ public class DrugsTestJMSClient {
 	    messageProducer.send(message);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_promotionConnectionToInfoSysFailed");
 	} finally {
 	    try {
 		messageProducer.close();
@@ -48,7 +48,7 @@ public class DrugsTestJMSClient {
 		queueConnection.close();
 	    } catch (Exception e) {
 		e.printStackTrace();
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_promotionConnectionToInfoSysFailed");
 	    }
 	}
 
