@@ -20,7 +20,7 @@
 		-->
 		
 		<!-- SQL dialect -->
-		<property name="dialect">org.hibernate.dialect.OracleDialect</property>
+		<property name="dialect">org.hibernate.dialect.Oracle10gDialect</property>
 
 		<!-- Disable the second-level cache -->
 		<property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
