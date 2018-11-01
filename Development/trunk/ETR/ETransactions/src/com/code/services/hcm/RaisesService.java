@@ -264,7 +264,7 @@ public class RaisesService extends BaseService {
     }
 
     private static void validateRaiseMandatoryFields(Raise raise) throws BusinessException {
-	if (raise.getDecisionNumber() == null)
+	if (raise.getDecisionNumber() == null || raise.getDecisionNumber().equals(""))
 	    throw new BusinessException("error_decisionNumberIsMandatory");
 	if (raise.getDecisionDate() == null)
 	    throw new BusinessException("error_decisionDateIsMandatory");
