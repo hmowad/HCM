@@ -569,9 +569,9 @@ public class MovementsService extends BaseService {
 			replacementEmp.setJobId(null);
 			emp.setJobId(null);
 			EmployeesService.updateEmployee(replacementEmp, session);
-			LogService.logEmployeeData(replacementEmp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate());
+			LogService.logEmployeeData(replacementEmp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), session);
 			EmployeesService.updateEmployee(emp, session);
-			LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate());
+			LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), session);
 			session.flushTransaction();
 		    }
 
@@ -603,7 +603,7 @@ public class MovementsService extends BaseService {
 
 		if (!sequentialMovement) {
 		    EmployeesService.updateEmployee(emp, session);
-		    LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate());
+		    LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), session);
 		} else {
 		    employees.add(emp);
 		}
@@ -635,7 +635,7 @@ public class MovementsService extends BaseService {
 
 		    emp.setJobId(null);
 		    EmployeesService.updateEmployee(emp, session);
-		    LogService.logEmployeeData(emp, empsMovTransactionsMap.get(emp.getEmpId()).getExecutionDate(), empsMovTransactionsMap.get(emp.getEmpId()).getDecisionNumber(), empsMovTransactionsMap.get(emp.getEmpId()).getDecisionDate());
+		    LogService.logEmployeeData(emp, empsMovTransactionsMap.get(emp.getEmpId()).getExecutionDate(), empsMovTransactionsMap.get(emp.getEmpId()).getDecisionNumber(), empsMovTransactionsMap.get(emp.getEmpId()).getDecisionDate(), session);
 		}
 
 		for (JobData job : jobsMap.values()) {
@@ -647,7 +647,7 @@ public class MovementsService extends BaseService {
 		for (EmployeeData emp : employees) {
 		    emp.setJobId(empsJobs.get(emp.getEmpId()));
 		    EmployeesService.updateEmployee(emp, session);
-		    LogService.logEmployeeData(emp, empsMovTransactionsMap.get(emp.getEmpId()).getExecutionDate(), empsMovTransactionsMap.get(emp.getEmpId()).getDecisionNumber(), empsMovTransactionsMap.get(emp.getEmpId()).getDecisionDate());
+		    LogService.logEmployeeData(emp, empsMovTransactionsMap.get(emp.getEmpId()).getExecutionDate(), empsMovTransactionsMap.get(emp.getEmpId()).getDecisionNumber(), empsMovTransactionsMap.get(emp.getEmpId()).getDecisionDate(), session);
 		}
 	    }
 
@@ -717,7 +717,7 @@ public class MovementsService extends BaseService {
 			    emp.setStatusId(EmployeeStatusEnum.ON_DUTY.getCode());
 			    emp.setPhysicalUnitId(emp.getOfficialUnitId());
 			    EmployeesService.updateEmployee(emp, session);
-			    LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate());
+			    LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), session);
 			}
 		    }
 
@@ -748,7 +748,7 @@ public class MovementsService extends BaseService {
 		}
 
 		EmployeesService.updateEmployee(emp, session);
-		LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate());
+		LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), session);
 	    }
 
 	    // Apply the changes made in he adjust Units Managers method
@@ -802,7 +802,7 @@ public class MovementsService extends BaseService {
 			emp.setStatusId(EmployeeStatusEnum.ON_DUTY.getCode());
 			emp.setPhysicalUnitId(emp.getOfficialUnitId());
 			EmployeesService.updateEmployee(emp, session);
-			LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate());
+			LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), session);
 		    }
 		}
 		continue;
@@ -818,7 +818,7 @@ public class MovementsService extends BaseService {
 		emp.setPhysicalUnitId(movementTransaction.getUnitId());
 	    }
 	    EmployeesService.updateEmployee(emp, session);
-	    LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate());
+	    LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), session);
 	}
 
 	// Apply the changes made in he adjust Units Managers method
@@ -865,7 +865,7 @@ public class MovementsService extends BaseService {
 		emp.setStatusId(EmployeeStatusEnum.MANDATED.getCode());
 		emp.setPhysicalUnitId(emp.getOfficialUnitId());
 		EmployeesService.updateEmployee(emp, session);
-		LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate());
+		LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), session);
 	    }
 
 	    // Apply further changes on the affected employees like invlidating thier inbox
@@ -910,7 +910,7 @@ public class MovementsService extends BaseService {
 		emp.setStatusId(EmployeeStatusEnum.SECONDMENTED.getCode());
 		emp.setPhysicalUnitId(emp.getOfficialUnitId());
 		EmployeesService.updateEmployee(emp, session);
-		LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate());
+		LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), session);
 	    }
 
 	    // Apply further changes on the affected employees like invlidating thier inbox
@@ -947,7 +947,7 @@ public class MovementsService extends BaseService {
 
 	    empData.setPhysicalUnitId(movementTransaction.getUnitId());
 	    EmployeesService.updateEmployee(empData, session);
-	    LogService.logEmployeeData(empData, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate());
+	    LogService.logEmployeeData(empData, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), session);
 	}
 
 	// Apply the changes made in he adjust Units Managers method
@@ -1009,7 +1009,7 @@ public class MovementsService extends BaseService {
 		emp.setPhysicalUnitId(emp.getOfficialUnitId());
 		emp.setStatusId(EmployeeStatusEnum.ON_DUTY.getCode());
 		EmployeesService.updateEmployee(emp, session);
-		LogService.logEmployeeData(emp, !isTermination ? movementTransaction.getExecutionDate() : movementTransaction.getEndDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate());
+		LogService.logEmployeeData(emp, !isTermination ? movementTransaction.getExecutionDate() : movementTransaction.getEndDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), session);
 
 		// add empId to the affected list to do changes after effect like invalidating the inbox
 		affectedEmployeesIds.add(emp.getEmpId());
@@ -3289,7 +3289,7 @@ public class MovementsService extends BaseService {
 		employee.setStatusId(EmployeeStatusEnum.ON_DUTY.getCode());
 		employee.setPhysicalUnitId(employee.getOfficialUnitId());
 		EmployeesService.updateEmployee(employee, session);
-		LogService.logEmployeeData(employee, HijriDateService.getHijriSysDate(), null, null);
+		LogService.logEmployeeData(employee, HijriDateService.getHijriSysDate(), null, null, session);
 
 		// Invalidate employee inbox and delegations
 		BusinessWorkflowCooperation.invalidateEmployeesInboxAndDelegations(new Long[] { employee.getEmpId() }, TransactionClassesEnum.MOVEMENTS.getCode(), session);
