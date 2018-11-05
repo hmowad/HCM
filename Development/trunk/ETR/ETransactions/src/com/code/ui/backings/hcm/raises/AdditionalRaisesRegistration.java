@@ -78,7 +78,6 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	    statusBuilder.append(",");
 	    statusBuilder.append(EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode());
 	    statusIds = statusBuilder.toString();
-	    // raiseId = (long) 26;
 	    if (getRequest().getParameter("raiseId") == null) {
 		setScreenTitle(getMessage("title_additionalRaisesRegistration"));
 		addAdminFlag = true;
@@ -109,6 +108,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
     public void addNewDeservedEmployee() {
 	try {
 	    RaiseEmployeeData newDeservedEmployee = RaisesService.constructRaiseEmployeeData(EmployeesService.getEmployeeData(selectedEmpId), null, RaiseTypesEnum.ADDITIONAL.getCode(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), raise.getExecutionDate());
+	    RaisesService.validateAlreadyAddedEmployees(newDeservedEmployee, deservedEmployeesList);
 	    deservedEmployeesList.add(newDeservedEmployee);
 	    if (modifyAdminFlag) {
 		if (newDeservedEmployee.getId() == null)
@@ -174,7 +174,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
     }
 
     private void changeScreen() {
-	setScreenTitle(getMessage("title_additionalRaisesModification"));
+	setScreenTitle(getMessage("title_additionalRaisesView"));
 	addAdminFlag = false;
 	modifyAdminFlag = false;
     }
