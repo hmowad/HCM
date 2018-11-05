@@ -180,7 +180,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
     public void regenerateRaiseEmployees() {
 	try {
-	    RaisesService.regenerateRaiseEmployeesForAnnualRaise(annualRaise);
+	    raiseEmployees = RaisesService.regenerateRaiseEmployeesForAnnualRaise(annualRaise);
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	    regenerateFlag = false;
 	} catch (BusinessException e) {
