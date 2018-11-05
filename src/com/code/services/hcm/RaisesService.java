@@ -706,6 +706,13 @@ public class RaisesService extends BaseService {
 
     }
 
+    public static void validateAlreadyAddedEmployees(RaiseEmployeeData newRaiseEmployee, List<RaiseEmployeeData> raiseEmployees) throws BusinessException {
+	for (RaiseEmployeeData raiseEmployee : raiseEmployees) {
+	    if (raiseEmployee.getEmpId().equals(newRaiseEmployee.getEmpId()))
+		throw new BusinessException("error_empDuplicateSameProcess");
+	}
+    }
+
     public static void isStillValidAdditionalRaiseEmployee(List<RaiseEmployeeData> raiseEmployees) throws BusinessException {
 	Map<Long, Long> rankDegreesHashMap = new HashMap<Long, Long>();
 	List<PayrollSalary> allEndOfLadderDegreesForCategory = PayrollsService.getEndOfLadderForAllRanksOfCategory(raiseEmployees.get(0).getRaiseCategoryId());
@@ -1173,7 +1180,7 @@ public class RaisesService extends BaseService {
 	    emp.getEmployee().setDegreeId(transaction.getEmpNewDegreeId());
 	    emp.getEmployee().setSystemUser(systemUser);
 	    EmployeesService.updateEmployee(emp, session);
-	    LogService.logEmployeeData(emp, transaction.getRaiseExecutionDate(), transaction.getRaiseDecisionNumber(), transaction.getRaiseDecisionDate());
+	    LogService.logEmployeeData(emp, transaction.getRaiseExecutionDate(), transaction.getRaiseDecisionNumber(), transaction.getRaiseDecisionDate(), session);
 	}
     }
 
@@ -1191,7 +1198,7 @@ public class RaisesService extends BaseService {
 	    updateEmployeesDueToAnnualRaiseEffect(beans, raise.getExecutionDate(), raise.getId(), session);
 	    for (EmployeeData employee : employees) {
 		employee.setDegreeId(employee.getDegreeId() + 1);
-		LogService.logEmployeeData(employee, raise.getExecutionDate(), raise.getDecisionNumber(), raise.getDecisionDate());
+		LogService.logEmployeeData(employee, raise.getExecutionDate(), raise.getDecisionNumber(), raise.getDecisionDate(), session);
 	    }
 	}
     }
