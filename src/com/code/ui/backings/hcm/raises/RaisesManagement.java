@@ -1,6 +1,7 @@
 package com.code.ui.backings.hcm.raises;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
@@ -8,6 +9,7 @@ import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.Category;
 import com.code.dal.orm.hcm.raises.Raise;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.RaiseEmployeesTypesEnum;
 import com.code.enums.RaiseTypesEnum;
@@ -39,6 +41,7 @@ public class RaisesManagement extends BaseBacking {
 
     public void init() {
 	try {
+	    employeesCategories = CommonService.getAllCategories();
 	    if (getRequest().getParameter("mode") != null) {
 		if (Integer.parseInt(getRequest().getParameter("mode")) == RaiseTypesEnum.ANNUAL.getCode()) {
 		    mode = RaiseTypesEnum.ANNUAL.getCode();
@@ -49,11 +52,14 @@ public class RaisesManagement extends BaseBacking {
 		    mode = RaiseTypesEnum.ADDITIONAL.getCode();
 		    setScreenTitle(getMessage("title_additionalRaisesManagement"));
 		    pageName = "Additional";
+		    for (Iterator<Category> i = employeesCategories.iterator(); i.hasNext();) {
+			Category category = i.next();
+			if ((category.getId() == CategoriesEnum.CONTRACTORS.getCode()) || (category.getId() == CategoriesEnum.OFFICERS.getCode()) || (category.getId() == CategoriesEnum.SOLDIERS.getCode()))
+			    i.remove();
+		    }
 
 		}
-
 		raises = RaisesService.getRaises(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, null, null, FlagsEnum.ALL.getCode(), mode, FlagsEnum.ALL.getCode());
-		employeesCategories = CommonService.getAllCategories();
 		reset();
 	    }
 	} catch (BusinessException e) {
