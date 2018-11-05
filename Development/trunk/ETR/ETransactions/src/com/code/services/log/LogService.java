@@ -102,8 +102,8 @@ public class LogService extends BaseService {
 	    employeeLogData.setSocialStatus(empData.getSocialStatus());
 	    employeeLogData.setGeneralSpecialization(empData.getGeneralSpecialization());
 
-	    employeeLogData.setEffectiveGregDate(HijriDateService.hijriToGregDate(effectiveHijriDate));
-	    employeeLogData.setEffectiveHijriDate(effectiveHijriDate);
+	    employeeLogData.setEffectiveGregDate(effectiveHijriDate);
+	    employeeLogData.setEffectiveHijriDate(HijriDateService.gregToHijriDate(effectiveHijriDate));
 	    employeeLogData.setDecisionNumber(decisionNumber);
 	    employeeLogData.setDecisionDate(decisionDate);
 
