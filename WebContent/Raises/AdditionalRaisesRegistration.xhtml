@@ -97,7 +97,7 @@
 									<tr>
 										<th width="20%">#{msgs.label_notes}</th>
 										<td>
-											<h:inputTextarea value="#{additionalRaisesRegistration.raise.remarks}" readonly="#{!(additionalRaisesRegistration.addAdminFlag or additionalRaisesRegistration.modifyAdminFlag)}" styleClass="inputDataSuperLarge" maxlength="500" />
+											<h:inputTextarea value="#{additionalRaisesRegistration.raise.remarks}" readonly="#{!(additionalRaisesRegistration.addAdminFlag or additionalRaisesRegistration.modifyAdminFlag)}" styleClass="inputDataSuperLarge" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" />
 										</td>
 									</tr>
 									<tr>
