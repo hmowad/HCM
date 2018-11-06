@@ -1,7 +1,6 @@
 package com.code.ui.backings.hcm.employees;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
@@ -27,6 +26,7 @@ import com.code.services.hcm.PayrollsService;
 import com.code.services.hcm.TrainingSetupService;
 import com.code.services.security.SecurityService;
 import com.code.services.util.CommonService;
+import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
 
 @SuppressWarnings("serial")
@@ -177,7 +177,7 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 	    else
 		employee.setCategoryClassificationId(null);
 
-	    EmployeesService.logEmployeeData(employee, new Date(), new Date());
+	    EmployeesService.logEmployeeData(employee, HijriDateService.getHijriSysDate(), HijriDateService.getHijriSysDate());
 	    EmployeesService.updateEmployeeAndHisQualifications(employee, employeeQualificationsData);
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
