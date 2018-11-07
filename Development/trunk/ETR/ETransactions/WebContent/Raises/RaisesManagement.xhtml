@@ -87,10 +87,10 @@
 							<tr>
 								<td width="100%">
 									<h:commandButton action="#{raisesManagement.search()}" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon">
-										<f:ajax execute="raisesManagementFormId:searchPanelId" render="raisesManagementFormId:raisesPanelId"/>
+										<f:ajax execute="raisesManagementFormId:searchPanelId" render="raisesManagementFormId:raisesPanelId raisesManagementFormId:notifyMessagesId"/>
 									</h:commandButton>
 									<h:commandButton action="#{raisesManagement.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
-										<f:ajax render="raisesManagementFormId:searchPanelId raisesManagementFormId:raisesPanelId" />
+										<f:ajax render="raisesManagementFormId:searchPanelId raisesManagementFormId:raisesPanelId raisesManagementFormId:notifyMessagesId" />
 									</h:commandButton>
 								</td>
 							</tr>
@@ -145,12 +145,17 @@
 							
 											<rich:column style="width:5%">
 												<f:facet name="header">#{msgs.label_eligible}</f:facet>
-												<h:commandButton action="#{raisesManagement.printEligible(raise)}" value="#{msgs.fa_print}" styleClass="btn_icon" title="#{msgs.label_eligible}"/>
+												<h:commandButton action="#{raisesManagement.printEligible(raise)}" value="#{msgs.fa_print}" styleClass="btn_icon" title="#{msgs.label_eligible}">
+													<f:ajax render="raisesManagementFormId:notifyMessagesId" />
+												</h:commandButton>
+								
 											</rich:column>
 											
 											<rich:column style="width:5%" rendered="#{raisesManagement.mode == 1}">
 												<f:facet name="header">#{msgs.label_excluded}</f:facet>
-												<h:commandButton action="#{raisesManagement.printExcluded(raise)}" value="#{msgs.fa_print}" styleClass="btn_icon" title="#{msgs.label_excluded}"/>
+												<h:commandButton action="#{raisesManagement.printExcluded(raise)}" value="#{msgs.fa_print}" styleClass="btn_icon" title="#{msgs.label_excluded}">
+													<f:ajax render="raisesManagementFormId:notifyMessagesId" />
+												</h:commandButton>
 										    </rich:column>
 											
 											<rich:column style="width:5%">

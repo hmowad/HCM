@@ -275,13 +275,14 @@ public class RaisesService extends BaseService {
     }
 
     private static void validateRaiseBusiness(Raise raise) throws BusinessException {
-	List<Raise> raisesList = getRaises(raise.getId() == null ? FlagsEnum.ALL.getCode() : raise.getId(), raise.getDecisionDate(), raise.getDecisionNumber(), raise.getType());
-	List<Raise> initialRaise = getInitialRaiseForTheSameCategory(raise.getCategoryId());
+	List<Raise> raisesList = getRaises(raise.getId() == null ? FlagsEnum.ALL.getCode() : raise.getId(), raise.getDecisionDate(), raise.getDecisionNumber(), FlagsEnum.ALL.getCode());
 	if (raisesList.size() != 0)
 	    throw new BusinessException("error_decisionNumberAndDecisionDateCannotBeRepeated");
-	if (!initialRaise.isEmpty() && raise.getId() == null)
-	    throw new BusinessException("error_cannotSaveTwoInitialAnnualRaiseForTheSameCategory");
-
+	if (raise.getType() == RaiseTypesEnum.ANNUAL.getCode()) {
+	    List<Raise> initialRaise = getInitialRaiseForTheSameCategory(raise.getCategoryId());
+	    if (!initialRaise.isEmpty() && raise.getId() == null)
+		throw new BusinessException("error_cannotSaveTwoInitialAnnualRaiseForTheSameCategory");
+	}
     }
 
     /*------------------------------------------Queries------------------------------------------------*/
@@ -415,7 +416,10 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static void saveAdditionalRaiseData(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataToAddList, List<RaiseEmployeeData> raiseEmployeeDataToDeleteList, CustomSession... useSession) throws BusinessException {
+    public static void saveAdditionalRaiseData(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataToAddList, List<RaiseEmployeeData> raiseEmployeeDataToDeleteList, List<RaiseEmployeeData> currRaiseEmployee, CustomSession... useSession) throws BusinessException {
+	if (currRaiseEmployee == null || currRaiseEmployee.isEmpty())
+	    throw new BusinessException("error_mustAddOneEmployeeAtLeastToSaveAdditionalRaise");
+
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -432,6 +436,8 @@ public class RaisesService extends BaseService {
 	    if (raiseEmployeeDataToDeleteList != null && !raiseEmployeeDataToDeleteList.isEmpty()) {
 		deleteRaiseEmployees(raiseEmployeeDataToDeleteList, session);
 	    }
+
+	    updateRaiseEmployeesList(currRaiseEmployee, session);
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -502,32 +508,39 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static void updateRaiseEmployeesList(List<RaiseEmployeeData> raiseEmployeeDataToUpdateList, String loginEmpId, CustomSession... useSession) throws BusinessException {
-	for (RaiseEmployeeData raiseEmployee : raiseEmployeeDataToUpdateList) {
-	    validateRaiseEmployee(raiseEmployee);
-	}
-	boolean isOpenedSession = isSessionOpened(useSession);
-	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
-	try {
-	    if (!isOpenedSession)
-		session.beginTransaction();
-	    for (RaiseEmployeeData raiseEmp : raiseEmployeeDataToUpdateList) {
-		DataAccess.updateEntity(raiseEmp.getRaiseEmployee(), session);
+    public static void updateRaiseEmployeesList(List<RaiseEmployeeData> raiseEmployeeDataToUpdateList, CustomSession... useSession) throws BusinessException {
+	if (raiseEmployeeDataToUpdateList != null && !raiseEmployeeDataToUpdateList.isEmpty()) {
+	    for (RaiseEmployeeData raiseEmployee : raiseEmployeeDataToUpdateList) {
+		validateRaiseEmployee(raiseEmployee);
 	    }
-	    if (!isOpenedSession)
-		session.commitTransaction();
-	} catch (Exception e) {
-	    if (!isOpenedSession)
-		session.rollbackTransaction();
+	    boolean isOpenedSession = isSessionOpened(useSession);
+	    CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	    try {
+		if (!isOpenedSession)
+		    session.beginTransaction();
+		if (raiseEmployeeDataToUpdateList.get(0).getRaiseType() == RaiseTypesEnum.ANNUAL.getCode()) {
+		    List<RaiseEmployeeData> deservedEmp = getAnnualRaiseDeservedEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), raiseEmployeeDataToUpdateList.get(0).getRaiseDecisionDateString(), raiseEmployeeDataToUpdateList.get(0).getRaiseDecisionNumber(), new Integer[] { RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode() });
+		    if (deservedEmp.size() == raiseEmployeeDataToUpdateList.size())
+			throw new BusinessException("error_annualRaiseMustHaveAtLeastOneDeservedEmployee");
+		}
+		for (RaiseEmployeeData raiseEmp : raiseEmployeeDataToUpdateList) {
+		    DataAccess.updateEntity(raiseEmp.getRaiseEmployee(), session);
+		}
+		if (!isOpenedSession)
+		    session.commitTransaction();
+	    } catch (Exception e) {
+		if (!isOpenedSession)
+		    session.rollbackTransaction();
 
-	    if (e instanceof BusinessException)
-		throw (BusinessException) e;
+		if (e instanceof BusinessException)
+		    throw (BusinessException) e;
 
-	    e.printStackTrace();
-	    throw new BusinessException("error_general");
-	} finally {
-	    if (!isOpenedSession)
-		session.close();
+		e.printStackTrace();
+		throw new BusinessException("error_general");
+	    } finally {
+		if (!isOpenedSession)
+		    session.close();
+	    }
 	}
     }
 
@@ -698,7 +711,8 @@ public class RaisesService extends BaseService {
 	    List<EmployeeData> employeeData = getDeservedEmployees(raiseEmployeeData.getRaiseExecutionDate(), raiseEmployeeData.getEmpId(), raiseEmployeeData.getRaiseType(), raiseEmployeeData.getRaiseCategoryId());
 	    if (employeeData == null || employeeData.isEmpty())
 		throw new BusinessException("error_employeeIsUndeservedForAdditionalRaise", new Object[] { raiseEmployeeData.getEmpName() });
-	    if (PayrollsService.getEndOfLadderOfRank(raiseEmployeeData.getEmpRankId()) == raiseEmployeeData.getEmpNewDegreeId())
+	    Long getEndOfLadderOfRank = PayrollsService.getEndOfLadderOfRank(raiseEmployeeData.getEmpRankId());
+	    if (raiseEmployeeData.getEmpNewDegreeId() > (getEndOfLadderOfRank == null ? raiseEmployeeData.getEmpNewDegreeId() : getEndOfLadderOfRank))
 		throw new BusinessException("error_employeeNewDegreeIsHigherThanEndOfLadderDegreeOfRank", new Object[] { raiseEmployeeData.getEmpName() });
 	}
 	if (raiseEmployeeData.getEmpNewDegreeId() <= raiseEmployeeData.getEmpDegreeId() && raiseEmployeeData.getEmpDeservedFlag() == RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode())
@@ -706,14 +720,21 @@ public class RaisesService extends BaseService {
 
     }
 
-    public static void validateAlreadyAddedEmployees(RaiseEmployeeData newRaiseEmployee, List<RaiseEmployeeData> raiseEmployees) throws BusinessException {
+    public static void validateAddedEmployees(RaiseEmployeeData newRaiseEmployee, List<RaiseEmployeeData> raiseEmployees) throws BusinessException {
 	for (RaiseEmployeeData raiseEmployee : raiseEmployees) {
 	    if (raiseEmployee.getEmpId().equals(newRaiseEmployee.getEmpId()))
 		throw new BusinessException("error_empDuplicateSameProcess");
 	}
+	if (newRaiseEmployee.getRaiseType() == RaiseTypesEnum.ADDITIONAL.getCode()) {
+	    if (newRaiseEmployee.getEmpDegreeId() == PayrollsService.getEndOfLadderOfRank(newRaiseEmployee.getEmpRankId()))
+		throw new BusinessException("error_employeeReachedTheEndOfLadderDegree");
+	}
     }
 
     public static void isStillValidAdditionalRaiseEmployee(List<RaiseEmployeeData> raiseEmployees) throws BusinessException {
+	if (raiseEmployees == null || raiseEmployees.isEmpty())
+	    throw new BusinessException("error_mustAddOneEmployeeAtLeastToSaveAdditionalRaise");
+
 	Map<Long, Long> rankDegreesHashMap = new HashMap<Long, Long>();
 	List<PayrollSalary> allEndOfLadderDegreesForCategory = PayrollsService.getEndOfLadderForAllRanksOfCategory(raiseEmployees.get(0).getRaiseCategoryId());
 	List<EmployeeData> allDeservedEmployees = getDeservedEmployees(raiseEmployees.get(0).getRaiseExecutionDate(), FlagsEnum.ALL.getCode(), raiseEmployees.get(0).getRaiseType(), raiseEmployees.get(0).getRaiseCategoryId());
