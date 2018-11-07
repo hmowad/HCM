@@ -79,8 +79,7 @@ public class RaisesManagement extends BaseBacking {
 	    decisionDateFrom = decisionDateTo = executionDateFrom = executionDateTo = null;
 	    raises = RaisesService.getRaises(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, null, null, FlagsEnum.ALL.getCode(), mode, FlagsEnum.ALL.getCode());
 	} catch (BusinessException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
