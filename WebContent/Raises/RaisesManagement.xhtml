@@ -145,17 +145,12 @@
 							
 											<rich:column style="width:5%">
 												<f:facet name="header">#{msgs.label_eligible}</f:facet>
-												<h:commandButton action="#{raisesManagement.printEligible(raise)}" value="#{msgs.fa_print}" styleClass="btn_icon" title="#{msgs.label_eligible}">
-													<f:ajax render="raisesManagementFormId:notifyMessagesId" />
-												</h:commandButton>
-								
+												<h:commandButton action="#{raisesManagement.printEligible(raise)}" value="#{msgs.fa_print}" styleClass="btn_icon" title="#{msgs.label_eligible}"/>
 											</rich:column>
 											
 											<rich:column style="width:5%" rendered="#{raisesManagement.mode == 1}">
 												<f:facet name="header">#{msgs.label_excluded}</f:facet>
-												<h:commandButton action="#{raisesManagement.printExcluded(raise)}" value="#{msgs.fa_print}" styleClass="btn_icon" title="#{msgs.label_excluded}">
-													<f:ajax render="raisesManagementFormId:notifyMessagesId" />
-												</h:commandButton>
+												<h:commandButton action="#{raisesManagement.printExcluded(raise)}" value="#{msgs.fa_print}" styleClass="btn_icon" title="#{msgs.label_excluded}"/>
 										    </rich:column>
 											
 											<rich:column style="width:5%">
