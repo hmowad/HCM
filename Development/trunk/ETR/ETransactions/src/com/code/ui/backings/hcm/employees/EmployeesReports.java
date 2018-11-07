@@ -140,7 +140,7 @@ public class EmployeesReports extends BaseBacking implements Serializable {
 	    } else if (reportType == 8) {
 		bytes = EmployeesService.getEmployeesServiceYearsDataBytes(categoryId, regionId, unitHKey, onDutyFlag, serviceYearsBegin, serviceYearsEnd);
 	    } else if (reportType == 9) {
-		bytes = EmployeesService.getSoldiersJobModifiedFlagDataBytes(regionId, unitHKey, jobModifiedFlag);
+		bytes = EmployeesService.getJobModifiedFlagDataBytes(categoryId, regionId, unitHKey, jobModifiedFlag);
 	    } else {
 		bytes = EmployeesService.getEmployeesQualificationsBytes(countryFlag, currentQualFlag, curRecSimilarityFlag, onDutyFlag, categoryId, regionId, unitId, unitFullName, qualMajorSpecId, qualMajorSpecDesc, qualMinorSpecId, qualMinorSpecDesc, qualLevelId, graduationPlaceDetailsIds, graduationPlaceDetailsDescs);
 	    }
