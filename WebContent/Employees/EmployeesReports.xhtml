@@ -214,6 +214,7 @@
 											<f:selectItem itemLabel="#{msgs.label_officersStatisticalReport}" itemValue="5" />
 											<f:selectItem itemLabel="#{msgs.label_officersQualificationsReport}" itemValue="7" />
 											<f:selectItem itemLabel="#{msgs.label_officersWorkYears}" itemValue="8" />
+											<f:selectItem itemLabel="#{msgs.label_officersJobModification}" itemValue="9" />
 											<f:ajax event="change" execute="@this" listener="#{employeesReports.resetForm()}" render="employeesReportsFormId:searchPanelId" />
 										</h:selectOneRadio>
 
@@ -295,7 +296,10 @@
 										</tr>
 										<h:panelGroup rendered="#{employeesReports.reportType == 9}">
 											<tr>
-												<th width="15%">#{msgs.label_isModifiedJob}</th>
+												<th width="15%"> 
+													<h:outputLabel value="#{msgs.label_isModifiedJob}" rendered="#{employeesReports.mode == 2}"/>
+													<h:outputLabel value="#{msgs.label_isModifiedJobOfficers}" rendered="#{employeesReports.mode == 1}"/>
+												</th>
 												<td width="40%">
 													<h:selectOneMenu value="#{employeesReports.jobModifiedFlag}">
 														<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
@@ -437,7 +441,7 @@
 										</h:panelGroup>
 
 										<h:panelGroup rendered="#{employeesReports.mode == 1}">
-											<h:panelGroup rendered="#{employeesReports.reportType != 7 and employeesReports.reportType != 8}">
+											<h:panelGroup rendered="#{employeesReports.reportType != 7 and employeesReports.reportType != 8 and employeesReports.reportType != 9}">
 												<tr>
 													<th width="15%">#{msgs.label_recruitmentDateFrom}</th>
 													<td width="35%">
@@ -450,7 +454,7 @@
 												</tr>
 											</h:panelGroup>
 
-											<h:panelGroup rendered="#{employeesReports.reportType != 8}">
+											<h:panelGroup rendered="#{employeesReports.reportType != 8 and employeesReports.reportType != 9}">
 												<tr>
 													<th width="10%">#{msgs.label_groupNumber}</th>
 													<td width="40%">

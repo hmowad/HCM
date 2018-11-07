@@ -1250,10 +1250,11 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    public static byte[] getSoldiersJobModifiedFlagDataBytes(long physicalRegionId, String physicalUnitHKey, int jobModfiedFlag) throws BusinessException {
+    public static byte[] getJobModifiedFlagDataBytes(long categoryId, long physicalRegionId, String physicalUnitHKey, int jobModfiedFlag) throws BusinessException {
 	try {
-	    String reportName = ReportNamesEnum.EMPLOYEES_SOLDIERS_JOB_MODIFIED_FLAG.getCode();
+	    String reportName = ReportNamesEnum.EMPLOYEES_JOB_MODIFIED_FLAG.getCode();
 	    Map<String, Object> parameters = new HashMap<String, Object>();
+	    parameters.put("P_CATEGORY_ID", categoryId);
 	    parameters.put("P_PHYSICAL_REGION_ID", physicalRegionId);
 	    parameters.put("P_PHYSICAL_REGION_DESC", physicalRegionId == FlagsEnum.ALL.getCode() ? getMessage("label_all") : CommonService.getRegionById(physicalRegionId).getDescription());
 	    parameters.put("P_PHYSICAL_UNIT_HKEY", physicalUnitHKey == null || physicalUnitHKey.isEmpty() ? FlagsEnum.ALL.getCode() + "" : UnitsService.getHKeyPrefix(physicalUnitHKey));
