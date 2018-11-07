@@ -236,7 +236,7 @@
 											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 												<tr>
 													<td >
-														<h:commandButton id="saveId" onclick="return handleOnAction('#{msgs.label_save}');" action="#{annualRaiseRegistration.saveRaiseEmployees()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" style="float: left;" rendered="#{!annualRaiseRegistration.approveAdminFlag and annualRaiseRegistration.modifyAdminFlag}">
+														<h:commandButton id="saveId" onclick="return handleOnAction('#{msgs.q_save}');" action="#{annualRaiseRegistration.saveRaiseEmployees()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" style="float: left;" rendered="#{!annualRaiseRegistration.approveAdminFlag and annualRaiseRegistration.modifyAdminFlag}">
 															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
 

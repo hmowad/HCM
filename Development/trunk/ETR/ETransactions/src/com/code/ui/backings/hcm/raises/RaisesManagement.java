@@ -40,30 +40,26 @@ public class RaisesManagement extends BaseBacking {
     }
 
     public void init() {
-	try {
-	    employeesCategories = CommonService.getAllCategories();
-	    if (getRequest().getParameter("mode") != null) {
-		if (Integer.parseInt(getRequest().getParameter("mode")) == RaiseTypesEnum.ANNUAL.getCode()) {
-		    mode = RaiseTypesEnum.ANNUAL.getCode();
-		    setScreenTitle(getMessage("title_annualRaisesManagement"));
-		    pageName = "Annual";
+	employeesCategories = CommonService.getAllCategories();
+	if (getRequest().getParameter("mode") != null) {
+	    if (Integer.parseInt(getRequest().getParameter("mode")) == RaiseTypesEnum.ANNUAL.getCode()) {
+		mode = RaiseTypesEnum.ANNUAL.getCode();
+		setScreenTitle(getMessage("title_annualRaisesManagement"));
+		pageName = "Annual";
 
-		} else {
-		    mode = RaiseTypesEnum.ADDITIONAL.getCode();
-		    setScreenTitle(getMessage("title_additionalRaisesManagement"));
-		    pageName = "Additional";
-		    for (Iterator<Category> i = employeesCategories.iterator(); i.hasNext();) {
-			Category category = i.next();
-			if ((category.getId() == CategoriesEnum.CONTRACTORS.getCode()) || (category.getId() == CategoriesEnum.OFFICERS.getCode()) || (category.getId() == CategoriesEnum.SOLDIERS.getCode()))
-			    i.remove();
-		    }
-
+	    } else {
+		mode = RaiseTypesEnum.ADDITIONAL.getCode();
+		setScreenTitle(getMessage("title_additionalRaisesManagement"));
+		pageName = "Additional";
+		for (Iterator<Category> i = employeesCategories.iterator(); i.hasNext();) {
+		    Category category = i.next();
+		    if ((category.getId() == CategoriesEnum.CONTRACTORS.getCode()) || (category.getId() == CategoriesEnum.OFFICERS.getCode()) || (category.getId() == CategoriesEnum.SOLDIERS.getCode()))
+			i.remove();
 		}
-		raises = RaisesService.getRaises(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, null, null, FlagsEnum.ALL.getCode(), mode, FlagsEnum.ALL.getCode());
-		reset();
+
 	    }
-	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+
+	    reset();
 	}
 
     }
@@ -77,9 +73,15 @@ public class RaisesManagement extends BaseBacking {
     }
 
     public void reset() {
-	decisionNumber = "";
-	jobCategory = null;
-	decisionDateFrom = decisionDateTo = executionDateFrom = executionDateTo = null;
+	try {
+	    decisionNumber = "";
+	    jobCategory = null;
+	    decisionDateFrom = decisionDateTo = executionDateFrom = executionDateTo = null;
+	    raises = RaisesService.getRaises(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, null, null, FlagsEnum.ALL.getCode(), mode, FlagsEnum.ALL.getCode());
+	} catch (BusinessException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
     }
 
     public void printEligible(Raise raise) {

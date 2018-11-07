@@ -190,10 +190,10 @@
 							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="100%">
-										<h:commandButton action="#{additionalRaisesRegistration.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{! additionalRaisesRegistration.approveAdminFlag}" >
+										<h:commandButton action="#{additionalRaisesRegistration.save()}" onclick="return handleOnAction('#{msgs.q_save}');" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{! additionalRaisesRegistration.approveAdminFlag}" >
 											<f:ajax execute="additionalRaisesRegistrationFormId:additionalRaiseDataPanelId additionalRaisesRegistrationFormId:addedEmployeesListId" render="additionalRaisesRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
-										<h:commandButton action="#{additionalRaisesRegistration.saveAndApprove()}" value="#{msgs.label_approveAndCloseRaise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{additionalRaisesRegistration.approveAdminFlag}">
+										<h:commandButton action="#{additionalRaisesRegistration.saveAndApprove()}" onclick="return handleOnAction('#{msgs.q_superSign}');"  value="#{msgs.label_approveAndCloseRaise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{additionalRaisesRegistration.approveAdminFlag}">
 											<f:ajax execute="additionalRaisesRegistrationFormId:additionalRaiseDataPanelId additionalRaisesRegistrationFormId:addedEmployeesListId" render="additionalRaisesRegistrationFormId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</td>
