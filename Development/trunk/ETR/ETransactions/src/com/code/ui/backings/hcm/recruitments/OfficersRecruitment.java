@@ -96,7 +96,7 @@ public class OfficersRecruitment extends RecruitmentsBase implements Serializabl
     }
 
     public void setDegree() {
-	selectedRec.setDegreeId(new Long((selectedRec.getSeniorityMonths() % 12) + 1));
+	selectedRec.setDegreeId(new Long((selectedRec.getSeniorityMonths() / 12) + 1));
     }
 
     public void saveWFRecruitment() {
