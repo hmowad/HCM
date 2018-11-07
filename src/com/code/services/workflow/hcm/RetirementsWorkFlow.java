@@ -175,6 +175,8 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		    throw new BusinessException("error_redirectToEmployeeMandatory");
 		if (reviewerEmpId.equals(sreTask.getOriginalId()))
 		    throw new BusinessException("error_cannotRedirectToYourself");
+		if (reviewerEmpId.equals(EmployeesService.getEmployeeData(sreTask.getOriginalId()).getManagerId()))
+		    throw new BusinessException("error_cannotRedirectTaskToYourUnitManager");
 		WFTask task = completeWFTask(sreTask, WFTaskActionsEnum.REDIRECT.getCode(), curDate, curHijriDate, wfDisclaimerData.getInstanceId(), getDelegate(reviewerEmpId, processId, requester.getEmpId()), reviewerEmpId, sreTask.getTaskUrl(), WFTaskRolesEnum.SECONDARY_REVIEWER_EMP.getCode(), sreTask.getLevel(), session);
 		task.setFlexField1(sreTask.getOriginalId() + "");
 		task.setFlexField2(EmployeesService.getEmployeeData(sreTask.getOriginalId()).getPhysicalUnitId() + "");
@@ -290,6 +292,8 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		    throw new BusinessException("error_redirectToEmployeeMandatory");
 		if (reviewerEmpId.equals(reTask.getOriginalId()))
 		    throw new BusinessException("error_cannotRedirectToYourself");
+		if (reviewerEmpId.equals(EmployeesService.getEmployeeData(reTask.getOriginalId()).getManagerId()))
+		    throw new BusinessException("error_cannotRedirectTaskToYourUnitManager");
 		WFTask task = completeWFTask(reTask, WFTaskActionsEnum.REDIRECT.getCode(), curDate, curHijriDate, wfDisclaimerData.getInstanceId(), getDelegate(reviewerEmpId, processId, requester.getEmpId()), reviewerEmpId, reTask.getTaskUrl(), WFTaskRolesEnum.REVIEWER_EMP.getCode(), reTask.getLevel(), session);
 		task.setFlexField1(reTask.getOriginalId() + "");
 		task.setFlexField2(EmployeesService.getEmployeeData(reTask.getOriginalId()).getPhysicalUnitId() + "");
