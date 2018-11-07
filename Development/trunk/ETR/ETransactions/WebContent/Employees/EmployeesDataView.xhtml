@@ -602,7 +602,7 @@
 										</td>
 									</tr>
 
-									<h:panelGroup rendered="#{employeesDataView.mode == 2}">
+									<h:panelGroup rendered="#{employeesDataView.mode == 1 or employeesDataView.mode == 2}">
 										<tr>
 											<th width="15%">#{msgs.label_isJobModified}</th>
 											<td>
@@ -613,7 +613,7 @@
 													</h:selectOneRadio>
 												</h:panelGroup>
 												<h:panelGroup rendered="#{employeesDataView.viewOnly}">
-													<h:outputText value="#{employeesDataView.employee.jobModifiedFlag==1 ? msgs.label_yes : msgs.label_no}" />
+													<h:outputText value="#{employeesDataView.employee.jobModifiedFlag != null and employeesDataView.employee.jobModifiedFlag==1 ? msgs.label_yes : msgs.label_no}" />
 												</h:panelGroup>
 											</td>
 										</tr>

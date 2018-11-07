@@ -17,6 +17,7 @@ import com.code.dal.orm.hcm.payroll.Degree;
 import com.code.dal.orm.hcm.trainings.QualificationLevel;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.CategoryClassificationEnum;
+import com.code.enums.FlagsEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
 import com.code.enums.RegionsEnum;
@@ -96,6 +97,7 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 			employee = empParam;
 			employeeQualificationsData = employeeQualificationsDataParam;
 		    }
+		    employee.setJobModifiedFlag(FlagsEnum.ON.getCode());
 
 		    break;
 
