@@ -697,12 +697,12 @@ public class RaisesService extends BaseService {
 	if (raiseEmployeeData.getRaiseType() == RaiseTypesEnum.ADDITIONAL.getCode()) {
 	    List<EmployeeData> employeeData = getDeservedEmployees(raiseEmployeeData.getRaiseExecutionDate(), raiseEmployeeData.getEmpId(), raiseEmployeeData.getRaiseType(), raiseEmployeeData.getRaiseCategoryId());
 	    if (employeeData == null || employeeData.isEmpty())
-		throw new BusinessException("error_employeeIsUndeservedForAdditionalRaise");
+		throw new BusinessException("error_employeeIsUndeservedForAdditionalRaise", new Object[] { raiseEmployeeData.getEmpName() });
 	    if (PayrollsService.getEndOfLadderOfRank(raiseEmployeeData.getEmpRankId()) == raiseEmployeeData.getEmpNewDegreeId())
-		throw new BusinessException("error_employeeNewDegreeIsHigherThanEndOfLadderDegreeOfRank");
+		throw new BusinessException("error_employeeNewDegreeIsHigherThanEndOfLadderDegreeOfRank", new Object[] { raiseEmployeeData.getEmpName() });
 	}
 	if (raiseEmployeeData.getEmpNewDegreeId() <= raiseEmployeeData.getEmpDegreeId() && raiseEmployeeData.getEmpDeservedFlag() == RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode())
-	    throw new BusinessException("error_newDegreeOfEmployeeMustBeBiggerThanCurrentDegreeOfEmployee");
+	    throw new BusinessException("error_newDegreeOfEmployeeMustBeBiggerThanCurrentDegreeOfEmployee", new Object[] { raiseEmployeeData.getEmpName() });
 
     }
 

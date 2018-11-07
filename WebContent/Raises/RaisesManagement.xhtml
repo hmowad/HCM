@@ -90,7 +90,7 @@
 										<f:ajax execute="raisesManagementFormId:searchPanelId" render="raisesManagementFormId:raisesPanelId"/>
 									</h:commandButton>
 									<h:commandButton action="#{raisesManagement.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
-										<f:ajax render="raisesManagementFormId:searchPanelId" />
+										<f:ajax render="raisesManagementFormId:searchPanelId raisesManagementFormId:raisesPanelId" />
 									</h:commandButton>
 								</td>
 							</tr>
