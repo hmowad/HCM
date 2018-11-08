@@ -13,6 +13,7 @@ import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.movements.MovementTransactionData;
 import com.code.dal.orm.hcm.organization.jobs.JobData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
+import com.code.dal.orm.hcm.payroll.PayrollSalary;
 import com.code.dal.orm.hcm.terminations.TerminationReason;
 import com.code.dal.orm.hcm.terminations.TerminationRecord;
 import com.code.dal.orm.hcm.terminations.TerminationRecordData;
@@ -179,6 +180,12 @@ public class TerminationsService extends BaseService {
 	    terminationTransaction.setRecordDetailId(terminationRecordDetailData.getId());
 	    terminationTransaction.setEmpId(terminationRecordDetailData.getEmpId());
 	    terminationTransaction.setCategoryId(terminationRecordData.getCategoryId());
+
+	    PayrollSalary payrollSalary = PayrollsService.getPayrollSalary(employee.getRankId(), employee.getDegreeId());
+	    terminationTransaction.setBasicSalary(payrollSalary != null ? payrollSalary.getBasicSalary() : null);
+	    terminationTransaction.setDegreeId(employee.getDegreeId());
+	    terminationTransaction.setDegreeDesc(employee.getDegreeDesc());
+
 	    terminationTransaction.setServiceTerminationDate(terminationRecordDetailData.getServiceTerminationDate());
 	    terminationTransaction.setStatus(terminationRecordDetailData.getStatus());
 

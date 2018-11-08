@@ -47,6 +47,8 @@ public class TerminationTransaction extends AuditEntity implements InsertableAud
     private Long recordDetailId;
     private Long empId;
     private Long categoryId;
+    private Double basicSalary;
+    private Long degreeId;
     private Date serviceTerminationDate;
     private Long status;
 
@@ -179,6 +181,26 @@ public class TerminationTransaction extends AuditEntity implements InsertableAud
 
     public void setCategoryId(Long categoryId) {
 	this.categoryId = categoryId;
+    }
+
+    @Basic
+    @Column(name = "DEGREE_ID")
+    public Long getDegreeId() {
+	return degreeId;
+    }
+
+    public void setDegreeId(Long degreeId) {
+	this.degreeId = degreeId;
+    }
+
+    @Basic
+    @Column(name = "SALARY")
+    public Double getBasicSalary() {
+	return basicSalary;
+    }
+
+    public void setBasicSalary(Double basicSalary) {
+	this.basicSalary = basicSalary;
     }
 
     @Basic

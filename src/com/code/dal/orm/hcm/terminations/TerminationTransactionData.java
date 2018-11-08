@@ -63,6 +63,9 @@ public class TerminationTransactionData extends BaseEntity {
     private Long empId;
     private String empName;
     private Long categoryId;
+    private Double basicSalary;
+    private Long degreeId;
+    private String degreeDesc;
     private Date serviceTerminationDate;
     private String serviceTerminationDateString;
     private Long status;
@@ -238,6 +241,38 @@ public class TerminationTransactionData extends BaseEntity {
     public void setCategoryId(Long categoryId) {
 	this.categoryId = categoryId;
 	this.terminationTransaction.setCategoryId(categoryId);
+    }
+
+    @Basic
+    @Column(name = "SALARY")
+    public Double getBasicSalary() {
+	return basicSalary;
+    }
+
+    public void setBasicSalary(Double basicSalary) {
+	this.basicSalary = basicSalary;
+	this.terminationTransaction.setBasicSalary(basicSalary);
+    }
+
+    @Basic
+    @Column(name = "DEGREE_ID")
+    public Long getDegreeId() {
+	return degreeId;
+    }
+
+    public void setDegreeId(Long degreeId) {
+	this.degreeId = degreeId;
+	this.terminationTransaction.setDegreeId(degreeId);
+    }
+
+    @Basic
+    @Column(name = "DEGREE_DESC")
+    public String getDegreeDesc() {
+	return degreeDesc;
+    }
+
+    public void setDegreeDesc(String degreeDesc) {
+	this.degreeDesc = degreeDesc;
     }
 
     @Basic
