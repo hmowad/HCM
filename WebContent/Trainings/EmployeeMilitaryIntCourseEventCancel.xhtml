@@ -40,6 +40,8 @@
 					.getElementById('employeeMilitaryIntCourseEventCancelFormId:cancelReasonId:2').checked;
 			var cancelReasonChecked4 = document
 					.getElementById('employeeMilitaryIntCourseEventCancelFormId:cancelReasonId:3').checked;
+			var cancelReasonChecked5 = document
+					.getElementById('employeeMilitaryIntCourseEventCancelFormId:cancelReasonId:4').checked;
 
 			if (beneficiaryEmployeeHId == null || beneficiaryEmployeeHId == '') {
 				alert('#{msgs.error_employeeMandatory}');
@@ -51,7 +53,7 @@
 				return false;
 			}
 			if (!cancelReasonChecked1 && !cancelReasonChecked2
-					&& !cancelReasonChecked3 && !cancelReasonChecked4) {
+					&& !cancelReasonChecked3 && !cancelReasonChecked4 && !cancelReasonChecked5) {
 				alert("#{msgs.error_cancelReasonMandatory}");
 				return false;
 			}
@@ -261,6 +263,7 @@
 																<f:selectItem itemLabel="#{msgs.label_absence}" itemValue="4" />
 																<f:selectItem itemLabel="#{msgs.label_badBehavior}" itemValue="5" />
 																<f:selectItem itemLabel="#{msgs.label_traineeCircumstances}" itemValue="6" />
+																<f:selectItem itemLabel="#{msgs.label_notJoined}" itemValue="7" />
 															</h:selectOneRadio>
 														</td>
 													</tr>
