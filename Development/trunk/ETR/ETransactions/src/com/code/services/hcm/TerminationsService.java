@@ -909,8 +909,10 @@ public class TerminationsService extends BaseService {
 	    List<TerminationTransactionData> terminationTransactionDataList = constructTerminationTransactions(terminationRecordData, terminationRecordDetailDataList, tansactionTypeId);
 	    List<TerminationTransactionData> nonFutureTerminationTransaction = new ArrayList<>();
 	    for (TerminationTransactionData terminationTransactionData : terminationTransactionDataList) {
-		if (!terminationTransactionData.getServiceTerminationDate().after(HijriDateService.getHijriSysDate()))
-		    nonFutureTerminationTransaction.add(terminationTransactionData);
+		if (terminationTransactionData.getStatus() == TerminationRecordOfficersStatusEnum.TERMINATED.getCode()) {
+		    if (!terminationTransactionData.getServiceTerminationDate().after(HijriDateService.getHijriSysDate()))
+			nonFutureTerminationTransaction.add(terminationTransactionData);
+		}
 	    }
 
 	    // save transaction
