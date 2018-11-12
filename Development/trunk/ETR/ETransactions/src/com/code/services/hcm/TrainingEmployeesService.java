@@ -314,8 +314,10 @@ public class TrainingEmployeesService extends BaseService {
 
 	    validateTransactionResultFields(trainingTransaction);
 
-	    if (trainingTransaction.getAttachments() == null || trainingTransaction.getAttachments().isEmpty())
-		throw new BusinessException("error_trainingAttachmentsMandatory");
+	    if (trainingTransaction.getTrainingTypeId() != TrainingTypesEnum.INTERNAL_MILITARY_COURSE.getCode()) {
+		if (trainingTransaction.getAttachments() == null || trainingTransaction.getAttachments().isEmpty())
+		    throw new BusinessException("error_trainingAttachmentsMandatory");
+	    }
 
 	    // Validate business rules
 	    TrainingCourseEventData loadedCourseEvent = courseEventId == null ? null : TrainingCoursesEventsService.getCourseEventById(courseEventId);
