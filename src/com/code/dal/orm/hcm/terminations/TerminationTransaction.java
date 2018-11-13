@@ -194,7 +194,7 @@ public class TerminationTransaction extends AuditEntity implements InsertableAud
     }
 
     @Basic
-    @Column(name = "SALARY")
+    @Column(name = "BASIC_SALARY")
     public Double getBasicSalary() {
 	return basicSalary;
     }
