@@ -1677,6 +1677,8 @@ public class TrainingSetupService extends BaseService {
 	}
     }
 
+    /******************************************* Success Rankings **************************************************/
+    /*---------------------------Queries------------------------------*/
     public static List<Rankings> getRankings(long rankingId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
