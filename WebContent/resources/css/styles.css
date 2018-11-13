@@ -692,7 +692,8 @@ label {
 	font-weight: normal;
 }
 
-.btn_normal_icon {
+.btn_normal_icon,
+.btn_normal_icon_left{
 	font-family: DroidArabicKufi, FontAwesome !important;
 	font-size: 14px !important;
 	color: #fff !important;
@@ -706,6 +707,9 @@ label {
 	-moz-border-radius: 6px !important;
 	border-radius: 6px !important;
 	margin-right:2px;
+}
+.btn_normal_icon_left{
+	float: left;
 }
 
 .btn_normal_icon:hover {
