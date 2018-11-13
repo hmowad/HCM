@@ -1683,6 +1683,13 @@ public class MovementsService extends BaseService {
 	    if (replacementEmp != null && replacementEmp.getOfficialRegionId() != replacementEmp.getPhysicalRegionId()) {
 		throw new BusinessException("error_cannotDoRequestAsReplacementEmpOficialRegionNotEqualPhysicalRegion");
 	    }
+
+	    if (movementTransaction.getExecutionDateString() != null && movementTransaction.getMovementTypeId() == MovementTypesEnum.MOVE.getCode() && emp.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() && emp.getOfficialRegionId() != UnitsService.getUnitById(movementTransaction.getUnitId()).getRegionId()) {
+		Integer[] dateDiff = HijriDateService.hijriDateDiffInMonthsAndDays(movementTransaction.getExecutionDateString(), emp.getServiceTerminationDueDateString());
+		if (dateDiff[1] < 14 || (dateDiff[1] == 14 && dateDiff[0] == 0)) {
+		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanfourteen", new String[] { emp.getName() });
+		}
+	    }
 	}
 
 	Long[] validateJobsIds = null;

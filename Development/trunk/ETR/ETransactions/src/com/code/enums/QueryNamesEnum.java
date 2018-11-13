@@ -496,8 +496,10 @@ public enum QueryNamesEnum {
     /* ****************************************** EmployeesLog ******************************************************* */
     HCM_EMPLOYEE_LOG_DATA_SEARCH_EMPLOYEES_LOG("hcm_employeeLogData_searchEmployeesLog"),
     /* ****************************************** General News ************************************************ */
-    HCM_GET_GENERAL_NEWS("hcm_generalNews_getGeneralNews");
+    HCM_GET_GENERAL_NEWS("hcm_generalNews_getGeneralNews"),
 
+    /* ******************************************* Rankings ****************************************************** */
+    HCM_RANKINGS_SEARCH_RANKINGS("hcm_rankings_searchRankings");
     private String code;
 
     private QueryNamesEnum(String code) {
