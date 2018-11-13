@@ -244,7 +244,7 @@ public class TerminationTransactionData extends BaseEntity {
     }
 
     @Basic
-    @Column(name = "SALARY")
+    @Column(name = "BASIC_SALARY")
     public Double getBasicSalary() {
 	return basicSalary;
     }
