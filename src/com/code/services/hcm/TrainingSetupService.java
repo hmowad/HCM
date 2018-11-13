@@ -10,6 +10,7 @@ import java.util.Set;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
+import com.code.dal.orm.hcm.Rankings;
 import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.dal.orm.hcm.trainings.GraduationPlaceData;
 import com.code.dal.orm.hcm.trainings.GraduationPlaceDetailData;
@@ -1670,6 +1671,17 @@ public class TrainingSetupService extends BaseService {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_TRAINING_UNIT_ID", trainingUnitId);
 	    return DataAccess.executeNamedQuery(TrainingAnnualCourseData.class, QueryNamesEnum.HCM_SEARCH_ANNUAL_COURSES.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static List<Rankings> getRankings(long rankingId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_ID", rankingId);
+	    return DataAccess.executeNamedQuery(Rankings.class, QueryNamesEnum.HCM_RANKINGS_SEARCH_RANKINGS.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");

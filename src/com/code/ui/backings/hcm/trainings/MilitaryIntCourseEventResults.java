@@ -6,6 +6,7 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
+import com.code.dal.orm.hcm.Rankings;
 import com.code.dal.orm.hcm.trainings.TrainingTransactionData;
 import com.code.dal.orm.hcm.trainings.TrainingUnitData;
 import com.code.dal.orm.workflow.hcm.trainings.WFTrainingCourseEventData;
@@ -26,6 +27,7 @@ public class MilitaryIntCourseEventResults extends TrainingCoursesBase {
     private List<TrainingTransactionData> trainingTransactionsList;
     private TrainingTransactionData selectedTrainingTransaction;
     private TrainingUnitData trainingUnit;
+    private List<Rankings> rankings;
 
     public MilitaryIntCourseEventResults() {
 	try {
@@ -33,7 +35,7 @@ public class MilitaryIntCourseEventResults extends TrainingCoursesBase {
 	    setScreenTitle(getMessage("title_coursesEventsResultsRegistration"));
 	    wfTrainingCourseEvent = new WFTrainingCourseEventData();
 	    trainingTransactionsList = new ArrayList<>();
-
+	    rankings = TrainingSetupService.getRankings(FlagsEnum.ALL.getCode());
 	    this.processId = WFProcessesEnum.MILITARY_INTERNAL_COURSE_EVENT_RESULTS.getCode();
 
 	    if (this.getRole().equals(WFTaskRolesEnum.REQUESTER.getCode())) { // Requester
@@ -94,6 +96,12 @@ public class MilitaryIntCourseEventResults extends TrainingCoursesBase {
 	}
     }
 
+    public String calculateRankingDesc() {
+	String successRankDesc = rankings.get(selectedTrainingTransaction.getSuccessRanking() - 1).getDescription();
+	selectedTrainingTransaction.setSuccessRankingDesc(successRankDesc);
+	return successRankDesc;
+    }
+
     public void successFlagChangeListener() {
 	selectedTrainingTransaction.setQualificationGrade(GradesEnum.NOT_AVAILABLE.getCode());
     }
@@ -120,5 +128,13 @@ public class MilitaryIntCourseEventResults extends TrainingCoursesBase {
 
     public void setTrainingUnit(TrainingUnitData trainingUnit) {
 	this.trainingUnit = trainingUnit;
+    }
+
+    public List<Rankings> getRankings() {
+	return rankings;
+    }
+
+    public void setRankings(List<Rankings> rankings) {
+	this.rankings = rankings;
     }
 }

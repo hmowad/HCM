@@ -10,6 +10,7 @@
 	<composite:attribute name="viewOnly" required="true" />
 	<composite:attribute name="claim" required="true" />
 	<composite:attribute name="successFlagChangeListener" required="false" />
+	<composite:attribute name="successRankingDesc" required="false" />
 </composite:interface>
 
 <composite:implementation>
@@ -187,10 +188,12 @@
 							<tr>
 								<th width="15%">#{msgs.label_theRanking}</th>
 								<td width="50%">
-									<h:inputText id="successRankingId" value="#{cc.attrs.trainingObject.successRanking}" rendered="#{!cc.attrs.viewOnly}" styleClass="inputDataNormal" maxlength="5" onkeypress="return isDigit(event);" />
+									<h:inputText id="successRankingId" value="#{cc.attrs.trainingObject.successRanking}" rendered="#{!cc.attrs.viewOnly}" styleClass="inputDataNormal" maxlength="5" onkeypress="return isDigit(event);" >
+										<f:ajax event="blur" render="#{cc.clientId}:successRankingPanelId" execute="#{cc.clientId}:successRankingPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+									</h:inputText>
 									<h:outputText value="  " rendered="#{!cc.attrs.viewOnly}" />
-									<h:inputText id="successRankingDescId" value="#{cc.attrs.trainingObject.successRankingDesc}" rendered="#{!cc.attrs.viewOnly}" onkeypress="return !isFloat(event, this.value, true);" maxlength="100" />
-									<h:outputText value="#{cc.attrs.trainingObject.successRanking} - #{cc.attrs.trainingObject.successRankingDesc}" rendered="#{cc.attrs.viewOnly}" />
+							
+									<h:outputText id = "successRankingDescId" value="#{cc.attrs.SuccessRankingDesc}" />
 									<br />
 									<h:outputText value="#{msgs.label_successRankingFieldDescriprion}" rendered="#{!cc.attrs.viewOnly}" style="color: red; font-weight: bold;"/>
 								</td>

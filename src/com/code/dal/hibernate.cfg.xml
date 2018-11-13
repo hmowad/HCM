@@ -282,5 +282,7 @@
 		<mapping class="com.code.dal.orm.log.EmployeeLog" />
 		<mapping class="com.code.dal.orm.log.EmployeeLogData" />
 		
+		<mapping class="com.code.dal.orm.hcm.Rankings"/>
+		
 	</session-factory>
 </hibernate-configuration>
