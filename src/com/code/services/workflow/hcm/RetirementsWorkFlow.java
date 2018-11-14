@@ -397,6 +397,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	disclaimerTransactionData.setOriginalDecisionApprovedId(wfDisclaimerData.getOriginalDecisionApprovedId());
 	disclaimerTransactionData.setOtherAmount(wfDisclaimerData.getOtherAmount());
 	disclaimerTransactionData.setRealEstateFundAmount(wfDisclaimerData.getRealEstateFundAmount());
+	updateDisclaimerAmounts(wfDisclaimerData);
 	disclaimerTransactionData.setTotalDueAmount(wfDisclaimerData.getBasicAmount().doubleValue() + wfDisclaimerData.getAllowanceAmount().doubleValue());
 	disclaimerTransactionData.setTotalGovernmentalDueAmount(wfDisclaimerData.getCreditBankAmount().doubleValue() + wfDisclaimerData.getRealEstateFundAmount().doubleValue()
 		+ wfDisclaimerData.getOtherAmount().doubleValue());
