@@ -314,7 +314,7 @@ public class TrainingEmployeesService extends BaseService {
 
 	    validateTransactionResultFields(trainingTransaction);
 
-	    if (trainingTransaction.getTrainingTypeId() != TrainingTypesEnum.INTERNAL_MILITARY_COURSE.getCode()) {
+	    if (trainingTransaction.getTrainingTypeId() != TrainingTypesEnum.INTERNAL_MILITARY_COURSE.getCode() && trainingTransaction.getTrainingTypeId() != TrainingTypesEnum.EXTERNAL_MILITARY_COURSE.getCode()) {
 		if (trainingTransaction.getAttachments() == null || trainingTransaction.getAttachments().isEmpty())
 		    throw new BusinessException("error_trainingAttachmentsMandatory");
 	    }
@@ -443,8 +443,10 @@ public class TrainingEmployeesService extends BaseService {
 	if (trainingTransactionCategory == TrainingTransactionCategoryEnum.CLAIM.getCode()) {
 	    validateTransactionResultFields(trainingTransaction);
 
-	    if (trainingTransaction.getAttachments() == null || trainingTransaction.getAttachments().isEmpty())
-		throw new BusinessException("error_trainingAttachmentsMandatory");
+	    if (trainingTransaction.getTrainingTypeId() != TrainingTypesEnum.INTERNAL_MILITARY_COURSE.getCode() && trainingTransaction.getTrainingTypeId() != TrainingTypesEnum.EXTERNAL_MILITARY_COURSE.getCode()) {
+		if (trainingTransaction.getAttachments() == null || trainingTransaction.getAttachments().isEmpty())
+		    throw new BusinessException("error_trainingAttachmentsMandatory");
+	    }
 	}
     }
 

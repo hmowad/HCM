@@ -266,23 +266,13 @@
 			</td>
 		</tr>
 		<tr>
-			<h:panelGroup rendered="#{cc.attrs.trainingObject.trainingTypeId !=1 or cc.attrs.claim}">
-				<th width="15%">
-					#{msgs.label_attachments}
-					<h:outputText value=" " />
-					<font style="color: red;">*</font>
-				</th>
-			</h:panelGroup>
-			<h:panelGroup rendered="#{cc.attrs.trainingObject.trainingTypeId == 1 and !cc.attrs.claim}">
-				<th width="15%">
-					#{msgs.label_attachments}
-					<h:outputText value=" " />
-				</th>
-			</h:panelGroup>
+			<th width="15%">
+				#{msgs.label_attachments}
+				<h:outputText value=" " />
+			</th>
 			<td width="85%" colspan="3">
 				<code:attachments loginEmpId="#{cc.attrs.loginEmpId}" attachmentId="#{cc.attrs.trainingObject.attachments}" addEnableFlag="#{!cc.attrs.viewOnly}" viewEnableFlag="true" deleteEnableFlag="#{!cc.attrs.viewOnly}" />
 				<h:outputText value=" " />
-				<h:outputText value="#{cc.attrs.trainingObject.trainingTypeId == 2 ? msgs.label_attachNominationLetterAndGraduationCertificateRequired : msgs.label_attachGraduationCertificateRequired}" rendered="#{cc.attrs.claim}" style="color: red; font-weight: bold;" />
 			</td>
 		</tr>
 	</h:panelGroup>
