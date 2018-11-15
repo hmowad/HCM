@@ -1,10 +1,14 @@
 package com.code.ui.backings.hcm.trainings;
 
+import java.util.List;
+
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
+import com.code.dal.orm.hcm.Rankings;
 import com.code.dal.orm.workflow.hcm.trainings.WFTrainingData;
 import com.code.enums.CategoriesEnum;
+import com.code.enums.FlagsEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
 import com.code.enums.TrainingTypesEnum;
@@ -22,11 +26,13 @@ public class MilitaryTrainingClaimRequest extends TrainingAndScholarshipBase {
 
     private long selectedEmployeeId;
     private long selectedEmpCategoryId;
+    private List<Rankings> rankings;
 
     public MilitaryTrainingClaimRequest() {
 	try {
 	    super.init();
 	    wfTraining = new WFTrainingData();
+	    rankings = TrainingSetupService.getRankings(FlagsEnum.ALL.getCode());
 
 	    if (getRequest().getParameter("mode") != null) {
 		mode = Integer.parseInt(getRequest().getParameter("mode"));
@@ -100,6 +106,14 @@ public class MilitaryTrainingClaimRequest extends TrainingAndScholarshipBase {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
 
+    }
+
+    public String calculateRankingDesc() {
+	if (wfTraining.getSuccessRanking() == null || wfTraining.getSuccessRanking().equals(0) || wfTraining.getSuccessRanking() > rankings.size())
+	    return "";
+	String successRankDesc = rankings.get(wfTraining.getSuccessRanking() - 1).getDescription();
+	wfTraining.setSuccessRankingDesc(successRankDesc);
+	return successRankDesc;
     }
 
     public long getSelectedEmployeeId() {

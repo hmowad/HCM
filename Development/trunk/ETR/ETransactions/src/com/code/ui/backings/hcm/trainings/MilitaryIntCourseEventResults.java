@@ -97,6 +97,8 @@ public class MilitaryIntCourseEventResults extends TrainingCoursesBase {
     }
 
     public String calculateRankingDesc() {
+	if (selectedTrainingTransaction.getSuccessRanking() == null || selectedTrainingTransaction.getSuccessRanking().equals(0) || selectedTrainingTransaction.getSuccessRanking() > rankings.size())
+	    return "";
 	String successRankDesc = rankings.get(selectedTrainingTransaction.getSuccessRanking() - 1).getDescription();
 	selectedTrainingTransaction.setSuccessRankingDesc(successRankDesc);
 	return successRankDesc;
@@ -128,13 +130,5 @@ public class MilitaryIntCourseEventResults extends TrainingCoursesBase {
 
     public void setTrainingUnit(TrainingUnitData trainingUnit) {
 	this.trainingUnit = trainingUnit;
-    }
-
-    public List<Rankings> getRankings() {
-	return rankings;
-    }
-
-    public void setRankings(List<Rankings> rankings) {
-	this.rankings = rankings;
     }
 }
