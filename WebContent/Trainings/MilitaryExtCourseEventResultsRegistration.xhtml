@@ -207,7 +207,7 @@
 															<h:outputText value="#{militaryExtCourseEventResultsRegistration.selectedTrainingTransaction.employeeName}" />
 														</td>
 													</tr>
-													<code:courseResults trainingObject="#{militaryExtCourseEventResultsRegistration.selectedTrainingTransaction}" loginEmpId="#{militaryExtCourseEventResultsRegistration.loginEmpData.empId}" viewOnly="#{false}" military="true" claim="false" successFlagChangeListener="#{militaryExtCourseEventResultsRegistration.successFlagChangeListener()}"></code:courseResults>
+													<code:courseResults trainingObject="#{militaryExtCourseEventResultsRegistration.selectedTrainingTransaction}" loginEmpId="#{militaryExtCourseEventResultsRegistration.loginEmpData.empId}" viewOnly="#{false}" military="true" claim="false" successFlagChangeListener="#{militaryExtCourseEventResultsRegistration.successFlagChangeListener()}" successRankingDesc ="#{militaryExtCourseEventResultsRegistration.calculateRankingDesc()}"></code:courseResults>
 
 													<tr>
 														<td width="100%" colspan="4">

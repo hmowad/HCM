@@ -5,6 +5,7 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
+import com.code.dal.orm.hcm.Rankings;
 import com.code.dal.orm.hcm.trainings.TrainingCourseEventData;
 import com.code.dal.orm.hcm.trainings.TrainingTransactionData;
 import com.code.enums.FlagsEnum;
@@ -12,6 +13,7 @@ import com.code.enums.GradesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.TrainingCoursesEventsService;
 import com.code.services.hcm.TrainingEmployeesService;
+import com.code.services.hcm.TrainingSetupService;
 import com.code.ui.backings.base.BaseBacking;
 
 @ManagedBean(name = "militaryExtCourseEventResultsRegistration")
@@ -22,10 +24,16 @@ public class MilitaryExtCourseEventResultsRegistration extends BaseBacking {
     private long selectedCourseEventId;
     private List<TrainingTransactionData> trainingTransactionsList;
     private TrainingTransactionData selectedTrainingTransaction;
+    private List<Rankings> rankings;
     final int pageSize = 10;
 
     public MilitaryExtCourseEventResultsRegistration() {
-	setScreenTitle(getMessage("title_coursesEventsResultsRegistration"));
+	try {
+	    setScreenTitle(getMessage("title_coursesEventsResultsRegistration"));
+	    rankings = TrainingSetupService.getRankings(FlagsEnum.ALL.getCode());
+	} catch (Exception e) {
+	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
     }
 
     public void selectCourseEvent() {
@@ -63,6 +71,14 @@ public class MilitaryExtCourseEventResultsRegistration extends BaseBacking {
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
+    }
+
+    public String calculateRankingDesc() {
+	if (selectedTrainingTransaction.getSuccessRanking() == null || selectedTrainingTransaction.getSuccessRanking().equals(0) || selectedTrainingTransaction.getSuccessRanking() > rankings.size())
+	    return "";
+	String successRankDesc = rankings.get(selectedTrainingTransaction.getSuccessRanking() - 1).getDescription();
+	selectedTrainingTransaction.setSuccessRankingDesc(successRankDesc);
+	return successRankDesc;
     }
 
     public void successFlagChangeListener() {

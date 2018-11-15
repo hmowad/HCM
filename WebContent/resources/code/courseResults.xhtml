@@ -192,10 +192,7 @@
 										<f:ajax event="blur" render="#{cc.clientId}:successRankingPanelId" execute="#{cc.clientId}:successRankingPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
 									</h:inputText>
 									<h:outputText value="  " rendered="#{!cc.attrs.viewOnly}" />
-							
-									<h:outputText id = "successRankingDescId" value="#{cc.attrs.SuccessRankingDesc}" />
-									<br />
-									<h:outputText value="#{msgs.label_successRankingFieldDescriprion}" rendered="#{!cc.attrs.viewOnly}" style="color: red; font-weight: bold;"/>
+									<h:outputText id = "successRankingDescId" value="#{cc.attrs.successRankingDesc}" />
 								</td>
 							</tr>
 						</table>
