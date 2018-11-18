@@ -1831,10 +1831,10 @@ public class VacationsBusinessRulesService extends BaseService {
 	    Vacation firstSickVacation = getFirstVacation(emp.getEmpId(), VacationTypesEnum.SICK.getCode(), subVacationType);
 
 	    frameEndDate = balanceToDate;
-	    if (CategoriesEnum.CONTRACTORS.getCode() == categoryId) {
+	    if (CategoriesEnum.SOLDIERS.getCode() == categoryId || CategoriesEnum.CONTRACTORS.getCode() == categoryId) {
 		frameEndDate = emp.getRecruitmentDate();
 	    } else {
-		// officers, soldiers, persons, users and wages.
+		// officers, persons, users and wages.
 		if (firstSickVacation != null && firstSickVacation.getStartDate().before(balanceToDate))
 		    frameEndDate = firstSickVacation.getStartDate();
 	    }
