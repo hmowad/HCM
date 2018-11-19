@@ -1553,7 +1553,7 @@ public class PromotionsService extends BaseService {
      */
     public static void sendPromotionsSoldiersDrugsTestRequest(PromotionReportData promotionReportData, long loginEmpId) throws BusinessException {
 
-	Integer[] medicalTestStatuses = new Integer[] { PromotionMedicalTestStatusEnum.NON_TESTED.getCode() };
+	Integer[] medicalTestStatuses = new Integer[] { PromotionMedicalTestStatusEnum.NON_TESTED.getCode(), null };
 	List<PromotionReportDetailData> candidatePromotionReportDetailDataList = getPromotionReportDetailsDataForDrugsTest(promotionReportData.getId(), new Long[] { PromotionCandidateStatusEnum.CANDIDATE.getCode() }, medicalTestStatuses);
 
 	if (promotionReportData.getRankId().equals(RanksEnum.SOLDIER.getCode()) || promotionReportData.getRankId().equals(RanksEnum.FIRST_SOLDIER.getCode()) || promotionReportData.getRankId().equals(RanksEnum.CORPORAL.getCode())) {
@@ -1564,7 +1564,7 @@ public class PromotionsService extends BaseService {
 	    int chosenNonCandidateSentForDrugTestCount = 0;
 	    // Choose the non candidates who have been sent to drugs test before.
 	    for (int i = 0; i < nonCandidatePromotionReportDetailDataList.size() && chosenNonCandidateSentForDrugTestCount < extraNonCandidateSentForDrugTestCount; i++) {
-		if (!nonCandidatePromotionReportDetailDataList.get(i).getMedicalTest().equals(PromotionMedicalTestStatusEnum.NON_TESTED.getCode())) {
+		if (!nonCandidatePromotionReportDetailDataList.get(i).getMedicalTest().equals(PromotionMedicalTestStatusEnum.NON_TESTED.getCode()) && nonCandidatePromotionReportDetailDataList.get(i).getMedicalTest() != null) {
 		    candidatePromotionReportDetailDataList.add(nonCandidatePromotionReportDetailDataList.get(i));
 		    chosenNonCandidateSentForDrugTestCount++;
 		}
@@ -1572,7 +1572,7 @@ public class PromotionsService extends BaseService {
 
 	    // If chosen non candidates count is not sufficient yet, choose some new non candidates to send
 	    for (int i = 0; i < nonCandidatePromotionReportDetailDataList.size() && chosenNonCandidateSentForDrugTestCount < extraNonCandidateSentForDrugTestCount; i++) {
-		if (nonCandidatePromotionReportDetailDataList.get(i).getMedicalTest().equals(PromotionMedicalTestStatusEnum.NON_TESTED.getCode())) {
+		if (nonCandidatePromotionReportDetailDataList.get(i).getMedicalTest().equals(PromotionMedicalTestStatusEnum.NON_TESTED.getCode()) && nonCandidatePromotionReportDetailDataList.get(i).getMedicalTest() == null) {
 		    candidatePromotionReportDetailDataList.add(nonCandidatePromotionReportDetailDataList.get(i));
 		    chosenNonCandidateSentForDrugTestCount++;
 		}
