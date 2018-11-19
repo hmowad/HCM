@@ -1553,7 +1553,7 @@ public class PromotionsService extends BaseService {
      */
     public static void sendPromotionsSoldiersDrugsTestRequest(PromotionReportData promotionReportData, long loginEmpId) throws BusinessException {
 
-	Integer[] medicalTestStatuses = new Integer[] { PromotionMedicalTestStatusEnum.NON_TESTED.getCode(), null };
+	Integer[] medicalTestStatuses = new Integer[] { null, PromotionMedicalTestStatusEnum.NON_TESTED.getCode() };
 	List<PromotionReportDetailData> candidatePromotionReportDetailDataList = getPromotionReportDetailsDataForDrugsTest(promotionReportData.getId(), new Long[] { PromotionCandidateStatusEnum.CANDIDATE.getCode() }, medicalTestStatuses);
 
 	if (promotionReportData.getRankId().equals(RanksEnum.SOLDIER.getCode()) || promotionReportData.getRankId().equals(RanksEnum.FIRST_SOLDIER.getCode()) || promotionReportData.getRankId().equals(RanksEnum.CORPORAL.getCode())) {
@@ -2832,7 +2832,7 @@ public class PromotionsService extends BaseService {
 	    }
 
 	    if (medicalTestStatuses != null && medicalTestStatuses.length > 0) {
-		qParams.put("P_MEDICAL_TEST_STATUSES_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_MEDICAL_TEST_STATUSES_FLAG", (medicalTestStatuses[0] == null ? FlagsEnum.OFF.getCode() : FlagsEnum.ON.getCode()));
 		qParams.put("P_MEDICAL_TEST_STATUSES", medicalTestStatuses);
 	    } else {
 		qParams.put("P_MEDICAL_TEST_STATUSES_FLAG", FlagsEnum.ALL.getCode());

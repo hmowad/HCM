@@ -31,7 +31,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_EMP_ID = -1 or pd.empId = :P_EMP_ID) " +
 			" and (:P_EMP_NAME = '-1' or pd.empName like :P_EMP_NAME ) " +
 			" and (:P_STATUS_FLAG = -1 or pd.status in (:P_STATUS)) " +
-			" and (:P_MEDICAL_TEST_STATUSES_FLAG = -1 or pd.medicalTest in (:P_MEDICAL_TEST_STATUSES)) " +
+			" and (:P_MEDICAL_TEST_STATUSES_FLAG = -1 or (:P_MEDICAL_TEST_STATUSES_FLAG = 1 and pd.medicalTest in (:P_MEDICAL_TEST_STATUSES)) or (:P_MEDICAL_TEST_STATUSES_FLAG = 0 and pd.medicalTest in (:P_MEDICAL_TEST_STATUSES) or  pd.medicalTest IS NULL)) " +
 			" order by pd.status desc, pd.promotionDueDate, pd.militaryNumber, pd.oldRankId, pd.recruitmentDate ,pd.oldDegreeId ,pd.oldJobClassCode,pd.empName "),
 
 	@NamedQuery(name = "hcm_promotionReportDetailData_searchPromotionReportDetailDataBySocialIds",
