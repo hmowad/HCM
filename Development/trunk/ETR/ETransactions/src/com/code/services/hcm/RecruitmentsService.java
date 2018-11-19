@@ -888,6 +888,8 @@ public class RecruitmentsService extends BaseService {
 			EmployeesService.updateEmployee(emp, session);
 		    else
 			EmployeesService.updateEmployeeAndHisQualifications(emp, employeeQualificationsData, session);
+		    if (recruitmentTransaction.getRecruitmentDate() == null)
+			recruitmentTransaction.setRecruitmentDate(HijriDateService.gregToHijriDate(new Date()));
 		    LogService.logEmployeeData(emp, recruitmentTransaction.getRecruitmentDate(), recruitmentTransaction.getDecisionNumber(), recruitmentTransaction.getDecisionDate(), session);
 		}
 	    }

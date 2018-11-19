@@ -297,8 +297,8 @@
 										<h:panelGroup rendered="#{employeesReports.reportType == 9}">
 											<tr>
 												<th width="15%"> 
-													<h:outputLabel value="#{msgs.label_isModifiedJob}" rendered="#{employeesReports.mode == 2}"/>
-													<h:outputLabel value="#{msgs.label_isModifiedJobOfficers}" rendered="#{employeesReports.mode == 1}"/>
+													<h:outputText value="#{msgs.label_isModifiedJob}" rendered="#{employeesReports.mode == 2}"/>
+													<h:outputText value="#{msgs.label_isModifiedJobOfficers}" rendered="#{employeesReports.mode == 1}"/>
 												</th>
 												<td width="40%">
 													<h:selectOneMenu value="#{employeesReports.jobModifiedFlag}">
