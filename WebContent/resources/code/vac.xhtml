@@ -59,6 +59,18 @@
                     </td>
                 </tr>
                 
+				<tr>
+					<th width="15%">#{msgs.label_location}</th>
+					<td width="35%">
+						<h:outputText value="#{msgs.label_locIn}"  rendered="#{cc.attrs.value.locationFlag == 0}"/>
+						<h:outputText value="#{msgs.label_locOut}" rendered="#{cc.attrs.value.locationFlag == 1}"/>
+					</td>
+					<th width="15%">#{msgs.title_countries}</th>
+					<td width="35%">
+						<h:outputText value="#{cc.attrs.value.location}" />
+					</td>
+				</tr>
+                
 			</table>			
         </h:panelGroup>
     </composite:implementation>  
