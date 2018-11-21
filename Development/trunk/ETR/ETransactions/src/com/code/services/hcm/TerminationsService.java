@@ -307,7 +307,10 @@ public class TerminationsService extends BaseService {
 
 	terminationTransaction.setCategoryId(categoryId);
 	terminationTransaction.setEmpId(wfTerminationCancellationMovementData.getEmpId());
-
+	PayrollSalary payrollSalary = PayrollsService.getPayrollSalary(employee.getRankId(), employee.getDegreeId());
+	terminationTransaction.setBasicSalary(payrollSalary != null ? payrollSalary.getBasicSalary() : null);
+	terminationTransaction.setDegreeId(employee.getDegreeId());
+	terminationTransaction.setDegreeDesc(employee.getDegreeDesc());
 	terminationTransaction.setReferring(wfTerminationCancellationMovementData.getReferring());
 	terminationTransaction.setCancelTransactionId(wfTerminationCancellationMovementData.getCancelTransactionId());
 	terminationTransaction.setCancelTransactionReason(wfTerminationCancellationMovementData.getReasons());
