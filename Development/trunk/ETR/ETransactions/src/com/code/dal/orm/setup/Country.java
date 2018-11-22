@@ -31,7 +31,12 @@ import com.code.dal.orm.AuditEntity;
 			" and (:P_ID = -1 or c.id = :P_ID)" +
 			" and (:P_COUNTRY_FLAG = -1 or c.countryFlag = :P_COUNTRY_FLAG)" +
 			" and (:P_EMBASSY_FLAG = -1 or c.embassyFlag = :P_EMBASSY_FLAG)" +
-			" order by c.name ")
+			" order by c.name "),
+
+	@NamedQuery(name = "hcm_country_getCountryByYaqeenName",
+		query = " select c from Country c" +
+			" where (c.yaqeenName IN (:P_YAQEEN_NAME))" +
+			" order by c.id ")
 })
 @SuppressWarnings("serial")
 @Entity
@@ -48,6 +53,7 @@ public class Country extends AuditEntity implements Serializable, InsertableAudi
     private Integer countryFlag;
     private Integer embassyFlag;
     private Integer blackListFlag;
+    private String yaqeenName;
 
     @SequenceGenerator(name = "HCMSetupSeq",
 	    sequenceName = "HCM_SETUP_SEQ")
@@ -169,6 +175,17 @@ public class Country extends AuditEntity implements Serializable, InsertableAudi
 
     public void setBlackListFlag(Integer blackListFlag) {
 	this.blackListFlag = blackListFlag;
+    }
+
+    @Basic
+    @Column(name = "YAQEEN_NAME")
+    @XmlTransient
+    public String getYaqeenName() {
+	return yaqeenName;
+    }
+
+    public void setYaqeenName(String yaqeenName) {
+	this.yaqeenName = yaqeenName;
     }
 
     @Override

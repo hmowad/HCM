@@ -48,10 +48,15 @@ public class RecruitmentsWS {
 		    employee.setSecondName(wsSoldier.getSecondName());
 		    employee.setThirdName(wsSoldier.getThirdName());
 		    employee.setLastName(wsSoldier.getLastName());
+		    employee.setFirstNameEn(wsSoldier.getFirstNameEn());
+		    employee.setSecondName(wsSoldier.getSecondNameEn());
+		    employee.setThirdNameEn(wsSoldier.getThirdNameEn());
+		    employee.setLastNameEn(wsSoldier.getLastNameEn());
 		    employee.setBirthPlace(wsSoldier.getBirthPlace());
 		    employee.setBirthDate(HijriDateService.getHijriDate(wsSoldier.getBirthDate())); // TODO date format dd/MM/YYYY
 		    employee.setSocialID(wsSoldier.getSocialID());
 		    employee.setSocialIDIssueDate(HijriDateService.getHijriDate(wsSoldier.getSocialIDIssueDate())); // TODO date format dd/MM/YYYY
+		    employee.setSocialIDIssueExpiryDate(HijriDateService.getHijriDate(wsSoldier.getSocialIDIssueExpiryDate()));
 		    employee.setSocialIDIssuePlaceID(wsSoldier.getSocialIDIssuePlaceID());
 		    employee.setBloodGroup(wsSoldier.getBloodGroup());
 		    employee.setGender(wsSoldier.getGender());

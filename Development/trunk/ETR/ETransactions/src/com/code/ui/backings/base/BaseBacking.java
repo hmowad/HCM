@@ -194,6 +194,17 @@ public abstract class BaseBacking implements Serializable {
 
     // -------------------------------------------------------------------------
 
+    public String getClientIpAddress() {
+	String ipAddress = getRequest().getHeader("X-FORWARDED-FOR");
+	if (ipAddress != null) {
+	    ipAddress = ipAddress.replaceFirst(",.*", "");
+	} else {
+	    ipAddress = getRequest().getRemoteAddr();
+	}
+	return ipAddress;
+    }
+
+    // --------------------------------------------------------------------------
     public String getScreenTitle() {
 	return screenTitle;
     }

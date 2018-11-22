@@ -6,10 +6,15 @@ public class WSRecEmployee {
     private String secondName;
     private String thirdName;
     private String lastName;
+    private String firstNameEn;
+    private String secondNameEn;
+    private String thirdNameEn;
+    private String lastNameEn;
     private String birthPlace;
     private String birthDate;
     private String socialID;
     private String socialIDIssueDate;
+    private String socialIDIssueExpiryDate;
     private Long socialIDIssuePlaceID;
     private String bloodGroup;
     private String gender;
@@ -59,6 +64,38 @@ public class WSRecEmployee {
 
     public void setLastName(String lastName) {
 	this.lastName = lastName;
+    }
+
+    public String getFirstNameEn() {
+	return firstNameEn;
+    }
+
+    public void setFirstNameEn(String firstNameEn) {
+	this.firstNameEn = firstNameEn;
+    }
+
+    public String getSecondNameEn() {
+	return secondNameEn;
+    }
+
+    public void setSecondNameEn(String secondNameEn) {
+	this.secondNameEn = secondNameEn;
+    }
+
+    public String getThirdNameEn() {
+	return thirdNameEn;
+    }
+
+    public void setThirdNameEn(String thirdNameEn) {
+	this.thirdNameEn = thirdNameEn;
+    }
+
+    public String getLastNameEn() {
+	return lastNameEn;
+    }
+
+    public void setLastNameEn(String lastNameEn) {
+	this.lastNameEn = lastNameEn;
     }
 
     public String getBirthPlace() {
@@ -228,4 +265,13 @@ public class WSRecEmployee {
     public void setRecStudyCountryId(Long recStudyCountryId) {
 	this.recStudyCountryId = recStudyCountryId;
     }
+
+    public String getSocialIDIssueExpiryDate() {
+	return socialIDIssueExpiryDate;
+    }
+
+    public void setSocialIDIssueExpiryDate(String socialIDIssueExpiryDate) {
+	this.socialIDIssueExpiryDate = socialIDIssueExpiryDate;
+    }
+
 }

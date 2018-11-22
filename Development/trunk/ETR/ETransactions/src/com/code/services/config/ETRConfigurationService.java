@@ -711,6 +711,7 @@ public class ETRConfigurationService extends BaseService {
     }
 
     /*--------------------------------------------End of Movements Configurations------------------------------------------------------*/
+
     /*------------------------------------------------------Start of Retirement Configurations------------------------------------------------------*/
     public static String getDisclaimerUnitsIds(Long physicalRegionId, Long categoryId) throws BusinessException {
 	String unitsIds;
@@ -758,5 +759,9 @@ public class ETRConfigurationService extends BaseService {
 
     public static void setExternalServiceAuthValue(String externalServiceAuthCode, String externalServiceAuthValue) {
 	setConfigValue(externalServiceAuthCode, externalServiceAuthValue, null);
+    }
+
+    public static String getYaqeenSystemCode() {
+	return getETRConfigByCode("SYSTEM_CODE_FOR_YAQEEN").getValue();
     }
 }

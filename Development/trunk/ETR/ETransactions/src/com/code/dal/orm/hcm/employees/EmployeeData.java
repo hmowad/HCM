@@ -261,6 +261,10 @@ public class EmployeeData extends BaseEntity implements Serializable {
     private String secondName;
     private String thirdName;
     private String lastName;
+    private String firstNameEn;
+    private String secondNameEn;
+    private String thirdNameEn;
+    private String lastNameEn;
     private Long rankId;
     private String rankDesc;
     private Long salaryRankId;
@@ -309,6 +313,8 @@ public class EmployeeData extends BaseEntity implements Serializable {
     private String socialID;
     private Date socialIDIssueDate;
     private String socialIDIssueDateString;
+    private Date socialIDIssueExpiryDate;
+    private String socialIDIssueExpiryDateString;
     private Long socialIDIssuePlaceID;
     private String socialIDIssuePlaceDesc;
     private String bloodGroup;
@@ -839,6 +845,54 @@ public class EmployeeData extends BaseEntity implements Serializable {
     }
 
     @Basic
+    @Column(name = "FIRST_NAME_EN")
+    @XmlTransient
+    public String getFirstNameEn() {
+	return firstNameEn;
+    }
+
+    public void setFirstNameEn(String firstNameEn) {
+	this.firstNameEn = firstNameEn;
+	employee.setFirstNameEn(firstNameEn);
+    }
+
+    @Basic
+    @Column(name = "SECOND_NAME_EN")
+    @XmlTransient
+    public String getSecondNameEn() {
+	return secondNameEn;
+    }
+
+    public void setSecondNameEn(String secondNameEn) {
+	this.secondNameEn = secondNameEn;
+	employee.setSecondNameEn(secondNameEn);
+    }
+
+    @Basic
+    @Column(name = "THIRD_NAME_EN")
+    @XmlTransient
+    public String getThirdNameEn() {
+	return thirdNameEn;
+    }
+
+    public void setThirdNameEn(String thirdNameEn) {
+	this.thirdNameEn = thirdNameEn;
+	employee.setThirdNameEn(thirdNameEn);
+    }
+
+    @Basic
+    @Column(name = "LAST_NAME_EN")
+    @XmlTransient
+    public String getLastNameEn() {
+	return lastNameEn;
+    }
+
+    public void setLastNameEn(String lastNameEn) {
+	this.lastNameEn = lastNameEn;
+	employee.setLastNameEn(lastNameEn);
+    }
+
+    @Basic
     @Column(name = "COUNTRY_ID")
     @XmlTransient
     public Long getCountryId() {
@@ -923,6 +977,32 @@ public class EmployeeData extends BaseEntity implements Serializable {
 	this.socialIDIssueDate = socialIDIssueDate;
 	this.socialIDIssueDateString = HijriDateService.getHijriDateString(socialIDIssueDate);
 	employee.setSocialIDIssueDate(socialIDIssueDate);
+    }
+
+    @Basic
+    @Column(name = "SOCIAL_ID_ISSUE_EXPIRY_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    @XmlTransient
+    public Date getSocialIDIssueExpiryDate() {
+	return socialIDIssueExpiryDate;
+    }
+
+    public void setSocialIDIssueExpiryDate(Date socialIDIssueExpiryDate) {
+	this.socialIDIssueExpiryDate = socialIDIssueExpiryDate;
+	this.socialIDIssueExpiryDateString = HijriDateService.getHijriDateString(socialIDIssueExpiryDate);
+	employee.setSocialIDIssueExpiryDate(socialIDIssueExpiryDate);
+    }
+
+    @Transient
+    @XmlTransient
+    public String getSocialIDIssueExpiryDateString() {
+	return socialIDIssueExpiryDateString;
+    }
+
+    public void setSocialIDIssueExpiryDateString(String socialIDIssueExpiryDateString) {
+	this.socialIDIssueExpiryDateString = socialIDIssueExpiryDateString;
+	this.socialIDIssueDate = HijriDateService.getHijriDate(socialIDIssueExpiryDateString);
+	employee.setSocialIDIssueExpiryDate(socialIDIssueDate);
     }
 
     @Transient

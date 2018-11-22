@@ -268,6 +268,14 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 	return "";
     }
 
+    public void yaqeenInformationRetrieval() {
+	try {
+	    EmployeesService.yaqeenConstructEmployeeData(employee, this.loginEmpData.getSocialID(), getClientIpAddress());
+	} catch (BusinessException e) {
+	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
+    }
+
     public int getMode() {
 	return mode;
     }

@@ -9,11 +9,13 @@ import java.util.Map;
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.Rank;
+import com.code.dal.orm.hcm.SocialIdIssuePlace;
 import com.code.dal.orm.hcm.employees.Employee;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.employees.EmployeePhoto;
 import com.code.dal.orm.hcm.employees.EmployeeQualificationsData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
+import com.code.dal.orm.setup.Country;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.CountriesEnum;
 import com.code.enums.EmployeeStatusEnum;
@@ -26,8 +28,17 @@ import com.code.enums.UnitTypesEnum;
 import com.code.enums.WFProcessesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.webservicesclients.yaqeenclient.yaqeen.ejada.com.BusinessException_Exception;
+import com.code.integration.webservicesclients.yaqeenclient.yaqeen.ejada.com.DataValidationException;
+import com.code.integration.webservicesclients.yaqeenclient.yaqeen.ejada.com.IdType;
+import com.code.integration.webservicesclients.yaqeenclient.yaqeen.ejada.com.PersonInfoDetailedResult;
+import com.code.integration.webservicesclients.yaqeenclient.yaqeen.ejada.com.PersonInfoRequest;
+import com.code.integration.webservicesclients.yaqeenclient.yaqeen.ejada.com.Yakeen4BorderGuardFaultException;
+import com.code.integration.webservicesclients.yaqeenclient.yaqeen.ejada.com.Yakeen4BorderGuardService;
+import com.code.integration.webservicesclients.yaqeenclient.yaqeen.ejada.com.YaqeenServices;
 import com.code.services.BaseService;
 import com.code.services.buswfcoop.BusinessWorkflowCooperation;
+import com.code.services.config.ETRConfigurationService;
 import com.code.services.log.LogService;
 import com.code.services.util.CommonService;
 import com.code.services.util.CountryService;
@@ -1514,4 +1525,62 @@ public class EmployeesService extends BaseService {
 	return empData.getFirstName() + " " + empData.getSecondName() + (empData.getThirdName() == null || empData.getThirdName().isEmpty() ? "" : " " + empData.getThirdName()) + " " + empData.getLastName();
     }
 
+    /************************************************************** Yaqeen integration **************************************************************/
+    public static PersonInfoDetailedResult yaqeenInformationRetrieval(String socialId, String birthDate, String loginSocialId, String clientIpAddress) throws BusinessException {
+	validateYaqeenMandatoryFields(socialId, birthDate);
+	try {
+	    PersonInfoRequest personInfoRequest = new PersonInfoRequest();
+	    personInfoRequest.setIdNumber(socialId);
+	    personInfoRequest.setOperatorId(loginSocialId);
+	    personInfoRequest.setIdType(socialId.charAt(0) == '1' ? IdType.C : (socialId.charAt(0) == '2' ? IdType.R : IdType.V));
+	    personInfoRequest.setDateOfBirth(personInfoRequest.getIdType() == IdType.C ? birthDate.replace('/', '-') : HijriDateService.hijriToGregDateString(birthDate).replace('/', '-'));
+	    personInfoRequest.setClientIpAddress(clientIpAddress);
+	    String systemCode = ETRConfigurationService.getYaqeenSystemCode();
+	    personInfoRequest.setSystemCode(systemCode);
+	    Yakeen4BorderGuardService yakeen4BorderGuardService = new Yakeen4BorderGuardService();
+	    YaqeenServices yaqeenService = yakeen4BorderGuardService.getYakeen4BorderGuardPort();
+	    return yaqeenService.getPersonInfoDetailed(personInfoRequest);
+	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+	    e.printStackTrace();
+	    if (e instanceof Yakeen4BorderGuardFaultException)
+		throw new BusinessException("error_cannotRetrieveInformationsFromYakeenAsDataEnteredIsWrong");
+	    if (e instanceof BusinessException_Exception || e instanceof DataValidationException)
+		throw new BusinessException("error_cannotRetrieveInformationsFromYakeenAsItIsNotAvailableNow");
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static void yaqeenConstructEmployeeData(EmployeeData emp, String loginId, String clientIpAddress) throws BusinessException {
+	PersonInfoDetailedResult personInfoDetailedResult = yaqeenInformationRetrieval(emp.getSocialID(), emp.getBirthDateString(), loginId, clientIpAddress);
+
+	emp.setFirstName(personInfoDetailedResult.getFirstName());
+	emp.setSecondName(personInfoDetailedResult.getFatherName());
+	emp.setThirdName(personInfoDetailedResult.getGrandFatherName());
+	emp.setLastName(personInfoDetailedResult.getFamilyName());
+	emp.setFirstNameEn(personInfoDetailedResult.getEnglishFirstName());
+	emp.setSecondNameEn(personInfoDetailedResult.getEnglishSecondName());
+	emp.setThirdNameEn(personInfoDetailedResult.getEnglishThirdName());
+	emp.setLastNameEn(personInfoDetailedResult.getEnglishLastName());
+
+	emp.setSocialIDIssueDate(HijriDateService.getHijriDate(personInfoDetailedResult.getIdIssueDateH().replace('-', '/')));
+	emp.setSocialIDIssueExpiryDate(HijriDateService.getHijriDate(personInfoDetailedResult.getIdExpiryDateH().replace('-', '/')));
+	emp.setGender(personInfoDetailedResult.getGender().toString());
+
+	List<SocialIdIssuePlace> socialIdIssuePlace = CommonService.getSocialIdIssuePlacesByExactDescription(personInfoDetailedResult.getIdIssuePlace().getValue());
+	emp.setSocialIDIssuePlaceDesc(socialIdIssuePlace == null || socialIdIssuePlace.isEmpty() ? null : socialIdIssuePlace.get(0).getDescription());
+	emp.setSocialIDIssuePlaceID(socialIdIssuePlace == null || socialIdIssuePlace.isEmpty() ? null : socialIdIssuePlace.get(0).getId());
+
+	Country country = CountryService.getCountryByYaqeenName(personInfoDetailedResult.getNationalityDesc());
+	emp.setCountryId(country.getId());
+	emp.setNationality(country.getNationality());
+    }
+
+    private static void validateYaqeenMandatoryFields(String socialId, String birthDate) throws BusinessException {
+	if (socialId == null || socialId.trim().equals(""))
+	    throw new BusinessException("error_socialIDMandatory");
+	if (birthDate == null || birthDate.equals(""))
+	    throw new BusinessException("error_birthDateMandatory");
+    }
 }
