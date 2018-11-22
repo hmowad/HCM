@@ -644,9 +644,9 @@ public class PromotionsWorkFlow extends BaseWorkFlow {
 	    }
 
 	    if (isCollective)
-		PromotionsService.deletePromotionReportDetails(promotionReportDetailDataList, loginEmpData);
+		PromotionsService.deletePromotionReportDetails(promotionReportDetailDataList, loginEmpData, session);
 	    else
-		PromotionsService.deletePromotionReportDetail(promotionReportDetailData, promotionReportDetailDataList, loginEmpData);
+		PromotionsService.deletePromotionReportDetail(promotionReportDetailData, promotionReportDetailDataList, loginEmpData, session);
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
