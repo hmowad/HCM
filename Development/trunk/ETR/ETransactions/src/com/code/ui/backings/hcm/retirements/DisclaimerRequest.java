@@ -251,7 +251,17 @@ public class DisclaimerRequest extends WFBaseBacking {
 
     public String doRetirementsAprroveESM() throws BusinessException {
 	try {
-	    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, currentTask);
+	    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, currentTask, WFActionFlagsEnum.APPROVE.getCode());
+	    return NavigationEnum.INBOX.toString();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    return null;
+	}
+    }
+
+    public String doRetirementsRejectESM() throws BusinessException {
+	try {
+	    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, currentTask, WFActionFlagsEnum.REJECT.getCode());
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
