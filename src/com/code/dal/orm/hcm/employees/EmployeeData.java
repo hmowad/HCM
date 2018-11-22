@@ -1001,8 +1001,8 @@ public class EmployeeData extends BaseEntity implements Serializable {
 
     public void setSocialIDIssueExpiryDateString(String socialIDIssueExpiryDateString) {
 	this.socialIDIssueExpiryDateString = socialIDIssueExpiryDateString;
-	this.socialIDIssueDate = HijriDateService.getHijriDate(socialIDIssueExpiryDateString);
-	employee.setSocialIDIssueExpiryDate(socialIDIssueDate);
+	this.socialIDIssueExpiryDate = HijriDateService.getHijriDate(socialIDIssueExpiryDateString);
+	employee.setSocialIDIssueExpiryDate(socialIDIssueExpiryDate);
     }
 
     @Transient
