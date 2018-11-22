@@ -340,6 +340,9 @@
 										<h:commandButton onclick="return handleOnAction('#{msgs.q_superSign}', 'true');" action="#{disclaimerRequest.doRetirementsAprroveESM()}" value="#{msgs.label_superSign}  &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 											<f:ajax />
 										</h:commandButton>
+										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'true');" action="#{disclaimerRequest.doRetirementsRejectESM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
 									</h:panelGroup>
 
 

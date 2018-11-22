@@ -336,11 +336,15 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	}
     }
 
-    public static void doESM(EmployeeData requester, WFInstance instance, WFDisclaimerData wfDisclaimerData, WFTask esmTask) throws BusinessException {
+    public static void doESM(EmployeeData requester, WFInstance instance, WFDisclaimerData wfDisclaimerData, WFTask esmTask, int actionFlag) throws BusinessException {
 	CustomSession session = DataAccess.getSession();
 	try {
 	    session.beginTransaction();
-	    closeDisclaimerWorkFlow(requester, instance, wfDisclaimerData, esmTask, session);
+	    if (actionFlag == WFActionFlagsEnum.APPROVE.getCode())
+		closeDisclaimerWorkFlow(requester, instance, wfDisclaimerData, esmTask, session);
+	    else if (actionFlag == WFActionFlagsEnum.REJECT.getCode()) {
+		closeWFInstanceByAction(requester.getEmpId(), instance, esmTask, WFTaskActionsEnum.REJECT.getCode(), null, session);
+	    }
 	    session.commitTransaction();
 	} catch (BusinessException e) {
 	    session.rollbackTransaction();

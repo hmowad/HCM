@@ -13,6 +13,7 @@ import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.workflow.WFInstance;
 import com.code.dal.orm.workflow.WFTask;
 import com.code.dal.orm.workflow.hcm.retirements.WFDisclaimerData;
+import com.code.enums.WFActionFlagsEnum;
 import com.code.enums.WFTaskRolesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.workflow.hcm.RetirementsWorkFlow;
@@ -102,7 +103,7 @@ public class RetirementsCollectiveApproval extends BaseBacking implements Serial
 		    WFDisclaimerData wfDisclaimerData = wfDisclaimerDataMap.get(task.getInstanceId());
 		    if (wfDisclaimerData == null)
 			wfDisclaimerData = new WFDisclaimerData();
-		    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, task);
+		    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, task, WFActionFlagsEnum.APPROVE.getCode());
 		} catch (BusinessException e) {
 		    unsuccessfulTaskIdsIfAny += comma + task.getTaskId();
 		    unsuccessfulTasksCount++;
