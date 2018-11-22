@@ -102,14 +102,18 @@ public class CommonService extends BaseService {
     /*---------------------------------- Social ID Issue Places -------------------------------*/
 
     public static List<SocialIdIssuePlace> getSocialIdIssuePlacesByDescription(String description) throws BusinessException {
-	return searchSocialIdIssuePlaces(FlagsEnum.ALL.getCode(), description);
+	return searchSocialIdIssuePlaces(FlagsEnum.ALL.getCode(), description, false);
     }
 
-    private static List<SocialIdIssuePlace> searchSocialIdIssuePlaces(long id, String description) throws BusinessException {
+    public static List<SocialIdIssuePlace> getSocialIdIssuePlacesByExactDescription(String description) throws BusinessException {
+	return searchSocialIdIssuePlaces(FlagsEnum.ALL.getCode(), description, true);
+    }
+
+    private static List<SocialIdIssuePlace> searchSocialIdIssuePlaces(long id, String description, boolean exact) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_ID", id);
-	    qParams.put("P_DESC", (description == null || description.length() == 0) ? FlagsEnum.ALL.getCode() + "" : "%" + description + "%");
+	    qParams.put("P_DESC", (description == null || description.length() == 0) ? FlagsEnum.ALL.getCode() + "" : (exact ? description : "%" + description + "%"));
 
 	    return DataAccess.executeNamedQuery(SocialIdIssuePlace.class, QueryNamesEnum.HCM_SEARCH_SOCIAL_ID_ISSUE_PLACES.getCode(), qParams);
 	} catch (DatabaseException e) {

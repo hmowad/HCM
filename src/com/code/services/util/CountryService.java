@@ -52,6 +52,27 @@ public class CountryService {
 
 	    return DataAccess.executeNamedQuery(Country.class, QueryNamesEnum.HCM_GET_COUNTRY_BY_COUNTRY_DESC.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static Country getCountryByYaqeenName(String yaqeenName) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    if (yaqeenName != null && !yaqeenName.trim().isEmpty()) {
+		qParams.put("P_YAQEEN_NAME", new String[] { yaqeenName, "NA" });
+	    } else {
+		qParams.put("P_YAQEEN_NAME", new String[] { FlagsEnum.ALL.getCode() + "" });
+	    }
+	    List<Country> result = DataAccess.executeNamedQuery(Country.class, QueryNamesEnum.HCM_GET_COUNTRY_BY_YAQEEN_NAME.getCode(), qParams);
+	    if (result.isEmpty())
+		return null;
+	    else {
+		return result.get(0);
+	    }
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }

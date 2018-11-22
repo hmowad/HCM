@@ -211,6 +211,14 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 	return "";
     }
 
+    public void yaqeenInformationRetrieval() {
+	try {
+	    EmployeesService.yaqeenConstructEmployeeData(employee, this.loginEmpData.getSocialID(), getClientIpAddress());
+	} catch (BusinessException e) {
+	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
+    }
+
     public JobData getJobData() {
 	return jobData;
     }

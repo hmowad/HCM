@@ -276,104 +276,108 @@
 						<h:panelGroup id="basicDataPanelId">
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
-									<th width="15%">
-										#{msgs.label_name}
-										<h:outputText value=" " />
-										<font style="color: red;">*</font>
-									</th>
-									<td width="75%" colspan="5">
-										<h:inputText id="firstNameId" value="#{employeesDataView.employee.firstName}" readonly="#{employeesDataView.viewOnly}" maxlength="50" styleClass="inputDataNormal" />
-										<h:outputText value=" " />
-										<h:inputText id="secondNameId" value="#{employeesDataView.employee.secondName}" readonly="#{employeesDataView.viewOnly}" maxlength="50" styleClass="inputDataNormal" />
-										<h:outputText value=" " />
-										<h:inputText value="#{employeesDataView.employee.thirdName}" readonly="#{employeesDataView.viewOnly}" maxlength="50" styleClass="inputDataNormal" />
-										<h:outputText value=" " />
-										<h:inputText id="lastNameId" value="#{employeesDataView.employee.lastName}" readonly="#{employeesDataView.viewOnly}" maxlength="50" styleClass="inputDataNormal" />
-									</td>
-									<td width="10%" rowspan="4">
-										<h:graphicImage title="#{!employeesDataView.viewOnly ? msgs.label_changeImage : ''}" width="100px" height="125px" id="imageId" value="/image?mode=1&amp;objectId=#{employeesDataView.employee.empId}" styleClass="#{!employeesDataView.viewOnly ? 'empProfileImage' : ''}" onclick="#{!employeesDataView.viewOnly ? 'getImage('.concat(employeesDataView.empPhoto == null ? 1 : 0).concat(',').concat(employeesDataView.employee.empId).concat(');') : 'return false;'}" />
-									</td>
-								</tr>
-								<tr>
-									<h:panelGroup rendered="#{employeesDataView.mode != 3}">
-										<th width="15%">#{msgs.label_nationality}</th>
-										<td width="20%">
-											<h:outputText value="#{msgs.label_saudi}" />
-										</td>
-									</h:panelGroup>
-									<h:panelGroup rendered="#{employeesDataView.mode == 3}">
-										<th width="15%">
-											#{msgs.label_nationality}
-											<h:outputText value=" " />
-											<font style="color: red;">*</font>
-										</th>
-										<td width="20%">
-											<h:inputHidden id="countryIDId" value="#{employeesDataView.employee.countryId}" />
-											<h:outputText id="nationalityId" value="#{employeesDataView.employee.nationality}" />
-											<h:inputHidden id="nationalityHId" value="#{employeesDataView.employee.nationality}" />
-											<h:outputText value=" " />
-											<h:commandButton value="#{msgs.fa_external_link}" rendered="false" onclick="getNationalityCountry(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
-										</td>
-									</h:panelGroup>
-									<th width="15%">
-										#{msgs.label_birthDate}
-										<h:outputText value=" " />
-										<font style="color: red;">*</font>
-									</th>
-									<td width="15%">
-										<util:hijri id="birthDateId" value="#{employeesDataView.employee.birthDate}" rendered="#{!employeesDataView.viewOnly}" nullable="true" viewOldRange="true" />
-										<h:outputText value="#{employeesDataView.employee.birthDateString}" rendered="#{employeesDataView.viewOnly}" />
-									</td>
-									<th width="15%">
-										#{msgs.label_birthPlace}
-										<h:outputText value=" " />
-										<font style="color: red;">*</font>
-									</th>
-									<td width="10%">
-										<h:inputText id="birthPlaceId" value="#{employeesDataView.employee.birthPlace}" readonly="#{employeesDataView.viewOnly}" maxlength="200" styleClass="inputDataLarge" />
-									</td>
-								</tr>
-								<tr>
-									<th width="15%">
+									<th width="15%" colspan="1">
 										#{msgs.label_socialId}
 										<h:outputText value=" " />
 										<font style="color: red;">*</font>
 									</th>
-									<td width="20%">
+									<td width="15%" colspan="1">
 										<h:inputText id="socialIDId" value="#{employeesDataView.employee.socialID}" readonly="#{employeesDataView.viewOnly}" styleClass="inputDataLarge" maxlength="10" />
 									</td>
-									<th width="15%">
-										#{msgs.label_issueDate}
+									<th width="15%" colspan="1">
+										#{msgs.label_birthDate}
 										<h:outputText value=" " />
+										<font style="color: red;">*</font>
 									</th>
-									<td width="15%">
-										<util:hijri id="socialIdIssueDateId" value="#{employeesDataView.employee.socialIDIssueDate}" rendered="#{!employeesDataView.viewOnly}" nullable="true" viewOldRange="true" />
-										<h:outputText value="#{employeesDataView.employee.socialIDIssueDateString}" rendered="#{employeesDataView.viewOnly}" />
+									<td width="15%" colspan="1">
+										<util:hijri id="birthDateId" value="#{employeesDataView.employee.birthDate}" rendered="#{!employeesDataView.viewOnly}" nullable="true" viewOldRange="true" />
+										<h:outputText value="#{employeesDataView.employee.birthDateString}" rendered="#{employeesDataView.viewOnly}" />
 									</td>
-									<th width="15%">
-										#{msgs.label_issuePlace}
-										<h:outputText value=" " />
+									<td width="30%" colspan="2">
+										<h:commandButton action ="#{employeesDataView.yaqeenInformationRetrieval()}" value="#{msgs.label_retrieveInformation}" title="#{msgs.label_retrieveInformation}" rendered="#{!employeesDataView.viewOnly}" styleClass="btn_normal" >
+											<f:ajax execute="employeesDataViewFormId:basicDataPanelId" render="employeesDataViewFormId:basicDataPanelId employeesDataViewFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+										</h:commandButton>
+									</td>
+									<td width="10%" rowspan="4" colspan="1">
+										<h:graphicImage title="#{!employeesDataView.viewOnly ? msgs.label_changeImage : ''}" width="100px" height="125px" id="imageId" value="/image?mode=1&amp;objectId=#{employeesDataView.employee.empId}" styleClass="#{!employeesDataView.viewOnly ? 'empProfileImage' : ''}" onclick="#{!employeesDataView.viewOnly ? 'getImage('.concat(employeesDataView.empPhoto == null ? 1 : 0).concat(',').concat(employeesDataView.employee.empId).concat(');') : 'return false;'}" />
+									</td>
+								</tr>
+								
+								<tr>
+									<th width="15%" colspan="1" rowspan="2">
+										#{msgs.label_name}
 									</th>
-									<td width="10%">
-										<h:outputText id="socialIdIssuePlaceDescId" value="#{employeesDataView.employee.socialIDIssuePlaceDesc}" />
-										<h:inputHidden id="socialIdIssuePlaceDescHId" value="#{employeesDataView.employee.socialIDIssuePlaceDesc}" />
-										<h:inputHidden id="socialIdIssuePlaceIDId" value="#{employeesDataView.employee.socialIDIssuePlaceID}" />
+									<td width="75%" colspan="5">
+										<h:inputText id="firstNameId" value="#{employeesDataView.employee.firstName}" maxlength="50"  readonly="true" styleClass="inputDataNormal"/>
 										<h:outputText value=" " />
-										<h:commandButton value="#{msgs.fa_external_link}" rendered="#{!employeesDataView.viewOnly}" onclick="getSocialIdIssuePlace(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+										<h:inputText id="secondNameId" value="#{employeesDataView.employee.secondName}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+										<h:outputText value=" " />
+										<h:inputText id ="thirdNameId" value="#{employeesDataView.employee.thirdName}"  maxlength="50" readonly="true" styleClass="inputDataNormal" />
+										<h:outputText value=" " />
+										<h:inputText id="lastNameId" value="#{employeesDataView.employee.lastName}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
 									</td>
 								</tr>
 								<tr>
-									<th width="15%">#{msgs.label_gender}</th>
-									<td width="20%">
-										<h:selectOneMenu value="#{employeesDataView.employee.gender}" rendered="#{not employeesDataView.viewOnly}">
-											<f:selectItem itemLabel="#{msgs.label_male}" itemValue="M" />
-											<f:selectItem itemLabel="#{msgs.label_female}" itemValue="F" />
-										</h:selectOneMenu>
-										<h:outputText value="#{msgs.label_male}" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.gender == 'M'}" />
-										<h:outputText value="#{msgs.label_female}" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.gender == 'F'}" />
+									<td width="75%" colspan="5">
+										<h:inputText id="firstNameEnId" value="#{employeesDataView.employee.firstNameEn}" maxlength="50"  readonly="true" styleClass="inputDataNormal"/>
+										<h:outputText value=" " />
+										<h:inputText id="secondNameEnId" value="#{employeesDataView.employee.secondNameEn}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+										<h:outputText value=" " />
+										<h:inputText id ="thirdNameEnId" value="#{employeesDataView.employee.thirdNameEn}"  maxlength="50" readonly="true" styleClass="inputDataNormal" />
+										<h:outputText value=" " />
+										<h:inputText id="lastNameEnId" value="#{employeesDataView.employee.lastNameEn}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
 									</td>
-									<th width="15%">#{msgs.label_bloodGroup}</th>
-									<td width="15%">
+								</tr>
+								<tr>
+									<th width ="15%" colspan="1">
+										#{msgs.label_issueDate}
+										<h:outputText value=" " />
+									</th>
+									<td width ="15%" colspan="1">
+										<h:outputText value="#{employeesDataView.employee.socialIDIssueDateString}"/>
+									</td>
+									<th width ="15%" colspan="1">
+										#{msgs.label_issueExpiryDate}
+										<h:outputText value=" " />
+									</th>
+									<td width ="15%" colspan="1">
+										<h:outputText value="#{employeesDataView.employee.socialIDIssueExpiryDateString}" />
+									</td>
+									<th width ="15%" colspan="1">
+										#{msgs.label_issuePlace}
+										<h:outputText value=" " />
+									</th>
+									<td width ="15%" colspan="1">
+										<h:outputText value="#{employeesDataView.employee.socialIDIssuePlaceDesc}" />
+									</td>
+								</tr>
+								<tr>
+									<th width ="15%" colspan="1">
+										#{msgs.label_birthPlace}
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</th>
+									<td width ="15%" colspan="1">
+										<h:inputText id="birthPlaceId" value="#{employeesDataView.employee.birthPlace}" readonly="#{employeesDataView.viewOnly}" maxlength="200" styleClass="inputDataLarge" />
+									</td>
+									
+									<th width ="15%" colspan="1">#{msgs.label_gender}</th>
+									<td width ="15%" colspan="1">
+										<h:outputText value="#{msgs.label_male}" rendered="#{employeesDataView.employee.gender == 'M'}" />
+										<h:outputText value="#{msgs.label_female}" rendered="#{employeesDataView.employee.gender == 'F'}" />
+									</td>
+									<th width ="15%" colspan="1">
+										#{msgs.label_nationality}
+									</th>
+									<td width ="15%" colspan="1">
+										<h:outputText value="#{employeesDataView.employee.nationality}" />
+									</td>
+						
+								</tr>
+								
+								<tr>
+									<th>#{msgs.label_bloodGroup}</th>
+									<td>
 										<h:selectOneMenu value="#{employeesDataView.employee.bloodGroup}" rendered="#{not employeesDataView.viewOnly}">
 											<f:selectItem itemLabel="" />
 											<f:selectItem itemValue="1" itemLabel="A+" />
@@ -394,8 +398,8 @@
 										<h:outputText value="O+" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.bloodGroup == '7'}" />
 										<h:outputText value="O-" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.bloodGroup == '8'}" />
 									</td>
-									<th width="15%">#{msgs.label_socialStatus}</th>
-									<td width="10%">
+									<th>#{msgs.label_socialStatus}</th>
+									<td>
 										<h:selectOneMenu value="#{employeesDataView.employee.socialStatus}" rendered="#{not employeesDataView.viewOnly}">
 											<f:selectItem itemLabel="" />
 											<f:selectItem itemLabel="#{msgs.label_single}" itemValue="1" />

@@ -299,125 +299,111 @@
 							<h:panelGroup id="basicDataPanelId">
 								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 									<tr>
-										<th width="15%">
-											#{msgs.label_name}
-											<h:outputText value=" " />
-											<font style="color: red;">*</font>
-										</th>
-										<td width="75%" colspan="5">
-											<h:inputText id="firstNameId" value="#{newEmployeeRegistration.employee.firstName}" readonly="#{newEmployeeRegistration.viewOnly}" maxlength="50" styleClass="inputDataNormal" />
-											<h:outputText value=" " />
-											<h:inputText id="secondNameId" value="#{newEmployeeRegistration.employee.secondName}" readonly="#{newEmployeeRegistration.viewOnly}" maxlength="50" styleClass="inputDataNormal" />
-											<h:outputText value=" " />
-											<h:inputText value="#{newEmployeeRegistration.employee.thirdName}" readonly="#{newEmployeeRegistration.viewOnly}" maxlength="50" styleClass="inputDataNormal" />
-											<h:outputText value=" " />
-											<h:inputText id="lastNameId" value="#{newEmployeeRegistration.employee.lastName}" readonly="#{newEmployeeRegistration.viewOnly}" maxlength="50" styleClass="inputDataNormal" />
-										</td>
-										<td width="10%" rowspan="4">
-											<h:graphicImage title="#{!newEmployeeRegistration.viewOnly ? msgs.label_changeImage : ''}" width="100px" height="125px" id="imageId" value="/image?mode=1&amp;objectId=#{newEmployeeRegistration.employee.empId}" styleClass="#{!newEmployeeRegistration.viewOnly ? 'empProfileImage' : ''}"
-												onclick="#{!newEmployeeRegistration.viewOnly ? 'getImage('.concat(newEmployeeRegistration.empPhoto == null ? 1 : 0).concat(',').concat(newEmployeeRegistration.employee.empId).concat(');') : 'return false;'}" />
-										</td>
-									</tr>
-									<tr>
-										<h:panelGroup rendered="#{newEmployeeRegistration.mode != 3}">
-											<th width="15%">#{msgs.label_nationality}</th>
-											<td width="20%">
-												<h:outputText value="#{msgs.label_saudi}" />
-											</td>
-										</h:panelGroup>
-										<h:panelGroup rendered="#{newEmployeeRegistration.mode == 3}">
-											<th width="15%">
-												#{msgs.label_nationality}
-												<h:outputText value=" " />
-												<font style="color: red;">*</font>
-											</th>
-											<td width="20%">
-												<h:inputHidden id="countryIDId" value="#{newEmployeeRegistration.employee.countryId}" />
-												<h:outputText id="nationalityId" value="#{newEmployeeRegistration.employee.nationality}" />
-												<h:inputHidden id="nationalityHId" value="#{newEmployeeRegistration.employee.nationality}" />
-												<h:outputText value=" " />
-												<h:commandButton value="#{msgs.fa_external_link}" rendered="#{newEmployeeRegistration.employee.categoryId == 6 and !newEmployeeRegistration.viewOnly}" onclick="getCountry(1); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
-											</td>
-										</h:panelGroup>
-										<th width="15%">
-											#{msgs.label_birthDate}
-											<h:outputText value=" " />
-											<font style="color: red;">*</font>
-										</th>
-										<td width="15%">
-											<util:hijri id="birthDateId" value="#{newEmployeeRegistration.employee.birthDate}" rendered="#{!newEmployeeRegistration.viewOnly}" viewOldRange="true" />
-											<h:outputText value="#{newEmployeeRegistration.employee.birthDateString}" rendered="#{newEmployeeRegistration.viewOnly}" />
-										</td>
-										<th width="15%">
-											#{msgs.label_birthPlace}
-											<h:outputText value=" " />
-											<font style="color: red;">*</font>
-										</th>
-										<td width="10%">
-											<h:inputText id="birthPlaceId" value="#{newEmployeeRegistration.employee.birthPlace}" readonly="#{newEmployeeRegistration.viewOnly}" maxlength="200" styleClass="inputDataLarge" />
-										</td>
-									</tr>
-									<tr>
-										<th>
+										<th width="15%" colspan="1">
 											#{msgs.label_socialId}
 											<h:outputText value=" " />
 											<font style="color: red;">*</font>
 										</th>
-										<td>
-											<h:inputText id="socialIDId" value="#{newEmployeeRegistration.employee.socialID}" readonly="#{newEmployeeRegistration.viewOnly}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
+										<td width="15%" colspan="1">
+											<h:inputText id="socialIDId" value="#{newEmployeeRegistration.employee.socialID}" readonly="#{newEmployeeRegistration.viewOnly}" styleClass="inputDataLarge" maxlength="10" />
 										</td>
-										<th>
-											#{msgs.label_issueDate}
+										<th width="15%" colspan="1">
+											#{msgs.label_birthDate}
 											<h:outputText value=" " />
+											<font style="color: red;">*</font>
 										</th>
-										<td>
-											<util:hijri value="#{newEmployeeRegistration.employee.socialIDIssueDate}" rendered="#{!newEmployeeRegistration.viewOnly}" viewOldRange="true" nullable="true"/>
-											<h:outputText value="#{newEmployeeRegistration.employee.socialIDIssueDateString}" rendered="#{newEmployeeRegistration.viewOnly}" />
+										<td width="15%" colspan="1">
+											<util:hijri id="birthDateId" value="#{newEmployeeRegistration.employee.birthDate}" rendered="#{!newEmployeeRegistration.viewOnly}" nullable="true" viewOldRange="true" />
+											<h:outputText value="#{newEmployeeRegistration.employee.birthDateString}" rendered="#{newEmployeeRegistration.viewOnly}" />
 										</td>
-										<th>
-											#{msgs.label_issuePlace}
-											<h:outputText value=" " />
+										<td width="30%" colspan="2">
+											<h:commandButton action ="#{newEmployeeRegistration.yaqeenInformationRetrieval()}" value="#{msgs.label_retrieveInformation}" title="#{msgs.label_retrieveInformation}" rendered="#{!newEmployeeRegistration.viewOnly}" styleClass="btn_normal" >
+												<f:ajax execute="newEmployeeRegistrationFormId:basicDataPanelId" render="newEmployeeRegistrationFormId:basicDataPanelId newEmployeeRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+											</h:commandButton>
+										</td>
+										<td width="10%" rowspan="4" colspan="1">
+											<h:graphicImage title="#{!newEmployeeRegistration.viewOnly ? msgs.label_changeImage : ''}" width="100px" height="125px" id="imageId" value="/image?mode=1&amp;objectId=#{newEmployeeRegistration.employee.empId}" styleClass="#{!newEmployeeRegistration.viewOnly ? 'empProfileImage' : ''}"
+												onclick="#{!newEmployeeRegistration.viewOnly ? 'getImage('.concat(newEmployeeRegistration.empPhoto == null ? 1 : 0).concat(',').concat(newEmployeeRegistration.employee.empId).concat(');') : 'return false;'}" />
+										</td>
+									</tr>
+									
+									<tr>
+										<th width="15%" colspan="1" rowspan="2">
+											#{msgs.label_name}
 										</th>
-										<td>
-											<h:outputText id="socialIdIssuePlaceDescId" value="#{newEmployeeRegistration.employee.socialIDIssuePlaceDesc}" />
-											<h:inputHidden id="socialIdIssuePlaceDescHId" value="#{newEmployeeRegistration.employee.socialIDIssuePlaceDesc}" />
-											<h:inputHidden id="socialIdIssuePlaceIDId" value="#{newEmployeeRegistration.employee.socialIDIssuePlaceID}" />
+										<td width="75%" colspan="5">
+											<h:inputText id="firstNameId" value="#{newEmployeeRegistration.employee.firstName}" maxlength="50"  readonly="true" styleClass="inputDataNormal"/>
 											<h:outputText value=" " />
-											<h:commandButton value="#{msgs.fa_external_link}" rendered="#{!newEmployeeRegistration.viewOnly}" onclick="getSocialIdIssuePlace(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+											<h:inputText id="secondNameId" value="#{newEmployeeRegistration.employee.secondName}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+											<h:outputText value=" " />
+											<h:inputText id ="thirdNameId" value="#{newEmployeeRegistration.employee.thirdName}"  maxlength="50" readonly="true" styleClass="inputDataNormal" />
+											<h:outputText value=" " />
+											<h:inputText id="lastNameId" value="#{newEmployeeRegistration.employee.lastName}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
 										</td>
 									</tr>
 									<tr>
-										<h:panelGroup rendered="#{newEmployeeRegistration.mode == 2}">
-											<th>
-												#{msgs.label_gender}
-												<h:outputText value=" " />
-												<font style="color: red;">*</font>
-											</th>
-											<td>
-												<h:selectOneMenu id="soldierGenderId" value="#{newEmployeeRegistration.employee.gender}" disabled="#{newEmployeeRegistration.updateMode}">
-													<f:selectItem itemLabel=" " />
-													<f:selectItem itemLabel="#{msgs.label_male}" itemValue="M" />
-													<f:selectItem itemLabel="#{msgs.label_female}" itemValue="F" />
-													<f:ajax event="change" execute="newEmployeeRegistrationFormId:jobDataPanelId" listener="#{newEmployeeRegistration.genderListener()}" render="newEmployeeRegistrationFormId:jobDataPanelId" />
-												</h:selectOneMenu>
-											</td>
-										</h:panelGroup>
-										<h:panelGroup rendered="#{newEmployeeRegistration.mode != 2}">
-											<th>
-												#{msgs.label_gender}
-												<h:outputText value=" " />
-												<font style="color: red;">*</font>
-											</th>
-											<td>
-												<h:selectOneMenu value="#{newEmployeeRegistration.employee.gender}" disabled="#{newEmployeeRegistration.viewOnly}">
-													<f:selectItem itemLabel="#{msgs.label_male}" itemValue="M" />
-													<f:selectItem itemLabel="#{msgs.label_female}" itemValue="F" />
-												</h:selectOneMenu>
-											</td>
-										</h:panelGroup>
+										<td width="75%" colspan="5">
+											<h:inputText id="firstNameEnId" value="#{newEmployeeRegistration.employee.firstNameEn}" maxlength="50"  readonly="true" styleClass="inputDataNormal"/>
+											<h:outputText value=" " />
+											<h:inputText id="secondNameEnId" value="#{newEmployeeRegistration.employee.secondNameEn}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+											<h:outputText value=" " />
+											<h:inputText id ="thirdNameEnId" value="#{newEmployeeRegistration.employee.thirdNameEn}"  maxlength="50" readonly="true" styleClass="inputDataNormal" />
+											<h:outputText value=" " />
+											<h:inputText id="lastNameEnId" value="#{newEmployeeRegistration.employee.lastNameEn}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+										</td>
+									</tr>
+									<tr>
+										<th width ="15%" colspan="1">
+											#{msgs.label_issueDate}
+											<h:outputText value=" " />
+										</th>
+										<td width ="15%" colspan="1">
+											<h:outputText value="#{newEmployeeRegistration.employee.socialIDIssueDateString}"/>
+										</td>
+										<th width ="15%" colspan="1">
+											#{msgs.label_issueExpiryDate}
+											<h:outputText value=" " />
+										</th>
+										<td width ="15%" colspan="1">
+											<h:outputText value="#{newEmployeeRegistration.employee.socialIDIssueExpiryDateString}" />
+										</td>
+										<th width ="15%" colspan="1">
+											#{msgs.label_issuePlace}
+											<h:outputText value=" " />
+										</th>
+										<td width ="15%" colspan="1">
+											<h:outputText value="#{newEmployeeRegistration.employee.socialIDIssuePlaceDesc}" />
+										</td>
+									</tr>
+									<tr>
+										<th width ="15%" colspan="1">
+											#{msgs.label_birthPlace}
+											<h:outputText value=" " />
+											<font style="color: red;">*</font>
+										</th>
+										<td width ="15%" colspan="1">
+											<h:inputText id="birthPlaceId" value="#{newEmployeeRegistration.employee.birthPlace}" readonly="#{newEmployeeRegistration.viewOnly}" maxlength="200" styleClass="inputDataLarge" />
+											
+										</td>
+										
+										<th width ="15%" colspan="1">#{msgs.label_gender}</th>
+										<td width ="15%" colspan="1">
+											<h:outputText value="#{msgs.label_male}" rendered="#{newEmployeeRegistration.employee.gender == 'M'}" />
+											<h:outputText value="#{msgs.label_female}" rendered="#{newEmployeeRegistration.employee.gender == 'F'}" />
+										</td>
+										<th width ="15%" colspan="1">
+											#{msgs.label_nationality}
+										</th>
+										<td width ="15%" colspan="1">
+											<h:outputText value="#{newEmployeeRegistration.employee.nationality}" />
+										</td>
+							
+									</tr>
+									
+									<tr>
 										<th>#{msgs.label_bloodGroup}</th>
 										<td>
-											<h:selectOneMenu value="#{newEmployeeRegistration.employee.bloodGroup}" disabled="#{newEmployeeRegistration.viewOnly}">
+											<h:selectOneMenu value="#{newEmployeeRegistration.employee.bloodGroup}" rendered="#{not newEmployeeRegistration.viewOnly}">
 												<f:selectItem itemLabel="" />
 												<f:selectItem itemValue="1" itemLabel="A+" />
 												<f:selectItem itemValue="2" itemLabel="A-" />
@@ -428,17 +414,27 @@
 												<f:selectItem itemValue="7" itemLabel="O+" />
 												<f:selectItem itemValue="8" itemLabel="O-" />
 											</h:selectOneMenu>
+											<h:outputText value="A+" rendered="#{newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.bloodGroup == '1'}" />
+											<h:outputText value="A-" rendered="#{newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.bloodGroup == '2'}" />
+											<h:outputText value="B+" rendered="#{newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.bloodGroup == '3'}" />
+											<h:outputText value="B-" rendered="#{newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.bloodGroup == '4'}" />
+											<h:outputText value="AB+" rendered="#{newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.bloodGroup == '5'}" />
+											<h:outputText value="AB-" rendered="#{newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.bloodGroup == '6'}" />
+											<h:outputText value="O+" rendered="#{newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.bloodGroup == '7'}" />
+											<h:outputText value="O-" rendered="#{newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.bloodGroup == '8'}" />
 										</td>
 										<th>#{msgs.label_socialStatus}</th>
 										<td>
-											<h:selectOneMenu value="#{newEmployeeRegistration.employee.socialStatus}" disabled="#{newEmployeeRegistration.viewOnly}">
+											<h:selectOneMenu value="#{newEmployeeRegistration.employee.socialStatus}" rendered="#{not newEmployeeRegistration.viewOnly}">
 												<f:selectItem itemLabel="" />
 												<f:selectItem itemLabel="#{msgs.label_single}" itemValue="1" />
 												<f:selectItem itemLabel="#{msgs.label_married}" itemValue="2" />
 											</h:selectOneMenu>
+											<h:outputText value="#{msgs.label_single}" rendered="#{newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.socialStatus == 1}" />
+											<h:outputText value="#{msgs.label_married}" rendered="#{newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.socialStatus == 2}" />
 										</td>
 									</tr>
-								</table>
+								</table>	
 							</h:panelGroup>
 						</td>
 					</tr>

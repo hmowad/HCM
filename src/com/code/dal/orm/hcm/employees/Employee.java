@@ -41,6 +41,10 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
     private String secondName;
     private String thirdName;
     private String lastName;
+    private String firstNameEn;
+    private String secondNameEn;
+    private String thirdNameEn;
+    private String lastNameEn;
     private Long categoryId;
     private Long rankId;
     private Long salaryRankId;
@@ -49,6 +53,7 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
     private String birthPlace;
     private String socialID;
     private Date socialIDIssueDate;
+    private Date socialIDIssueExpiryDate;
     private Long socialIDIssuePlaceID;
     private String bloodGroup;
     private String gender;
@@ -149,6 +154,46 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
 	return lastName;
     }
 
+    @Basic
+    @Column(name = "FIRST_NAME_EN")
+    public String getFirstNameEn() {
+	return firstNameEn;
+    }
+
+    public void setFirstNameEn(String firstNameEn) {
+	this.firstNameEn = firstNameEn;
+    }
+
+    @Basic
+    @Column(name = "SECOND_NAME_EN")
+    public String getSecondNameEn() {
+	return secondNameEn;
+    }
+
+    public void setSecondNameEn(String secondNameEn) {
+	this.secondNameEn = secondNameEn;
+    }
+
+    @Basic
+    @Column(name = "THIRD_NAME_EN")
+    public String getThirdNameEn() {
+	return thirdNameEn;
+    }
+
+    public void setThirdNameEn(String thirdNameEn) {
+	this.thirdNameEn = thirdNameEn;
+    }
+
+    @Basic
+    @Column(name = "LAST_NAME_EN")
+    public String getLastNameEn() {
+	return lastNameEn;
+    }
+
+    public void setLastNameEn(String lastNameEn) {
+	this.lastNameEn = lastNameEn;
+    }
+
     public void setCategoryId(Long categoryId) {
 	this.categoryId = categoryId;
     }
@@ -229,6 +274,17 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
     @Temporal(TemporalType.TIMESTAMP)
     public Date getSocialIDIssueDate() {
 	return socialIDIssueDate;
+    }
+
+    public void setSocialIDIssueExpiryDate(Date socialIDIssueExpiryDate) {
+	this.socialIDIssueExpiryDate = socialIDIssueExpiryDate;
+    }
+
+    @Basic
+    @Column(name = "SOCIAL_ID_ISSUE_EXPIRY_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getSocialIDIssueExpiryDate() {
+	return socialIDIssueExpiryDate;
     }
 
     public void setSocialIDIssuePlaceID(Long socialIDIssuePlaceID) {
