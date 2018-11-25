@@ -449,6 +449,14 @@ function unitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTypeCod
 	unMaskOnPopupClose(childWindow);
 }
 
+
+function unitsMiniSearchByInstanceId(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, unitHKeyPrefix, instanceId, multipleSelectFlag){
+	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
+	maskOpenerScreen();
+	var childWindow = window.open(contextPath+'/MiniSearch/UnitsMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&mode='+mode+'&unitTypeCode='+unitTypeCode+'&unitRegionId='+unitRegionId+'&unitParentId='+unitParentId + '&unitHKeyPrefix=' + unitHKeyPrefix + '&instanceId=' + instanceId + '&multipleSelectFlag='+ multipleSelectFlag, null, specsStr);
+	unMaskOnPopupClose(childWindow);
+}
+
 function openSelectProcesses(mode, contextPath, miniSearchReturnHandler){
 	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
 	maskOpenerScreen();
