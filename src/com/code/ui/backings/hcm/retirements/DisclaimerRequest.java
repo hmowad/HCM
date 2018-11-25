@@ -1,6 +1,7 @@
 package com.code.ui.backings.hcm.retirements;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -42,6 +43,9 @@ public class DisclaimerRequest extends WFBaseBacking {
 
     private Long reviewerEmpId;
     private String hkeyReviewerEmps;
+    private String selectedUnitsIds;
+    private List<UnitData> sentBackUnits;
+    private String selectedUnitsNames;
 
     public DisclaimerRequest() {
 	super.init();
@@ -269,6 +273,29 @@ public class DisclaimerRequest extends WFBaseBacking {
 	}
     }
 
+    // public void doRetirementsSendBackUnitsESM() {
+    // try {
+    // sentBackUnits = UnitsService.getUnitsByIdsString(selectedUnitsIds);
+    // if (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() &&
+    // wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode()) {
+    // for (UnitData sentBackUnit : sentBackUnits) {
+    // if (sentBackUnit.getRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) { // add payrollUnitManager for emp region
+    // WFPosition regionPosition = RetirementsWorkFlow.getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
+    // sentBackUnits.add(UnitsService.getUnitById(regionPosition.getUnitId()));
+    // break;
+    // }
+    // }
+    // WFPosition generalDirectoratePosition = RetirementsWorkFlow.getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+    // sentBackUnits.add(UnitsService.getUnitById(generalDirectoratePosition.getUnitId()));
+    // } else {
+    //
+    // }
+    // } catch (BusinessException e) {
+    // this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+    // e.printStackTrace();
+    // }
+    // }
+
     public String closeProcess() {
 	try {
 	    RetirementsWorkFlow.closeWFInstanceByNotification(instance, currentTask);
@@ -360,6 +387,38 @@ public class DisclaimerRequest extends WFBaseBacking {
 
     public void setRegionId(long regionId) {
 	this.regionId = regionId;
+    }
+
+    public WFDisclaimerDetail getWfDisclaimerDetail() {
+	return wfDisclaimerDetail;
+    }
+
+    public void setWfDisclaimerDetail(WFDisclaimerDetail wfDisclaimerDetail) {
+	this.wfDisclaimerDetail = wfDisclaimerDetail;
+    }
+
+    public String getSelectedUnitsIds() {
+	return selectedUnitsIds;
+    }
+
+    public void setSelectedUnitsIds(String selectedUnitsIds) {
+	this.selectedUnitsIds = selectedUnitsIds;
+    }
+
+    public List<UnitData> getSentBackUnits() {
+	return sentBackUnits;
+    }
+
+    public void setSentBackUnits(List<UnitData> sentBackUnits) {
+	this.sentBackUnits = sentBackUnits;
+    }
+
+    public String getSelectedUnitsNames() {
+	return selectedUnitsNames;
+    }
+
+    public void setSelectedUnitsNames(String selectedUnitsNames) {
+	this.selectedUnitsNames = selectedUnitsNames;
     }
 
 }
