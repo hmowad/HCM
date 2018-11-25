@@ -35,6 +35,18 @@
      	}
      }
 
+	function getUnit(contextPath, instanceId, empRegionId) {
+		unitsMiniSearchByInstanceId(8, contextPath, 'handleUnitMiniSearchResult(ret)', -1, empRegionId, -1, null,instanceId, 1);
+	}
+	
+	function handleUnitMiniSearchResult(ret){
+		if (ret != null) {
+			document.getElementById('disclaimerRequestFormId:unitsIDsHId').value = ret[0];
+			document.getElementById('disclaimerRequestFormId:unitsNamesHId').value = ret[1];
+			document.getElementById('disclaimerRequestFormId:addUnitBtnId').click() ;
+		}
+	}
+
 	</script>
 </h:head>
 <h:body styleClass="screenBg">
@@ -187,8 +199,8 @@
 								<tr>
 									<th>#{msgs.label_totalDegree}</th>
 									<td>
-										<h:outputText id="totalDueAmountId" value="#{disclaimerRequest.wfDisclaimerData.totalDueAmount}" >
-										<f:convertNumber maxFractionDigits="2" minFractionDigits="2" groupingUsed="false" />
+										<h:outputText id="totalDueAmountId" value="#{disclaimerRequest.wfDisclaimerData.totalDueAmount}">
+											<f:convertNumber maxFractionDigits="2" minFractionDigits="2" groupingUsed="false" />
 										</h:outputText>
 									</td>
 									<td>#{msgs.label_riyals}</td>
@@ -244,7 +256,7 @@
 									<th>#{msgs.label_totalDegree}</th>
 									<td>
 										<h:outputText id="totalGovernmentalDueAmountId" value="#{disclaimerRequest.wfDisclaimerData.totalGovernmentalDueAmount}">
-										<f:convertNumber maxFractionDigits="2" minFractionDigits="2" groupingUsed="false" />
+											<f:convertNumber maxFractionDigits="2" minFractionDigits="2" groupingUsed="false" />
 										</h:outputText>
 									</td>
 									<td>#{msgs.label_riyals}</td>
@@ -305,6 +317,30 @@
 					<td width="100%" height="5" />
 				</tr>
 				<tr>
+					<td>
+						<h:panelGroup rendered="#{disclaimerRequest.role=='ExtraSignManager'}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										<h:outputText value="#{msgs.label_returnToUnit}" />
+									</th>
+									<td>
+										<h:outputText id="unitsNamesId" value="#{disclaimerRequest.selectedUnitsNames}" />
+										<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getUnit('#{request.contextPath}', '#{disclaimerRequest.wfDisclaimerData.instanceId}', '#{disclaimerRequest.wfDisclaimerData.empPhysicalRegionId}');return false;" />
+											<h:commandButton id="addUnitBtnId" style="display:none;">
+												<f:ajax execute="disclaimerRequestFormId:unitsIDsHId disclaimerRequestFormId:unitsNamesHId" render="disclaimerRequestFormId:unitsNamesId disclaimerRequestFormId:notifyMessagesId" />
+											</h:commandButton>
+											<h:inputHidden id="unitsIDsHId" value="#{disclaimerRequest.selectedUnitsIds}" />
+											<h:inputHidden id="unitsNamesHId" value="#{disclaimerRequest.selectedUnitsNames}" />
+									</td>
+								</tr>
+
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
 					<td width="100%">
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
@@ -340,6 +376,9 @@
 										<h:commandButton onclick="return handleOnAction('#{msgs.q_superSign}', 'true');" action="#{disclaimerRequest.doRetirementsAprroveESM()}" value="#{msgs.label_superSign}  &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 											<f:ajax />
 										</h:commandButton>
+
+										<h:commandButton action="#" value="#{msgs.label_returnToUnit}" />
+
 										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'true');" action="#{disclaimerRequest.doRetirementsRejectESM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
 											<f:ajax render="notifyMessagesId" execute="@form" />
 										</h:commandButton>
