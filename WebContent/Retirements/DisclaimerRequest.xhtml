@@ -322,11 +322,11 @@
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<th width="15%">
-										<h:outputText value="#{msgs.label_returnToUnit}" />
+										<h:outputText value="#{msgs.label_sendBackToUnits}" />
 									</th>
 									<td>
 										<h:outputText id="unitsNamesId" value="#{disclaimerRequest.selectedUnitsNames}" />
-										<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getUnit('#{request.contextPath}', '#{disclaimerRequest.wfDisclaimerData.instanceId}', '#{disclaimerRequest.wfDisclaimerData.empPhysicalRegionId}');return false;" />
+										<h:commandButton value="#{msgs.fa_external_link}"  styleClass="btn_normal" onclick="getUnit('#{request.contextPath}', '#{disclaimerRequest.wfDisclaimerData.instanceId}', '#{disclaimerRequest.wfDisclaimerData.empPhysicalRegionId}');return false;" />
 											<h:commandButton id="addUnitBtnId" style="display:none;">
 												<f:ajax execute="disclaimerRequestFormId:unitsIDsHId disclaimerRequestFormId:unitsNamesHId" render="disclaimerRequestFormId:unitsNamesId disclaimerRequestFormId:notifyMessagesId" />
 											</h:commandButton>
@@ -377,7 +377,7 @@
 											<f:ajax />
 										</h:commandButton>
 
-										<h:commandButton action="#" value="#{msgs.label_returnToUnit}" />
+										<h:commandButton action="#" value="#{msgs.label_sendBackToUnits}" />
 
 										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'true');" action="#{disclaimerRequest.doRetirementsRejectESM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
 											<f:ajax render="notifyMessagesId" execute="@form" />
