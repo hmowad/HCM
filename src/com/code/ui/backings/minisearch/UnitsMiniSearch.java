@@ -26,11 +26,13 @@ public class UnitsMiniSearch extends BaseBacking implements Serializable {
     private long unitRegionId;
     private long unitParentId;
     private String unitHKeyPrefix;
+    private Long instanceId;
 
     private boolean multipleSelectFlag;
     private final int SELECTED_UNITS_MAX = 100;
     private List<UnitData> selectedUnitList;
     private String selectedUnitsIds;
+    private String selectedUnitsNames;
     private String comma;
 
     public UnitsMiniSearch() {
@@ -39,11 +41,13 @@ public class UnitsMiniSearch extends BaseBacking implements Serializable {
 	unitRegionId = Long.valueOf(getRequest().getParameter("unitRegionId"));
 	unitParentId = Long.valueOf(getRequest().getParameter("unitParentId"));
 	unitHKeyPrefix = getRequest().getParameter("unitHKeyPrefix");
+	instanceId = Long.valueOf(getRequest().getParameter("instanceId"));
 
 	if (getRequest().getParameter("multipleSelectFlag") != null) {
 	    multipleSelectFlag = Integer.parseInt(getRequest().getParameter("multipleSelectFlag")) == 1;
 	    selectedUnitList = new ArrayList<UnitData>();
 	    selectedUnitsIds = "";
+	    selectedUnitsNames = "";
 	    comma = "";
 	    if (multipleSelectFlag) {
 		rowsCount = 5;
@@ -72,6 +76,8 @@ public class UnitsMiniSearch extends BaseBacking implements Serializable {
 		searchUnitList = UnitsService.getTrainingCentersAndInstitutesByName(searchUnitFullName);
 	    } else if (mode.equals("7")) {
 		searchUnitList = UnitsService.getUnitsByPrefixHkey(unitHKeyPrefix, searchUnitFullName);
+	    } else if (mode.equals("8")) {
+		searchUnitList = UnitsService.getUnitsByDisclaimersInstanceId(instanceId, unitRegionId);
 	    }
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -95,6 +101,7 @@ public class UnitsMiniSearch extends BaseBacking implements Serializable {
 	searchUnitList.remove(unit);
 	selectedUnitList.add(unit);
 	selectedUnitsIds += comma + unit.getId();
+	selectedUnitsNames += comma + unit.getFullName();
 	comma = ",";
     }
 
@@ -104,10 +111,13 @@ public class UnitsMiniSearch extends BaseBacking implements Serializable {
 
 	if (selectedUnitsIds.equals(unit.getId() + "")) {
 	    selectedUnitsIds = "";
+	    selectedUnitsNames = "";
 	    comma = "";
 	} else {
 	    selectedUnitsIds = ("," + selectedUnitsIds + ",").replace("," + unit.getId() + ",", ",");
 	    selectedUnitsIds = selectedUnitsIds.substring(1, selectedUnitsIds.length() - 1);
+	    selectedUnitsNames = ("," + selectedUnitsNames + ",").replace("," + unit.getFullName() + ",", ",");
+	    selectedUnitsNames = selectedUnitsNames.substring(1, selectedUnitsNames.length() - 1);
 	}
     }
 
@@ -141,6 +151,14 @@ public class UnitsMiniSearch extends BaseBacking implements Serializable {
 
     public void setSelectedUnitsIds(String selectedUnitsIds) {
 	this.selectedUnitsIds = selectedUnitsIds;
+    }
+
+    public String getSelectedUnitsNames() {
+	return selectedUnitsNames;
+    }
+
+    public void setSelectedUnitsNames(String selectedUnitsNames) {
+	this.selectedUnitsNames = selectedUnitsNames;
     }
 
     public List<UnitData> getSelectedUnitList() {

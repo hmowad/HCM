@@ -14,6 +14,7 @@ import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.dal.orm.hcm.organization.units.UnitTransaction;
 import com.code.dal.orm.hcm.organization.units.UnitTransactionData;
 import com.code.dal.orm.hcm.organization.units.UnitType;
+import com.code.dal.orm.workflow.WFPosition;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.RegionsEnum;
@@ -27,6 +28,7 @@ import com.code.services.BaseService;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
+import com.code.services.workflow.hcm.RetirementsWorkFlow;
 
 /**
  * The class <code>UnitsService</code> provides methods for handling the units operations such as create, rename, move, merge, separate, scale up, scale down, or cancel units.
@@ -1717,6 +1719,37 @@ public class UnitsService extends BaseService {
 		return true;
 	}
 	return false;
+    }
+
+    private static List<UnitData> searchUnitsByDisclaimersInstanceId(Long instanceId, Long empUnitRegionId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_INSTANCE_ID", instanceId);
+	    return DataAccess.executeNamedQuery(UnitData.class, QueryNamesEnum.HCM_GET_UNIT_BY_DISCLAIMER_DETAILS_INSTANCE_ID.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static List<UnitData> getUnitsByDisclaimersInstanceId(Long instanceId, Long empUnitRegionId) throws BusinessException {
+	List<UnitData> sentBackUnitsData = searchUnitsByDisclaimersInstanceId(instanceId, empUnitRegionId);
+
+	WFPosition regionPosition = RetirementsWorkFlow.getRegionPayrollUnitManager(empUnitRegionId);
+	WFPosition generalDirectoratePosition = RetirementsWorkFlow.getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+	if (regionPosition == null || generalDirectoratePosition == null) {
+	    throw new BusinessException("error_general");
+	}
+
+	UnitData payrollRegionUnitData = getUnitById(regionPosition.getUnitId());
+	UnitData payrollGeneralDirectorateUnitData = getUnitById(generalDirectoratePosition.getUnitId());
+	for (int i = 0; i < sentBackUnitsData.size(); i++) {
+	    if ((sentBackUnitsData.get(i).getId()).equals(payrollRegionUnitData.getId()) || (sentBackUnitsData.get(i).getId()).equals(payrollGeneralDirectorateUnitData.getId())) {
+		sentBackUnitsData.remove(sentBackUnitsData.get(i));
+		i--;
+	    }
+	}
+	return sentBackUnitsData;
     }
 
     /*---------------------------------------- Unit Transaction--------------------------------*/
