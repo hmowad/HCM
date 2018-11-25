@@ -24,6 +24,7 @@ public class WFDisclaimer extends AuditEntity implements UpdatableAuditEntity {
     private Double otherAmount;
     private Long decisionApprovedId;
     private Long originalDecisionApprovedId;
+    private String sentBackUnitsString;
 
     @Id
     @Column(name = "INSTANCE_ID")
@@ -133,6 +134,16 @@ public class WFDisclaimer extends AuditEntity implements UpdatableAuditEntity {
 
     public void setOriginalDecisionApprovedId(Long originalDecisionApprovedId) {
 	this.originalDecisionApprovedId = originalDecisionApprovedId;
+    }
+
+    @Basic
+    @Column(name = "SENT_BACK_UNITS_STRING")
+    public String getSentBackUnitsString() {
+	return sentBackUnitsString;
+    }
+
+    public void setSentBackUnitsString(String sentBackUnitsString) {
+	this.sentBackUnitsString = sentBackUnitsString;
     }
 
     @Override

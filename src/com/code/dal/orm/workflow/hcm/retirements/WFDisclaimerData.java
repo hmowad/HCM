@@ -77,6 +77,7 @@ public class WFDisclaimerData extends BaseEntity {
     private BigDecimal totalGovernmentalDueAmount;
     private Long decisionApprovedId;
     private Long originalDecisionApprovedId;
+    private String sentBackUnitsString;
 
     private WFDisclaimer WFDisclaimer;
 
@@ -313,6 +314,17 @@ public class WFDisclaimerData extends BaseEntity {
     public void setOriginalDecisionApprovedId(Long originalDecisionApprovedId) {
 	this.originalDecisionApprovedId = originalDecisionApprovedId;
 	WFDisclaimer.setOriginalDecisionApprovedId(originalDecisionApprovedId);
+    }
+
+    @Basic
+    @Column(name = "SENT_BACK_UNITS_STRING")
+    public String getSentBackUnitsString() {
+	return sentBackUnitsString;
+    }
+
+    public void setSentBackUnitsString(String sentBackUnitsString) {
+	this.sentBackUnitsString = sentBackUnitsString;
+	this.WFDisclaimer.setSentBackUnitsString(sentBackUnitsString);
     }
 
     @Transient
