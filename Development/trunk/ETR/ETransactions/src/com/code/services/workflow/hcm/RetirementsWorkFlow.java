@@ -128,7 +128,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		if (countUncompletedWFInstanceTasks(instance.getInstanceId()) == FlagsEnum.ON.getCode()) { // if function returned 1, it means that current task is the only remaining task so a task for ESM will be added
 		    if (wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode()) {
 			List<UnitData> managersUnits = new ArrayList<>();
-			if (wfDisclaimerData.getSentBackUnitsString() == null || wfDisclaimerData.getSentBackUnitsString().equals("")) {
+			if (wfDisclaimerData.getSentBackUnitsString() != null && !wfDisclaimerData.getSentBackUnitsString().equals("")) {
 			    List<UnitData> sentBackUnits = UnitsService.getUnitsByIdsString(wfDisclaimerData.getSentBackUnitsString());
 			    for (UnitData sentBackUnit : sentBackUnits) {
 				if (sentBackUnit.getRegionId() == RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) { // add payrollUnitManager for emp region
@@ -394,6 +394,8 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		    addWFTask(instance.getInstanceId(), getDelegate(regionPayrollUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), regionPayrollUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
 		}
 		setWFTaskAction(esmTask, WFTaskActionsEnum.SENT_BACK_TO_UNITS.getCode(), curDate, curHijriDate, session);
+		wfDisclaimerData.setSentBackUnitsString(sentBackUnitsString);
+		addModifyWFDisclaimerData(wfDisclaimerData, instance.getInstanceId(), session);
 	    }
 	    session.commitTransaction();
 	} catch (BusinessException e) {
@@ -406,6 +408,28 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	} finally {
 	    session.close();
 	}
+    }
+
+    public static List<UnitData> getManagersUnitsByDisclaimerDetailsInstanceId(Long instanceId, Long empUnitRegionId) throws BusinessException {
+	List<UnitData> searchUnitList = new ArrayList<UnitData>();
+	List<WFDisclaimerDetail> wfDisclaiamerDetails = getWFDisclaimerDetailsByManagerId(null, instanceId);
+
+	for (WFDisclaimerDetail wfDisclaimerDetail : wfDisclaiamerDetails) {
+	    UnitData unitData = UnitsService.getUnitByExactFullName(wfDisclaimerDetail.getManagerUnitFullName());
+
+	    WFPosition regionPosition = getRegionPayrollUnitManager(empUnitRegionId);
+	    WFPosition generalDirectoratePosition = getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+	    if (regionPosition == null || generalDirectoratePosition == null) {
+		throw new BusinessException("error_general");
+	    }
+
+	    UnitData payrollRegionUnitData = UnitsService.getUnitById(regionPosition.getUnitId());
+	    UnitData payrollGeneralDirectorateUnitData = UnitsService.getUnitById(generalDirectoratePosition.getUnitId());
+	    if (unitData.getId() != payrollRegionUnitData.getId() || unitData.getId() != payrollGeneralDirectorateUnitData.getId())
+		searchUnitList.add(unitData);
+	}
+
+	return searchUnitList;
     }
 
     /*------------------------------------------------ Integration Operations --------------------------------------------------*/

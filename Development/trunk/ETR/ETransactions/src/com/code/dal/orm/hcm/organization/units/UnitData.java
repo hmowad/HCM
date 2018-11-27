@@ -110,13 +110,7 @@ import com.code.enums.FlagsEnum;
 	@NamedQuery(name = "hcm_unitData_searchUnitsByUnitsIds",
 		query = " select u from UnitData u " +
 			" where u.id in (:P_UNITS_IDS) " +
-			" order by u.id "),
-
-	@NamedQuery(name = "hcm_unitData_searchUnitsByDisclaimerDetailsInstanceId",
-		query = " select u from UnitData u , WFDisclaimerDetail dd "
-			+ " where :P_INSTANCE_ID = dd.instanceId "
-			+ " and u.fullName = dd.managerUnitFullName "
-			+ " order by u.fullName")
+			" order by u.id ")
 })
 @Entity
 @Table(name = "HCM_VW_ORG_UNITS")
