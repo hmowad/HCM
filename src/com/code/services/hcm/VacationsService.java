@@ -833,8 +833,8 @@ public class VacationsService extends BaseService {
 	    } else if (reportType == 80) {
 		reportName = ReportNamesEnum.VACATIONS_TRANSACTIONS_AND_REQUESTS_STATISTICAL.getCode();
 		parameters.put("P_PREFIX_HKEY", includeChildren ? UnitsService.getHKeyPrefix(selectedUnitHKey) + "%" : selectedUnitHKey);
-		parameters.put("P_EXCLUDED_PROCESSES_IDS", new Long[] { WFProcessesEnum.OFFICERS_VACATION_JOINING.getCode(),
-			WFProcessesEnum.SOLDIERS_VACATION_JOINING.getCode(), WFProcessesEnum.CIVILIANS_VACATION_JOINING.getCode() });
+		parameters.put("P_EXCLUDED_PROCESSES_IDS", WFProcessesEnum.OFFICERS_VACATION_JOINING.getCode() + "," +
+			WFProcessesEnum.SOLDIERS_VACATION_JOINING.getCode() + "," + WFProcessesEnum.CIVILIANS_VACATION_JOINING.getCode());
 	    }
 
 	    parameters.put("P_REGION_ID", regionId);
