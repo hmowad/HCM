@@ -9,8 +9,11 @@ import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.organization.Region;
 import com.code.enums.FlagsEnum;
+import com.code.enums.MenuActionsEnum;
+import com.code.enums.MenuCodesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.VacationsService;
+import com.code.services.security.SecurityService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
@@ -23,12 +26,34 @@ public class VacationsReports extends BaseBacking implements Serializable {
     private long selectedRegionId;
 
     private long selectedCategoryId;
+    private long selectedUnitRegionId;
+    private long selectedUnitId;
+    private String selectedUnitFullName;
+    private String selectedUnitHKey;
+
+    private int reportType;
+    private boolean viewAllLevelsVacationsFlag = false;
+
     private Date fromDate;
     private Date toDate;
 
+    private boolean admin = false;
+
     public VacationsReports() {
-	regionList = CommonService.getAllRegions();
-	resetForm();
+
+	try {
+	    admin = SecurityService.isEmployeeMenuActionGranted(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_VACATIONS_REPORTS_FOR_ALL.getCode(), MenuActionsEnum.VAC_VACATIONS_REPORTS_FOR_ALL.getCode());
+
+	    regionList = CommonService.getAllRegions();
+	    reportType = 10;
+	    resetForm();
+
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    this.setServerSideErrorMessages(getMessage("error_general"));
+	}
     }
 
     public void resetForm() {
@@ -36,6 +61,11 @@ public class VacationsReports extends BaseBacking implements Serializable {
 	    selectedCategoryId = FlagsEnum.ALL.getCode();
 	    selectedRegionId = getLoginEmpPhysicalRegionFlag(true);
 	    fromDate = toDate = HijriDateService.getHijriSysDate();
+
+	    selectedUnitFullName = this.loginEmpData.getPhysicalUnitFullName();
+	    selectedUnitId = this.loginEmpData.getPhysicalUnitId();
+	    selectedUnitHKey = this.loginEmpData.getPhysicalUnitHKey();
+	    selectedUnitRegionId = this.loginEmpData.getPhysicalRegionId().longValue();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -43,22 +73,27 @@ public class VacationsReports extends BaseBacking implements Serializable {
 
     public void print() {
 	try {
-	    String reportTitle = getMessage("title_vacationsReportsTitle");
-
+	    String reportTitle = "";
 	    String regionDesc = getMessage("label_all");
-	    if (selectedRegionId != FlagsEnum.ALL.getCode()) {
-		for (Region region : regionList) {
-		    if (region.getId().longValue() == selectedRegionId) {
-			regionDesc = region.getDescription();
-			break;
+	    if (reportType == 10) {
+		reportTitle = getMessage("title_vacationsReportsTitle");
+
+		if (selectedRegionId != FlagsEnum.ALL.getCode()) {
+		    for (Region region : regionList) {
+			if (region.getId().longValue() == selectedRegionId) {
+			    regionDesc = region.getDescription();
+			    break;
+			}
 		    }
 		}
+	    } else if (reportType == 80) {
+		reportTitle = getMessage("title_vacationsUnitsPercentageReportTitle");
 	    }
-
-	    byte[] bytes = VacationsService.getVacationsReportsBytes(10, selectedRegionId, regionDesc, null, null, selectedCategoryId, fromDate, toDate,
+	    byte[] bytes = VacationsService.getVacationsReportsBytes(reportType, selectedRegionId, regionDesc, selectedUnitHKey, selectedUnitFullName, selectedCategoryId, fromDate, toDate,
 		    FlagsEnum.OFF.getCode(), FlagsEnum.OFF.getCode(), (long) FlagsEnum.OFF.getCode(), null, null, (long) FlagsEnum.OFF.getCode(), "",
-		    (long) FlagsEnum.OFF.getCode(), "", null, null, null, reportTitle);
+		    (long) FlagsEnum.OFF.getCode(), "", null, null, null, reportTitle, viewAllLevelsVacationsFlag);
 	    super.print(bytes);
+
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -78,6 +113,54 @@ public class VacationsReports extends BaseBacking implements Serializable {
 
     public void setSelectedCategoryId(long selectedCategoryId) {
 	this.selectedCategoryId = selectedCategoryId;
+    }
+
+    public long getSelectedUnitRegionId() {
+	return selectedUnitRegionId;
+    }
+
+    public void setSelectedUnitRegionId(long selectedUnitRegionId) {
+	this.selectedUnitRegionId = selectedUnitRegionId;
+    }
+
+    public long getSelectedUnitId() {
+	return selectedUnitId;
+    }
+
+    public void setSelectedUnitId(long selectedUnitId) {
+	this.selectedUnitId = selectedUnitId;
+    }
+
+    public String getSelectedUnitFullName() {
+	return selectedUnitFullName;
+    }
+
+    public void setSelectedUnitFullName(String selectedUnitFullName) {
+	this.selectedUnitFullName = selectedUnitFullName;
+    }
+
+    public String getSelectedUnitHKey() {
+	return selectedUnitHKey;
+    }
+
+    public void setSelectedUnitHKey(String selectedUnitHKey) {
+	this.selectedUnitHKey = selectedUnitHKey;
+    }
+
+    public int getReportType() {
+	return reportType;
+    }
+
+    public void setReportType(int reportType) {
+	this.reportType = reportType;
+    }
+
+    public boolean isViewAllLevelsVacationsFlag() {
+	return viewAllLevelsVacationsFlag;
+    }
+
+    public void setViewAllLevelsVacationsFlag(boolean viewAllLevelsVacationsFlag) {
+	this.viewAllLevelsVacationsFlag = viewAllLevelsVacationsFlag;
     }
 
     public Date getFromDate() {
@@ -102,5 +185,13 @@ public class VacationsReports extends BaseBacking implements Serializable {
 
     public void setRegionList(List<Region> regionList) {
 	this.regionList = regionList;
+    }
+
+    public boolean isAdmin() {
+	return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+	this.admin = admin;
     }
 }

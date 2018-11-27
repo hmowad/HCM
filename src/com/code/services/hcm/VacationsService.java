@@ -23,6 +23,7 @@ import com.code.enums.RequestTypesEnum;
 import com.code.enums.SubVacationTypesEnum;
 import com.code.enums.TransactionClassesEnum;
 import com.code.enums.VacationTypesEnum;
+import com.code.enums.WFProcessesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.services.BaseService;
@@ -746,7 +747,7 @@ public class VacationsService extends BaseService {
     public static byte[] getJoiningDocumentBytes(long vacationId) throws BusinessException {
 	return getVacationsReportsBytes(70, (long) FlagsEnum.ALL.getCode(), null, null, null, (long) FlagsEnum.ALL.getCode(), null, null,
 		(long) FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), (long) FlagsEnum.ALL.getCode(), null, null,
-		null, null, null, null, FlagsEnum.ALL.getCode() + "", null, vacationId, null);
+		null, null, null, null, FlagsEnum.ALL.getCode() + "", null, vacationId, null, false);
     }
 
     /**
@@ -780,7 +781,7 @@ public class VacationsService extends BaseService {
      */
     public static byte[] getVacationsReportsBytes(int reportType, long regionId, String regionDesc, String selectedUnitHKey, String unitFullName, long categoryId,
 	    Date fromDate, Date toDate, long vacationTypeId, int vacationStatusFlag, Long employeeId, String employeeName, String employeeRankDesc,
-	    Long fromRankId, String fromRankDesc, Long toRankId, String toRankDesc, String decisionNumber, Date decisionDate, Long vacationId, String reportTitle) throws BusinessException {
+	    Long fromRankId, String fromRankDesc, Long toRankId, String toRankDesc, String decisionNumber, Date decisionDate, Long vacationId, String reportTitle, boolean includeChildren) throws BusinessException {
 	try {
 	    String reportName = "";
 	    Map<String, Object> parameters = new HashMap<String, Object>();
@@ -829,6 +830,13 @@ public class VacationsService extends BaseService {
 		parameters.put("P_EMPLOYEE_ID", employeeId);
 		parameters.put("P_DECISION_NUMBER", decisionNumber);
 		parameters.put("P_DECISION_DATE", decisionDate == null ? hijriSysDateString : HijriDateService.getHijriDateString(decisionDate));
+	    } else if (reportType == 80) {
+		reportName = ReportNamesEnum.VACATIONS_UNITS_VACATIONS_STATISTICAL.getCode();
+		// parameters.put("P_CATEGORY_ID", categoryId);
+		parameters.put("P_PREFIX_HKEY", includeChildren ? UnitsService.getHKeyPrefix(selectedUnitHKey) + "%" : selectedUnitHKey);
+		parameters.put("P_PHYSICAL_UNIT_FULL_NAME", unitFullName);
+		parameters.put("P_EXCLUDED_PROCESSES_IDS", new Long[] { WFProcessesEnum.OFFICERS_VACATION_JOINING.getCode(),
+			WFProcessesEnum.SOLDIERS_VACATION_JOINING.getCode(), WFProcessesEnum.CIVILIANS_VACATION_JOINING.getCode() });
 	    }
 
 	    parameters.put("P_REGION_ID", regionId);
