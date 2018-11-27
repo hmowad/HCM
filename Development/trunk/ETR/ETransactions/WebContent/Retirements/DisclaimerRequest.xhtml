@@ -326,7 +326,7 @@
 									</th>
 									<td>
 										<h:outputText id="unitsNamesId" value="#{disclaimerRequest.selectedUnitsNames}" />
-										<h:commandButton value="#{msgs.fa_external_link}"  styleClass="btn_normal" onclick="getUnit('#{request.contextPath}', '#{disclaimerRequest.wfDisclaimerData.instanceId}', '#{disclaimerRequest.wfDisclaimerData.empPhysicalRegionId}');return false;" />
+										<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getUnit('#{request.contextPath}', '#{disclaimerRequest.wfDisclaimerData.instanceId}', '#{disclaimerRequest.wfDisclaimerData.empPhysicalRegionId}');return false;" />
 											<h:commandButton id="addUnitBtnId" style="display:none;">
 												<f:ajax execute="disclaimerRequestFormId:unitsIDsHId disclaimerRequestFormId:unitsNamesHId" render="disclaimerRequestFormId:unitsNamesId disclaimerRequestFormId:notifyMessagesId" />
 											</h:commandButton>
@@ -377,8 +377,10 @@
 											<f:ajax />
 										</h:commandButton>
 
-										<h:commandButton action="#" value="#{msgs.label_sendBackToUnits}" />
-
+										<h:commandButton id="sentBackToUnitsEsmBtnId" onclick="return handleOnAction('#{msgs.q_sendBackToUnits}', 'true');" action="#{disclaimerRequest.doRetirementsSendBackUnitsESM()}" value="#{msgs.label_sendBackToUnits} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+										
 										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'true');" action="#{disclaimerRequest.doRetirementsRejectESM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
 											<f:ajax render="notifyMessagesId" execute="@form" />
 										</h:commandButton>

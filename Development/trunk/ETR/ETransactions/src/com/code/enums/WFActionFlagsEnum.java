@@ -13,7 +13,8 @@ public enum WFActionFlagsEnum {
     SEND_FOR_ADVISE(8),
     REDIRECT(9),
     DISCLAIM(10),
-    CLAIM(11);
+    CLAIM(11),
+    SENT_BACK_TO_UNITS(12);
 
     private int code;
 
