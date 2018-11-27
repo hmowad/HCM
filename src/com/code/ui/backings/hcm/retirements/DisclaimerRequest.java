@@ -255,7 +255,7 @@ public class DisclaimerRequest extends WFBaseBacking {
 
     public String doRetirementsAprroveESM() throws BusinessException {
 	try {
-	    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, currentTask, WFActionFlagsEnum.APPROVE.getCode());
+	    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, currentTask, null, WFActionFlagsEnum.APPROVE.getCode());
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
@@ -265,7 +265,7 @@ public class DisclaimerRequest extends WFBaseBacking {
 
     public String doRetirementsRejectESM() throws BusinessException {
 	try {
-	    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, currentTask, WFActionFlagsEnum.REJECT.getCode());
+	    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, currentTask, null, WFActionFlagsEnum.REJECT.getCode());
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
@@ -273,29 +273,15 @@ public class DisclaimerRequest extends WFBaseBacking {
 	}
     }
 
-    // public void doRetirementsSendBackUnitsESM() {
-    // try {
-    // sentBackUnits = UnitsService.getUnitsByIdsString(selectedUnitsIds);
-    // if (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() &&
-    // wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode()) {
-    // for (UnitData sentBackUnit : sentBackUnits) {
-    // if (sentBackUnit.getRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) { // add payrollUnitManager for emp region
-    // WFPosition regionPosition = RetirementsWorkFlow.getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
-    // sentBackUnits.add(UnitsService.getUnitById(regionPosition.getUnitId()));
-    // break;
-    // }
-    // }
-    // WFPosition generalDirectoratePosition = RetirementsWorkFlow.getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
-    // sentBackUnits.add(UnitsService.getUnitById(generalDirectoratePosition.getUnitId()));
-    // } else {
-    //
-    // }
-    // } catch (BusinessException e) {
-    // this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-    // e.printStackTrace();
-    // }
-    // }
-    //
+    public String doRetirementsSendBackUnitsESM() throws BusinessException {
+	try {
+	    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, currentTask, selectedUnitsIds, WFActionFlagsEnum.SENT_BACK_TO_UNITS.getCode());
+	    return NavigationEnum.INBOX.toString();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    return null;
+	}
+    }
 
     public String closeProcess() {
 	try {
