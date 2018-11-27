@@ -363,6 +363,8 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    else if (actionFlag == WFActionFlagsEnum.REJECT.getCode()) {
 		closeWFInstanceByAction(requester.getEmpId(), instance, esmTask, WFTaskActionsEnum.REJECT.getCode(), null, session);
 	    } else if (actionFlag == WFActionFlagsEnum.SENT_BACK_TO_UNITS.getCode()) {
+		if (sentBackUnitsString == null || sentBackUnitsString.equals(""))
+		    throw new BusinessException("error_sentBackUnitsMandatory");
 		Date curDate = new Date();
 		Date curHijriDate = HijriDateService.getHijriSysDate();
 		List<UnitData> sentBackUnits = UnitsService.getUnitsByIdsString(sentBackUnitsString);
