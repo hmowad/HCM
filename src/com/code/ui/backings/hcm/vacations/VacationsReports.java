@@ -26,8 +26,6 @@ public class VacationsReports extends BaseBacking implements Serializable {
     private long selectedRegionId;
 
     private long selectedCategoryId;
-    private long selectedUnitRegionId;
-    private long selectedUnitId;
     private String selectedUnitFullName;
     private String selectedUnitHKey;
 
@@ -63,9 +61,7 @@ public class VacationsReports extends BaseBacking implements Serializable {
 	    fromDate = toDate = HijriDateService.getHijriSysDate();
 
 	    selectedUnitFullName = this.loginEmpData.getPhysicalUnitFullName();
-	    selectedUnitId = this.loginEmpData.getPhysicalUnitId();
 	    selectedUnitHKey = this.loginEmpData.getPhysicalUnitHKey();
-	    selectedUnitRegionId = this.loginEmpData.getPhysicalRegionId().longValue();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -89,7 +85,7 @@ public class VacationsReports extends BaseBacking implements Serializable {
 	    } else if (reportType == 80) {
 		reportTitle = getMessage("title_vacationsUnitsPercentageReportTitle");
 	    }
-	    byte[] bytes = VacationsService.getVacationsReportsBytes(reportType, selectedRegionId, regionDesc, selectedUnitHKey, selectedUnitFullName, selectedCategoryId, fromDate, toDate,
+	    byte[] bytes = VacationsService.getVacationsReportsBytes(reportType, selectedRegionId, regionDesc, selectedUnitHKey, null, selectedCategoryId, fromDate, toDate,
 		    FlagsEnum.OFF.getCode(), FlagsEnum.OFF.getCode(), (long) FlagsEnum.OFF.getCode(), null, null, (long) FlagsEnum.OFF.getCode(), "",
 		    (long) FlagsEnum.OFF.getCode(), "", null, null, null, reportTitle, viewAllLevelsVacationsFlag);
 	    super.print(bytes);
@@ -113,22 +109,6 @@ public class VacationsReports extends BaseBacking implements Serializable {
 
     public void setSelectedCategoryId(long selectedCategoryId) {
 	this.selectedCategoryId = selectedCategoryId;
-    }
-
-    public long getSelectedUnitRegionId() {
-	return selectedUnitRegionId;
-    }
-
-    public void setSelectedUnitRegionId(long selectedUnitRegionId) {
-	this.selectedUnitRegionId = selectedUnitRegionId;
-    }
-
-    public long getSelectedUnitId() {
-	return selectedUnitId;
-    }
-
-    public void setSelectedUnitId(long selectedUnitId) {
-	this.selectedUnitId = selectedUnitId;
     }
 
     public String getSelectedUnitFullName() {

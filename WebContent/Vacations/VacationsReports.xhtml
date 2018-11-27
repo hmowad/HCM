@@ -19,7 +19,6 @@
 			document.getElementById('vacationsReportsForm:selectedUnitFullNameId').innerHTML = ret[1];
 			document.getElementById('vacationsReportsForm:selectedUnitFullNameHId').value = ret[1];
 			document.getElementById('vacationsReportsForm:selectedUnitHKeyId').value = ret[3];
-			document.getElementById('vacationsReportsForm:selectedUnitRegionIDId').value = ret[4];
 		}
 	}
 	// ]]>
@@ -143,9 +142,7 @@
 												<h:panelGroup id="unitPanelGroupId">
 													<h:outputText id="selectedUnitFullNameId" value="#{vacationsReports.selectedUnitFullName}" />
 													<h:inputHidden id="selectedUnitFullNameHId" value="#{vacationsReports.selectedUnitFullName}" />
-													<h:inputHidden id="selectedUnitHID" value="#{vacationsReports.selectedUnitId}" />
 													<h:inputHidden id="selectedUnitHKeyId" value="#{vacationsReports.selectedUnitHKey}" />
-													<h:inputHidden id="selectedUnitRegionIDId" value="#{vacationsReports.selectedUnitRegionId}" />
 													<h:outputText value=" " />
 													<h:commandButton rendered="#{vacationsReports.admin == true}" value="#{msgs.fa_external_link}" onclick="getUnit();return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
 												</h:panelGroup>
