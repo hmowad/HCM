@@ -135,7 +135,6 @@ public enum QueryNamesEnum {
     HCM_COUNT_UNIT_CHILDREN_EXIST_IN_UNITS("hcm_unit_countUnitChildrenExistInUnits"),
     HCM_GET_REGION("hcm_Region_getRegion"),
     HCM_GET_UNIT_TRANSACTION_DATA("hcm_unitTransactionData_getUnitTransactions"),
-    HCM_GET_UNIT_BY_DISCLAIMER_DETAILS_INSTANCE_ID("hcm_unitData_searchUnitsByDisclaimerDetailsInstanceId"),
 
     /* ************************************************ Organization Tables ********************************************************** */
     HCM_GET_ORGANIZATION_TABLE_BY_UNITS_IDS_AND_CATEGORY_CLASS("hcm_organizationTable_getOrganizationTablesByCategoryClassAndUnitsIds"),

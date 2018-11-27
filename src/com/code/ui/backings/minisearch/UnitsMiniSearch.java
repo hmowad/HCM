@@ -11,6 +11,7 @@ import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.enums.FlagsEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.UnitsService;
+import com.code.services.workflow.hcm.RetirementsWorkFlow;
 import com.code.ui.backings.base.BaseBacking;
 
 @SuppressWarnings("serial")
@@ -77,7 +78,7 @@ public class UnitsMiniSearch extends BaseBacking implements Serializable {
 	    } else if (mode.equals("7")) {
 		searchUnitList = UnitsService.getUnitsByPrefixHkey(unitHKeyPrefix, searchUnitFullName);
 	    } else if (mode.equals("8")) {
-		searchUnitList = UnitsService.getUnitsByDisclaimersInstanceId(instanceId, unitRegionId);
+		searchUnitList = RetirementsWorkFlow.getManagersUnitsByDisclaimerDetailsInstanceId(instanceId, unitRegionId);
 	    }
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
