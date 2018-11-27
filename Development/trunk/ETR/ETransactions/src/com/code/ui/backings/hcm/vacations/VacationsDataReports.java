@@ -204,7 +204,7 @@ public class VacationsDataReports extends BaseBacking implements Serializable {
 
 	    byte[] bytes = VacationsService.getVacationsReportsBytes(reportType, selectedRegionId, regionDesc, selectedUnitHKey, selectedUnitFullName, mode,
 		    reportType == 20 ? fromDate : employeeVactionFromDate, reportType == 20 ? toDate : employeeVactionToDate, selectedVacationTypeId, vacationStatusFlag,
-		    selectedEmployeeId, selectedEmployeeName, employeeRankDesc, fromRankId, fromRankDesc, toRankId, toRankDesc, decisionNumber, decisionDate, null, reportTitle, false);
+		    selectedEmployeeId, selectedEmployeeName, employeeRankDesc, fromRankId, fromRankDesc, toRankId, toRankDesc, decisionNumber, decisionDate, null, false, reportTitle);
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
