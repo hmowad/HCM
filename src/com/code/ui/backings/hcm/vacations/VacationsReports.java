@@ -45,7 +45,6 @@ public class VacationsReports extends BaseBacking implements Serializable {
 	    regionList = CommonService.getAllRegions();
 	    reportType = 10;
 	    resetForm();
-
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	} catch (Exception e) {
@@ -85,11 +84,11 @@ public class VacationsReports extends BaseBacking implements Serializable {
 	    } else if (reportType == 80) {
 		reportTitle = getMessage("title_vacationsUnitsPercentageReportTitle");
 	    }
+
 	    byte[] bytes = VacationsService.getVacationsReportsBytes(reportType, selectedRegionId, regionDesc, selectedUnitHKey, null, selectedCategoryId, fromDate, toDate,
 		    FlagsEnum.OFF.getCode(), FlagsEnum.OFF.getCode(), (long) FlagsEnum.OFF.getCode(), null, null, (long) FlagsEnum.OFF.getCode(), "",
-		    (long) FlagsEnum.OFF.getCode(), "", null, null, null, reportTitle, viewAllLevelsVacationsFlag);
+		    (long) FlagsEnum.OFF.getCode(), "", null, null, null, viewAllLevelsVacationsFlag, reportTitle);
 	    super.print(bytes);
-
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
