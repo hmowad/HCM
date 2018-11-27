@@ -42,7 +42,8 @@ public class UnitsMiniSearch extends BaseBacking implements Serializable {
 	unitRegionId = Long.valueOf(getRequest().getParameter("unitRegionId"));
 	unitParentId = Long.valueOf(getRequest().getParameter("unitParentId"));
 	unitHKeyPrefix = getRequest().getParameter("unitHKeyPrefix");
-	instanceId = Long.valueOf(getRequest().getParameter("instanceId"));
+	if (getRequest().getParameter("instanceId") != null)
+	    instanceId = Long.valueOf(getRequest().getParameter("instanceId"));
 
 	if (getRequest().getParameter("multipleSelectFlag") != null) {
 	    multipleSelectFlag = Integer.parseInt(getRequest().getParameter("multipleSelectFlag")) == 1;
