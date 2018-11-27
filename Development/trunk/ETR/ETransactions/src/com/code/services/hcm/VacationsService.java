@@ -832,9 +832,8 @@ public class VacationsService extends BaseService {
 		parameters.put("P_DECISION_DATE", decisionDate == null ? hijriSysDateString : HijriDateService.getHijriDateString(decisionDate));
 	    } else if (reportType == 80) {
 		reportName = ReportNamesEnum.VACATIONS_UNITS_VACATIONS_STATISTICAL.getCode();
-		// parameters.put("P_CATEGORY_ID", categoryId);
+		parameters.put("P_CATEGORY_ID", categoryId);
 		parameters.put("P_PREFIX_HKEY", includeChildren ? UnitsService.getHKeyPrefix(selectedUnitHKey) + "%" : selectedUnitHKey);
-		parameters.put("P_PHYSICAL_UNIT_FULL_NAME", unitFullName);
 		parameters.put("P_EXCLUDED_PROCESSES_IDS", new Long[] { WFProcessesEnum.OFFICERS_VACATION_JOINING.getCode(),
 			WFProcessesEnum.SOLDIERS_VACATION_JOINING.getCode(), WFProcessesEnum.CIVILIANS_VACATION_JOINING.getCode() });
 	    }
