@@ -154,14 +154,6 @@
 				return false;
 			}
 
-			countryId = document.getElementById('newEmployeeRegistrationFormId:countryIDId');
-			if(countryId != null) {
-				countryIdValue = countryId.value;
-				if ((countryIdValue == null || countryIdValue == '') &amp;&amp; (personsCategories!=null &amp;&amp; personsCategories.value == 6)) {
-					alert("#{msgs.error_nationalityIsMandatory}");
-					return false;
-				}
-			}
 			
 			if(socialIdValue == null || socialIdValue == '') {
 				alert("#{msgs.error_socialIDMandatory}");
@@ -354,7 +346,7 @@
 									</tr>
 									<tr>
 										<th width ="15%" colspan="1">
-											#{msgs.label_issueDate}
+											#{msgs.label_socialIdIssueDate}
 											<h:outputText value=" " />
 										</th>
 										<td width ="15%" colspan="1">
@@ -368,7 +360,7 @@
 											<h:outputText value="#{newEmployeeRegistration.employee.socialIDIssueExpiryDateString}" />
 										</td>
 										<th width ="15%" colspan="1">
-											#{msgs.label_issuePlace}
+											#{msgs.label_socialIdIssuePlace}
 											<h:outputText value=" " />
 										</th>
 										<td width ="15%" colspan="1">
