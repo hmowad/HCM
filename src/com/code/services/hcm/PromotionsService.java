@@ -1012,9 +1012,14 @@ public class PromotionsService extends BaseService {
 
 	    reportDetailData.setOldRankId(employee.getRankId());
 	    reportDetailData.setOldRankDesc(employee.getRankDesc());
-	    Rank newRank = CommonService.getRankById(getNextRank(employee.getRankId()));
-	    reportDetailData.setNewRankId(newRank.getId());
-	    reportDetailData.setNewRankDesc(newRank.getDescription());
+	    if (promotionReportData.getPromotionTypeId() == PromotionsTypesEnum.PROMOTION_CANCELLATION.getCode()) {
+		reportDetailData.setNewRankId(promotionTransactionData.getOldRankId());
+		reportDetailData.setNewRankDesc(promotionTransactionData.getOldRankDesc());
+	    } else {
+		Rank newRank = CommonService.getRankById(getNextRank(employee.getRankId()));
+		reportDetailData.setNewRankId(newRank.getId());
+		reportDetailData.setNewRankDesc(newRank.getDescription());
+	    }
 
 	    reportDetailData.setRankTitleId(employee.getRankTitleId());
 	    reportDetailData.setRankTitleName(employee.getRankTitleDesc());
