@@ -368,31 +368,42 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		Date curDate = new Date();
 		Date curHijriDate = HijriDateService.getHijriSysDate();
 		List<UnitData> sentBackUnits = UnitsService.getUnitsByIdsString(sentBackUnitsString);
-		Boolean twoLevelsFlag = false;
+
 		int i = 1;
 		if (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() &&
 			wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode()) {
 		    for (UnitData sentBackUnit : sentBackUnits) {
-			if (sentBackUnit.getRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) { // add payrollUnitManager for emp region
+			if (sentBackUnit.getRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) { // add tasks for all ssm
 			    addWFTask(instance.getInstanceId(), getDelegate(sentBackUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), sentBackUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
-			    twoLevelsFlag = true;
 			    i++;
 			}
 		    }
-		}
-		if (!twoLevelsFlag) {
+
+		    if (i > 1) { // at least one ssm is added then add task for region payroll manager
+			WFPosition regionPayrollPosition = RetirementsWorkFlow.getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
+			UnitData regionPayrollUnit = UnitsService.getUnitById(regionPayrollPosition.getUnitId());
+			addWFTask(instance.getInstanceId(), getDelegate(regionPayrollUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), regionPayrollUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
+		    } else { // no ssm is added then add task directly for sm
+			for (UnitData sentBackUnit : sentBackUnits) {
+			    addWFTask(instance.getInstanceId(), getDelegate(sentBackUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), sentBackUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
+			    i++;
+			}
+			WFPosition generalDirectoratePosition = RetirementsWorkFlow.getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+			UnitData generalDirectorateUnit = UnitsService.getUnitById(generalDirectoratePosition.getUnitId());
+			addWFTask(instance.getInstanceId(), getDelegate(generalDirectorateUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), generalDirectorateUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
+		    }
+
+		} else { // if not regions officer then all tasks are sm
 		    for (UnitData sentBackUnit : sentBackUnits) {
 			addWFTask(instance.getInstanceId(), getDelegate(sentBackUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), sentBackUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
 			i++;
 		    }
-		    WFPosition generalDirectoratePosition = RetirementsWorkFlow.getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
-		    UnitData generalDirectorateUnit = UnitsService.getUnitById(generalDirectoratePosition.getUnitId());
-		    addWFTask(instance.getInstanceId(), getDelegate(generalDirectorateUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), generalDirectorateUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
-		} else {
-		    WFPosition regionPayrollPosition = RetirementsWorkFlow.getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
-		    UnitData regionPayrollUnit = UnitsService.getUnitById(regionPayrollPosition.getUnitId());
-		    addWFTask(instance.getInstanceId(), getDelegate(regionPayrollUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), regionPayrollUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
+		    WFPosition payrollPosition = RetirementsWorkFlow.getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
+		    UnitData payrollUnit = UnitsService.getUnitById(payrollPosition.getUnitId());
+		    addWFTask(instance.getInstanceId(), getDelegate(payrollUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), payrollUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
+
 		}
+
 		setWFTaskAction(esmTask, WFTaskActionsEnum.SENT_BACK_TO_UNITS.getCode(), curDate, curHijriDate, session);
 		wfDisclaimerData.setSentBackUnitsString(sentBackUnitsString);
 		addModifyWFDisclaimerData(wfDisclaimerData, instance.getInstanceId(), session);
