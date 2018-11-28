@@ -97,8 +97,16 @@ public class MilitaryIntCourseEventResults extends TrainingCoursesBase {
     }
 
     public String calculateRankingDesc() {
-	if (selectedTrainingTransaction.getSuccessRanking() == null || selectedTrainingTransaction.getSuccessRanking().equals(0) || selectedTrainingTransaction.getSuccessRanking() > rankings.size())
+	if (selectedTrainingTransaction.getSuccessRanking() == null)
 	    return "";
+	if (selectedTrainingTransaction.getSuccessRanking().equals(0)) {
+	    setServerSideErrorMessages(getMessage("error_successRankingCannotBeZeroOrLess"));
+	    return "";
+	}
+	if (selectedTrainingTransaction.getSuccessRanking() > rankings.size()) {
+	    setServerSideErrorMessages(getMessage("error_successRankingCannotBeHigherThanThousand"));
+	    return "";
+	}
 	String successRankDesc = rankings.get(selectedTrainingTransaction.getSuccessRanking() - 1).getDescription();
 	selectedTrainingTransaction.setSuccessRankingDesc(successRankDesc);
 	return successRankDesc;

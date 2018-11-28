@@ -109,8 +109,16 @@ public class MilitaryTrainingClaimRequest extends TrainingAndScholarshipBase {
     }
 
     public String calculateRankingDesc() {
-	if (wfTraining.getSuccessRanking() == null || wfTraining.getSuccessRanking().equals(0) || wfTraining.getSuccessRanking() > rankings.size())
+	if (wfTraining.getSuccessRanking() == null)
 	    return "";
+	if (wfTraining.getSuccessRanking().equals(0)) {
+	    setServerSideErrorMessages(getMessage("error_successRankingCannotBeZeroOrLess"));
+	    return "";
+	}
+	if (wfTraining.getSuccessRanking() > rankings.size()) {
+	    setServerSideErrorMessages(getMessage("error_successRankingCannotBeHigherThanThousand"));
+	    return "";
+	}
 	String successRankDesc = rankings.get(wfTraining.getSuccessRanking() - 1).getDescription();
 	wfTraining.setSuccessRankingDesc(successRankDesc);
 	return successRankDesc;
