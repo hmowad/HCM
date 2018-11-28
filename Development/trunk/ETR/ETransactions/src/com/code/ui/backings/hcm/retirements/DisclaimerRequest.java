@@ -12,10 +12,12 @@ import com.code.dal.orm.hcm.retirements.DisclaimerTransactionData;
 import com.code.dal.orm.workflow.WFPosition;
 import com.code.dal.orm.workflow.hcm.retirements.WFDisclaimerData;
 import com.code.dal.orm.workflow.hcm.retirements.WFDisclaimerDetail;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
 import com.code.enums.NavigationEnum;
+import com.code.enums.RegionsEnum;
 import com.code.enums.WFActionFlagsEnum;
 import com.code.enums.WFProcessesEnum;
 import com.code.enums.WFTaskRolesEnum;
@@ -100,9 +102,17 @@ public class DisclaimerRequest extends WFBaseBacking {
 			hkeyReviewerEmps = SmSsmUnitData.gethKey();
 		    }
 		} else if (this.role.equals(WFTaskRolesEnum.SIGN_MANAGER.getCode())) {
-		    position = RetirementsWorkFlow.getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
-		    payrollUnitData = UnitsService.getUnitById(position.getUnitId());
-		    isPayrollReviewer = payrollUnitData.getPhysicalManagerId().equals(loginEmpData.getEmpId());
+		    if ((wfDisclaimerData.getSentBackUnitsString() != null) &&
+			    (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() &&
+				    wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode())) {
+			position = RetirementsWorkFlow.getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+			payrollUnitData = UnitsService.getUnitById(position.getUnitId());
+			isPayrollReviewer = payrollUnitData.getPhysicalManagerId().equals(loginEmpData.getEmpId());
+		    } else {
+			position = RetirementsWorkFlow.getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
+			payrollUnitData = UnitsService.getUnitById(position.getUnitId());
+			isPayrollReviewer = payrollUnitData.getPhysicalManagerId().equals(loginEmpData.getEmpId());
+		    }
 		    hkeyReviewerEmps = this.loginEmpData.getPhysicalUnitHKey();
 		} else if (this.role.equals(WFTaskRolesEnum.REVIEWER_EMP.getCode())) {
 		    position = RetirementsWorkFlow.getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
