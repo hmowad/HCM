@@ -764,4 +764,8 @@ public class ETRConfigurationService extends BaseService {
     public static String getYaqeenSystemCode() {
 	return getETRConfigByCode("SYSTEM_CODE_FOR_YAQEEN").getValue();
     }
+
+    public static String getYaqeenWsdlLocation() {
+	return getETRConfigByCode("YAKEEN_FOR_BORDER_GUARD_WSDL_LOCATION").getValue();
+    }
 }
