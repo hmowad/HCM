@@ -425,7 +425,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 
 	    UnitData payrollRegionUnitData = UnitsService.getUnitById(regionPosition.getUnitId());
 	    UnitData payrollGeneralDirectorateUnitData = UnitsService.getUnitById(generalDirectoratePosition.getUnitId());
-	    if (unitData.getId() != payrollRegionUnitData.getId() || unitData.getId() != payrollGeneralDirectorateUnitData.getId())
+	    if (!unitData.getId().equals(payrollRegionUnitData.getId()) && !unitData.getId().equals(payrollGeneralDirectorateUnitData.getId()))
 		searchUnitList.add(unitData);
 	}
 
