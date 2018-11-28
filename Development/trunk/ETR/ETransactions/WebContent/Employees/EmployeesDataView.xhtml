@@ -86,17 +86,6 @@
 			}
 		}
 		
-		function getNationalityCountry() {
-			openSelectCountries(2, '#{request.contextPath}','handleNationalityCountryMiniSearchResult(ret)');
-		}
-		
-		function handleNationalityCountryMiniSearchResult(ret){
-			if(ret != null){
-				document.getElementById('employeesDataViewFormId:countryIDId').value=ret[0];
-				document.getElementById('employeesDataViewFormId:nationalityId').innerHTML = ret[1];
-				document.getElementById('employeesDataViewFormId:nationalityHId').value = ret[1];
-			}
-		}
 		
 		function getImage(isNew, empId) {
 			openImageUpload(1, '#{request.contextPath}','handleImageUploadResult()', empId, isNew);
@@ -182,14 +171,6 @@
 					alert("#{msgs.error_personsViewFieldsAreMandatrory}");
 				return false;
 			} 
-			if (mode==3) {
-				//Persons
-				countryIdValue = document.getElementById('employeesDataViewFormId:countryIDId').value;
-				if (countryIdValue == null || countryIdValue == '') {
-					alert("#{msgs.error_personsViewFieldsAreMandatrory}");
-					return false;
-				}
-			}
 			if (socialIdValue) {
 				if (socialIdValue.length != 10 || (socialIdValue.charAt(0) != "1" && countryIdValue == 190)) {
 					alert("#{msgs.error_socialIdNotValid}");
@@ -585,10 +566,11 @@
 										</td>
 										<th width="15%">#{msgs.label_salaryRank}</th>
 										<td width="20%">
-											<h:selectOneMenu value="#{employeesDataView.employee.salaryRankId}" disabled="#{employeesDataView.viewOnly}">
+											<h:selectOneMenu value="#{employeesDataView.employee.salaryRankId}" rendered="#{not employeesDataView.viewOnly}">
 												<f:selectItem itemLabel="" />
 												<f:selectItems value="#{employeesDataView.salaryRanks}" var="salaryRank" itemLabel="#{salaryRank.description}" itemValue="#{salaryRank.id}" />
 											</h:selectOneMenu>
+											<h:outputText value="#{employeesDataView.employee.salaryRankDesc}" rendered="#{employeesDataView.viewOnly}"/>
 										</td>
 									</tr>
 									
