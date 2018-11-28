@@ -93,24 +93,21 @@
 		    alert('#{msgs.error_successIndicatorMandatory}');
 		    return false;
 		} 
-	
-		
 		
 		if(passedIndicatorChecked) {
 			var successRanking = document.getElementById('#{cc.clientId}' +':successRankingId').value;
-			var successRankingDesc = document.getElementById('#{cc.clientId}' +':successRankingDescId').value; 
-				
-				if((successRanking == null || successRanking == '') && (successRankingDesc != null && successRankingDesc != '')
-						|| (successRanking != null && successRanking != '') && (successRankingDesc == null || successRankingDesc == '')) {
-					alert('#{msgs.error_successRankMandatory}');
-				    return false;
-				}
-			
-				 if(successRanking != null && successRanking != '' && successRanking <= 0) {
-					alert('#{msgs.error_successRankingCannotBeZeroOrLess}');
-					return false;
-				} 
-					    
+			if((successRanking == null || successRanking == '')
+				alert('#{msgs.error_successRankMandatory}');
+			    return false;
+			}
+			 if(successRanking <= 0) {
+				alert('#{msgs.error_successRankingCannotBeZeroOrLess}');
+				return false;
+			}
+			if(successRanking > 1000){
+				alert('#{msgs.error_successRankingCannotBeHigherThanThousand}');
+				return false;
+			}
 		    // qualification grade
 		    var excellentMilitaryQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':militaryQualificationGradeId:0').checked;
 			var veryGoodMilitaryQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':militaryQualificationGradeId:1').checked;
@@ -186,13 +183,17 @@
 					<h:panelGroup rendered="#{cc.attrs.trainingObject.successFlag == null or cc.attrs.trainingObject.successFlag == 1}">
 						<table border="0" cellpadding="0" cellspacing="0" width="100%">
 							<tr>
-								<th width="15%">#{msgs.label_theRanking}</th>
+								<th width="15%">
+									#{msgs.label_theRanking}
+									<h:outputText value=" " />
+									<font style="color: red;">*</font>
+								</th>
 								<td width="50%">
 									<h:inputText id="successRankingId" value="#{cc.attrs.trainingObject.successRanking}" rendered="#{!cc.attrs.viewOnly}" styleClass="inputDataNormal" maxlength="5" onkeypress="return isDigit(event);" >
-										<f:ajax event="blur" render="#{cc.clientId}:successRankingPanelId" execute="#{cc.clientId}:successRankingPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+										<f:ajax event="blur" listener="#{cc.attrs.successRankingDesc}" render="#{cc.clientId}:successRankingPanelId  #{cc.clientId.split(':')[0].concat(':notifyMessagesId')}" execute="#{cc.clientId}:successRankingPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
 									</h:inputText>
 									<h:outputText value="  " rendered="#{!cc.attrs.viewOnly}" />
-									<h:outputText id = "successRankingDescId" value="#{cc.attrs.successRankingDesc}" />
+									<h:outputText id ="successRankingDescId" value="#{cc.attrs.successRankingDesc}" />
 								</td>
 							</tr>
 						</table>
