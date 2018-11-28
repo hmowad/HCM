@@ -172,24 +172,24 @@
 									<tr>
 										<th width="15%">#{msgs.label_oldRankDesc}</th>
 										<td width="35%">
-											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.oldRankDesc}" />
-											<h:inputHidden id="empOldRankHId" value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.oldRankId}" />
+											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.newRankDesc}" />
+											<h:inputHidden id="empOldRankHId" value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.newRankId}" />
 											<h:inputHidden id="empPhysicalRegionId" value="#{promotionsSoldiersDecisionCancellation.employee.physicalRegionId}" />
 										</td>
 										<th width="15%">#{msgs.label_newRankDesc}</th>
 										<td width="35%">
-											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.newRankDesc}" />
+											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.oldRankDesc}" />
 										</td>
 									</tr>
 
 									<tr>
 										<th width="15%">#{msgs.label_oldUnitDesc}</th>
 										<td width="35%">
-											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.oldUnitFullName}" />
+											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.newUnitFullName}" />
 										</td>
 										<th width="15%">#{msgs.label_newUnitDesc}</th>
 										<td width="35%">
-											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.newUnitFullName}" />
+											<h:outputText value="#{promotionsSoldiersDecisionCancellation.promotionTransaction.oldUnitFullName}" />
 										</td>
 									</tr>
 
