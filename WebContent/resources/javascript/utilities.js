@@ -439,23 +439,20 @@ function openSelectCountries(mode, contextPath, miniSearchReturnHandler){
 }
 
 function openUnitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId){
-	unitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, null, 0);
+	unitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, null , null, 0);
 }
 
-function unitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, unitHKeyPrefix, multipleSelectFlag){
+function openUnitsMiniSearchByUnitsIdsString(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, unitsIdsString, multipleSelectFlag){
+	unitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, null , unitsIdsString, multipleSelectFlag);
+}
+
+function unitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, unitHKeyPrefix, unitsIdsString ,multipleSelectFlag){
 	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
 	maskOpenerScreen();
-	var childWindow = window.open(contextPath+'/MiniSearch/UnitsMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&mode='+mode+'&unitTypeCode='+unitTypeCode+'&unitRegionId='+unitRegionId+'&unitParentId='+unitParentId + '&unitHKeyPrefix=' + unitHKeyPrefix +'&multipleSelectFlag='+ multipleSelectFlag, null, specsStr);
+	var childWindow = window.open(contextPath+'/MiniSearch/UnitsMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&mode='+mode+'&unitTypeCode='+unitTypeCode+'&unitRegionId='+unitRegionId+'&unitParentId='+unitParentId + '&unitHKeyPrefix=' + unitHKeyPrefix +'&unitsIdsString='+ unitsIdsString+'&multipleSelectFlag='+ multipleSelectFlag, null, specsStr);
 	unMaskOnPopupClose(childWindow);
 }
 
-
-function unitsMiniSearchByInstanceId(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, unitHKeyPrefix, instanceId, multipleSelectFlag){
-	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
-	maskOpenerScreen();
-	var childWindow = window.open(contextPath+'/MiniSearch/UnitsMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&mode='+mode+'&unitTypeCode='+unitTypeCode+'&unitRegionId='+unitRegionId+'&unitParentId='+unitParentId + '&unitHKeyPrefix=' + unitHKeyPrefix + '&instanceId=' + instanceId + '&multipleSelectFlag='+ multipleSelectFlag, null, specsStr);
-	unMaskOnPopupClose(childWindow);
-}
 
 function openSelectProcesses(mode, contextPath, miniSearchReturnHandler){
 	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
