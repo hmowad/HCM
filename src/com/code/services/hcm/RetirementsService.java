@@ -9,6 +9,8 @@ import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransactionData;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransactionDetail;
+import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.ReportNamesEnum;
@@ -181,12 +183,18 @@ public class RetirementsService extends BaseService {
 	}
     }
 
-    public static byte[] getDisclaimerStepsBytes(Long terminationTransactionId) throws BusinessException {
+    public static byte[] getDisclaimerStepsBytes(TerminationTransactionData terminationTransactionData, Integer empMilitaryNumber) throws BusinessException {
 	String reportName = "";
 	try {
 	    Map<String, Object> parameters = new HashMap<String, Object>();
 
-	    parameters.put("P_TERMINATION_TRANS_ID", terminationTransactionId);
+	    parameters.put("P_TERMINATION_TRANS_ID", terminationTransactionData.getId());
+	    parameters.put("P_EMP_NUMBER", terminationTransactionData.getCategoryId() == CategoriesEnum.OFFICERS.getCode() ? empMilitaryNumber : terminationTransactionData.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() ? terminationTransactionData.getJobCode() : "");
+	    parameters.put("P_EMP_NAME", terminationTransactionData.getEmpName());
+	    parameters.put("P_EMP_RANK_DESC", terminationTransactionData.getTransEmpRankDesc());
+	    parameters.put("P_EMP_JOB_DESC", terminationTransactionData.getTransEmpJobClassJobDesc());
+	    parameters.put("P_EMP_UNIT_FULL_NAME", terminationTransactionData.getTransEmpUnitFullName());
+	    parameters.put("P_TERMINATION_TRANSACTION_REASON", terminationTransactionData.getReasonDesc());
 	    parameters.put("P_SYS_DATE", HijriDateService.getHijriSysDateString());
 
 	    reportName = ReportNamesEnum.RETIREMENTS_DISCLAIMER_STEPS.getCode();
