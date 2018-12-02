@@ -13,6 +13,7 @@ import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
+import com.code.enums.WFTaskActionsEnum;
 import com.code.enums.WFTaskRolesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.RetirementsService;
@@ -45,7 +46,7 @@ public class DisclaimerDataView extends BaseBacking {
 
 		WFTaskData esmTask = new WFTaskData();
 		for (WFTaskData disclaimerTransactionWFTask : disclaimerTransactionWFTasks) {
-		    if (disclaimerTransactionWFTask.getAssigneeWfRole().equals(WFTaskRolesEnum.EXTRA_SIGN_MANAGER.getCode())) {
+		    if (disclaimerTransactionWFTask.getAssigneeWfRole().equals(WFTaskRolesEnum.EXTRA_SIGN_MANAGER.getCode()) && disclaimerTransactionWFTask.getAction().equals(WFTaskActionsEnum.SUPER_SIGN.getCode())) {
 			esmTask = disclaimerTransactionWFTask;
 			disclaimerTransactionWFTasks.remove(disclaimerTransactionWFTask);
 			break;
