@@ -319,7 +319,9 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 
     public void printDisclaimerStepsReport(DisclaimerTransactionData disclaimerTransactionData) {
 	try {
-	    byte[] bytes = RetirementsService.getDisclaimerStepsBytes(disclaimerTransactionData.getTerminationTransactionId());
+	    EmployeeData employee = EmployeesService.getEmployeeData(disclaimerTransactionData.getEmpId());
+	    TerminationTransactionData employeeTerminationTransaction = TerminationsService.getTerminationTransactionById(disclaimerTransactionData.getTerminationTransactionId());
+	    byte[] bytes = RetirementsService.getDisclaimerStepsBytes(employeeTerminationTransaction, employee.getMilitaryNumber());
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
