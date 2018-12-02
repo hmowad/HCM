@@ -29,6 +29,7 @@ public class WFDisclaimerDetail extends BaseEntity {
     private Long id;
     private Long instanceId;
     private Long managerId;
+    private Long managerUnitId;
     private String managerUnitFullName;
     private String managerJobDesc;
     private String managerName;
@@ -66,6 +67,16 @@ public class WFDisclaimerDetail extends BaseEntity {
 
     public void setManagerId(Long managerId) {
 	this.managerId = managerId;
+    }
+
+    @Basic
+    @Column(name = "MANAGER_UNIT_ID")
+    public Long getManagerUnitId() {
+	return managerUnitId;
+    }
+
+    public void setManagerUnitId(Long managerUnitId) {
+	this.managerUnitId = managerUnitId;
     }
 
     @Basic
