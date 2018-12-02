@@ -11,7 +11,6 @@ import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.enums.FlagsEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.UnitsService;
-import com.code.services.workflow.hcm.RetirementsWorkFlow;
 import com.code.ui.backings.base.BaseBacking;
 
 @SuppressWarnings("serial")
@@ -27,7 +26,7 @@ public class UnitsMiniSearch extends BaseBacking implements Serializable {
     private long unitRegionId;
     private long unitParentId;
     private String unitHKeyPrefix;
-    private Long instanceId;
+    private String unitsIdsString;
 
     private boolean multipleSelectFlag;
     private final int SELECTED_UNITS_MAX = 100;
@@ -42,8 +41,7 @@ public class UnitsMiniSearch extends BaseBacking implements Serializable {
 	unitRegionId = Long.valueOf(getRequest().getParameter("unitRegionId"));
 	unitParentId = Long.valueOf(getRequest().getParameter("unitParentId"));
 	unitHKeyPrefix = getRequest().getParameter("unitHKeyPrefix");
-	if (getRequest().getParameter("instanceId") != null)
-	    instanceId = Long.valueOf(getRequest().getParameter("instanceId"));
+	unitsIdsString = getRequest().getParameter("unitsIdsString");
 
 	if (getRequest().getParameter("multipleSelectFlag") != null) {
 	    multipleSelectFlag = Integer.parseInt(getRequest().getParameter("multipleSelectFlag")) == 1;
@@ -79,7 +77,7 @@ public class UnitsMiniSearch extends BaseBacking implements Serializable {
 	    } else if (mode.equals("7")) {
 		searchUnitList = UnitsService.getUnitsByPrefixHkey(unitHKeyPrefix, searchUnitFullName);
 	    } else if (mode.equals("8")) {
-		searchUnitList = RetirementsWorkFlow.getManagersUnitsByDisclaimerDetailsInstanceId(instanceId, unitRegionId);
+		searchUnitList = UnitsService.getUnitsByIdsString(unitsIdsString);
 	    }
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -174,4 +172,13 @@ public class UnitsMiniSearch extends BaseBacking implements Serializable {
     public boolean isMultipleSelectFlag() {
 	return multipleSelectFlag;
     }
+
+    public String getUnitsIdsString() {
+	return unitsIdsString;
+    }
+
+    public void setUnitsIdsString(String unitsIdsString) {
+	this.unitsIdsString = unitsIdsString;
+    }
+
 }

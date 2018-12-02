@@ -428,8 +428,8 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	}
     }
 
-    public static List<UnitData> getManagersUnitsByDisclaimerDetailsInstanceId(Long instanceId, Long empUnitRegionId) throws BusinessException {
-	List<UnitData> searchUnitList = new ArrayList<UnitData>();
+    public static String getManagersUnitsIdsString(Long instanceId, Long empUnitRegionId) throws BusinessException {
+	String unitsIdsString = "";
 	List<WFDisclaimerDetail> wfDisclaiamerDetails = getWFDisclaimerDetailsByManagerId(null, instanceId);
 
 	for (WFDisclaimerDetail wfDisclaimerDetail : wfDisclaiamerDetails) {
@@ -444,10 +444,10 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    UnitData payrollRegionUnitData = UnitsService.getUnitById(regionPosition.getUnitId());
 	    UnitData payrollGeneralDirectorateUnitData = UnitsService.getUnitById(generalDirectoratePosition.getUnitId());
 	    if (!unitData.getId().equals(payrollRegionUnitData.getId()) && !unitData.getId().equals(payrollGeneralDirectorateUnitData.getId()))
-		searchUnitList.add(unitData);
+		unitsIdsString += unitData.getId() + ",";
 	}
 
-	return searchUnitList;
+	return unitsIdsString.substring(0, unitsIdsString.length() - 1);
     }
 
     /*------------------------------------------------ Integration Operations --------------------------------------------------*/

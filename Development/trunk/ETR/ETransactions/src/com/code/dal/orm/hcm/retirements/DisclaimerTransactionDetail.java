@@ -17,6 +17,7 @@ public class DisclaimerTransactionDetail extends BaseEntity {
     private Long id;
     private Long disclaimerTransactionId;
     private Long managerId;
+    private Long managerUnitId;
     private String transManagerUnitFullName;
     private String transManagerJobDesc;
     private String transManagerName;
@@ -55,6 +56,16 @@ public class DisclaimerTransactionDetail extends BaseEntity {
 
     public void setManagerId(Long managerId) {
 	this.managerId = managerId;
+    }
+
+    @Basic
+    @Column(name = "MANAGER_UNIT_ID")
+    public Long getManagerUnitId() {
+	return managerUnitId;
+    }
+
+    public void setManagerUnitId(Long managerUnitId) {
+	this.managerUnitId = managerUnitId;
     }
 
     @Basic

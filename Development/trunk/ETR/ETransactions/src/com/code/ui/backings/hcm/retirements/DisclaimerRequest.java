@@ -48,6 +48,7 @@ public class DisclaimerRequest extends WFBaseBacking {
     private String selectedUnitsIds;
     private List<UnitData> sentBackUnits;
     private String selectedUnitsNames;
+    private String unitsIdsString;
 
     public DisclaimerRequest() {
 	super.init();
@@ -124,6 +125,8 @@ public class DisclaimerRequest extends WFBaseBacking {
 		    if (SmSsmUnitData != null) {
 			hkeyReviewerEmps = SmSsmUnitData.gethKey();
 		    }
+		} else if (this.role.equals(WFTaskRolesEnum.EXTRA_SIGN_MANAGER.getCode())) {
+		    unitsIdsString = RetirementsWorkFlow.getManagersUnitsIdsString(wfDisclaimerData.getInstanceId(), wfDisclaimerData.getEmpPhysicalRegionId());
 		}
 	    } else {
 		setServerSideErrorMessages(getMessage("error_general"));
@@ -416,6 +419,14 @@ public class DisclaimerRequest extends WFBaseBacking {
 
     public void setSelectedUnitsNames(String selectedUnitsNames) {
 	this.selectedUnitsNames = selectedUnitsNames;
+    }
+
+    public String getUnitsIdsString() {
+	return unitsIdsString;
+    }
+
+    public void setUnitsIdsString(String unitsIdsString) {
+	this.unitsIdsString = unitsIdsString;
     }
 
 }
