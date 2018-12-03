@@ -832,9 +832,9 @@ public class VacationsService extends BaseService {
 		parameters.put("P_DECISION_DATE", decisionDate == null ? hijriSysDateString : HijriDateService.getHijriDateString(decisionDate));
 	    } else if (reportType == 80) {
 		reportName = ReportNamesEnum.VACATIONS_TRANSACTIONS_AND_REQUESTS_STATISTICAL.getCode();
-		parameters.put("P_PREFIX_HKEY", includeChildren ? UnitsService.getHKeyPrefix(selectedUnitHKey) + "%" : selectedUnitHKey);
-		parameters.put("P_INCLUDE_CHILDREN", includeChildren);
-		parameters.put("P_PHYSICAL_UNIT_FULL_NAME", unitFullName);
+		parameters.put("P_UNIT_HKEY_PREFIX", includeChildren ? UnitsService.getHKeyPrefix(selectedUnitHKey) + "%" : selectedUnitHKey);
+		parameters.put("P_UNIT_FULL_NAME", unitFullName);
+		parameters.put("P_INCLUDE_CHILDREN", includeChildren ? 1 : 0);
 		parameters.put("P_EXCLUDED_PROCESSES_IDS", WFProcessesEnum.OFFICERS_VACATION_JOINING.getCode() + "," +
 			WFProcessesEnum.SOLDIERS_VACATION_JOINING.getCode() + "," + WFProcessesEnum.CIVILIANS_VACATION_JOINING.getCode());
 	    }
