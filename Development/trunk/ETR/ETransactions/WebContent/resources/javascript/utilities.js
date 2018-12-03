@@ -442,14 +442,17 @@ function openUnitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTyp
 	unitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, null , null, 0);
 }
 
-function openUnitsMiniSearchByUnitsIdsString(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, unitsIdsString, multipleSelectFlag){
-	unitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, null , unitsIdsString, multipleSelectFlag);
-}
-
-function unitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, unitHKeyPrefix, unitsIdsString ,multipleSelectFlag){
+function openUnitsMiniSearchByUnitsIdsString(contextPath, miniSearchReturnHandler,  unitsIdsString , multipleSelectFlag){
 	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
 	maskOpenerScreen();
-	var childWindow = window.open(contextPath+'/MiniSearch/UnitsMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&mode='+mode+'&unitTypeCode='+unitTypeCode+'&unitRegionId='+unitRegionId+'&unitParentId='+unitParentId + '&unitHKeyPrefix=' + unitHKeyPrefix +'&unitsIdsString='+ unitsIdsString+'&multipleSelectFlag='+ multipleSelectFlag, null, specsStr);
+	var childWindow = window.open(contextPath+'/MiniSearch/UnitsMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&mode=8&unitTypeCode=-1&unitRegionId=-1&unitParentId=-1&unitHKeyPrefix=-1&unitsIdsString='+ unitsIdsString +'&multipleSelectFlag='+ multipleSelectFlag, null, specsStr);
+	unMaskOnPopupClose(childWindow);
+}
+
+function unitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, unitHKeyPrefix, multipleSelectFlag){
+	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
+	maskOpenerScreen();
+	var childWindow = window.open(contextPath+'/MiniSearch/UnitsMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&mode='+mode+'&unitTypeCode='+unitTypeCode+'&unitRegionId='+unitRegionId+'&unitParentId='+unitParentId + '&unitHKeyPrefix=' + unitHKeyPrefix +'&unitsIdsString='+ null +'&multipleSelectFlag='+ multipleSelectFlag, null, specsStr);
 	unMaskOnPopupClose(childWindow);
 }
 
