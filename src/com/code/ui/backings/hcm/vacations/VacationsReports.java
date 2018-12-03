@@ -85,7 +85,7 @@ public class VacationsReports extends BaseBacking implements Serializable {
 		reportTitle = getMessage("title_vacationsUnitsPercentageReportTitle");
 	    }
 
-	    byte[] bytes = VacationsService.getVacationsReportsBytes(reportType, selectedRegionId, regionDesc, selectedUnitHKey, null, selectedCategoryId, fromDate, toDate,
+	    byte[] bytes = VacationsService.getVacationsReportsBytes(reportType, selectedRegionId, regionDesc, selectedUnitHKey, selectedUnitFullName, selectedCategoryId, fromDate, toDate,
 		    FlagsEnum.OFF.getCode(), FlagsEnum.OFF.getCode(), (long) FlagsEnum.OFF.getCode(), null, null, (long) FlagsEnum.OFF.getCode(), "",
 		    (long) FlagsEnum.OFF.getCode(), "", null, null, null, viewAllLevelsVacationsFlag, reportTitle);
 	    super.print(bytes);
