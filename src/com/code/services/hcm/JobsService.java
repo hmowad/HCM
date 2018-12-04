@@ -286,7 +286,7 @@ public class JobsService extends BaseService {
 		DataAccess.addEntity(jobData.getJob(), session);
 		jobData.setId(jobData.getJob().getId());
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_CONSTRUCTION.getCode(), decisionData,
-			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), useSession);
+			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), useSession);
 	    }
 
 	    if (!isOpenedSession)
@@ -337,7 +337,6 @@ public class JobsService extends BaseService {
 
 	    for (JobData jobData : jobsData) {
 		Long transBasicJobNameId = jobData.getBasicJobNameId();
-		String transName = jobData.getName();
 		String transCode = jobData.getCode();
 
 		jobData.setBasicJobNameId(jobData.getNewBasicJobNameId());
@@ -354,7 +353,7 @@ public class JobsService extends BaseService {
 		jobData.setExecutionDate(decisionData.getExecutionDate());
 		DataAccess.updateEntity(jobData.getJob(), session);
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_RENAME.getCode(), decisionData,
-			transCode, transBasicJobNameId, transName, jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
+			transCode, transBasicJobNameId, jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 
 		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode()) {
 		    EmployeeData empData = EmployeesService.getEmployeesByEmpsIds(new Long[] { jobData.getEmployeeId() }).get(0);
@@ -411,7 +410,7 @@ public class JobsService extends BaseService {
 		jobData.setExecutionDate(decisionData.getExecutionDate());
 		DataAccess.updateEntity(jobData.getJob(), session);
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_CANCELLATION.getCode(), decisionData,
-			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
+			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 	    }
 
 	    if (!isOpenedSession)
@@ -463,7 +462,7 @@ public class JobsService extends BaseService {
 
 		DataAccess.updateEntity(jobData.getJob(), session);
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_FREEZE.getCode(), decisionData,
-			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
+			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 	    }
 
 	    if (!isOpenedSession)
@@ -510,7 +509,7 @@ public class JobsService extends BaseService {
 		jobData.setExecutionDate(decisionData.getExecutionDate());
 		DataAccess.updateEntity(jobData.getJob(), session);
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_UNFREEZE.getCode(), decisionData,
-			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
+			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 	    }
 
 	    if (!isOpenedSession)
@@ -558,7 +557,6 @@ public class JobsService extends BaseService {
 		boolean isScaleUp = (jobData.getRankId().longValue() > jobData.getNewRankId().longValue()) ? true : false;
 
 		Long transBasicJobNameId = jobData.getBasicJobNameId();
-		String transName = jobData.getName();
 		String transCode = jobData.getCode();
 		Long transRankId = jobData.getRankId();
 
@@ -585,7 +583,7 @@ public class JobsService extends BaseService {
 		DataAccess.updateEntity(jobData.getJob(), session);
 
 		addJobTransaction(jobData, isScaleUp ? TransactionTypesEnum.JOB_SCALE_UP.getCode() : TransactionTypesEnum.JOB_SCALE_DOWN.getCode(), decisionData,
-			transCode, transBasicJobNameId, transName, jobData.getUnitId(), jobData.getUnitFullName(), transRankId, jobData.getMinorSpecializationId(), session);
+			transCode, transBasicJobNameId, jobData.getUnitId(), jobData.getUnitFullName(), transRankId, jobData.getMinorSpecializationId(), session);
 
 		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode()) {
 		    EmployeeData empData = EmployeesService.getEmployeesByEmpsIds(new Long[] { jobData.getEmployeeId() }).get(0);
@@ -662,7 +660,7 @@ public class JobsService extends BaseService {
 		DataAccess.updateEntity(jobData.getJob(), session);
 
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_MOVE.getCode(), decisionData,
-			transCode, jobData.getBasicJobNameId(), jobData.getName(), transUnitId, transUnitFullName, jobData.getRankId(), jobData.getMinorSpecializationId(), session);
+			transCode, jobData.getBasicJobNameId(), transUnitId, transUnitFullName, jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 	    }
 
 	    if (!isOpenedSession)
@@ -690,7 +688,6 @@ public class JobsService extends BaseService {
 	    for (JobData jobData : jobsData) {
 		Long transMinorSpecId = jobData.getMinorSpecializationId();
 		Long transBasicJobNameId = jobData.getBasicJobNameId();
-		String transName = jobData.getName();
 
 		jobData.setMinorSpecializationId(jobData.getNewMinorSpecializationId());
 		jobData.setExecutionDate(decisionData.getExecutionDate());
@@ -701,7 +698,7 @@ public class JobsService extends BaseService {
 		}
 		DataAccess.updateEntity(jobData.getJob(), session);
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_MODIFY_MINOR_SPECIALIZATION.getCode(), decisionData,
-			jobData.getCode(), transBasicJobNameId, transName, jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), transMinorSpecId, session);
+			jobData.getCode(), transBasicJobNameId, jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), transMinorSpecId, session);
 
 		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode()) {
 		    EmployeeData empData = EmployeesService.getEmployeesByEmpsIds(new Long[] { jobData.getEmployeeId() }).get(0);
@@ -751,7 +748,7 @@ public class JobsService extends BaseService {
 		jobData.setReservationStatus(reservationStatus);
 		DataAccess.updateEntity(jobData.getJob(), session);
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_RESERVE.getCode(), decisionData,
-			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
+			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 	    }
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -793,7 +790,7 @@ public class JobsService extends BaseService {
 		jobData.setReservationStatus(JobReservationStatusEnum.UN_RESERVED.getCode());
 		DataAccess.updateEntity(jobData.getJob(), session);
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_UNRESERVE.getCode(), decisionData,
-			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getName(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
+			jobData.getCode(), jobData.getBasicJobNameId(), jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 	    }
 
 	    if (!isOpenedSession)
@@ -2295,7 +2292,7 @@ public class JobsService extends BaseService {
      *             if any error occurs
      */
     private static void addJobTransaction(JobData jobData, Integer transactionType, JobTransaction decisionData,
-	    String transCode, Long transBasicJobNameId, String transName, Long transUnitId, String transUnitFullName, Long transRankId, Long transMinorSpecId, CustomSession... useSession) throws BusinessException {
+	    String transCode, Long transBasicJobNameId, Long transUnitId, String transUnitFullName, Long transRankId, Long transMinorSpecId, CustomSession... useSession) throws BusinessException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
