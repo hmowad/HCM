@@ -103,7 +103,7 @@ public class RetirementsCollectiveApproval extends BaseBacking implements Serial
 		    WFDisclaimerData wfDisclaimerData = wfDisclaimerDataMap.get(task.getInstanceId());
 		    if (wfDisclaimerData == null)
 			wfDisclaimerData = new WFDisclaimerData();
-		    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, task, null, WFActionFlagsEnum.APPROVE.getCode());
+		    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, task, WFActionFlagsEnum.APPROVE.getCode());
 		} catch (BusinessException e) {
 		    unsuccessfulTaskIdsIfAny += comma + task.getTaskId();
 		    unsuccessfulTasksCount++;

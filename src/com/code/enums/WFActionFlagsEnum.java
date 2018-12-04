@@ -14,7 +14,7 @@ public enum WFActionFlagsEnum {
     REDIRECT(9),
     DISCLAIM(10),
     CLAIM(11),
-    SENT_BACK_TO_UNITS(12);
+    SEND_BACK_TO_UNITS(12);
 
     private int code;
 

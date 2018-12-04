@@ -150,7 +150,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 			    if (wfDisclaimerData.getSentBackUnitsString() == null || wfDisclaimerData.getSentBackUnitsString().equals(""))
 				managerWFDisclaimerDetail = RetirementsWorkFlow.constructWFDisclaimerDetail(instance.getInstanceId(), unitManagerData);
 			    else {
-				List<WFDisclaimerDetail> managerWFDisclaimerDetailList = getWFDisclaimerDetailsByManagerId(unitManagerId, instance.getInstanceId());
+				List<WFDisclaimerDetail> managerWFDisclaimerDetailList = getWFDisclaimerDetailsByManagerIdAndInstanceId(unitManagerId, instance.getInstanceId());
 				managerWFDisclaimerDetail = (managerWFDisclaimerDetailList != null && managerWFDisclaimerDetailList.size() != 0) ? managerWFDisclaimerDetailList.get(0) : null;
 				if (managerWFDisclaimerDetail != null)
 				    managerWFDisclaimerDetail.setClaimedFlag(FlagsEnum.OFF.getCode());
@@ -361,7 +361,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	}
     }
 
-    public static void doESM(EmployeeData requester, WFInstance instance, WFDisclaimerData wfDisclaimerData, WFTask esmTask, String sentBackUnitsString, int actionFlag) throws BusinessException {
+    public static void doESM(EmployeeData requester, WFInstance instance, WFDisclaimerData wfDisclaimerData, WFTask esmTask, int actionFlag) throws BusinessException {
 	CustomSession session = DataAccess.getSession();
 	try {
 	    session.beginTransaction();
@@ -369,12 +369,12 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		closeDisclaimerWorkFlow(requester, instance, wfDisclaimerData, esmTask, session);
 	    else if (actionFlag == WFActionFlagsEnum.REJECT.getCode()) {
 		closeWFInstanceByAction(requester.getEmpId(), instance, esmTask, WFTaskActionsEnum.REJECT.getCode(), null, session);
-	    } else if (actionFlag == WFActionFlagsEnum.SENT_BACK_TO_UNITS.getCode()) {
-		if (sentBackUnitsString == null || sentBackUnitsString.equals(""))
+	    } else if (actionFlag == WFActionFlagsEnum.SEND_BACK_TO_UNITS.getCode()) {
+		if (wfDisclaimerData.getSentBackUnitsString() == null || wfDisclaimerData.getSentBackUnitsString().equals(""))
 		    throw new BusinessException("error_sentBackUnitsMandatory");
 		Date curDate = new Date();
 		Date curHijriDate = HijriDateService.getHijriSysDate();
-		List<UnitData> sentBackUnits = UnitsService.getUnitsByIdsString(sentBackUnitsString);
+		List<UnitData> sentBackUnits = UnitsService.getUnitsByIdsString(wfDisclaimerData.getSentBackUnitsString());
 
 		int i = 1;
 		if (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() &&
@@ -411,8 +411,8 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 
 		}
 
-		setWFTaskAction(esmTask, WFTaskActionsEnum.SENT_BACK_TO_UNITS.getCode(), curDate, curHijriDate, session);
-		wfDisclaimerData.setSentBackUnitsString(sentBackUnitsString);
+		setWFTaskAction(esmTask, WFTaskActionsEnum.SEND_BACK_TO_UNITS.getCode(), curDate, curHijriDate, session);
+		wfDisclaimerData.setSentBackUnitsString(wfDisclaimerData.getSentBackUnitsString());
 		addModifyWFDisclaimerData(wfDisclaimerData, instance.getInstanceId(), session);
 	    }
 	    session.commitTransaction();
@@ -430,7 +430,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 
     public static String getManagersUnitsIdsString(Long instanceId, Long empUnitRegionId) throws BusinessException {
 	String unitsIdsString = "";
-	List<WFDisclaimerDetail> wfDisclaiamerDetails = getWFDisclaimerDetailsByManagerId(null, instanceId);
+	List<WFDisclaimerDetail> wfDisclaiamerDetails = getWFDisclaimerDetailsByManagerIdAndInstanceId(null, instanceId);
 
 	for (WFDisclaimerDetail wfDisclaimerDetail : wfDisclaiamerDetails) {
 	    UnitData unitData = UnitsService.getUnitByExactFullName(wfDisclaimerDetail.getManagerUnitFullName());
@@ -751,7 +751,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	}
     }
 
-    public static List<WFDisclaimerDetail> getWFDisclaimerDetailsByManagerId(Long managerId, Long instanceId) throws BusinessException {
+    public static List<WFDisclaimerDetail> getWFDisclaimerDetailsByManagerIdAndInstanceId(Long managerId, Long instanceId) throws BusinessException {
 	return searchWFDisclaimerDetails(managerId, instanceId);
     }
 

@@ -330,7 +330,7 @@
 										<h:commandButton id="addUnitBtnId" style="display:none;">
 											<f:ajax execute="disclaimerRequestFormId:unitsIDsHId disclaimerRequestFormId:unitsNamesHId" render="disclaimerRequestFormId:unitsNamesId disclaimerRequestFormId:notifyMessagesId" />
 										</h:commandButton>
-										<h:inputHidden id="unitsIDsHId" value="#{disclaimerRequest.selectedUnitsIds}" />
+										<h:inputHidden id="unitsIDsHId" value="#{disclaimerRequest.wfDisclaimerData.sentBackUnitsString}" />
 										<h:inputHidden id="unitsNamesHId" value="#{disclaimerRequest.selectedUnitsNames}" />
 									</td>
 								</tr>
