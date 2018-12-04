@@ -35,14 +35,13 @@
      	}
      }
 
-	function getUnit(contextPath, unitsIdsString) {
-		openUnitsMiniSearchByUnitsIdsString(contextPath, 'handleUnitMiniSearchResult(ret)', unitsIdsString, 1);
+	function getUnit(contextPath, sentBackUnitsIdsString) {
+		openUnitsMiniSearchByUnitsIdsString(contextPath, 'handleUnitMiniSearchResult(ret)', sentBackUnitsIdsString, 1);
 	}
 	
 	function handleUnitMiniSearchResult(ret){
 		if (ret != null) {
 			document.getElementById('disclaimerRequestFormId:unitsIDsHId').value = ret[0];
-			document.getElementById('disclaimerRequestFormId:unitsNamesHId').value = ret[1];
 			document.getElementById('disclaimerRequestFormId:addUnitBtnId').click() ;
 		}
 	}
@@ -325,13 +324,12 @@
 										<h:outputText value="#{msgs.label_sendBackToUnits}" />
 									</th>
 									<td>
-										<h:outputText id="unitsNamesId" value="#{disclaimerRequest.selectedUnitsNames}" />
-										<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getUnit('#{request.contextPath}', '#{disclaimerRequest.unitsIdsString}');return false;" />
-										<h:commandButton id="addUnitBtnId" style="display:none;">
-											<f:ajax execute="disclaimerRequestFormId:unitsIDsHId disclaimerRequestFormId:unitsNamesHId" render="disclaimerRequestFormId:unitsNamesId disclaimerRequestFormId:notifyMessagesId" />
-										</h:commandButton>
+										<h:outputText id="unitsNamesId" value="#{disclaimerRequest.selectedSentBackUnitsNamesString}" />
 										<h:inputHidden id="unitsIDsHId" value="#{disclaimerRequest.wfDisclaimerData.sentBackUnitsString}" />
-										<h:inputHidden id="unitsNamesHId" value="#{disclaimerRequest.selectedUnitsNames}" />
+										<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getUnit('#{request.contextPath}', '#{disclaimerRequest.sentBackUnitsIdsParam}');return false;" />
+										<h:commandButton id="addUnitBtnId" style="display:none;" action = "#{disclaimerRequest.getSentBackUnitsNames()}">
+											<f:ajax execute="disclaimerRequestFormId:unitsIDsHId" render="disclaimerRequestFormId:unitsNamesId disclaimerRequestFormId:notifyMessagesId" />
+										</h:commandButton>
 									</td>
 								</tr>
 

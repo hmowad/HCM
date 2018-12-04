@@ -1,7 +1,6 @@
 package com.code.ui.backings.hcm.retirements;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -45,9 +44,8 @@ public class DisclaimerRequest extends WFBaseBacking {
 
     private Long reviewerEmpId;
     private String hkeyReviewerEmps;
-    private List<UnitData> sentBackUnits;
-    private String selectedUnitsNames;
-    private String unitsIdsString;
+    private String sentBackUnitsIdsParam;
+    private String selectedSentBackUnitsNamesString;
 
     public DisclaimerRequest() {
 	super.init();
@@ -125,7 +123,7 @@ public class DisclaimerRequest extends WFBaseBacking {
 			hkeyReviewerEmps = SmSsmUnitData.gethKey();
 		    }
 		} else if (this.role.equals(WFTaskRolesEnum.EXTRA_SIGN_MANAGER.getCode())) {
-		    unitsIdsString = RetirementsWorkFlow.getManagersUnitsIdsString(wfDisclaimerData.getInstanceId(), wfDisclaimerData.getEmpPhysicalRegionId());
+		    sentBackUnitsIdsParam = RetirementsWorkFlow.getManagersUnitsIdsString(wfDisclaimerData.getInstanceId(), wfDisclaimerData.getEmpPhysicalRegionId());
 		}
 	    } else {
 		setServerSideErrorMessages(getMessage("error_general"));
@@ -295,6 +293,14 @@ public class DisclaimerRequest extends WFBaseBacking {
 	}
     }
 
+    public void getSentBackUnitsNames() {
+	try {
+	    selectedSentBackUnitsNamesString = RetirementsWorkFlow.getSentBackUnitsNames(wfDisclaimerData.getSentBackUnitsString());
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	}
+    }
+
     public String closeProcess() {
 	try {
 	    RetirementsWorkFlow.closeWFInstanceByNotification(instance, currentTask);
@@ -396,28 +402,20 @@ public class DisclaimerRequest extends WFBaseBacking {
 	this.wfDisclaimerDetail = wfDisclaimerDetail;
     }
 
-    public List<UnitData> getSentBackUnits() {
-	return sentBackUnits;
+    public String getSentBackUnitsIdsParam() {
+	return sentBackUnitsIdsParam;
     }
 
-    public void setSentBackUnits(List<UnitData> sentBackUnits) {
-	this.sentBackUnits = sentBackUnits;
+    public void setSentBackUnitsIdsParam(String unitsIdsString) {
+	this.sentBackUnitsIdsParam = unitsIdsString;
     }
 
-    public String getSelectedUnitsNames() {
-	return selectedUnitsNames;
+    public String getSelectedSentBackUnitsNamesString() {
+	return selectedSentBackUnitsNamesString;
     }
 
-    public void setSelectedUnitsNames(String selectedUnitsNames) {
-	this.selectedUnitsNames = selectedUnitsNames;
-    }
-
-    public String getUnitsIdsString() {
-	return unitsIdsString;
-    }
-
-    public void setUnitsIdsString(String unitsIdsString) {
-	this.unitsIdsString = unitsIdsString;
+    public void setSelectedSentBackUnitsNamesString(String selectedSentBackUnitsNamesString) {
+	this.selectedSentBackUnitsNamesString = selectedSentBackUnitsNamesString;
     }
 
 }

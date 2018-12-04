@@ -450,6 +450,15 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	return unitsIdsString.substring(0, unitsIdsString.length() - 1);
     }
 
+    public static String getSentBackUnitsNames(String sentBackUnitsIdsString) throws BusinessException {
+	String sentBackUnitsNamesString = "";
+	List<UnitData> sentBackUnits = UnitsService.getUnitsByIdsString(sentBackUnitsIdsString);
+	for (UnitData sentBackUnit : sentBackUnits) {
+	    sentBackUnitsNamesString += sentBackUnit.getFullName() + ",";
+	}
+	return sentBackUnitsNamesString.substring(0, sentBackUnitsNamesString.length() - 1);
+    }
+
     /*------------------------------------------------ Integration Operations --------------------------------------------------*/
     private static void closeDisclaimerWorkFlow(EmployeeData requester, WFInstance instance, WFDisclaimerData wfDisclaimerData,
 	    WFTask esmTask, CustomSession session) throws BusinessException {
