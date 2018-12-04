@@ -3716,7 +3716,7 @@ public class PromotionsService extends BaseService {
 		    JobsService.changeJobStatus(newJob, JobStatusEnum.OCCUPIED.getCode(), session);
 
 		    EmployeesService.updateEmployeePromotionData(employee, promotionTransactionDataItr.getNewJobId(), getNextRank(employee.getRankId()), null, promotionTransactionDataItr.getNewDegreeId(), null, null, null, session);
-		    LogService.logEmployeeData(employee, promotionTransactionDataItr.getNewLastPromotionDate(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), session);
+		    LogService.logEmployeeData(employee, promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), session);
 		}
 		// add promotion transaction
 		DataAccess.addEntity(promotionTransactionDataItr.getPromotionTransaction(), session);
