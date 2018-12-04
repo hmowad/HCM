@@ -45,7 +45,6 @@ public class DisclaimerRequest extends WFBaseBacking {
 
     private Long reviewerEmpId;
     private String hkeyReviewerEmps;
-    private String selectedUnitsIds;
     private List<UnitData> sentBackUnits;
     private String selectedUnitsNames;
     private String unitsIdsString;
@@ -195,7 +194,7 @@ public class DisclaimerRequest extends WFBaseBacking {
     public String doRetirementClaimSM() throws BusinessException {
 	try {
 	    wfDisclaimerData.getWFDisclaimer().setSystemUser(loginEmpData.getEmpId() + ""); // For auditing.
-	    wfDisclaimerDetail = RetirementsWorkFlow.getWFDisclaimerDetailsByManagerId(currentTask.getOriginalId(), instance.getInstanceId()).get(0);
+	    wfDisclaimerDetail = RetirementsWorkFlow.getWFDisclaimerDetailsByManagerIdAndInstanceId(currentTask.getOriginalId(), instance.getInstanceId()).get(0);
 	    wfDisclaimerDetail.setClaimedFlag(FlagsEnum.ON.getCode());
 	    if (this.role.equals(WFTaskRolesEnum.SIGN_MANAGER.getCode()))
 		RetirementsWorkFlow.doSM(requester, instance, wfDisclaimerData, wfDisclaimerDetail, currentTask, WFActionFlagsEnum.CLAIM.getCode(), null);
@@ -211,7 +210,7 @@ public class DisclaimerRequest extends WFBaseBacking {
     public String doRetirementDisclaimSM() throws BusinessException {
 	try {
 	    wfDisclaimerData.getWFDisclaimer().setSystemUser(loginEmpData.getEmpId() + ""); // For auditing.
-	    wfDisclaimerDetail = RetirementsWorkFlow.getWFDisclaimerDetailsByManagerId(currentTask.getOriginalId(), instance.getInstanceId()).get(0);
+	    wfDisclaimerDetail = RetirementsWorkFlow.getWFDisclaimerDetailsByManagerIdAndInstanceId(currentTask.getOriginalId(), instance.getInstanceId()).get(0);
 	    wfDisclaimerDetail.setClaimedFlag(FlagsEnum.OFF.getCode());
 	    if (this.role.equals(WFTaskRolesEnum.SIGN_MANAGER.getCode()))
 		RetirementsWorkFlow.doSM(requester, instance, wfDisclaimerData, wfDisclaimerDetail, currentTask, WFActionFlagsEnum.DISCLAIM.getCode(), null);
@@ -268,7 +267,7 @@ public class DisclaimerRequest extends WFBaseBacking {
 
     public String doRetirementsAprroveESM() throws BusinessException {
 	try {
-	    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, currentTask, null, WFActionFlagsEnum.APPROVE.getCode());
+	    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, currentTask, WFActionFlagsEnum.APPROVE.getCode());
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
@@ -278,7 +277,7 @@ public class DisclaimerRequest extends WFBaseBacking {
 
     public String doRetirementsRejectESM() throws BusinessException {
 	try {
-	    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, currentTask, null, WFActionFlagsEnum.REJECT.getCode());
+	    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, currentTask, WFActionFlagsEnum.REJECT.getCode());
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
@@ -288,7 +287,7 @@ public class DisclaimerRequest extends WFBaseBacking {
 
     public String doRetirementsSendBackUnitsESM() throws BusinessException {
 	try {
-	    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, currentTask, selectedUnitsIds, WFActionFlagsEnum.SENT_BACK_TO_UNITS.getCode());
+	    RetirementsWorkFlow.doESM(requester, instance, wfDisclaimerData, currentTask, WFActionFlagsEnum.SEND_BACK_TO_UNITS.getCode());
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
@@ -395,14 +394,6 @@ public class DisclaimerRequest extends WFBaseBacking {
 
     public void setWfDisclaimerDetail(WFDisclaimerDetail wfDisclaimerDetail) {
 	this.wfDisclaimerDetail = wfDisclaimerDetail;
-    }
-
-    public String getSelectedUnitsIds() {
-	return selectedUnitsIds;
-    }
-
-    public void setSelectedUnitsIds(String selectedUnitsIds) {
-	this.selectedUnitsIds = selectedUnitsIds;
     }
 
     public List<UnitData> getSentBackUnits() {
