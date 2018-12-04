@@ -36,10 +36,8 @@
 
 		function returnUnitsList(){
     	    var unitsIds = document.getElementById('searchUnitForm:returnedUnitsIdsId').value;
-    	    var unitsNames = document.getElementById('searchUnitForm:unitsNamesId').value;
           	ret = new Array();
           	ret[0] = unitsIds;
-          	ret[1] = unitsNames;
           	window.close();
        	    eval('(' + window.opener.#{param['miniSearchReturnHandler']} + ')');
        }
@@ -117,7 +115,7 @@
 								<f:facet name="header">#{msgs.label_selectUnit}</f:facet>
 								<h:commandButton onclick="selectUnit(this.id); return false;" value="#{msgs.fa_check_square}" rendered="#{!unitsMiniSearch.multipleSelectFlag}"  title="#{msgs.label_selectUnit}" styleClass="btn_icon" />
 								<h:commandButton action="#{unitsMiniSearch.addSelectedUnit(row)}" rendered="#{unitsMiniSearch.multipleSelectFlag}" value="#{msgs.fa_check_square}" title="#{msgs.label_selectUnit}" styleClass="btn_icon">
-									<f:ajax render="searchUnitForm:notifyMessagesId searchUnitForm:unitList searchUnitForm:selectedUnitsTableId searchUnitForm:returnedUnitsIdsId searchUnitForm:unitsNamesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									<f:ajax render="searchUnitForm:notifyMessagesId searchUnitForm:unitList searchUnitForm:selectedUnitsTableId searchUnitForm:returnedUnitsIdsId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 								</h:commandButton>
 							</rich:column>
 							<f:facet name="footer">
@@ -153,7 +151,6 @@
 					<tr>
 						<td align="center" width="100%">
 							<h:inputHidden id="returnedUnitsIdsId" value="#{unitsMiniSearch.selectedUnitsIds}" />
-							<h:inputHidden id="unitsNamesId" value="#{unitsMiniSearch.selectedUnitsNames}" />
 							<rich:dataTable id="selectedUnitsTableId" rows="#{unitsMiniSearch.rowsCount}" rowKeyVar="index" var="row" value="#{unitsMiniSearch.selectedUnitList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
 								<rich:column style="width : 5%">
 									<f:facet name="header">#</f:facet>
@@ -180,7 +177,7 @@
 								<rich:column style="width : 5%">
 									<f:facet name="header">#{msgs.label_delete}</f:facet>
 									<h:commandButton action="#{unitsMiniSearch.removeSelectedUnit(row)}" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon">
-										<f:ajax render="searchUnitForm:notifyMessagesId searchUnitForm:unitList searchUnitForm:selectedUnitsTableId searchUnitForm:returnedUnitsIdsId searchUnitForm:unitsNamesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										<f:ajax render="searchUnitForm:notifyMessagesId searchUnitForm:unitList searchUnitForm:selectedUnitsTableId searchUnitForm:returnedUnitsIdsId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 									</h:commandButton>
 								</rich:column>
 								<f:facet name="footer">
