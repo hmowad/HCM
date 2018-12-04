@@ -485,7 +485,6 @@
 											<td width="50%" colspan="3">
 												<h:selectOneMenu id="personsCategoriesId" value="#{newEmployeeRegistration.employee.categoryId}" disabled="#{newEmployeeRegistration.viewOnly}">
 													<f:selectItems value="#{newEmployeeRegistration.categories}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
-													<f:ajax event="change" execute="newEmployeeRegistrationFormId:basicDataPanelId" render="newEmployeeRegistrationFormId:basicDataPanelId" listener="#{newEmployeeRegistration.categoryChangeListener()}" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 												</h:selectOneMenu>
 											</td>
 										</tr>

@@ -96,7 +96,7 @@
 		
 		if(passedIndicatorChecked) {
 			var successRanking = document.getElementById('#{cc.clientId}' +':successRankingId').value;
-			if((successRanking == null || successRanking == '')
+			if(successRanking == null || successRanking == ''){
 				alert('#{msgs.error_successRankMandatory}');
 			    return false;
 			}

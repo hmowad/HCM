@@ -16,7 +16,6 @@ import com.code.dal.orm.hcm.organization.Region;
 import com.code.dal.orm.hcm.trainings.QualificationLevel;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.CategoryModesEnum;
-import com.code.enums.CountriesEnum;
 import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.MenuActionsEnum;
@@ -27,7 +26,6 @@ import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.TrainingSetupService;
 import com.code.services.security.SecurityService;
 import com.code.services.util.CommonService;
-import com.code.services.util.CountryService;
 import com.code.services.workflow.hcm.RecruitmentsWorkFlow;
 import com.code.ui.backings.base.BaseBacking;
 
@@ -185,7 +183,6 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 	// reset category drop down list and employee country
 	if (mode == 3) {
 	    employee.setCategoryId(CategoriesEnum.PERSONS.getCode());
-	    categoryChangeListener();
 	}
     }
 
@@ -229,20 +226,6 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 	employee.setRecTrainingUnitId(null);
 	employee.setRecTrainingUnitFullName(null);
 	employee.setRecTrainingJoiningDate(null);
-    }
-
-    public void categoryChangeListener() {
-	try {
-	    if (employee.getCategoryId() != CategoriesEnum.CONTRACTORS.getCode()) {
-		employee.setNationality(getMessage("label_saudi"));
-		employee.setCountryId(CountryService.getCountryByCode(CountriesEnum.SAUDI_ARABIA.getCode()).getId());
-	    } else {
-		employee.setCountryId(null);
-		employee.setNationality(null);
-	    }
-	} catch (BusinessException e) {
-	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
-	}
     }
 
     public void save() {
