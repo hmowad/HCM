@@ -2309,7 +2309,6 @@ public class JobsService extends BaseService {
 	    jobTransaction.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(transactionType, TransactionClassesEnum.JOBS.getCode()).getId());
 	    jobTransaction.setCode(jobData.getCode());
 	    jobTransaction.setBasicJobNameId(jobData.getBasicJobNameId());
-	    jobTransaction.setName(jobData.getName());
 	    jobTransaction.setRankId(jobData.getRankId());
 	    jobTransaction.setRegionId(jobData.getRegionId());
 	    jobTransaction.setUnitId(jobData.getUnitId());
@@ -2339,7 +2338,6 @@ public class JobsService extends BaseService {
 	    jobTransaction.seteFlag(decisionData.geteFlag() == null ? FlagsEnum.OFF.getCode() : decisionData.geteFlag());
 	    jobTransaction.setTransCode(transCode);
 	    jobTransaction.setTransBasicJobNameId(transBasicJobNameId);
-	    jobTransaction.setTransName(transName);
 	    jobTransaction.setTransUnitId(transUnitId);
 	    jobTransaction.setTransUnitFullName(transUnitFullName);
 	    jobTransaction.setTransRankId(transRankId);

@@ -230,7 +230,6 @@ public class JobData extends BaseEntity {
 
     public void setName(String name) {
 	this.name = name;
-	job.setName(name);
     }
 
     @Basic

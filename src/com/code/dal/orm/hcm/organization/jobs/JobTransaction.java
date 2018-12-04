@@ -53,7 +53,6 @@ public class JobTransaction extends BaseEntity {
     private Long transactionTypeId;
     private String code;
     private Long basicJobNameId;
-    private String name;
     private Long rankId;
     private Long regionId;
     private Long unitId;
@@ -84,7 +83,6 @@ public class JobTransaction extends BaseEntity {
     private Integer migFlag;
     private String transCode;
     private Long transBasicJobNameId;
-    private String transName;
     private Long transUnitId;
     private String transUnitFullName;
     private Long transRankId;
@@ -176,16 +174,6 @@ public class JobTransaction extends BaseEntity {
 
     public void setBasicJobNameId(Long basicJobNameId) {
 	this.basicJobNameId = basicJobNameId;
-    }
-
-    @Basic
-    @Column(name = "NAME")
-    public String getName() {
-	return name;
-    }
-
-    public void setName(String name) {
-	this.name = name;
     }
 
     @Basic
@@ -479,16 +467,6 @@ public class JobTransaction extends BaseEntity {
 
     public void setTransBasicJobNameId(Long transBasicJobNameId) {
 	this.transBasicJobNameId = transBasicJobNameId;
-    }
-
-    @Basic
-    @Column(name = "TRANS_NAME")
-    public String getTransName() {
-	return transName;
-    }
-
-    public void setTransName(String transName) {
-	this.transName = transName;
     }
 
     @Basic
