@@ -162,8 +162,8 @@ public class WFDisclaimer extends AuditEntity implements UpdatableAuditEntity {
 		"creditBankAmount:" + creditBankAmount + AUDIT_SEPARATOR +
 		"otherAmount:" + otherAmount + AUDIT_SEPARATOR +
 		"decisionApprovedId:" + decisionApprovedId + AUDIT_SEPARATOR +
-		"originalDecisionApprovedId:" + originalDecisionApprovedId;
-
+		"originalDecisionApprovedId:" + originalDecisionApprovedId + AUDIT_SEPARATOR +
+		"sentBackUnitsString:" + sentBackUnitsString;
     }
 
 }
