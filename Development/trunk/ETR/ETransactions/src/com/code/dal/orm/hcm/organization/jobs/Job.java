@@ -62,7 +62,6 @@ public class Job extends BaseEntity {
     private String code;
     private String serial;
     private Long basicJobNameId;
-    private String name;
     private Long categoryId;
     private Long rankId;
     private Long regionId;
@@ -122,16 +121,6 @@ public class Job extends BaseEntity {
 
     public void setBasicJobNameId(Long basicJobNameId) {
 	this.basicJobNameId = basicJobNameId;
-    }
-
-    @Basic
-    @Column(name = "NAME")
-    public String getName() {
-	return name;
-    }
-
-    public void setName(String name) {
-	this.name = name;
     }
 
     @Basic

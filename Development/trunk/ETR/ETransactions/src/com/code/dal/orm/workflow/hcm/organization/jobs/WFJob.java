@@ -37,7 +37,6 @@ public class WFJob extends AuditEntity implements InsertableAuditEntity, Updatab
     private Integer jobsCount;
     private Long transactionTypeId;
     private Long newBasicJobNameId;
-    private String newName;
     private Long newRankId;
     private Long newUnitId;
     private Long newMinorSpecializationId;
@@ -111,16 +110,6 @@ public class WFJob extends AuditEntity implements InsertableAuditEntity, Updatab
 
     public void setNewBasicJobNameId(Long newBasicJobNameId) {
 	this.newBasicJobNameId = newBasicJobNameId;
-    }
-
-    @Basic
-    @Column(name = "NEW_NAME")
-    public String getNewName() {
-	return newName;
-    }
-
-    public void setNewName(String newName) {
-	this.newName = newName;
     }
 
     @Basic
@@ -244,7 +233,6 @@ public class WFJob extends AuditEntity implements InsertableAuditEntity, Updatab
 		"jobId:" + jobId + AUDIT_SEPARATOR +
 		"jobsCount:" + jobsCount + AUDIT_SEPARATOR +
 		"transactionTypeId:" + transactionTypeId + AUDIT_SEPARATOR +
-		"newName:" + newName + AUDIT_SEPARATOR +
 		"newRankId:" + newRankId + AUDIT_SEPARATOR +
 		"newUnitId:" + newUnitId + AUDIT_SEPARATOR +
 		"newMinorSpecializationId:" + newMinorSpecializationId + AUDIT_SEPARATOR +

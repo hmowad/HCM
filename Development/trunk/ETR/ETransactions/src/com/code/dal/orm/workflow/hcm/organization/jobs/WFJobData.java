@@ -238,7 +238,6 @@ public class WFJobData extends BaseEntity {
 
     public void setNewName(String newName) {
 	this.newName = newName;
-	this.wfJob.setNewName(newName);
     }
 
     @Basic
