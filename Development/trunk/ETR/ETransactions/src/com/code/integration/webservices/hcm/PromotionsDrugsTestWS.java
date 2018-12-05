@@ -5,6 +5,8 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
+import org.apache.log4j.Logger;
+
 import com.code.enums.WSResponseStatusEnum;
 import com.code.exceptions.BusinessException;
 import com.code.integration.responses.WSResponseBase;
@@ -20,16 +22,16 @@ public class PromotionsDrugsTestWS {
     public WSResponseBase adjustPromotionsDrugsTestResults(@WebParam(name = "drugstestresults") String drugsTestResults) {
 
 	WSResponseBase response = new WSResponseBase();
-
+	Logger log = Logger.getLogger(PromotionsDrugsTestWS.class.getName());
 	try {
 	    if (drugsTestResults == null || drugsTestResults.trim().isEmpty()) {
-		System.out.println("error_general: empty or null message");
+		log.info("empty or null message");
 		throw new BusinessException("error_general");
 	    }
 
-	    System.out.println("msg:" + drugsTestResults);
+	    log.info("msg:" + drugsTestResults);
 	    PromotionsService.updatePromotionReportDetailsDrugsTestStatus(drugsTestResults);
-	    System.out.println("updated");
+	    log.info("updated");
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
