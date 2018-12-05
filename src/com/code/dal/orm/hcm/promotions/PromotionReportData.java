@@ -357,4 +357,10 @@ public class PromotionReportData extends BaseEntity {
 	this.promotionReport.setAttachments(attachments);
     }
 
+    @Override
+    public String toString() {
+	return "PromotionReportData [id=" + id + ", reportNumber=" + reportNumber + ", reportDate=" + reportDate + ", reportDateString=" + reportDateString + ", categoryId=" + categoryId + ", promotionTypeId=" + promotionTypeId + ", promotionTypeDesc=" + promotionTypeDesc + ", dueDate=" + dueDate + ", dueDateString=" + dueDateString + ", promotionDate=" + promotionDate + ", promotionDateString=" + promotionDateString + ", rankId=" + rankId + ", rankDesc=" + rankDesc + ", status=" + status
+		+ ", regionId=" + regionId + ", regionDesc=" + regionDesc + ", scaleUpFlag=" + scaleUpFlag + ", scaleUpFlagBoolean=" + scaleUpFlagBoolean + ", decisionNumber=" + decisionNumber + ", decisionDate=" + decisionDate + ", decisionDateString=" + decisionDateString + ", internalCopies=" + internalCopies + ", externalCopies=" + externalCopies + ", attachments=" + attachments + "]";
+    }
+
 }
