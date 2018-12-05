@@ -159,7 +159,16 @@
 				alert("#{msgs.error_socialIDMandatory}");
 				return false;
 			}
-
+			
+			countryId = document.getElementById('newEmployeeRegistrationFormId:countryIDId');
+			if(countryId != null) {
+				countryIdValue = countryId.value;
+				if ((countryIdValue == null || countryIdValue == '') &amp;&amp; (personsCategories!=null &amp;&amp; personsCategories.value == 6)) {
+					alert("#{msgs.error_nationalityIsMandatory}");
+					return false;
+				}
+			}
+			
 			if(soldierGender != null &amp;&amp; (soldierGender.value == null || soldierGender.value == '')) {
 				alert("#{msgs.error_genderIsMandatory}");
 				return false;
@@ -314,7 +323,7 @@
 											</h:commandButton>
 										</td>
 										<td width="10%" rowspan="4" colspan="1">
-											<h:graphicImage title="#{!newEmployeeRegistration.viewOnly ? msgs.label_changeImage : ''}" width="100px" height="125px" id="imageId" value="/image?mode=1&amp;objectId=#{newEmployeeRegistration.employee.empId}" styleClass="#{!newEmployeeRegistration.viewOnly ? 'empProfileImage' : ''}"
+											<h:graphicImage rendered="#{newEmployeeRegistration.employee.empId != null}" title="#{!newEmployeeRegistration.viewOnly ? msgs.label_changeImage : ''}" width="100px" height="125px" id="imageId" value="/image?mode=1&amp;objectId=#{newEmployeeRegistration.employee.empId}" styleClass="#{!newEmployeeRegistration.viewOnly ? 'empProfileImage' : ''}"
 												onclick="#{!newEmployeeRegistration.viewOnly ? 'getImage('.concat(newEmployeeRegistration.empPhoto == null ? 1 : 0).concat(',').concat(newEmployeeRegistration.employee.empId).concat(');') : 'return false;'}" />
 										</td>
 									</tr>
@@ -387,6 +396,7 @@
 											#{msgs.label_nationality}
 										</th>
 										<td width ="15%" colspan="1">
+											<h:inputHidden id="countryIDId" value="#{newEmployeeRegistration.employee.countryId}" />
 											<h:outputText value="#{newEmployeeRegistration.employee.nationality}" />
 										</td>
 							
@@ -754,7 +764,7 @@
 											<td width="100%">
 												<h:commandButton id="saveBtnId" action="#{newEmployeeRegistration.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{(newEmployeeRegistration.updateMode and !newEmployeeRegistration.viewOnly) or (!newEmployeeRegistration.updateMode and newEmployeeRegistration.employee.empId == null)}"
 													onclick="return handleOnAction('#{newEmployeeRegistration.mode == 2 and newEmployeeRegistration.updateMode and newEmployeeRegistration.employee.exceptionalRecruitmentFlag == 0 and newEmployeeRegistration.employee.gender == 'M' ? msgs.q_updateSoldiersWarning : msgs.q_save}', 'validate(#{newEmployeeRegistration.mode})');">
-													<f:ajax execute="newEmployeeRegistrationFormId:basicDataPanelId newEmployeeRegistrationFormId:jobDataPanelId newEmployeeRegistrationFormId:qualificationDataPanelId newEmployeeRegistrationFormId:communicationDataPanelId" render="newEmployeeRegistrationFormId:actionsPanelId newEmployeeRegistrationFormId:imageId newEmployeeRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+													<f:ajax execute="newEmployeeRegistrationFormId:basicDataPanelId newEmployeeRegistrationFormId:jobDataPanelId newEmployeeRegistrationFormId:qualificationDataPanelId newEmployeeRegistrationFormId:communicationDataPanelId" render="newEmployeeRegistrationFormId:actionsPanelId newEmployeeRegistrationFormId:imageId newEmployeeRegistrationFormId:notifyMessagesId newEmployeeRegistrationFormId:basicDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 												</h:commandButton>
 												<h:commandButton action="#{newEmployeeRegistration.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" rendered="#{!newEmployeeRegistration.updateMode}">
 													<f:ajax render="newEmployeeRegistrationFormId:actionsPanelId newEmployeeRegistrationFormId:basicDataPanelId newEmployeeRegistrationFormId:jobDataPanelId newEmployeeRegistrationFormId:qualificationDataPanelId newEmployeeRegistrationFormId:communicationDataPanelId newEmployeeRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
