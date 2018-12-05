@@ -353,6 +353,9 @@ public class EmployeesService extends BaseService {
 	    throw new BusinessException("error_socialIDMandatory");
 	if (empData.getSocialID().length() != 10)
 	    throw new BusinessException("error_invalidSocialID");
+	if (empData.getCategoryId() != CategoriesEnum.CONTRACTORS.getCode() && empData.getSocialID().charAt(0) != '1') {
+	    throw new BusinessException("error_employeeHasToBeSaudi");
+	}
 
 	EmployeeData conflictEmp = getEmployeeBySocialID(empData.getSocialID());
 	if (conflictEmp != null && (empData.getEmpId() == null || !conflictEmp.getEmpId().equals(empData.getEmpId())))
