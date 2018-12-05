@@ -439,7 +439,7 @@ function openSelectCountries(mode, contextPath, miniSearchReturnHandler){
 }
 
 function openUnitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId){
-	unitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, null , null, 0);
+	unitsMiniSearch(mode, contextPath, miniSearchReturnHandler, unitTypeCode, unitRegionId, unitParentId, null , 0);
 }
 
 function openUnitsMiniSearchByUnitsIdsString(contextPath, miniSearchReturnHandler,  unitsIdsString , multipleSelectFlag){
