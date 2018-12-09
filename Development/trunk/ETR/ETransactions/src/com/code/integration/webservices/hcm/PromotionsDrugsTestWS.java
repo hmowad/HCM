@@ -5,13 +5,12 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
-import org.apache.log4j.Logger;
-
 import com.code.enums.WSResponseStatusEnum;
 import com.code.exceptions.BusinessException;
 import com.code.integration.responses.WSResponseBase;
 import com.code.services.BaseService;
 import com.code.services.hcm.PromotionsService;
+import com.code.services.log4j.Log4jService;
 
 @WebService(targetNamespace = "http://integration.code.com/promotionsDrugsTest",
 	portName = "PromotionsDrugsTestWSHttpPort")
@@ -21,17 +20,17 @@ public class PromotionsDrugsTestWS {
     @WebResult(name = "promotionsDrugsTestResultsResponse")
     public WSResponseBase adjustPromotionsDrugsTestResults(@WebParam(name = "drugstestresults") String drugsTestResults) {
 
+	Log4jService.traceInfo(PromotionsDrugsTestWS.class, "Start of PromotionsDrugsTestWS");
 	WSResponseBase response = new WSResponseBase();
-	Logger log = Logger.getLogger(PromotionsDrugsTestWS.class.getName());
 	try {
 	    if (drugsTestResults == null || drugsTestResults.trim().isEmpty()) {
-		log.info("empty or null message");
+		Log4jService.traceError(PromotionsDrugsTestWS.class, "Empty or null message from infoSys");
 		throw new BusinessException("error_general");
 	    }
 
-	    log.info("msg:" + drugsTestResults);
+	    Log4jService.traceInfo(PromotionsDrugsTestWS.class, "drugTestResults: " + drugsTestResults);
 	    PromotionsService.updatePromotionReportDetailsDrugsTestStatus(drugsTestResults);
-	    log.info("updated");
+	    Log4jService.traceInfo(PromotionsDrugsTestWS.class, "Promotion report details updated");
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
@@ -39,7 +38,6 @@ public class PromotionsDrugsTestWS {
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
-
 	return response;
     }
 

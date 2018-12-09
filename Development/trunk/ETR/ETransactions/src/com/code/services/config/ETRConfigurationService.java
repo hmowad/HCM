@@ -215,6 +215,10 @@ public class ETRConfigurationService extends BaseService {
 	return getETRConfigByCode("TRN_CURRICULUM_COMMITTEE_MEMBERS").getValue();
     }
 
+    public static String getLogFilePath() {
+	return getETRConfigByCode("LOG_FILE_PATH").getValue();
+    }
+
     /*------------------------------------------------------General Notifications Configurations------------------------------------------------------*/
 
     public static String getGeneralMessagesUrl() {

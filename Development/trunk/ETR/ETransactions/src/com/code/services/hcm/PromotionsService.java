@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.Rank;
@@ -63,6 +61,7 @@ import com.code.services.buswfcoop.EmployeesJobsConflictValidator;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.cor.ETRCorrespondence;
 import com.code.services.log.LogService;
+import com.code.services.log4j.Log4jService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
 
@@ -949,8 +948,7 @@ public class PromotionsService extends BaseService {
     }
 
     public static void modifyReportDetailsDrugTestResult(List<PromotionReportDetailData> promotionReportDetailDataList) throws BusinessException {
-	Logger log = Logger.getLogger(PromotionsService.class.getName());
-	log.info("-- start of modifyReportDetailsDrugTestResult() --");
+	Log4jService.traceInfo(PromotionsService.class, "Start of modifyReportDetailsDrugTestResult()");
 	try {
 	    if (promotionReportDetailDataList == null || promotionReportDetailDataList.size() == 0)
 		return;
@@ -963,8 +961,9 @@ public class PromotionsService extends BaseService {
 	    HCMWebServiceService infoSysGetDrugTestResultsWS = new HCMWebServiceService();
 	    HCMWebService webService = infoSysGetDrugTestResultsWS.getHCMWebServicePort();
 
-	    log.info("socialIds: " + socialIds);
+	    Log4jService.traceInfo(PromotionsService.class, "socialIds: " + socialIds);
 	    String result = webService.getLabCheckResults(socialIds);
+	    Log4jService.traceInfo(PromotionsService.class, "result: " + result);
 	    String[] resultParts = result.split(",");
 	    Map<String, Integer> empsSocialIdsResultsMap = new HashMap<>();
 	    for (String resultPart : resultParts) {
@@ -973,9 +972,8 @@ public class PromotionsService extends BaseService {
 	    }
 	    for (PromotionReportDetailData promotionReportDetailData : promotionReportDetailDataList) {
 		promotionReportDetailData.setMedicalTest(empsSocialIdsResultsMap.get(promotionReportDetailData.getEmpSocialID() + ""));
-		log.info(promotionReportDetailData.getEmpSocialID() + " " + empsSocialIdsResultsMap.get(promotionReportDetailData.getEmpSocialID()));
 	    }
-	    log.info("-- end of modifyReportDetailsDrugTestResult() --");
+	    Log4jService.traceInfo(PromotionsService.class, "End of modifyReportDetailsDrugTestResult()");
 	} catch (Exception e) {
 	    throw new BusinessException("error_promotionConnectionToInfoSysFailed");
 	}
@@ -1565,9 +1563,8 @@ public class PromotionsService extends BaseService {
      */
     public static void sendPromotionsSoldiersDrugsTestRequest(PromotionReportData promotionReportData, long loginEmpId) throws BusinessException {
 
-	Logger log = Logger.getLogger(PromotionsService.class.getName());
-	log.info("[Promotions service]: start of sendPromotionsSoldiersDrugsTestRequest()...");
-	log.info(promotionReportData.toString());
+	Log4jService.traceInfo(PromotionsService.class, "Start of sendPromotionsSoldiersDrugsTestRequest()");
+	Log4jService.traceInfo(PromotionsService.class, promotionReportData.toString());
 	Integer[] medicalTestStatuses = new Integer[] { null, PromotionMedicalTestStatusEnum.NON_TESTED.getCode() };
 	List<PromotionReportDetailData> candidatePromotionReportDetailDataList = getPromotionReportDetailsDataForDrugsTest(promotionReportData.getId(), new Long[] { PromotionCandidateStatusEnum.CANDIDATE.getCode() }, medicalTestStatuses);
 
@@ -1593,12 +1590,12 @@ public class PromotionsService extends BaseService {
 		}
 	    }
 	}
-	log.info("List of candidate Promotion Report Detail Data List to be sent to drug test");
+	Log4jService.traceInfo(PromotionsService.class, "List of candidate Promotion Report Detail Data List to be sent to drug test");
 	for (PromotionReportDetailData r : candidatePromotionReportDetailDataList) {
-	    log.info("[Promotions service]: - " + r.toString());
+	    Log4jService.traceInfo(PromotionsService.class, r.toString());
 	}
 	if (candidatePromotionReportDetailDataList.isEmpty()) {
-	    log.info("[Promotions service]: - candidate list is empty");
+	    Log4jService.traceInfo(PromotionsService.class, "Candidate list is empty");
 	    throw new BusinessException("error_noCandidatesInReportDidntPerformDrugTest");
 	}
 	String employeesSocialIDs = "";
@@ -1610,7 +1607,7 @@ public class PromotionsService extends BaseService {
 	    comma = ",";
 	}
 
-	log.info("[Promotions service]: - drug test text message : " + (employeesSocialIDs.isEmpty() ? " _empty_ " : employeesSocialIDs));
+	Log4jService.traceInfo(PromotionsService.class, "Drug test text message : " + (employeesSocialIDs.isEmpty() ? " _empty_ " : employeesSocialIDs));
 	if (!employeesSocialIDs.isEmpty())
 	    DrugsTestJMSClient.sendTextMessage(employeesSocialIDs);
 
@@ -1620,11 +1617,12 @@ public class PromotionsService extends BaseService {
 		promotionReportDetailDataItr.setMedicalTest(PromotionMedicalTestStatusEnum.CURRENTLY_TESTING.getCode());
 	    }
 	}
-	log.info("candidates after changing status from not tested to currrently testing");
+	Log4jService.traceInfo(PromotionsService.class, "Candidates after changing status from not tested to currrently testing");
 	for (PromotionReportDetailData r : candidatePromotionReportDetailDataList) {
-	    log.info("[Promotions service]: - " + r.toString());
+	    Log4jService.traceInfo(PromotionsService.class, r.toString());
 	}
 	addModifyPromotionReportDetails(promotionReportData.getId(), candidatePromotionReportDetailDataList, loginEmpId);
+	Log4jService.traceInfo(PromotionsService.class, "End of sendPromotionsSoldiersDrugsTestRequest()");
     }
 
     /**
