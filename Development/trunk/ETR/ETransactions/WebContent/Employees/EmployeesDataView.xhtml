@@ -140,7 +140,7 @@
 			firstNameValue = document.getElementById('employeesDataViewFormId:firstNameId').value;
 			secondNameValue = document.getElementById('employeesDataViewFormId:secondNameId').value;
 			lastNameValue = document.getElementById('employeesDataViewFormId:lastNameId').value;
-			birthDate = document.getElementById('employeesDataViewFormId:birthDateId:day');
+			birthDate = document.getElementById('employeesDataViewFormId:birthDateId').value;
 			birthPlaceValue = document.getElementById('employeesDataViewFormId:birthPlaceId').value;
 			socialIdValue = document.getElementById('employeesDataViewFormId:socialIDId').value;
 			recQualificationLevelId = document.getElementById('employeesDataViewFormId:recQualificationLevelIDId');
@@ -158,7 +158,7 @@
 			if ((firstNameValue == null || firstNameValue == '')
 					|| (secondNameValue == null || secondNameValue == '')
 					|| (lastNameValue == null || lastNameValue == '')
-					|| (birthDate != null && birthDate.value == 0)
+					|| (birthDate == null || birthDate = '')
 					|| (birthPlaceValue == null || birthPlaceValue == '')
 					|| (socialIdValue == null || socialIdValue == '')
 					|| (recQualificationLevelId != null && !recQualificationLevelId.value)
@@ -263,7 +263,7 @@
 										<font style="color: red;">*</font>
 									</th>
 									<td width="15%" colspan="1">
-										<h:inputText id="socialIDId" value="#{employeesDataView.employee.socialID}" readonly="#{employeesDataView.viewOnly}" styleClass="inputDataLarge" maxlength="10" />
+										<h:outputText id="socialIDId" value="#{employeesDataView.employee.socialID}" styleClass="inputDataLarge" maxlength="10" />
 									</td>
 									<th width="15%" colspan="1">
 										#{msgs.label_birthDate}
@@ -271,8 +271,7 @@
 										<font style="color: red;">*</font>
 									</th>
 									<td width="15%" colspan="1">
-										<util:hijri id="birthDateId" value="#{employeesDataView.employee.birthDate}" rendered="#{!employeesDataView.viewOnly}" nullable="true" viewOldRange="true" />
-										<h:outputText value="#{employeesDataView.employee.birthDateString}" rendered="#{employeesDataView.viewOnly}" />
+										<h:outputText id="birthDateId" value="#{employeesDataView.employee.birthDateString}"/>
 									</td>
 									<td width="30%" colspan="2">
 										<h:commandButton action ="#{employeesDataView.yaqeenInformationRetrieval()}" value="#{msgs.label_retrieveInformation}" title="#{msgs.label_retrieveInformation}" rendered="#{!employeesDataView.viewOnly}" styleClass="btn_normal" >
