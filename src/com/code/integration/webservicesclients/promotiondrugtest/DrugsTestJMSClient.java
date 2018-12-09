@@ -13,10 +13,9 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.log4j.Logger;
-
 import com.code.exceptions.BusinessException;
 import com.code.services.config.ETRConfigurationService;
+import com.code.services.log4j.Log4jService;
 
 /**
  *
@@ -27,22 +26,21 @@ public class DrugsTestJMSClient {
 	QueueConnection queueConnection = null;
 	QueueSession queueSession = null;
 	MessageProducer messageProducer = null;
-	Logger log = Logger.getLogger(DrugsTestJMSClient.class.getName());
 	try {
-	    log.info("-- start of sendTextMessage() method --");
+	    Log4jService.traceInfo(DrugsTestJMSClient.class, "Start of sendTextMessage() method");
 	    InitialContext context = getInitialContext();
 	    QueueConnectionFactory queueConnectionFactory = (QueueConnectionFactory) context.lookup(getDrugsTestJMSFactory());
 	    queueConnection = queueConnectionFactory.createQueueConnection();
-	    log.info("-- initialize connection factory --");
+	    Log4jService.traceInfo(DrugsTestJMSClient.class, "Initialize connection factory");
 	    queueSession = queueConnection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
 	    Queue queue = (Queue) context.lookup(getDrugsLookUpJMSQueue());
 	    messageProducer = queueSession.createProducer(queue);
 	    queueConnection.start();
-	    log.info("-- queue started with message --" + inputMessage);
+	    Log4jService.traceInfo(DrugsTestJMSClient.class, "Queue started with message" + inputMessage);
 	    TextMessage message = queueSession.createTextMessage();
 	    message.setText(inputMessage);
 	    messageProducer.send(message);
-	    log.info("-- message sent --");
+	    Log4jService.traceInfo(DrugsTestJMSClient.class, "Message sent");
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_promotionConnectionToInfoSysFailed");
