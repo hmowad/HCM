@@ -306,7 +306,7 @@
 											<font style="color: red;">*</font>
 										</th>
 										<td width="15%" colspan="1">
-											<h:inputText id="socialIDId" value="#{newEmployeeRegistration.employee.socialID}" readonly="#{newEmployeeRegistration.viewOnly}" styleClass="inputDataLarge" maxlength="10" />
+											<h:inputText id="socialIDId" value="#{newEmployeeRegistration.employee.socialID}" readonly="#{newEmployeeRegistration.viewOnly or newEmployeeRegistration.employee.empId != null}" styleClass="inputDataLarge" maxlength="10" />
 										</td>
 										<th width="15%" colspan="1">
 											#{msgs.label_birthDate}
@@ -314,8 +314,8 @@
 											<font style="color: red;">*</font>
 										</th>
 										<td width="15%" colspan="1">
-											<util:hijri id="birthDateId" value="#{newEmployeeRegistration.employee.birthDate}" rendered="#{!newEmployeeRegistration.viewOnly}" nullable="true" viewOldRange="true" />
-											<h:outputText value="#{newEmployeeRegistration.employee.birthDateString}" rendered="#{newEmployeeRegistration.viewOnly}" />
+											<util:hijri id="birthDateId" value="#{newEmployeeRegistration.employee.birthDate}" rendered="#{!newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.empId ==null}" nullable="true" viewOldRange="true" />
+											<h:outputText value="#{newEmployeeRegistration.employee.birthDateString}" rendered="#{newEmployeeRegistration.viewOnly or newEmployeeRegistration.employee.empId != null}" />
 										</td>
 										<td width="30%" colspan="2">
 											<h:commandButton action ="#{newEmployeeRegistration.yaqeenInformationRetrieval()}" value="#{msgs.label_retrieveInformation}" title="#{msgs.label_retrieveInformation}" rendered="#{!newEmployeeRegistration.viewOnly}" styleClass="btn_normal" >
