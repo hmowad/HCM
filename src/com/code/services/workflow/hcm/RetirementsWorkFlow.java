@@ -518,6 +518,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    DisclaimerTransactionDetail disclaimerTransactionDetail = new DisclaimerTransactionDetail();
 
 	    disclaimerTransactionDetail.setManagerId(wfDisclaimerDetail.getManagerId());
+	    disclaimerTransactionDetail.setTransManagerUnitId(wfDisclaimerDetail.getManagerUnitId());
 	    disclaimerTransactionDetail.setTransManagerJobDesc(wfDisclaimerDetail.getManagerJobDesc());
 	    disclaimerTransactionDetail.setTransManagerName(wfDisclaimerDetail.getManagerName());
 	    disclaimerTransactionDetail.setTransManagerUnitFullName(wfDisclaimerDetail.getManagerUnitFullName());
@@ -599,6 +600,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
     public static WFDisclaimerDetail constructWFDisclaimerDetail(long instanceId, EmployeeData employeeData) {
 	WFDisclaimerDetail wfDisclaimerDetail = new WFDisclaimerDetail();
 	wfDisclaimerDetail.setManagerId(employeeData.getEmpId());
+	wfDisclaimerDetail.setManagerUnitId(employeeData.getPhysicalUnitId());
 	wfDisclaimerDetail.setManagerJobDesc(employeeData.getJobDesc());
 	wfDisclaimerDetail.setManagerName(employeeData.getName());
 	wfDisclaimerDetail.setManagerRankDesc(employeeData.getRankDesc());
