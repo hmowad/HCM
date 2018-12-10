@@ -100,9 +100,8 @@ public class DisclaimerRequest extends WFBaseBacking {
 			hkeyReviewerEmps = SmSsmUnitData.gethKey();
 		    }
 		} else if (this.role.equals(WFTaskRolesEnum.SIGN_MANAGER.getCode())) {
-		    if ((wfDisclaimerData.getSentBackUnitsString() != null) &&
-			    (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() &&
-				    wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode())) {
+		    if (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() &&
+			    wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode()) {
 			position = RetirementsWorkFlow.getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
 			payrollUnitData = UnitsService.getUnitById(position.getUnitId());
 			isPayrollReviewer = payrollUnitData.getPhysicalManagerId().equals(loginEmpData.getEmpId());
