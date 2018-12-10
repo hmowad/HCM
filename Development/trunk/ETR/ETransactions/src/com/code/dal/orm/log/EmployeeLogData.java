@@ -52,6 +52,11 @@ public class EmployeeLogData extends BaseEntity {
     private Date effectiveHijriDate;
     private String decisionNumber;
     private Date decisionDate;
+    private Long insertionTime;
+    private Long officialUnitId;
+    private Long medStaffRankId;
+    private Long medStaffLevelId;
+    private Long medStaffDegreeId;
     private EmployeeLog employeelog;
 
     public EmployeeLogData() {
@@ -221,6 +226,56 @@ public class EmployeeLogData extends BaseEntity {
     public void setDecisionDate(Date decisionDate) {
 	this.decisionDate = decisionDate;
 	employeelog.setDecisionDate(decisionDate);
+    }
+
+    @Basic
+    @Column(name = "INSERTION_TIME")
+    public Long getInsertionTime() {
+	return insertionTime;
+    }
+
+    public void setInsertionTime(Long insertionTime) {
+	this.insertionTime = insertionTime;
+    }
+
+    @Basic
+    @Column(name = "OFFICIAL_UNIT_ID")
+    public Long getOfficialUnitId() {
+	return officialUnitId;
+    }
+
+    public void setOfficialUnitId(Long officialUnitId) {
+	this.officialUnitId = officialUnitId;
+    }
+
+    @Basic
+    @Column(name = "MED_STAFF_RANK_ID")
+    public Long getMedStaffRankId() {
+	return medStaffRankId;
+    }
+
+    public void setMedStaffRankId(Long medStaffRankId) {
+	this.medStaffRankId = medStaffRankId;
+    }
+
+    @Basic
+    @Column(name = "MED_STAFF_LEVEL_ID")
+    public Long getMedStaffLevelId() {
+	return medStaffLevelId;
+    }
+
+    public void setMedStaffLevelId(Long medStaffLevelId) {
+	this.medStaffLevelId = medStaffLevelId;
+    }
+
+    @Basic
+    @Column(name = "MED_STAFF_DEGREE_ID")
+    public Long getMedStaffDegreeId() {
+	return medStaffDegreeId;
+    }
+
+    public void setMedStaffDegreeId(Long medStaffDegreeId) {
+	this.medStaffDegreeId = medStaffDegreeId;
     }
 
     @Transient
