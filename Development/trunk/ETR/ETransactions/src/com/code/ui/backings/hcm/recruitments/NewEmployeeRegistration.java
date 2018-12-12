@@ -49,6 +49,7 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
     private boolean updateMode;
     private boolean viewOnly;
     private boolean employeeHasRecruitmentRequest;
+    private boolean yaqeenFlag = false;
 
     private int pageSize = 10;
 
@@ -179,7 +180,7 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 	employee.setExceptionalRecruitmentFlag(FlagsEnum.OFF.getCode());
 	employeeQualificationsData = new EmployeeQualificationsData();
 	employee.setCategoryId(categoryId);
-
+	yaqeenFlag = false;
 	// reset category drop down list and employee country
 	if (mode == 3) {
 	    employee.setCategoryId(CategoriesEnum.PERSONS.getCode());
@@ -254,6 +255,7 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
     public void yaqeenInformationRetrieval() {
 	try {
 	    EmployeesService.yaqeenConstructEmployeeData(employee, this.loginEmpData.getSocialID(), getClientIpAddress());
+	    yaqeenFlag = true;
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -354,4 +356,13 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
     public void setEmpPhoto(EmployeePhoto empPhoto) {
 	this.empPhoto = empPhoto;
     }
+
+    public boolean isYaqeenFlag() {
+	return yaqeenFlag;
+    }
+
+    public void setYaqeenFlag(boolean yaqeenFlag) {
+	this.yaqeenFlag = yaqeenFlag;
+    }
+
 }
