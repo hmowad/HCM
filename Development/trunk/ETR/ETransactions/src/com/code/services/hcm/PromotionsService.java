@@ -968,7 +968,7 @@ public class PromotionsService extends BaseService {
 	    Map<String, Integer> empsSocialIdsResultsMap = new HashMap<>();
 	    for (String resultPart : resultParts) {
 		String[] socialIdResult = resultPart.split("_");
-		empsSocialIdsResultsMap.put(socialIdResult[0], Integer.parseInt(socialIdResult[1]));
+		empsSocialIdsResultsMap.put(socialIdResult[0], (socialIdResult[1] == null || socialIdResult[1] == "" || !isValidPromotionMedicalTestStatus(Integer.parseInt(socialIdResult[1]))) ? PromotionMedicalTestStatusEnum.NON_TESTED.getCode() : Integer.parseInt(socialIdResult[1]));
 	    }
 	    for (PromotionReportDetailData promotionReportDetailData : promotionReportDetailDataList) {
 		promotionReportDetailData.setMedicalTest(empsSocialIdsResultsMap.get(promotionReportDetailData.getEmpSocialID() + ""));
