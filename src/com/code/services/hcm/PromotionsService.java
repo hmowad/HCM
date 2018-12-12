@@ -3708,7 +3708,7 @@ public class PromotionsService extends BaseService {
 		    }
 
 		    // effect in employee
-		    EmployeesService.updateEmployeePromotionData(employee, promotionTransactionDataItr.getNewJobId(), getNextRank(employee.getRankId()), null, promotionTransactionDataItr.getNewDegreeId(), null, promotionTransactionDataItr.getNewDueDate(), promotionTransactionDataItr.getNewLastPromotionDate(), session);
+		    EmployeesService.updateEmployeePromotionData(employee, promotionTransactionDataItr.getNewJobId(), promotionTransactionDataItr.getNewRankId(), null, promotionTransactionDataItr.getNewDegreeId(), null, promotionTransactionDataItr.getNewDueDate(), promotionTransactionDataItr.getNewLastPromotionDate(), session);
 		    if (promotionReportData.getPromotionTypeId().equals(PromotionsTypesEnum.PROMOTION_CANCELLATION.getCode()))
 			LogService.logEmployeeData(employee, promotionTransactionDataItr.getOldLastPromotionDate(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), session);
 		    else
