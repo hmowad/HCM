@@ -1508,18 +1508,18 @@ public class PromotionsService extends BaseService {
 	    // 2- Check for trials for changing final states like (negative, positive) can NOT be changed once set
 	    // 3- in case of drugRequestId = null, set it with received value for currently_testing details only
 	    // 4- In case of equality for drugRequestId in both promotionReprotDetail and received message, update medicalTest value
-	    if (index == null || !isValidPromotionMedicalTestStatus(statusIds[index])) {
+	    if (index == null) {
 		invalidDataFlag = true;
 	    } else if (promotionReportDetailData.getMedicalTest().equals(PromotionMedicalTestStatusEnum.NEGATIVE.getCode()) || promotionReportDetailData.getMedicalTest().equals(PromotionMedicalTestStatusEnum.POSITIVE.getCode()) || promotionReportDetailData.getMedicalTest().equals(PromotionMedicalTestStatusEnum.SAMPLE_CHEATING.getCode())) {
 		invalidDataFlag = true;
 	    } else {
 		if (promotionReportDetailData.getDrugsRequestId() == null && promotionReportDetailData.getMedicalTest().equals(PromotionMedicalTestStatusEnum.CURRENTLY_TESTING.getCode())) {
-		    promotionReportDetailData.setMedicalTest(statusIds[index]);
+		    promotionReportDetailData.setMedicalTest((statusIds[index] == null || !isValidPromotionMedicalTestStatus(statusIds[index])) ? PromotionMedicalTestStatusEnum.NON_TESTED.getCode() : statusIds[index]);
 		    promotionReportDetailData.setDrugsRequestId(drugRequestIds[index]);
 		    updatedPromotionReportDetailDataList.add(promotionReportDetailData);
 		} else if (promotionReportDetailData.getDrugsRequestId() != null && promotionReportDetailData.getDrugsRequestId().equals(drugRequestIds[index])) {
 		    if (!promotionReportDetailData.getMedicalTest().equals(statusIds[index])) {
-			promotionReportDetailData.setMedicalTest(statusIds[index]);
+			promotionReportDetailData.setMedicalTest((statusIds[index] == null || !isValidPromotionMedicalTestStatus(statusIds[index])) ? PromotionMedicalTestStatusEnum.NON_TESTED.getCode() : statusIds[index]);
 			updatedPromotionReportDetailDataList.add(promotionReportDetailData);
 		    }
 		} else {
