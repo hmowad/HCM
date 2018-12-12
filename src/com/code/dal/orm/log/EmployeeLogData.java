@@ -39,14 +39,22 @@ import com.code.dal.orm.BaseEntity;
 public class EmployeeLogData extends BaseEntity {
     private Long id;
     private Long empId;
+    private String empName;
     private Long jobId;
     private Long basicJobNameId;
+    private String basicJobNameDesc;
     private Long physicalUnitId;
+    private String physicalUnitFullName;
     private Long rankId;
+    private String rankDesc;
     private Long rankTitleId;
+    private String rankTitleDesc;
     private Long salaryRankId;
+    private String salaryRankDesc;
     private Long degreeId;
+    private Long degreeDesc;
     private Integer socialStatus;
+    private String socialStatusDesc;
     private Integer generalSpecialization;
     private Date effectiveGregDate;
     private Date effectiveHijriDate;
@@ -54,9 +62,13 @@ public class EmployeeLogData extends BaseEntity {
     private Date decisionDate;
     private Long insertionTime;
     private Long officialUnitId;
+    private String officialUnitFullName;
     private Long medStaffRankId;
+    private String medStaffRankDesc;
     private Long medStaffLevelId;
+    private String medStaffLevelDesc;
     private Long medStaffDegreeId;
+    private String medStaffDegreeDesc;
     private EmployeeLog employeelog;
 
     public EmployeeLogData() {
@@ -86,6 +98,16 @@ public class EmployeeLogData extends BaseEntity {
     }
 
     @Basic
+    @Column(name = "EMP_NAME")
+    public String getEmpName() {
+	return empName;
+    }
+
+    public void setEmpName(String empName) {
+	this.empName = empName;
+    }
+
+    @Basic
     @Column(name = "JOB_ID")
     public Long getJobId() {
 	return jobId;
@@ -108,6 +130,16 @@ public class EmployeeLogData extends BaseEntity {
     }
 
     @Basic
+    @Column(name = "BASIC_JOB_NAME_DESCRIPTION")
+    public String getBasicJobNameDesc() {
+	return basicJobNameDesc;
+    }
+
+    public void setBasicJobNameDesc(String basicJobNameDesc) {
+	this.basicJobNameDesc = basicJobNameDesc;
+    }
+
+    @Basic
     @Column(name = "PHYSICAL_UNIT_ID")
     public Long getPhysicalUnitId() {
 	return physicalUnitId;
@@ -116,6 +148,16 @@ public class EmployeeLogData extends BaseEntity {
     public void setPhysicalUnitId(Long physicalUnitId) {
 	this.physicalUnitId = physicalUnitId;
 	employeelog.setPhysicalUnitId(physicalUnitId);
+    }
+
+    @Basic
+    @Column(name = "PHYSICAL_UNIT_FULL_NAME")
+    public String getPhysicalUnitFullName() {
+	return physicalUnitFullName;
+    }
+
+    public void setPhysicalUnitFullName(String physicalUnitFullName) {
+	this.physicalUnitFullName = physicalUnitFullName;
     }
 
     @Basic
@@ -130,6 +172,16 @@ public class EmployeeLogData extends BaseEntity {
     }
 
     @Basic
+    @Column(name = "RANK_DESCRIPTION")
+    public String getRankDesc() {
+	return rankDesc;
+    }
+
+    public void setRankDesc(String rankDesc) {
+	this.rankDesc = rankDesc;
+    }
+
+    @Basic
     @Column(name = "RANK_TITLE_ID")
     public Long getRankTitleId() {
 	return rankTitleId;
@@ -138,6 +190,16 @@ public class EmployeeLogData extends BaseEntity {
     public void setRankTitleId(Long rankTitleId) {
 	this.rankTitleId = rankTitleId;
 	employeelog.setRankTitleId(rankTitleId);
+    }
+
+    @Basic
+    @Column(name = "RANK_TITLE_DESCRIPTION")
+    public String getRankTitleDesc() {
+	return rankTitleDesc;
+    }
+
+    public void setRankTitleDesc(String rankTitleDesc) {
+	this.rankTitleDesc = rankTitleDesc;
     }
 
     @Basic
@@ -152,6 +214,16 @@ public class EmployeeLogData extends BaseEntity {
     }
 
     @Basic
+    @Column(name = "SALARY_RANK_DESCRIPTION")
+    public String getSalaryRankDesc() {
+	return salaryRankDesc;
+    }
+
+    public void setSalaryRankDesc(String salaryRankDesc) {
+	this.salaryRankDesc = salaryRankDesc;
+    }
+
+    @Basic
     @Column(name = "DEGREE_ID")
     public Long getDegreeId() {
 	return degreeId;
@@ -163,6 +235,16 @@ public class EmployeeLogData extends BaseEntity {
     }
 
     @Basic
+    @Column(name = "DEGREE_DESCRIPTION")
+    public Long getDegreeDesc() {
+	return degreeDesc;
+    }
+
+    public void setDegreeDesc(Long degreeDesc) {
+	this.degreeDesc = degreeDesc;
+    }
+
+    @Basic
     @Column(name = "SOCIAL_STATUS")
     public Integer getSocialStatus() {
 	return socialStatus;
@@ -171,6 +253,16 @@ public class EmployeeLogData extends BaseEntity {
     public void setSocialStatus(Integer socialStatus) {
 	this.socialStatus = socialStatus;
 	employeelog.setSocialStatus(socialStatus);
+    }
+
+    @Basic
+    @Column(name = "SOCIAL_STATUS_DESCRIPTION")
+    public String getSocialStatusDesc() {
+	return socialStatusDesc;
+    }
+
+    public void setSocialStatusDesc(String socialStatusDesc) {
+	this.socialStatusDesc = socialStatusDesc;
     }
 
     @Basic
@@ -249,6 +341,16 @@ public class EmployeeLogData extends BaseEntity {
     }
 
     @Basic
+    @Column(name = "OFFICIAL_UNIT_FULL_NAME")
+    public String getOfficialUnitFullName() {
+	return officialUnitFullName;
+    }
+
+    public void setOfficialUnitFullName(String officialUnitFullName) {
+	this.officialUnitFullName = officialUnitFullName;
+    }
+
+    @Basic
     @Column(name = "MED_STAFF_RANK_ID")
     public Long getMedStaffRankId() {
 	return medStaffRankId;
@@ -256,6 +358,16 @@ public class EmployeeLogData extends BaseEntity {
 
     public void setMedStaffRankId(Long medStaffRankId) {
 	this.medStaffRankId = medStaffRankId;
+    }
+
+    @Basic
+    @Column(name = "MED_STAFF_RANK_DESCRIPTION")
+    public String getMedStaffRankDesc() {
+	return medStaffRankDesc;
+    }
+
+    public void setMedStaffRankDesc(String medStaffRankDesc) {
+	this.medStaffRankDesc = medStaffRankDesc;
     }
 
     @Basic
@@ -269,6 +381,16 @@ public class EmployeeLogData extends BaseEntity {
     }
 
     @Basic
+    @Column(name = "MED_STAFF_LEVEL_DESCRIPTION")
+    public String getMedStaffLevelDesc() {
+	return medStaffLevelDesc;
+    }
+
+    public void setMedStaffLevelDesc(String medStaffLevelDesc) {
+	this.medStaffLevelDesc = medStaffLevelDesc;
+    }
+
+    @Basic
     @Column(name = "MED_STAFF_DEGREE_ID")
     public Long getMedStaffDegreeId() {
 	return medStaffDegreeId;
@@ -276,6 +398,16 @@ public class EmployeeLogData extends BaseEntity {
 
     public void setMedStaffDegreeId(Long medStaffDegreeId) {
 	this.medStaffDegreeId = medStaffDegreeId;
+    }
+
+    @Basic
+    @Column(name = "MED_STAFF_DEGREE_DESCRIPTION")
+    public String getMedStaffDegreeDesc() {
+	return medStaffDegreeDesc;
+    }
+
+    public void setMedStaffDegreeDesc(String medStaffDegreeDesc) {
+	this.medStaffDegreeDesc = medStaffDegreeDesc;
     }
 
     @Transient
@@ -286,4 +418,5 @@ public class EmployeeLogData extends BaseEntity {
     public void setEmployeelog(EmployeeLog employeelog) {
 	this.employeelog = employeelog;
     }
+
 }
