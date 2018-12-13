@@ -1685,6 +1685,10 @@ public class MovementsService extends BaseService {
 	    }
 
 	    if (movementTransaction.getExecutionDateString() != null && movementTransaction.getMovementTypeId() == MovementTypesEnum.MOVE.getCode() && emp.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() && emp.getOfficialRegionId() != UnitsService.getUnitById(movementTransaction.getUnitId()).getRegionId()) {
+		if (movementTransaction.getExecutionDate().after(emp.getServiceTerminationDueDate())) {
+		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanfourteen", new String[] { emp.getName() });
+		}
+
 		Integer[] dateDiff = HijriDateService.hijriDateDiffInMonthsAndDays(movementTransaction.getExecutionDateString(), emp.getServiceTerminationDueDateString());
 		if (dateDiff[1] < 14 || (dateDiff[1] == 14 && dateDiff[0] == 0)) {
 		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanfourteen", new String[] { emp.getName() });
