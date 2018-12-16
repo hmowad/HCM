@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.ws.WebServiceException;
+
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.Rank;
@@ -390,6 +392,8 @@ public class EmployeesService extends BaseService {
 	if (!HijriDateService.isValidHijriDate(emp.getBirthDate()))
 	    throw new BusinessException("error_invalidHijriBirthDate");
 	if (emp.getSocialIDIssueDate() != null && !HijriDateService.isValidHijriDate(emp.getSocialIDIssueDate()))
+	    throw new BusinessException("error_invalidHijriSocialIdIssueDate");
+	if (emp.getSocialIDExpiryDate() != null && !HijriDateService.isValidHijriDate(emp.getSocialIDExpiryDate()))
 	    throw new BusinessException("error_invalidHijriSocialIdIssueDate");
 
 	Date sysDate = HijriDateService.getHijriSysDate();
@@ -1549,7 +1553,7 @@ public class EmployeesService extends BaseService {
 	    e.printStackTrace();
 	    if (e instanceof Yakeen4BorderGuardFaultException)
 		throw new BusinessException("error_cannotRetrieveInformationsFromYakeenAsDataEnteredIsWrong");
-	    if (e instanceof BusinessException_Exception || e instanceof DataValidationException)
+	    if (e instanceof BusinessException_Exception || e instanceof DataValidationException || e instanceof WebServiceException)
 		throw new BusinessException("error_cannotRetrieveInformationsFromYakeenAsItIsNotAvailableNow");
 	    throw new BusinessException("error_general");
 	}
@@ -1568,7 +1572,7 @@ public class EmployeesService extends BaseService {
 	emp.setLastNameEn(personInfoDetailedResult.getEnglishLastName());
 
 	emp.setSocialIDIssueDate(HijriDateService.getHijriDate(personInfoDetailedResult.getIdIssueDateH().replace('-', '/')));
-	emp.setSocialIDIssueExpiryDate(HijriDateService.getHijriDate(personInfoDetailedResult.getIdExpiryDateH().replace('-', '/')));
+	emp.setSocialIDExpiryDate(HijriDateService.getHijriDate(personInfoDetailedResult.getIdExpiryDateH().replace('-', '/')));
 	emp.setGender(personInfoDetailedResult.getGender().toString());
 
 	List<SocialIdIssuePlace> socialIdIssuePlace = CommonService.getSocialIdIssuePlacesByExactDescription(personInfoDetailedResult.getIdIssuePlace().getValue());
@@ -1583,6 +1587,8 @@ public class EmployeesService extends BaseService {
     private static void validateYaqeenMandatoryFields(String socialId, String birthDate) throws BusinessException {
 	if (socialId == null || socialId.trim().equals(""))
 	    throw new BusinessException("error_socialIDMandatory");
+	if (socialId.length() != 10)
+	    throw new BusinessException("error_invalidSocialID");
 	if (birthDate == null || birthDate.equals(""))
 	    throw new BusinessException("error_birthDateMandatory");
     }

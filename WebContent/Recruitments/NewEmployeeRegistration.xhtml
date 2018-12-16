@@ -103,18 +103,32 @@
 				document.getElementById('newEmployeeRegistrationFormId:graduationPlaceFullDescId').innerHTML = ret[1] +' \\ '+ ret[3] +' \\ '+ ret[5];
 			}
 		}
+
+		function validateYaqeenRetrieval () {
+			socialIdValue = document.getElementById('newEmployeeRegistrationFormId:socialIDId').value;
+			birthDateValue = document.getElementById('newEmployeeRegistrationFormId:birthDateId:day').value;
+
+			if(socialIdValue == null || socialIdValue == '') {
+				alert("#{msgs.error_socialIDMandatory}");
+				return false;
+			}
+			
+			if (socialIdValue.length != 10) {
+				alert("#{msgs.error_socialIdNotValid}");
+				return false;
+			}
+
+			if(birthDateValue == 0) {
+				alert("#{msgs.error_birthDateMandatory}");
+				return false;
+			}
+			
+			return true;
+		}
 		
 		function validate(mode) {
-
-			countryIdValue = 190;
-			
-			firstNameValue = document.getElementById('newEmployeeRegistrationFormId:firstNameId').value;
-			secondNameValue = document.getElementById('newEmployeeRegistrationFormId:secondNameId').value;
-			lastNameValue = document.getElementById('newEmployeeRegistrationFormId:lastNameId').value;
-			birthDateValue = document.getElementById('newEmployeeRegistrationFormId:birthDateId:day').value;
+			expiryDateIdValue = document.getElementById('newEmployeeRegistrationFormId:expiryDateId').innerHTML;
 			birthPlaceValue = document.getElementById('newEmployeeRegistrationFormId:birthPlaceId').value;
-			socialIdValue = document.getElementById('newEmployeeRegistrationFormId:socialIDId').value;
-			soldierGender = document.getElementById('newEmployeeRegistrationFormId:soldierGenderId');
 
 			generalSpecialization = document.getElementById('newEmployeeRegistrationFormId:generalSpecializationId');
 
@@ -128,49 +142,14 @@
 
 			qualificationLevelIdValue = document.getElementById('newEmployeeRegistrationFormId:qualificationLevelIDId').value;
 			personsCategories = document.getElementById('newEmployeeRegistrationFormId:personsCategoriesId');
-			
-			if(firstNameValue == null || firstNameValue == '') {
-				alert("#{msgs.error_firstNameMandatory}");
-				return false;
-			}
 
-			if(secondNameValue == null || secondNameValue == '') {
-				alert("#{msgs.error_secondNameMandatory}");
-				return false;
-			}
-
-			if(lastNameValue == null || lastNameValue == '') {
-				alert("#{msgs.error_lastNameMandatory}");
-				return false;
-			}
-
-			if(birthDateValue == 0) {
-				alert("#{msgs.error_birthDateMandatory}");
+			if(expiryDateIdValue == null || expiryDateIdValue == '') {
+				alert("#{msgs.error_retrieveDataFromYaqeen}");
 				return false;
 			}
 
 			if(birthPlaceValue == null || birthPlaceValue == '') {
 				alert("#{msgs.error_birthPlaceMandatory}");
-				return false;
-			}
-
-			
-			if(socialIdValue == null || socialIdValue == '') {
-				alert("#{msgs.error_socialIDMandatory}");
-				return false;
-			}
-			
-			countryId = document.getElementById('newEmployeeRegistrationFormId:countryIDId');
-			if(countryId != null) {
-				countryIdValue = countryId.value;
-				if ((countryIdValue == null || countryIdValue == '') &amp;&amp; (personsCategories!=null &amp;&amp; personsCategories.value == 6)) {
-					alert("#{msgs.error_nationalityIsMandatory}");
-					return false;
-				}
-			}
-			
-			if(soldierGender != null &amp;&amp; (soldierGender.value == null || soldierGender.value == '')) {
-				alert("#{msgs.error_genderIsMandatory}");
 				return false;
 			}
 
@@ -213,12 +192,6 @@
 				alert("#{msgs.error_recruitmentQualificationLevelMandatory}");
 				return false;
 			}
-			
-			if (socialIdValue.length != 10 || (socialIdValue.charAt(0) != "1" &amp;&amp; countryIdValue == 190)) {
-				alert("#{msgs.error_socialIdNotValid}");
-				return false;
-			}
-
 			
 			militaryNumber = document.getElementById('newEmployeeRegistrationFormId:militaryNumberId');
 			if (militaryNumber != null &amp;&amp; (!(militaryNumber.value == null || militaryNumber.value == ''))) {
@@ -318,7 +291,7 @@
 											<h:outputText value="#{newEmployeeRegistration.employee.birthDateString}" rendered="#{newEmployeeRegistration.viewOnly or newEmployeeRegistration.employee.empId != null or newEmployeeRegistration.yaqeenFlag}" />
 										</td>
 										<td width="30%" colspan="2">
-											<h:commandButton action ="#{newEmployeeRegistration.yaqeenInformationRetrieval()}" value="#{msgs.label_retrieveInformation}" title="#{msgs.label_retrieveInformation}" rendered="#{!newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.empId ==null and !newEmployeeRegistration.yaqeenFlag}" styleClass="btn_normal" >
+											<h:commandButton action ="#{newEmployeeRegistration.yaqeenInformationRetrieval()}" onclick="return validateYaqeenRetrieval();" value="#{msgs.label_retrieveInformation}" title="#{msgs.label_retrieveInformation}" rendered="#{!newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.empId ==null and !newEmployeeRegistration.yaqeenFlag}" styleClass="btn_normal" >
 												<f:ajax execute="newEmployeeRegistrationFormId:basicDataPanelId" render="newEmployeeRegistrationFormId:basicDataPanelId newEmployeeRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
 											</h:commandButton>
 										</td>
@@ -366,7 +339,7 @@
 											<h:outputText value=" " />
 										</th>
 										<td width ="15%" colspan="1">
-											<h:outputText value="#{newEmployeeRegistration.employee.socialIDIssueExpiryDateString}" />
+											<h:outputText id="expiryDateId" value="#{newEmployeeRegistration.employee.socialIDExpiryDateString}" />
 										</td>
 										<th width ="15%" colspan="1">
 											#{msgs.label_socialIdIssuePlace}

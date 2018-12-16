@@ -135,14 +135,8 @@
 		}
 		
 		function validate(mode) {
-
-			countryIdValue = 190;
-			firstNameValue = document.getElementById('employeesDataViewFormId:firstNameId').value;
-			secondNameValue = document.getElementById('employeesDataViewFormId:secondNameId').value;
-			lastNameValue = document.getElementById('employeesDataViewFormId:lastNameId').value;
-			birthDate = document.getElementById('employeesDataViewFormId:birthDateId').value;
+			expiryDateIdValue = document.getElementById('newEmployeeRegistrationFormId:expiryDateId').innerHTML;
 			birthPlaceValue = document.getElementById('employeesDataViewFormId:birthPlaceId').value;
-			socialIdValue = document.getElementById('employeesDataViewFormId:socialIDId').value;
 			recQualificationLevelId = document.getElementById('employeesDataViewFormId:recQualificationLevelIDId');
 			curQualificationLevelId = document.getElementById('employeesDataViewFormId:curQualificationLevelIDId');
 			privateMobileNumberValue = document.getElementById('employeesDataViewFormId:privateMobileNumberId').value;
@@ -154,29 +148,18 @@
 
 			var emailRe = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 			var mobileRe = /05\d{8}$/;	
+
+			if(expiryDateIdValue == null || expiryDateIdValue == '') {
+				alert("#{msgs.error_retrieveDataFromYaqeen}");
+				return false;
+			}
 			
-			if ((firstNameValue == null || firstNameValue == '')
-					|| (secondNameValue == null || secondNameValue == '')
-					|| (lastNameValue == null || lastNameValue == '')
-					|| (birthDate == null || birthDate = '')
-					|| (birthPlaceValue == null || birthPlaceValue == '')
-					|| (socialIdValue == null || socialIdValue == '')
+			if ((birthPlaceValue == null || birthPlaceValue == '')
 					|| (recQualificationLevelId != null && !recQualificationLevelId.value)
 					|| (curQualificationLevelId != null && !curQualificationLevelId.value)) {
-				if (mode==1)
 					alert("#{msgs.error_employeesViewFieldsAreMandatrory}");
-				else if (mode==2)
-					alert("#{msgs.error_employeesViewFieldsAreMandatrory}");
-				else if (mode==3)
-					alert("#{msgs.error_personsViewFieldsAreMandatrory}");
 				return false;
 			} 
-			if (socialIdValue) {
-				if (socialIdValue.length != 10 || (socialIdValue.charAt(0) != "1" && countryIdValue == 190)) {
-					alert("#{msgs.error_socialIdNotValid}");
-					return false;
-				}
-			}
 
 			if(recQualificationPercentageValue != null && recQualificationPercentageValue != '') {
 				if(recQualificationPercentageValue > 100) {
@@ -321,7 +304,7 @@
 										<h:outputText value=" " />
 									</th>
 									<td width ="15%" colspan="1">
-										<h:outputText value="#{employeesDataView.employee.socialIDIssueExpiryDateString}" />
+										<h:outputText id="expiryDateId" value="#{employeesDataView.employee.socialIDExpiryDateString}" />
 									</td>
 									<th width ="15%" colspan="1">
 										#{msgs.label_socialIdIssuePlace}

@@ -313,8 +313,8 @@ public class EmployeeData extends BaseEntity implements Serializable {
     private String socialID;
     private Date socialIDIssueDate;
     private String socialIDIssueDateString;
-    private Date socialIDIssueExpiryDate;
-    private String socialIDIssueExpiryDateString;
+    private Date socialIDExpiryDate;
+    private String socialIDExpiryDateString;
     private Long socialIDIssuePlaceID;
     private String socialIDIssuePlaceDesc;
     private String bloodGroup;
@@ -980,29 +980,29 @@ public class EmployeeData extends BaseEntity implements Serializable {
     }
 
     @Basic
-    @Column(name = "SOCIAL_ID_ISSUE_EXPIRY_DATE")
+    @Column(name = "SOCIAL_ID_EXPIRY_DATE")
     @Temporal(TemporalType.TIMESTAMP)
     @XmlTransient
-    public Date getSocialIDIssueExpiryDate() {
-	return socialIDIssueExpiryDate;
+    public Date getSocialIDExpiryDate() {
+	return socialIDExpiryDate;
     }
 
-    public void setSocialIDIssueExpiryDate(Date socialIDIssueExpiryDate) {
-	this.socialIDIssueExpiryDate = socialIDIssueExpiryDate;
-	this.socialIDIssueExpiryDateString = HijriDateService.getHijriDateString(socialIDIssueExpiryDate);
-	employee.setSocialIDIssueExpiryDate(socialIDIssueExpiryDate);
+    public void setSocialIDExpiryDate(Date socialIDExpiryDate) {
+	this.socialIDExpiryDate = socialIDExpiryDate;
+	this.socialIDExpiryDateString = HijriDateService.getHijriDateString(socialIDExpiryDate);
+	employee.setSocialIDExpiryDate(socialIDExpiryDate);
     }
 
     @Transient
     @XmlTransient
-    public String getSocialIDIssueExpiryDateString() {
-	return socialIDIssueExpiryDateString;
+    public String getSocialIDExpiryDateString() {
+	return socialIDExpiryDateString;
     }
 
-    public void setSocialIDIssueExpiryDateString(String socialIDIssueExpiryDateString) {
-	this.socialIDIssueExpiryDateString = socialIDIssueExpiryDateString;
-	this.socialIDIssueExpiryDate = HijriDateService.getHijriDate(socialIDIssueExpiryDateString);
-	employee.setSocialIDIssueExpiryDate(socialIDIssueExpiryDate);
+    public void setSocialIDExpiryDateString(String socialIDExpiryDateString) {
+	this.socialIDExpiryDateString = socialIDExpiryDateString;
+	this.socialIDExpiryDate = HijriDateService.getHijriDate(socialIDExpiryDateString);
+	employee.setSocialIDExpiryDate(socialIDExpiryDate);
     }
 
     @Transient
