@@ -1,4 +1,4 @@
-package com.code.services.log4j;
+package com.code.services.util;
 
 import java.util.Properties;
 

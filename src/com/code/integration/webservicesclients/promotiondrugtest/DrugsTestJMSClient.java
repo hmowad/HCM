@@ -15,7 +15,7 @@ import javax.naming.NamingException;
 
 import com.code.exceptions.BusinessException;
 import com.code.services.config.ETRConfigurationService;
-import com.code.services.log4j.Log4jService;
+import com.code.services.util.Log4jService;
 
 /**
  *

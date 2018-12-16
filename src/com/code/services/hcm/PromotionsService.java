@@ -61,9 +61,9 @@ import com.code.services.buswfcoop.EmployeesJobsConflictValidator;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.cor.ETRCorrespondence;
 import com.code.services.log.LogService;
-import com.code.services.log4j.Log4jService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
+import com.code.services.util.Log4jService;
 
 /**
  * This class consists of static methods to operate on and handle promotion services for officers, soldiers, and civilians.
