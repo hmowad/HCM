@@ -56,7 +56,7 @@ public class RecruitmentsWS {
 		    employee.setBirthDate(HijriDateService.getHijriDate(wsSoldier.getBirthDate())); // TODO date format dd/MM/YYYY
 		    employee.setSocialID(wsSoldier.getSocialID());
 		    employee.setSocialIDIssueDate(HijriDateService.getHijriDate(wsSoldier.getSocialIDIssueDate())); // TODO date format dd/MM/YYYY
-		    employee.setSocialIDIssueExpiryDate(HijriDateService.getHijriDate(wsSoldier.getSocialIDIssueExpiryDate()));
+		    employee.setSocialIDExpiryDate(HijriDateService.getHijriDate(wsSoldier.getSocialIDExpiryDate()));
 		    employee.setSocialIDIssuePlaceID(wsSoldier.getSocialIDIssuePlaceID());
 		    employee.setBloodGroup(wsSoldier.getBloodGroup());
 		    employee.setGender(wsSoldier.getGender());

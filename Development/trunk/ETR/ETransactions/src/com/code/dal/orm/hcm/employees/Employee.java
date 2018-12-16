@@ -53,7 +53,7 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
     private String birthPlace;
     private String socialID;
     private Date socialIDIssueDate;
-    private Date socialIDIssueExpiryDate;
+    private Date socialIDExpiryDate;
     private Long socialIDIssuePlaceID;
     private String bloodGroup;
     private String gender;
@@ -276,15 +276,15 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
 	return socialIDIssueDate;
     }
 
-    public void setSocialIDIssueExpiryDate(Date socialIDIssueExpiryDate) {
-	this.socialIDIssueExpiryDate = socialIDIssueExpiryDate;
+    public void setSocialIDExpiryDate(Date socialIDExpiryDate) {
+	this.socialIDExpiryDate = socialIDExpiryDate;
     }
 
     @Basic
-    @Column(name = "SOCIAL_ID_ISSUE_EXPIRY_DATE")
+    @Column(name = "SOCIAL_ID_EXPIRY_DATE")
     @Temporal(TemporalType.TIMESTAMP)
-    public Date getSocialIDIssueExpiryDate() {
-	return socialIDIssueExpiryDate;
+    public Date getSocialIDExpiryDate() {
+	return socialIDExpiryDate;
     }
 
     public void setSocialIDIssuePlaceID(Long socialIDIssuePlaceID) {

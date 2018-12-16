@@ -14,7 +14,7 @@ public class WSRecEmployee {
     private String birthDate;
     private String socialID;
     private String socialIDIssueDate;
-    private String socialIDIssueExpiryDate;
+    private String socialIDExpiryDate;
     private Long socialIDIssuePlaceID;
     private String bloodGroup;
     private String gender;
@@ -266,12 +266,12 @@ public class WSRecEmployee {
 	this.recStudyCountryId = recStudyCountryId;
     }
 
-    public String getSocialIDIssueExpiryDate() {
-	return socialIDIssueExpiryDate;
+    public String getSocialIDExpiryDate() {
+	return socialIDExpiryDate;
     }
 
-    public void setSocialIDIssueExpiryDate(String socialIDIssueExpiryDate) {
-	this.socialIDIssueExpiryDate = socialIDIssueExpiryDate;
+    public void setSocialIDExpiryDate(String socialIDExpiryDate) {
+	this.socialIDExpiryDate = socialIDExpiryDate;
     }
 
 }
