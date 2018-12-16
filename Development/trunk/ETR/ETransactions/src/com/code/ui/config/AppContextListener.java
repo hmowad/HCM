@@ -6,9 +6,9 @@ import javax.servlet.ServletContextListener;
 import com.code.dal.DataAccess;
 import com.code.integration.webservicesclients.pushclient.PushNotificationRestClient;
 import com.code.services.config.ETRConfigurationService;
-import com.code.services.log4j.Log4jService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
+import com.code.services.util.Log4jService;
 
 public class AppContextListener implements ServletContextListener {
 

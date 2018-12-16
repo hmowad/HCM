@@ -10,7 +10,7 @@ import com.code.exceptions.BusinessException;
 import com.code.integration.responses.WSResponseBase;
 import com.code.services.BaseService;
 import com.code.services.hcm.PromotionsService;
-import com.code.services.log4j.Log4jService;
+import com.code.services.util.Log4jService;
 
 @WebService(targetNamespace = "http://integration.code.com/promotionsDrugsTest",
 	portName = "PromotionsDrugsTestWSHttpPort")
