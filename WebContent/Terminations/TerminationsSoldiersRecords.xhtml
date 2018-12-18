@@ -841,7 +841,8 @@
 													<font style="color: red;">*</font>
 												</th>
 												<td width="80%" colspan="3">
-													<h:inputTextarea id="referringMarriageId" value="#{terminationsSoldiersRecords.selectedTerminationRecordDetailData.referring}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge" disabled="#{(terminationsSoldiersRecords.terminationRecordData.status == 15) or (terminationsSoldiersRecords.terminationRecordData.status == 10 and terminationsSoldiersRecords.role != 'ReviewerEmp')}" />
+													<h:inputTextarea id="referringMarriageId" value="#{terminationsSoldiersRecords.selectedTerminationRecordDetailData.referring}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',400);" rows="2" styleClass="inputDataSuperLarge"
+														disabled="#{(terminationsSoldiersRecords.terminationRecordData.status == 15) or (terminationsSoldiersRecords.terminationRecordData.status == 10 and terminationsSoldiersRecords.role != 'ReviewerEmp')}" />
 												</td>
 											</tr>
 										</h:panelGroup>
@@ -1035,6 +1036,7 @@
 														<f:selectItem itemLabel="#{msgs.label_deathDueToWork}" itemValue="1" />
 														<f:selectItem itemLabel="#{msgs.label_deathNotDueToWork}" itemValue="2" />
 														<f:selectItem itemLabel="#{msgs.label_martyrdom}" itemValue="3" />
+														<f:selectItem itemLabel="#{msgs.label_deathDueToWorkDuringSavingSecurityOperations}" itemValue="4" />
 														<f:ajax event="change" listener="#{terminationsSoldiersRecords.changeDeathType}" execute="terminationsSoldiersRecordsFormId:terminationServiceDataPanelId" render="terminationsSoldiersRecordsFormId:terminationServiceDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 													</h:selectOneRadio>
 												</td>
