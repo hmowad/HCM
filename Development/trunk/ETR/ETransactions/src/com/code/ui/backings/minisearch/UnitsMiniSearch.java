@@ -75,7 +75,7 @@ public class UnitsMiniSearch extends BaseBacking implements Serializable {
 	    } else if (mode.equals("7")) {
 		searchUnitList = UnitsService.getUnitsByPrefixHkey(unitHKeyPrefix, searchUnitFullName);
 	    } else if (mode.equals("8")) {
-		searchUnitList = UnitsService.getUnitsByIdsString(unitsIdsString);
+		searchUnitList = UnitsService.getUnitsByIdsStringAndUnitFullName(unitsIdsString, searchUnitFullName);
 	    }
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));

@@ -1570,18 +1570,32 @@ public class UnitsService extends BaseService {
 	    for (int i = 0; i < unitsIdsStrings.length; i++)
 		unitsIds[i] = Long.parseLong(unitsIdsStrings[i]);
 
-	    unitsList = searchUnitsByUnitsIds(unitsIds);
+	    unitsList = searchUnitsByUnitsIds(unitsIds, null);
 	}
 	return unitsList;
     }
 
-    private static List<UnitData> searchUnitsByUnitsIds(Long[] unitsIds) throws BusinessException {
+    public static List<UnitData> getUnitsByIdsStringAndUnitFullName(String unitsIdsString, String unitFullName) throws BusinessException {
+	List<UnitData> unitsList = new ArrayList<UnitData>();
+	if (unitsIdsString != null && unitsIdsString.length() > 0) {
+	    String[] unitsIdsStrings = unitsIdsString.split(",");
+	    Long[] unitsIds = new Long[unitsIdsStrings.length];
+	    for (int i = 0; i < unitsIdsStrings.length; i++)
+		unitsIds[i] = Long.parseLong(unitsIdsStrings[i]);
+
+	    unitsList = searchUnitsByUnitsIds(unitsIds, unitFullName);
+	}
+	return unitsList;
+    }
+
+    private static List<UnitData> searchUnitsByUnitsIds(Long[] unitsIds, String unitFullName) throws BusinessException {
 	try {
 	    if (unitsIds == null || unitsIds.length == 0)
 		return new ArrayList<UnitData>();
 
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_UNITS_IDS", unitsIds);
+	    qParams.put("P_UNIT_FULL_NAME", unitFullName == null ? FlagsEnum.ALL.getCode() : "%" + unitFullName + "%");
 
 	    return DataAccess.executeNamedQuery(UnitData.class, QueryNamesEnum.HCM_SEARCH_UNITS_BY_UNITS_IDS.getCode(), qParams);
 	} catch (DatabaseException e) {
