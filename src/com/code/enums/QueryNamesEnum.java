@@ -500,7 +500,11 @@ public enum QueryNamesEnum {
     HCM_GET_GENERAL_NEWS("hcm_generalNews_getGeneralNews"),
 
     /* ******************************************* Rankings ****************************************************** */
-    HCM_RANKINGS_SEARCH_RANKINGS("hcm_rankings_searchRankings");
+    HCM_RANKINGS_SEARCH_RANKINGS("hcm_rankings_searchRankings"),
+
+    /* ******************************************* Timeline ****************************************************** */
+    HCM_GET_ALL_FUTURE_TRANSACTIONS("hcm_transactionsTimeline_getAllFutureTransactions");
+
     private String code;
 
     private QueryNamesEnum(String code) {
