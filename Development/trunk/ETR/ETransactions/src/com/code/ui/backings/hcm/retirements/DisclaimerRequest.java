@@ -300,6 +300,11 @@ public class DisclaimerRequest extends WFBaseBacking {
 	}
     }
 
+    public void clearSentBackUnits() {
+	selectedSentBackUnitsNamesString = "";
+	wfDisclaimerData.setSentBackUnitsString("");
+    }
+
     public String closeProcess() {
 	try {
 	    RetirementsWorkFlow.closeWFInstanceByNotification(instance, currentTask);
