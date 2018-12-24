@@ -365,9 +365,13 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	CustomSession session = DataAccess.getSession();
 	try {
 	    session.beginTransaction();
-	    if (actionFlag == WFActionFlagsEnum.APPROVE.getCode())
+	    if (actionFlag == WFActionFlagsEnum.APPROVE.getCode()) {
+		if (!(wfDisclaimerData.getSentBackUnitsString() == null || wfDisclaimerData.getSentBackUnitsString().equals("")))
+		    throw new BusinessException("error_cantApproveSentBackUnitsSelected");
 		closeDisclaimerWorkFlow(requester, instance, wfDisclaimerData, esmTask, session);
-	    else if (actionFlag == WFActionFlagsEnum.REJECT.getCode()) {
+	    } else if (actionFlag == WFActionFlagsEnum.REJECT.getCode()) {
+		if (!(wfDisclaimerData.getSentBackUnitsString() == null || wfDisclaimerData.getSentBackUnitsString().equals("")))
+		    throw new BusinessException("error_cantRejectSentBackUnitsSelected");
 		closeWFInstanceByAction(requester.getEmpId(), instance, esmTask, WFTaskActionsEnum.REJECT.getCode(), null, session);
 	    } else if (actionFlag == WFActionFlagsEnum.SEND_BACK_TO_UNITS.getCode()) {
 		if (wfDisclaimerData.getSentBackUnitsString() == null || wfDisclaimerData.getSentBackUnitsString().equals(""))

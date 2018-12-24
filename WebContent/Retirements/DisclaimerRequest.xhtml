@@ -45,6 +45,24 @@
 			document.getElementById('disclaimerRequestFormId:addUnitBtnId').click() ;
 		}
 	}
+	
+	function validateESMApprove(){
+		sentBackUnitsString = document.getElementById('disclaimerRequestFormId:unitsIDsHId').value
+		if(!(sentBackUnitsString == null || sentBackUnitsString == '')) {
+			alert("#{msgs.error_cantApproveSentBackUnitsSelected}");
+			return false;
+		}
+		return true;
+	}
+	
+	function validateESMReject(){
+		sentBackUnitsString = document.getElementById('disclaimerRequestFormId:unitsIDsHId').value
+		if(!(sentBackUnitsString == null || sentBackUnitsString == '')) {
+			alert("#{msgs.error_cantRejectSentBackUnitsSelected}");
+			return false;
+		}
+		return true;
+	}
 
 	</script>
 </h:head>
@@ -317,7 +335,7 @@
 				</tr>
 				<tr>
 					<td>
-						<h:panelGroup rendered="#{disclaimerRequest.role=='ExtraSignManager'}">
+						<h:panelGroup id="sendBackPanelId" rendered="#{disclaimerRequest.role=='ExtraSignManager'}">
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<th width="15%">
@@ -328,7 +346,10 @@
 										<h:inputHidden id="unitsIDsHId" value="#{disclaimerRequest.wfDisclaimerData.sentBackUnitsString}" />
 										<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getUnit('#{request.contextPath}', '#{disclaimerRequest.sentBackUnitsIdsParam}');return false;" />
 										<h:commandButton id="addUnitBtnId" style="display:none;" action = "#{disclaimerRequest.getSentBackUnitsNames()}">
-											<f:ajax execute="disclaimerRequestFormId:unitsIDsHId" render="disclaimerRequestFormId:unitsNamesId disclaimerRequestFormId:notifyMessagesId" />
+											<f:ajax execute="disclaimerRequestFormId:unitsIDsHId disclaimerRequestFormId:unitsNamesId" render="disclaimerRequestFormId:sendBackPanelId disclaimerRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+										</h:commandButton>
+										<h:commandButton id="clearUnitsBtnId" rendered="#{disclaimerRequest.selectedSentBackUnitsNamesString != null and disclaimerRequest.selectedSentBackUnitsNamesString.length() != 0}" action="#{disclaimerRequest.clearSentBackUnits()}" value="#{msgs.fa_times}" styleClass="btn_icon">
+											<f:ajax execute="disclaimerRequestFormId:sendBackPanelId" render="disclaimerRequestFormId:sendBackPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</td>
 								</tr>
@@ -371,7 +392,7 @@
 
 
 									<h:panelGroup rendered="#{disclaimerRequest.role=='ExtraSignManager'}">
-										<h:commandButton onclick="return handleOnAction('#{msgs.q_superSign}', 'true');" action="#{disclaimerRequest.doRetirementsAprroveESM()}" value="#{msgs.label_superSign}  &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_superSign}', 'validateESMApprove()');" action="#{disclaimerRequest.doRetirementsAprroveESM()}" value="#{msgs.label_superSign}  &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 											<f:ajax />
 										</h:commandButton>
 
@@ -379,7 +400,7 @@
 											<f:ajax render="notifyMessagesId" execute="@form" />
 										</h:commandButton>
 
-										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'true');" action="#{disclaimerRequest.doRetirementsRejectESM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateESMReject()');" action="#{disclaimerRequest.doRetirementsRejectESM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
 											<f:ajax render="notifyMessagesId" execute="@form" />
 										</h:commandButton>
 									</h:panelGroup>
