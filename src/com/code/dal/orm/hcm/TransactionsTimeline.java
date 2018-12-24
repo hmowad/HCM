@@ -10,7 +10,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlTransient;
 
 import com.code.dal.orm.BaseEntity;
 import com.code.services.util.HijriDateService;
@@ -74,7 +73,7 @@ public class TransactionsTimeline extends BaseEntity {
     }
 
     @Basic
-    @Column(name = "DESCRIPTION")  
+    @Column(name = "DESCRIPTION")
     public String getTransactionTypeDescription() {
 	return transactionTypeDescription;
     }

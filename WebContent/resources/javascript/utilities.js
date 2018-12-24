@@ -357,6 +357,13 @@ function deservedEmpsForAnnualRaiseMiniSearch(contextPath, miniSearchReturnHandl
     unMaskOnPopupClose(childWindow);
 }
 
+function transactionsTimeLineMiniSearch(contextPath){
+	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
+	maskOpenerScreen();
+	var childWindow = window.open(contextPath+'/MiniSearch/TransactionsTimeLineMiniSearch.jsf', null, specsStr);
+    unMaskOnPopupClose(childWindow);
+}
+
 function openAdditionalSpecializationsMiniSearch(contextPath, miniSearchReturnHandler){
 	 var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
 	 maskOpenerScreen();

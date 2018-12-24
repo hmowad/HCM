@@ -6,8 +6,13 @@
 
 	<h:outputStylesheet library="css" name="styles.css" />
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript"> 
+		function openTransactionsTimeLineMiniSerach(){
+			transactionsTimeLineMiniSearch('#{request.contextPath}');
+		}
+	</script>
 </h:head>
-<h:body styleClass="screenBg">
+<h:body styleClass="screenBg" onload="openTransactionsTimeLineMiniSerach(); return false;">
 
 	<f:event type="preRenderView" listener="#{home.calculateDelegationsCount}" />
 
@@ -218,19 +223,19 @@
 									<td width="50%" class="homeStatisticsContainerTD">
 										<table width="99%" cellpadding="0" cellspacing="0" class="fleft">
 											<tr>
-												<td width="100%" colspan="2">
+												<td width="100%" colspan="3">
 													<table class="homeStatisticsTitle" cellpadding="0" cellspacing="0">
 														<tr>
 															<td width="14%">
 																<h:graphicImage value="/resources/images/tasksInstances.png" />
 															</td>
-															<td width="86%">#{msgs.label_wfTasksInstances}</td>
+															<td width="86%">#{msgs.label_wfTasksInstancesTimeLine}</td>
 														</tr>
 													</table>
 												</td>
 											</tr>
 											<tr>
-												<td width="50%" style="padding-left: 5px;">
+												<td width="35%" style="padding-left: 5px;">
 													<table class="homeStatisticsContent" width="100%">
 														<tr>
 															<td width="20%" rowspan="2">
@@ -253,7 +258,7 @@
 														</tr>
 													</table>
 												</td>
-												<td width="50%">
+												<td width="35%" style="padding-left: 5px;">
 													<table class="homeStatisticsContent" width="100%">
 														<tr>
 															<td width="20%">
@@ -264,6 +269,18 @@
 																	#{msgs.title_outbox}
 																	<h:outputText value="#{home.outboxCount}" />
 																</a>
+															</td>
+														</tr>
+													</table>
+												</td>
+												<td width="30%">
+													<table class="homeStatisticsContent" width="100%">
+														<tr>
+															<td width="20%">
+																<h:graphicImage value="/resources/images/timeLineIcon.png" />
+															</td>
+															<td>
+																<h:commandLink value="#{msgs.label_timeLine}" onclick="openTransactionsTimeLineMiniSerach(); return false;" style="color:Black;font-weight: bold" />	
 															</td>
 														</tr>
 													</table>
@@ -280,17 +297,71 @@
 						<td width="100%" height="10" />
 					</tr>
 
-					<tr>
-						<td>
-							<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
-								<tr>
-									<th width="100%">
-										<h:outputText value="#{msgs.notify_minimumBrowsersVersionsMessage}" style="font-size: 15px !important;" styleClass="remarkMessage" />
-									</th>
-								</tr>
-							</table>
-						</td>
-					</tr>
+					<h:panelGroup rendered="#{(home.socialAvailable or home.socialExpired) or home.lastVacation != null or home.lastValidMovTrans != null or home.lastValidSubjoinTran != null}" >
+						<tr>
+							<td width="100%">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:graphicImage value="/resources/images/warning.png" width="25px" height="25px" />
+											<h:outputText value="#{msgs.label_alerts}" />
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<h:panelGroup rendered="#{home.socialAvailable or home.socialExpired}" >
+										<tr>
+											<th width="10%">#{msgs.label_nationalIdentity}</th>
+											<td>
+												<h:outputText value="#{msgs.label_nationalIdentityWillEndOn}" styleClass="#{home.socialExpired?'remarkMessage' : 'errorMessage'}" />
+												<h:outputText value="#{home.loginEmpData.socialIDExpiryDateString}" styleClass="#{home.socialExpired?'remarkMessage' : 'errorMessage'}" />
+												<a target="_blank" href="#{request.contextPath}/Employees/EmployeesDataView.jsf?employeeId=#{employeesDataView.loginEmpData.empId}" style="text-decoration: none;">
+													<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_details}"></i>
+												</a>
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{home.lastVacation != null}" >
+										<tr>
+											<th width="10%">#{msgs.label_vacationJoining}</th>
+											<td>
+												<h:outputText value="#{msgs.notify_pleaseProvideVacationJoining}" styleClass="remarkMessage" />
+												<a target="_blank" href="#{request.contextPath}/Vacations/VacationJoining.jsf" style="text-decoration: none;">
+													<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_details}"></i>
+												</a>
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{home.lastValidMovTrans != null}" >
+										<tr>
+											<th width="10%">#{msgs.label_moveJoining}</th>
+											<td>
+												<h:outputText value="#{msgs.notify_pleaseProvideMoveJoining}" styleClass="remarkMessage" />
+												<a target="_blank" href="#{request.contextPath}/Movements/MoveJoiningDateRequest.jsf?mode=#{employeesDataView.loginEmpData.categoryId}" style="text-decoration: none;">
+													<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_details}"></i>
+												</a>
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{home.lastValidSubjoinTran != null}" >
+										<tr>
+											<th width="10%">#{msgs.label_subjoinJoining}</th>
+											<td>
+												<h:outputText value="#{msgs.notify_pleaseProvideSubjoinJoining}" styleClass="remarkMessage" />
+												<a target="_blank" href="#{request.contextPath}/Movements/SubjoinJoiningDateRequest.jsf?mode=#{employeesDataView.loginEmpData.categoryId}" style="text-decoration: none;">
+													<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_details}"></i>
+												</a>
+											</td>
+										</tr>
+									</h:panelGroup>
+								</table>
+							</td>
+						</tr>
+					</h:panelGroup>
 				</h:panelGroup>
 			</table>
 		</ui:decorate>
