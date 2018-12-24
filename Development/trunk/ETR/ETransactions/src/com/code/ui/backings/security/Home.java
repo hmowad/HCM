@@ -6,12 +6,18 @@ import java.util.Calendar;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
+import com.code.dal.orm.hcm.movements.MovementTransactionData;
+import com.code.dal.orm.hcm.vacations.VacationData;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
+import com.code.enums.MovementTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.BaseService;
 import com.code.services.config.ETRConfigurationService;
+import com.code.services.hcm.MovementsService;
+import com.code.services.hcm.VacationsService;
 import com.code.services.security.SecurityService;
+import com.code.services.util.HijriDateService;
 import com.code.services.workflow.BaseWorkFlow;
 import com.code.ui.backings.base.BaseBacking;
 
@@ -22,10 +28,16 @@ public class Home extends BaseBacking {
     private String inboxCount;
     private String notificationsCount;
     private Object[] delegationsCounts; // 0:Total From; 1:Total To; 2:Partial From; 3:Partial To
+    private boolean socialAvailable;
+    private boolean socialExpired;
+    private VacationData lastVacation;
+    private MovementTransactionData lastValidMovTrans;
+    private MovementTransactionData lastValidSubjoinTran;
 
     public Home() {
 	calculateInboxCount();
 	calculateNotificationsCount();
+	calcAlertsData();
     }
 
     private void calculateInboxCount() {
@@ -106,6 +118,28 @@ public class Home extends BaseBacking {
 	    encryptedString.append(number);
 	}
 	return encryptedString.toString();
+    }
+
+    public void calcAlertsData() {
+	try {
+	    if (loginEmpData.getSocialIDExpiryDate() != null) {
+		if (HijriDateService.getHijriSysDate().after(loginEmpData.getSocialIDExpiryDate())) {
+		    socialExpired = true;
+		    socialAvailable = false;
+		} else {
+		    int diffDays = Math.abs(HijriDateService.hijriDateDiff(HijriDateService.getHijriSysDate(), loginEmpData.getSocialIDExpiryDate()));
+		    if (diffDays <= ETRConfigurationService.getSocialIdRenewalPeriod()) {
+			socialAvailable = true;
+			socialExpired = false;
+		    }
+		}
+	    }
+	    lastVacation = VacationsService.getLastVacationWithoutJoiningDate(loginEmpData.getEmpId());
+	    lastValidMovTrans = MovementsService.getLastValidMovementTransactionForJoiningDate(loginEmpData.getEmpId(), MovementTypesEnum.MOVE.getCode());
+	    lastValidSubjoinTran = MovementsService.getLastValidMovementTransactionForJoiningDate(loginEmpData.getEmpId(), MovementTypesEnum.SUBJOIN.getCode());
+	} catch (BusinessException e) {
+	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
     }
 
     public String getVersionNumber() {
@@ -191,4 +225,45 @@ public class Home extends BaseBacking {
     public Object[] getDelegationsCounts() {
 	return delegationsCounts;
     }
+
+    public boolean isSocialAvailable() {
+	return socialAvailable;
+    }
+
+    public void setSocialAvailable(boolean socialAvailable) {
+	this.socialAvailable = socialAvailable;
+    }
+
+    public boolean isSocialExpired() {
+	return socialExpired;
+    }
+
+    public void setSocialExpired(boolean socialExpired) {
+	this.socialExpired = socialExpired;
+    }
+
+    public VacationData getLastVacation() {
+	return lastVacation;
+    }
+
+    public void setLastVacation(VacationData lastVacation) {
+	this.lastVacation = lastVacation;
+    }
+
+    public MovementTransactionData getLastValidMovTrans() {
+	return lastValidMovTrans;
+    }
+
+    public void setLastValidMovTrans(MovementTransactionData lastValidMovTrans) {
+	this.lastValidMovTrans = lastValidMovTrans;
+    }
+
+    public MovementTransactionData getLastValidSubjoinTran() {
+	return lastValidSubjoinTran;
+    }
+
+    public void setLastValidSubjoinTran(MovementTransactionData lastValidSubjoinTran) {
+	this.lastValidSubjoinTran = lastValidSubjoinTran;
+    }
+
 }
