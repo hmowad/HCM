@@ -95,6 +95,7 @@ public class LogService extends BaseService {
 	    }
 
 	    employeeLogData.setPhysicalUnitId(empData.getPhysicalUnitId());
+	    employeeLogData.setOfficialUnitId(empData.getOfficialUnitId());
 	    employeeLogData.setRankId(empData.getRankId());
 	    employeeLogData.setRankTitleId(empData.getRankTitleId());
 	    employeeLogData.setSalaryRankId(empData.getSalaryRankId());
