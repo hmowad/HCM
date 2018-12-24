@@ -144,6 +144,7 @@ public class EmployeesService extends BaseService {
 	EmployeeData empOldData = getEmployeeData(empData.getEmpId());
 	if (((empOldData.getJobId() == null && empData.getJobId() != null) || empOldData.getJobId() != null && !empOldData.getJobId().equals(empData.getJobId())) ||
 		((empOldData.getPhysicalUnitId() == null && empData.getPhysicalUnitId() != null) || empOldData.getPhysicalUnitId() != null && !empOldData.getPhysicalUnitId().equals(empData.getPhysicalUnitId())) ||
+		((empOldData.getOfficialUnitId() == null && empData.getOfficialUnitId() != null) || empOldData.getOfficialUnitId() != null && !empOldData.getOfficialUnitId().equals(empData.getOfficialUnitId())) ||
 		((empOldData.getRankId() == null && empData.getRankId() != null) || empOldData.getRankId() != null && !empOldData.getRankId().equals(empData.getRankId())) ||
 		((empOldData.getRankTitleId() == null && empData.getRankTitleId() != null) || empOldData.getRankTitleId() != null && !empOldData.getRankTitleId().equals(empData.getRankTitleId())) ||
 		((empOldData.getSalaryRankId() == null && empData.getSalaryRankId() != null) || empOldData.getSalaryRankId() != null && !empOldData.getSalaryRankId().equals(empData.getSalaryRankId())) ||
