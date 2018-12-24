@@ -1684,13 +1684,15 @@ public class MovementsService extends BaseService {
 		throw new BusinessException("error_cannotDoRequestAsReplacementEmpOficialRegionNotEqualPhysicalRegion");
 	    }
 
-	    if (movementTransaction.getExecutionDateString() != null && movementTransaction.getMovementTypeId() == MovementTypesEnum.MOVE.getCode() && emp.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() && emp.getOfficialRegionId() != UnitsService.getUnitById(movementTransaction.getUnitId()).getRegionId()) {
-		if (movementTransaction.getExecutionDate().after(emp.getServiceTerminationDueDate())) {
+	    if (job != null && movementTransaction.getMovementTypeId() == MovementTypesEnum.MOVE.getCode() && emp.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() && emp.getOfficialRegionId() != UnitsService.getUnitById(movementTransaction.getUnitId()).getRegionId()) {
+		Date executionDate = movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate();
+
+		if (executionDate.after(emp.getServiceTerminationDueDate())) {
 		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanfourteen", new String[] { emp.getName() });
 		}
 
-		Integer[] dateDiff = HijriDateService.hijriDateDiffInMonthsAndDays(movementTransaction.getExecutionDateString(), emp.getServiceTerminationDueDateString());
-		if (dateDiff[1] < 14 || (dateDiff[1] == 14 && dateDiff[0] == 0)) {
+		Integer[] dateDiff = HijriDateService.hijriDateDiffInMonthsAndDays(HijriDateService.getHijriDateString(executionDate), emp.getServiceTerminationDueDateString());
+		if (dateDiff[1] < ETRConfigurationService.getMovementPeriodBetweenMovementAndServiceTerminationDueDate() || (dateDiff[1] == ETRConfigurationService.getMovementPeriodBetweenMovementAndServiceTerminationDueDate() && dateDiff[0] == 0)) {
 		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanfourteen", new String[] { emp.getName() });
 		}
 	    }

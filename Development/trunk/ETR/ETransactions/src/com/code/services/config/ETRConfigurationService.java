@@ -256,6 +256,10 @@ public class ETRConfigurationService extends BaseService {
 	setConfigValue("MVT_WISHES_MIN_SERVICE_PERIOD", minServicePeriod + "", transactionEmployeeId, session);
     }
 
+    public static int getMovementPeriodBetweenMovementAndServiceTerminationDueDate() {
+	return Integer.parseInt(getETRConfigByCode("MVT_MIN_PERIOD_BETWEEN_MOVEMENT_AND_SERVICE_TERMINATION_DUE_DATE").getValue());
+    }
+
     /*------------------------------------------------------Promotions Configurations------------------------------------------------------*/
     public static String[] getDrugsTestConfigInfo() {
 	return configurationMap.get("DRUGS_TEST_CONFIG_INFO").split(",");
