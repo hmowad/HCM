@@ -284,6 +284,8 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		    if (retirementAffairsUnitManagerId == null)
 			throw new BusinessException("error_general");
 		    completeWFTask(smTask, wfTaskAction, curDate, curHijriDate, instance.getInstanceId(), getDelegate(retirementAffairsUnitManagerId, instance.getProcessId(), requester.getEmpId()), retirementAffairsUnitManagerId, smTask.getTaskUrl(), WFTaskRolesEnum.EXTRA_SIGN_MANAGER.getCode(), smTask.getLevel(), session);
+		    wfDisclaimerData.setSentBackUnitsString(null);
+		    addModifyWFDisclaimerData(wfDisclaimerData, instance.getInstanceId(), session);
 		} else {
 		    setWFTaskAction(smTask, wfTaskAction, curDate, curHijriDate, session);
 		}
@@ -416,7 +418,6 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		}
 
 		setWFTaskAction(esmTask, WFTaskActionsEnum.SEND_BACK_TO_UNITS.getCode(), curDate, curHijriDate, session);
-		wfDisclaimerData.setSentBackUnitsString(wfDisclaimerData.getSentBackUnitsString());
 		addModifyWFDisclaimerData(wfDisclaimerData, instance.getInstanceId(), session);
 	    }
 	    session.commitTransaction();
