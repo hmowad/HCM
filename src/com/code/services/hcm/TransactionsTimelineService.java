@@ -81,14 +81,14 @@ public class TransactionsTimelineService extends BaseService {
 
 	startTransaction.setDueDateString(movementsTransaction.getExecutionDateString());
 	startTransaction.setDaysPeriod(daysPeriod);
-	startTransaction.setTransactionTypeDescription(getMessage("label_start") + description);
+	startTransaction.setTransactionTypeDescription(getMessage("label_start") + " " + description);
+	transactions.add(startTransaction);
 	if (movementsTransaction.getEndDateString() != null) {
 	    endTransaction.setDueDateString(movementsTransaction.getEndDateString());
 	    endTransaction.setDaysPeriod(daysPeriod == null ? "-" : daysPeriod);
-	    endTransaction.setTransactionTypeDescription(getMessage("label_end") + description);
+	    endTransaction.setTransactionTypeDescription(getMessage("label_end") + " " + description);
 	    transactions.add(endTransaction);
 	}
-	transactions.add(startTransaction);
 
 	return transactions;
     }
