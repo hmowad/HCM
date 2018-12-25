@@ -9,6 +9,8 @@ public enum SessionAttributesEnum {
     USER_WORKFLOWS_MENU("userWorkflowsMenu"),
     USER_REPORTS_MENU("userReportsMenu"),
 
+    TIME_LINE_MINI_SEARCH_SHOW_FLAG("timeLineMiniSearchShowFlag"),
+
     ACCESSED_WF_INSTANCES_IDS("accessedWfInstancesIds");
 
     private String code;
