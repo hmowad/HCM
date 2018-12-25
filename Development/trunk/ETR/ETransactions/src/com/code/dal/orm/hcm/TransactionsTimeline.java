@@ -6,6 +6,7 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -23,25 +24,16 @@ import com.code.services.util.HijriDateService;
 
 @Entity
 @Table(name = "HCM_VW_TRANS_TIMELINE")
+@IdClass(TransactionsTimelineId.class)
 public class TransactionsTimeline extends BaseEntity {
 
-    private Long employeeId;
     private Date dueDate;
     private String dueDateString;
-    private String daysPeriod;
     private String transactionTypeDescription;
+    private Long employeeId;
+    private String daysPeriod;
 
     @Id
-    @Column(name = "EMPLOYEE_ID")
-    public Long getEmployeeId() {
-	return employeeId;
-    }
-
-    public void setEmployeeId(Long employeeId) {
-	this.employeeId = employeeId;
-    }
-
-    @Basic
     @Column(name = "DUE_DATE")
     public Date getDueDate() {
 	return dueDate;
@@ -62,6 +54,26 @@ public class TransactionsTimeline extends BaseEntity {
 	this.dueDate = HijriDateService.getHijriDate(dueDateString);
     }
 
+    @Id
+    @Column(name = "DESCRIPTION")
+    public String getTransactionTypeDescription() {
+	return transactionTypeDescription;
+    }
+
+    public void setTransactionTypeDescription(String transactionTypeDescription) {
+	this.transactionTypeDescription = transactionTypeDescription;
+    }
+
+    @Basic
+    @Column(name = "EMPLOYEE_ID")
+    public Long getEmployeeId() {
+	return employeeId;
+    }
+
+    public void setEmployeeId(Long employeeId) {
+	this.employeeId = employeeId;
+    }
+
     @Basic
     @Column(name = "DAYS_COUNT")
     public String getDaysPeriod() {
@@ -70,16 +82,6 @@ public class TransactionsTimeline extends BaseEntity {
 
     public void setDaysPeriod(String daysPeriod) {
 	this.daysPeriod = daysPeriod;
-    }
-
-    @Basic
-    @Column(name = "DESCRIPTION")
-    public String getTransactionTypeDescription() {
-	return transactionTypeDescription;
-    }
-
-    public void setTransactionTypeDescription(String transactionTypeDescription) {
-	this.transactionTypeDescription = transactionTypeDescription;
     }
 
 }
