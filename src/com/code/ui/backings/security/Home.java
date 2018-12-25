@@ -5,12 +5,14 @@ import java.util.Calendar;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.servlet.http.HttpSession;
 
 import com.code.dal.orm.hcm.movements.MovementTransactionData;
 import com.code.dal.orm.hcm.vacations.VacationData;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.MovementTypesEnum;
+import com.code.enums.SessionAttributesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.BaseService;
 import com.code.services.config.ETRConfigurationService;
@@ -33,11 +35,17 @@ public class Home extends BaseBacking {
     private VacationData lastVacation;
     private MovementTransactionData lastValidMovTrans;
     private MovementTransactionData lastValidSubjoinTran;
+    private boolean showTimeLineMiniSearchFlag;
 
     public Home() {
 	calculateInboxCount();
 	calculateNotificationsCount();
 	calcAlertsData();
+	HttpSession session = getSession();
+	if (session.getAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode()) != null) {
+	    showTimeLineMiniSearchFlag = (boolean) session.getAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode());
+	}
+	session.setAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode(), false);
     }
 
     private void calculateInboxCount() {
@@ -264,6 +272,14 @@ public class Home extends BaseBacking {
 
     public void setLastValidSubjoinTran(MovementTransactionData lastValidSubjoinTran) {
 	this.lastValidSubjoinTran = lastValidSubjoinTran;
+    }
+
+    public boolean isShowTimeLineMiniSearchFlag() {
+	return showTimeLineMiniSearchFlag;
+    }
+
+    public void setShowTimeLineMiniSearchFlag(boolean showTimeLineMiniSearchFlag) {
+	this.showTimeLineMiniSearchFlag = showTimeLineMiniSearchFlag;
     }
 
 }
