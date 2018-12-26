@@ -130,13 +130,24 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 			List<UnitData> managersUnits = new ArrayList<>();
 			if (wfDisclaimerData.getSentBackUnitsString() != null && !wfDisclaimerData.getSentBackUnitsString().equals("")) {
 			    List<UnitData> sentBackUnits = UnitsService.getUnitsByIdsString(wfDisclaimerData.getSentBackUnitsString());
+			    Boolean isPayrollGeneralDirectorateUnitDataAdded = false;
 			    for (UnitData sentBackUnit : sentBackUnits) {
 				if (sentBackUnit.getRegionId() == RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) { // add payrollUnitManager for emp region
 				    managersUnits.add(sentBackUnit);
 				}
+				WFPosition generalDirectoratePosition = getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+				if (generalDirectoratePosition == null) {
+				    throw new BusinessException("error_general");
+				}
+				UnitData payrollGeneralDirectorateUnitData = UnitsService.getUnitById(generalDirectoratePosition.getUnitId());
+				if (sentBackUnit.getId().equals(payrollGeneralDirectorateUnitData.getId())) {
+				    isPayrollGeneralDirectorateUnitDataAdded = true;
+				}
 			    }
-			    WFPosition generalDirectoratePosition = RetirementsWorkFlow.getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
-			    managersUnits.add(UnitsService.getUnitById(generalDirectoratePosition.getUnitId()));
+			    if (!isPayrollGeneralDirectorateUnitDataAdded) {
+				WFPosition generalDirectoratePosition = RetirementsWorkFlow.getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+				managersUnits.add(UnitsService.getUnitById(generalDirectoratePosition.getUnitId()));
+			    }
 			} else
 			    managersUnits = getManagersUnits(null, CategoriesEnum.OFFICERS.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode(), FlagsEnum.ON.getCode());
 			setWFTaskAction(ssmTask, wfTaskAction, curDate, curHijriDate, session);
@@ -383,38 +394,71 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		List<UnitData> sentBackUnits = UnitsService.getUnitsByIdsString(wfDisclaimerData.getSentBackUnitsString());
 
 		int i = 1;
+		Boolean isPayrollManagerAdded = false;
 		if (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() &&
 			wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode()) {
 		    for (UnitData sentBackUnit : sentBackUnits) {
-			if (sentBackUnit.getRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) { // add tasks for all ssm
-			    addWFTask(instance.getInstanceId(), getDelegate(sentBackUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), sentBackUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
-			    i++;
+			if (sentBackUnit.getRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) { // add tasks for all ssm and PayrollRegionManager if exist
+			    WFPosition regionPosition = getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
+			    if (regionPosition == null) {
+				throw new BusinessException("error_general");
+			    }
+			    UnitData payrollRegionUnitData = UnitsService.getUnitById(regionPosition.getUnitId());
+
+			    if (sentBackUnit.getId().equals(payrollRegionUnitData.getId())) {
+				addWFTask(instance.getInstanceId(), getDelegate(sentBackUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), sentBackUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
+				isPayrollManagerAdded = true;
+			    } else {
+				addWFTask(instance.getInstanceId(), getDelegate(sentBackUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), sentBackUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
+				i++;
+			    }
 			}
 		    }
 
-		    if (i > 1) { // at least one ssm is added then add task for region payroll manager
+		    if (i > 1 && !isPayrollManagerAdded) { // at least one ssm is added and PayrollRegionManager is not Added
 			WFPosition regionPayrollPosition = RetirementsWorkFlow.getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
 			UnitData regionPayrollUnit = UnitsService.getUnitById(regionPayrollPosition.getUnitId());
 			addWFTask(instance.getInstanceId(), getDelegate(regionPayrollUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), regionPayrollUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
-		    } else { // no ssm is added then add task directly for sm
+		    } else if (!isPayrollManagerAdded) { // no ssm is added then add task directly for sm
 			for (UnitData sentBackUnit : sentBackUnits) {
 			    addWFTask(instance.getInstanceId(), getDelegate(sentBackUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), sentBackUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
 			    i++;
+
+			    WFPosition generalDirectoratePosition = getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+			    if (generalDirectoratePosition == null) {
+				throw new BusinessException("error_general");
+			    }
+			    UnitData payrollGeneralDirectorateUnitData = UnitsService.getUnitById(generalDirectoratePosition.getUnitId());
+			    if (sentBackUnit.getId().equals(payrollGeneralDirectorateUnitData.getId()))
+				isPayrollManagerAdded = true;
 			}
-			WFPosition generalDirectoratePosition = RetirementsWorkFlow.getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
-			UnitData generalDirectorateUnit = UnitsService.getUnitById(generalDirectoratePosition.getUnitId());
-			addWFTask(instance.getInstanceId(), getDelegate(generalDirectorateUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), generalDirectorateUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
+			if (!isPayrollManagerAdded) {
+			    WFPosition generalDirectoratePosition = RetirementsWorkFlow.getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+			    UnitData generalDirectorateUnit = UnitsService.getUnitById(generalDirectoratePosition.getUnitId());
+			    addWFTask(instance.getInstanceId(), getDelegate(generalDirectorateUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), generalDirectorateUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
+			}
 		    }
 
 		} else { // if not regions officer then all tasks are sm
 		    for (UnitData sentBackUnit : sentBackUnits) {
 			addWFTask(instance.getInstanceId(), getDelegate(sentBackUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), sentBackUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
 			i++;
-		    }
-		    WFPosition payrollPosition = RetirementsWorkFlow.getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
-		    UnitData payrollUnit = UnitsService.getUnitById(payrollPosition.getUnitId());
-		    addWFTask(instance.getInstanceId(), getDelegate(payrollUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), payrollUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
 
+			WFPosition payrollPosition = getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
+			if (payrollPosition == null) {
+			    throw new BusinessException("error_general");
+			}
+			UnitData payrollUnitData = UnitsService.getUnitById(payrollPosition.getUnitId());
+			if (sentBackUnit.getId().equals(payrollUnitData.getId())) {
+			    isPayrollManagerAdded = true;
+			}
+
+		    }
+		    if (!isPayrollManagerAdded) {
+			WFPosition payrollPosition = RetirementsWorkFlow.getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
+			UnitData payrollUnit = UnitsService.getUnitById(payrollPosition.getUnitId());
+			addWFTask(instance.getInstanceId(), getDelegate(payrollUnit.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), payrollUnit.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
+		    }
 		}
 
 		setWFTaskAction(esmTask, WFTaskActionsEnum.SEND_BACK_TO_UNITS.getCode(), curDate, curHijriDate, session);
@@ -439,17 +483,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 
 	for (WFDisclaimerDetail wfDisclaimerDetail : wfDisclaiamerDetails) {
 	    UnitData unitData = UnitsService.getUnitByExactFullName(wfDisclaimerDetail.getManagerUnitFullName());
-
-	    WFPosition regionPosition = getRegionPayrollUnitManager(empUnitRegionId);
-	    WFPosition generalDirectoratePosition = getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
-	    if (regionPosition == null || generalDirectoratePosition == null) {
-		throw new BusinessException("error_general");
-	    }
-
-	    UnitData payrollRegionUnitData = UnitsService.getUnitById(regionPosition.getUnitId());
-	    UnitData payrollGeneralDirectorateUnitData = UnitsService.getUnitById(generalDirectoratePosition.getUnitId());
-	    if (!unitData.getId().equals(payrollRegionUnitData.getId()) && !unitData.getId().equals(payrollGeneralDirectorateUnitData.getId()))
-		unitsIdsString += unitData.getId() + ",";
+	    unitsIdsString += unitData.getId() + ",";
 	}
 
 	return unitsIdsString.substring(0, unitsIdsString.length() - 1);
