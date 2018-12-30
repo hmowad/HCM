@@ -7,19 +7,19 @@
 	<h:outputStylesheet library="css" name="styles.css" />
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
 	<script type="text/javascript"> 
-	function showTransactionsTimeLineMiniSerachBasedOnFlag(){
-		var showMiniSearchFlag = document.getElementById('welcomeForm:showMiniSearchFlagID').value;
+	function showTransactionsTimelineBasedOnFlag(){
+		var showMiniSearchFlag = document.getElementById('welcomeForm:showTransactionsTimelineScreenFlagID').value;
 		if(showMiniSearchFlag == "true"){
-			openTransactionsTimeLineMiniSerach();
+			openTransactionsTimelineScreen();
 		}
 	}
 	
-	function openTransactionsTimeLineMiniSerach(){
-		transactionsTimeLineMiniSearch('#{request.contextPath}');
+	function openTransactionsTimelineScreen(){
+		openTransactionsTimeline('#{request.contextPath}');
 	}
 	</script>
 </h:head>
-<h:body styleClass="screenBg" onload="showTransactionsTimeLineMiniSerachBasedOnFlag(); return false;">
+<h:body styleClass="screenBg" onload="showTransactionsTimelineBasedOnFlag(); return false;">
 
 	<f:event type="preRenderView" listener="#{home.calculateDelegationsCount}" />
 
@@ -287,7 +287,7 @@
 																<h:graphicImage value="/resources/images/timeLineIcon.png" />
 															</td>
 															<td>
-																<h:commandLink value="#{msgs.label_timeLine}" onclick="openTransactionsTimeLineMiniSerach(); return false;" style="color:Black;font-weight: bold" />	
+																<h:commandLink value="#{msgs.label_timeLine}" onclick="openTransactionsTimelineScreen(); return false;" style="color:Black;font-weight: bold" />	
 															</td>
 														</tr>
 													</table>
@@ -370,7 +370,7 @@
 						</tr>
 					</h:panelGroup>
 				</h:panelGroup>
-				<h:inputHidden id="showMiniSearchFlagID" value="#{home.showTransactionsTimelineScreenFlag}" />
+				<h:inputHidden id="showTransactionsTimelineScreenFlagID" value="#{home.showTransactionsTimelineScreenFlag}" />
 			</table>
 		</ui:decorate>
 	</h:form>

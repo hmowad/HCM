@@ -21,11 +21,11 @@ public class TransactionsTimeline extends BaseBacking implements Serializable {
 
     public TransactionsTimeline() {
 	transactionsTimelineList = new ArrayList<TransactionTimeline>();
-	searchTransactionsTimeLine();
+	searchTransactionsTimeline();
 
     }
 
-    public void searchTransactionsTimeLine() {
+    public void searchTransactionsTimeline() {
 	try {
 	    transactionsTimelineList = TransactionsTimelineService.getAllFutureTransactions(loginEmpData.getEmpId());
 	} catch (BusinessException e) {
@@ -41,7 +41,7 @@ public class TransactionsTimeline extends BaseBacking implements Serializable {
 	this.rowsCount = rowsCount;
     }
 
-    public List<TransactionTimeline> getTransactionTimeLineList() {
+    public List<TransactionTimeline> getTransactionTimelineList() {
 	return transactionsTimelineList;
     }
 
