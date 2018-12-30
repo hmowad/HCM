@@ -284,7 +284,7 @@
 		
 		<mapping class="com.code.dal.orm.hcm.Rankings"/>
 		
-		<mapping class="com.code.dal.orm.hcm.TransactionsTimeline"/>
+		<mapping class="com.code.dal.orm.hcm.TransactionTimeline"/>
 		
 	</session-factory>
 </hibernate-configuration>
