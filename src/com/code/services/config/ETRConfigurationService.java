@@ -219,8 +219,8 @@ public class ETRConfigurationService extends BaseService {
 	return getETRConfigByCode("LOG_FILE_PATH").getValue();
     }
 
-    public static int getSocialIdRenewalPeriod() {
-	return Integer.parseInt(configurationMap.get("SOCIAL_ID_RENEWAL_PERIOD"));
+    public static int getSocialIdRenewalPeriodWarning() {
+	return Integer.parseInt(configurationMap.get("SOCIAL_ID_RENEWAL_PERIOD_WARNING"));
     }
     /*------------------------------------------------------General Notifications Configurations------------------------------------------------------*/
 
