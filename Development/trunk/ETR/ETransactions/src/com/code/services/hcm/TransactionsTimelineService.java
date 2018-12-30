@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.code.dal.DataAccess;
-import com.code.dal.orm.hcm.TransactionsTimeline;
+import com.code.dal.orm.hcm.TransactionTimeline;
 import com.code.dal.orm.hcm.movements.MovementTransactionData;
 import com.code.enums.MovementTypesEnum;
 import com.code.enums.QueryNamesEnum;
@@ -23,23 +23,23 @@ import com.code.services.util.HijriDateService;
 
 public class TransactionsTimelineService extends BaseService {
 
-    public static List<TransactionsTimeline> getAllFutureTransactions(long employeeId) throws BusinessException {
-	List<TransactionsTimeline> movementTransactions = getMovementsTransactions(employeeId);
-	List<TransactionsTimeline> allTransactionsExceptMovement = getAllFutureTransactionsExceptMovements(employeeId);
+    public static List<TransactionTimeline> getAllFutureTransactions(long employeeId) throws BusinessException {
+	List<TransactionTimeline> movementTransactions = getMovementsTransactions(employeeId);
+	List<TransactionTimeline> allTransactionsExceptMovement = getAllFutureTransactionsExceptMovements(employeeId);
 	return sortLists(movementTransactions, allTransactionsExceptMovement);
     }
 
-    private static List<TransactionsTimeline> getMovementsTransactions(long employeeId) throws BusinessException {
+    private static List<TransactionTimeline> getMovementsTransactions(long employeeId) throws BusinessException {
 
 	List<MovementTransactionData> movementsTransactions = MovementsService.getMovementTransactionsHistory(employeeId);
-	List<TransactionsTimeline> returnList = new ArrayList<>();
+	List<TransactionTimeline> returnList = new ArrayList<>();
 	if (movementsTransactions == null || movementsTransactions.isEmpty()) {
 	    return returnList;
 	}
 	if (movementsTransactions.get(0).getTransactionTypeCode() == TransactionTypesEnum.MVT_NEW_DECISION.getCode() && HijriDateService.getHijriSysDate().before(movementsTransactions.get(0).getExecutionDate())) {
 	    return constructFutureMovementTransactionsTimeline(movementsTransactions.get(0), 1);
 	} else if (movementsTransactions.get(0).getEndDate() != null && HijriDateService.getHijriSysDate().before(movementsTransactions.get(0).getEndDate())) {
-	    TransactionsTimeline transaction = consturctActiveTransactionsTimeline(movementsTransactions);
+	    TransactionTimeline transaction = consturctActiveTransactionsTimeline(movementsTransactions);
 	    if (transaction != null)
 		returnList.add(consturctActiveTransactionsTimeline(movementsTransactions));
 	    return returnList;
@@ -63,10 +63,10 @@ public class TransactionsTimelineService extends BaseService {
 	return description;
     }
 
-    private static List<TransactionsTimeline> constructFutureMovementTransactionsTimeline(MovementTransactionData movementsTransaction, int typeFlag) {
-	List<TransactionsTimeline> transactions = new ArrayList<>();
-	TransactionsTimeline startTransaction = new TransactionsTimeline();
-	TransactionsTimeline endTransaction = new TransactionsTimeline();
+    private static List<TransactionTimeline> constructFutureMovementTransactionsTimeline(MovementTransactionData movementsTransaction, int typeFlag) {
+	List<TransactionTimeline> transactions = new ArrayList<>();
+	TransactionTimeline startTransaction = new TransactionTimeline();
+	TransactionTimeline endTransaction = new TransactionTimeline();
 
 	String description = getMovementTransactionDescription(movementsTransaction);
 	String daysPeriod;
@@ -93,8 +93,8 @@ public class TransactionsTimelineService extends BaseService {
 	return transactions;
     }
 
-    private static TransactionsTimeline consturctActiveTransactionsTimeline(List<MovementTransactionData> movementsTransactions) {
-	TransactionsTimeline movementTransactionTimeline = new TransactionsTimeline();
+    private static TransactionTimeline consturctActiveTransactionsTimeline(List<MovementTransactionData> movementsTransactions) {
+	TransactionTimeline movementTransactionTimeline = new TransactionTimeline();
 	long daysCount = 0;
 	String lastEndDate = null;
 	for (MovementTransactionData transaction : movementsTransactions) {
@@ -122,11 +122,11 @@ public class TransactionsTimelineService extends BaseService {
 	return null;
     }
 
-    private static List<TransactionsTimeline> sortLists(List<TransactionsTimeline> movementTransactions, List<TransactionsTimeline> allTransactionsExceptMovement) {
-	List<TransactionsTimeline> allTransactions = new ArrayList<>();
-	for (TransactionsTimeline transaction : allTransactionsExceptMovement) {
-	    for (Iterator<TransactionsTimeline> i = movementTransactions.iterator(); i.hasNext();) {
-		TransactionsTimeline sortMovementTransaction = i.next();
+    private static List<TransactionTimeline> sortLists(List<TransactionTimeline> movementTransactions, List<TransactionTimeline> allTransactionsExceptMovement) {
+	List<TransactionTimeline> allTransactions = new ArrayList<>();
+	for (TransactionTimeline transaction : allTransactionsExceptMovement) {
+	    for (Iterator<TransactionTimeline> i = movementTransactions.iterator(); i.hasNext();) {
+		TransactionTimeline sortMovementTransaction = i.next();
 		if (sortMovementTransaction.getDueDate().before(transaction.getDueDate())) {
 		    allTransactions.add(sortMovementTransaction);
 		    i.remove();
@@ -141,14 +141,14 @@ public class TransactionsTimelineService extends BaseService {
 
     }
 
-    private static List<TransactionsTimeline> getAllFutureTransactionsExceptMovements(long employeeId) throws BusinessException {
+    private static List<TransactionTimeline> getAllFutureTransactionsExceptMovements(long employeeId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 
 	    qParams.put("P_EMP_ID", employeeId);
 	    qParams.put("P_SYSTEM_DATE", HijriDateService.getHijriSysDateString());
 
-	    return DataAccess.executeNamedQuery(TransactionsTimeline.class, QueryNamesEnum.HCM_GET_ALL_FUTURE_TRANSACTIONS.getCode(), qParams);
+	    return DataAccess.executeNamedQuery(TransactionTimeline.class, QueryNamesEnum.HCM_GET_ALL_FUTURE_TRANSACTIONS.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");

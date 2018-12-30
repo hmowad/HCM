@@ -16,16 +16,16 @@ import com.code.dal.orm.BaseEntity;
 import com.code.services.util.HijriDateService;
 
 @NamedQueries({
-	@NamedQuery(name = "hcm_transactionsTimeline_getAllFutureTransactions",
-		query = " select t from TransactionsTimeline t" +
+	@NamedQuery(name = "hcm_transactionTimeline_getAllFutureTransactions",
+		query = " select t from TransactionTimeline t" +
 			" where t.employeeId = :P_EMP_ID " +
 			" and t.dueDate >= to_date(:P_SYSTEM_DATE, 'MI/MM/YYYY')")
 })
 
 @Entity
 @Table(name = "HCM_VW_TRANS_TIMELINE")
-@IdClass(TransactionsTimelineId.class)
-public class TransactionsTimeline extends BaseEntity {
+@IdClass(TransactionTimelineId.class)
+public class TransactionTimeline extends BaseEntity {
 
     private Date dueDate;
     private String dueDateString;
@@ -83,5 +83,4 @@ public class TransactionsTimeline extends BaseEntity {
     public void setDaysPeriod(String daysPeriod) {
 	this.daysPeriod = daysPeriod;
     }
-
 }

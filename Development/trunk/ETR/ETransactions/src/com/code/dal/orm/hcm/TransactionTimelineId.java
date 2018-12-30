@@ -6,7 +6,7 @@ import java.util.Date;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class TransactionsTimelineId implements Serializable {
+public class TransactionTimelineId implements Serializable {
 
     private Date dueDate;
     private String transactionTypeDescription;
@@ -28,7 +28,7 @@ public class TransactionsTimelineId implements Serializable {
     }
 
     public boolean equals(Object o) {
-	return ((o instanceof TransactionsTimelineId) && (dueDate.equals(((TransactionsTimelineId) o).getDueDate())) && (transactionTypeDescription.equals(((TransactionsTimelineId) o).getTransactionTypeDescription())));
+	return ((o instanceof TransactionTimelineId) && (dueDate.equals(((TransactionTimelineId) o).getDueDate())) && (transactionTypeDescription.equals(((TransactionTimelineId) o).getTransactionTypeDescription())));
     }
 
     public int hashCode() {

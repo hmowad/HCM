@@ -30,12 +30,12 @@ public class Home extends BaseBacking {
     private String inboxCount;
     private String notificationsCount;
     private Object[] delegationsCounts; // 0:Total From; 1:Total To; 2:Partial From; 3:Partial To
-    private boolean socialAvailable;
-    private boolean socialExpired;
+    private boolean socialIdRenewalPeriodWarning;
+    private boolean socialIdExpiredWarning;
     private VacationData lastVacation;
     private MovementTransactionData lastValidMovTrans;
     private MovementTransactionData lastValidSubjoinTran;
-    private boolean showTimeLineMiniSearchFlag;
+    private boolean showTransactionsTimelineScreenFlag;
 
     public Home() {
 	calculateInboxCount();
@@ -43,7 +43,7 @@ public class Home extends BaseBacking {
 	calcAlertsData();
 	HttpSession session = getSession();
 	if (session.getAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode()) != null) {
-	    showTimeLineMiniSearchFlag = (boolean) session.getAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode());
+	    showTransactionsTimelineScreenFlag = (boolean) session.getAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode());
 	}
 	session.setAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode(), false);
     }
@@ -132,13 +132,13 @@ public class Home extends BaseBacking {
 	try {
 	    if (loginEmpData.getSocialIDExpiryDate() != null) {
 		if (HijriDateService.getHijriSysDate().after(loginEmpData.getSocialIDExpiryDate())) {
-		    socialExpired = true;
-		    socialAvailable = false;
+		    socialIdExpiredWarning = true;
+		    socialIdRenewalPeriodWarning = false;
 		} else {
 		    int diffDays = Math.abs(HijriDateService.hijriDateDiff(HijriDateService.getHijriSysDate(), loginEmpData.getSocialIDExpiryDate()));
-		    if (diffDays <= ETRConfigurationService.getSocialIdRenewalPeriod()) {
-			socialAvailable = true;
-			socialExpired = false;
+		    if (diffDays <= ETRConfigurationService.getSocialIdRenewalPeriodWarning()) {
+			socialIdRenewalPeriodWarning = true;
+			socialIdExpiredWarning = false;
 		    }
 		}
 	    }
@@ -234,20 +234,20 @@ public class Home extends BaseBacking {
 	return delegationsCounts;
     }
 
-    public boolean isSocialAvailable() {
-	return socialAvailable;
+    public boolean isSocialIdRenewalPeriodWarning() {
+	return socialIdRenewalPeriodWarning;
     }
 
-    public void setSocialAvailable(boolean socialAvailable) {
-	this.socialAvailable = socialAvailable;
+    public void setSocialIdRenewalPeriodWarning(boolean socialIdRenewalPeriodWarning) {
+	this.socialIdRenewalPeriodWarning = socialIdRenewalPeriodWarning;
     }
 
-    public boolean isSocialExpired() {
-	return socialExpired;
+    public boolean isSocialIdExpiredWarning() {
+	return socialIdExpiredWarning;
     }
 
-    public void setSocialExpired(boolean socialExpired) {
-	this.socialExpired = socialExpired;
+    public void setSocialIdExpiredWarning(boolean socialIdExpiredWarning) {
+	this.socialIdExpiredWarning = socialIdExpiredWarning;
     }
 
     public VacationData getLastVacation() {
@@ -274,12 +274,12 @@ public class Home extends BaseBacking {
 	this.lastValidSubjoinTran = lastValidSubjoinTran;
     }
 
-    public boolean isShowTimeLineMiniSearchFlag() {
-	return showTimeLineMiniSearchFlag;
+    public boolean isShowTransactionsTimelineScreenFlag() {
+	return showTransactionsTimelineScreenFlag;
     }
 
-    public void setShowTimeLineMiniSearchFlag(boolean showTimeLineMiniSearchFlag) {
-	this.showTimeLineMiniSearchFlag = showTimeLineMiniSearchFlag;
+    public void setShowTransactionsTimelineScreenFlag(boolean showTimeLineMiniSearchFlag) {
+	this.showTransactionsTimelineScreenFlag = showTimeLineMiniSearchFlag;
     }
 
 }

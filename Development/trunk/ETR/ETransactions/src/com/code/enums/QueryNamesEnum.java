@@ -503,7 +503,7 @@ public enum QueryNamesEnum {
     HCM_RANKINGS_SEARCH_RANKINGS("hcm_rankings_searchRankings"),
 
     /* ******************************************* Timeline ****************************************************** */
-    HCM_GET_ALL_FUTURE_TRANSACTIONS("hcm_transactionsTimeline_getAllFutureTransactions");
+    HCM_GET_ALL_FUTURE_TRANSACTIONS("hcm_transactionTimeline_getAllFutureTransactions");
 
     private String code;
 
