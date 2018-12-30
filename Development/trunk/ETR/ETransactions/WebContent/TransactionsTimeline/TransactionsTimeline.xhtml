@@ -17,7 +17,7 @@
 
 				<tr>
 					<td class="screenTitle">
-						<h:outputText value="#{msgs.title_transactionsTimeLine}" />
+						<h:outputText value="#{msgs.title_transactionsTimeline}" />
 					</td>
 				</tr>
 				
@@ -27,7 +27,7 @@
 				
 				<tr>
 					<td align="center" width="100%">
-						<rich:dataTable id="timeLineListId" rows="#{transactionsTimeLine.rowsCount}" rowKeyVar="index" var="row" value="#{transactionsTimeLine.transactionsTimelineList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+						<rich:dataTable id="timelineListId" rows="#{transactionsTimeline.rowsCount}" rowKeyVar="index" var="row" value="#{transactionsTimeline.transactionTimelineList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
 							<rich:column>
 								<f:facet name="header">#</f:facet>
                                 <h:outputText value="#{index + 1}" />         
