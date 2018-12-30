@@ -256,9 +256,8 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    Date curDate = new Date();
 	    Date curHijriDate = HijriDateService.getHijriSysDate();
 	    WFPosition position = new WFPosition();
-	    if ((wfDisclaimerData.getSentBackUnitsString() != null) &&
-		    (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() &&
-			    wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode())) {
+	    if (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() &&
+		    wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode()) {
 		position = getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
 	    } else {
 		position = getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
