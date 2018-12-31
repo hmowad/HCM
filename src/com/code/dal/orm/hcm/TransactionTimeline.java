@@ -31,7 +31,10 @@ public class TransactionTimeline extends BaseEntity {
     private String dueDateString;
     private String transactionTypeDescription;
     private Long employeeId;
-    private String daysPeriod;
+    private String days;
+    private String weeks;
+    private String months;
+    private String period;
 
     @Id
     @Column(name = "DUE_DATE")
@@ -75,12 +78,41 @@ public class TransactionTimeline extends BaseEntity {
     }
 
     @Basic
-    @Column(name = "DAYS_COUNT")
-    public String getDaysPeriod() {
-	return daysPeriod;
+    @Column(name = "DAYS")
+    public String getDays() {
+	return days;
     }
 
-    public void setDaysPeriod(String daysPeriod) {
-	this.daysPeriod = daysPeriod;
+    public void setDays(String days) {
+	this.days = days;
+    }
+
+    @Basic
+    @Column(name = "WEEKS")
+    public String getWeeks() {
+	return weeks;
+    }
+
+    public void setWeeks(String weeks) {
+	this.weeks = weeks;
+    }
+
+    @Basic
+    @Column(name = "MONTHS")
+    public String getMonths() {
+	return months;
+    }
+
+    public void setMonths(String months) {
+	this.months = months;
+    }
+
+    @Transient
+    public String getPeriod() {
+	return period;
+    }
+
+    public void setPeriod(String period) {
+	this.period = period;
     }
 }
