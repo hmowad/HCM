@@ -37,11 +37,11 @@ public class TransactionsTimelineService extends BaseService {
 	    return returnList;
 	}
 	if (movementsTransactions.get(0).getTransactionTypeCode() == TransactionTypesEnum.MVT_NEW_DECISION.getCode() && HijriDateService.getHijriSysDate().before(movementsTransactions.get(0).getExecutionDate())) {
-	    return constructFutureMovementTransactionsTimeline(movementsTransactions.get(0), 1);
+	    return constructFutureMovementTransactionTimeline(movementsTransactions.get(0));
 	} else if (movementsTransactions.get(0).getEndDate() != null && HijriDateService.getHijriSysDate().before(movementsTransactions.get(0).getEndDate())) {
-	    TransactionTimeline transaction = consturctActiveTransactionsTimeline(movementsTransactions);
+	    TransactionTimeline transaction = consturctActiveTransactionTimeline(movementsTransactions);
 	    if (transaction != null)
-		returnList.add(consturctActiveTransactionsTimeline(movementsTransactions));
+		returnList.add(transaction);
 	    return returnList;
 	}
 	return returnList;
@@ -63,29 +63,33 @@ public class TransactionsTimelineService extends BaseService {
 	return description;
     }
 
-    private static List<TransactionTimeline> constructFutureMovementTransactionsTimeline(MovementTransactionData movementsTransaction, int typeFlag) {
+    private static String calculatePeriod(String days, String weeks, String months) {
+	String period = "";
+	if (!months.equals("-"))
+	    period += months + " " + getMessage("label_months");
+	if (!weeks.equals("-"))
+	    period += weeks + " " + getMessage("label_weeks");
+	if (!days.equals("-"))
+	    period = (period.isEmpty() ? "" : period + " " + getMessage("label_and")) + " " + days + " " + getMessage("label_days");
+	if (period.isEmpty())
+	    period = "-";
+	return period;
+    }
+
+    private static List<TransactionTimeline> constructFutureMovementTransactionTimeline(MovementTransactionData movementsTransaction) {
 	List<TransactionTimeline> transactions = new ArrayList<>();
 	TransactionTimeline startTransaction = new TransactionTimeline();
 	TransactionTimeline endTransaction = new TransactionTimeline();
 
 	String description = getMovementTransactionDescription(movementsTransaction);
-	String daysPeriod;
-	if (movementsTransaction.getPeriodDays() == null && movementsTransaction.getPeriodMonths() == null)
-	    daysPeriod = "-";
-	else if (movementsTransaction.getPeriodDays() == null)
-	    daysPeriod = movementsTransaction.getPeriodMonths() * 30 + "";
-	else if (movementsTransaction.getPeriodMonths() == null)
-	    daysPeriod = movementsTransaction.getPeriodDays() + "";
-	else
-	    daysPeriod = movementsTransaction.getPeriodMonths() * 30 + movementsTransaction.getPeriodDays() + "";
-
+	String period = calculatePeriod(movementsTransaction.getPeriodDays() == null ? "-" : movementsTransaction.getPeriodDays() + "", "-", movementsTransaction.getPeriodMonths() == null ? "-" : movementsTransaction.getPeriodMonths() + "");
 	startTransaction.setDueDateString(movementsTransaction.getExecutionDateString());
-	startTransaction.setDaysPeriod(daysPeriod);
+	startTransaction.setPeriod(period);
 	startTransaction.setTransactionTypeDescription(getMessage("label_start") + " " + description);
 	transactions.add(startTransaction);
 	if (movementsTransaction.getEndDateString() != null) {
 	    endTransaction.setDueDateString(movementsTransaction.getEndDateString());
-	    endTransaction.setDaysPeriod(daysPeriod == null ? "-" : daysPeriod);
+	    endTransaction.setPeriod(period);
 	    endTransaction.setTransactionTypeDescription(getMessage("label_end") + " " + description);
 	    transactions.add(endTransaction);
 	}
@@ -93,38 +97,45 @@ public class TransactionsTimelineService extends BaseService {
 	return transactions;
     }
 
-    private static TransactionTimeline consturctActiveTransactionsTimeline(List<MovementTransactionData> movementsTransactions) {
+    private static TransactionTimeline consturctActiveTransactionTimeline(List<MovementTransactionData> movementsTransactions) {
 	TransactionTimeline movementTransactionTimeline = new TransactionTimeline();
 	long daysCount = 0;
+	long monthsCount = 0;
 	String lastEndDate = null;
 	for (MovementTransactionData transaction : movementsTransactions) {
 	    if (transaction.getTransactionTypeCode() == TransactionTypesEnum.MVT_NEW_DECISION.getCode()) {
 		if (transaction.getSuccessorDecisionEffectFlag() != null)
 		    return null;
-		daysCount += transaction.getPeriodMonths() == null ? transaction.getPeriodDays() : transaction.getPeriodMonths() * 30 + (transaction.getPeriodDays() == null ? 0 : transaction.getPeriodDays());
-		movementTransactionTimeline.setDaysPeriod(daysCount + "");
+		daysCount += transaction.getPeriodDays() == null ? 0 : transaction.getPeriodDays();
+		monthsCount += transaction.getPeriodMonths() == null ? 0 : transaction.getPeriodMonths() + (daysCount / 30);
+		daysCount = daysCount % 30;
+
+		movementTransactionTimeline.setPeriod(calculatePeriod(daysCount + "", "-", monthsCount + ""));
 		movementTransactionTimeline.setDueDateString(lastEndDate == null ? transaction.getEndDateString() : lastEndDate);
-		movementTransactionTimeline.setTransactionTypeDescription(getMessage("label_end") + getMovementTransactionDescription(transaction));
+		movementTransactionTimeline.setTransactionTypeDescription(getMessage("label_end") + " " + getMovementTransactionDescription(transaction));
 		return movementTransactionTimeline;
 	    }
 	    if (transaction.getTransactionTypeCode() == TransactionTypesEnum.MVT_TERMINATION_DECISION.getCode()) {
 		movementTransactionTimeline.setDueDateString(transaction.getEndDateString());
-		movementTransactionTimeline.setDaysPeriod(transaction.getPeriodMonths() == null ? transaction.getPeriodDays() + "" : transaction.getPeriodMonths() * 30 + (transaction.getPeriodDays() == null ? 0 : transaction.getPeriodDays()) + "");
-		movementTransactionTimeline.setTransactionTypeDescription(getMessage("label_end") + getMovementTransactionDescription(transaction));
+		movementTransactionTimeline.setPeriod(calculatePeriod(transaction.getPeriodDays() == null ? "-" : transaction.getPeriodDays() + "", "-", transaction.getPeriodMonths() == null ? "-" : transaction.getPeriodMonths() + ""));
+		movementTransactionTimeline.setTransactionTypeDescription(getMessage("label_end") + " " + getMovementTransactionDescription(transaction));
 		return movementTransactionTimeline;
 	    }
 	    if (transaction.getTransactionTypeCode() == TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode() && transaction.getSuccessorDecisionEffectFlag() == null) {
-		daysCount += transaction.getPeriodMonths() == null ? transaction.getPeriodDays() : transaction.getPeriodMonths() * 30 + (transaction.getPeriodDays() == null ? 0 : transaction.getPeriodDays());
+		daysCount += transaction.getPeriodDays() == null ? 0 : transaction.getPeriodDays();
+		monthsCount += transaction.getPeriodMonths() == null ? 0 : transaction.getPeriodMonths();
 		if (lastEndDate == null)
 		    lastEndDate = transaction.getEndDateString();
 	    }
 	}
+
 	return null;
     }
 
     private static List<TransactionTimeline> sortLists(List<TransactionTimeline> movementTransactions, List<TransactionTimeline> allTransactionsExceptMovement) {
 	List<TransactionTimeline> allTransactions = new ArrayList<>();
 	for (TransactionTimeline transaction : allTransactionsExceptMovement) {
+	    transaction.setPeriod(calculatePeriod(transaction.getDays(), transaction.getWeeks(), transaction.getMonths()));
 	    for (Iterator<TransactionTimeline> i = movementTransactions.iterator(); i.hasNext();) {
 		TransactionTimeline sortMovementTransaction = i.next();
 		if (sortMovementTransaction.getDueDate().before(transaction.getDueDate())) {
