@@ -2032,6 +2032,15 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 
 	    if (movementRequest.getReplacementEmployeeId() != null && !checkSoldiersMovementFiveYearsRule(movementRequest.getReplacementEmployeeId(), movementRequest.getExecutionDate() == null ? HijriDateService.getHijriSysDate() : movementRequest.getExecutionDate()))
 		movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_replacementSoldierMinYearsPeriodWarning" + ",");
+
+	    long newDecisionTransactionTypeId = CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId();
+	    long extensionDecisionTransactionTypeId = CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId();
+	    if (!isRequestProcess(getWFInstanceById(movementRequest.getInstanceId()).getProcessId(), movementRequest.getCategoryId())
+		    && (movementRequest.getTransactionTypeId() == newDecisionTransactionTypeId || movementRequest.getTransactionTypeId() == extensionDecisionTransactionTypeId)
+		    && (!MovementsService.checkSoldiersFourteenMonthRule(movementRequest.getExecutionDate(), emp.getServiceTerminationDueDate()))) {
+		movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_serviceTerminationDueDateIsInLessThanFourteenMonth" + ",");
+	    }
+
 	}
 
 	if (emp.getCategoryId().longValue() == CategoriesEnum.OFFICERS.getCode() || movementRequest.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {

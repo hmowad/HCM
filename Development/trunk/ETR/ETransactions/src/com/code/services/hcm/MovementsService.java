@@ -24,6 +24,7 @@ import com.code.enums.MovementTransactionViewsEnum;
 import com.code.enums.MovementTypesEnum;
 import com.code.enums.MovementsReasonTypesEnum;
 import com.code.enums.QueryNamesEnum;
+import com.code.enums.RegionsEnum;
 import com.code.enums.ReportNamesEnum;
 import com.code.enums.TransactionClassesEnum;
 import com.code.enums.TransactionTypesEnum;
@@ -1638,6 +1639,29 @@ public class MovementsService extends BaseService {
     }
 
     /**
+     * validate soldiers fourteen month rule
+     * 
+     * @param movementTransaction
+     *            move transaction to be validated
+     * @param emp
+     *            employee to be validated
+     * @throws BusinessException
+     *             if any error occurs
+     */
+
+    public static boolean checkSoldiersFourteenMonthRule(Date executionDate, Date empServiceTerminationDueDate) throws BusinessException {
+	if (executionDate.after(empServiceTerminationDueDate)) {
+	    return false;
+	}
+
+	Integer[] dateDiff = HijriDateService.hijriDateDiffInMonthsAndDays(HijriDateService.getHijriDateString(executionDate), HijriDateService.getHijriDateString(empServiceTerminationDueDate));
+	if (dateDiff[1] < ETRConfigurationService.getMovementPeriodBetweenMovementAndServiceTerminationDueDate() || (dateDiff[1] == ETRConfigurationService.getMovementPeriodBetweenMovementAndServiceTerminationDueDate() && dateDiff[0] == 0)) {
+	    return false;
+	}
+	return true;
+    }
+
+    /**
      * validate rules for a move transaction
      * 
      * @param movementTransaction
@@ -1684,16 +1708,11 @@ public class MovementsService extends BaseService {
 		throw new BusinessException("error_cannotDoRequestAsReplacementEmpOficialRegionNotEqualPhysicalRegion");
 	    }
 
-	    if (job != null && movementTransaction.getMovementTypeId() == MovementTypesEnum.MOVE.getCode() && emp.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() && emp.getOfficialRegionId() != UnitsService.getUnitById(movementTransaction.getUnitId()).getRegionId()) {
-		Date executionDate = movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate();
-
-		if (executionDate.after(emp.getServiceTerminationDueDate())) {
+	    if (job != null && emp.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() && (movementTransaction.getLocationFlag().equals(LocationFlagsEnum.EXTERNAL.getCode()) || (emp.getOfficialRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) || emp.getOfficialRegionId() != UnitsService.getUnitById(movementTransaction.getUnitId()).getRegionId()))) {
+		if (!checkSoldiersFourteenMonthRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate()))
 		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanfourteen", new String[] { emp.getName() });
-		}
-
-		Integer[] dateDiff = HijriDateService.hijriDateDiffInMonthsAndDays(HijriDateService.getHijriDateString(executionDate), emp.getServiceTerminationDueDateString());
-		if (dateDiff[1] < ETRConfigurationService.getMovementPeriodBetweenMovementAndServiceTerminationDueDate() || (dateDiff[1] == ETRConfigurationService.getMovementPeriodBetweenMovementAndServiceTerminationDueDate() && dateDiff[0] == 0)) {
-		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanfourteen", new String[] { emp.getName() });
+		if (replacementEmp != null && !checkSoldiersFourteenMonthRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), replacementEmp.getServiceTerminationDueDate())) {
+		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanfourteen", new String[] { replacementEmp.getName() });
 		}
 	    }
 	}
@@ -1785,6 +1804,13 @@ public class MovementsService extends BaseService {
 
 		if (emp.getOfficialRegionId() != emp.getPhysicalRegionId())
 		    throw new BusinessException("error_cannotDoRequestAsOficialRegionNotEqualPhysicalRegion");
+	    }
+
+	    if (movementTransaction.getExecutionDate() != null && movementTransaction.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() &&
+		    (CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId().equals(movementTransaction.getTransactionTypeId()) || CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId().equals(movementTransaction.getTransactionTypeId()))
+		    && (movementTransaction.getLocationFlag().equals(LocationFlagsEnum.EXTERNAL.getCode()) || (emp.getOfficialRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) || emp.getOfficialRegionId() != UnitsService.getUnitById(movementTransaction.getUnitId()).getRegionId()))
+		    && checkSoldiersFourteenMonthRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate())) {
+		throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanfourteen", new String[] { emp.getName() });
 	    }
 
 	}
