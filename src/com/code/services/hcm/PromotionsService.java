@@ -1035,7 +1035,7 @@ public class PromotionsService extends BaseService {
 	    if (promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 		RetroactivePromotionDAO retroactivePromotion = new RetroactivePromotionProxy();
 		Long promotionRetroactiveDegreeId = retroactivePromotion.calculateNewDegree(reportDetailData.getEmpId(), reportDetailData.getOldRankId(), reportDetailData.getPromotionDueDate());
-		if (promotionRetroactiveDegreeId != null) {
+		if (promotionRetroactiveDegreeId != null && employee.getDegreeId() > promotionRetroactiveDegreeId) {
 		    Long differenceBetweenCurrentDegreeAndRetroactiveDegree = employee.getDegreeId() - promotionRetroactiveDegreeId;
 		    PayrollSalary oldRetroactivePayrollSalary = PayrollsService.getPayrollSalary(reportDetailData.getOldRankId(), promotionRetroactiveDegreeId);
 		    PayrollSalary newRetroactivePayrollSalary = PayrollsService.getPayrollNewSalary(getNextRank(reportDetailData.getOldRankId()), oldRetroactivePayrollSalary.getBasicSalary());
