@@ -32,6 +32,7 @@ public abstract class WFBaseBacking extends BaseBacking implements Serializable 
 
     protected String attachments;
     protected String notificationMessage;
+    protected Boolean prevTasksNoLevelFlag = false;
 
     protected Integer instanceApproved = null;
 
@@ -81,7 +82,10 @@ public abstract class WFBaseBacking extends BaseBacking implements Serializable 
 			    notificationMessage = null;
 		    }
 		} else {
-		    prevTasks = BaseWorkFlow.getWFInstanceCompletedTasksData(currentTask.getInstanceId(), currentTask.getTaskId(), currentTask.getLevel());
+		    if (prevTasksNoLevelFlag)
+			prevTasks = BaseWorkFlow.getWFInstanceCompletedTasksData(currentTask.getInstanceId(), currentTask.getTaskId(), FlagsEnum.ALL.getCode() + "");
+		    else
+			prevTasks = BaseWorkFlow.getWFInstanceCompletedTasksData(currentTask.getInstanceId(), currentTask.getTaskId(), currentTask.getLevel());
 		}
 
 		if (currentTask.getAction() != null) {
@@ -175,4 +179,13 @@ public abstract class WFBaseBacking extends BaseBacking implements Serializable 
     public void setInstanceApproved(Integer instanceApproved) {
 	this.instanceApproved = instanceApproved;
     }
+
+    public Boolean getPrevTasksNoLevelFlag() {
+	return prevTasksNoLevelFlag;
+    }
+
+    public void setPrevTasksNoLevelFlag(Boolean prevTasksNoLevelFlag) {
+	this.prevTasksNoLevelFlag = prevTasksNoLevelFlag;
+    }
+
 }
