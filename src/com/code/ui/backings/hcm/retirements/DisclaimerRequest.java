@@ -48,6 +48,7 @@ public class DisclaimerRequest extends WFBaseBacking {
     private String selectedSentBackUnitsNamesString;
 
     public DisclaimerRequest() {
+	prevTasksNoLevelFlag = true;
 	super.init();
 	try {
 	    if (getRequest().getParameter("mode") != null) {
