@@ -913,7 +913,7 @@ public class TerminationsService extends BaseService {
 	    List<TerminationTransactionData> nonFutureTerminationTransaction = new ArrayList<>();
 	    for (TerminationTransactionData terminationTransactionData : terminationTransactionDataList) {
 		if (terminationTransactionData.getStatus() == TerminationRecordOfficersStatusEnum.TERMINATED.getCode()) {
-		    if (!terminationTransactionData.getServiceTerminationDate().after(HijriDateService.getHijriSysDate()))
+		    if (terminationTransactionData.getServiceTerminationDate() != null && !terminationTransactionData.getServiceTerminationDate().after(HijriDateService.getHijriSysDate()))
 			nonFutureTerminationTransaction.add(terminationTransactionData);
 		}
 	    }
