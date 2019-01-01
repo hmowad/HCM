@@ -85,7 +85,9 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 		    } else {
 			nonSaudiDoctorContractorFlag = false;
 		    }
-		}
+		}else {
+		salaryRanks = CommonService.getRanks(null, new Long[] { employee.getCategoryId() });
+	    }
 
 		switch (empParam.getCategoryId().intValue()) {
 		case 1:
