@@ -67,7 +67,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    Date curHijriDate = HijriDateService.getHijriSysDate();
 	    String wfTaskRole;
 	    WFInstance instance = addWFInstance(processId, requester.getEmpId(), curDate, curHijriDate, WFInstanceStatusEnum.RUNNING.getCode(), attachments, Arrays.asList(wfDisclaimerData.getEmpId()), session);
-	    if (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() && wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode())
+	    if (isRegionOfficerDisclaimerRequest(wfDisclaimerData))
 		wfTaskRole = WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode();
 	    else
 		wfTaskRole = WFTaskRolesEnum.SIGN_MANAGER.getCode();
@@ -253,8 +253,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    Date curDate = new Date();
 	    Date curHijriDate = HijriDateService.getHijriSysDate();
 	    WFPosition position = new WFPosition();
-	    if (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() &&
-		    wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode()) {
+	    if (isRegionOfficerDisclaimerRequest(wfDisclaimerData)) {
 		position = getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
 	    } else {
 		position = getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
@@ -379,8 +378,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
     }
 
     private static Boolean isRegionOfficerDisclaimerRequest(WFDisclaimerData wfDisclaimerData) {
-	if (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() &&
-		wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode())
+	if (isRegionOfficerDisclaimerRequest(wfDisclaimerData))
 	    return true;
 	return false;
     }
