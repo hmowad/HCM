@@ -11,7 +11,6 @@ import com.code.dal.orm.hcm.retirements.DisclaimerTransactionData;
 import com.code.dal.orm.workflow.WFPosition;
 import com.code.dal.orm.workflow.hcm.retirements.WFDisclaimerData;
 import com.code.dal.orm.workflow.hcm.retirements.WFDisclaimerDetail;
-import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
@@ -101,8 +100,7 @@ public class DisclaimerRequest extends WFBaseBacking {
 			hkeyReviewerEmps = SmSsmUnitData.gethKey();
 		    }
 		} else if (this.role.equals(WFTaskRolesEnum.SIGN_MANAGER.getCode())) {
-		    if (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() &&
-			    wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode()) {
+		    if (RetirementsWorkFlow.isRegionOfficerDisclaimerRequest(wfDisclaimerData)) {
 			position = RetirementsWorkFlow.getRegionPayrollUnitManager(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
 			payrollUnitData = UnitsService.getUnitById(position.getUnitId());
 			isPayrollReviewer = payrollUnitData.getPhysicalManagerId().equals(loginEmpData.getEmpId());
