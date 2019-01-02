@@ -81,7 +81,7 @@ public class SubjoinTerminationRequest extends MovementsBase implements Serializ
 	    } else {
 		lastValidTran = MovementsService.getLastValidMovementTransaction(this.loginEmpData.getEmpId(), MovementTypesEnum.SUBJOIN.getCode(), FlagsEnum.ON.getCode());
 		if (lastValidTran != null) {
-		    wfMovement = MovementsWorkFlow.constructWFMovement(requester.getEmpId(), null, lastValidTran.getExecutionDateFlag(), lastValidTran.getExecutionDate(), lastValidTran.getEndDate(), lastValidTran.getUnitId(), lastValidTran.getUnitFullName(), null, null, lastValidTran.getLocationFlag(), lastValidTran.getLocation(), lastValidTran.getDecisionNumber(), lastValidTran.getDecisionDate(),
+		    wfMovement = MovementsWorkFlow.constructWFMovement(processId, requester.getEmpId(), null, lastValidTran.getExecutionDateFlag(), lastValidTran.getExecutionDate(), lastValidTran.getEndDate(), lastValidTran.getUnitId(), lastValidTran.getUnitFullName(), null, null, lastValidTran.getLocationFlag(), lastValidTran.getLocation(), lastValidTran.getDecisionNumber(), lastValidTran.getDecisionDate(),
 			    MovementsReasonTypesEnum.BASED_ON_HIS_REQUEST.getCode(), lastValidTran.getJobId(), lastValidTran.getJobCode(), lastValidTran.getJobName(), MovementTypesEnum.SUBJOIN.getCode(), TransactionTypesEnum.MVT_TERMINATION_DECISION.getCode());
 		}
 		wfMovement.setEndDate(HijriDateService.getHijriSysDate());

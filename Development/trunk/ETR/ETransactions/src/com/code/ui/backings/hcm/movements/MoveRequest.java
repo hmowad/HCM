@@ -51,7 +51,7 @@ public class MoveRequest extends MovementsBase implements Serializable {
 	    try {
 
 		if (this.getRole().equals(WFTaskRolesEnum.REQUESTER.getCode())) {
-		    wfMovement = MovementsWorkFlow.constructWFMovement(this.loginEmpData.getEmpId(), null, FlagsEnum.ON.getCode(), null, null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, MovementsReasonTypesEnum.BASED_ON_HIS_REQUEST.getCode(), null, null, null, MovementTypesEnum.MOVE.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
+		    wfMovement = MovementsWorkFlow.constructWFMovement(processId, this.loginEmpData.getEmpId(), null, FlagsEnum.ON.getCode(), null, null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, MovementsReasonTypesEnum.BASED_ON_HIS_REQUEST.getCode(), null, null, null, MovementTypesEnum.MOVE.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
 		} else {
 		    wfMovement = MovementsWorkFlow.getWFMovementDataByInstanceId(this.instance.getInstanceId()).get(0);
 
@@ -59,7 +59,7 @@ public class MoveRequest extends MovementsBase implements Serializable {
 			wfMovement.setMinistryApprovalDate(HijriDateService.getHijriSysDate());
 
 		    if (!this.role.equals(WFTaskRolesEnum.NOTIFICATION.getCode()))
-			MovementsWorkFlow.calculateWarnings(wfMovement);
+			MovementsWorkFlow.calculateWarnings(wfMovement, processId);
 		    if (!(this.role.equals(WFTaskRolesEnum.DIRECT_MANAGER.getCode()) || this.role.equals(WFTaskRolesEnum.MANAGER_REDIRECT.getCode()))) {
 			internalCopies = EmployeesService.getEmployeesByIdsString(wfMovement.getInternalCopies());
 			if (internalCopies == null)
@@ -120,7 +120,7 @@ public class MoveRequest extends MovementsBase implements Serializable {
 		wfMovement.setExecutionDate(HijriDateService.getHijriSysDate());
 	    }
 
-	    MovementsWorkFlow.calculateWarnings(wfMovement);
+	    MovementsWorkFlow.calculateWarnings(wfMovement, processId);
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -128,7 +128,7 @@ public class MoveRequest extends MovementsBase implements Serializable {
 
     public void calculateWarnings() {
 	try {
-	    MovementsWorkFlow.calculateWarnings(wfMovement);
+	    MovementsWorkFlow.calculateWarnings(wfMovement, processId);
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}

@@ -53,7 +53,7 @@ public class MoveByReplacementRequest extends MovementsBase implements Serializa
 	    try {
 
 		if (this.getRole().equals(WFTaskRolesEnum.REQUESTER.getCode())) {
-		    wfMovement = MovementsWorkFlow.constructWFMovement(this.loginEmpData.getEmpId(), null, FlagsEnum.ON.getCode(), null, null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, MovementsReasonTypesEnum.BASED_ON_HIS_REQUEST.getCode(), null, null, null, MovementTypesEnum.MOVE.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
+		    wfMovement = MovementsWorkFlow.constructWFMovement(processId, this.loginEmpData.getEmpId(), null, FlagsEnum.ON.getCode(), null, null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, MovementsReasonTypesEnum.BASED_ON_HIS_REQUEST.getCode(), null, null, null, MovementTypesEnum.MOVE.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
 		    replacementEmployee = new EmployeeData();
 		} else {
 		    wfMovement = MovementsWorkFlow.getWFMovementDataByInstanceId(this.instance.getInstanceId()).get(0);
@@ -61,7 +61,7 @@ public class MoveByReplacementRequest extends MovementsBase implements Serializa
 		    replacementEmployee = EmployeesService.getEmployeeData(wfMovement.getReplacementEmployeeId());
 
 		    if (!this.role.equals(WFTaskRolesEnum.NOTIFICATION.getCode()))
-			MovementsWorkFlow.calculateWarnings(wfMovement);
+			MovementsWorkFlow.calculateWarnings(wfMovement, processId);
 
 		    if (!(this.role.equals(WFTaskRolesEnum.DIRECT_MANAGER.getCode()) || this.role.equals(WFTaskRolesEnum.REPLACEMENT_DIRECT_MANAGER.getCode()) || this.role.equals(WFTaskRolesEnum.MANAGER_REDIRECT.getCode()))) {
 			internalCopies = EmployeesService.getEmployeesByIdsString(wfMovement.getInternalCopies());
@@ -98,7 +98,7 @@ public class MoveByReplacementRequest extends MovementsBase implements Serializa
 	    wfMovement.setUnitId(replacementEmployee.getOfficialUnitId());
 	    wfMovement.setJobId(replacementEmployee.getJobId());
 
-	    MovementsWorkFlow.calculateWarnings(wfMovement);
+	    MovementsWorkFlow.calculateWarnings(wfMovement, processId);
 	} catch (BusinessException e) {
 	    replacementEmployee = new EmployeeData();
 	    wfMovement.setReplacementEmployeeId(null);
@@ -120,7 +120,7 @@ public class MoveByReplacementRequest extends MovementsBase implements Serializa
 		wfMovement.setExecutionDate(HijriDateService.getHijriSysDate());
 	    }
 
-	    MovementsWorkFlow.calculateWarnings(wfMovement);
+	    MovementsWorkFlow.calculateWarnings(wfMovement, processId);
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -128,7 +128,7 @@ public class MoveByReplacementRequest extends MovementsBase implements Serializa
 
     public void calculateWarnings() {
 	try {
-	    MovementsWorkFlow.calculateWarnings(wfMovement);
+	    MovementsWorkFlow.calculateWarnings(wfMovement, processId);
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}

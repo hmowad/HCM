@@ -74,7 +74,7 @@ public class SoldiersSecondmentExtensionDecisionRequest extends MovementsBase im
 		throw new BusinessException("error_general");
 
 	    if (lastSecondment != null) {
-		wfMovement = MovementsWorkFlow.constructWFMovement(soldier.getEmpId(), null, lastSecondment.getExecutionDateFlag(), null, lastSecondment.getEndDate(), null, null, null, null, lastSecondment.getLocationFlag(), lastSecondment.getLocation(), lastSecondment.getDecisionNumber(), lastSecondment.getDecisionDate(), lastSecondment.getReasonType(),
+		wfMovement = MovementsWorkFlow.constructWFMovement(processId, soldier.getEmpId(), null, lastSecondment.getExecutionDateFlag(), null, lastSecondment.getEndDate(), null, null, null, null, lastSecondment.getLocationFlag(), lastSecondment.getLocation(), lastSecondment.getDecisionNumber(), lastSecondment.getDecisionDate(), lastSecondment.getReasonType(),
 			null, null, null, movementTypeId, TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode());
 		wfMovement.setMinistryApprovalDate(HijriDateService.getHijriSysDate());
 		internalCopies = EmployeesService.getEmployeesByIdsString(lastSecondment.getInternalCopies());
@@ -93,13 +93,31 @@ public class SoldiersSecondmentExtensionDecisionRequest extends MovementsBase im
 
     public void manipulateEndDate() {
 	try {
-
+	    calculateWarnings(wfMovement);
 	    if (lastSecondment.getEndDateString() != null && ((wfMovement.getPeriodMonths() != null && wfMovement.getPeriodMonths() > 0) || (wfMovement.getPeriodDays() != null && wfMovement.getPeriodDays() > 0))) {
 		wfMovement.setEndDateString(HijriDateService.addSubStringHijriMonthsDays(lastSecondment.getEndDateString(), wfMovement.getPeriodMonths() == null ? 0 : wfMovement.getPeriodMonths(), wfMovement.getPeriodDays() == null ? -1 : wfMovement.getPeriodDays()));
 	    } else
 		wfMovement.setEndDateString(null);
 	} catch (Exception e) {
 	    wfMovement.setEndDateString(null);
+	}
+    }
+
+    public void calculateWarnings(WFMovementData wfMovement) {
+	try {
+	    boolean hadWarning = false;
+	    boolean hasWarning = false;
+	    if (wfMovement.getWarningMessages() != null && !wfMovement.getWarningMessages().isEmpty())
+		hadWarning = true;
+	    MovementsWorkFlow.calculateWarnings(wfMovement, processId);
+	    if (wfMovement.getWarningMessages() != null && !wfMovement.getWarningMessages().isEmpty())
+		hasWarning = true;
+	    if (hasWarning && !hadWarning)
+		warningsCount++;
+	    if (!hasWarning && hadWarning)
+		warningsCount--;
+	} catch (BusinessException e) {
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 

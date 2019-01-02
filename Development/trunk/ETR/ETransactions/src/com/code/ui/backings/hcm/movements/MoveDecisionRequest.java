@@ -79,7 +79,7 @@ public class MoveDecisionRequest extends MovementsBase implements Serializable {
 			    jobsData.add(JobsService.getJobById(wfMovement.getEmployeeJobId()));
 
 			if (!role.equals(WFTaskRolesEnum.NOTIFICATION.getCode()))
-			    MovementsWorkFlow.calculateWarnings(wfMovement);
+			    MovementsWorkFlow.calculateWarnings(wfMovement, processId);
 			if (wfMovement.getWarningMessages() != null && !wfMovement.getWarningMessages().isEmpty())
 			    warningsCount++;
 		    }
@@ -102,7 +102,7 @@ public class MoveDecisionRequest extends MovementsBase implements Serializable {
 
     public void addWfMovement() {
 	try {
-	    WFMovementData wfMovement = MovementsWorkFlow.constructWFMovement(selectedEmpId.longValue(), null, decisionData.getExecutionDateFlag(), decisionData.getExecutionDate(), null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, decisionData.getReasonType(), null, null, null, MovementTypesEnum.MOVE.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
+	    WFMovementData wfMovement = MovementsWorkFlow.constructWFMovement(processId, selectedEmpId.longValue(), null, decisionData.getExecutionDateFlag(), decisionData.getExecutionDate(), null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, decisionData.getReasonType(), null, null, null, MovementTypesEnum.MOVE.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
 	    jobsData.add(JobsService.getJobById(EmployeesService.getEmployeeData(wfMovement.getEmployeeId()).getJobId()));
 	    wfMovementsList.add(wfMovement);
 	    if (wfMovement.getWarningMessages() != null && !wfMovement.getWarningMessages().isEmpty())
@@ -213,7 +213,7 @@ public class MoveDecisionRequest extends MovementsBase implements Serializable {
 		WFMovementData wfMovement = wfMovementsList.get(i);
 		wfMovement.setExecutionDateFlag(decisionData.getExecutionDateFlag());
 		wfMovement.setExecutionDate(decisionData.getExecutionDate());
-		MovementsWorkFlow.calculateWarnings(wfMovement);
+		MovementsWorkFlow.calculateWarnings(wfMovement, processId);
 		if (wfMovement.getWarningMessages() != null && !wfMovement.getWarningMessages().isEmpty())
 		    warningsCount++;
 	    }
@@ -236,7 +236,7 @@ public class MoveDecisionRequest extends MovementsBase implements Serializable {
 	    boolean hasWarning = false;
 	    if (wfMovement.getWarningMessages() != null && !wfMovement.getWarningMessages().isEmpty())
 		hadWarning = true;
-	    MovementsWorkFlow.calculateWarnings(wfMovement);
+	    MovementsWorkFlow.calculateWarnings(wfMovement, processId);
 	    if (wfMovement.getWarningMessages() != null && !wfMovement.getWarningMessages().isEmpty())
 		hasWarning = true;
 	    if (hasWarning && !hadWarning)

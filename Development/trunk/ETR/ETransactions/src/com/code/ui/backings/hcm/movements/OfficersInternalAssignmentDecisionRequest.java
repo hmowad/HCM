@@ -60,7 +60,7 @@ public class OfficersInternalAssignmentDecisionRequest extends MovementsBase imp
 
     public void addWFMovement() {
 	try {
-	    WFMovementData wfMovement = MovementsWorkFlow.constructWFMovement(selectedEmpId.longValue(), null, FlagsEnum.OFF.getCode(), HijriDateService.getHijriSysDate(), null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, MovementsReasonTypesEnum.FOR_WORK_INTEREST.getCode(), null, null, null, MovementTypesEnum.ASSIGNMENT.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
+	    WFMovementData wfMovement = MovementsWorkFlow.constructWFMovement(processId, selectedEmpId.longValue(), null, FlagsEnum.OFF.getCode(), HijriDateService.getHijriSysDate(), null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, MovementsReasonTypesEnum.FOR_WORK_INTEREST.getCode(), null, null, null, MovementTypesEnum.ASSIGNMENT.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
 	    wfMovementsList.add(wfMovement);
 	} catch (Exception e1) {
 	    setServerSideErrorMessages(getParameterizedMessage(e1.getMessage(), ((BusinessException) e1).getParams()));

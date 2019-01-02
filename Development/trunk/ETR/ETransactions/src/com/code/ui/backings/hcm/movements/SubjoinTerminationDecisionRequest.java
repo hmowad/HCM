@@ -127,7 +127,7 @@ public class SubjoinTerminationDecisionRequest extends MovementsBase implements 
 
     public void getSubjoinByDecisionInfo() {
 	try {
-	    wfMovementsList = MovementsWorkFlow.constructWFMovementByDecisionInfo(decisionData.getBasedOnDecisionNumber(), decisionData.getBasedOnDecisionDate(), getCategoriesIdsArrayByMode(mode), MovementTypesEnum.SUBJOIN.getCode(), TransactionTypesEnum.MVT_TERMINATION_DECISION.getCode(), getLoginEmpPhysicalRegionFlag(true));
+	    wfMovementsList = MovementsWorkFlow.constructWFMovementByDecisionInfo(processId, decisionData.getBasedOnDecisionNumber(), decisionData.getBasedOnDecisionDate(), getCategoriesIdsArrayByMode(mode), MovementTypesEnum.SUBJOIN.getCode(), TransactionTypesEnum.MVT_TERMINATION_DECISION.getCode(), getLoginEmpPhysicalRegionFlag(true));
 	    if (wfMovementsList != null && wfMovementsList.size() > 0) {
 		decisionData = wfMovementsList.get(0);
 		decisionData.setBasedOnOrderDate(HijriDateService.getHijriSysDate());

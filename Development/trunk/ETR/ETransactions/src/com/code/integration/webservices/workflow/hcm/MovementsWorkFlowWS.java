@@ -68,13 +68,14 @@ public class MovementsWorkFlowWS {
 	    EmployeeData requester = EmployeesService.getEmployeeData(requesterId);
 
 	    if (movementTypeId == MovementTypesEnum.MOVE.getCode()) {
-		movementRequest = MovementsWorkFlow.constructWFMovement(requesterId, null, FlagsEnum.OFF.getCode(), null, null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, MovementsReasonTypesEnum.BASED_ON_HIS_REQUEST.getCode(), null, null, null, MovementTypesEnum.MOVE.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
+		proceeeIdAndTaskURL = getProcessIdAndTaskURL(requester.getCategoryId(), MovementTypesEnum.MOVE.getCode()).split(",");
+		movementRequest = MovementsWorkFlow.constructWFMovement(Long.parseLong(proceeeIdAndTaskURL[0]), requesterId, null, FlagsEnum.OFF.getCode(), null, null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, MovementsReasonTypesEnum.BASED_ON_HIS_REQUEST.getCode(), null, null, null, MovementTypesEnum.MOVE.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
 		movementRequest.setUnitId(unitId);
 		movementRequest.setReasons(reasons);
-		proceeeIdAndTaskURL = getProcessIdAndTaskURL(requester.getCategoryId(), MovementTypesEnum.MOVE.getCode()).split(",");
 
 	    } else if (movementTypeId == MovementTypesEnum.SUBJOIN.getCode()) {
-		movementRequest = MovementsWorkFlow.constructWFMovement(requesterId, null, FlagsEnum.OFF.getCode(), HijriDateService.getHijriDate(startDateString), null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, MovementsReasonTypesEnum.BASED_ON_HIS_REQUEST.getCode(), null, null, null, MovementTypesEnum.SUBJOIN.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
+		proceeeIdAndTaskURL = getProcessIdAndTaskURL(requester.getCategoryId(), MovementTypesEnum.SUBJOIN.getCode()).split(",");
+		movementRequest = MovementsWorkFlow.constructWFMovement(Long.parseLong(proceeeIdAndTaskURL[0]), requesterId, null, FlagsEnum.OFF.getCode(), HijriDateService.getHijriDate(startDateString), null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, MovementsReasonTypesEnum.BASED_ON_HIS_REQUEST.getCode(), null, null, null, MovementTypesEnum.SUBJOIN.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
 		movementRequest.setPeriodMonths(periodMonths);
 		movementRequest.setPeriodDays(periodDays);
 		if (startDateString != null && ((periodMonths != null && periodMonths > 0) || (periodDays != null && periodDays > 0))) {
@@ -82,8 +83,6 @@ public class MovementsWorkFlowWS {
 		}
 		movementRequest.setUnitId(unitId);
 		movementRequest.setReasons(reasons);
-		proceeeIdAndTaskURL = getProcessIdAndTaskURL(requester.getCategoryId(), MovementTypesEnum.SUBJOIN.getCode()).split(",");
-
 	    }
 	    List<WFMovementData> movementRequests = new ArrayList<WFMovementData>();
 	    movementRequests.add(movementRequest);

@@ -88,7 +88,7 @@ public class SubjoinDecisionRequest extends MovementsBase implements Serializabl
 
     public void addNewSubjoinDecisionRequest() {
 	try {
-	    WFMovementData temp = MovementsWorkFlow.constructWFMovement(selectedEmpId.longValue(), null, FlagsEnum.OFF.getCode(), HijriDateService.getHijriSysDate(), null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, decisionData.getReasonType(), null, null, null, MovementTypesEnum.SUBJOIN.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
+	    WFMovementData temp = MovementsWorkFlow.constructWFMovement(processId, selectedEmpId.longValue(), null, FlagsEnum.OFF.getCode(), HijriDateService.getHijriSysDate(), null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, decisionData.getReasonType(), null, null, null, MovementTypesEnum.SUBJOIN.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
 	    wfMovementsList.add(temp);
 	    if (temp.getWarningMessages() != null && !temp.getWarningMessages().isEmpty())
 		warningsCount++;
@@ -138,7 +138,7 @@ public class SubjoinDecisionRequest extends MovementsBase implements Serializabl
 	    boolean hasWarning = false;
 	    if (subjoin.getWarningMessages() != null && !subjoin.getWarningMessages().isEmpty())
 		hadWarning = true;
-	    MovementsWorkFlow.calculateWarnings(subjoin);
+	    MovementsWorkFlow.calculateWarnings(subjoin, processId);
 	    if (subjoin.getWarningMessages() != null && !subjoin.getWarningMessages().isEmpty())
 		hasWarning = true;
 	    if (hasWarning && !hadWarning)
