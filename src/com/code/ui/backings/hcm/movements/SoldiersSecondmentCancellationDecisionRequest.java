@@ -75,7 +75,7 @@ public class SoldiersSecondmentCancellationDecisionRequest extends MovementsBase
 		throw new BusinessException("error_general");
 
 	    if (lastSecondment != null) {
-		wfMovement = MovementsWorkFlow.constructWFMovement(soldier.getEmpId(), null, lastSecondment.getExecutionDateFlag(), lastSecondment.getExecutionDate(), lastSecondment.getEndDate(), null, null, lastSecondment.getPeriodDays(), lastSecondment.getPeriodMonths(), lastSecondment.getLocationFlag(), lastSecondment.getLocation(), lastSecondment.getDecisionNumber(), lastSecondment.getDecisionDate(), lastSecondment.getReasonType(),
+		wfMovement = MovementsWorkFlow.constructWFMovement(processId, soldier.getEmpId(), null, lastSecondment.getExecutionDateFlag(), lastSecondment.getExecutionDate(), lastSecondment.getEndDate(), null, null, lastSecondment.getPeriodDays(), lastSecondment.getPeriodMonths(), lastSecondment.getLocationFlag(), lastSecondment.getLocation(), lastSecondment.getDecisionNumber(), lastSecondment.getDecisionDate(), lastSecondment.getReasonType(),
 			null, null, null, movementTypeId, TransactionTypesEnum.MVT_CANCEL_DECISION.getCode());
 		wfMovement.setMinistryApprovalDate(HijriDateService.getHijriSysDate());
 		internalCopies = EmployeesService.getEmployeesByIdsString(lastSecondment.getInternalCopies());

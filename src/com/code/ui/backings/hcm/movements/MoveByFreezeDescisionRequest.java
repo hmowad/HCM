@@ -72,7 +72,7 @@ public class MoveByFreezeDescisionRequest extends MovementsBase implements Seria
     public void addToList() {
 	try {
 	    WFMovementData empWF = new WFMovementData();
-	    empWF = MovementsWorkFlow.constructWFMovement(empId, null, decisionData.getExecutionDateFlag(), decisionData.getExecutionDate(), null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, decisionData.getReasonType(), null, null, null, MovementTypesEnum.MOVE.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
+	    empWF = MovementsWorkFlow.constructWFMovement(processId, empId, null, decisionData.getExecutionDateFlag(), decisionData.getExecutionDate(), null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, decisionData.getReasonType(), null, null, null, MovementTypesEnum.MOVE.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
 	    empWF.setFreezeJobId(empWF.getEmployeeJobId());
 	    empWF.setFreezeJobCode(empWF.getEmployeeJobCode());
 	    empWF.setFreezeJobName(empWF.getEmployeeJobName());
@@ -158,7 +158,7 @@ public class MoveByFreezeDescisionRequest extends MovementsBase implements Seria
 	    boolean hasWarning = false;
 	    if (wfMovement.getWarningMessages() != null && !wfMovement.getWarningMessages().isEmpty())
 		hadWarning = true;
-	    MovementsWorkFlow.calculateWarnings(wfMovement);
+	    MovementsWorkFlow.calculateWarnings(wfMovement, processId);
 	    if (wfMovement.getWarningMessages() != null && !wfMovement.getWarningMessages().isEmpty())
 		hasWarning = true;
 	    if (hasWarning && !hadWarning)

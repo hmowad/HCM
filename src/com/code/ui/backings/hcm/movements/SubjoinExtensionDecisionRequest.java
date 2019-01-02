@@ -70,6 +70,13 @@ public class SubjoinExtensionDecisionRequest extends MovementsBase implements Se
 		if (internalCopies == null)
 		    internalCopies = new ArrayList<EmployeeData>();
 		externalCopies = decisionData.getExternalCopies();
+		warningsCount = 0;
+		if (processId == WFProcessesEnum.SOLDIERS_SUBJOIN_EXTENSION.getCode()) {
+		    for (WFMovementData wfMovement : wfMovementsList) {
+			if (wfMovement.getWarningMessages() != null && !wfMovement.getWarningMessages().isEmpty())
+			    warningsCount++;
+		    }
+		}
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -101,6 +108,9 @@ public class SubjoinExtensionDecisionRequest extends MovementsBase implements Se
 	    if (subjoin.getInstanceId() != null)
 		MovementsWorkFlow.deleteWFMovement(subjoin);
 
+	    if (processId == WFProcessesEnum.SOLDIERS_SUBJOIN_EXTENSION.getCode() && (subjoin.getWarningMessages() != null || subjoin.getWarningMessages().isEmpty()))
+		warningsCount--;
+
 	    wfMovementsList.remove(subjoin);
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -125,7 +135,7 @@ public class SubjoinExtensionDecisionRequest extends MovementsBase implements Se
 
     public void getSubjoinByDecisionInfo() {
 	try {
-	    wfMovementsList = MovementsWorkFlow.constructWFMovementByDecisionInfo(decisionData.getBasedOnDecisionNumber(), decisionData.getBasedOnDecisionDate(), getCategoriesIdsArrayByMode(mode), MovementTypesEnum.SUBJOIN.getCode(), TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), getLoginEmpPhysicalRegionFlag(true));
+	    wfMovementsList = MovementsWorkFlow.constructWFMovementByDecisionInfo(processId, decisionData.getBasedOnDecisionNumber(), decisionData.getBasedOnDecisionDate(), getCategoriesIdsArrayByMode(mode), MovementTypesEnum.SUBJOIN.getCode(), TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), getLoginEmpPhysicalRegionFlag(true));
 	    if (wfMovementsList != null && wfMovementsList.size() > 0) {
 		decisionData = wfMovementsList.get(0);
 		decisionData.setBasedOnOrderDate(HijriDateService.getHijriSysDate());
@@ -133,7 +143,15 @@ public class SubjoinExtensionDecisionRequest extends MovementsBase implements Se
 		    decisionData.setMinistryApprovalDate(HijriDateService.getHijriSysDate());
 		internalCopies = EmployeesService.getEmployeesByIdsString(wfMovementsList.get(0).getInternalCopies());
 		externalCopies = wfMovementsList.get(0).getExternalCopies();
+		warningsCount = 0;
+		if (processId == WFProcessesEnum.SOLDIERS_SUBJOIN_EXTENSION.getCode()) {
+		    for (WFMovementData wfMovement : wfMovementsList) {
+			if (wfMovement.getWarningMessages() != null && !wfMovement.getWarningMessages().isEmpty())
+			    warningsCount++;
+		    }
+		}
 	    }
+
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -141,12 +159,32 @@ public class SubjoinExtensionDecisionRequest extends MovementsBase implements Se
 
     public void manipulateEndDate(WFMovementData subjoin) {
 	try {
+	    if (processId == WFProcessesEnum.SOLDIERS_SUBJOIN_EXTENSION.getCode())
+		calculateWarnings(subjoin);
 	    if (subjoin.getExecutionDateString() != null && ((subjoin.getPeriodMonths() != null && subjoin.getPeriodMonths() > 0) || (subjoin.getPeriodDays() != null && subjoin.getPeriodDays() > 0))) {
 		subjoin.setEndDateString(HijriDateService.addSubStringHijriMonthsDays(subjoin.getExecutionDateString(), subjoin.getPeriodMonths() == null ? 0 : subjoin.getPeriodMonths(), subjoin.getPeriodDays() == null ? -1 : subjoin.getPeriodDays() - 1));
 	    } else
 		subjoin.setEndDateString(null);
 	} catch (Exception e) {
 	    subjoin.setEndDateString(null);
+	}
+    }
+
+    public void calculateWarnings(WFMovementData wfMovement) {
+	try {
+	    boolean hadWarning = false;
+	    boolean hasWarning = false;
+	    if (wfMovement.getWarningMessages() != null && !wfMovement.getWarningMessages().isEmpty())
+		hadWarning = true;
+	    MovementsWorkFlow.calculateWarnings(wfMovement, processId);
+	    if (wfMovement.getWarningMessages() != null && !wfMovement.getWarningMessages().isEmpty())
+		hasWarning = true;
+	    if (hasWarning && !hadWarning)
+		warningsCount++;
+	    if (!hasWarning && hadWarning)
+		warningsCount--;
+	} catch (BusinessException e) {
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 }

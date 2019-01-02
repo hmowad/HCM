@@ -83,7 +83,7 @@ public class SubjoinCancellationRequest extends MovementsBase implements Seriali
 	    } else {
 		lastValidTran = MovementsService.getLastValidMovementTransaction(this.loginEmpData.getEmpId(), MovementTypesEnum.SUBJOIN.getCode(), FlagsEnum.ON.getCode());
 		if (lastValidTran != null)
-		    wfMovement = MovementsWorkFlow.constructWFMovement(requester.getEmpId(), null, lastValidTran.getExecutionDateFlag(), lastValidTran.getExecutionDate(), lastValidTran.getEndDate(), lastValidTran.getUnitId(), lastValidTran.getUnitFullName(), lastValidTran.getPeriodDays(), lastValidTran.getPeriodMonths(), lastValidTran.getLocationFlag(), lastValidTran.getLocation(), lastValidTran.getDecisionNumber(), lastValidTran.getDecisionDate(),
+		    wfMovement = MovementsWorkFlow.constructWFMovement(processId, requester.getEmpId(), null, lastValidTran.getExecutionDateFlag(), lastValidTran.getExecutionDate(), lastValidTran.getEndDate(), lastValidTran.getUnitId(), lastValidTran.getUnitFullName(), lastValidTran.getPeriodDays(), lastValidTran.getPeriodMonths(), lastValidTran.getLocationFlag(), lastValidTran.getLocation(), lastValidTran.getDecisionNumber(), lastValidTran.getDecisionDate(),
 			    MovementsReasonTypesEnum.BASED_ON_HIS_REQUEST.getCode(), lastValidTran.getJobId(), lastValidTran.getJobCode(),
 			    lastValidTran.getJobName(), MovementTypesEnum.SUBJOIN.getCode(), CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_CANCEL_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getCode());
 	    }

@@ -1809,7 +1809,7 @@ public class MovementsService extends BaseService {
 	    if (movementTransaction.getExecutionDate() != null && movementTransaction.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() &&
 		    (CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId().equals(movementTransaction.getTransactionTypeId()) || CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId().equals(movementTransaction.getTransactionTypeId()))
 		    && (movementTransaction.getLocationFlag().equals(LocationFlagsEnum.EXTERNAL.getCode()) || (emp.getOfficialRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) || emp.getOfficialRegionId() != UnitsService.getUnitById(movementTransaction.getUnitId()).getRegionId()))
-		    && checkSoldiersFourteenMonthRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate())) {
+		    && !checkSoldiersFourteenMonthRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate())) {
 		throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanfourteen", new String[] { emp.getName() });
 	    }
 

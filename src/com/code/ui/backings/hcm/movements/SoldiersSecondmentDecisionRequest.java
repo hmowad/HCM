@@ -70,7 +70,7 @@ public class SoldiersSecondmentDecisionRequest extends MovementsBase implements 
 	    if (soldier == null)
 		throw new BusinessException("error_general");
 
-	    wfMovement = MovementsWorkFlow.constructWFMovement(soldier.getEmpId(), null, FlagsEnum.OFF.getCode(), HijriDateService.getHijriSysDate(), null, null, null, null, null, LocationFlagsEnum.EXTERNAL.getCode(), null, null, null, MovementsReasonTypesEnum.FOR_WORK_INTEREST.getCode(), null,
+	    wfMovement = MovementsWorkFlow.constructWFMovement(processId, soldier.getEmpId(), null, FlagsEnum.OFF.getCode(), HijriDateService.getHijriSysDate(), null, null, null, null, null, LocationFlagsEnum.EXTERNAL.getCode(), null, null, null, MovementsReasonTypesEnum.FOR_WORK_INTEREST.getCode(), null,
 		    null, null, movementTypeId, TransactionTypesEnum.MVT_NEW_DECISION.getCode());
 	    wfMovement.setMinistryApprovalDate(HijriDateService.getHijriSysDate());
 	    wfMovementsList = null;
@@ -82,7 +82,7 @@ public class SoldiersSecondmentDecisionRequest extends MovementsBase implements 
 
     public void manipulateEndDate() {
 	try {
-	    MovementsWorkFlow.calculateWarnings(wfMovement);
+	    MovementsWorkFlow.calculateWarnings(wfMovement, processId);
 	    if (wfMovement.getExecutionDateString() != null && ((wfMovement.getPeriodMonths() != null && wfMovement.getPeriodMonths() > 0) || (wfMovement.getPeriodDays() != null && wfMovement.getPeriodDays() > 0))) {
 		wfMovement.setEndDateString(HijriDateService.addSubStringHijriMonthsDays(wfMovement.getExecutionDateString(), wfMovement.getPeriodMonths() == null ? 0 : wfMovement.getPeriodMonths(), wfMovement.getPeriodDays() == null ? -1 : wfMovement.getPeriodDays() - 1));
 	    } else

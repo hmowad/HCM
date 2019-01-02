@@ -1641,7 +1641,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
     }
 
     /**
-     * constructs movements requests as successors of previous movement decision wrapper for {@link #constructWFMovement(long, Long, Integer, Date, Date, Long, String, Integer, Integer, Integer, String, String, Date, Integer, Long, String, String, long, int)}
+     * constructs movements requests as successors of previous movement decision wrapper for {@link #constructWFMovement(long, long, Long, Integer, Date, Date, Long, String, Integer, Integer, Integer, String, String, Date, Integer, Long, String, String, long, int)}
      * 
      * @param decisionNumber
      *            previous decision number
@@ -1661,12 +1661,12 @@ public class MovementsWorkFlow extends BaseWorkFlow {
      * @see TransactionTypesEnum , MovementTypesEnum
      * 
      */
-    public static List<WFMovementData> constructWFMovementByDecisionInfo(String decisionNumber, Date decisionDate, Long[] categoriesIds, long movementTypeId, int transactionTypeCode, long regionId) throws BusinessException {
+    public static List<WFMovementData> constructWFMovementByDecisionInfo(long processId, String decisionNumber, Date decisionDate, Long[] categoriesIds, long movementTypeId, int transactionTypeCode, long regionId) throws BusinessException {
 	List<MovementTransactionData> movementTransactions = MovementsService.getValidDecisionMembers(decisionNumber, decisionDate, categoriesIds, movementTypeId, regionId, FlagsEnum.ON.getCode());
 	List<WFMovementData> movementRequests = new ArrayList<WFMovementData>();
 	if (movementTransactions != null && movementTransactions.size() > 0) {
 	    for (MovementTransactionData movementTransaction : movementTransactions) {
-		movementRequests.add(constructWFMovement(movementTransaction.getEmployeeId(), null, movementTransaction.getExecutionDateFlag(), movementTransaction.getExecutionDate(), transactionTypeCode == TransactionTypesEnum.MVT_TERMINATION_DECISION.getCode() ? HijriDateService.getHijriSysDate() : movementTransaction.getEndDate(), movementTransaction.getUnitId(), movementTransaction.getUnitFullName(), movementTransaction.getPeriodDays(), movementTransaction.getPeriodMonths(),
+		movementRequests.add(constructWFMovement(processId, movementTransaction.getEmployeeId(), null, movementTransaction.getExecutionDateFlag(), movementTransaction.getExecutionDate(), transactionTypeCode == TransactionTypesEnum.MVT_TERMINATION_DECISION.getCode() ? HijriDateService.getHijriSysDate() : movementTransaction.getEndDate(), movementTransaction.getUnitId(), movementTransaction.getUnitFullName(), movementTransaction.getPeriodDays(), movementTransaction.getPeriodMonths(),
 			movementTransaction.getLocationFlag(), movementTransaction.getLocation(), movementTransaction.getDecisionNumber(),
 			movementTransaction.getDecisionDate(), movementTransaction.getReasonType(), movementTransaction.getJobId(), movementTransaction.getJobCode(), movementTransaction.getJobName(), movementTransaction.getMovementTypeId(), transactionTypeCode));
 	    }
@@ -1720,7 +1720,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
      *             if any error occurs
      * @see LocationFlagsEnum , MovementTypesEnum , TransactionTypesEnum , MovementsReasonTypesEnum
      */
-    public static WFMovementData constructWFMovement(long employeeId, Long replacementEmployeeId, Integer executionDateFlag, Date executionDate, Date endDate, Long unitId, String unitFullName, Integer periodDays, Integer periodMonths, Integer locationFlag, String location, String decisionNumber, Date decisionDate, Integer reasonType, Long jobId, String jobCode, String jobName, long movementTypeId, int transactionTypeCode) throws BusinessException {
+    public static WFMovementData constructWFMovement(long processId, long employeeId, Long replacementEmployeeId, Integer executionDateFlag, Date executionDate, Date endDate, Long unitId, String unitFullName, Integer periodDays, Integer periodMonths, Integer locationFlag, String location, String decisionNumber, Date decisionDate, Integer reasonType, Long jobId, String jobCode, String jobName, long movementTypeId, int transactionTypeCode) throws BusinessException {
 	WFMovementData movementRequest = new WFMovementData();
 
 	EmployeeData employee = EmployeesService.getEmployeeData(employeeId);
@@ -1800,7 +1800,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 
 	movementRequest.setLocationFlag(locationFlag);
 
-	calculateWarnings(movementRequest);
+	calculateWarnings(movementRequest, processId);
 
 	return movementRequest;
     }
@@ -1994,7 +1994,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
      * @throws BusinessException
      *             if any error occurs
      */
-    public static void calculateWarnings(WFMovementData movementRequest) throws BusinessException {
+    public static void calculateWarnings(WFMovementData movementRequest, long processId) throws BusinessException {
 	EmployeeData emp = EmployeesService.getEmployeeData(movementRequest.getEmployeeId());
 	if (emp == null)
 	    throw new BusinessException("error_general");
@@ -2035,7 +2035,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 
 	    long newDecisionTransactionTypeId = CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId();
 	    long extensionDecisionTransactionTypeId = CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId();
-	    if (!isRequestProcess(getWFInstanceById(movementRequest.getInstanceId()).getProcessId(), movementRequest.getCategoryId())
+	    if (!isRequestProcess(processId, movementRequest.getCategoryId())
 		    && (movementRequest.getTransactionTypeId() == newDecisionTransactionTypeId || movementRequest.getTransactionTypeId() == extensionDecisionTransactionTypeId)
 		    && (!MovementsService.checkSoldiersFourteenMonthRule(movementRequest.getExecutionDate(), emp.getServiceTerminationDueDate()))) {
 		movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_serviceTerminationDueDateIsInLessThanFourteenMonth" + ",");
