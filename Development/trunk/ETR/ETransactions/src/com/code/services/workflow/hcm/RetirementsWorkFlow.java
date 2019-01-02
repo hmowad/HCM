@@ -377,7 +377,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	return UnitsService.getUnitById(regionPosition.getUnitId());
     }
 
-    private static Boolean isRegionOfficerDisclaimerRequest(WFDisclaimerData wfDisclaimerData) {
+    public static Boolean isRegionOfficerDisclaimerRequest(WFDisclaimerData wfDisclaimerData) {
 	if (isRegionOfficerDisclaimerRequest(wfDisclaimerData))
 	    return true;
 	return false;
