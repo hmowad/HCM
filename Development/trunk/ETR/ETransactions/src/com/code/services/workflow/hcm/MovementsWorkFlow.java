@@ -2007,48 +2007,51 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 	}
 
 	movementRequest.setWarningMessages("");
-	// All
-	if (emp.getStatusId().longValue() == EmployeeStatusEnum.ON_DUTY.getCode() && (emp.getPhysicalUnitId() != null && emp.getOfficialUnitId() != null && emp.getPhysicalUnitId().longValue() != emp.getOfficialUnitId().longValue())) {
-	    movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_internallyAssignedEmployeeWarning" + ",");
+
+	long extensionDecisionTransactionTypeId = CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId();
+	long newDecisionTransactionTypeId = CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId();
+	if (!isRequestProcess(processId, movementRequest.getCategoryId()) && movementRequest.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())
+		&& (movementRequest.getTransactionTypeId() == newDecisionTransactionTypeId || movementRequest.getTransactionTypeId() == extensionDecisionTransactionTypeId)
+		&& (!MovementsService.checkSoldiersFourteenMonthRule(movementRequest.getExecutionDate(), emp.getServiceTerminationDueDate()))) {
+	    movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_serviceTerminationDueDateIsInLessThanFourteenMonth" + ",");
+
 	}
+	if (isRequestProcess(processId, movementRequest.getCategoryId()) || movementRequest.getTransactionTypeId() != extensionDecisionTransactionTypeId) {
 
-	if (replacementEmp != null && replacementEmp.getStatusId().longValue() == EmployeeStatusEnum.ON_DUTY.getCode() && (replacementEmp.getPhysicalUnitId() != null && replacementEmp.getOfficialUnitId() != null && replacementEmp.getPhysicalUnitId().longValue() != replacementEmp.getOfficialUnitId().longValue())) {
-	    movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_internallyAssignedReplacementEmployeeWarning" + ",");
-	}
-
-	// Officers
-	if (emp.getCategoryId().longValue() == CategoriesEnum.OFFICERS.getCode()) {
-	    if (emp.getStatusId().longValue() == EmployeeStatusEnum.ASSIGNED.getCode())
-		movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_assignedOfficerWarning" + ",");
-
-	    if (replacementEmp != null && replacementEmp.getStatusId().longValue() == EmployeeStatusEnum.ASSIGNED.getCode())
-		movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_assignedReplacementOfficerWarning" + ",");
-	}
-
-	// Soldiers : check also for replacement soldier
-	if (movementRequest.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
-	    if (!checkSoldiersMovementFiveYearsRule(movementRequest.getEmployeeId(), movementRequest.getExecutionDate() == null ? HijriDateService.getHijriSysDate() : movementRequest.getExecutionDate()))
-		movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_soldierMinYearsPeriodWarning" + ",");
-
-	    if (movementRequest.getReplacementEmployeeId() != null && !checkSoldiersMovementFiveYearsRule(movementRequest.getReplacementEmployeeId(), movementRequest.getExecutionDate() == null ? HijriDateService.getHijriSysDate() : movementRequest.getExecutionDate()))
-		movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_replacementSoldierMinYearsPeriodWarning" + ",");
-
-	    long newDecisionTransactionTypeId = CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId();
-	    long extensionDecisionTransactionTypeId = CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId();
-	    if (!isRequestProcess(processId, movementRequest.getCategoryId())
-		    && (movementRequest.getTransactionTypeId() == newDecisionTransactionTypeId || movementRequest.getTransactionTypeId() == extensionDecisionTransactionTypeId)
-		    && (!MovementsService.checkSoldiersFourteenMonthRule(movementRequest.getExecutionDate(), emp.getServiceTerminationDueDate()))) {
-		movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_serviceTerminationDueDateIsInLessThanFourteenMonth" + ",");
+	    // All
+	    if (emp.getStatusId().longValue() == EmployeeStatusEnum.ON_DUTY.getCode() && (emp.getPhysicalUnitId() != null && emp.getOfficialUnitId() != null && emp.getPhysicalUnitId().longValue() != emp.getOfficialUnitId().longValue())) {
+		movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_internallyAssignedEmployeeWarning" + ",");
 	    }
 
-	}
+	    if (replacementEmp != null && replacementEmp.getStatusId().longValue() == EmployeeStatusEnum.ON_DUTY.getCode() && (replacementEmp.getPhysicalUnitId() != null && replacementEmp.getOfficialUnitId() != null && replacementEmp.getPhysicalUnitId().longValue() != replacementEmp.getOfficialUnitId().longValue())) {
+		movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_internallyAssignedReplacementEmployeeWarning" + ",");
+	    }
 
-	if (emp.getCategoryId().longValue() == CategoriesEnum.OFFICERS.getCode() || movementRequest.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
-	    if (movementRequest.getReplacementEmployeeId() == null && movementRequest.getJobId() != null && emp.getMajorSpecId().longValue() != JobsService.getJobById(movementRequest.getJobId()).getMajorSpecializationId().longValue())
-		movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_empSpecNotMatchingJobSpec" + ",");
+	    // Officers
+	    if (emp.getCategoryId().longValue() == CategoriesEnum.OFFICERS.getCode()) {
+		if (emp.getStatusId().longValue() == EmployeeStatusEnum.ASSIGNED.getCode())
+		    movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_assignedOfficerWarning" + ",");
 
-	    if (movementRequest.getReplacementEmployeeId() != null && emp.getMajorSpecId().longValue() != replacementEmp.getMajorSpecId().longValue())
-		movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_empsSpecsNotMatching");
+		if (replacementEmp != null && replacementEmp.getStatusId().longValue() == EmployeeStatusEnum.ASSIGNED.getCode())
+		    movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_assignedReplacementOfficerWarning" + ",");
+	    }
+
+	    // Soldiers : check also for replacement soldier
+	    if (movementRequest.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
+		if (!checkSoldiersMovementFiveYearsRule(movementRequest.getEmployeeId(), movementRequest.getExecutionDate() == null ? HijriDateService.getHijriSysDate() : movementRequest.getExecutionDate()))
+		    movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_soldierMinYearsPeriodWarning" + ",");
+
+		if (movementRequest.getReplacementEmployeeId() != null && !checkSoldiersMovementFiveYearsRule(movementRequest.getReplacementEmployeeId(), movementRequest.getExecutionDate() == null ? HijriDateService.getHijriSysDate() : movementRequest.getExecutionDate()))
+		    movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_replacementSoldierMinYearsPeriodWarning" + ",");
+	    }
+
+	    if (emp.getCategoryId().longValue() == CategoriesEnum.OFFICERS.getCode() || movementRequest.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
+		if (movementRequest.getReplacementEmployeeId() == null && movementRequest.getJobId() != null && emp.getMajorSpecId().longValue() != JobsService.getJobById(movementRequest.getJobId()).getMajorSpecializationId().longValue())
+		    movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_empSpecNotMatchingJobSpec" + ",");
+
+		if (movementRequest.getReplacementEmployeeId() != null && emp.getMajorSpecId().longValue() != replacementEmp.getMajorSpecId().longValue())
+		    movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_empsSpecsNotMatching");
+	    }
 	}
     }
 
