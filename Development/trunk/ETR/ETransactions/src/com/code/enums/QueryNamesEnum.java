@@ -131,7 +131,7 @@ public enum QueryNamesEnum {
     HCM_GET_UNITS_BY_PHYSICAL_MANAGER("hcm_unitData_getUnitsByPhysicalManager"),
     HCM_GET_TRAINING_CENTERS_AND_INSTITUTES_AND_NAME("hcm_unitData_getTrainingCentersAndInstitutesByName"),
     HCM_GET_UNIT_DATA_ANCESTOR_UNDER_PRESIDENCY_BY_LEVEL("hcm_unitData_getAncestorUnderPresidencyByLevel"),
-    HCM_SEARCH_UNITS_BY_UNITS_IDS("hcm_unitData_searchUnitsByUnitsIds"),
+    HCM_SEARCH_UNITS_BY_UNITS_IDS("hcm_unitData_searchUnitsByUnitsIdsAndUnitFullName"),
     HCM_COUNT_UNIT_CHILDREN_EXIST_IN_UNITS("hcm_unit_countUnitChildrenExistInUnits"),
     HCM_GET_REGION("hcm_Region_getRegion"),
     HCM_GET_UNIT_TRANSACTION_DATA("hcm_unitTransactionData_getUnitTransactions"),

@@ -107,7 +107,7 @@ import com.code.enums.FlagsEnum;
 			" and au.activeFlag = 1 " +
 			" order by au.id"),
 
-	@NamedQuery(name = "hcm_unitData_searchUnitsByUnitsIds",
+	@NamedQuery(name = "hcm_unitData_searchUnitsByUnitsIdsAndUnitFullName",
 		query = " select u from UnitData u " +
 			" where u.id in (:P_UNITS_IDS) " +
 			" and (:P_UNIT_FULL_NAME = '-1' or u.fullName like :P_UNIT_FULL_NAME)" +
