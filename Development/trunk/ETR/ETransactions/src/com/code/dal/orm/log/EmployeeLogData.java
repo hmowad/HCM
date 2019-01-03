@@ -40,6 +40,8 @@ public class EmployeeLogData extends BaseEntity {
     private Long id;
     private Long empId;
     private String empName;
+    private Long categoryId;
+    private String categoryDesc;
     private Long jobId;
     private Long basicJobNameId;
     private String basicJobNameDesc;
@@ -105,6 +107,26 @@ public class EmployeeLogData extends BaseEntity {
 
     public void setEmpName(String empName) {
 	this.empName = empName;
+    }
+
+    @Basic
+    @Column(name = "CATEGORY_ID")
+    public Long getCategoryId() {
+	return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+	this.categoryId = categoryId;
+    }
+
+    @Basic
+    @Column(name = "CATEGORY_DESCRIPTION")
+    public String getCategoryDesc() {
+	return categoryDesc;
+    }
+
+    public void setCategoryDesc(String categoryDesc) {
+	this.categoryDesc = categoryDesc;
     }
 
     @Basic
@@ -328,6 +350,7 @@ public class EmployeeLogData extends BaseEntity {
 
     public void setInsertionTime(Long insertionTime) {
 	this.insertionTime = insertionTime;
+	employeelog.setInsertionTime(insertionTime);
     }
 
     @Basic
@@ -338,6 +361,7 @@ public class EmployeeLogData extends BaseEntity {
 
     public void setOfficialUnitId(Long officialUnitId) {
 	this.officialUnitId = officialUnitId;
+	employeelog.setOfficialUnitId(officialUnitId);
     }
 
     @Basic
@@ -358,6 +382,7 @@ public class EmployeeLogData extends BaseEntity {
 
     public void setMedStaffRankId(Long medStaffRankId) {
 	this.medStaffRankId = medStaffRankId;
+	employeelog.setMedStaffRankId(medStaffRankId);
     }
 
     @Basic
@@ -378,6 +403,7 @@ public class EmployeeLogData extends BaseEntity {
 
     public void setMedStaffLevelId(Long medStaffLevelId) {
 	this.medStaffLevelId = medStaffLevelId;
+	employeelog.setMedStaffLevelId(medStaffLevelId);
     }
 
     @Basic
@@ -398,6 +424,7 @@ public class EmployeeLogData extends BaseEntity {
 
     public void setMedStaffDegreeId(Long medStaffDegreeId) {
 	this.medStaffDegreeId = medStaffDegreeId;
+	employeelog.setMedStaffDegreeId(medStaffDegreeId);
     }
 
     @Basic
