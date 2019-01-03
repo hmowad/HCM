@@ -131,10 +131,8 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 		default:
 		    throw new BusinessException("error_general");
 		}
-		salaryRanks = CommonService.getRanks(null, new Long[] { empParam.getCategoryId() });
-	    } else {
-		salaryRanks = CommonService.getRanks(null, new Long[] { employee.getCategoryId() });
 	    }
+	    salaryRanks = CommonService.getRanks(null, new Long[] { employee.getCategoryId() });
 
 	    switch (employee.getCategoryId().intValue()) {
 	    case 1:
