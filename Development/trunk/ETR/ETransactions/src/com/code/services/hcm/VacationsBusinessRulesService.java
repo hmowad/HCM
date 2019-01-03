@@ -576,7 +576,7 @@ public class VacationsBusinessRulesService extends BaseService {
 
 	    // validate if the vacation is between 2 frames
 	    Date frameStartDate = null, frameEndDate = request.getStartDate();
-	    if (CategoriesEnum.CONTRACTORS.getCode() == vacationBeneficiary.getCategoryId()) {
+	    if (CategoriesEnum.SOLDIERS.getCode() == vacationBeneficiary.getCategoryId() || CategoriesEnum.CONTRACTORS.getCode() == vacationBeneficiary.getCategoryId()) {
 		frameEndDate = vacationBeneficiary.getRecruitmentDate();
 	    } else {
 		Vacation firstSickVacation = getFirstVacation(vacationBeneficiary.getEmpId(), VacationTypesEnum.SICK.getCode(), request.getSubVacationType());
