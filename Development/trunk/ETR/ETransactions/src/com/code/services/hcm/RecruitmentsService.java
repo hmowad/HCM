@@ -851,6 +851,7 @@ public class RecruitmentsService extends BaseService {
 			emp.setRankId(recruitmentTransaction.getRankId());
 			emp.setRecruitmentRankId(recruitmentTransaction.getRankId());
 			emp.setRankTitleId(recruitmentTransaction.getRankTitleId());
+			emp.setJobModifiedFlag(FlagsEnum.ON.getCode());
 		    } else {
 			emp.setRankId(job.getRankId());
 			emp.setRecruitmentRankId(job.getRankId());
@@ -1739,6 +1740,7 @@ public class RecruitmentsService extends BaseService {
 		if (empData.getEmpId() == null)
 		    empData.setRecruitmentRankId(recruitmentTransaction.getRankId());
 		empData.setRankTitleId(recruitmentTransaction.getRankTitleId());
+		empData.setJobModifiedFlag(FlagsEnum.ON.getCode());
 	    } else {
 		empData.setRankId(job.getRankId());
 		if (empData.getEmpId() == null)
