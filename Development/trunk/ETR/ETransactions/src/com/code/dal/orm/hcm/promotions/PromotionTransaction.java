@@ -92,6 +92,7 @@ public class PromotionTransaction extends AuditEntity implements InsertableAudit
     private String internalCopies;
     private String externalCopies;
     private String attachments;
+    private Long basedOnTransactionId;
 
     @SequenceGenerator(name = "HCMPromotionsSeq",
 	    sequenceName = "HCM_PRM_SEQ")
@@ -611,6 +612,16 @@ public class PromotionTransaction extends AuditEntity implements InsertableAudit
 
     public void setAttachments(String attachments) {
 	this.attachments = attachments;
+    }
+
+    @Basic
+    @Column(name = "BASED_ON_TRANSACTION_ID")
+    public Long getBasedOnTransactionId() {
+	return basedOnTransactionId;
+    }
+
+    public void setBasedOnTransactionId(Long basedOnTransactionId) {
+	this.basedOnTransactionId = basedOnTransactionId;
     }
 
     @Override

@@ -301,7 +301,8 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 
     public void printPromotion(PromotionTransactionData promotion) {
 	try {
-	    byte[] bytes = PromotionsService.getPromotionBytes(promotion, null, null);
+	    PromotionTransactionData originalPromotionTransaction = PromotionsService.getPromotionTransactionById(promotion.getBasedOnTransactionId());
+	    byte[] bytes = PromotionsService.getPromotionBytes(promotion, originalPromotionTransaction.getDecisionDate(), originalPromotionTransaction.getDecisionNumber());
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));

@@ -116,6 +116,7 @@ public class PromotionTransactionData extends BaseEntity {
     private String internalCopies;
     private String externalCopies;
     private String attachments;
+    private Long basedOnTransactionId;
 
     private PromotionTransaction promotionTransaction;
 
@@ -848,6 +849,16 @@ public class PromotionTransactionData extends BaseEntity {
     public void setAttachments(String attachments) {
 	this.attachments = attachments;
 	this.promotionTransaction.setAttachments(attachments);
+    }
+
+    @Basic
+    @Column(name = "BASED_ON_TRANSACTION_ID")
+    public Long getBasedOnTransactionId() {
+	return basedOnTransactionId;
+    }
+
+    public void setBasedOnTransactionId(Long basedOnTransactionId) {
+	this.basedOnTransactionId = basedOnTransactionId;
     }
 
     @Transient
