@@ -3281,6 +3281,7 @@ public class PromotionsService extends BaseService {
 		    promotionTransactionData.setNewRankId(promotionReportDetailDataItr.getNewRankId());
 		    promotionTransactionData.setNewRankDesc(promotionReportDetailDataItr.getNewRankDesc());
 		    promotionTransactionData.setRankTitleId(promotionReportDetailDataItr.getRankTitleId());
+		    promotionTransactionData.setBasedOnTransactionId(promotionReportDetailDataItr.getBasedOnTransactionId());
 
 		    // Exceptional Promotions Data
 		    promotionTransactionData.setExternalDecisionNumber(promotionReportDetailDataItr.getExternalDecisionNumber());
