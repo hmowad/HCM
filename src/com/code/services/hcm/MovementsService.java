@@ -570,9 +570,7 @@ public class MovementsService extends BaseService {
 			replacementEmp.setJobId(null);
 			emp.setJobId(null);
 			EmployeesService.updateEmployee(replacementEmp, session);
-			LogService.logEmployeeData(replacementEmp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), session);
 			EmployeesService.updateEmployee(emp, session);
-			LogService.logEmployeeData(emp, movementTransaction.getExecutionDate(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), session);
 			session.flushTransaction();
 		    }
 
