@@ -2012,7 +2012,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 	long newDecisionTransactionTypeId = CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId();
 	if (!isRequestProcess(processId, movementRequest.getCategoryId()) && movementRequest.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())
 		&& (movementRequest.getTransactionTypeId() == newDecisionTransactionTypeId || movementRequest.getTransactionTypeId() == extensionDecisionTransactionTypeId)
-		&& (!MovementsService.checkSoldiersFourteenMonthRule(movementRequest.getExecutionDate(), emp.getServiceTerminationDueDate()))) {
+		&& (!MovementsService.checkSoldiersFourteenMonthRule(movementRequest.getExecutionDate() != null ? movementRequest.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate()))) {
 	    movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_serviceTerminationDueDateIsInLessThanFourteenMonth" + ",");
 
 	}
