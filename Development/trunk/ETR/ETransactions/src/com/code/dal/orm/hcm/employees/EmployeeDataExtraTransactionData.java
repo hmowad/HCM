@@ -39,10 +39,11 @@ public class EmployeeDataExtraTransactionData {
     private String socialStatusDesc;
     private Integer generalSpecialization;
     private String generalSpecDescription;
-    private Date effectiveGregDate;
-    private Date effectiveHijriDate;
+    private Date effectiveDate;
+    private String effectiveDateString;
     private String decisionNumber;
     private Date decisionDate;
+    private String decisionDateString;
     private Long medStaffRankId;
     private String medStaffRankDesc;
     private Long medStaffLevelId;
@@ -194,25 +195,23 @@ public class EmployeeDataExtraTransactionData {
     }
 
     @Basic
-    @Column(name = "EFFECTIVE_GREG_DATE")
-    public Date getEffectiveGregDate() {
-	return effectiveGregDate;
+    @Column(name = "EFFECTIVE_DATE")
+    public Date getEffectiveDate() {
+	return effectiveDate;
     }
 
-    public void setEffectiveGregDate(Date effectiveGregDate) {
-	this.effectiveGregDate = effectiveGregDate;
-	employeeDataExtraTransaction.setEffectiveGregDate(effectiveGregDate);
+    public void setEffectiveDate(Date effectiveDate) {
+	this.effectiveDate = effectiveDate;
+	employeeDataExtraTransaction.setEffectiveDate(effectiveDate);
     }
 
-    @Basic
-    @Column(name = "EFFECTIVE_HIJRI_DATE")
-    public Date getEffectiveHijriDate() {
-	return effectiveHijriDate;
+    @Transient
+    public String getEffectiveDateString() {
+	return effectiveDateString;
     }
 
-    public void setEffectiveHijriDate(Date effectiveHijriDate) {
-	this.effectiveHijriDate = effectiveHijriDate;
-	employeeDataExtraTransaction.setEffectiveHijriDate(effectiveHijriDate);
+    public void setEffectiveDateString(String effectiveDateString) {
+	this.effectiveDateString = effectiveDateString;
     }
 
     @Basic
@@ -235,6 +234,15 @@ public class EmployeeDataExtraTransactionData {
     public void setDecisionDate(Date decisionDate) {
 	this.decisionDate = decisionDate;
 	employeeDataExtraTransaction.setDecisionDate(decisionDate);
+    }
+
+    @Transient
+    public String getDecisionDateString() {
+	return decisionDateString;
+    }
+
+    public void setDecisionDateString(String decisionDateString) {
+	this.decisionDateString = decisionDateString;
     }
 
     @Basic

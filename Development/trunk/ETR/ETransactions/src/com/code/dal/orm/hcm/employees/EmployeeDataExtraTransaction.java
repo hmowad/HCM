@@ -22,8 +22,7 @@ public class EmployeeDataExtraTransaction {
     private Long salaryDegreeId;
     private Integer socialStatus;
     private Integer generalSpecialization;
-    private Date effectiveGregDate;
-    private Date effectiveHijriDate;
+    private Date effectiveDate;
     private String decisionNumber;
     private Date decisionDate;
     private Long medStaffRankId;
@@ -106,23 +105,13 @@ public class EmployeeDataExtraTransaction {
     }
 
     @Basic
-    @Column(name = "EFFECTIVE_GREG_DATE")
-    public Date getEffectiveGregDate() {
-	return effectiveGregDate;
+    @Column(name = "EFFECTIVE_DATE")
+    public Date getEffectiveDate() {
+	return effectiveDate;
     }
 
-    public void setEffectiveGregDate(Date effectiveGregDate) {
-	this.effectiveGregDate = effectiveGregDate;
-    }
-
-    @Basic
-    @Column(name = "EFFECTIVE_HIJRI_DATE")
-    public Date getEffectiveHijriDate() {
-	return effectiveHijriDate;
-    }
-
-    public void setEffectiveHijriDate(Date effectiveHijriDate) {
-	this.effectiveHijriDate = effectiveHijriDate;
+    public void setEffectiveDate(Date effectiveDate) {
+	this.effectiveDate = effectiveDate;
     }
 
     @Basic
