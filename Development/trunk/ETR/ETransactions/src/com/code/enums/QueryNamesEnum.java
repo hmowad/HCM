@@ -15,6 +15,7 @@ public enum QueryNamesEnum {
     HCM_SEARCH_EMPLOYEES("hcm_empData_searchEmpData"),
     HCM_SEARCH_MANAGER_EMPLOYEES("hcm_empData_searchManagerEmployees"),
     HCM_SEARCH_EMPLOYEES_BY_PHYSICAL_OR_OFFICIAL_UNIT("hcm_empData_searchEmpDataByOfficialOrPhysicalUnit"),
+    HCM_SEARCH_EMPLOYEES_DATA_EXTRA_TRANSACTION("hcm_empDataExtraTrnData_searchEmpDataExtraTrnData"),
 
     HCM_COUNT_EMPS_BY_UNIT_ID("hcm_empData_countEmpByUnit"),
     HCM_COUNT_EMPS_BY_UNIT_HKEY_PREFIX("hcm_empData_countEmpByUnitHkeyPrefix"),

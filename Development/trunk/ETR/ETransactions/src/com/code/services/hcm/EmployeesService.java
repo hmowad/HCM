@@ -14,6 +14,7 @@ import com.code.dal.orm.hcm.Rank;
 import com.code.dal.orm.hcm.SocialIdIssuePlace;
 import com.code.dal.orm.hcm.employees.Employee;
 import com.code.dal.orm.hcm.employees.EmployeeData;
+import com.code.dal.orm.hcm.employees.EmployeeDataExtraTransactionData;
 import com.code.dal.orm.hcm.employees.EmployeePhoto;
 import com.code.dal.orm.hcm.employees.EmployeeQualificationsData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
@@ -1592,5 +1593,33 @@ public class EmployeesService extends BaseService {
 	    throw new BusinessException("error_invalidSocialID");
 	if (birthDate == null || birthDate.equals(""))
 	    throw new BusinessException("error_birthDateMandatory");
+    }
+
+    // --------------------------------------- Employees Data Extra Transaction -------------------------------------------//
+
+    public static List<EmployeeDataExtraTransactionData> getEmployeeDataExtraTransactionByEmpId(Long empId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_EMP_ID", empId);
+	    return DataAccess.executeNamedQuery(EmployeeDataExtraTransactionData.class, QueryNamesEnum.HCM_SEARCH_EMPLOYEES_DATA_EXTRA_TRANSACTION.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static void getEmployeeDataExtraTransactionLists(Long empId, List<EmployeeDataExtraTransactionData> socialStatusEmployeeDataExtraTransactionList, List<EmployeeDataExtraTransactionData> generalSpecializationEmployeeDataExtraTransactionList, List<EmployeeDataExtraTransactionData> rankTitleEmployeeDataExtraTransactionList,
+	    List<EmployeeDataExtraTransactionData> salaryRankEmployeeDataExtraTransactionList) throws BusinessException {
+	List<EmployeeDataExtraTransactionData> allEmployeeDataExtraTransactionList = getEmployeeDataExtraTransactionByEmpId(empId);
+	for (EmployeeDataExtraTransactionData employeeDataExtraTransactionData : allEmployeeDataExtraTransactionList) {
+	    if (employeeDataExtraTransactionData.getSocialStatus() != null)
+		socialStatusEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
+	    if (employeeDataExtraTransactionData.getGeneralSpecialization() != null)
+		generalSpecializationEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
+	    if (employeeDataExtraTransactionData.getRankTitleId() != null)
+		rankTitleEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
+	    if (employeeDataExtraTransactionData.getSalaryRankId() != null || employeeDataExtraTransactionData.getSalaryDegreeId() != null)
+		salaryRankEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
+	}
     }
 }
