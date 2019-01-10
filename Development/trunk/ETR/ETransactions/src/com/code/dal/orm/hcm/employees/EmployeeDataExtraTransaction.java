@@ -1,5 +1,6 @@
 package com.code.dal.orm.hcm.employees;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -11,9 +12,12 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.code.dal.orm.BaseEntity;
+
+@SuppressWarnings("serial")
 @Entity
 @Table(name = "HCM_PRS_EMPS_DATA_EXTRA_TRNS")
-public class EmployeeDataExtraTransaction {
+public class EmployeeDataExtraTransaction extends BaseEntity implements Serializable {
 
     private Long id;
     private Long empId;
