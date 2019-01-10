@@ -1,5 +1,6 @@
 package com.code.dal.orm.hcm.employees;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -14,17 +15,20 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.code.dal.orm.BaseEntity;
+
+@SuppressWarnings("serial")
 @NamedQueries({
 	@NamedQuery(name = "hcm_empDataExtraTrnData_searchEmpDataExtraTrnData",
 		query = "select e from EmployeeDataExtraTransactionData e " +
 			" where (:P_EMP_ID = -1 or e.empId = :P_EMP_ID) " +
-			" order by e.effectiveHijriDate")
+			" order by e.effectiveDate")
 
 })
 
 @Entity
 @Table(name = "HCM_VW_PRS_EMPS_DATA_EXT_TRNS")
-public class EmployeeDataExtraTransactionData {
+public class EmployeeDataExtraTransactionData extends BaseEntity implements Serializable {
 
     private Long id;
     private Long empId;
@@ -51,6 +55,10 @@ public class EmployeeDataExtraTransactionData {
     private Long medStaffDegreeId;
     private String medStaffDegreeDesc;
     private EmployeeDataExtraTransaction employeeDataExtraTransaction;
+
+    public EmployeeDataExtraTransactionData() {
+	employeeDataExtraTransaction = new EmployeeDataExtraTransaction();
+    }
 
     @SequenceGenerator(name = "HCMEmpsExtraTrnsSeq",
 	    sequenceName = "HCM_EMPS_EXTRA_TRNS_SEQ",
