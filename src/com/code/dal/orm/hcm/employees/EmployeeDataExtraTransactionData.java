@@ -16,12 +16,14 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.code.dal.orm.BaseEntity;
+import com.code.services.util.HijriDateService;
 
 @SuppressWarnings("serial")
 @NamedQueries({
 	@NamedQuery(name = "hcm_empDataExtraTrnData_searchEmpDataExtraTrnData",
 		query = "select e from EmployeeDataExtraTransactionData e " +
 			" where (:P_EMP_ID = -1 or e.empId = :P_EMP_ID) " +
+			" and (:P_DECISCION_NUMBER = '-1' or e.decisionNumber = :P_DECISCION_NUMBER) " +
 			" order by e.effectiveDate")
 
 })
@@ -210,6 +212,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
 
     public void setEffectiveDate(Date effectiveDate) {
 	this.effectiveDate = effectiveDate;
+	this.effectiveDateString = HijriDateService.getHijriDateString(effectiveDate);
 	employeeDataExtraTransaction.setEffectiveDate(effectiveDate);
     }
 
@@ -241,6 +244,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
 
     public void setDecisionDate(Date decisionDate) {
 	this.decisionDate = decisionDate;
+	this.decisionDateString = HijriDateService.getHijriDateString(decisionDate);
 	employeeDataExtraTransaction.setDecisionDate(decisionDate);
     }
 
