@@ -24,7 +24,7 @@ import com.code.services.util.HijriDateService;
 		query = "select e from EmployeeDataExtraTransactionData e " +
 			" where (:P_EMP_ID = -1 or e.empId = :P_EMP_ID) " +
 			" and (:P_DECISCION_NUMBER = '-1' or e.decisionNumber = :P_DECISCION_NUMBER) " +
-			" order by e.effectiveDate")
+			" order by e.effectiveDate desc")
 
 })
 
