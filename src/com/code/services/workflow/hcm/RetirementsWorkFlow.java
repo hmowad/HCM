@@ -378,7 +378,8 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
     }
 
     public static Boolean isRegionOfficerDisclaimerRequest(WFDisclaimerData wfDisclaimerData) {
-	if (isRegionOfficerDisclaimerRequest(wfDisclaimerData))
+	if (wfDisclaimerData.getEmpPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()
+		&& wfDisclaimerData.getEmpCategoryId() == CategoriesEnum.OFFICERS.getCode())
 	    return true;
 	return false;
     }
