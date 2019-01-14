@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function getEmployee(contextPath){
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, -1);
+		}
+		
+		function handleEmpMiniSearchResult(ret){
+			if(ret!=null){ 
+		         document.getElementById('employeesDataExtraTransactionsFormId:employeeIDId').value=ret[0];
+		         document.getElementById('employeesDataExtraTransactionsFormId:searchEmpBtnId').click();
+			}
+		}
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="employeesDataExtraTransactionsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{employeesDataExtraTransactions.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_emp}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%">
+							<tr>
+								<td width="100%">
+									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<th width="15%">
+												<h:outputText value="#{msgs.label_selectEmp}" />
+											</th>
+											<td width="85%">
+												<h:inputHidden id="employeeIDId" value="#{employeesDataExtraTransactions.employeeId}" />
+												<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+												<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{employeesDataExtraTransactions.searchEmployee()}">
+													<f:ajax execute="employeesDataExtraTransactionsFormId:employeeIDId" render="employeesDataExtraTransactionsFormId:employeeDataPanelId employeesDataExtraTransactionsFormId:employeeDataExtraTransactionsPanelId employeesDataExtraTransactionsFormId:notifyMessagesId" />
+												</h:commandButton>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="employeeDataPanelId">
+							<h:panelGroup rendered="#{employeesDataExtraTransactions.employeeId != null}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%">
+											<code:emp value="#{employeesDataExtraTransactions.employee}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="employeeDataExtraTransactionsPanelId">
+							<h:panelGroup rendered="#{employeesDataExtraTransactions.employeeId != null}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_socialStatus}">
+												<h:panelGroup id="socialStatusPanelId">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td>
+																<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal_icon" action="#{employeesDataExtraTransactions.addNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.socialStatusList)}">
+																	<f:ajax render="employeesDataExtraTransactionsFormId:socialStatusPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																</h:commandButton>
+															</td>
+														</tr>
+
+														<tr>
+															<td width="100%" height="5" />
+														</tr>
+
+														<tr>
+															<td>
+																<rich:dataTable id="socialStatusListId" rows="#{employeesDataExtraTransactions.rowsCount}" rowKeyVar="index" var="socialStatusElement" value="#{employeesDataExtraTransactions.socialStatusList}" styleClass="gridMaster">
+																	<rich:column style="width : 5%">
+																		<f:facet name="header">#</f:facet>
+	                                										#{index + 1}
+	                            									</rich:column>
+	                            									<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+																		<h:inputText value="#{socialStatusElement.decisionNumber}" rendered="#{socialStatusElement.id == null}" />
+																		<h:outputText value="#{socialStatusElement.decisionNumber}" rendered="#{socialStatusElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+																		<util:hijri value="#{socialStatusElement.decisionDate}" rendered="#{socialStatusElement.id == null}" nullable="false" />
+																		<h:outputText value="#{socialStatusElement.decisionDateString}" rendered="#{socialStatusElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width : 10%">
+																		<f:facet name="header">#{msgs.label_socialStatus}</f:facet>
+																		<h:selectOneMenu value="#{socialStatusElement.socialStatus}" rendered="#{socialStatusElement.id == null}">
+																			<f:selectItem itemLabel="" />
+																			<f:selectItem itemLabel="#{msgs.label_single}" itemValue="1" />
+																			<f:selectItem itemLabel="#{msgs.label_married}" itemValue="2" />
+																		</h:selectOneMenu>
+																		<h:outputText value="#{msgs.label_single}" rendered="#{(socialStatusElement.id != null) and (socialStatusElement.socialStatus == 1)}" />
+																		<h:outputText value="#{msgs.label_married}" rendered="#{(socialStatusElement.id != null) and (socialStatusElement.socialStatus == 2)}" />
+																	</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_startFromDate}</f:facet>
+																		<util:hijri value="#{socialStatusElement.effectiveDate}" rendered="#{socialStatusElement.id == null}" nullable="false" />
+																		<h:outputText value="#{socialStatusElement.effectiveDateString}" rendered="#{socialStatusElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_save}</f:facet>
+																		<h:commandButton value="#{msgs.fa_floppy_o}" styleClass="btn_icon" action="#{employeesDataExtraTransactions.saveNewEmployeeDataExtraTransaction(socialStatusElement)}">
+																			<f:ajax execute="employeesDataExtraTransactionsFormId:socialStatusListId" render="employeesDataExtraTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandButton>
+																	</rich:column>
+																	<f:facet name="footer">
+																		<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+																			<f:facet name="first">#{msgs.label_first}</f:facet>
+																			<f:facet name="last">#{msgs.label_last}</f:facet>
+																			<f:facet name="next">#{msgs.label_next}</f:facet>
+																			<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																		</rich:dataScroller>
+																	</f:facet>
+																</rich:dataTable>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</rich:collapsiblePanel>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_rankTitle}">
+												<h:panelGroup id="rankTitlePanelId">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td>
+																<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal_icon" action="#{employeesDataExtraTransactions.addNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.rankTitleList)}">
+																	<f:ajax render="employeesDataExtraTransactionsFormId:rankTitlePanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																</h:commandButton>
+															</td>
+														</tr>
+
+														<tr>
+															<td width="100%" height="5" />
+														</tr>
+
+														<tr>
+															<td>
+																<rich:dataTable id="rankTitleListId" rows="#{employeesDataExtraTransactions.rowsCount}" rowKeyVar="index" var="rankTitleElement" value="#{employeesDataExtraTransactions.rankTitleList}" styleClass="gridMaster">
+																	<rich:column style="width : 5%">
+																		<f:facet name="header">#</f:facet>
+	                                										#{index + 1}
+	                            									</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+																		<h:inputText value="#{rankTitleElement.decisionNumber}" rendered="#{rankTitleElement.id == null}" />
+																		<h:outputText value="#{rankTitleElement.decisionNumber}" rendered="#{rankTitleElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+																		<util:hijri value="#{rankTitleElement.decisionDate}" rendered="#{rankTitleElement.id == null}" nullable="false" />
+																		<h:outputText value="#{rankTitleElement.decisionDateString}" rendered="#{rankTitleElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width : 10%">
+																		<f:facet name="header">#{msgs.label_rankTitle}</f:facet>
+																		<h:selectOneMenu value="#{rankTitleElement.rankTitleId}" rendered="#{rankTitleElement.id == null}">
+																			<f:selectItem itemLabel="" />
+																			<f:selectItems value="#{employeesDataExtraTransactions.ranksTitles}" var="rankTitle" itemLabel="#{rankTitle.description}" itemValue="#{rankTitle.id}" />
+																		</h:selectOneMenu>
+																		<h:outputText value="#{rankTitleElement.rankTitleDesc}" rendered="#{rankTitleElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_startFromDate}</f:facet>
+																		<util:hijri value="#{rankTitleElement.effectiveDate}" rendered="#{rankTitleElement.id == null}" nullable="false" />
+																		<h:outputText value="#{rankTitleElement.effectiveDateString}" rendered="#{rankTitleElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_save}</f:facet>
+																		<h:commandButton value="#{msgs.fa_floppy_o}" styleClass="btn_icon" action="#{employeesDataExtraTransactions.saveNewEmployeeDataExtraTransaction(rankTitleElement)}">
+																			<f:ajax execute="employeesDataExtraTransactionsFormId:rankTitlePanelId" render="employeesDataExtraTransactionsFormId:employeesDataExtraTransactionsFormId employeesDataExtraTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandButton>
+																	</rich:column>
+																	<f:facet name="footer">
+																		<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+																			<f:facet name="first">#{msgs.label_first}</f:facet>
+																			<f:facet name="last">#{msgs.label_last}</f:facet>
+																			<f:facet name="next">#{msgs.label_next}</f:facet>
+																			<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																		</rich:dataScroller>
+																	</f:facet>
+																</rich:dataTable>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</rich:collapsiblePanel>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_generalSpec}">
+												<h:panelGroup id="generalSpecPanelId">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td>
+																<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal_icon" action="#{employeesDataExtraTransactions.addNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.generalSpecList)}">
+																	<f:ajax render="employeesDataExtraTransactionsFormId:generalSpecPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																</h:commandButton>
+															</td>
+														</tr>
+
+														<tr>
+															<td width="100%" height="5" />
+														</tr>
+
+														<tr>
+															<td>
+																<rich:dataTable id="generalSpecListId" rows="#{employeesDataExtraTransactions.rowsCount}" rowKeyVar="index" var="generalSpecElement" value="#{employeesDataExtraTransactions.generalSpecList}" styleClass="gridMaster">
+																	<rich:column style="width : 5%">
+																		<f:facet name="header">#</f:facet>
+	                                									#{index + 1}
+	                            									</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+																		<h:inputText value="#{generalSpecElement.decisionNumber}" rendered="#{generalSpecElement.id == null}" />
+																		<h:outputText value="#{generalSpecElement.decisionNumber}" rendered="#{generalSpecElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+																		<util:hijri value="#{generalSpecElement.decisionDate}" rendered="#{generalSpecElement.id == null}" nullable="false" />
+																		<h:outputText value="#{generalSpecElement.decisionDateString}" rendered="#{generalSpecElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width : 10%">
+																		<f:facet name="header">#{msgs.label_generalSpec}</f:facet>
+																		<h:selectOneMenu value="#{generalSpecElement.generalSpecialization}" rendered="#{generalSpecElement.id == null}">
+																			<f:selectItem itemLabel="" />
+																			<f:selectItem itemLabel="#{msgs.label_overland}" itemValue="1" />
+																			<f:selectItem itemLabel="#{msgs.label_naval}" itemValue="2" />
+																			<f:selectItem itemLabel="#{msgs.label_aerial}" itemValue="3" />
+																		</h:selectOneMenu>
+																		<h:outputText rendered="#{(generalSpecElement.id) != null and (generalSpecElement.generalSpecialization ==1)}" value="#{msgs.label_overland}" />
+																		<h:outputText rendered="#{(generalSpecElement.id) != null and (generalSpecElement.generalSpecialization ==2)}" value="#{msgs.label_naval}" />
+																		<h:outputText rendered="#{(generalSpecElement.id) != null and (generalSpecElement.generalSpecialization ==3)}" value="#{msgs.label_aerial}" />
+																	</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_startFromDate}</f:facet>
+																		<util:hijri value="#{generalSpecElement.effectiveDate}" rendered="#{generalSpecElement.id == null}" nullable="false" />
+																		<h:outputText value="#{generalSpecElement.effectiveDateString}" rendered="#{generalSpecElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_save}</f:facet>
+																		<h:commandButton value="#{msgs.fa_floppy_o}" styleClass="btn_icon" action="#{employeesDataExtraTransactions.saveNewEmployeeDataExtraTransaction(generalSpecElement)}">
+																			<f:ajax execute="employeesDataExtraTransactionsFormId:generalSpecPanelId" render="employeesDataExtraTransactionsFormId:generalSpecPanelId employeesDataExtraTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandButton>
+																	</rich:column>
+																	<f:facet name="footer">
+																		<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+																			<f:facet name="first">#{msgs.label_first}</f:facet>
+																			<f:facet name="last">#{msgs.label_last}</f:facet>
+																			<f:facet name="next">#{msgs.label_next}</f:facet>
+																			<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																		</rich:dataScroller>
+																	</f:facet>
+																</rich:dataTable>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</rich:collapsiblePanel>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<rich:collapsiblePanel switchType="client" expanded="false" header="#{msgs.label_salaryRank}">
+												<h:panelGroup id="salaryRankPanelId">
+													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+														<tr>
+															<td>
+																<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal_icon" action="#{employeesDataExtraTransactions.addNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.salaryRankList)}">
+																	<f:ajax render="employeesDataExtraTransactionsFormId:salaryRankPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																</h:commandButton>
+															</td>
+														</tr>
+
+														<tr>
+															<td width="100%" height="5" />
+														</tr>
+
+														<tr>
+															<td>
+																<rich:dataTable id="salaryRankListId" rows="#{employeesDataExtraTransactions.rowsCount}" rowKeyVar="index" var="salaryRankElement" value="#{employeesDataExtraTransactions.salaryRankList}" styleClass="gridMaster">
+																	<rich:column style="width : 5%">
+																		<f:facet name="header">#</f:facet>
+	                                									#{index + 1}
+	                            									</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+																		<h:inputText value="#{salaryRankElement.decisionNumber}" rendered="#{salaryRankElement.id == null}" />
+																		<h:outputText value="#{salaryRankElement.decisionNumber}" rendered="#{salaryRankElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+																		<util:hijri value="#{salaryRankElement.decisionDate}" rendered="#{salaryRankElement.id == null}" nullable="false" />
+																		<h:outputText value="#{salaryRankElement.decisionDateString}" rendered="#{salaryRankElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width : 10%">
+																		<f:facet name="header">#{msgs.label_salaryRank}</f:facet>
+																		<h:selectOneMenu value="#{salaryRankElement.salaryRankId}" rendered="#{salaryRankElement.id == null}">
+																			<f:selectItem itemLabel="" />
+																			<f:selectItems value="#{employeesDataExtraTransactions.salaryRanks}" var="salaryRank" itemLabel="#{salaryRank.description}" itemValue="#{salaryRank.id}" />
+																		</h:selectOneMenu>
+																		<h:outputText value="#{salaryRankElement.salaryRankDesc}" rendered="#{salaryRankElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width : 10%">
+																		<f:facet name="header">#{msgs.label_salaryDegree}</f:facet>
+																		<h:selectOneMenu value="#{salaryRankElement.salaryDegreeId}" rendered="#{salaryRankElement.id == null}">
+																			<f:selectItem itemLabel="" />
+																			<f:selectItems value="#{employeesDataExtraTransactions.salaryDegrees}" var="salaryDegree" itemLabel="#{salaryDegree.description}" itemValue="#{salaryDegree.id}" />
+																		</h:selectOneMenu>
+																		<h:outputText value="#{salaryRankElement.salaryDegreeDesc}" rendered="#{salaryRankElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_startFromDate}</f:facet>
+																		<util:hijri value="#{salaryRankElement.effectiveDate}" rendered="#{salaryRankElement.id == null}" nullable="false" />
+																		<h:outputText value="#{salaryRankElement.effectiveDateString}" rendered="#{salaryRankElement.id != null}" />
+																	</rich:column>
+																	<rich:column style="width:25%">
+																		<f:facet name="header">#{msgs.label_save}</f:facet>
+																		<h:commandButton value="#{msgs.fa_floppy_o}" styleClass="btn_icon" action="#{employeesDataExtraTransactions.saveNewEmployeeDataExtraTransaction(salaryRankElement)}">
+																			<f:ajax execute="employeesDataExtraTransactionsFormId:salaryRankPanelId" render="employeesDataExtraTransactionsFormId:employeesDataExtraTransactionsFormId employeesDataExtraTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandButton>
+																	</rich:column>
+																	<f:facet name="footer">
+																		<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+																			<f:facet name="first">#{msgs.label_first}</f:facet>
+																			<f:facet name="last">#{msgs.label_last}</f:facet>
+																			<f:facet name="next">#{msgs.label_next}</f:facet>
+																			<f:facet name="previous">#{msgs.label_previous}</f:facet>
+																		</rich:dataScroller>
+																	</f:facet>
+																</rich:dataTable>
+															</td>
+														</tr>
+													</table>
+												</h:panelGroup>
+											</rich:collapsiblePanel>
+										</td>
+									</tr>
+
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>
