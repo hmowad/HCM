@@ -1596,11 +1596,73 @@ public class EmployeesService extends BaseService {
     }
 
     // --------------------------------------- Employees Data Extra Transaction -------------------------------------------//
+    private static void validateEmployeeDataExtraTransaction(EmployeeDataExtraTransactionData employeeDataExtraTransactionData) throws BusinessException {
+	if (employeeDataExtraTransactionData.getDecisionNumber() == null)
+	    throw new BusinessException("error_decisionNumberMandatory");
+	List<EmployeeDataExtraTransactionData> employeeDataExtraTransactionDataList = getEmployeeDataExtraTransactionByDecisionNumber(employeeDataExtraTransactionData.getDecisionNumber());
+	if (employeeDataExtraTransactionDataList != null && employeeDataExtraTransactionDataList.size() != 0)
+	    throw new BusinessException("error_repeatedDecisionNumber");
+
+	Date sysDate = HijriDateService.getHijriSysDate();
+	if (employeeDataExtraTransactionData.getDecisionDate().after(sysDate))
+	    throw new BusinessException("error_decDateAfterMandatory");
+	if (employeeDataExtraTransactionData.getEffectiveDate().after(sysDate))
+	    throw new BusinessException("error_incorrectEffectiveDate");
+    }
+
+    public static void addEmployeeDataExtraTransactions(EmployeeData employee, EmployeeDataExtraTransactionData employeeDataExtraTransactionData, CustomSession... useSession) throws BusinessException {
+	validateEmployeeDataExtraTransaction(employeeDataExtraTransactionData);
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+
+	    if (employeeDataExtraTransactionData.getSocialStatus() != null)
+		employee.setSocialStatus(employeeDataExtraTransactionData.getSocialStatus());
+	    if (employeeDataExtraTransactionData.getGeneralSpecialization() != null)
+		employee.setGeneralSpecialization(employeeDataExtraTransactionData.getGeneralSpecialization());
+	    if (employeeDataExtraTransactionData.getRankTitleId() != null)
+		employee.setRankTitleId(employeeDataExtraTransactionData.getRankTitleId());
+	    if (employeeDataExtraTransactionData.getSalaryRankId() != null || employeeDataExtraTransactionData.getSalaryDegreeId() != null) {
+		employee.setSalaryRankId(employeeDataExtraTransactionData.getSalaryRankId());
+		// TODO: salary degree id for emp data
+	    }
+	    updateEmployee(employee, session);
+
+	    employeeDataExtraTransactionData.setEmpId(employee.getEmpId());
+	    DataAccess.addEntity(employeeDataExtraTransactionData.getEmployeeDataExtraTransaction(), session);
+
+	    if (!isOpenedSession)
+		session.commitTransaction();
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+	    employeeDataExtraTransactionData.setId(null);
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
 
     public static List<EmployeeDataExtraTransactionData> getEmployeeDataExtraTransactionByEmpId(Long empId) throws BusinessException {
+	return searchEmployeeDataExtraTransaction(empId, null);
+    }
+
+    public static List<EmployeeDataExtraTransactionData> getEmployeeDataExtraTransactionByDecisionNumber(String decisionNumber) throws BusinessException {
+	return searchEmployeeDataExtraTransaction(null, decisionNumber);
+    }
+
+    private static List<EmployeeDataExtraTransactionData> searchEmployeeDataExtraTransaction(Long empId, String decisionNumber) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put("P_EMP_ID", empId);
+	    qParams.put("P_EMP_ID", empId == null ? FlagsEnum.ALL.getCode() : empId);
+	    qParams.put("P_DECISCION_NUMBER", decisionNumber == null ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
 	    return DataAccess.executeNamedQuery(EmployeeDataExtraTransactionData.class, QueryNamesEnum.HCM_SEARCH_EMPLOYEES_DATA_EXTRA_TRANSACTION.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
@@ -1608,16 +1670,16 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    public static void getEmployeeDataExtraTransactionLists(Long empId, List<EmployeeDataExtraTransactionData> socialStatusEmployeeDataExtraTransactionList, List<EmployeeDataExtraTransactionData> generalSpecializationEmployeeDataExtraTransactionList, List<EmployeeDataExtraTransactionData> rankTitleEmployeeDataExtraTransactionList,
+    public static void getEmployeeDataExtraTransactionLists(Long empId, List<EmployeeDataExtraTransactionData> socialStatusEmployeeDataExtraTransactionList, List<EmployeeDataExtraTransactionData> rankTitleEmployeeDataExtraTransactionList, List<EmployeeDataExtraTransactionData> generalSpecializationEmployeeDataExtraTransactionList,
 	    List<EmployeeDataExtraTransactionData> salaryRankEmployeeDataExtraTransactionList) throws BusinessException {
 	List<EmployeeDataExtraTransactionData> allEmployeeDataExtraTransactionList = getEmployeeDataExtraTransactionByEmpId(empId);
 	for (EmployeeDataExtraTransactionData employeeDataExtraTransactionData : allEmployeeDataExtraTransactionList) {
 	    if (employeeDataExtraTransactionData.getSocialStatus() != null)
 		socialStatusEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
-	    if (employeeDataExtraTransactionData.getGeneralSpecialization() != null)
-		generalSpecializationEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
 	    if (employeeDataExtraTransactionData.getRankTitleId() != null)
 		rankTitleEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
+	    if (employeeDataExtraTransactionData.getGeneralSpecialization() != null)
+		generalSpecializationEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
 	    if (employeeDataExtraTransactionData.getSalaryRankId() != null || employeeDataExtraTransactionData.getSalaryDegreeId() != null)
 		salaryRankEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
 	}
