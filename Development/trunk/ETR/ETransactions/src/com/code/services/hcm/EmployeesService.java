@@ -1597,7 +1597,7 @@ public class EmployeesService extends BaseService {
 
     // --------------------------------------- Employees Data Extra Transaction -------------------------------------------//
     private static void validateEmployeeDataExtraTransaction(EmployeeDataExtraTransactionData employeeDataExtraTransactionData) throws BusinessException {
-	if (employeeDataExtraTransactionData.getDecisionNumber() == null)
+	if (employeeDataExtraTransactionData.getDecisionNumber() == null || employeeDataExtraTransactionData.getDecisionNumber().equals(""))
 	    throw new BusinessException("error_decisionNumberMandatory");
 	List<EmployeeDataExtraTransactionData> employeeDataExtraTransactionDataList = getEmployeeDataExtraTransactionByDecisionNumber(employeeDataExtraTransactionData.getDecisionNumber());
 	if (employeeDataExtraTransactionDataList != null && employeeDataExtraTransactionDataList.size() != 0)
@@ -1610,7 +1610,7 @@ public class EmployeesService extends BaseService {
 	    throw new BusinessException("error_incorrectEffectiveDate");
     }
 
-    public static void addEmployeeDataExtraTransactions(EmployeeData employee, EmployeeDataExtraTransactionData employeeDataExtraTransactionData, CustomSession... useSession) throws BusinessException {
+    public static void addEmployeeDataExtraTransaction(EmployeeData employee, EmployeeDataExtraTransactionData employeeDataExtraTransactionData, CustomSession... useSession) throws BusinessException {
 	validateEmployeeDataExtraTransaction(employeeDataExtraTransactionData);
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -1632,6 +1632,7 @@ public class EmployeesService extends BaseService {
 
 	    employeeDataExtraTransactionData.setEmpId(employee.getEmpId());
 	    DataAccess.addEntity(employeeDataExtraTransactionData.getEmployeeDataExtraTransaction(), session);
+	    employeeDataExtraTransactionData.setId(employeeDataExtraTransactionData.getEmployeeDataExtraTransaction().getId());
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -1683,5 +1684,12 @@ public class EmployeesService extends BaseService {
 	    if (employeeDataExtraTransactionData.getSalaryRankId() != null || employeeDataExtraTransactionData.getSalaryDegreeId() != null)
 		salaryRankEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
 	}
+    }
+
+    public static void getMedicalStaffExtraTransactionDataList(Long empId, List<EmployeeDataExtraTransactionData> medicalStaffExtraTransactionDataList) throws BusinessException {
+	List<EmployeeDataExtraTransactionData> allEmployeeDataExtraTransactionList = getEmployeeDataExtraTransactionByEmpId(empId);
+	for (EmployeeDataExtraTransactionData employeeDataExtraTransactionData : allEmployeeDataExtraTransactionList)
+	    if (employeeDataExtraTransactionData.getMedStaffDegreeId() != null || employeeDataExtraTransactionData.getMedStaffLevelId() != null || employeeDataExtraTransactionData.getMedStaffRankId() != null)
+		medicalStaffExtraTransactionDataList.add(employeeDataExtraTransactionData);
     }
 }
