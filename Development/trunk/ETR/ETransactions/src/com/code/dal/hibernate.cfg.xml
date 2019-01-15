@@ -73,6 +73,9 @@
 		<mapping class="com.code.dal.orm.hcm.SocialIdIssuePlace" />
 		<mapping class="com.code.dal.orm.hcm.GraduationGroupPlace" />
 		<mapping class="com.code.dal.orm.hcm.TransactionType" />
+		<mapping class="com.code.dal.orm.hcm.MedicalStaffLevel" />
+		<mapping class="com.code.dal.orm.hcm.MedicalStaffRank" />
+		
 
 		<mapping class="com.code.dal.orm.hcm.specializations.MajorSpecialization" />
 		<mapping class="com.code.dal.orm.hcm.specializations.MinorSpecialization" />

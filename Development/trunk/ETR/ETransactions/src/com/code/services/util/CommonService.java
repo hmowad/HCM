@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.Category;
 import com.code.dal.orm.hcm.GraduationGroupPlace;
+import com.code.dal.orm.hcm.MedicalStaffLevel;
+import com.code.dal.orm.hcm.MedicalStaffRank;
 import com.code.dal.orm.hcm.Rank;
 import com.code.dal.orm.hcm.RankTitle;
 import com.code.dal.orm.hcm.SocialIdIssuePlace;
@@ -288,5 +290,34 @@ public class CommonService extends BaseService {
 
     public static RankTitle getRankTitleById(long id) {
 	return rankTitlesMap.get(id);
+    }
+
+    /*---------------------------------- Medical Stuff ----------------------------------------*/
+    private static List<MedicalStaffRank> searchMedicalStaffRanks() throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    return DataAccess.executeNamedQuery(MedicalStaffRank.class, QueryNamesEnum.HCM_GET_ALL_MEDICAL_STAFF_RANKS.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    private static List<MedicalStaffLevel> searchMedicalStaffLevels() throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    return DataAccess.executeNamedQuery(MedicalStaffLevel.class, QueryNamesEnum.HCM_GET_ALL_MEDICAL_STAFF_LEVELS.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static List<MedicalStaffRank> getAllMedicalStaffRanks() throws BusinessException {
+	return searchMedicalStaffRanks();
+    }
+
+    public static List<MedicalStaffLevel> getAllMedicalStaffLevels() throws BusinessException {
+	return searchMedicalStaffLevels();
     }
 }

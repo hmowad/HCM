@@ -231,6 +231,10 @@ public enum QueryNamesEnum {
     HCM_GET_All_RanksTitles("hcm_RanksTitles_getAllRanksTitles"),
     /* *********************************************** Categories ***************************************************** */
     HCM_GET_ALL_CATEGORIES("hcm_category_getAllCategories"),
+    /* *********************************************** Medical stuff ranks ***************************************************** */
+    HCM_GET_ALL_MEDICAL_STAFF_RANKS("hcm_category_getAllMedicalStaffRanks"),
+    /* *********************************************** Medical stuff levels ***************************************************** */
+    HCM_GET_ALL_MEDICAL_STAFF_LEVELS("hcm_category_getAllMedicalStaffLevels"),
     /******************************************************************************************************************/
     SEC_GET_EMP_MENUS("sec_menu_getEmployeeMenus"),
     SEC_GET_EXTERNAL_MENUS("sec_menu_getExternalMenus"),
