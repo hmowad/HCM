@@ -100,7 +100,7 @@
 													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 														<tr>
 															<td>
-																<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal_icon" action="#{employeesDataExtraTransactions.addNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.socialStatusList)}">
+																<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" action="#{employeesDataExtraTransactions.addNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.socialStatusList)}">
 																	<f:ajax render="employeesDataExtraTransactionsFormId:socialStatusPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 																</h:commandButton>
 															</td>
@@ -130,7 +130,6 @@
 																	<rich:column style="width : 10%">
 																		<f:facet name="header">#{msgs.label_socialStatus}</f:facet>
 																		<h:selectOneMenu value="#{socialStatusElement.socialStatus}" rendered="#{socialStatusElement.id == null}">
-																			<f:selectItem itemLabel="" />
 																			<f:selectItem itemLabel="#{msgs.label_single}" itemValue="1" />
 																			<f:selectItem itemLabel="#{msgs.label_married}" itemValue="2" />
 																		</h:selectOneMenu>
@@ -176,7 +175,7 @@
 													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 														<tr>
 															<td>
-																<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal_icon" action="#{employeesDataExtraTransactions.addNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.rankTitleList)}">
+																<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" action="#{employeesDataExtraTransactions.addNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.rankTitleList)}">
 																	<f:ajax render="employeesDataExtraTransactionsFormId:rankTitlePanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 																</h:commandButton>
 															</td>
@@ -206,7 +205,6 @@
 																	<rich:column style="width : 10%">
 																		<f:facet name="header">#{msgs.label_rankTitle}</f:facet>
 																		<h:selectOneMenu value="#{rankTitleElement.rankTitleId}" rendered="#{rankTitleElement.id == null}">
-																			<f:selectItem itemLabel="" />
 																			<f:selectItems value="#{employeesDataExtraTransactions.ranksTitles}" var="rankTitle" itemLabel="#{rankTitle.description}" itemValue="#{rankTitle.id}" />
 																		</h:selectOneMenu>
 																		<h:outputText value="#{rankTitleElement.rankTitleDesc}" rendered="#{rankTitleElement.id != null}" />
@@ -250,7 +248,7 @@
 													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 														<tr>
 															<td>
-																<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal_icon" action="#{employeesDataExtraTransactions.addNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.generalSpecList)}">
+																<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" action="#{employeesDataExtraTransactions.addNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.generalSpecList)}">
 																	<f:ajax render="employeesDataExtraTransactionsFormId:generalSpecPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 																</h:commandButton>
 															</td>
@@ -280,7 +278,6 @@
 																	<rich:column style="width : 10%">
 																		<f:facet name="header">#{msgs.label_generalSpec}</f:facet>
 																		<h:selectOneMenu value="#{generalSpecElement.generalSpecialization}" rendered="#{generalSpecElement.id == null}">
-																			<f:selectItem itemLabel="" />
 																			<f:selectItem itemLabel="#{msgs.label_overland}" itemValue="1" />
 																			<f:selectItem itemLabel="#{msgs.label_naval}" itemValue="2" />
 																			<f:selectItem itemLabel="#{msgs.label_aerial}" itemValue="3" />
@@ -328,7 +325,7 @@
 													<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 														<tr>
 															<td>
-																<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal_icon" action="#{employeesDataExtraTransactions.addNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.salaryRankList)}">
+																<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" action="#{employeesDataExtraTransactions.addNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.salaryRankList)}">
 																	<f:ajax render="employeesDataExtraTransactionsFormId:salaryRankPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 																</h:commandButton>
 															</td>
@@ -358,15 +355,13 @@
 																	<rich:column style="width : 10%">
 																		<f:facet name="header">#{msgs.label_salaryRank}</f:facet>
 																		<h:selectOneMenu value="#{salaryRankElement.salaryRankId}" rendered="#{salaryRankElement.id == null}">
-																			<f:selectItem itemLabel="" />
 																			<f:selectItems value="#{employeesDataExtraTransactions.salaryRanks}" var="salaryRank" itemLabel="#{salaryRank.description}" itemValue="#{salaryRank.id}" />
 																		</h:selectOneMenu>
 																		<h:outputText value="#{salaryRankElement.salaryRankDesc}" rendered="#{salaryRankElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width : 10%">
 																		<f:facet name="header">#{msgs.label_salaryDegree}</f:facet>
-																		<h:selectOneMenu value="#{salaryRankElement.salaryDegreeId}" rendered="#{salaryRankElement.id == null}">
-																			<f:selectItem itemLabel="" />
+																		<h:selectOneMenu value="#{salaryRankElement.salaryDegreeId}" rendered="#{salaryRankElement.id == null}">	<f:selectItem itemLabel="" />
 																			<f:selectItems value="#{employeesDataExtraTransactions.salaryDegrees}" var="salaryDegree" itemLabel="#{salaryDegree.description}" itemValue="#{salaryDegree.id}" />
 																		</h:selectOneMenu>
 																		<h:outputText value="#{salaryRankElement.salaryDegreeDesc}" rendered="#{salaryRankElement.id != null}" />
