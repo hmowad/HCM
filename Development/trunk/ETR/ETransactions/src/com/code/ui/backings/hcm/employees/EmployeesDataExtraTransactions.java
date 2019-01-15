@@ -46,10 +46,15 @@ public class EmployeesDataExtraTransactions extends BaseBacking implements Seria
 
     public void reset() {
 	employee = new EmployeeData();
+	socialStatusList = new ArrayList<EmployeeDataExtraTransactionData>();
+	rankTitleList = new ArrayList<EmployeeDataExtraTransactionData>();
+	generalSpecList = new ArrayList<EmployeeDataExtraTransactionData>();
+	salaryRankList = new ArrayList<EmployeeDataExtraTransactionData>();
     }
 
     public void searchEmployee() {
 	try {
+	    reset();
 	    employee = EmployeesService.getEmployeeData(employeeId);
 	    salaryRanks = CommonService.getRanks(null, new Long[] { employee.getCategoryId() });
 	    salaryDegrees = PayrollsService.getAllDegrees();
@@ -65,9 +70,11 @@ public class EmployeesDataExtraTransactions extends BaseBacking implements Seria
 	empDataExtraTransactionList.add(0, newEmpDataExtraTransaction);
     }
 
-    public void saveNewEmployeeDataExtraTransaction(EmployeeDataExtraTransactionData employeeDataExtraTransactionData) {
+    public void saveNewEmployeeDataExtraTransaction(List<EmployeeDataExtraTransactionData> employeeDataExtraTransactionList,
+	    EmployeeDataExtraTransactionData employeeDataExtraTransactionData, int index) {
 	try {
-	    EmployeesService.addEmployeeDataExtraTransactions(employee, employeeDataExtraTransactionData);
+	    EmployeesService.addEmployeeDataExtraTransaction(employee, employeeDataExtraTransactionData);
+	    employeeDataExtraTransactionList.set(index, EmployeesService.getEmployeeDataExtraTransactionByDecisionNumber(employeeDataExtraTransactionData.getDecisionNumber()).get(0));
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
