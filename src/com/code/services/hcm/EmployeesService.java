@@ -1631,10 +1631,10 @@ public class EmployeesService extends BaseService {
 		employee.setGeneralSpecialization(employeeDataExtraTransactionData.getGeneralSpecialization());
 	    if (employeeDataExtraTransactionData.getRankTitleId() != null)
 		employee.setRankTitleId(employeeDataExtraTransactionData.getRankTitleId());
-	    if (employeeDataExtraTransactionData.getSalaryRankId() != null || employeeDataExtraTransactionData.getSalaryDegreeId() != null) {
+	    if (employeeDataExtraTransactionData.getSalaryRankId() != null)
 		employee.setSalaryRankId(employeeDataExtraTransactionData.getSalaryRankId());
-		// TODO: salary degree id for emp data
-	    }
+	    if (employeeDataExtraTransactionData.getSalaryDegreeId() != null)
+		employee.setSalaryDegreeId(employeeDataExtraTransactionData.getSalaryDegreeId());
 	    updateEmployee(employee, session);
 
 	    employeeDataExtraTransactionData.setEmpId(employee.getEmpId());
@@ -1664,7 +1664,7 @@ public class EmployeesService extends BaseService {
 	    if (employeeDataExtraTransactionData.getMedStaffDegreeId() != null || employeeDataExtraTransactionData.getMedStaffLevelId() != null || employeeDataExtraTransactionData.getMedStaffRankId() != null)
 		medicalStaffExtraTransactionDataList.add(employeeDataExtraTransactionData);
     }
-    
+
     public static void getEmployeeDataExtraTransactionLists(Long empId, List<EmployeeDataExtraTransactionData> socialStatusEmployeeDataExtraTransactionList, List<EmployeeDataExtraTransactionData> rankTitleEmployeeDataExtraTransactionList, List<EmployeeDataExtraTransactionData> generalSpecializationEmployeeDataExtraTransactionList,
 	    List<EmployeeDataExtraTransactionData> salaryRankEmployeeDataExtraTransactionList) throws BusinessException {
 	List<EmployeeDataExtraTransactionData> allEmployeeDataExtraTransactionList = getEmployeeDataExtraTransactionByEmpId(empId);
