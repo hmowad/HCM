@@ -1610,6 +1610,13 @@ public class EmployeesService extends BaseService {
 	    throw new BusinessException("error_incorrectEffectiveDate");
     }
 
+    public static void validateSelectedEmployeeForExtraTransaction(EmployeeData selectedEmployee) throws BusinessException {
+	if (!(selectedEmployee.getStatusId() >= EmployeeStatusEnum.ON_DUTY.getCode() && selectedEmployee.getStatusId() < EmployeeStatusEnum.MOVED_EXTERNALLY.getCode())) {
+	    throw new BusinessException("error_empMustBeOnDuty");
+	} else if (selectedEmployee.getCategoryId() != CategoriesEnum.OFFICERS.getCode() && selectedEmployee.getCategoryId() != CategoriesEnum.SOLDIERS.getCode())
+	    throw new BusinessException("error_empMustBeMilitary");
+    }
+
     public static void addEmployeeDataExtraTransaction(EmployeeData employee, EmployeeDataExtraTransactionData employeeDataExtraTransactionData, CustomSession... useSession) throws BusinessException {
 	validateEmployeeDataExtraTransaction(employeeDataExtraTransactionData);
 	boolean isOpenedSession = isSessionOpened(useSession);
