@@ -1651,6 +1651,28 @@ public class EmployeesService extends BaseService {
 	}
     }
 
+    public static void getMedicalStaffExtraTransactionDataList(Long empId, List<EmployeeDataExtraTransactionData> medicalStaffExtraTransactionDataList) throws BusinessException {
+	List<EmployeeDataExtraTransactionData> allEmployeeDataExtraTransactionList = getEmployeeDataExtraTransactionByEmpId(empId);
+	for (EmployeeDataExtraTransactionData employeeDataExtraTransactionData : allEmployeeDataExtraTransactionList)
+	    if (employeeDataExtraTransactionData.getMedStaffDegreeId() != null || employeeDataExtraTransactionData.getMedStaffLevelId() != null || employeeDataExtraTransactionData.getMedStaffRankId() != null)
+		medicalStaffExtraTransactionDataList.add(employeeDataExtraTransactionData);
+    }
+    
+    public static void getEmployeeDataExtraTransactionLists(Long empId, List<EmployeeDataExtraTransactionData> socialStatusEmployeeDataExtraTransactionList, List<EmployeeDataExtraTransactionData> rankTitleEmployeeDataExtraTransactionList, List<EmployeeDataExtraTransactionData> generalSpecializationEmployeeDataExtraTransactionList,
+	    List<EmployeeDataExtraTransactionData> salaryRankEmployeeDataExtraTransactionList) throws BusinessException {
+	List<EmployeeDataExtraTransactionData> allEmployeeDataExtraTransactionList = getEmployeeDataExtraTransactionByEmpId(empId);
+	for (EmployeeDataExtraTransactionData employeeDataExtraTransactionData : allEmployeeDataExtraTransactionList) {
+	    if (employeeDataExtraTransactionData.getSocialStatus() != null)
+		socialStatusEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
+	    if (employeeDataExtraTransactionData.getRankTitleId() != null)
+		rankTitleEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
+	    if (employeeDataExtraTransactionData.getGeneralSpecialization() != null)
+		generalSpecializationEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
+	    if (employeeDataExtraTransactionData.getSalaryRankId() != null || employeeDataExtraTransactionData.getSalaryDegreeId() != null)
+		salaryRankEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
+	}
+    }
+
     public static List<EmployeeDataExtraTransactionData> getEmployeeDataExtraTransactionByEmpId(Long empId) throws BusinessException {
 	return searchEmployeeDataExtraTransaction(empId, null);
     }
@@ -1669,27 +1691,5 @@ public class EmployeesService extends BaseService {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
-    }
-
-    public static void getEmployeeDataExtraTransactionLists(Long empId, List<EmployeeDataExtraTransactionData> socialStatusEmployeeDataExtraTransactionList, List<EmployeeDataExtraTransactionData> rankTitleEmployeeDataExtraTransactionList, List<EmployeeDataExtraTransactionData> generalSpecializationEmployeeDataExtraTransactionList,
-	    List<EmployeeDataExtraTransactionData> salaryRankEmployeeDataExtraTransactionList) throws BusinessException {
-	List<EmployeeDataExtraTransactionData> allEmployeeDataExtraTransactionList = getEmployeeDataExtraTransactionByEmpId(empId);
-	for (EmployeeDataExtraTransactionData employeeDataExtraTransactionData : allEmployeeDataExtraTransactionList) {
-	    if (employeeDataExtraTransactionData.getSocialStatus() != null)
-		socialStatusEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
-	    if (employeeDataExtraTransactionData.getRankTitleId() != null)
-		rankTitleEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
-	    if (employeeDataExtraTransactionData.getGeneralSpecialization() != null)
-		generalSpecializationEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
-	    if (employeeDataExtraTransactionData.getSalaryRankId() != null || employeeDataExtraTransactionData.getSalaryDegreeId() != null)
-		salaryRankEmployeeDataExtraTransactionList.add(employeeDataExtraTransactionData);
-	}
-    }
-
-    public static void getMedicalStaffExtraTransactionDataList(Long empId, List<EmployeeDataExtraTransactionData> medicalStaffExtraTransactionDataList) throws BusinessException {
-	List<EmployeeDataExtraTransactionData> allEmployeeDataExtraTransactionList = getEmployeeDataExtraTransactionByEmpId(empId);
-	for (EmployeeDataExtraTransactionData employeeDataExtraTransactionData : allEmployeeDataExtraTransactionList)
-	    if (employeeDataExtraTransactionData.getMedStaffDegreeId() != null || employeeDataExtraTransactionData.getMedStaffLevelId() != null || employeeDataExtraTransactionData.getMedStaffRankId() != null)
-		medicalStaffExtraTransactionDataList.add(employeeDataExtraTransactionData);
     }
 }
