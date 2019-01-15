@@ -48,6 +48,7 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
     private Long categoryId;
     private Long rankId;
     private Long salaryRankId;
+    private Long salaryDegreeId;
     private Long countryId;
     private Date birthDate;
     private String birthPlace;
@@ -222,6 +223,16 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
 
     public void setSalaryRankId(Long salaryRankId) {
 	this.salaryRankId = salaryRankId;
+    }
+
+    @Basic
+    @Column(name = "SALARY_DEGREE_ID")
+    public Long getSalaryDegreeId() {
+	return salaryDegreeId;
+    }
+
+    public void setSalaryDegreeId(Long salaryDegreeId) {
+	this.salaryDegreeId = salaryDegreeId;
     }
 
     public void setCountryId(Long countryId) {
