@@ -269,6 +269,8 @@ public class EmployeeData extends BaseEntity implements Serializable {
     private String rankDesc;
     private Long salaryRankId;
     private String salaryRankDesc;
+    private Long salaryDegreeId;
+    private String salaryDegreeDesc;
     private Long categoryId;
     private String categoryDesc;
     private Long jobId;
@@ -574,6 +576,26 @@ public class EmployeeData extends BaseEntity implements Serializable {
 
     public void setSalaryRankDesc(String salaryRankDesc) {
 	this.salaryRankDesc = salaryRankDesc;
+    }
+
+    @Basic
+    @Column(name = "SALARY_DEGREE_ID")
+    public Long getSalaryDegreeId() {
+	return salaryDegreeId;
+    }
+
+    public void setSalaryDegreeId(Long salaryDegreeId) {
+	this.salaryDegreeId = salaryDegreeId;
+    }
+
+    @Basic
+    @Column(name = "SALARY_DEGREE_DESC")
+    public String getSalaryDegreeDesc() {
+	return salaryDegreeDesc;
+    }
+
+    public void setSalaryDegreeDesc(String salaryDegreeDesc) {
+	this.salaryDegreeDesc = salaryDegreeDesc;
     }
 
     @Basic
