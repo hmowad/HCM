@@ -358,7 +358,7 @@ function deservedEmpsForAnnualRaiseMiniSearch(contextPath, miniSearchReturnHandl
 }
 
 function openTransactionsTimeline(contextPath){
-	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
+	var specsStr = getPopupWindowSpecsString(0.50, 0.50, 'no', 'yes');
 	maskOpenerScreen();
 	var childWindow = window.open(contextPath+'/TransactionsTimeline/TransactionsTimeline.jsf', null, specsStr);
     unMaskOnPopupClose(childWindow);

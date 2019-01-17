@@ -55,6 +55,19 @@
 						</rich:dataTable>
 					</td>
 				</tr>
+				
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				
+				<tr>
+					<td width="20%">
+						<h:selectBooleanCheckbox value="#{transactionsTimeline.empPrefrences.timeLineAutoShowFlagBoolean}">
+							<f:ajax event="change" listener="#{transactionsTimeline.updateEmployeePrefrences()}" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+						</h:selectBooleanCheckbox>
+						<h:outputText value="#{msgs.label_doNotAppearAutomatically}" style="color: red;" />
+					</td>
+				</tr>
 			</table>
 		</ui:decorate>
 	</h:form>
