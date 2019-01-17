@@ -7,6 +7,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.servlet.http.HttpSession;
 
+import com.code.dal.orm.hcm.employees.EmployeePrefrences;
 import com.code.dal.orm.hcm.movements.MovementTransactionData;
 import com.code.dal.orm.hcm.vacations.VacationData;
 import com.code.enums.CategoriesEnum;
@@ -16,7 +17,9 @@ import com.code.enums.SessionAttributesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.BaseService;
 import com.code.services.config.ETRConfigurationService;
+import com.code.services.hcm.EmployeesPrefrencesService;
 import com.code.services.hcm.MovementsService;
+import com.code.services.hcm.TransactionsTimelineService;
 import com.code.services.hcm.VacationsService;
 import com.code.services.security.SecurityService;
 import com.code.services.util.HijriDateService;
@@ -36,16 +39,22 @@ public class Home extends BaseBacking {
     private MovementTransactionData lastValidMovTrans;
     private MovementTransactionData lastValidSubjoinTran;
     private boolean showTransactionsTimelineScreenFlag;
+    private EmployeePrefrences empPrefrences;
 
     public Home() {
-	calculateInboxCount();
-	calculateNotificationsCount();
-	calcAlertsData();
-	HttpSession session = getSession();
-	if (session.getAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode()) != null) {
-	    showTransactionsTimelineScreenFlag = (boolean) session.getAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode());
+	try {
+	    calculateInboxCount();
+	    calculateNotificationsCount();
+	    calcAlertsData();
+	    empPrefrences = EmployeesPrefrencesService.getEmployeePrefrences(loginEmpData.getEmpId());
+	    HttpSession session = getSession();
+	    if ((session.getAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode()) != null) && (!TransactionsTimelineService.getAllFutureTransactions(loginEmpData.getEmpId()).isEmpty()) && (!empPrefrences.getTimeLineAutoShowFlagBoolean())) {
+		showTransactionsTimelineScreenFlag = (boolean) session.getAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode());
+	    }
+	    session.setAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode(), false);
+	} catch (BusinessException e) {
+	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
-	session.setAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode(), false);
     }
 
     private void calculateInboxCount() {
@@ -280,6 +289,14 @@ public class Home extends BaseBacking {
 
     public void setShowTransactionsTimelineScreenFlag(boolean showTimeLineMiniSearchFlag) {
 	this.showTransactionsTimelineScreenFlag = showTimeLineMiniSearchFlag;
+    }
+
+    public EmployeePrefrences getEmpPrefrences() {
+	return empPrefrences;
+    }
+
+    public void setEmpPrefrences(EmployeePrefrences empPrefrences) {
+	this.empPrefrences = empPrefrences;
     }
 
 }
