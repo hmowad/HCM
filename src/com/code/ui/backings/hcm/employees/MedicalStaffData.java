@@ -6,10 +6,10 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import com.code.dal.orm.hcm.MedicalStaffLevel;
-import com.code.dal.orm.hcm.MedicalStaffRank;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.employees.EmployeeExtraTransactionData;
+import com.code.dal.orm.hcm.employees.medicalstuff.MedicalStaffLevel;
+import com.code.dal.orm.hcm.employees.medicalstuff.MedicalStaffRank;
 import com.code.dal.orm.hcm.payroll.Degree;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
