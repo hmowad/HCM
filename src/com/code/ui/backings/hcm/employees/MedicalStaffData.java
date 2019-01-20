@@ -9,7 +9,7 @@ import javax.faces.bean.ViewScoped;
 import com.code.dal.orm.hcm.MedicalStaffLevel;
 import com.code.dal.orm.hcm.MedicalStaffRank;
 import com.code.dal.orm.hcm.employees.EmployeeData;
-import com.code.dal.orm.hcm.employees.EmployeeDataExtraTransactionData;
+import com.code.dal.orm.hcm.employees.EmployeeExtraTransactionData;
 import com.code.dal.orm.hcm.payroll.Degree;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
@@ -21,7 +21,7 @@ import com.code.ui.backings.base.BaseBacking;
 @ViewScoped
 public class MedicalStaffData extends BaseBacking {
     private EmployeeData selectedEmployee;
-    private List<EmployeeDataExtraTransactionData> employeeDataExtraTransactionDataList;
+    private List<EmployeeExtraTransactionData> employeeExtraTransactionDataList;
     private int pageSize = 10;
     private List<MedicalStaffRank> medicalStaffRanks;
     private List<MedicalStaffLevel> medicalStaffLevels;
@@ -30,7 +30,7 @@ public class MedicalStaffData extends BaseBacking {
     public MedicalStaffData() {
 	try {
 	    selectedEmployee = new EmployeeData();
-	    employeeDataExtraTransactionDataList = new ArrayList<EmployeeDataExtraTransactionData>();
+	    employeeExtraTransactionDataList = new ArrayList<EmployeeExtraTransactionData>();
 	    medicalStaffRanks = CommonService.getAllMedicalStaffRanks();
 	    medicalStaffLevels = CommonService.getAllMedicalStaffLevels();
 	    medicalStaffDegrees = PayrollsService.getAllDegrees();
@@ -43,8 +43,8 @@ public class MedicalStaffData extends BaseBacking {
 	try {
 	    selectedEmployee = EmployeesService.getEmployeeData(selectedEmployee.getEmpId());
 	    EmployeesService.validateSelectedEmployeeForExtraTransaction(selectedEmployee);
-	    employeeDataExtraTransactionDataList = new ArrayList<EmployeeDataExtraTransactionData>();
-	    EmployeesService.getMedicalStaffExtraTransactionDataList(selectedEmployee.getEmpId(), employeeDataExtraTransactionDataList);
+	    employeeExtraTransactionDataList = new ArrayList<EmployeeExtraTransactionData>();
+	    EmployeesService.getMedicalStaffExtraTransactionDataList(selectedEmployee.getEmpId(), employeeExtraTransactionDataList);
 	} catch (BusinessException e) {
 	    selectedEmployee = new EmployeeData();
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -52,14 +52,14 @@ public class MedicalStaffData extends BaseBacking {
     }
 
     public void addEmployeeExtraData() {
-	EmployeeDataExtraTransactionData addedEmployeeDataExtraTransactionData = new EmployeeDataExtraTransactionData();
-	employeeDataExtraTransactionDataList.add(0, addedEmployeeDataExtraTransactionData);
+	EmployeeExtraTransactionData addedEmployeeExtraTransactionData = new EmployeeExtraTransactionData();
+	employeeExtraTransactionDataList.add(0, addedEmployeeExtraTransactionData);
     }
 
-    public void saveEmployeeExtraData(EmployeeDataExtraTransactionData addedEmployeeDataExtraTransactionData, int index) {
+    public void saveEmployeeExtraData(EmployeeExtraTransactionData addedEmployeeExtraTransactionData, int index) {
 	try {
-	    EmployeesService.addEmployeeDataExtraTransaction(selectedEmployee, addedEmployeeDataExtraTransactionData);
-	    employeeDataExtraTransactionDataList.set(index, EmployeesService.getEmployeeDataExtraTransactionByDecisionNumber(addedEmployeeDataExtraTransactionData.getDecisionNumber()).get(0));
+	    EmployeesService.addEmployeeDataExtraTransaction(selectedEmployee, addedEmployeeExtraTransactionData);
+	    employeeExtraTransactionDataList.set(index, EmployeesService.getEmployeeExtraTransactionByDecisionNumber(addedEmployeeExtraTransactionData.getDecisionNumber()).get(0));
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -74,12 +74,12 @@ public class MedicalStaffData extends BaseBacking {
 	this.selectedEmployee = selectedEmployee;
     }
 
-    public List<EmployeeDataExtraTransactionData> getEmployeeDataExtraTransactionDataList() {
-	return employeeDataExtraTransactionDataList;
+    public List<EmployeeExtraTransactionData> getEmployeeExtraTransactionDataList() {
+	return employeeExtraTransactionDataList;
     }
 
-    public void setEmployeeDataExtraTransactionDataList(List<EmployeeDataExtraTransactionData> employeeDataExtraTransactionDataList) {
-	this.employeeDataExtraTransactionDataList = employeeDataExtraTransactionDataList;
+    public void setEmployeeExtraTransactionDataList(List<EmployeeExtraTransactionData> employeeExtraTransactionDataList) {
+	this.employeeExtraTransactionDataList = employeeExtraTransactionDataList;
     }
 
     public int getPageSize() {

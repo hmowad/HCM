@@ -10,7 +10,7 @@ import javax.faces.bean.ViewScoped;
 import com.code.dal.orm.hcm.Rank;
 import com.code.dal.orm.hcm.RankTitle;
 import com.code.dal.orm.hcm.employees.EmployeeData;
-import com.code.dal.orm.hcm.employees.EmployeeDataExtraTransactionData;
+import com.code.dal.orm.hcm.employees.EmployeeExtraTransactionData;
 import com.code.dal.orm.hcm.payroll.Degree;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
@@ -29,27 +29,27 @@ public class EmployeesDataExtraTransactions extends BaseBacking implements Seria
     private List<RankTitle> ranksTitles;
     private List<Rank> salaryRanks;
     private List<Degree> salaryDegrees;
-    private List<EmployeeDataExtraTransactionData> socialStatusList;
-    private List<EmployeeDataExtraTransactionData> rankTitleList;
-    private List<EmployeeDataExtraTransactionData> generalSpecList;
-    private List<EmployeeDataExtraTransactionData> salaryRankList;
+    private List<EmployeeExtraTransactionData> socialStatusList;
+    private List<EmployeeExtraTransactionData> rankTitleList;
+    private List<EmployeeExtraTransactionData> generalSpecList;
+    private List<EmployeeExtraTransactionData> salaryRankList;
 
     public EmployeesDataExtraTransactions() {
 	setScreenTitle(getMessage("title_employeesDataExtraTransactions"));
 	ranksTitles = CommonService.getAllRanksTitles();
-	socialStatusList = new ArrayList<EmployeeDataExtraTransactionData>();
-	rankTitleList = new ArrayList<EmployeeDataExtraTransactionData>();
-	generalSpecList = new ArrayList<EmployeeDataExtraTransactionData>();
-	salaryRankList = new ArrayList<EmployeeDataExtraTransactionData>();
+	socialStatusList = new ArrayList<EmployeeExtraTransactionData>();
+	rankTitleList = new ArrayList<EmployeeExtraTransactionData>();
+	generalSpecList = new ArrayList<EmployeeExtraTransactionData>();
+	salaryRankList = new ArrayList<EmployeeExtraTransactionData>();
 	reset();
     }
 
     public void reset() {
 	employee = new EmployeeData();
-	socialStatusList = new ArrayList<EmployeeDataExtraTransactionData>();
-	rankTitleList = new ArrayList<EmployeeDataExtraTransactionData>();
-	generalSpecList = new ArrayList<EmployeeDataExtraTransactionData>();
-	salaryRankList = new ArrayList<EmployeeDataExtraTransactionData>();
+	socialStatusList = new ArrayList<EmployeeExtraTransactionData>();
+	rankTitleList = new ArrayList<EmployeeExtraTransactionData>();
+	generalSpecList = new ArrayList<EmployeeExtraTransactionData>();
+	salaryRankList = new ArrayList<EmployeeExtraTransactionData>();
     }
 
     public void searchEmployee() {
@@ -65,16 +65,16 @@ public class EmployeesDataExtraTransactions extends BaseBacking implements Seria
 	}
     }
 
-    public void addNewEmployeeDataExtraTransaction(List<EmployeeDataExtraTransactionData> empDataExtraTransactionList) {
-	EmployeeDataExtraTransactionData newEmpDataExtraTransaction = new EmployeeDataExtraTransactionData();
+    public void addNewEmployeeDataExtraTransaction(List<EmployeeExtraTransactionData> empDataExtraTransactionList) {
+	EmployeeExtraTransactionData newEmpDataExtraTransaction = new EmployeeExtraTransactionData();
 	empDataExtraTransactionList.add(0, newEmpDataExtraTransaction);
     }
 
-    public void saveNewEmployeeDataExtraTransaction(List<EmployeeDataExtraTransactionData> employeeDataExtraTransactionList,
-	    EmployeeDataExtraTransactionData employeeDataExtraTransactionData, int index) {
+    public void saveNewEmployeeDataExtraTransaction(List<EmployeeExtraTransactionData> employeeDataExtraTransactionList,
+	    EmployeeExtraTransactionData employeeExtraTransactionData, int index) {
 	try {
-	    EmployeesService.addEmployeeDataExtraTransaction(employee, employeeDataExtraTransactionData);
-	    employeeDataExtraTransactionList.set(index, EmployeesService.getEmployeeDataExtraTransactionByDecisionNumber(employeeDataExtraTransactionData.getDecisionNumber()).get(0));
+	    EmployeesService.addEmployeeDataExtraTransaction(employee, employeeExtraTransactionData);
+	    employeeDataExtraTransactionList.set(index, EmployeesService.getEmployeeExtraTransactionByDecisionNumber(employeeExtraTransactionData.getDecisionNumber()).get(0));
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -130,35 +130,35 @@ public class EmployeesDataExtraTransactions extends BaseBacking implements Seria
 	this.salaryDegrees = salaryDegrees;
     }
 
-    public List<EmployeeDataExtraTransactionData> getSocialStatusList() {
+    public List<EmployeeExtraTransactionData> getSocialStatusList() {
 	return socialStatusList;
     }
 
-    public void setSocialStatusList(List<EmployeeDataExtraTransactionData> socialStatusList) {
+    public void setSocialStatusList(List<EmployeeExtraTransactionData> socialStatusList) {
 	this.socialStatusList = socialStatusList;
     }
 
-    public List<EmployeeDataExtraTransactionData> getRankTitleList() {
+    public List<EmployeeExtraTransactionData> getRankTitleList() {
 	return rankTitleList;
     }
 
-    public void setRankTitleList(List<EmployeeDataExtraTransactionData> rankTitleList) {
+    public void setRankTitleList(List<EmployeeExtraTransactionData> rankTitleList) {
 	this.rankTitleList = rankTitleList;
     }
 
-    public List<EmployeeDataExtraTransactionData> getGeneralSpecList() {
+    public List<EmployeeExtraTransactionData> getGeneralSpecList() {
 	return generalSpecList;
     }
 
-    public void setGeneralSpecList(List<EmployeeDataExtraTransactionData> generalSpecList) {
+    public void setGeneralSpecList(List<EmployeeExtraTransactionData> generalSpecList) {
 	this.generalSpecList = generalSpecList;
     }
 
-    public List<EmployeeDataExtraTransactionData> getSalaryRankList() {
+    public List<EmployeeExtraTransactionData> getSalaryRankList() {
 	return salaryRankList;
     }
 
-    public void setSalaryRankList(List<EmployeeDataExtraTransactionData> salaryRankList) {
+    public void setSalaryRankList(List<EmployeeExtraTransactionData> salaryRankList) {
 	this.salaryRankList = salaryRankList;
     }
 

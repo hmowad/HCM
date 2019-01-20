@@ -133,8 +133,8 @@
 		<mapping class="com.code.dal.orm.hcm.employees.EmployeePhoto" />
 		<mapping class="com.code.dal.orm.hcm.employees.EmployeeQualifications" />
 		<mapping class="com.code.dal.orm.hcm.employees.EmployeeQualificationsData" />
-		<mapping class="com.code.dal.orm.hcm.employees.EmployeeDataExtraTransaction" />
-		<mapping class="com.code.dal.orm.hcm.employees.EmployeeDataExtraTransactionData" />
+		<mapping class="com.code.dal.orm.hcm.employees.EmployeeExtraTransaction" />
+		<mapping class="com.code.dal.orm.hcm.employees.EmployeeExtraTransactionData" />
 		
 		<mapping class="com.code.dal.orm.hcm.navyformations.NavyFormation" />
 		

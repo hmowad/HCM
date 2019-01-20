@@ -113,8 +113,8 @@
 					<td align="center" width="100%">
 						<h:panelGroup id="medicalStaffRankDataPanelId">
 							<h:panelGroup rendered="#{medicalStaffData.selectedEmployee.empId !=null}">
-								<h:outputText id="medicalStaffRankDataListSizeId" style="display:none" value="#{medicalStaffData.employeeDataExtraTransactionDataList.size()}" />
-								<rich:dataTable rowKeyVar="index" var="employeeExtra" value="#{medicalStaffData.employeeDataExtraTransactionDataList}" rows="#{medicalStaffData.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+								<h:outputText id="medicalStaffRankDataListSizeId" style="display:none" value="#{medicalStaffData.employeeExtraTransactionDataList.size()}" />
+								<rich:dataTable rowKeyVar="index" var="employeeExtra" value="#{medicalStaffData.employeeExtraTransactionDataList}" rows="#{medicalStaffData.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
 									<f:facet name="header">
 										<rich:columnGroup>
 											<rich:column>#</rich:column>
