@@ -20,8 +20,8 @@ import com.code.services.util.HijriDateService;
 
 @SuppressWarnings("serial")
 @NamedQueries({
-	@NamedQuery(name = "hcm_empDataExtraTrnData_searchEmpDataExtraTrnData",
-		query = "select e from EmployeeDataExtraTransactionData e " +
+	@NamedQuery(name = "hcm_empDataExtraTrnData_searchEmpExtraTrnData",
+		query = "select e from EmployeeExtraTransactionData e " +
 			" where (:P_EMP_ID = -1 or e.empId = :P_EMP_ID) " +
 			" and (:P_DECISCION_NUMBER = '-1' or e.decisionNumber = :P_DECISCION_NUMBER) " +
 			" order by e.effectiveDate desc")
@@ -29,8 +29,8 @@ import com.code.services.util.HijriDateService;
 })
 
 @Entity
-@Table(name = "HCM_VW_PRS_EMPS_DATA_EXT_TRNS")
-public class EmployeeDataExtraTransactionData extends BaseEntity implements Serializable {
+@Table(name = "HCM_VW_PRS_EMPS_EXTRA_TRNS")
+public class EmployeeExtraTransactionData extends BaseEntity implements Serializable {
 
     private Long id;
     private Long empId;
@@ -56,10 +56,10 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
     private String medStaffLevelDesc;
     private Long medStaffDegreeId;
     private String medStaffDegreeDesc;
-    private EmployeeDataExtraTransaction employeeDataExtraTransaction;
+    private EmployeeExtraTransaction employeeExtraTransaction;
 
-    public EmployeeDataExtraTransactionData() {
-	employeeDataExtraTransaction = new EmployeeDataExtraTransaction();
+    public EmployeeExtraTransactionData() {
+	employeeExtraTransaction = new EmployeeExtraTransaction();
     }
 
     @SequenceGenerator(name = "HCMEmpsExtraTrnsSeq",
@@ -75,7 +75,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
 
     public void setId(Long id) {
 	this.id = id;
-	employeeDataExtraTransaction.setId(id);
+	employeeExtraTransaction.setId(id);
     }
 
     @Basic
@@ -86,7 +86,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
 
     public void setEmpId(Long empId) {
 	this.empId = empId;
-	employeeDataExtraTransaction.setEmpId(empId);
+	employeeExtraTransaction.setEmpId(empId);
     }
 
     @Basic
@@ -107,7 +107,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
 
     public void setRankTitleId(Long rankTitleId) {
 	this.rankTitleId = rankTitleId;
-	employeeDataExtraTransaction.setRankTitleId(rankTitleId);
+	employeeExtraTransaction.setRankTitleId(rankTitleId);
     }
 
     @Basic
@@ -128,7 +128,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
 
     public void setSalaryRankId(Long salaryRankId) {
 	this.salaryRankId = salaryRankId;
-	employeeDataExtraTransaction.setSalaryRankId(salaryRankId);
+	employeeExtraTransaction.setSalaryRankId(salaryRankId);
     }
 
     @Basic
@@ -149,7 +149,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
 
     public void setSalaryDegreeId(Long salaryDegreeId) {
 	this.salaryDegreeId = salaryDegreeId;
-	employeeDataExtraTransaction.setSalaryDegreeId(salaryDegreeId);
+	employeeExtraTransaction.setSalaryDegreeId(salaryDegreeId);
     }
 
     @Basic
@@ -170,7 +170,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
 
     public void setSocialStatus(Integer socialStatus) {
 	this.socialStatus = socialStatus;
-	employeeDataExtraTransaction.setSocialStatus(socialStatus);
+	employeeExtraTransaction.setSocialStatus(socialStatus);
     }
 
     @Basic
@@ -191,7 +191,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
 
     public void setGeneralSpecialization(Integer generalSpecialization) {
 	this.generalSpecialization = generalSpecialization;
-	employeeDataExtraTransaction.setGeneralSpecialization(generalSpecialization);
+	employeeExtraTransaction.setGeneralSpecialization(generalSpecialization);
     }
 
     @Basic
@@ -213,7 +213,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
     public void setEffectiveDate(Date effectiveDate) {
 	this.effectiveDate = effectiveDate;
 	this.effectiveDateString = HijriDateService.getHijriDateString(effectiveDate);
-	employeeDataExtraTransaction.setEffectiveDate(effectiveDate);
+	employeeExtraTransaction.setEffectiveDate(effectiveDate);
     }
 
     @Transient
@@ -233,7 +233,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
 
     public void setDecisionNumber(String decisionNumber) {
 	this.decisionNumber = decisionNumber;
-	employeeDataExtraTransaction.setDecisionNumber(decisionNumber);
+	employeeExtraTransaction.setDecisionNumber(decisionNumber);
     }
 
     @Basic
@@ -245,7 +245,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
     public void setDecisionDate(Date decisionDate) {
 	this.decisionDate = decisionDate;
 	this.decisionDateString = HijriDateService.getHijriDateString(decisionDate);
-	employeeDataExtraTransaction.setDecisionDate(decisionDate);
+	employeeExtraTransaction.setDecisionDate(decisionDate);
     }
 
     @Transient
@@ -265,7 +265,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
 
     public void setMedStaffRankId(Long medStaffRankId) {
 	this.medStaffRankId = medStaffRankId;
-	employeeDataExtraTransaction.setMedStaffRankId(medStaffRankId);
+	employeeExtraTransaction.setMedStaffRankId(medStaffRankId);
     }
 
     @Basic
@@ -286,7 +286,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
 
     public void setMedStaffLevelId(Long medStaffLevelId) {
 	this.medStaffLevelId = medStaffLevelId;
-	employeeDataExtraTransaction.setMedStaffLevelId(medStaffLevelId);
+	employeeExtraTransaction.setMedStaffLevelId(medStaffLevelId);
     }
 
     @Basic
@@ -307,7 +307,7 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
 
     public void setMedStaffDegreeId(Long medStaffDegreeId) {
 	this.medStaffDegreeId = medStaffDegreeId;
-	employeeDataExtraTransaction.setMedStaffDegreeId(medStaffDegreeId);
+	employeeExtraTransaction.setMedStaffDegreeId(medStaffDegreeId);
     }
 
     @Basic
@@ -321,12 +321,12 @@ public class EmployeeDataExtraTransactionData extends BaseEntity implements Seri
     }
 
     @Transient
-    public EmployeeDataExtraTransaction getEmployeeDataExtraTransaction() {
-	return employeeDataExtraTransaction;
+    public EmployeeExtraTransaction getEmployeeExtraTransaction() {
+	return employeeExtraTransaction;
     }
 
-    public void setEmployeeDataExtraTransaction(EmployeeDataExtraTransaction employeeDataExtraTransaction) {
-	this.employeeDataExtraTransaction = employeeDataExtraTransaction;
+    public void setEmployeeExtraTransaction(EmployeeExtraTransaction EmployeeExtraTransaction) {
+	this.employeeExtraTransaction = EmployeeExtraTransaction;
     }
 
 }

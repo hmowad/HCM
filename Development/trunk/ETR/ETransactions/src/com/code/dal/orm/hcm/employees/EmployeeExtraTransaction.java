@@ -12,12 +12,14 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.code.dal.orm.BaseEntity;
+import com.code.dal.audit.InsertableAuditEntity;
+import com.code.dal.audit.UpdatableAuditEntity;
+import com.code.dal.orm.AuditEntity;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "HCM_PRS_EMPS_DATA_EXTRA_TRNS")
-public class EmployeeDataExtraTransaction extends BaseEntity implements Serializable {
+@Table(name = "HCM_PRS_EMPLOYEES_EXTRA_TRNS")
+public class EmployeeExtraTransaction extends AuditEntity implements Serializable, InsertableAuditEntity, UpdatableAuditEntity {
 
     private Long id;
     private Long empId;
@@ -166,6 +168,27 @@ public class EmployeeDataExtraTransaction extends BaseEntity implements Serializ
 
     public void setMedStaffDegreeId(Long medStaffDegreeId) {
 	this.medStaffDegreeId = medStaffDegreeId;
+    }
+
+    @Override
+    public Long calculateContentId() {
+	return id;
+    }
+
+    @Override
+    public String calculateContent() {
+	return "empId:" + empId + AUDIT_SEPARATOR +
+		"rankTitleId:" + rankTitleId + AUDIT_SEPARATOR +
+		"salaryRankId:" + salaryRankId + AUDIT_SEPARATOR +
+		"salaryDegreeId:" + salaryDegreeId + AUDIT_SEPARATOR +
+		"socialStatus:" + socialStatus + AUDIT_SEPARATOR +
+		"generalSpecialization:" + generalSpecialization + AUDIT_SEPARATOR +
+		"effectiveDate:" + effectiveDate + AUDIT_SEPARATOR +
+		"decisionNumber:" + decisionNumber + AUDIT_SEPARATOR +
+		"decisionDate:" + decisionDate + AUDIT_SEPARATOR +
+		"medStaffRankId:" + medStaffRankId + AUDIT_SEPARATOR +
+		"medStaffLevelId:" + medStaffLevelId + AUDIT_SEPARATOR +
+		"medStaffDegreeId:" + medStaffDegreeId + AUDIT_SEPARATOR;
     }
 
 }
