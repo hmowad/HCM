@@ -783,6 +783,7 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
 		"lastName:" + lastName + AUDIT_SEPARATOR +
 		"categoryId:" + categoryId + AUDIT_SEPARATOR +
 		"rankId:" + rankId + AUDIT_SEPARATOR +
+		"salaryDegreeId:" + salaryDegreeId + AUDIT_SEPARATOR +
 		"countryId:" + countryId + AUDIT_SEPARATOR +
 		"birthDate:" + birthDate + AUDIT_SEPARATOR +
 		"birthPlace:" + birthPlace + AUDIT_SEPARATOR +

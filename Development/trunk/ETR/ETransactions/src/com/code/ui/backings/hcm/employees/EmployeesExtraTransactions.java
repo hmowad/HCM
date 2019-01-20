@@ -20,7 +20,7 @@ import com.code.ui.backings.base.BaseBacking;
 
 @ManagedBean(name = "employeesDataExtraTransactions")
 @ViewScoped
-public class EmployeesDataExtraTransactions extends BaseBacking implements Serializable {
+public class EmployeesExtraTransactions extends BaseBacking implements Serializable {
 
     private int rowsCount = 5;
     private Long employeeId;
@@ -34,7 +34,7 @@ public class EmployeesDataExtraTransactions extends BaseBacking implements Seria
     private List<EmployeeExtraTransactionData> generalSpecList;
     private List<EmployeeExtraTransactionData> salaryRankList;
 
-    public EmployeesDataExtraTransactions() {
+    public EmployeesExtraTransactions() {
 	setScreenTitle(getMessage("title_employeesDataExtraTransactions"));
 	ranksTitles = CommonService.getAllRanksTitles();
 	socialStatusList = new ArrayList<EmployeeExtraTransactionData>();

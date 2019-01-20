@@ -1,4 +1,4 @@
-package com.code.dal.orm.hcm;
+package com.code.dal.orm.hcm.employees.medicalstuff;
 
 import java.io.Serializable;
 
