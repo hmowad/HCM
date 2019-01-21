@@ -73,7 +73,7 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
     public void saveNewEmployeeDataExtraTransaction(List<EmployeeExtraTransactionData> employeeDataExtraTransactionList,
 	    EmployeeExtraTransactionData employeeExtraTransactionData, int index) {
 	try {
-	    EmployeesService.addEmployeeDataExtraTransaction(employee, employeeExtraTransactionData);
+	    EmployeesService.addEmployeeDataExtraTransaction(employee, employeeExtraTransactionData, null);
 	    employeeDataExtraTransactionList.set(index, EmployeesService.getEmployeeExtraTransactionByDecisionNumber(employeeExtraTransactionData.getDecisionNumber()).get(0));
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {

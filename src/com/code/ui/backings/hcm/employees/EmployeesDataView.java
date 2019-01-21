@@ -12,6 +12,7 @@ import com.code.dal.orm.hcm.RankTitle;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.employees.EmployeePhoto;
 import com.code.dal.orm.hcm.employees.EmployeeQualificationsData;
+import com.code.dal.orm.hcm.employees.medicalstuff.EmployeeMedicalStaffData;
 import com.code.dal.orm.hcm.organization.jobs.JobData;
 import com.code.dal.orm.hcm.payroll.Degree;
 import com.code.dal.orm.hcm.trainings.QualificationLevel;
@@ -51,6 +52,7 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
     private int pageSize = 10;
     private boolean viewOnly;
     private boolean nonSaudiDoctorContractorFlag;
+    private EmployeeMedicalStaffData employeeMedicalStaffData;
 
     public EmployeesDataView() {
 	init();
@@ -97,6 +99,7 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 			employee = empParam;
 			employeeQualificationsData = employeeQualificationsDataParam;
 		    }
+		    employeeMedicalStaffData = EmployeesService.getEmployeeMedicalStaffDataByEmpId(empParam.getEmpId());
 		    employee.setJobModifiedFlag(FlagsEnum.ON.getCode());
 
 		    break;
@@ -321,6 +324,14 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 
     public void setNonSaudiDoctorContractorFlag(boolean nonSaudiDoctorContractorFlag) {
 	this.nonSaudiDoctorContractorFlag = nonSaudiDoctorContractorFlag;
+    }
+
+    public EmployeeMedicalStaffData getEmployeeMedicalStaffData() {
+	return employeeMedicalStaffData;
+    }
+
+    public void setEmployeeMedicalStaffData(EmployeeMedicalStaffData employeeMedicalStaffData) {
+	this.employeeMedicalStaffData = employeeMedicalStaffData;
     }
 
 }

@@ -8,6 +8,7 @@ import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.employees.EmployeeExtraTransactionData;
+import com.code.dal.orm.hcm.employees.medicalstuff.EmployeeMedicalStaffData;
 import com.code.dal.orm.hcm.employees.medicalstuff.MedicalStaffLevel;
 import com.code.dal.orm.hcm.employees.medicalstuff.MedicalStaffRank;
 import com.code.dal.orm.hcm.payroll.Degree;
@@ -58,7 +59,9 @@ public class MedicalStaffData extends BaseBacking {
 
     public void saveEmployeeExtraData(EmployeeExtraTransactionData addedEmployeeExtraTransactionData, int index) {
 	try {
-	    EmployeesService.addEmployeeDataExtraTransaction(selectedEmployee, addedEmployeeExtraTransactionData);
+	    EmployeeMedicalStaffData employeeMedicalStaffData = new EmployeeMedicalStaffData();
+	    EmployeesService.constructEmployeeMedicalStaffData(addedEmployeeExtraTransactionData, employeeMedicalStaffData);
+	    EmployeesService.addEmployeeDataExtraTransaction(selectedEmployee, addedEmployeeExtraTransactionData, employeeMedicalStaffData);
 	    employeeExtraTransactionDataList.set(index, EmployeesService.getEmployeeExtraTransactionByDecisionNumber(addedEmployeeExtraTransactionData.getDecisionNumber()).get(0));
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {

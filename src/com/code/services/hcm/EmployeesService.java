@@ -17,6 +17,7 @@ import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.employees.EmployeeExtraTransactionData;
 import com.code.dal.orm.hcm.employees.EmployeePhoto;
 import com.code.dal.orm.hcm.employees.EmployeeQualificationsData;
+import com.code.dal.orm.hcm.employees.medicalstuff.EmployeeMedicalStaffData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.dal.orm.setup.Country;
 import com.code.enums.CategoriesEnum;
@@ -1617,7 +1618,13 @@ public class EmployeesService extends BaseService {
 	    throw new BusinessException("error_empMustBeMilitary");
     }
 
-    public static void addEmployeeDataExtraTransaction(EmployeeData employee, EmployeeExtraTransactionData employeeExtraTransactionData, CustomSession... useSession) throws BusinessException {
+    public static void constructEmployeeMedicalStaffData(EmployeeExtraTransactionData employeeExtraTransactionData, EmployeeMedicalStaffData employeeMedicalStaffData) {
+	employeeMedicalStaffData.setMedStaffDegreeId(employeeExtraTransactionData.getMedStaffDegreeId());
+	employeeMedicalStaffData.setMedStaffLevelId(employeeExtraTransactionData.getMedStaffLevelId());
+	employeeMedicalStaffData.setMedStaffRankId(employeeExtraTransactionData.getMedStaffRankId());
+    }
+
+    public static void addEmployeeDataExtraTransaction(EmployeeData employee, EmployeeExtraTransactionData employeeExtraTransactionData, EmployeeMedicalStaffData employeeMedicalStaffData, CustomSession... useSession) throws BusinessException {
 	validateEmployeeDataExtraTransaction(employeeExtraTransactionData);
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -1638,6 +1645,10 @@ public class EmployeesService extends BaseService {
 	    updateEmployee(employee, session);
 
 	    employeeExtraTransactionData.setEmpId(employee.getEmpId());
+	    if (employeeMedicalStaffData != null) {
+		employeeMedicalStaffData.setEmpId(employeeExtraTransactionData.getEmpId());
+		addModifyEmployeeMedicalStaffData(employeeExtraTransactionData, employeeMedicalStaffData, useSession);
+	    }
 	    DataAccess.addEntity(employeeExtraTransactionData.getEmployeeExtraTransaction(), session);
 	    employeeExtraTransactionData.setId(employeeExtraTransactionData.getEmployeeExtraTransaction().getId());
 
@@ -1680,12 +1691,57 @@ public class EmployeesService extends BaseService {
 	}
     }
 
+    public static EmployeeMedicalStaffData getEmployeeMedicalStaffDataByEmpId(Long empId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_EMP_ID", empId == null ? FlagsEnum.ALL.getCode() : empId);
+	    List<EmployeeMedicalStaffData> resultList = DataAccess.executeNamedQuery(EmployeeMedicalStaffData.class, QueryNamesEnum.GET_EMPLOYEE_MEDICAL_STAFF_DATA_BY_EMP_ID.getCode(), qParams);
+	    return (resultList == null || resultList.size() == 0) ? null : resultList.get(0);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
     public static List<EmployeeExtraTransactionData> getEmployeeDataExtraTransactionByEmpId(Long empId) throws BusinessException {
 	return searchEmployeeExtraTransactionData(empId, null);
     }
 
     public static List<EmployeeExtraTransactionData> getEmployeeExtraTransactionByDecisionNumber(String decisionNumber) throws BusinessException {
 	return searchEmployeeExtraTransactionData(null, decisionNumber);
+    }
+
+    private static void addModifyEmployeeMedicalStaffData(EmployeeExtraTransactionData employeeExtraTransactionData, EmployeeMedicalStaffData employeeMedicalStaffData, CustomSession... useSession) throws BusinessException {
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+	    EmployeeMedicalStaffData exitingEmployeeMedicalStaffData = getEmployeeMedicalStaffDataByEmpId(employeeExtraTransactionData.getEmpId());
+	    if (exitingEmployeeMedicalStaffData == null)
+		DataAccess.addEntity(employeeMedicalStaffData.getEmployeeMedicalStuff(), session);
+	    else {
+		if (employeeExtraTransactionData.getMedStaffDegreeId() != null)
+		    exitingEmployeeMedicalStaffData.setMedStaffDegreeId(employeeExtraTransactionData.getMedStaffDegreeId());
+		if (employeeExtraTransactionData.getMedStaffLevelId() != null)
+		    exitingEmployeeMedicalStaffData.setMedStaffLevelId(employeeExtraTransactionData.getMedStaffLevelId());
+		if (employeeExtraTransactionData.getMedStaffRankId() != null)
+		    exitingEmployeeMedicalStaffData.setMedStaffRankId(employeeExtraTransactionData.getMedStaffRankId());
+		DataAccess.updateEntity(exitingEmployeeMedicalStaffData.getEmployeeMedicalStuff(), session);
+	    }
+	    if (!isOpenedSession)
+		session.commitTransaction();
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
     }
 
     private static List<EmployeeExtraTransactionData> searchEmployeeExtraTransactionData(Long empId, String decisionNumber) throws BusinessException {
