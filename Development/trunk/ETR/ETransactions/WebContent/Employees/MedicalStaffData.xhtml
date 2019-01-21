@@ -161,7 +161,7 @@
 										<util:hijri value="#{employeeExtra.effectiveDate}" rendered="#{employeeExtra.id == null}" />
 									</rich:column>
 									<rich:column style="width:5%">
-										<h:commandButton value="#{msgs.fa_floppy_o}" action="#{medicalStaffData.saveEmployeeExtraData(employeeExtra, index)}" styleClass="btn_icon" title="#{msgs.label_save}" disabled="#{employeeExtra.id != null}">
+										<h:commandButton value="#{msgs.fa_floppy_o}" action="#{medicalStaffData.saveEmployeeExtraData(employeeExtra, index)}"  onclick="return handleOnAction('#{msgs.q_checkEmployeesExtraDataSave}', 'true');" styleClass="btn_icon" title="#{msgs.label_save}" disabled="#{employeeExtra.id != null}">
 											<f:ajax execute="medicalStaffDataFormId:medicalStaffRankDataPanelId" render="medicalStaffDataFormId:medicalStaffRankDataPanelId medicalStaffDataFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</rich:column>

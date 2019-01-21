@@ -135,6 +135,9 @@
 		<mapping class="com.code.dal.orm.hcm.employees.EmployeeExtraTransactionData" />
 		<mapping class="com.code.dal.orm.hcm.employees.medicalstuff.MedicalStaffLevel" />
 		<mapping class="com.code.dal.orm.hcm.employees.medicalstuff.MedicalStaffRank" />
+		<mapping class="com.code.dal.orm.hcm.employees.medicalstuff.EmployeeMedicalStaff" />
+		<mapping class="com.code.dal.orm.hcm.employees.medicalstuff.EmployeeMedicalStaffData" />
+		
 		
 		<mapping class="com.code.dal.orm.hcm.navyformations.NavyFormation" />
 		
