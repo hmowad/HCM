@@ -363,9 +363,13 @@
 											<f:selectItem itemLabel="" />
 											<f:selectItem itemLabel="#{msgs.label_single}" itemValue="1" />
 											<f:selectItem itemLabel="#{msgs.label_married}" itemValue="2" />
+											<f:selectItem itemLabel="#{msgs.label_divorcee}" itemValue="3" />
+											<f:selectItem itemLabel="#{msgs.label_widowed}" itemValue="4" />
 										</h:selectOneMenu>
 										<h:outputText value="#{msgs.label_single}" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.socialStatus == 1}" />
 										<h:outputText value="#{msgs.label_married}" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.socialStatus == 2}" />
+										<h:outputText value="#{msgs.label_divorcee}" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.socialStatus == 3}" />
+										<h:outputText value="#{msgs.label_widowed}" rendered="#{employeesDataView.viewOnly and employeesDataView.employee.socialStatus == 4}" />
 									</td>
 								</tr>
 							</table>
