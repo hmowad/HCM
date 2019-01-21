@@ -132,9 +132,13 @@
 																		<h:selectOneMenu value="#{socialStatusElement.socialStatus}" rendered="#{socialStatusElement.id == null}">
 																			<f:selectItem itemLabel="#{msgs.label_single}" itemValue="1" />
 																			<f:selectItem itemLabel="#{msgs.label_married}" itemValue="2" />
+																			<f:selectItem itemLabel="#{msgs.label_divorcee}" itemValue="3" />
+																			<f:selectItem itemLabel="#{msgs.label_widowed}" itemValue="4" />
 																		</h:selectOneMenu>
 																		<h:outputText value="#{msgs.label_single}" rendered="#{(socialStatusElement.id != null) and (socialStatusElement.socialStatus == 1)}" />
 																		<h:outputText value="#{msgs.label_married}" rendered="#{(socialStatusElement.id != null) and (socialStatusElement.socialStatus == 2)}" />
+																		<h:outputText value="#{msgs.label_divorcee}" rendered="#{(socialStatusElement.id != null) and (socialStatusElement.socialStatus == 3)}" />
+																		<h:outputText value="#{msgs.label_widowed}" rendered="#{(socialStatusElement.id != null) and (socialStatusElement.socialStatus == 4)}" />
 																	</rich:column>
 																	<rich:column style="width:25%">
 																		<f:facet name="header">#{msgs.label_startFromDate}</f:facet>
