@@ -13,7 +13,7 @@ import com.code.dal.orm.BaseEntity;
 import com.code.enums.FlagsEnum;
 
 @NamedQueries({
-	@NamedQuery(name = "hcm_empPrefrences_searchEmployeePrefrencesById",
+	@NamedQuery(name = "hcm_empPrefrences_getEmployeePrefrencesById",
 		query = " select e from EmployeePrefrences e" +
 			" where e.id = :P_EMP_ID ")
 })
@@ -21,8 +21,8 @@ import com.code.enums.FlagsEnum;
 @Table(name = "HCM_PRS_EMPLOYEES_PREFRENCES")
 public class EmployeePrefrences extends BaseEntity {
     private Long id;
-    private Integer timeLineAutoShowFlag;
-    private Boolean timeLineAutoShowFlagBoolean;
+    private Integer timeLineAutoHideFlag;
+    private Boolean timeLineAutoHideFlagBoolean;
 
     @Id
     @Column(name = "ID")
@@ -35,31 +35,31 @@ public class EmployeePrefrences extends BaseEntity {
     }
 
     @Basic
-    @Column(name = "TIMELINE_AUTO_SHOW_FLAG")
-    public Integer getTimeLineAutoShowFlag() {
-	return timeLineAutoShowFlag;
+    @Column(name = "TIMELINE_AUTO_HIDE_FLAG")
+    public Integer getTimeLineAutoHideFlag() {
+	return timeLineAutoHideFlag;
     }
 
-    public void setTimeLineAutoShowFlag(Integer timeLineAutoShowFlag) {
-	this.timeLineAutoShowFlag = timeLineAutoShowFlag;
-	if (this.timeLineAutoShowFlag == null || this.timeLineAutoShowFlag == FlagsEnum.OFF.getCode()) {
-	    this.timeLineAutoShowFlagBoolean = false;
+    public void setTimeLineAutoHideFlag(Integer timeLineAutoHideFlag) {
+	this.timeLineAutoHideFlag = timeLineAutoHideFlag;
+	if (this.timeLineAutoHideFlag == null || this.timeLineAutoHideFlag == FlagsEnum.OFF.getCode()) {
+	    this.timeLineAutoHideFlagBoolean = false;
 	} else {
-	    this.timeLineAutoShowFlagBoolean = true;
+	    this.timeLineAutoHideFlagBoolean = true;
 	}
     }
 
     @Transient
-    public Boolean getTimeLineAutoShowFlagBoolean() {
-	return timeLineAutoShowFlagBoolean;
+    public Boolean getTimeLineAutoHideFlagBoolean() {
+	return timeLineAutoHideFlagBoolean;
     }
 
-    public void setTimeLineAutoShowFlagBoolean(Boolean timeLineAutoShowFlagBoolean) {
-	this.timeLineAutoShowFlagBoolean = timeLineAutoShowFlagBoolean;
-	if (this.timeLineAutoShowFlagBoolean == false) {
-	    setTimeLineAutoShowFlag(FlagsEnum.OFF.getCode());
+    public void setTimeLineAutoHideFlagBoolean(Boolean timeLineAutoHideFlagBoolean) {
+	this.timeLineAutoHideFlagBoolean = timeLineAutoHideFlagBoolean;
+	if (this.timeLineAutoHideFlagBoolean == false) {
+	    setTimeLineAutoHideFlag(FlagsEnum.OFF.getCode());
 	} else {
-	    setTimeLineAutoShowFlag(FlagsEnum.ON.getCode());
+	    setTimeLineAutoHideFlag(FlagsEnum.ON.getCode());
 	}
     }
 
