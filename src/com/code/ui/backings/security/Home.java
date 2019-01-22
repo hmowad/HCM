@@ -39,19 +39,19 @@ public class Home extends BaseBacking {
     private MovementTransactionData lastValidMovTrans;
     private MovementTransactionData lastValidSubjoinTran;
     private boolean showTransactionsTimelineScreenFlag;
-    private EmployeePrefrences empPrefrences;
 
     public Home() {
 	try {
 	    calculateInboxCount();
 	    calculateNotificationsCount();
 	    calcAlertsData();
-	    empPrefrences = EmployeesPrefrencesService.getEmployeePrefrences(loginEmpData.getEmpId());
 	    HttpSession session = getSession();
-	    if ((session.getAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode()) != null) && (!TransactionsTimelineService.getAllFutureTransactions(loginEmpData.getEmpId()).isEmpty()) && (!empPrefrences.getTimeLineAutoShowFlagBoolean())) {
-		showTransactionsTimelineScreenFlag = (boolean) session.getAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode());
+
+	    EmployeePrefrences empPrefrences = EmployeesPrefrencesService.getEmployeePrefrences(loginEmpData.getEmpId());
+	    if ((session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode()) != null) && (TransactionsTimelineService.getFutureTransactionsCount(loginEmpData.getEmpId()) > 0) && (!empPrefrences.getTimeLineAutoHideFlagBoolean())) {
+		showTransactionsTimelineScreenFlag = (boolean) session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode());
 	    }
-	    session.setAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode(), false);
+	    session.setAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode(), false);
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -289,14 +289,6 @@ public class Home extends BaseBacking {
 
     public void setShowTransactionsTimelineScreenFlag(boolean showTimeLineMiniSearchFlag) {
 	this.showTransactionsTimelineScreenFlag = showTimeLineMiniSearchFlag;
-    }
-
-    public EmployeePrefrences getEmpPrefrences() {
-	return empPrefrences;
-    }
-
-    public void setEmpPrefrences(EmployeePrefrences empPrefrences) {
-	this.empPrefrences = empPrefrences;
     }
 
 }

@@ -13,7 +13,6 @@ import com.code.enums.NavigationEnum;
 import com.code.enums.SessionAttributesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.BaseService;
-import com.code.services.hcm.EmployeesPrefrencesService;
 import com.code.services.security.SecurityService;
 
 @ManagedBean(name = "login")
@@ -36,8 +35,6 @@ public class Login extends SecurityBase implements Serializable {
 	    EmployeeData empData = SecurityService.authenticateUser(username, password);
 	    HttpSession session = getSession();
 	    session.setAttribute(SessionAttributesEnum.EMP_DATA.getCode(), empData);
-	    session.setAttribute(SessionAttributesEnum.TIME_LINE_MINI_SEARCH_SHOW_FLAG.getCode(), true);
-	    EmployeesPrefrencesService.addEmployeePrefrencesIfNotExist(empData.getEmpId());
 
 	    if (SecurityService.isDualSecurityEnabled()) {
 		if (empData.getOfficialMobileNumber() != null) {

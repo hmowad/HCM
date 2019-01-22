@@ -29,13 +29,18 @@ public class TransactionsTimelineService extends BaseService {
 	return sortLists(movementTransactions, allTransactionsExceptMovement);
     }
 
+    public static int getFutureTransactionsCount(long employeeId) throws BusinessException {
+	return MovementsService.getMovementTransactionsHistory(employeeId).size() + getAllFutureTransactionsExceptMovements(employeeId).size();
+    }
+
     private static List<TransactionTimeline> getMovementsTransactions(long employeeId) throws BusinessException {
 
 	List<MovementTransactionData> movementsTransactions = MovementsService.getMovementTransactionsHistory(employeeId);
-	List<TransactionTimeline> returnList = new ArrayList<>();
-	if (movementsTransactions == null || movementsTransactions.isEmpty()) {
-	    return returnList;
+	if (movementsTransactions.isEmpty()) {
+	    return new ArrayList<>();
 	}
+
+	List<TransactionTimeline> returnList = new ArrayList<>();
 	if (movementsTransactions.get(0).getTransactionTypeCode() == TransactionTypesEnum.MVT_NEW_DECISION.getCode() && HijriDateService.getHijriSysDate().before(movementsTransactions.get(0).getExecutionDate())) {
 	    return constructFutureMovementTransactionTimeline(movementsTransactions.get(0));
 	} else if (movementsTransactions.get(0).getEndDate() != null && HijriDateService.getHijriSysDate().before(movementsTransactions.get(0).getEndDate())) {

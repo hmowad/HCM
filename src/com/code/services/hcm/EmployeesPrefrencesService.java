@@ -34,6 +34,8 @@ public class EmployeesPrefrencesService extends BaseService {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
 
+	    empPrefrences.setId(null);
+
 	    if (e instanceof BusinessException)
 		throw (BusinessException) e;
 
@@ -73,12 +75,12 @@ public class EmployeesPrefrencesService extends BaseService {
 	}
     }
 
-    public static EmployeePrefrences getEmployeePrefrences(long employeeId) throws BusinessException {
+    private static EmployeePrefrences getEmployeePrefrencesByEmpId(long employeeId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_ID", employeeId);
 
-	    List<EmployeePrefrences> result = DataAccess.executeNamedQuery(EmployeePrefrences.class, QueryNamesEnum.HCM_SEARCH_EMPLOYEE_PREFRENCES_BY_ID.getCode(), qParams);
+	    List<EmployeePrefrences> result = DataAccess.executeNamedQuery(EmployeePrefrences.class, QueryNamesEnum.HCM_GET_EMPLOYEE_PREFRENCES_BY_ID.getCode(), qParams);
 	    return result.isEmpty() ? null : result.get(0);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
@@ -86,12 +88,15 @@ public class EmployeesPrefrencesService extends BaseService {
 	}
     }
 
-    public static void addEmployeePrefrencesIfNotExist(long employeeId) throws BusinessException {
-	if (getEmployeePrefrences(employeeId) == null) {
-	    EmployeePrefrences empPrefrences = new EmployeePrefrences();
-	    empPrefrences.setId(employeeId);
-	    empPrefrences.setTimeLineAutoShowFlag(FlagsEnum.OFF.getCode());
-	    addEmployeePrefrences(empPrefrences);
+    public static EmployeePrefrences getEmployeePrefrences(long employeeId) throws BusinessException {
+	EmployeePrefrences employeePrefrences = getEmployeePrefrencesByEmpId(employeeId);
+	if (employeePrefrences == null) {
+	    employeePrefrences = new EmployeePrefrences();
+	    employeePrefrences.setId(employeeId);
+	    employeePrefrences.setTimeLineAutoHideFlag(FlagsEnum.OFF.getCode());
+	    addEmployeePrefrences(employeePrefrences);
 	}
+
+	return employeePrefrences;
     }
 }
