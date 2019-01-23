@@ -1,6 +1,7 @@
 package com.code.ui.backings.hcm.employees;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
@@ -24,6 +25,7 @@ import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
+import com.code.enums.PromotionsTypesEnum;
 import com.code.enums.RecruitmentTypeEnum;
 import com.code.enums.RegionsEnum;
 import com.code.exceptions.BusinessException;
@@ -301,8 +303,14 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 
     public void printPromotion(PromotionTransactionData promotion) {
 	try {
-	    PromotionTransactionData originalPromotionTransaction = PromotionsService.getPromotionTransactionById(promotion.getBasedOnTransactionId());
-	    byte[] bytes = PromotionsService.getPromotionBytes(promotion, originalPromotionTransaction.getDecisionDate(), originalPromotionTransaction.getDecisionNumber());
+	    Date promotionTransactionDecisionDate = null;
+	    String promotionTransactionDecisionNumber = null;
+	    if (promotion.getPromotionTypeId() == PromotionsTypesEnum.PROMOTION_CANCELLATION.getCode()) {
+		PromotionTransactionData originalPromotionTransaction = PromotionsService.getPromotionTransactionById(promotion.getBasedOnTransactionId());
+		promotionTransactionDecisionDate = originalPromotionTransaction.getDecisionDate();
+		promotionTransactionDecisionNumber = originalPromotionTransaction.getDecisionNumber();
+	    }
+	    byte[] bytes = PromotionsService.getPromotionBytes(promotion, promotionTransactionDecisionDate, promotionTransactionDecisionNumber);
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
