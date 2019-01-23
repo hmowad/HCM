@@ -1692,15 +1692,8 @@ public class EmployeesService extends BaseService {
     }
 
     public static EmployeeMedicalStaffData getEmployeeMedicalStaffDataByEmpId(Long empId) throws BusinessException {
-	try {
-	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put("P_EMP_ID", empId == null ? FlagsEnum.ALL.getCode() : empId);
-	    List<EmployeeMedicalStaffData> resultList = DataAccess.executeNamedQuery(EmployeeMedicalStaffData.class, QueryNamesEnum.GET_EMPLOYEE_MEDICAL_STAFF_DATA_BY_EMP_ID.getCode(), qParams);
-	    return (resultList == null || resultList.size() == 0) ? null : resultList.get(0);
-	} catch (DatabaseException e) {
-	    e.printStackTrace();
-	    throw new BusinessException("error_general");
-	}
+	List<EmployeeMedicalStaffData> resultList = searchEmployeeMedicalStaffDataByEmpId(empId);
+	return (resultList == null || resultList.size() == 0) ? null : resultList.get(0);
     }
 
     public static List<EmployeeExtraTransactionData> getEmployeeDataExtraTransactionByEmpId(Long empId) throws BusinessException {
@@ -1750,6 +1743,17 @@ public class EmployeesService extends BaseService {
 	    qParams.put("P_EMP_ID", empId == null ? FlagsEnum.ALL.getCode() : empId);
 	    qParams.put("P_DECISCION_NUMBER", decisionNumber == null ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
 	    return DataAccess.executeNamedQuery(EmployeeExtraTransactionData.class, QueryNamesEnum.HCM_SEARCH_EMPLOYEES_EXTRA_TRANSACTION_DATA.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    private static List<EmployeeMedicalStaffData> searchEmployeeMedicalStaffDataByEmpId(Long empId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_EMP_ID", empId == null ? FlagsEnum.ALL.getCode() : empId);
+	    return DataAccess.executeNamedQuery(EmployeeMedicalStaffData.class, QueryNamesEnum.HCM_SEARCH_EMPLOYEE_MEDICAL_STAFF_DATA.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
