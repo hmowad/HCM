@@ -27,7 +27,6 @@ import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.WFActionFlagsEnum;
 import com.code.enums.WFInstanceStatusEnum;
-import com.code.enums.WFProcessesEnum;
 import com.code.enums.WFTaskActionsEnum;
 import com.code.enums.WFTaskRolesEnum;
 import com.code.exceptions.BusinessException;
@@ -506,18 +505,15 @@ public abstract class BaseWorkFlow extends BaseService {
 		WFTask task = (WFTask) (((Object[]) taskAndInstance)[0]);
 		WFInstance instance = (WFInstance) (((Object[]) taskAndInstance)[1]);
 
-		// exclude disclaimer requests from invalidations
-		if (!(instance.getProcessId() == WFProcessesEnum.OFFICERS_DISCLAIMER_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.SOLDIERS_DISCLAIMER_REQUEST.getCode())) {
-		    instancesIds.add(instance.getInstanceId());
-		    task.setRefuseReasons(refuseReasons);
+		instancesIds.add(instance.getInstanceId());
+		task.setRefuseReasons(refuseReasons);
 
-		    if (instance.getInstanceId() == lastInstanceId) {
-			// just reject this task as that means this task's instance has been closed (This happens at the parallel tasks).
-			setWFTaskAction(task, WFTaskActionsEnum.REJECT.getCode(), curDate, curHijriDate, session);
-		    } else {
-			closeWFInstanceByAction(null, instance, task, WFTaskActionsEnum.REJECT.getCode(), null, session);
-			lastInstanceId = instance.getInstanceId();
-		    }
+		if (instance.getInstanceId() == lastInstanceId) {
+		    // just reject this task as that means this task's instance has been closed (This happens at the parallel tasks).
+		    setWFTaskAction(task, WFTaskActionsEnum.REJECT.getCode(), curDate, curHijriDate, session);
+		} else {
+		    closeWFInstanceByAction(null, instance, task, WFTaskActionsEnum.REJECT.getCode(), null, session);
+		    lastInstanceId = instance.getInstanceId();
 		}
 	    }
 
