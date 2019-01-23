@@ -294,7 +294,7 @@
 		
 		<mapping class="com.code.dal.orm.hcm.TransactionTimeline"/>
 		
-		<mapping class="com.code.dal.orm.hcm.employees.EmployeePrefrences"/>
+		<mapping class="com.code.dal.orm.hcm.employees.EmployeePreferences"/>
 		
 	</session-factory>
 </hibernate-configuration>

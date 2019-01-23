@@ -7,7 +7,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.servlet.http.HttpSession;
 
-import com.code.dal.orm.hcm.employees.EmployeePrefrences;
+import com.code.dal.orm.hcm.employees.EmployeePreferences;
 import com.code.dal.orm.hcm.movements.MovementTransactionData;
 import com.code.dal.orm.hcm.vacations.VacationData;
 import com.code.enums.CategoriesEnum;
@@ -17,7 +17,7 @@ import com.code.enums.SessionAttributesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.BaseService;
 import com.code.services.config.ETRConfigurationService;
-import com.code.services.hcm.EmployeesPrefrencesService;
+import com.code.services.hcm.EmployeesPreferencesService;
 import com.code.services.hcm.MovementsService;
 import com.code.services.hcm.TransactionsTimelineService;
 import com.code.services.hcm.VacationsService;
@@ -47,8 +47,8 @@ public class Home extends BaseBacking {
 	    calcAlertsData();
 	    HttpSession session = getSession();
 
-	    EmployeePrefrences empPrefrences = EmployeesPrefrencesService.getEmployeePrefrences(loginEmpData.getEmpId());
-	    if ((session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode()) != null) && (TransactionsTimelineService.getFutureTransactionsCount(loginEmpData.getEmpId()) > 0) && (!empPrefrences.getTimeLineAutoHideFlagBoolean())) {
+	    EmployeePreferences empPreferences = EmployeesPreferencesService.getEmployeePreferences(loginEmpData.getEmpId());
+	    if ((session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode()) != null) && (TransactionsTimelineService.getFutureTransactionsCount(loginEmpData.getEmpId()) > 0) && (!empPreferences.getTimeLineAutoHideFlagBoolean())) {
 		showTransactionsTimelineScreenFlag = (boolean) session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode());
 	    }
 	    session.setAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode(), false);

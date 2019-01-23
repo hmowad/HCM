@@ -62,8 +62,8 @@
 				
 				<tr>
 					<td width="20%">
-						<h:selectBooleanCheckbox value="#{transactionsTimeline.empPrefrences.timeLineAutoHideFlagBoolean}">
-							<f:ajax event="change" listener="#{transactionsTimeline.updateEmployeePrefrences()}" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+						<h:selectBooleanCheckbox value="#{transactionsTimeline.empPreferences.timeLineAutoHideFlagBoolean}">
+							<f:ajax event="change" listener="#{transactionsTimeline.updateEmployeePreferences()}" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
 						</h:selectBooleanCheckbox>
 						<h:outputText value="#{msgs.label_doNotAppearAutomatically}" styleClass="remarkMessage" />
 					</td>

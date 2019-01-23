@@ -13,13 +13,13 @@ import com.code.dal.orm.BaseEntity;
 import com.code.enums.FlagsEnum;
 
 @NamedQueries({
-	@NamedQuery(name = "hcm_empPrefrences_getEmployeePrefrencesById",
-		query = " select e from EmployeePrefrences e" +
+	@NamedQuery(name = "hcm_empPreferences_getEmployeePreferencesById",
+		query = " select e from EmployeePreferences e" +
 			" where e.id = :P_EMP_ID ")
 })
 @Entity
-@Table(name = "HCM_PRS_EMPLOYEES_PREFRENCES")
-public class EmployeePrefrences extends BaseEntity {
+@Table(name = "HCM_PRS_EMPLOYEES_PREFERENCES")
+public class EmployeePreferences extends BaseEntity {
     private Long id;
     private Integer timeLineAutoHideFlag;
     private Boolean timeLineAutoHideFlagBoolean;

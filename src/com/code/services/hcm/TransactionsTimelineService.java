@@ -9,6 +9,7 @@ import java.util.Map;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.TransactionTimeline;
 import com.code.dal.orm.hcm.movements.MovementTransactionData;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.MovementTypesEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.TransactionTypesEnum;
@@ -53,29 +54,37 @@ public class TransactionsTimelineService extends BaseService {
     }
 
     private static String getMovementTransactionDescription(MovementTransactionData movementsTransaction) {
-	String description;
+	String description = "";
 	if (movementsTransaction.getReplacementTransId() != null) {
 	    description = getMessage("label_moveByReplacement");
 	} else if (movementsTransaction.getFreezeJobId() != null) {
 	    description = getMessage("label_moveByJobFreeze");
 	} else if (movementsTransaction.getMovementTypeId() == MovementTypesEnum.MANDATE.getCode() || movementsTransaction.getMovementTypeId() == MovementTypesEnum.SECONDMENT.getCode()) {
 	    description = movementsTransaction.getMovementTypeDesc();
-	} else if (movementsTransaction.getLocationFlag() == 0) {
-	    description = movementsTransaction.getMovementTypeDesc() + " " + getMessage("label_internal");
-	} else {
-	    description = movementsTransaction.getMovementTypeDesc() + " " + getMessage("label_external");
+	} else if (movementsTransaction.getMovementTypeId() == MovementTypesEnum.SUBJOIN.getCode()) {
+	    if (movementsTransaction.getLocationFlag() == 0) {
+		if (movementsTransaction.getCategoryId() == CategoriesEnum.OFFICERS.getCode() || movementsTransaction.getCategoryId() == CategoriesEnum.SOLDIERS.getCode())
+		    description = movementsTransaction.getMovementTypeDesc() + " " + getMessage("label_internal");
+		else
+		    description = getMessage("label_assignment") + " " + getMessage("label_internal");
+	    } else {
+		if (movementsTransaction.getCategoryId() == CategoriesEnum.OFFICERS.getCode() || movementsTransaction.getCategoryId() == CategoriesEnum.SOLDIERS.getCode())
+		    description = movementsTransaction.getMovementTypeDesc() + " " + getMessage("label_external");
+		else
+		    description = getMessage("label_assignment") + " " + getMessage("label_external");
+	    }
 	}
 	return description;
     }
 
     private static String calculatePeriod(String days, String weeks, String months) {
 	String period = "";
-	if (!months.equals("-"))
-	    period += months + " " + getMessage("label_months");
-	if (!weeks.equals("-"))
-	    period += weeks + " " + getMessage("label_weeks");
-	if (!days.equals("-"))
-	    period = (period.isEmpty() ? "" : period + " " + getMessage("label_and")) + " " + days + " " + getMessage("label_days");
+	if (!months.equals("-") && !months.equals("0"))
+	    period += months + " " + getMessage("label_month");
+	if (!weeks.equals("-") && !weeks.equals("0"))
+	    period += weeks + " " + getMessage("label_week");
+	if (!days.equals("-") && !days.equals("0"))
+	    period = (period.isEmpty() ? "" : period + " " + getMessage("label_and")) + " " + days + " " + getMessage("label_day");
 	if (period.isEmpty())
 	    period = "-";
 	return period;
