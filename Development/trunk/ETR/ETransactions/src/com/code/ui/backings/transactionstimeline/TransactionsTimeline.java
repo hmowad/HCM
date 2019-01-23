@@ -8,9 +8,9 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.TransactionTimeline;
-import com.code.dal.orm.hcm.employees.EmployeePrefrences;
+import com.code.dal.orm.hcm.employees.EmployeePreferences;
 import com.code.exceptions.BusinessException;
-import com.code.services.hcm.EmployeesPrefrencesService;
+import com.code.services.hcm.EmployeesPreferencesService;
 import com.code.services.hcm.TransactionsTimelineService;
 import com.code.ui.backings.base.BaseBacking;
 
@@ -20,15 +20,15 @@ import com.code.ui.backings.base.BaseBacking;
 public class TransactionsTimeline extends BaseBacking implements Serializable {
     private int rowsCount = 10;
     private List<TransactionTimeline> transactionsTimelineList;
-    private EmployeePrefrences empPrefrences;
+    private EmployeePreferences empPreferences;
 
     public TransactionsTimeline() {
 	try {
 	    transactionsTimelineList = new ArrayList<TransactionTimeline>();
-	    empPrefrences = EmployeesPrefrencesService.getEmployeePrefrences(loginEmpData.getEmpId());
+	    empPreferences = EmployeesPreferencesService.getEmployeePreferences(loginEmpData.getEmpId());
 	    searchTransactionsTimeline();
 	} catch (BusinessException e) {
-	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
+	    e.printStackTrace();
 	}
 
     }
@@ -41,9 +41,9 @@ public class TransactionsTimeline extends BaseBacking implements Serializable {
 	}
     }
 
-    public void updateEmployeePrefrences() {
+    public void updateEmployeePreferences() {
 	try {
-	    EmployeesPrefrencesService.updateEmployeePrefrences(empPrefrences);
+	    EmployeesPreferencesService.updateEmployeePreferences(empPreferences);
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -65,12 +65,12 @@ public class TransactionsTimeline extends BaseBacking implements Serializable {
 	this.transactionsTimelineList = transactionsTimelineList;
     }
 
-    public EmployeePrefrences getEmpPrefrences() {
-	return empPrefrences;
+    public EmployeePreferences getEmpPreferences() {
+	return empPreferences;
     }
 
-    public void setEmpPrefrences(EmployeePrefrences empPrefrences) {
-	this.empPrefrences = empPrefrences;
+    public void setEmpPreferences(EmployeePreferences empPreferences) {
+	this.empPreferences = empPreferences;
     }
 
 }
