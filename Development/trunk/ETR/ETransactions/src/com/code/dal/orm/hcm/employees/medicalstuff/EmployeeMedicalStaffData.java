@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.code.dal.orm.BaseEntity;
 
 @NamedQueries({
-	@NamedQuery(name = "hcm_emp_getEmployeeMedicalStaffDataIdByEmpId",
+	@NamedQuery(name = "hcm_empData_searchEmployeeMedicalStaffData",
 		query = " select e from EmployeeMedicalStaffData e where e.empId = :P_EMP_ID")
 })
 
