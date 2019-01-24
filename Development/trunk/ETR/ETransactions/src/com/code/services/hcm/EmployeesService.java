@@ -1600,9 +1600,6 @@ public class EmployeesService extends BaseService {
     private static void validateEmployeeDataExtraTransaction(EmployeeExtraTransactionData employeeExtraTransactionData) throws BusinessException {
 	if (employeeExtraTransactionData.getDecisionNumber() == null || employeeExtraTransactionData.getDecisionNumber().equals(""))
 	    throw new BusinessException("error_decisionNumberMandatory");
-	List<EmployeeExtraTransactionData> employeeExtraTransactionDataList = getEmployeeExtraTransactionByDecisionNumber(employeeExtraTransactionData.getDecisionNumber());
-	if (employeeExtraTransactionDataList != null && employeeExtraTransactionDataList.size() != 0)
-	    throw new BusinessException("error_repeatedDecisionNumber");
 
 	Date sysDate = HijriDateService.getHijriSysDate();
 	if (employeeExtraTransactionData.getDecisionDate().after(sysDate))
