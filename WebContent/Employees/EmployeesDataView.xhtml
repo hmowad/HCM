@@ -257,7 +257,7 @@
 										<h:outputText id="birthDateId" value="#{employeesDataView.employee.birthDateString}" />
 									</td>
 									<td width="30%" colspan="2">
-										<h:commandButton action="#{employeesDataView.yaqeenInformationRetrieval()}" value="#{msgs.label_retrieveInformation}" title="#{msgs.label_retrieveInformation}" rendered="#{!employeesDataView.viewOnly}" styleClass="btn_normal">
+										<h:commandButton action="#{employeesDataView.updateEmployeeDataFromYaqeen()}" value="#{msgs.label_retrieveInformation}" title="#{msgs.label_retrieveInformation}" rendered="#{!employeesDataView.viewOnly}" styleClass="btn_normal">
 											<f:ajax execute="employeesDataViewFormId:basicDataPanelId" render="employeesDataViewFormId:basicDataPanelId employeesDataViewFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</td>

@@ -1537,7 +1537,7 @@ public class EmployeesService extends BaseService {
     }
 
     /************************************************************** Yaqeen integration **************************************************************/
-    public static PersonInfoDetailedResult yaqeenInformationRetrieval(String socialId, String birthDate, String loginSocialId, String clientIpAddress) throws BusinessException {
+    public static PersonInfoDetailedResult retrieveEmployeeInfoFromYaqeen(String socialId, String birthDate, String loginSocialId, String clientIpAddress) throws BusinessException {
 	validateYaqeenMandatoryFields(socialId, birthDate);
 	try {
 	    PersonInfoRequest personInfoRequest = new PersonInfoRequest();
@@ -1563,8 +1563,8 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    public static void yaqeenConstructEmployeeData(EmployeeData emp, String loginId, String clientIpAddress) throws BusinessException {
-	PersonInfoDetailedResult personInfoDetailedResult = yaqeenInformationRetrieval(emp.getSocialID(), emp.getBirthDateString(), loginId, clientIpAddress);
+    public static void updateEmployeeDataFromYaqeen(EmployeeData emp, String loginEmployeeSocialId, String clientIpAddress) throws BusinessException {
+	PersonInfoDetailedResult personInfoDetailedResult = retrieveEmployeeInfoFromYaqeen(emp.getSocialID(), emp.getBirthDateString(), loginEmployeeSocialId, clientIpAddress);
 
 	emp.setFirstName(personInfoDetailedResult.getFirstName());
 	emp.setSecondName(personInfoDetailedResult.getFatherName());
@@ -1595,6 +1595,24 @@ public class EmployeesService extends BaseService {
 	    throw new BusinessException("error_invalidSocialID");
 	if (birthDate == null || birthDate.equals(""))
 	    throw new BusinessException("error_birthDateMandatory");
+    }
+
+    public static boolean isSocialIdExpired(EmployeeData employeeData) throws BusinessException {
+	if (employeeData != null && employeeData.getSocialIDExpiryDate() != null && HijriDateService.getHijriSysDate().after(employeeData.getSocialIDExpiryDate()))
+	    return true;
+
+	return false;
+    }
+
+    public static boolean isSocialIdExpiryDateInRenewalPeriodWarning(EmployeeData employeeData) throws BusinessException {
+	if (employeeData != null && employeeData.getSocialIDExpiryDate() != null) {
+	    int diffDays = Math.abs(HijriDateService.hijriDateDiff(HijriDateService.getHijriSysDate(), employeeData.getSocialIDExpiryDate()));
+	    if (diffDays <= ETRConfigurationService.getSocialIdRenewalPeriodWarning()) {
+		return true;
+	    }
+	}
+
+	return false;
     }
 
     // --------------------------------------- Employees Data Extra Transaction -------------------------------------------//

@@ -10,6 +10,7 @@ import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.TransactionTimeline;
 import com.code.dal.orm.hcm.movements.MovementTransactionData;
 import com.code.enums.CategoriesEnum;
+import com.code.enums.LocationFlagsEnum;
 import com.code.enums.MovementTypesEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.TransactionTypesEnum;
@@ -61,18 +62,9 @@ public class TransactionsTimelineService extends BaseService {
 	    description = getMessage("label_moveByJobFreeze");
 	} else if (movementsTransaction.getMovementTypeId() == MovementTypesEnum.MANDATE.getCode() || movementsTransaction.getMovementTypeId() == MovementTypesEnum.SECONDMENT.getCode()) {
 	    description = movementsTransaction.getMovementTypeDesc();
-	} else if (movementsTransaction.getMovementTypeId() == MovementTypesEnum.SUBJOIN.getCode()) {
-	    if (movementsTransaction.getLocationFlag() == 0) {
-		if (movementsTransaction.getCategoryId() == CategoriesEnum.OFFICERS.getCode() || movementsTransaction.getCategoryId() == CategoriesEnum.SOLDIERS.getCode())
-		    description = movementsTransaction.getMovementTypeDesc() + " " + getMessage("label_internal");
-		else
-		    description = getMessage("label_assignment") + " " + getMessage("label_internal");
-	    } else {
-		if (movementsTransaction.getCategoryId() == CategoriesEnum.OFFICERS.getCode() || movementsTransaction.getCategoryId() == CategoriesEnum.SOLDIERS.getCode())
-		    description = movementsTransaction.getMovementTypeDesc() + " " + getMessage("label_external");
-		else
-		    description = getMessage("label_assignment") + " " + getMessage("label_external");
-	    }
+	} else {
+	    description = ((movementsTransaction.getCategoryId() != CategoriesEnum.OFFICERS.getCode() && movementsTransaction.getCategoryId() != CategoriesEnum.SOLDIERS.getCode()) && movementsTransaction.getMovementTypeId() == MovementTypesEnum.SUBJOIN.getCode()) ? getMessage("label_assignment") : movementsTransaction.getMovementTypeDesc();
+	    description += movementsTransaction.getLocationFlag() == LocationFlagsEnum.INTERNAL.getCode() ? getMessage("label_internal") : getMessage("label_external");
 	}
 	return description;
     }

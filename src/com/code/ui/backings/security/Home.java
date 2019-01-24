@@ -18,11 +18,11 @@ import com.code.exceptions.BusinessException;
 import com.code.services.BaseService;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.hcm.EmployeesPreferencesService;
+import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.MovementsService;
 import com.code.services.hcm.TransactionsTimelineService;
 import com.code.services.hcm.VacationsService;
 import com.code.services.security.SecurityService;
-import com.code.services.util.HijriDateService;
 import com.code.services.workflow.BaseWorkFlow;
 import com.code.ui.backings.base.BaseBacking;
 
@@ -139,17 +139,12 @@ public class Home extends BaseBacking {
 
     public void calcAlertsData() {
 	try {
-	    if (loginEmpData.getSocialIDExpiryDate() != null) {
-		if (HijriDateService.getHijriSysDate().after(loginEmpData.getSocialIDExpiryDate())) {
-		    socialIdExpiredWarning = true;
-		    socialIdRenewalPeriodWarning = false;
-		} else {
-		    int diffDays = Math.abs(HijriDateService.hijriDateDiff(HijriDateService.getHijriSysDate(), loginEmpData.getSocialIDExpiryDate()));
-		    if (diffDays <= ETRConfigurationService.getSocialIdRenewalPeriodWarning()) {
-			socialIdRenewalPeriodWarning = true;
-			socialIdExpiredWarning = false;
-		    }
-		}
+	    if (EmployeesService.isSocialIdExpired(loginEmpData)) {
+		socialIdExpiredWarning = true;
+		socialIdRenewalPeriodWarning = false;
+	    } else if (EmployeesService.isSocialIdExpiryDateInRenewalPeriodWarning(loginEmpData)) {
+		socialIdRenewalPeriodWarning = true;
+		socialIdExpiredWarning = false;
 	    }
 	    lastVacation = VacationsService.getLastVacationWithoutJoiningDate(loginEmpData.getEmpId());
 	    lastValidMovTrans = MovementsService.getLastValidMovementTransactionForJoiningDate(loginEmpData.getEmpId(), MovementTypesEnum.MOVE.getCode());
