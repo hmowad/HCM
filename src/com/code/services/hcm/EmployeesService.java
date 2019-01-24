@@ -28,6 +28,7 @@ import com.code.enums.QueryNamesEnum;
 import com.code.enums.RanksEnum;
 import com.code.enums.RegionsEnum;
 import com.code.enums.ReportNamesEnum;
+import com.code.enums.TransactionTypesEnum;
 import com.code.enums.UnitTypesEnum;
 import com.code.enums.WFProcessesEnum;
 import com.code.exceptions.BusinessException;
@@ -1598,9 +1599,18 @@ public class EmployeesService extends BaseService {
 
     // --------------------------------------- Employees Data Extra Transaction -------------------------------------------//
     private static void validateEmployeeDataExtraTransaction(EmployeeExtraTransactionData employeeExtraTransactionData) throws BusinessException {
+	if (employeeExtraTransactionData.getTransactionTypeId() == TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS.getCode() && employeeExtraTransactionData.getSocialStatus() == null)
+	    throw new BusinessException("error_socialStatusMandatory");
+	if (employeeExtraTransactionData.getTransactionTypeId() == TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SALARY_RANK.getCode() && (employeeExtraTransactionData.getSalaryRankId() == null || employeeExtraTransactionData.getSalaryDegreeId() == null))
+	    throw new BusinessException("error_salaryRankMandatory");
+	if (employeeExtraTransactionData.getTransactionTypeId() == TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_RANK_TITLE.getCode() && employeeExtraTransactionData.getRankTitleId() == null)
+	    throw new BusinessException("error_rankTitleMandatory");
+	if (employeeExtraTransactionData.getTransactionTypeId() == TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_GENERAL_SPECIALIZATION.getCode() && employeeExtraTransactionData.getGeneralSpecialization() == null)
+	    throw new BusinessException("error_generalSpecializationMandatory");
+	if (employeeExtraTransactionData.getTransactionTypeId() == TransactionTypesEnum.EMPLOYEE_MEDICAL_STAFF_DATA.getCode() && (employeeExtraTransactionData.getMedStaffDegreeId() == null || employeeExtraTransactionData.getMedStaffRankId() == null || employeeExtraTransactionData.getMedStaffLevelId() == null))
+	    throw new BusinessException("error_medStaffDataMandatory");
 	if (employeeExtraTransactionData.getDecisionNumber() == null || employeeExtraTransactionData.getDecisionNumber().equals(""))
 	    throw new BusinessException("error_decisionNumberMandatory");
-
 	Date sysDate = HijriDateService.getHijriSysDate();
 	if (employeeExtraTransactionData.getDecisionDate().after(sysDate))
 	    throw new BusinessException("error_decDateAfterMandatory");

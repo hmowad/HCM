@@ -2,6 +2,7 @@ package com.code.enums;
 
 public enum TransactionClassesEnum {
 
+    EMPLOYEES(5),
     UNITS(10),
     JOBS(20),
     RECRUITMENT(30),
