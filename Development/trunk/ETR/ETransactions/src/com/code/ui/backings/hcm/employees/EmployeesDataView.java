@@ -214,12 +214,23 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 	return "";
     }
 
-    public void yaqeenInformationRetrieval() {
+    public void updateEmployeeDataFromYaqeen() {
 	try {
-	    EmployeesService.yaqeenConstructEmployeeData(employee, this.loginEmpData.getSocialID(), getClientIpAddress());
+	    EmployeesService.updateEmployeeDataFromYaqeen(employee, this.loginEmpData.getSocialID(), getClientIpAddress());
+	    if (socialIdNeedToBeUpdated())
+		super.setServerSideErrorMessages(getMessage("error_renewYourSocialId"));
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
+    }
+
+    public boolean socialIdNeedToBeUpdated() {
+	try {
+	    return ((loginEmpData.getEmpId().equals(employee.getEmpId())) && (employee.getSocialIDExpiryDate() == null || EmployeesService.isSocialIdExpired(employee) || EmployeesService.isSocialIdExpiryDateInRenewalPeriodWarning(employee)));
+	} catch (BusinessException e) {
+	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
+	return false;
     }
 
     public JobData getJobData() {

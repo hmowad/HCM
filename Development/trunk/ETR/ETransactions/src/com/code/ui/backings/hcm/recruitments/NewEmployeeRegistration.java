@@ -254,7 +254,7 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 
     public void yaqeenInformationRetrieval() {
 	try {
-	    EmployeesService.yaqeenConstructEmployeeData(employee, this.loginEmpData.getSocialID(), getClientIpAddress());
+	    EmployeesService.updateEmployeeDataFromYaqeen(employee, this.loginEmpData.getSocialID(), getClientIpAddress());
 	    yaqeenFlag = true;
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));

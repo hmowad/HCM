@@ -17,6 +17,14 @@
 	function openTransactionsTimelineScreen(){
 		openTransactionsTimeline('#{request.contextPath}');
 	}
+
+	window.onkeypress = function(e) {
+		// window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+		var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+		if (keyCode == '13') {
+			return false;
+		}
+	}
 	</script>
 </h:head>
 <h:body styleClass="screenBg" onload="showTransactionsTimelineBasedOnFlag(); return false;">
