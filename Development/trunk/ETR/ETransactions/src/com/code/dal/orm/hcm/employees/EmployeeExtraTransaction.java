@@ -34,6 +34,7 @@ public class EmployeeExtraTransaction extends AuditEntity implements Serializabl
     private Long medStaffRankId;
     private Long medStaffLevelId;
     private Long medStaffDegreeId;
+    private Integer transactionTypeId;
 
     @SequenceGenerator(name = "HCMEmpsExtraTrnsSeq",
 	    sequenceName = "HCM_EMPS_EXTRA_TRNS_SEQ",
@@ -170,6 +171,16 @@ public class EmployeeExtraTransaction extends AuditEntity implements Serializabl
 	this.medStaffDegreeId = medStaffDegreeId;
     }
 
+    @Basic
+    @Column(name = "TRANSACTION_TYPE_ID")
+    public Integer getTransactionTypeId() {
+	return transactionTypeId;
+    }
+
+    public void setTransactionTypeId(Integer transactionTypeId) {
+	this.transactionTypeId = transactionTypeId;
+    }
+
     @Override
     public Long calculateContentId() {
 	return id;
@@ -188,7 +199,8 @@ public class EmployeeExtraTransaction extends AuditEntity implements Serializabl
 		"decisionDate:" + decisionDate + AUDIT_SEPARATOR +
 		"medStaffRankId:" + medStaffRankId + AUDIT_SEPARATOR +
 		"medStaffLevelId:" + medStaffLevelId + AUDIT_SEPARATOR +
-		"medStaffDegreeId:" + medStaffDegreeId + AUDIT_SEPARATOR;
+		"medStaffDegreeId:" + medStaffDegreeId + AUDIT_SEPARATOR +
+		"transactionTypeId:" + transactionTypeId + AUDIT_SEPARATOR;
     }
 
 }

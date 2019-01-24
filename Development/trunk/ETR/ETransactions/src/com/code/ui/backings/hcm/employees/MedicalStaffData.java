@@ -12,6 +12,7 @@ import com.code.dal.orm.hcm.employees.medicalstuff.EmployeeMedicalStaffData;
 import com.code.dal.orm.hcm.employees.medicalstuff.MedicalStaffLevel;
 import com.code.dal.orm.hcm.employees.medicalstuff.MedicalStaffRank;
 import com.code.dal.orm.hcm.payroll.Degree;
+import com.code.enums.TransactionTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.PayrollsService;
@@ -61,6 +62,7 @@ public class MedicalStaffData extends BaseBacking {
 	try {
 	    EmployeeMedicalStaffData employeeMedicalStaffData = new EmployeeMedicalStaffData();
 	    EmployeesService.constructEmployeeMedicalStaffData(addedEmployeeExtraTransactionData, employeeMedicalStaffData);
+	    addedEmployeeExtraTransactionData.setTransactionTypeId(TransactionTypesEnum.EMPLOYEE_MEDICAL_STAFF_DATA.getCode());
 	    EmployeesService.addEmployeeDataExtraTransaction(selectedEmployee, addedEmployeeExtraTransactionData, employeeMedicalStaffData);
 	    employeeExtraTransactionDataList.set(index, EmployeesService.getEmployeeExtraTransactionByDecisionNumber(addedEmployeeExtraTransactionData.getDecisionNumber()).get(0));
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));

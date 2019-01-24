@@ -2,6 +2,13 @@ package com.code.enums;
 
 public enum TransactionTypesEnum {
 
+    /************************** Employees ***********************************/
+    EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS(10),
+    EMPLOYEES_EXTRA_DATA_RANK_TITLE(20),
+    EMPLOYEES_EXTRA_DATA_GENERAL_SPECIALIZATION(30),
+    EMPLOYEES_EXTRA_DATA_SALARY_RANK(40),
+    EMPLOYEE_MEDICAL_STAFF_DATA(50),
+
     /************************** Units ***********************************/
     UNIT_CONSTRUCTION(10),
     UNIT_NAME_MODIFICATION(20),
