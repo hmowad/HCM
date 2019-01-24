@@ -43,15 +43,19 @@ public class TransactionsTimelineService extends BaseService {
 	}
 
 	List<TransactionTimeline> returnList = new ArrayList<>();
-	if (movementsTransactions.get(0).getTransactionTypeCode() == TransactionTypesEnum.MVT_NEW_DECISION.getCode() && HijriDateService.getHijriSysDate().before(movementsTransactions.get(0).getExecutionDate())) {
-	    return constructFutureMovementTransactionTimeline(movementsTransactions.get(0));
-	} else if (movementsTransactions.get(0).getEndDate() != null && HijriDateService.getHijriSysDate().before(movementsTransactions.get(0).getEndDate())) {
-	    TransactionTimeline transaction = consturctActiveTransactionTimeline(movementsTransactions);
-	    if (transaction != null)
-		returnList.add(transaction);
-	    return returnList;
+	for (int i = 0; i < movementsTransactions.size(); i++) {
+	    if (movementsTransactions.get(i).getTransactionTypeCode() == TransactionTypesEnum.MVT_NEW_DECISION.getCode() && movementsTransactions.get(i).getSuccessorDecisionEffectFlag() == null && HijriDateService.getHijriSysDate().before(movementsTransactions.get(i).getExecutionDate())) {
+		return constructFutureMovementTransactionTimeline(movementsTransactions.get(i));
+	    } else if (movementsTransactions.get(i).getEndDate() != null && HijriDateService.getHijriSysDate().before(movementsTransactions.get(i).getEndDate())) {
+		TransactionTimeline transaction = consturctActiveTransactionTimeline(movementsTransactions.subList(i, movementsTransactions.size()));
+		if (transaction != null) {
+		    returnList.add(transaction);
+		    return returnList;
+		}
+	    }
 	}
 	return returnList;
+
     }
 
     private static String getMovementTransactionDescription(MovementTransactionData movementsTransaction) {
