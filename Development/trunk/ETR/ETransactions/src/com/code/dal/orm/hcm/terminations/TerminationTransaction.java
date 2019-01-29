@@ -123,6 +123,7 @@ public class TerminationTransaction extends AuditEntity implements InsertableAud
     private String transEmpJobClassJobCode;
     private String transEmpJobClassJobDesc;
     private String transEmpUnitFullName;
+    private Long transEmpUnitId;
     private Long transactionTypeId;
 
     private Long reasonId;
@@ -866,6 +867,16 @@ public class TerminationTransaction extends AuditEntity implements InsertableAud
 
     public void setTransEmpUnitFullName(String transEmpUnitFullName) {
 	this.transEmpUnitFullName = transEmpUnitFullName;
+    }
+
+    @Basic
+    @Column(name = "TRANS_EMP_UNIT_ID")
+    public Long getTransEmpUnitId() {
+	return transEmpUnitId;
+    }
+
+    public void setTransEmpUnitId(Long transEmpUnitId) {
+	this.transEmpUnitId = transEmpUnitId;
     }
 
     @Basic

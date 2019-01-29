@@ -162,6 +162,7 @@ public class TerminationTransactionData extends BaseEntity {
     private String transEmpJobClassJobCode;
     private String transEmpJobClassJobDesc;
     private String transEmpUnitFullName;
+    private Long transEmpUnitId;
     private Long cancelTransactionId;
     private Long transactionTypeId;
     private String transactionTypeDesc;
@@ -1316,6 +1317,17 @@ public class TerminationTransactionData extends BaseEntity {
     public void setTransEmpUnitFullName(String transEmpUnitFullName) {
 	this.transEmpUnitFullName = transEmpUnitFullName;
 	this.terminationTransaction.setTransEmpUnitFullName(transEmpUnitFullName);
+    }
+
+    @Basic
+    @Column(name = "TRANS_EMP_UNIT_ID")
+    public Long getTransEmpUnitId() {
+	return transEmpUnitId;
+    }
+
+    public void setTransEmpUnitId(Long transEmpUnitId) {
+	this.transEmpUnitId = transEmpUnitId;
+	terminationTransaction.setTransEmpUnitId(transEmpUnitId);
     }
 
     @Basic

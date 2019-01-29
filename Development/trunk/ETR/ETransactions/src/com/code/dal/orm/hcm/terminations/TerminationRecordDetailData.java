@@ -49,6 +49,7 @@ public class TerminationRecordDetailData extends BaseEntity {
     private Date empBirthDate;
     private String empBirthDateString;
     private Long empPhysicalUnitId;
+    private Long empOfficialUnitId;
     private String empOfficialUnitFullName;
     private String empPhysicalUnitFullName;
     private Date empLastExtensionEndDate;
@@ -309,6 +310,16 @@ public class TerminationRecordDetailData extends BaseEntity {
 
     public void setEmpPhysicalUnitId(Long empPhysicalUnitId) {
 	this.empPhysicalUnitId = empPhysicalUnitId;
+    }
+
+    @Basic
+    @Column(name = "EMP_OFFICIAL_UNIT_ID")
+    public Long getEmpOfficialUnitId() {
+	return empOfficialUnitId;
+    }
+
+    public void setEmpOfficialUnitId(Long empOfficialUnitId) {
+	this.empOfficialUnitId = empOfficialUnitId;
     }
 
     @Basic
