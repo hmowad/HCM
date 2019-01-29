@@ -51,6 +51,7 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
     private List<Category> categories;
     private int pageSize = 10;
     private boolean viewOnly;
+    private boolean viewSaveBtnForYaqeen;
     private boolean nonSaudiDoctorContractorFlag;
     private EmployeeMedicalStaffData employeeMedicalStaffData;
 
@@ -65,6 +66,7 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 	    employee = EmployeesService.getEmployeeData(loginEmpData.getEmpId());
 	    employeeQualificationsData = EmployeesService.getEmployeeQualificationsByEmpId(loginEmpData.getEmpId());
 	    viewOnly = true;
+	    viewSaveBtnForYaqeen = socialIdNeedToBeUpdated();
 
 	    EmployeeData empParam;
 	    EmployeeQualificationsData employeeQualificationsDataParam;
@@ -185,6 +187,7 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 	    EmployeesService.logEmployeeData(employee, HijriDateService.getHijriSysDate(), HijriDateService.getHijriSysDate());
 	    EmployeesService.updateEmployeeAndHisQualifications(employee, employeeQualificationsData);
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	    viewSaveBtnForYaqeen = socialIdNeedToBeUpdated();
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -343,6 +346,14 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 
     public void setEmployeeMedicalStaffData(EmployeeMedicalStaffData employeeMedicalStaffData) {
 	this.employeeMedicalStaffData = employeeMedicalStaffData;
+    }
+
+    public boolean isViewSaveBtnForYaqeen() {
+	return viewSaveBtnForYaqeen;
+    }
+
+    public void setViewSaveBtnForYaqeen(boolean viewSaveBtnForYaqeen) {
+	this.viewSaveBtnForYaqeen = viewSaveBtnForYaqeen;
     }
 
 }

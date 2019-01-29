@@ -257,7 +257,7 @@
 										<h:outputText id="birthDateId" value="#{employeesDataView.employee.birthDateString}" />
 									</td>
 									<td width="30%" colspan="2">
-										<h:commandButton action="#{employeesDataView.updateEmployeeDataFromYaqeen()}" value="#{msgs.label_retrieveInformation}" title="#{msgs.label_retrieveInformation}" rendered="#{!employeesDataView.viewOnly}" styleClass="btn_normal">
+										<h:commandButton action="#{employeesDataView.updateEmployeeDataFromYaqeen()}" value="#{msgs.label_retrieveInformation}" title="#{msgs.label_retrieveInformation}" rendered="#{not employeesDataView.viewOnly or employeesDataView.socialIdNeedToBeUpdated()}" styleClass="btn_normal">
 											<f:ajax execute="employeesDataViewFormId:basicDataPanelId" render="employeesDataViewFormId:basicDataPanelId employeesDataViewFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</td>
@@ -884,24 +884,21 @@
 						</rich:collapsiblePanel>
 					</td>
 				</tr>
-				<h:panelGroup rendered="#{!employeesDataView.viewOnly}">
-					<tr>
-						<td width="100%" height="5" />
-					</tr>
-					<tr>
-						<td>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="saveButtonPanelGroupId">
 							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="100%">
-										<h:commandButton id="saveBtn" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validate(#{employeesDataView.mode})');">
-											<f:ajax execute="employeesDataViewFormId:basicDataPanelId employeesDataViewFormId:jobDataPanelId employeesDataViewFormId:recQualificationDataPanelId employeesDataViewFormId:curQualificationDataPanelId employeesDataViewFormId:communicationDataPanelId employeesDataViewFormId:socialIdArchivingPanelId" render="employeesDataViewFormId:notifyMessagesId" listener="#{employeesDataView.save()}" />
+										<h:commandButton id="saveBtn" action="#{employeesDataView.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validate(#{employeesDataView.mode})');" rendered="#{not employeesDataView.viewOnly or employeesDataView.viewSaveBtnForYaqeen}">
+											<f:ajax execute="@form" render="employeesDataViewFormId:saveButtonPanelGroupId employeesDataViewFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</td>
 								</tr>
 							</table>
-						</td>
-					</tr>
-				</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
 			</table>
 		</ui:decorate>
 	</h:form>
