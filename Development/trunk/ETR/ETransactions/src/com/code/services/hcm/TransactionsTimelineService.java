@@ -68,7 +68,7 @@ public class TransactionsTimelineService extends BaseService {
 	    description = movementsTransaction.getMovementTypeDesc();
 	} else {
 	    description = ((movementsTransaction.getCategoryId() != CategoriesEnum.OFFICERS.getCode() && movementsTransaction.getCategoryId() != CategoriesEnum.SOLDIERS.getCode()) && movementsTransaction.getMovementTypeId() == MovementTypesEnum.SUBJOIN.getCode()) ? getMessage("label_assignment") : movementsTransaction.getMovementTypeDesc();
-	    description += movementsTransaction.getLocationFlag() == LocationFlagsEnum.INTERNAL.getCode() ? getMessage("label_internal") : getMessage("label_external");
+	    description += " " + (movementsTransaction.getLocationFlag() == LocationFlagsEnum.INTERNAL.getCode() ? getMessage("label_internal") : getMessage("label_external"));
 	}
 	return description;
     }
