@@ -73,7 +73,7 @@ public class DataAccess {
 	}
     }
 
-    public static void addMultipleEntities(List<BaseEntity> beans, CustomSession... useSession) throws DatabaseException {
+    public static <T> void addMultipleEntities(List<T> beans, CustomSession... useSession) throws DatabaseException {
 	boolean isOpenedSession = false;
 	if (useSession != null && useSession.length > 0)
 	    isOpenedSession = true;
@@ -131,7 +131,7 @@ public class DataAccess {
 	}
     }
 
-    public static void updateMultipleEntities(List<BaseEntity> beans, CustomSession... useSession) throws DatabaseException {
+    public static <T> void updateMultipleEntities(List<T> beans, CustomSession... useSession) throws DatabaseException {
 	boolean isOpenedSession = false;
 	if (useSession != null && useSession.length > 0)
 	    isOpenedSession = true;
@@ -333,13 +333,13 @@ public class DataAccess {
 	}
     }
 
-    private static void auditMultipleEntities(List<BaseEntity> beans, AuditOperationsEnum operation, Session session) throws DatabaseException {
+    private static <T> void auditMultipleEntities(List<T> beans, AuditOperationsEnum operation, Session session) throws DatabaseException {
 	int i = 0;
 	if (beans != null && !beans.isEmpty()) {
 	    if ((AuditOperationsEnum.INSERT.equals(operation) && beans.get(0) instanceof InsertableAuditEntity) ||
 		    (AuditOperationsEnum.UPDATE.equals(operation) && beans.get(0) instanceof UpdatableAuditEntity) ||
 		    (AuditOperationsEnum.DELETE.equals(operation) && beans.get(0) instanceof DeletableAuditEntity)) {
-		for (BaseEntity bean : beans) {
+		for (T bean : beans) {
 		    // It is intended not to check for the cast exception here to announce the wrong usage.
 		    AuditEntity auditableBean = (AuditEntity) bean;
 

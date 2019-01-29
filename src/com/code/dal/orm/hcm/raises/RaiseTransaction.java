@@ -8,18 +8,34 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import com.code.dal.audit.InsertableAuditEntity;
+import com.code.dal.audit.UpdatableAuditEntity;
 import com.code.dal.orm.AuditEntity;
-import com.code.services.util.HijriDateService;
+
+@NamedQueries({
+
+	@NamedQuery(name = "hcm_raiseTransaction_getAllRaisesForEmployeesAfterGivenTime",
+		query = "select rt from RaiseTransaction rt where executionDate > to_date(:P_PROMOTION_DATE, 'MI/MM/YYYY') and rt.empId in (:P_EMP_IDS) and rt.deservedFlag = 1" +
+			" order by empId, executionDate"),
+
+	@NamedQuery(name = "hcm_raiseTransaction_getEmployeesDegreeAtGivenTime",
+		query = "select a from RaiseTransaction a" +
+			" where a.executionDate > to_date(:P_PROMOTION_DATE, 'MI/MM/YYYY')" +
+			" and a.executionDate = (select min(b.executionDate) from RaiseTransaction b where b.executionDate > to_date(:P_PROMOTION_DATE, 'MI/MM/YYYY') and a.empId = b.empId)" +
+			" and a.empId in (:P_EMP_IDS)" +
+			" order by a.empId")
+
+})
 
 @Entity
 @Table(name = "HCM_RAISE_TRANSACTIONS")
-public class RaiseTransaction extends AuditEntity implements InsertableAuditEntity {
+public class RaiseTransaction extends AuditEntity implements InsertableAuditEntity, UpdatableAuditEntity {
     private Long id;
     private Long empId;
     private Long categoryId;
@@ -28,21 +44,23 @@ public class RaiseTransaction extends AuditEntity implements InsertableAuditEnti
     private String exclusionReason;
     private Long newDegreeId;
     private Date decisionDate;
-    private String decisionDateString;
     private String decisionNumber;
+    private String basedOnDecisionNumber;
+    private Date basedOnDecisionDate;
     private Date executionDate;
-    private String executionDateString;
     private String remarks;
     private Integer effectFlag;
     private Integer eFlag;
     private Integer migFlag;
     private Long decisionApprovedId;
     private Long originalDecisionApprovedId;
+    private Integer status;
     private String transEmpJobName;
     private String transEmpUnitFullName;
     private String transEmpJobRankDesc;
     private String transEmpRankDesc;
     private String transEmpDegreeDesc;
+    private Long transEmpDegreeId;
 
     @GenericGenerator(name = "HCMRaiseSeq",
 	    strategy = "enhanced-sequence",
@@ -129,27 +147,6 @@ public class RaiseTransaction extends AuditEntity implements InsertableAuditEnti
     }
 
     @Basic
-    @Column(name = "DECISION_DATE")
-    public Date getDecisionDate() {
-	return decisionDate;
-    }
-
-    public void setDecisionDate(Date decisionDate) {
-	this.decisionDate = decisionDate;
-	this.decisionDateString = HijriDateService.getHijriDateString(decisionDate);
-    }
-
-    @Basic
-    @Column(name = "DECISION_NUMBER")
-    public String getDecisionNumber() {
-	return decisionNumber;
-    }
-
-    public void setDecisionNumber(String decisionNumber) {
-	this.decisionNumber = decisionNumber;
-    }
-
-    @Basic
     @Column(name = "EXECUTION_DATE")
     public Date getExecutionDate() {
 	return executionDate;
@@ -157,7 +154,6 @@ public class RaiseTransaction extends AuditEntity implements InsertableAuditEnti
 
     public void setExecutionDate(Date executionDate) {
 	this.executionDate = executionDate;
-	this.executionDateString = HijriDateService.getHijriDateString(executionDate);
     }
 
     @Basic
@@ -270,24 +266,64 @@ public class RaiseTransaction extends AuditEntity implements InsertableAuditEnti
 	this.transEmpDegreeDesc = transEmpDegreeDesc;
     }
 
-    @Transient
-    public String getDecisionDateString() {
-	return decisionDateString;
+    @Basic
+    @Column(name = "TRANS_EMP_DEGREE_ID")
+    public Long getTransEmpDegreeId() {
+	return transEmpDegreeId;
     }
 
-    public void setDecisionDateString(String decisionDateString) {
-	this.decisionDateString = decisionDateString;
-	this.decisionDate = HijriDateService.getHijriDate(decisionDateString);
+    public void setTransEmpDegreeId(Long transEmpDegreeId) {
+	this.transEmpDegreeId = transEmpDegreeId;
     }
 
-    @Transient
-    public String getExecutionDateString() {
-	return executionDateString;
+    @Basic
+    @Column(name = "DECISION_DATE")
+    public Date getDecisionDate() {
+	return decisionDate;
     }
 
-    public void setExecutionDateString(String executionDateString) {
-	this.executionDateString = executionDateString;
-	this.executionDate = HijriDateService.getHijriDate(executionDateString);
+    public void setDecisionDate(Date decisionDate) {
+	this.decisionDate = decisionDate;
+    }
+
+    @Basic
+    @Column(name = "DECISION_NUMBER")
+    public String getDecisionNumber() {
+	return decisionNumber;
+    }
+
+    public void setDecisionNumber(String decisionNumber) {
+	this.decisionNumber = decisionNumber;
+    }
+
+    @Basic
+    @Column(name = "BASED_ON_DECISION_DATE")
+    public Date getBasedOnDecisionDate() {
+	return basedOnDecisionDate;
+    }
+
+    public void setBasedOnDecisionDate(Date basedOnDecisionDate) {
+	this.basedOnDecisionDate = basedOnDecisionDate;
+    }
+
+    @Basic
+    @Column(name = "BASED_ON_DECISION_NUMBER")
+    public String getBasedOnDecisionNumber() {
+	return basedOnDecisionNumber;
+    }
+
+    public void setBasedOnDecisionNumber(String basedOnDecisionNumber) {
+	this.basedOnDecisionNumber = basedOnDecisionNumber;
+    }
+
+    @Basic
+    @Column(name = "STATUS")
+    public Integer getStatus() {
+	return status;
+    }
+
+    public void setStatus(Integer status) {
+	this.status = status;
     }
 
     @Override
@@ -302,9 +338,11 @@ public class RaiseTransaction extends AuditEntity implements InsertableAuditEnti
 		"type:" + type + AUDIT_SEPARATOR +
 		"exclusionReason:" + exclusionReason + AUDIT_SEPARATOR +
 		"decisionDate:" + decisionDate + AUDIT_SEPARATOR +
+		"basedOnDecisionDate:" + basedOnDecisionDate + AUDIT_SEPARATOR +
 		"newDegreeId:" + newDegreeId + AUDIT_SEPARATOR +
 		"deservedFlag:" + deservedFlag + AUDIT_SEPARATOR +
 		"decisionNumber:" + decisionNumber + AUDIT_SEPARATOR +
+		"basedOnDecisionNumber:" + basedOnDecisionNumber + AUDIT_SEPARATOR +
 		"executionDate:" + executionDate + AUDIT_SEPARATOR +
 		"remarks:" + remarks + AUDIT_SEPARATOR +
 		"effectFlag:" + effectFlag + AUDIT_SEPARATOR +
@@ -316,7 +354,8 @@ public class RaiseTransaction extends AuditEntity implements InsertableAuditEnti
 		"transEmpJobRankDesc:" + transEmpJobRankDesc + AUDIT_SEPARATOR +
 		"transEmpRankDesc:" + transEmpRankDesc + AUDIT_SEPARATOR +
 		"transEmpDegreeDesc:" + transEmpDegreeDesc + AUDIT_SEPARATOR +
-		"transEmpUnitFullName:" + transEmpUnitFullName + AUDIT_SEPARATOR;
+		"transEmpUnitFullName:" + transEmpUnitFullName + AUDIT_SEPARATOR +
+		"status:" + status + AUDIT_SEPARATOR;
     }
 
 }

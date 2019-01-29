@@ -107,6 +107,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 
     public void addNewDeservedEmployee() {
 	try {
+	    RaisesService.validateEmployeeFutureRaises(selectedEmpId, raise.getExecutionDate());
 	    RaiseEmployeeData newDeservedEmployee = RaisesService.constructRaiseEmployeeData(EmployeesService.getEmployeeData(selectedEmpId), null, RaiseTypesEnum.ADDITIONAL.getCode(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), raise.getExecutionDate());
 	    RaisesService.validateAddedEmployees(newDeservedEmployee, deservedEmployeesList);
 	    deservedEmployeesList.add(newDeservedEmployee);
@@ -168,6 +169,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	try {
 	    save();
 	    deservedEmployeesList = RaisesService.approveAdditionalRaise(raise, loginEmpData.getEmpId(), loginEmpData.getEmpId() + "");
+	    categoryDesc = CommonService.getCategoryById(raise.getCategoryId()).getDescription();
 	    changeScreen();
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {

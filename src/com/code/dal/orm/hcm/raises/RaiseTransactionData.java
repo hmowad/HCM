@@ -16,7 +16,10 @@ import com.code.services.util.HijriDateService;
 
 @NamedQueries({
 	@NamedQuery(name = "hcm_raiseTransactionData_getNotExecutedRaisesTransactions",
-		query = "select r from RaiseTransactionData r where r.effectFlag = 0 and r.raiseExecutionDate <= to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY')")
+		query = "select r from RaiseTransactionData r where r.effectFlag = 0 and r.raiseExecutionDate <= to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY')"),
+
+	@NamedQuery(name = "hcm_raiseTransactionData_getFutureRaisesByEmpId",
+		query = "select r from RaiseTransactionData r where r.empId = :P_EMP_ID and r.raiseExecutionDate > to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY')")
 })
 @Entity
 @Table(name = "HCM_VW_RAISE_TRANSACTIONS")
@@ -31,9 +34,12 @@ public class RaiseTransactionData extends BaseEntity {
     private Integer raiseType;
     private Date raiseExecutionDate;
     private String raiseExecutionDateString;
-    private String raiseDecisionNumber;
     private Date raiseDecisionDate;
     private String raiseDecisionDateString;
+    private String raiseDecisionNumber;
+    private Date raiseBasedOnDecisionDate;
+    private String raiseBasedOnDecisionDateString;
+    private String raiseBasedOnDecisionNumber;
     private Long raiseCategoryId;
     private String raiseCategoryDesc;
     private String remarks;
@@ -42,11 +48,13 @@ public class RaiseTransactionData extends BaseEntity {
     private Integer migFlag;
     private Long empDecisionApprovedId;
     private Long empOriginalDecisionApprovedId;
+    private Integer status;
     private String transEmpJobName;
     private String transEmpUnitFullName;
     private String transEmpJobRankDesc;
     private String transEmpRankDesc;
     private String transEmpDegreeDesc;
+    private Long transEmpDegreeId;
     private RaiseTransaction raiseTransaction;
 
     public RaiseTransactionData() {
@@ -163,6 +171,29 @@ public class RaiseTransactionData extends BaseEntity {
     }
 
     @Basic
+    @Column(name = "RAISE_DECISION_DATE")
+    public Date getRaiseDecisionDate() {
+	return raiseDecisionDate;
+    }
+
+    public void setRaiseDecisionDate(Date raiseDecisionDate) {
+	this.raiseDecisionDate = raiseDecisionDate;
+	raiseTransaction.setDecisionDate(raiseDecisionDate);
+	raiseDecisionDateString = HijriDateService.getHijriDateString(raiseDecisionDate);
+    }
+
+    @Transient
+    public String getRaiseDecisionDateString() {
+	return raiseDecisionDateString;
+    }
+
+    public void setRaiseDecisionDateString(String decisionDateString) {
+	this.raiseDecisionDateString = decisionDateString;
+	this.raiseDecisionDate = HijriDateService.getHijriDate(decisionDateString);
+	raiseTransaction.setDecisionDate(raiseDecisionDate);
+    }
+
+    @Basic
     @Column(name = "RAISE_DECISION_NUMBER")
     public String getRaiseDecisionNumber() {
 	return raiseDecisionNumber;
@@ -171,29 +202,6 @@ public class RaiseTransactionData extends BaseEntity {
     public void setRaiseDecisionNumber(String raiseDecisionNumber) {
 	this.raiseDecisionNumber = raiseDecisionNumber;
 	raiseTransaction.setDecisionNumber(raiseDecisionNumber);
-    }
-
-    @Basic
-    @Column(name = "RAISE_DECISION_DATE")
-    public Date getRaiseDecisionDate() {
-	return raiseDecisionDate;
-    }
-
-    public void setRaiseDecisionDate(Date raiseDecisionDate) {
-	this.raiseDecisionDate = raiseDecisionDate;
-	this.raiseDecisionDateString = HijriDateService.getHijriDateString(raiseDecisionDate);
-	raiseTransaction.setDecisionDate(raiseDecisionDate);
-    }
-
-    @Transient
-    public String getRaiseDecisionDateString() {
-	return raiseDecisionDateString;
-    }
-
-    public void setRaiseDecisionDateString(String raiseDecisionDateString) {
-	this.raiseDecisionDateString = raiseDecisionDateString;
-	this.raiseDecisionDate = HijriDateService.getHijriDate(raiseDecisionDateString);
-	raiseTransaction.setDecisionDate(raiseDecisionDate);
     }
 
     @Basic
@@ -336,6 +344,62 @@ public class RaiseTransactionData extends BaseEntity {
     public void setTransEmpDegreeDesc(String transEmpDegreeDesc) {
 	this.transEmpDegreeDesc = transEmpDegreeDesc;
 	raiseTransaction.setTransEmpDegreeDesc(transEmpDegreeDesc);
+    }
+
+    @Basic
+    @Column(name = "TRANS_EMP_DEGREE_ID")
+    public Long getTransEmpDegreeId() {
+	return transEmpDegreeId;
+    }
+
+    public void setTransEmpDegreeId(Long transEmpDegreeId) {
+	this.transEmpDegreeId = transEmpDegreeId;
+	raiseTransaction.setTransEmpDegreeId(transEmpDegreeId);
+    }
+
+    @Basic
+    @Column(name = "RAISE_BASED_ON_DECISION_DATE")
+    public Date getRaiseBasedOnDecisionDate() {
+	return raiseBasedOnDecisionDate;
+    }
+
+    public void setRaiseBasedOnDecisionDate(Date raiseBasedOnDecisionDate) {
+	this.raiseBasedOnDecisionDate = raiseBasedOnDecisionDate;
+	this.raiseBasedOnDecisionDateString = HijriDateService.getHijriDateString(raiseBasedOnDecisionDate);
+	this.raiseTransaction.setBasedOnDecisionDate(raiseBasedOnDecisionDate);
+    }
+
+    @Transient
+    public String getRaiseBasedOnDecisionDateString() {
+	return raiseBasedOnDecisionDateString;
+    }
+
+    public void setRaiseBasedOnDecisionDateString(String raiseBasedOnDecisionDateString) {
+	this.raiseBasedOnDecisionDateString = raiseBasedOnDecisionDateString;
+	raiseBasedOnDecisionDate = HijriDateService.getHijriDate(raiseBasedOnDecisionDateString);
+	this.raiseTransaction.setBasedOnDecisionDate(raiseBasedOnDecisionDate);
+    }
+
+    @Basic
+    @Column(name = "RAISE_BASED_ON_DECISION_NUMBER")
+    public String getRaiseBasedOnDecisionNumber() {
+	return raiseBasedOnDecisionNumber;
+    }
+
+    public void setRaiseBasedOnDecisionNumber(String raiseBasedOnDecisionNumber) {
+	this.raiseBasedOnDecisionNumber = raiseBasedOnDecisionNumber;
+	this.raiseTransaction.setBasedOnDecisionNumber(raiseBasedOnDecisionNumber);
+    }
+
+    @Basic
+    @Column(name = "STATUS")
+    public Integer getStatus() {
+	return status;
+    }
+
+    public void setStatus(Integer status) {
+	this.status = status;
+	this.raiseTransaction.setStatus(status);
     }
 
     @Transient

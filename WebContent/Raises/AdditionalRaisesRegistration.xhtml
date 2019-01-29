@@ -90,7 +90,7 @@
 											<font style="color: red;">*</font>
 										</th>
 										<td>
-											<util:hijri value="#{additionalRaisesRegistration.raise.executionDate}" rendered="#{additionalRaisesRegistration.addAdminFlag or additionalRaisesRegistration.modifyAdminFlag}" />
+											<util:hijri value="#{additionalRaisesRegistration.raise.executionDate}" rendered="#{additionalRaisesRegistration.addAdminFlag or additionalRaisesRegistration.modifyAdminFlag}" onChangeAjaxSubmit="true"/>
 											<h:outputText value="#{additionalRaisesRegistration.raise.executionDateString}" rendered="#{!(additionalRaisesRegistration.addAdminFlag or additionalRaisesRegistration.modifyAdminFlag)}" />
 										</td>
 									</tr>

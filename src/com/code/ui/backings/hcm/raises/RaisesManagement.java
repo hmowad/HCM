@@ -7,15 +7,20 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
+import com.code.dal.CustomSession;
+import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.Category;
+import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.raises.Raise;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.RaiseEmployeesTypesEnum;
 import com.code.enums.RaiseTypesEnum;
 import com.code.exceptions.BusinessException;
+import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.RaisesService;
 import com.code.services.util.CommonService;
+import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
 
 @ManagedBean(name = "raisesManagement")
@@ -36,6 +41,37 @@ public class RaisesManagement extends BaseBacking {
     private List<Category> employeesCategories;
 
     public RaisesManagement() {
+	try {
+
+	    List<EmployeeData> empData = EmployeesService.getEmployeesByEmpsIds(new Long[] { (long) 3000052, (long) 412,
+		    (long) 701,
+		    (long) 702,
+		    (long) 703,
+		    (long) 7801,
+		    (long) 383,
+		    (long) 7802 });
+	    RaisesService.employeesDegreesDuringPromotion(empData, HijriDateService.getHijriDate("01/01/1420"));
+	    CustomSession session = DataAccess.getSession();
+	    try {
+		session.beginTransaction();
+		RaisesService.raisesModificationsAfterPromotions(empData, HijriDateService.getHijriDate("01/01/1420"), "100021", "2100", session);
+		session.commitTransaction();
+	    } catch (Exception e) {
+		e.printStackTrace();
+		session.rollbackTransaction();
+	    } finally {
+		try {
+		    session.close();
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	    }
+
+	} catch (BusinessException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+
 	init();
     }
 
