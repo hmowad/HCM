@@ -11,7 +11,6 @@ import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.security.Menu;
@@ -35,12 +34,8 @@ public class AppPhaseListener implements PhaseListener {
 	    String requestURI = getRequestURI(req.getRequestURI());
 	    EmployeeData sessionUser = (EmployeeData) req.getSession().getAttribute(SessionAttributesEnum.EMP_DATA.getCode());
 
-	    if (sessionUser == null) {
-		if (requestURI.endsWith("/Main/Login.jsf")) {
-		    HttpSession httpSession = req.getSession();
-		    httpSession.setAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode(), true);
-		} else
-		    redirect("/Main/Login.jsf", false);
+	    if (sessionUser == null && !requestURI.endsWith("/Main/Login.jsf")) {
+		redirect("/Main/Login.jsf", false);
 	    } else if (sessionUser != null && requestURI.endsWith("/Main/Login.jsf")) {
 		// Navigation Option is for by-passing the normal navigation rules for external channels.
 		String navigationOption = req.getParameter("navigationOption");

@@ -5,6 +5,8 @@ import java.util.Calendar;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.code.dal.orm.hcm.employees.EmployeePreferences;
@@ -46,6 +48,13 @@ public class Home extends BaseBacking {
 	    calculateNotificationsCount();
 	    calcAlertsData();
 	    HttpSession session = getSession();
+
+	    HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+	    String previousRequestURI = req.getHeader("referer");
+	    if (previousRequestURI.endsWith("Login.jsf")) {
+		HttpSession httpSession = req.getSession();
+		httpSession.setAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode(), true);
+	    }
 
 	    EmployeePreferences empPreferences = EmployeesPreferencesService.getEmployeePreferences(loginEmpData.getEmpId());
 	    if ((session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode()) != null) && (TransactionsTimelineService.getFutureTransactionsCount(loginEmpData.getEmpId()) > 0) && (!empPreferences.getTimeLineAutoHideFlagBoolean())) {
