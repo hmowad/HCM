@@ -3692,7 +3692,7 @@ public class PromotionsService extends BaseService {
 		    employee.setRecruitmentAsOfficerDate(promotionTransactionDataItr.getDecisionDate());
 
 		    EmployeesService.updateEmployeePromotionData(employee, promotionTransactionDataItr.getNewJobId(), getNextRank(employee.getRankId()), promotionTransactionDataItr.getRankTitleId(), promotionTransactionDataItr.getNewDegreeId(), promotionTransactionDataItr.getNewMilitaryNumber(), promotionTransactionDataItr.getNewDueDate(), promotionTransactionDataItr.getNewLastPromotionDate(), session);
-		    LogService.logEmployeeData(employee, promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), session);
+		    LogService.logEmployeeData(employee, promotionTransactionDataItr.getNewLastPromotionDate(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), session);
 
 		} else if (employee.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && subject != null) {
 		    // check this when the commit
