@@ -257,6 +257,7 @@
 		<mapping class="com.code.dal.orm.hcm.raises.RaiseEmployeeData"/>
 		<mapping class="com.code.dal.orm.hcm.raises.RaiseTransaction"/>
 		<mapping class="com.code.dal.orm.hcm.raises.RaiseTransactionData"/>
+		<mapping class="com.code.dal.orm.hcm.raises.RaiseTransactionLog"/>
 		
 		<mapping class="com.code.dal.orm.hcm.exercises.Exercise"/>
 		<mapping class="com.code.dal.orm.hcm.exercises.ExerciseData"/>
