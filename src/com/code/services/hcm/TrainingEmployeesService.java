@@ -512,7 +512,7 @@ public class TrainingEmployeesService extends BaseService {
 	}
 
 	if (trainingTransactionCategory == TrainingTransactionCategoryEnum.CLAIM.getCode() && courseEventData != null && courseEventData.getActualEndDate().after(HijriDateService.getHijriSysDate()))
-	    throw new BusinessException("error_courseStartAndEndDateBeforeRequestDate", new String[] { courseEventData.getCourseName() });
+	    throw new BusinessException("error_courseStartAndEndDateBeforeRequestDate");
 
 	if (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.INTERNAL_MILITARY_COURSE.getCode()
 		|| trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.EXTERNAL_MILITARY_COURSE.getCode()) {
