@@ -143,6 +143,7 @@ public class TerminationsService extends BaseService {
 	    terminationRecordDetailData.setEmpJobName(employee.getJobDesc());
 
 	    terminationRecordDetailData.setEmpPhysicalUnitId(employee.getPhysicalUnitId());
+	    terminationRecordDetailData.setEmpOfficialUnitId(employee.getOfficialUnitId());
 	    terminationRecordDetailData.setEmpOfficialUnitFullName(employee.getOfficialUnitFullName());
 
 	    terminationRecordDetailData.setEmpTerminationDueDate(employee.getServiceTerminationDueDate());
@@ -256,6 +257,7 @@ public class TerminationsService extends BaseService {
 	    terminationTransaction.setTransEmpJobClassJobCode(employee.getJobClassificationCode());
 	    terminationTransaction.setTransEmpJobClassJobDesc(employee.getJobClassificationDesc());
 	    terminationTransaction.setTransEmpUnitFullName(terminationRecordDetailData.getEmpOfficialUnitFullName());
+	    terminationTransaction.setTransEmpUnitId(terminationRecordDetailData.getEmpOfficialUnitId());
 
 	    terminationTransaction.setTransactionTypeId(tansactionTypeId);
 	    terminationTransaction.setReasonId(terminationRecordData.getReasonId());
