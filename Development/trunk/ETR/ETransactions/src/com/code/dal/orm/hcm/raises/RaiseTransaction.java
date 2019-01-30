@@ -20,11 +20,11 @@ import com.code.dal.orm.AuditEntity;
 
 @NamedQueries({
 
-	@NamedQuery(name = "hcm_raiseTransaction_getAllRaisesForEmployeesAfterGivenTime",
+	@NamedQuery(name = "hcm_raiseTransaction_getAllRaisesForEmployeesAfterGivenDate",
 		query = "select rt from RaiseTransaction rt where executionDate > to_date(:P_PROMOTION_DATE, 'MI/MM/YYYY') and rt.empId in (:P_EMP_IDS) and rt.deservedFlag = 1" +
 			" order by empId, executionDate"),
 
-	@NamedQuery(name = "hcm_raiseTransaction_getEmployeesDegreeAtGivenTime",
+	@NamedQuery(name = "hcm_raiseTransaction_getFirstRaiseTransactionAfterGivenDate",
 		query = "select a from RaiseTransaction a" +
 			" where a.executionDate > to_date(:P_PROMOTION_DATE, 'MI/MM/YYYY')" +
 			" and a.executionDate = (select min(b.executionDate) from RaiseTransaction b where b.executionDate > to_date(:P_PROMOTION_DATE, 'MI/MM/YYYY') and a.empId = b.empId)" +
@@ -355,6 +355,7 @@ public class RaiseTransaction extends AuditEntity implements InsertableAuditEnti
 		"transEmpRankDesc:" + transEmpRankDesc + AUDIT_SEPARATOR +
 		"transEmpDegreeDesc:" + transEmpDegreeDesc + AUDIT_SEPARATOR +
 		"transEmpUnitFullName:" + transEmpUnitFullName + AUDIT_SEPARATOR +
+		"transEmpDegreeId:" + transEmpDegreeId + AUDIT_SEPARATOR +
 		"status:" + status + AUDIT_SEPARATOR;
     }
 
