@@ -35,6 +35,10 @@ public class TransactionTimeline extends BaseEntity {
     private String weeks;
     private String months;
     private String period;
+    private Date startDate;
+    private String startDateString;
+    private Date endDate;
+    private String endDateString;
 
     @Id
     @Column(name = "DUE_DATE")
@@ -115,4 +119,47 @@ public class TransactionTimeline extends BaseEntity {
     public void setPeriod(String period) {
 	this.period = period;
     }
+
+    @Basic
+    @Column(name = "START_DATE")
+    public Date getStartDate() {
+	return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+	this.startDate = startDate;
+	this.startDateString = HijriDateService.getHijriDateString(startDate);
+    }
+
+    @Transient
+    public String getStartDateString() {
+	return startDateString;
+    }
+
+    public void setStartDateString(String startDateString) {
+	this.startDateString = startDateString;
+	this.startDate = HijriDateService.getHijriDate(startDateString);
+    }
+
+    @Basic
+    @Column(name = "END_DATE")
+    public Date getEndDate() {
+	return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+	this.endDate = endDate;
+	this.endDateString = HijriDateService.getHijriDateString(endDate);
+    }
+
+    @Transient
+    public String getEndDateString() {
+	return endDateString;
+    }
+
+    public void setEndDateString(String endDateString) {
+	this.endDateString = endDateString;
+	this.endDate = HijriDateService.getHijriDate(endDateString);
+    }
+
 }
