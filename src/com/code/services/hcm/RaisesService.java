@@ -1308,13 +1308,13 @@ public class RaisesService extends BaseService {
     }
 
     public static void employeesDegreesDuringPromotion(List<EmployeeData> employees, Date promotionDate) throws BusinessException {
-	if (employees != null || !employees.isEmpty()) {
+	if (employees != null && !employees.isEmpty()) {
 	    List<RaiseTransaction> transactions = new ArrayList<>();
 	    List<Long> empIds = new ArrayList<>();
 	    for (int i = 0; i < employees.size(); i++) {
 		empIds.add(employees.get(i).getEmpId());
 		if (i == employees.size() - 1 || (i % 1000 == 0 && i != 0)) {
-		    transactions.addAll(getEmployeesDegreeAtGivenTime(empIds.toArray(), promotionDate));
+		    transactions.addAll(getFirstRaiseTransactionAtGivenDate(empIds.toArray(), promotionDate));
 		    empIds.clear();
 		}
 	    }
@@ -1339,7 +1339,7 @@ public class RaisesService extends BaseService {
 		for (int i = 0; i < employees.size(); i++) {
 		    empIds.add(employees.get(i).getEmpId());
 		    if (i == employees.size() - 1 || (i % 1000 == 0 && i != 0)) {
-			transactions.addAll(getAllRaisesForEmployeesAfterGivenTime(empIds.toArray(), promotionDecisionDate));
+			transactions.addAll(getAllRaisesForEmployeesAfterGivenDate(empIds.toArray(), promotionDecisionDate));
 			empIds.clear();
 		    }
 		}
@@ -1494,12 +1494,12 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    private static List<RaiseTransaction> getEmployeesDegreeAtGivenTime(Object[] employeesList, Date promotionDate) throws BusinessException {
+    private static List<RaiseTransaction> getFirstRaiseTransactionAtGivenDate(Object[] employeesList, Date promotionDate) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_IDS", employeesList);
 	    qParams.put("P_PROMOTION_DATE", HijriDateService.getHijriDateString(promotionDate));
-	    return DataAccess.executeNamedQuery(RaiseTransaction.class, QueryNamesEnum.HCM_GET_EMPLOYEES_DEGREE_AT_GIVEN_TIME.getCode(), qParams);
+	    return DataAccess.executeNamedQuery(RaiseTransaction.class, QueryNamesEnum.HCM_GET_FIRST_RAISE_TRRANSACTION_AFTER_GIVEN_DATE.getCode(), qParams);
 
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
@@ -1507,12 +1507,12 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    private static List<RaiseTransaction> getAllRaisesForEmployeesAfterGivenTime(Object[] employeesList, Date promotionDate) throws BusinessException {
+    private static List<RaiseTransaction> getAllRaisesForEmployeesAfterGivenDate(Object[] employeesList, Date promotionDate) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_IDS", employeesList);
 	    qParams.put("P_PROMOTION_DATE", HijriDateService.getHijriDateString(promotionDate));
-	    return DataAccess.executeNamedQuery(RaiseTransaction.class, QueryNamesEnum.HCM_GET_ALL_RAISES_FOR_EMPLOYEES_AFTER_GIVEN_TIME.getCode(), qParams);
+	    return DataAccess.executeNamedQuery(RaiseTransaction.class, QueryNamesEnum.HCM_GET_ALL_RAISES_FOR_EMPLOYEES_AFTER_GIVEN_DATE.getCode(), qParams);
 
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
