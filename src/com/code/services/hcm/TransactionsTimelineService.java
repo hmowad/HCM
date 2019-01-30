@@ -142,10 +142,14 @@ public class TransactionsTimelineService extends BaseService {
 	return null;
     }
 
-    private static List<TransactionTimeline> sortLists(List<TransactionTimeline> movementTransactions, List<TransactionTimeline> allTransactionsExceptMovement) {
+    private static List<TransactionTimeline> sortLists(List<TransactionTimeline> movementTransactions, List<TransactionTimeline> allTransactionsExceptMovement) throws BusinessException {
 	List<TransactionTimeline> allTransactions = new ArrayList<>();
 	for (TransactionTimeline transaction : allTransactionsExceptMovement) {
-	    transaction.setPeriod(calculatePeriod(transaction.getDays(), transaction.getWeeks(), transaction.getMonths()));
+	    if (transaction.getDays() == null && transaction.getWeeks() == null && transaction.getMonths() == null) {
+		Integer[] diff = HijriDateService.hijriDateDiffInMonthsAndDays(transaction.getStartDateString(), transaction.getEndDateString());
+		transaction.setPeriod(calculatePeriod(diff[0].toString() + "", "-", diff[1].toString() + ""));
+	    } else
+		transaction.setPeriod(calculatePeriod(transaction.getDays(), transaction.getWeeks(), transaction.getMonths()));
 	    for (Iterator<TransactionTimeline> i = movementTransactions.iterator(); i.hasNext();) {
 		TransactionTimeline sortMovementTransaction = i.next();
 		if (sortMovementTransaction.getDueDate().before(transaction.getDueDate())) {
