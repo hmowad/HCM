@@ -1672,7 +1672,7 @@ public class EmployeesService extends BaseService {
 	    employeeExtraTransactionData.setEmpId(employee.getEmpId());
 	    if (employeeMedicalStaffData != null) {
 		employeeMedicalStaffData.setEmpId(employeeExtraTransactionData.getEmpId());
-		addModifyEmployeeMedicalStaffData(employeeExtraTransactionData, employeeMedicalStaffData, useSession);
+		addModifyEmployeeMedicalStaffData(employeeExtraTransactionData, employeeMedicalStaffData, session);
 	    }
 	    DataAccess.addEntity(employeeExtraTransactionData.getEmployeeExtraTransaction(), session);
 	    employeeExtraTransactionData.setId(employeeExtraTransactionData.getEmployeeExtraTransaction().getId());

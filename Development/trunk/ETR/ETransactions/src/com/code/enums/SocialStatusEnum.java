@@ -4,7 +4,7 @@ public enum SocialStatusEnum {
     SINGLE(1),
     MARRIED(2),
     DIVORCEE(3),
-    WIDOWED(3);
+    WIDOWED(4);
 
     private int code;
 
