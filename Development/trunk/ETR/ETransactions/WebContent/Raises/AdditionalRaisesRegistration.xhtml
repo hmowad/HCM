@@ -120,7 +120,7 @@
 										<h:outputText value=" " />
 										<h:commandButton value="#{msgs.label_add}" styleClass="btn_normal" onclick="getEmployee(); return false;" />
 										<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{additionalRaisesRegistration.addNewDeservedEmployee()}">
-											<f:ajax execute="additionalRaisesRegistrationFormId:employeeIDId additionalRaisesRegistrationFormId:addedEmployeesListId" render="additionalRaisesRegistrationFormId:employeeAdditionPanelId additionalRaisesRegistrationFormId:notifyMessagesId" />
+											<f:ajax execute="additionalRaisesRegistrationFormId:employeeIDId additionalRaisesRegistrationFormId:addedEmployeesListId additionalRaisesRegistrationFormId:additionalRaiseDataPanelId" render="additionalRaisesRegistrationFormId:employeeAdditionPanelId additionalRaisesRegistrationFormId:notifyMessagesId" />
 										</h:commandButton>
 										<h:inputHidden id="employeeIDId" value="#{additionalRaisesRegistration.selectedEmpId}" />
 									</td>

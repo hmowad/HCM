@@ -19,7 +19,7 @@ import com.code.services.util.HijriDateService;
 		query = "select r from RaiseTransactionData r where r.effectFlag = 0 and r.raiseExecutionDate <= to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY')"),
 
 	@NamedQuery(name = "hcm_raiseTransactionData_getFutureRaisesByEmpId",
-		query = "select r from RaiseTransactionData r where r.empId = :P_EMP_ID and r.raiseExecutionDate > to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY')")
+		query = "select r from RaiseTransactionData r where r.empId = :P_EMP_ID and r.raiseExecutionDate > to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY') and deservedFlag = 1")
 })
 @Entity
 @Table(name = "HCM_VW_RAISE_TRANSACTIONS")
