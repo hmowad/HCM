@@ -441,8 +441,8 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static void saveAdditionalRaiseData(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataToAddList, List<RaiseEmployeeData> raiseEmployeeDataToDeleteList, List<RaiseEmployeeData> currRaiseEmployee, CustomSession... useSession) throws BusinessException {
-	if (currRaiseEmployee == null || currRaiseEmployee.isEmpty())
+    public static void saveAdditionalRaiseData(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataToAddList, List<RaiseEmployeeData> raiseEmployeeDataToDeleteList, List<RaiseEmployeeData> currRaiseEmployees, CustomSession... useSession) throws BusinessException {
+	if (currRaiseEmployees == null || currRaiseEmployees.isEmpty())
 	    throw new BusinessException("error_mustAddOneEmployeeAtLeastToSaveAdditionalRaise");
 
 	boolean isOpenedSession = isSessionOpened(useSession);
@@ -462,7 +462,7 @@ public class RaisesService extends BaseService {
 		deleteRaiseEmployees(raiseEmployeeDataToDeleteList, session);
 	    }
 
-	    updateRaiseEmployeesList(currRaiseEmployee, session);
+	    updateRaiseEmployeesList(currRaiseEmployees, session);
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -1143,30 +1143,29 @@ public class RaisesService extends BaseService {
 	List<RaiseEmployeeData> deserved = getRaiseEmployeeByRaiseId(raise.getId());
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
-	List<RaiseTransactionData> raiseTransactionsData = new ArrayList<>();
 	List<RaiseTransactionLog> raiseTransactionsLog = new ArrayList<>();
+	List<RaiseTransaction> raiseTransactions = new ArrayList<>();
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
 	    isStillValidAdditionalRaiseEmployee(deserved);
-	    List<RaiseTransaction> beans = new ArrayList<>();
+
 	    for (RaiseEmployeeData raiseEmployee : deserved) {
 		RaiseTransactionData transaction = constructRaiseTransaction(raise, raiseEmployee, managerId);
 		validateRaiseTransactionMandatoryFields(transaction);
 		RaiseTransactionLog transactionLog = constructRaiseTransactionLogDecision(raiseEmployee);
 		transaction.getRaiseTransaction().setSystemUser(raise.getSystemUser());
 		transactionLog.setSystemUser(raise.getSystemUser());
-		raiseTransactionsData.add(transaction);
 		raiseTransactionsLog.add(transactionLog);
 		doRaiseEffect(transaction, loginEmpId, session);
-		beans.add(transaction.getRaiseTransaction());
+		raiseTransactions.add(transaction.getRaiseTransaction());
 	    }
-	    DataAccess.addMultipleEntities(beans, session);
-	    beans.clear();
-	    for (int i = 0; i < raiseTransactionsData.size(); i++) {
-		raiseTransactionsData.get(i).setId(raiseTransactionsData.get(i).getRaiseTransaction().getId());
-		raiseTransactionsLog.get(i).setRaiseTransactionId(raiseTransactionsData.get(i).getId());
+	    DataAccess.addMultipleEntities(raiseTransactions, session);
+	    raiseTransactions.clear();
+	    for (int i = 0; i < raiseTransactions.size(); i++) {
+		raiseTransactions.get(i).setId(raiseTransactions.get(i).getId());
+		raiseTransactionsLog.get(i).setRaiseTransactionId(raiseTransactions.get(i).getId());
 	    }
 	    DataAccess.addMultipleEntities(raiseTransactionsLog, session);
 
@@ -1177,8 +1176,8 @@ public class RaisesService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
-	    for (int i = 0; i < raiseTransactionsData.size(); i++) {
-		raiseTransactionsData.get(i).setId(null);
+	    for (int i = 0; i < raiseTransactions.size(); i++) {
+		raiseTransactions.get(i).setId(null);
 		raiseTransactionsLog.get(i).setId(null);
 	    }
 	    if (e instanceof BusinessException)
@@ -1197,15 +1196,13 @@ public class RaisesService extends BaseService {
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 
 	List<RaiseEmployeeData> allEmployees = getRaiseEmployeeByRaiseId(raise.getId());
-	List<RaiseTransactionData> raiseTransactionsData = new ArrayList<>();
 	List<RaiseTransactionLog> raiseTransactionsLog = new ArrayList<>();
-
+	List<RaiseTransaction> raiseTransactions = new ArrayList<>();
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
 	    isStillValidAnnualRaiseEmployee(raise);
-	    List<RaiseTransaction> beans = new ArrayList<>();
 
 	    for (RaiseEmployeeData raiseEmployee : allEmployees) {
 		RaiseTransactionData transaction = constructRaiseTransaction(raise, raiseEmployee, managerId);
@@ -1213,15 +1210,14 @@ public class RaisesService extends BaseService {
 		transaction.getRaiseTransaction().setSystemUser(loginEmpId);
 		RaiseTransactionLog transactionLog = constructRaiseTransactionLogDecision(raiseEmployee);
 		transactionLog.setSystemUser(raise.getSystemUser());
-		beans.add(transaction.getRaiseTransaction());
-		raiseTransactionsData.add(transaction);
+		raiseTransactions.add(transaction.getRaiseTransaction());
 		raiseTransactionsLog.add(transactionLog);
 	    }
-	    DataAccess.addMultipleEntities(beans, session);
+	    DataAccess.addMultipleEntities(raiseTransactions, session);
 
-	    for (int i = 0; i < raiseTransactionsData.size(); i++) {
-		raiseTransactionsData.get(i).setId(raiseTransactionsData.get(i).getRaiseTransaction().getId());
-		raiseTransactionsLog.get(i).setRaiseTransactionId(raiseTransactionsData.get(i).getId());
+	    for (int i = 0; i < raiseTransactions.size(); i++) {
+		raiseTransactions.get(i).setId(raiseTransactions.get(i).getId());
+		raiseTransactionsLog.get(i).setRaiseTransactionId(raiseTransactions.get(i).getId());
 	    }
 	    DataAccess.addMultipleEntities(raiseTransactionsLog, session);
 
@@ -1235,8 +1231,8 @@ public class RaisesService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
-	    for (RaiseTransactionData raiseTransactionData : raiseTransactionsData) {
-		raiseTransactionData.setId(null);
+	    for (RaiseTransaction raiseTransaction : raiseTransactions) {
+		raiseTransaction.setId(null);
 	    }
 	    if (e instanceof BusinessException)
 		throw (BusinessException) e;
