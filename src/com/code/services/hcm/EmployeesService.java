@@ -1657,17 +1657,23 @@ public class EmployeesService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
-	    if (employeeExtraTransactionData.getSocialStatus() != null)
-		employee.setSocialStatus(employeeExtraTransactionData.getSocialStatus());
-	    if (employeeExtraTransactionData.getGeneralSpecialization() != null)
-		employee.setGeneralSpecialization(employeeExtraTransactionData.getGeneralSpecialization());
-	    if (employeeExtraTransactionData.getRankTitleId() != null)
-		employee.setRankTitleId(employeeExtraTransactionData.getRankTitleId());
-	    if (employeeExtraTransactionData.getSalaryRankId() != null)
-		employee.setSalaryRankId(employeeExtraTransactionData.getSalaryRankId());
-	    if (employeeExtraTransactionData.getSalaryDegreeId() != null)
-		employee.setSalaryDegreeId(employeeExtraTransactionData.getSalaryDegreeId());
-	    updateEmployee(employee, session);
+	    List<EmployeeExtraTransactionData> employeeExtraTransactions = getEmployeeDataExtraTransactionByEmpId(employee.getEmpId());
+	    if (employeeExtraTransactions != null && employeeExtraTransactions.size() != 0) {
+		if (employeeExtraTransactions.get(0).getEffectiveDate().before(employeeExtraTransactionData.getEffectiveDate())) {
+		    if (employeeExtraTransactionData.getSocialStatus() != null)
+			employee.setSocialStatus(employeeExtraTransactionData.getSocialStatus());
+		    if (employeeExtraTransactionData.getGeneralSpecialization() != null)
+			employee.setGeneralSpecialization(employeeExtraTransactionData.getGeneralSpecialization());
+		    if (employeeExtraTransactionData.getRankTitleId() != null)
+			employee.setRankTitleId(employeeExtraTransactionData.getRankTitleId());
+		    if (employeeExtraTransactionData.getSalaryRankId() != null)
+			employee.setSalaryRankId(employeeExtraTransactionData.getSalaryRankId());
+		    if (employeeExtraTransactionData.getSalaryDegreeId() != null)
+			employee.setSalaryDegreeId(employeeExtraTransactionData.getSalaryDegreeId());
+		    updateEmployee(employee, session);
+		    LogService.logEmployeeData(employee, employeeExtraTransactionData.getEffectiveDate(), employeeExtraTransactionData.getDecisionNumber(), employeeExtraTransactionData.getDecisionDate(), session);
+		}
+	    }
 
 	    employeeExtraTransactionData.setEmpId(employee.getEmpId());
 	    if (employeeMedicalStaffData != null) {
