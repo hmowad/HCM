@@ -586,6 +586,7 @@ public class EmployeeData extends BaseEntity implements Serializable {
 
     public void setSalaryDegreeId(Long salaryDegreeId) {
 	this.salaryDegreeId = salaryDegreeId;
+	this.employee.setSalaryDegreeId(salaryDegreeId);
     }
 
     @Basic

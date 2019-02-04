@@ -24,6 +24,7 @@ import com.code.services.util.HijriDateService;
 		query = "select e from EmployeeExtraTransactionData e " +
 			" where (:P_EMP_ID = -1 or e.empId = :P_EMP_ID) " +
 			" and (:P_DECISCION_NUMBER = '-1' or e.decisionNumber = :P_DECISCION_NUMBER) " +
+			" and (:P_TRANSACTION_TYPE = -1 or e.transactionTypeId = :P_TRANSACTION_TYPE) " +
 			" order by e.effectiveDate desc")
 
 })
@@ -329,6 +330,7 @@ public class EmployeeExtraTransactionData extends BaseEntity implements Serializ
 
     public void setTransactionTypeId(Integer transactionTypeId) {
 	this.transactionTypeId = transactionTypeId;
+	this.employeeExtraTransaction.setTransactionTypeId(transactionTypeId);
     }
 
     @Transient

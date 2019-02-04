@@ -433,7 +433,7 @@
 																			<h:outputText value=" " />
 																			<font style="color: red;">*</font>
 																		</f:facet>
-																		<h:selectOneMenu value="#{salaryRankElement.salaryDegreeId}" rendered="#{salaryRankElement.id == null}">	<f:selectItem itemLabel="" />
+																		<h:selectOneMenu value="#{salaryRankElement.salaryDegreeId}" rendered="#{salaryRankElement.id == null}">
 																			<f:selectItems value="#{employeesDataExtraTransactions.salaryDegrees}" var="salaryDegree" itemLabel="#{salaryDegree.description}" itemValue="#{salaryDegree.id}" />
 																		</h:selectOneMenu>
 																		<h:outputText value="#{salaryRankElement.salaryDegreeDesc}" rendered="#{salaryRankElement.id != null}" />
