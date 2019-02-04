@@ -1658,6 +1658,7 @@ public class EmployeesService extends BaseService {
 		session.beginTransaction();
 
 	    List<EmployeeExtraTransactionData> employeeExtraTransactions = getEmployeeDataExtraTransactionByEmpId(employee.getEmpId());
+	    employeeExtraTransactionData.setEmpId(employee.getEmpId());
 	    if (employeeExtraTransactions != null && employeeExtraTransactions.size() != 0) {
 		if (employeeExtraTransactions.get(0).getEffectiveDate().before(employeeExtraTransactionData.getEffectiveDate())) {
 		    if (employeeExtraTransactionData.getSocialStatus() != null)
@@ -1671,15 +1672,14 @@ public class EmployeesService extends BaseService {
 		    if (employeeExtraTransactionData.getSalaryDegreeId() != null)
 			employee.setSalaryDegreeId(employeeExtraTransactionData.getSalaryDegreeId());
 		    updateEmployee(employee, session);
+		    if (employeeMedicalStaffData != null) {
+			employeeMedicalStaffData.setEmpId(employeeExtraTransactionData.getEmpId());
+			addModifyEmployeeMedicalStaffData(employeeExtraTransactionData, employeeMedicalStaffData, session);
+		    }
 		    LogService.logEmployeeData(employee, employeeExtraTransactionData.getEffectiveDate(), employeeExtraTransactionData.getDecisionNumber(), employeeExtraTransactionData.getDecisionDate(), session);
 		}
 	    }
 
-	    employeeExtraTransactionData.setEmpId(employee.getEmpId());
-	    if (employeeMedicalStaffData != null) {
-		employeeMedicalStaffData.setEmpId(employeeExtraTransactionData.getEmpId());
-		addModifyEmployeeMedicalStaffData(employeeExtraTransactionData, employeeMedicalStaffData, session);
-	    }
 	    DataAccess.addEntity(employeeExtraTransactionData.getEmployeeExtraTransaction(), session);
 	    employeeExtraTransactionData.setId(employeeExtraTransactionData.getEmployeeExtraTransaction().getId());
 
