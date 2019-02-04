@@ -50,6 +50,8 @@
 										<tr>
 											<th width="15%">
 												<h:outputText value="#{msgs.label_selectEmp}" />
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
 											</th>
 											<td width="85%">
 												<h:outputText id="empNameId" value="#{employeesDataExtraTransactions.employee.name}" />
@@ -114,21 +116,35 @@
 															<td>
 																<rich:dataTable id="socialStatusListId" rows="#{employeesDataExtraTransactions.rowsCount}" rowKeyVar="index" var="socialStatusElement" value="#{employeesDataExtraTransactions.socialStatusList}" styleClass="gridMaster">
 																	<rich:column style="width : 5%">
-																		<f:facet name="header">#</f:facet>
+																		<f:facet name="header">
+																			#
+																		</f:facet>
 	                                										#{index + 1}
 	                            									</rich:column>
 																	<rich:column style="width:25%">
-																		<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_decisionNumber}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<h:inputText value="#{socialStatusElement.decisionNumber}" rendered="#{socialStatusElement.id == null}" />
 																		<h:outputText value="#{socialStatusElement.decisionNumber}" rendered="#{socialStatusElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width:25%">
-																		<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_decisionDate}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<util:hijri value="#{socialStatusElement.decisionDate}" rendered="#{socialStatusElement.id == null}" nullable="false" />
 																		<h:outputText value="#{socialStatusElement.decisionDateString}" rendered="#{socialStatusElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width : 10%">
-																		<f:facet name="header">#{msgs.label_socialStatus}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_socialStatus}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<h:selectOneMenu value="#{socialStatusElement.socialStatus}" rendered="#{socialStatusElement.id == null}">
 																			<f:selectItem itemLabel="#{msgs.label_single}" itemValue="1" />
 																			<f:selectItem itemLabel="#{msgs.label_married}" itemValue="2" />
@@ -141,7 +157,11 @@
 																		<h:outputText value="#{msgs.label_widowed}" rendered="#{(socialStatusElement.id != null) and (socialStatusElement.socialStatus == 4)}" />
 																	</rich:column>
 																	<rich:column style="width:25%">
-																		<f:facet name="header">#{msgs.label_startFromDate}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_startFromDate}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<util:hijri value="#{socialStatusElement.effectiveDate}" rendered="#{socialStatusElement.id == null}" nullable="false" />
 																		<h:outputText value="#{socialStatusElement.effectiveDateString}" rendered="#{socialStatusElement.id != null}" />
 																	</rich:column>
@@ -197,24 +217,40 @@
 	                                										#{index + 1}
 	                            									</rich:column>
 																	<rich:column style="width:25%">
-																		<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_decisionNumber}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<h:inputText value="#{rankTitleElement.decisionNumber}" rendered="#{rankTitleElement.id == null}" />
 																		<h:outputText value="#{rankTitleElement.decisionNumber}" rendered="#{rankTitleElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width:25%">
-																		<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_decisionDate}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<util:hijri value="#{rankTitleElement.decisionDate}" rendered="#{rankTitleElement.id == null}" nullable="false" />
 																		<h:outputText value="#{rankTitleElement.decisionDateString}" rendered="#{rankTitleElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width : 10%">
-																		<f:facet name="header">#{msgs.label_rankTitle}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_rankTitle}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<h:selectOneMenu value="#{rankTitleElement.rankTitleId}" rendered="#{rankTitleElement.id == null}">
 																			<f:selectItems value="#{employeesDataExtraTransactions.ranksTitles}" var="rankTitle" itemLabel="#{rankTitle.description}" itemValue="#{rankTitle.id}" />
 																		</h:selectOneMenu>
 																		<h:outputText value="#{rankTitleElement.rankTitleDesc}" rendered="#{rankTitleElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width:25%">
-																		<f:facet name="header">#{msgs.label_startFromDate}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_startFromDate}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<util:hijri value="#{rankTitleElement.effectiveDate}" rendered="#{rankTitleElement.id == null}" nullable="false" />
 																		<h:outputText value="#{rankTitleElement.effectiveDateString}" rendered="#{rankTitleElement.id != null}" />
 																	</rich:column>
@@ -270,17 +306,29 @@
 	                                									#{index + 1}
 	                            									</rich:column>
 																	<rich:column style="width:25%">
-																		<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_decisionNumber}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<h:inputText value="#{generalSpecElement.decisionNumber}" rendered="#{generalSpecElement.id == null}" />
 																		<h:outputText value="#{generalSpecElement.decisionNumber}" rendered="#{generalSpecElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width:25%">
-																		<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_decisionDate}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<util:hijri value="#{generalSpecElement.decisionDate}" rendered="#{generalSpecElement.id == null}" nullable="false" />
 																		<h:outputText value="#{generalSpecElement.decisionDateString}" rendered="#{generalSpecElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width : 10%">
-																		<f:facet name="header">#{msgs.label_generalSpec}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_generalSpec}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<h:selectOneMenu value="#{generalSpecElement.generalSpecialization}" rendered="#{generalSpecElement.id == null}">
 																			<f:selectItem itemLabel="#{msgs.label_overland}" itemValue="1" />
 																			<f:selectItem itemLabel="#{msgs.label_naval}" itemValue="2" />
@@ -291,7 +339,11 @@
 																		<h:outputText rendered="#{(generalSpecElement.id) != null and (generalSpecElement.generalSpecialization ==3)}" value="#{msgs.label_aerial}" />
 																	</rich:column>
 																	<rich:column style="width:25%">
-																		<f:facet name="header">#{msgs.label_startFromDate}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_startFromDate}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<util:hijri value="#{generalSpecElement.effectiveDate}" rendered="#{generalSpecElement.id == null}" nullable="false" />
 																		<h:outputText value="#{generalSpecElement.effectiveDateString}" rendered="#{generalSpecElement.id != null}" />
 																	</rich:column>
@@ -347,31 +399,51 @@
 	                                									#{index + 1}
 	                            									</rich:column>
 																	<rich:column style="width:25%">
-																		<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_decisionNumber}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<h:inputText value="#{salaryRankElement.decisionNumber}" rendered="#{salaryRankElement.id == null}" />
 																		<h:outputText value="#{salaryRankElement.decisionNumber}" rendered="#{salaryRankElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width:25%">
-																		<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_decisionDate}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<util:hijri value="#{salaryRankElement.decisionDate}" rendered="#{salaryRankElement.id == null}" nullable="false" />
 																		<h:outputText value="#{salaryRankElement.decisionDateString}" rendered="#{salaryRankElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width : 10%">
-																		<f:facet name="header">#{msgs.label_salaryRank}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_salaryRank}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<h:selectOneMenu value="#{salaryRankElement.salaryRankId}" rendered="#{salaryRankElement.id == null}">
 																			<f:selectItems value="#{employeesDataExtraTransactions.salaryRanks}" var="salaryRank" itemLabel="#{salaryRank.description}" itemValue="#{salaryRank.id}" />
 																		</h:selectOneMenu>
 																		<h:outputText value="#{salaryRankElement.salaryRankDesc}" rendered="#{salaryRankElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width : 10%">
-																		<f:facet name="header">#{msgs.label_salaryDegree}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_salaryDegree}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<h:selectOneMenu value="#{salaryRankElement.salaryDegreeId}" rendered="#{salaryRankElement.id == null}">	<f:selectItem itemLabel="" />
 																			<f:selectItems value="#{employeesDataExtraTransactions.salaryDegrees}" var="salaryDegree" itemLabel="#{salaryDegree.description}" itemValue="#{salaryDegree.id}" />
 																		</h:selectOneMenu>
 																		<h:outputText value="#{salaryRankElement.salaryDegreeDesc}" rendered="#{salaryRankElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width:25%">
-																		<f:facet name="header">#{msgs.label_startFromDate}</f:facet>
+																		<f:facet name="header">
+																			#{msgs.label_startFromDate}
+																			<h:outputText value=" " />
+																			<font style="color: red;">*</font>
+																		</f:facet>
 																		<util:hijri value="#{salaryRankElement.effectiveDate}" rendered="#{salaryRankElement.id == null}" nullable="false" />
 																		<h:outputText value="#{salaryRankElement.effectiveDateString}" rendered="#{salaryRankElement.id != null}" />
 																	</rich:column>

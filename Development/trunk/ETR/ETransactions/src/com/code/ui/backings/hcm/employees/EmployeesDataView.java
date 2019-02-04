@@ -101,7 +101,6 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 			employee = empParam;
 			employeeQualificationsData = employeeQualificationsDataParam;
 		    }
-		    employeeMedicalStaffData = EmployeesService.getEmployeeMedicalStaffDataByEmpId(empParam.getEmpId());
 		    employee.setJobModifiedFlag(FlagsEnum.ON.getCode());
 
 		    break;
@@ -137,6 +136,7 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 		    throw new BusinessException("error_general");
 		}
 	    }
+	    employeeMedicalStaffData = EmployeesService.getEmployeeMedicalStaffDataByEmpId(employee.getEmpId());
 	    salaryRanks = CommonService.getRanks(null, new Long[] { employee.getCategoryId() });
 
 	    switch (employee.getCategoryId().intValue()) {
