@@ -580,6 +580,7 @@ public class EmployeeData extends BaseEntity implements Serializable {
 
     @Basic
     @Column(name = "SALARY_DEGREE_ID")
+    @XmlTransient
     public Long getSalaryDegreeId() {
 	return salaryDegreeId;
     }
@@ -591,6 +592,7 @@ public class EmployeeData extends BaseEntity implements Serializable {
 
     @Basic
     @Column(name = "SALARY_DEGREE_DESC")
+    @XmlTransient
     public String getSalaryDegreeDesc() {
 	return salaryDegreeDesc;
     }
