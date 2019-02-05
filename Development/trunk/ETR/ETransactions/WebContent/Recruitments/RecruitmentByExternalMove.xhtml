@@ -64,11 +64,15 @@
 	function handleQualificationMiniSearchResult(ret){
 		 if(ret != null){
  			document.getElementById('recruitmentByExternalMoveFormId:qualificationMinorSpecIDId').value = ret[0];
+ 			document.getElementById('recruitmentByExternalMoveFormId:curQualificationMinorSpecIDId').value = ret[0];
 			document.getElementById('recruitmentByExternalMoveFormId:qualificationMinorSpecDescId').innerHTML = ret[1];
 			document.getElementById('recruitmentByExternalMoveFormId:qualificationMinorSpecDescHId').value = ret[1];
+			document.getElementById('recruitmentByExternalMoveFormId:curQualificationMinorSpecDescHId').value = ret[1];
 			document.getElementById('recruitmentByExternalMoveFormId:qualificationMajorSpecIDId').value = ret[2];
+			document.getElementById('recruitmentByExternalMoveFormId:curQualificationMajorSpecIDId').value = ret[2];
 			document.getElementById('recruitmentByExternalMoveFormId:qualificationMajorSpecDescId').innerHTML = ret[3];
-			document.getElementById('recruitmentByExternalMoveFormId:qualificationMajorSpecDescHId').value = ret[3];	        
+			document.getElementById('recruitmentByExternalMoveFormId:qualificationMajorSpecDescHId').value = ret[3];
+			document.getElementById('recruitmentByExternalMoveFormId:curQualificationMajorSpecDescHId').value = ret[3];	        
 		}
 	}
 	
@@ -410,13 +414,17 @@
 										<td>
 											<h:outputText id="qualificationMajorSpecDescId" value="#{recruitmentByExternalMove.employeeQualificationsData.recQualMajorSpecDesc}" />
 											<h:inputHidden id="qualificationMajorSpecDescHId" value="#{recruitmentByExternalMove.employeeQualificationsData.recQualMajorSpecDesc}" />
+											<h:inputHidden id="curQualificationMajorSpecDescHId" value="#{recruitmentByExternalMove.employeeQualificationsData.curQualMajorSpecDesc}" />
 											<h:inputHidden id="qualificationMajorSpecIDId" value="#{recruitmentByExternalMove.employeeQualificationsData.recQualMajorSpecId}" />
+											<h:inputHidden id="curQualificationMajorSpecIDId" value="#{recruitmentByExternalMove.employeeQualificationsData.curQualMajorSpecId}" />
 										</td>
 										<th>#{msgs.label_minorQualificationSpecialization}</th>
 										<td>
 											<h:outputText id="qualificationMinorSpecDescId" value="#{recruitmentByExternalMove.employeeQualificationsData.recQualMinorSpecDesc}" />
 											<h:inputHidden id="qualificationMinorSpecDescHId" value="#{recruitmentByExternalMove.employeeQualificationsData.recQualMinorSpecDesc}" />
+											<h:inputHidden id="curQualificationMinorSpecDescHId" value="#{recruitmentByExternalMove.employeeQualificationsData.curQualMinorSpecDesc}" />
 											<h:inputHidden id="qualificationMinorSpecIDId" value="#{recruitmentByExternalMove.employeeQualificationsData.recQualMinorSpecId}" />
+											<h:inputHidden id="curQualificationMinorSpecIDId" value="#{recruitmentByExternalMove.employeeQualificationsData.curQualMinorSpecId}" />
 											<h:outputText value=" " />
 											<h:commandButton value="#{msgs.fa_external_link}" onclick="getQualificationMinorAndMajorSpecs(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
 										</td>

@@ -101,24 +101,25 @@ public class EmployeesService extends BaseService {
 	    if (empData.getExceptionalRecruitmentFlag() == null)
 		empData.setExceptionalRecruitmentFlag(FlagsEnum.OFF.getCode());
 
-	    if (empData.getCategoryId().intValue() == CategoriesEnum.OFFICERS.getCode()) {
-		Rank rank = CommonService.getRankById(RanksEnum.CADET.getCode());
-		empData.setRankId(rank.getId());
-		empData.setRankDesc(rank.getDescription());
-		empData.setStatusId(EmployeeStatusEnum.UNDER_RECRUITMENT.getCode());
+	    if (empData.getRankId() == null && empData.getStatusId() == null) {
+		if (empData.getCategoryId().intValue() == CategoriesEnum.OFFICERS.getCode()) {
+		    Rank rank = CommonService.getRankById(RanksEnum.CADET.getCode());
+		    empData.setRankId(rank.getId());
+		    empData.setRankDesc(rank.getDescription());
+		    empData.setStatusId(EmployeeStatusEnum.UNDER_RECRUITMENT.getCode());
 
-	    } else if (empData.getCategoryId().intValue() == CategoriesEnum.SOLDIERS.getCode()) {
-		Rank rank = CommonService.getRankById(RanksEnum.STUDENT_SOLDIER.getCode());
-		empData.setRankId(rank.getId());
-		empData.setRankDesc(rank.getDescription());
-		if (empData.getRecruitmentRankId().longValue() == RanksEnum.SOLDIER.getCode() || empData.getRecruitmentRankId().longValue() == RanksEnum.FIRST_SOLDIER.getCode())
-		    empData.setStatusId(EmployeeStatusEnum.NEW_STUDENT_SOLDIER.getCode());
-		else
-		    empData.setStatusId(EmployeeStatusEnum.NEW_STUDENT_RANKED_SOLDIER.getCode());
-	    } else {
-		empData.setStatusId(EmployeeStatusEnum.UNDER_RECRUITMENT.getCode());
+		} else if (empData.getCategoryId().intValue() == CategoriesEnum.SOLDIERS.getCode()) {
+		    Rank rank = CommonService.getRankById(RanksEnum.STUDENT_SOLDIER.getCode());
+		    empData.setRankId(rank.getId());
+		    empData.setRankDesc(rank.getDescription());
+		    if (empData.getRecruitmentRankId().longValue() == RanksEnum.SOLDIER.getCode() || empData.getRecruitmentRankId().longValue() == RanksEnum.FIRST_SOLDIER.getCode())
+			empData.setStatusId(EmployeeStatusEnum.NEW_STUDENT_SOLDIER.getCode());
+		    else
+			empData.setStatusId(EmployeeStatusEnum.NEW_STUDENT_RANKED_SOLDIER.getCode());
+		} else {
+		    empData.setStatusId(EmployeeStatusEnum.UNDER_RECRUITMENT.getCode());
+		}
 	    }
-
 	    if (empData.getCategoryId().longValue() != CategoriesEnum.CONTRACTORS.getCode())
 		empData.setCountryId(CountryService.getCountryByCode(CountriesEnum.SAUDI_ARABIA.getCode()).getId());
 

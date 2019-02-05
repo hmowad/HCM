@@ -1693,7 +1693,6 @@ public class RecruitmentsService extends BaseService {
     public static void constructReRecruitmentTransaction(RecruitmentTransactionData recruitment, EmployeeData employee, Integer recruitmentType) {
 	recruitment.setEmployeeId(employee.getEmpId());
 	recruitment.setCategoryId(employee.getCategoryId());
-	recruitment.setEmployeeId(employee.getEmpId());
 	recruitment.setGraduationGroupNumber(employee.getGraduationGroupNumber());
 	recruitment.setGraduationGroupPlaceId(employee.getGraduationGroupPlace());
 	recruitment.setEmployeeMilitaryNumber(employee.getMilitaryNumber());
@@ -1737,8 +1736,6 @@ public class RecruitmentsService extends BaseService {
 
 	    if (empData.getCategoryId().longValue() == CategoriesEnum.OFFICERS.getCode()) {
 		empData.setRankId(recruitmentTransaction.getRankId());
-		if (empData.getEmpId() == null)
-		    empData.setRecruitmentRankId(recruitmentTransaction.getRankId());
 		empData.setRankTitleId(recruitmentTransaction.getRankTitleId());
 		empData.setJobModifiedFlag(FlagsEnum.ON.getCode());
 	    } else {
