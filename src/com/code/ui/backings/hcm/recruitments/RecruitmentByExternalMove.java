@@ -163,6 +163,7 @@ public class RecruitmentByExternalMove extends BaseBacking {
 	    if (employee.getEmpId() == null) {
 		RecruitmentsService.constructReRecruitmentTransaction(recruitment, employee, RecruitmentTypeEnum.RECRUITMENT_BY_EXTERNAL_MOVE.getCode());
 		employee.setFirstRecruitmentDate(recruitment.getFirstRecruitmentDate());
+		employeeQualificationsData.setCurQualLevelId(employeeQualificationsData.getRecQualLevelId());
 	    }
 
 	    RecruitmentsService.handleReRecruitmentRequests(recruitment, employee, employeeQualificationsData, employeeDataMode);
