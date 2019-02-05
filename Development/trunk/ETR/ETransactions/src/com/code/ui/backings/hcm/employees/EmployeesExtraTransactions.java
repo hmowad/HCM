@@ -12,6 +12,7 @@ import com.code.dal.orm.hcm.RankTitle;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.employees.EmployeeExtraTransactionData;
 import com.code.dal.orm.hcm.payroll.Degree;
+import com.code.enums.TransactionClassesEnum;
 import com.code.enums.TransactionTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
@@ -59,7 +60,10 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
 	    employee = EmployeesService.getEmployeeData(employeeId);
 	    salaryRanks = CommonService.getRanks(null, new Long[] { employee.getCategoryId() });
 	    salaryDegrees = PayrollsService.getAllDegrees();
-	    EmployeesService.getEmployeeDataExtraTransactionLists(employeeId, socialStatusList, rankTitleList, generalSpecList, salaryRankList);
+	    socialStatusList = EmployeesService.getSocialStatusExtraTransactionDataList(employeeId);
+	    rankTitleList = EmployeesService.getRankTitleExtraTransactionDataList(employeeId);
+	    generalSpecList = EmployeesService.getGeneralSpecializationExtraTransactionDataList(employeeId);
+	    salaryRankList = EmployeesService.getSalaryRankExtraTransactionDataList(employeeId);
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	    e.printStackTrace();
@@ -75,13 +79,13 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
 	    EmployeeExtraTransactionData employeeExtraTransactionData, int index) {
 	try {
 	    if (employeeDataExtraTransactionList.equals(salaryRankList))
-		employeeExtraTransactionData.setTransactionTypeId(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SALARY_RANK.getCode());
+		employeeExtraTransactionData.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SALARY_RANK.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
 	    else if (employeeDataExtraTransactionList.equals(generalSpecList))
-		employeeExtraTransactionData.setTransactionTypeId(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_GENERAL_SPECIALIZATION.getCode());
+		employeeExtraTransactionData.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_GENERAL_SPECIALIZATION.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
 	    else if (employeeDataExtraTransactionList.equals(rankTitleList))
-		employeeExtraTransactionData.setTransactionTypeId(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_RANK_TITLE.getCode());
+		employeeExtraTransactionData.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_RANK_TITLE.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
 	    else if (employeeDataExtraTransactionList.equals(socialStatusList))
-		employeeExtraTransactionData.setTransactionTypeId(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS.getCode());
+		employeeExtraTransactionData.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
 	    EmployeesService.addEmployeeDataExtraTransaction(employee, employeeExtraTransactionData, null);
 	    employeeDataExtraTransactionList.set(index, EmployeesService.getEmployeeExtraTransactionByDecisionNumber(employeeExtraTransactionData.getDecisionNumber()).get(0));
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
