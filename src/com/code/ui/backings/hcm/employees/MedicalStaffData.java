@@ -12,6 +12,7 @@ import com.code.dal.orm.hcm.employees.medicalstuff.EmployeeMedicalStaffData;
 import com.code.dal.orm.hcm.employees.medicalstuff.MedicalStaffLevel;
 import com.code.dal.orm.hcm.employees.medicalstuff.MedicalStaffRank;
 import com.code.dal.orm.hcm.payroll.Degree;
+import com.code.enums.TransactionClassesEnum;
 import com.code.enums.TransactionTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
@@ -46,7 +47,7 @@ public class MedicalStaffData extends BaseBacking {
 	    selectedEmployee = EmployeesService.getEmployeeData(selectedEmployee.getEmpId());
 	    EmployeesService.validateSelectedEmployeeForExtraTransaction(selectedEmployee);
 	    employeeExtraTransactionDataList = new ArrayList<EmployeeExtraTransactionData>();
-	    EmployeesService.getMedicalStaffExtraTransactionDataList(selectedEmployee.getEmpId(), employeeExtraTransactionDataList);
+	    employeeExtraTransactionDataList = EmployeesService.getMedicalStaffExtraTransactionDataList(selectedEmployee.getEmpId());
 	} catch (BusinessException e) {
 	    selectedEmployee = new EmployeeData();
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -62,7 +63,7 @@ public class MedicalStaffData extends BaseBacking {
 	try {
 	    EmployeeMedicalStaffData employeeMedicalStaffData = new EmployeeMedicalStaffData();
 	    EmployeesService.constructEmployeeMedicalStaffData(addedEmployeeExtraTransactionData, employeeMedicalStaffData);
-	    addedEmployeeExtraTransactionData.setTransactionTypeId(TransactionTypesEnum.EMPLOYEE_MEDICAL_STAFF_DATA.getCode());
+	    addedEmployeeExtraTransactionData.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEE_MEDICAL_STAFF_DATA.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
 	    EmployeesService.addEmployeeDataExtraTransaction(selectedEmployee, addedEmployeeExtraTransactionData, employeeMedicalStaffData);
 	    employeeExtraTransactionDataList.set(index, EmployeesService.getEmployeeExtraTransactionByDecisionNumber(addedEmployeeExtraTransactionData.getDecisionNumber()).get(0));
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));

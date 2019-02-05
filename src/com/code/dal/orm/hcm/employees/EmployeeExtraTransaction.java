@@ -34,7 +34,7 @@ public class EmployeeExtraTransaction extends AuditEntity implements Serializabl
     private Long medStaffRankId;
     private Long medStaffLevelId;
     private Long medStaffDegreeId;
-    private Integer transactionTypeId;
+    private Long transactionTypeId;
 
     @SequenceGenerator(name = "HCMEmpsExtraTrnsSeq",
 	    sequenceName = "HCM_EMPS_EXTRA_TRNS_SEQ",
@@ -173,11 +173,11 @@ public class EmployeeExtraTransaction extends AuditEntity implements Serializabl
 
     @Basic
     @Column(name = "TRANSACTION_TYPE_ID")
-    public Integer getTransactionTypeId() {
+    public Long getTransactionTypeId() {
 	return transactionTypeId;
     }
 
-    public void setTransactionTypeId(Integer transactionTypeId) {
+    public void setTransactionTypeId(Long transactionTypeId) {
 	this.transactionTypeId = transactionTypeId;
     }
 

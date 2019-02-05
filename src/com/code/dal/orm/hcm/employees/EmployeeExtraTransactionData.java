@@ -57,7 +57,7 @@ public class EmployeeExtraTransactionData extends BaseEntity implements Serializ
     private String medStaffLevelDesc;
     private Long medStaffDegreeId;
     private String medStaffDegreeDesc;
-    private Integer transactionTypeId;
+    private Long transactionTypeId;
     private EmployeeExtraTransaction employeeExtraTransaction;
 
     public EmployeeExtraTransactionData() {
@@ -324,11 +324,11 @@ public class EmployeeExtraTransactionData extends BaseEntity implements Serializ
 
     @Basic
     @Column(name = "TRANSACTION_TYPE_ID")
-    public Integer getTransactionTypeId() {
+    public Long getTransactionTypeId() {
 	return transactionTypeId;
     }
 
-    public void setTransactionTypeId(Integer transactionTypeId) {
+    public void setTransactionTypeId(Long transactionTypeId) {
 	this.transactionTypeId = transactionTypeId;
 	this.employeeExtraTransaction.setTransactionTypeId(transactionTypeId);
     }
