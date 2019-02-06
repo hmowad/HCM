@@ -1033,6 +1033,7 @@ public class TerminationTransaction extends AuditEntity implements InsertableAud
 		"status:" + status + AUDIT_SEPARATOR +
 		"remarks:" + remarks + AUDIT_SEPARATOR +
 		"referring:" + referring + AUDIT_SEPARATOR +
+		"transEmpUnitId" + transEmpUnitId + AUDIT_SEPARATOR +
 
 		"terminationRequestType:" + terminationRequestType + AUDIT_SEPARATOR +
 		"desiredTerminationDate:" + desiredTerminationDate + AUDIT_SEPARATOR +

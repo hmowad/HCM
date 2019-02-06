@@ -1303,14 +1303,14 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    public static void employeesDegreesDuringPromotion(List<EmployeeData> employees, Date promotionDate) throws BusinessException {
+    public static void getEmployeesDegreesInGivenDate(List<EmployeeData> employees, Date date) throws BusinessException {
 	if (employees != null && !employees.isEmpty()) {
 	    List<RaiseTransaction> transactions = new ArrayList<>();
 	    List<Long> empIds = new ArrayList<>();
 	    for (int i = 0; i < employees.size(); i++) {
 		empIds.add(employees.get(i).getEmpId());
 		if (i == employees.size() - 1 || (i % 1000 == 0 && i != 0)) {
-		    transactions.addAll(getFirstRaiseTransactionAtGivenDate(empIds.toArray(), promotionDate));
+		    transactions.addAll(getFirstRaiseTransactionAtGivenDate(empIds.toArray(), date));
 		    empIds.clear();
 		}
 	    }
@@ -1339,59 +1339,61 @@ public class RaisesService extends BaseService {
 			empIds.clear();
 		    }
 		}
-		Map<Long, Long> rankDegreesHashMap = getEndOfLadderDegreesMap(employees.get(0).getCategoryId());
-		Map<Long, EmployeeData> employeesMap = new HashMap<>();
-		for (int i = 0; i < employees.size(); i++) {
-		    employeesMap.put(employees.get(i).getEmpId(), employees.get(i));
-		}
-		long lastEmpId = transactions.get(0).getEmpId();
-		long newDegree = employeesMap.get(transactions.get(0).getEmpId()).getDegreeId();
-		long oldDegree = employeesMap.get(transactions.get(0).getEmpId()).getDegreeId();
-		boolean invalid = false;
-		for (int i = 0; i <= transactions.size(); i++) {
+		if (transactions != null && transactions.size() != 0) {
+		    Map<Long, Long> rankDegreesHashMap = getEndOfLadderDegreesMap(employees.get(0).getCategoryId());
+		    Map<Long, EmployeeData> employeesMap = new HashMap<>();
+		    for (int i = 0; i < employees.size(); i++) {
+			employeesMap.put(employees.get(i).getEmpId(), employees.get(i));
+		    }
+		    long lastEmpId = transactions.get(0).getEmpId();
+		    long newDegree = employeesMap.get(transactions.get(0).getEmpId()).getDegreeId();
+		    long oldDegree = employeesMap.get(transactions.get(0).getEmpId()).getDegreeId();
+		    boolean invalid = false;
+		    for (int i = 0; i <= transactions.size(); i++) {
 
-		    if (i >= transactions.size() || !transactions.get(i).getEmpId().equals(lastEmpId)) {
-			if (transactions.get(i - 1).getEffectFlag().equals(FlagsEnum.ON.getCode()))
-			    employeesMap.get(lastEmpId).setDegreeId(newDegree);
-			if (i >= transactions.size())
-			    break;
-			invalid = false;
-			newDegree = employeesMap.get(transactions.get(i).getEmpId()).getDegreeId();
-			oldDegree = employeesMap.get(transactions.get(i).getEmpId()).getDegreeId();
-		    }
-		    EmployeeData employee = employeesMap.get(transactions.get(i).getEmpId());
-		    if (invalid || (rankDegreesHashMap.get(employee.getRankId()) == null ? degrees.get(degrees.size() - 1).getId() : rankDegreesHashMap.get(employee.getRankId())) == newDegree) {
-			RaiseTransactionLog transactionLog = constructRaiseTransactionLogModification(transactions.get(i).getId(), promotionDecisionDate, transactions.get(i).getTransEmpDegreeId(), transactions.get(i).getNewDegreeId(), promotionDecisionNumber, transactions.get(i).getTransEmpRankDesc(), transactions.get(0).getTransEmpDegreeDesc());
-			transactionLog.setSystemUser(loginEmpId);
-			addedTransactionLogList.add(transactionLog);
-			transactions.get(i).setStatus(RaiseTransactionTypesEnum.INVALID.getCode());
-			transactions.get(i).setSystemUser(loginEmpId);
-			updatedTransactionList.add(transactions.get(i));
-			invalid = true;
-		    } else {
-			newDegree += transactions.get(i).getNewDegreeId() - transactions.get(i).getTransEmpDegreeId();
-			if (newDegree >= (rankDegreesHashMap.get(employee.getRankId()) == null ? degrees.get(degrees.size() - 1).getId() : rankDegreesHashMap.get(employee.getRankId()))) {
-			    newDegree = rankDegreesHashMap.get(employee.getRankId()) == null ? degrees.get(degrees.size() - 1).getId() : rankDegreesHashMap.get(employee.getRankId());
-			    invalid = true;
+			if (i >= transactions.size() || !transactions.get(i).getEmpId().equals(lastEmpId)) {
+			    if (transactions.get(i - 1).getEffectFlag().equals(FlagsEnum.ON.getCode()))
+				employeesMap.get(lastEmpId).setDegreeId(newDegree);
+			    if (i >= transactions.size())
+				break;
+			    invalid = false;
+			    newDegree = employeesMap.get(transactions.get(i).getEmpId()).getDegreeId();
+			    oldDegree = employeesMap.get(transactions.get(i).getEmpId()).getDegreeId();
 			}
-			transactions.get(i).setNewDegreeId(newDegree);
-			transactions.get(i).setBasedOnDecisionDate(promotionDecisionDate);
-			transactions.get(i).setBasedOnDecisionNumber(promotionDecisionNumber);
-			transactions.get(i).setTransEmpDegreeId(oldDegree);
-			transactions.get(i).setTransEmpDegreeDesc(degrees.get((int) oldDegree - 1).getDescription());
-			transactions.get(i).setTransEmpRankDesc(employee.getRankDesc());
-			transactions.get(i).setStatus(RaiseTransactionTypesEnum.VALID.getCode());
-			transactions.get(i).setSystemUser(loginEmpId);
-			updatedTransactionList.add(transactions.get(i));
-			RaiseTransactionLog transactionLog = constructRaiseTransactionLogModification(transactions.get(i).getId(), promotionDecisionDate, oldDegree, newDegree, promotionDecisionNumber, employee.getRankDesc(), degrees.get((int) oldDegree - 1).getDescription());
-			transactionLog.setSystemUser(loginEmpId);
-			addedTransactionLogList.add(transactionLog);
-			oldDegree = newDegree;
+			EmployeeData employee = employeesMap.get(transactions.get(i).getEmpId());
+			if (invalid || (rankDegreesHashMap.get(employee.getRankId()) == null ? degrees.get(degrees.size() - 1).getId() : rankDegreesHashMap.get(employee.getRankId())) == newDegree) {
+			    RaiseTransactionLog transactionLog = constructRaiseTransactionLogModification(transactions.get(i).getId(), promotionDecisionDate, transactions.get(i).getTransEmpDegreeId(), transactions.get(i).getNewDegreeId(), promotionDecisionNumber, transactions.get(i).getTransEmpRankDesc(), transactions.get(0).getTransEmpDegreeDesc());
+			    transactionLog.setSystemUser(loginEmpId);
+			    addedTransactionLogList.add(transactionLog);
+			    transactions.get(i).setStatus(RaiseTransactionTypesEnum.INVALID.getCode());
+			    transactions.get(i).setSystemUser(loginEmpId);
+			    updatedTransactionList.add(transactions.get(i));
+			    invalid = true;
+			} else {
+			    newDegree += transactions.get(i).getNewDegreeId() - transactions.get(i).getTransEmpDegreeId();
+			    if (newDegree >= (rankDegreesHashMap.get(employee.getRankId()) == null ? degrees.get(degrees.size() - 1).getId() : rankDegreesHashMap.get(employee.getRankId()))) {
+				newDegree = rankDegreesHashMap.get(employee.getRankId()) == null ? degrees.get(degrees.size() - 1).getId() : rankDegreesHashMap.get(employee.getRankId());
+				invalid = true;
+			    }
+			    transactions.get(i).setNewDegreeId(newDegree);
+			    transactions.get(i).setBasedOnDecisionDate(promotionDecisionDate);
+			    transactions.get(i).setBasedOnDecisionNumber(promotionDecisionNumber);
+			    transactions.get(i).setTransEmpDegreeId(oldDegree);
+			    transactions.get(i).setTransEmpDegreeDesc(degrees.get((int) oldDegree - 1).getDescription());
+			    transactions.get(i).setTransEmpRankDesc(employee.getRankDesc());
+			    transactions.get(i).setStatus(RaiseTransactionTypesEnum.VALID.getCode());
+			    transactions.get(i).setSystemUser(loginEmpId);
+			    updatedTransactionList.add(transactions.get(i));
+			    RaiseTransactionLog transactionLog = constructRaiseTransactionLogModification(transactions.get(i).getId(), promotionDecisionDate, oldDegree, newDegree, promotionDecisionNumber, employee.getRankDesc(), degrees.get((int) oldDegree - 1).getDescription());
+			    transactionLog.setSystemUser(loginEmpId);
+			    addedTransactionLogList.add(transactionLog);
+			    oldDegree = newDegree;
+			}
+			lastEmpId = transactions.get(i).getEmpId();
 		    }
-		    lastEmpId = transactions.get(i).getEmpId();
+		    DataAccess.addMultipleEntities(addedTransactionLogList, session);
+		    DataAccess.updateMultipleEntities(updatedTransactionList, session);
 		}
-		DataAccess.addMultipleEntities(addedTransactionLogList, session);
-		DataAccess.updateMultipleEntities(updatedTransactionList, session);
 	    }
 	} catch (Exception e) {
 	    if (e instanceof BusinessException)
