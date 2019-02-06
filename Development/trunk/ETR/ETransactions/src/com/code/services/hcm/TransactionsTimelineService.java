@@ -32,7 +32,7 @@ public class TransactionsTimelineService extends BaseService {
     }
 
     public static int getFutureTransactionsCount(long employeeId) throws BusinessException {
-	return MovementsService.getMovementTransactionsHistory(employeeId).size() + getAllFutureTransactionsExceptMovements(employeeId).size();
+	return getMovementsTransactions(employeeId).size() + getAllFutureTransactionsExceptMovements(employeeId).size();
     }
 
     private static List<TransactionTimeline> getMovementsTransactions(long employeeId) throws BusinessException {
