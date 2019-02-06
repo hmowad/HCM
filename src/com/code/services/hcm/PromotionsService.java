@@ -25,8 +25,6 @@ import com.code.dal.orm.hcm.promotions.PromotionReportDetailData;
 import com.code.dal.orm.hcm.promotions.PromotionSeniortyPoints;
 import com.code.dal.orm.hcm.promotions.PromotionTransactionData;
 import com.code.dal.orm.hcm.promotions.RankPowerData;
-import com.code.dal.orm.hcm.promotions.RetroactivePromotionDAO;
-import com.code.dal.orm.hcm.promotions.RetroactivePromotionProxy;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransactionData;
 import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
 import com.code.dal.orm.hcm.trainings.TrainingTransactionData;
@@ -1001,6 +999,16 @@ public class PromotionsService extends BaseService {
 
 	Long[] empsIds = new Long[employeeList.size()];
 	HashMap<Long, PromotionReportDetailData> employeesPromotionReportDetailDataMap = new HashMap<Long, PromotionReportDetailData>();
+	List<EmployeeData> editedEmployeeList = new ArrayList<>();
+	for (EmployeeData employeeData : employeeList) {
+	    EmployeeData copiedEmployeeData = new EmployeeData();
+	    copiedEmployeeData.setEmpId(employeeData.getEmpId());
+	    copiedEmployeeData.setDegreeId(employeeData.getDegreeId());
+	    editedEmployeeList.add(copiedEmployeeData);
+	}
+	if (promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()))
+	    RaisesService.getEmployeesDegreesInGivenDate(editedEmployeeList, promotionReportData.getDueDate());
+	int index = 0;
 	int i = 0;
 
 	for (EmployeeData employee : employeeList) {
@@ -1032,22 +1040,15 @@ public class PromotionsService extends BaseService {
 
 	    reportDetailData.setOldDegreeId(employee.getDegreeId());
 	    reportDetailData.setOldDegreeDesc(employee.getDegreeDesc());
-	    if (promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
-		RetroactivePromotionDAO retroactivePromotion = new RetroactivePromotionProxy();
-		Long promotionRetroactiveDegreeId = retroactivePromotion.calculateNewDegree(reportDetailData.getEmpId(), reportDetailData.getOldRankId(), reportDetailData.getPromotionDueDate());
-		if (promotionRetroactiveDegreeId != null && employee.getDegreeId() > promotionRetroactiveDegreeId) {
-		    Long differenceBetweenCurrentDegreeAndRetroactiveDegree = employee.getDegreeId() - promotionRetroactiveDegreeId;
-		    PayrollSalary oldRetroactivePayrollSalary = PayrollsService.getPayrollSalary(reportDetailData.getOldRankId(), promotionRetroactiveDegreeId);
-		    PayrollSalary newRetroactivePayrollSalary = PayrollsService.getPayrollNewSalary(getNextRank(reportDetailData.getOldRankId()), oldRetroactivePayrollSalary.getBasicSalary());
-		    Long deservedDegree = differenceBetweenCurrentDegreeAndRetroactiveDegree + newRetroactivePayrollSalary.getDegreeId();
-		    Long endOfLadderOfRank = PayrollsService.getEndOfLadderOfRank(getNextRank(reportDetailData.getOldRankId()));
-		    reportDetailData.setNewDegreeId(deservedDegree > endOfLadderOfRank ? endOfLadderOfRank : deservedDegree);
-		} else {
-		    reportDetailData.setNewDegreeId(newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId());
-		}
-	    } else {
+	    if (promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && employee.getDegreeId() > editedEmployeeList.get(index).getDegreeId()) {
+		Long differenceBetweenCurrentDegreeAndRetroactiveDegree = employee.getDegreeId() - editedEmployeeList.get(index).getDegreeId();
+		PayrollSalary oldRetroactivePayrollSalary = PayrollsService.getPayrollSalary(reportDetailData.getOldRankId(), editedEmployeeList.get(index).getDegreeId());
+		PayrollSalary newRetroactivePayrollSalary = PayrollsService.getPayrollNewSalary(getNextRank(reportDetailData.getOldRankId()), oldRetroactivePayrollSalary.getBasicSalary());
+		Long deservedDegree = differenceBetweenCurrentDegreeAndRetroactiveDegree + newRetroactivePayrollSalary.getDegreeId();
+		Long endOfLadderOfRank = PayrollsService.getEndOfLadderOfRank(getNextRank(reportDetailData.getOldRankId()));
+		reportDetailData.setNewDegreeId(deservedDegree > endOfLadderOfRank ? endOfLadderOfRank : deservedDegree);
+	    } else
 		reportDetailData.setNewDegreeId(newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId());
-	    }
 	    reportDetailData.setOldJobId(employee.getJobId());
 	    reportDetailData.setOldJobCode(employee.getJobCode());
 	    reportDetailData.setOldJobDesc(employee.getJobDesc());
@@ -1126,6 +1127,7 @@ public class PromotionsService extends BaseService {
 
 		promotionReportDetailDataList.add(reportDetailData);
 	    }
+	    index++;
 	}
 
 	if (promotionReportData.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && !promotionReportData.getPromotionTypeId().equals(PromotionsTypesEnum.EXCEPTIONAL_PROMOTION.getCode()) && !promotionReportData.getPromotionTypeId().equals(PromotionsTypesEnum.PROMOTION_CANCELLATION.getCode())) {
@@ -3589,6 +3591,15 @@ public class PromotionsService extends BaseService {
 
 	List<PromotionTransactionData> promotionTransactionList = constructPromotionTransactionList(promotionReportData, promotionReportDetailDataList, smTaskOriginalId, session);
 	addPromotionsTransactions(promotionReportData, promotionTransactionList, subject, loginEmpId, session);
+	if (promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+	    Long[] empsIds = new Long[promotionReportDetailDataList.size()];
+	    int i = 0;
+	    for (PromotionReportDetailData promotionReportDetail : promotionReportDetailDataList) {
+		empsIds[i] = promotionReportDetail.getEmpId();
+		i++;
+	    }
+	    RaisesService.raisesModificationsAfterPromotions(EmployeesService.getEmployeesByEmpsIds(empsIds), promotionTransactionList.get(0).getDecisionDate(), promotionTransactionList.get(0).getDecisionNumber(), loginEmpId + "", session);
+	}
     }
 
     /**
