@@ -43,19 +43,20 @@ public class Home extends BaseBacking {
     private boolean showTransactionsTimelineScreenFlag;
 
     public Home() {
+	calculateInboxCount();
+	calculateNotificationsCount();
+	calculateAlertsData();
+	HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+	String previousRequestURI = req.getHeader("referer");
+	if (previousRequestURI != null && previousRequestURI.endsWith("Login.jsf")) {
+	    HttpSession httpSession = req.getSession();
+	    httpSession.setAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode(), true);
+	}
+    }
+
+    public void calculateTransactionsTimelineShowFlag() {
 	try {
-	    calculateInboxCount();
-	    calculateNotificationsCount();
-	    calcAlertsData();
 	    HttpSession session = getSession();
-
-	    HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-	    String previousRequestURI = req.getHeader("referer");
-	    if (previousRequestURI.endsWith("Login.jsf")) {
-		HttpSession httpSession = req.getSession();
-		httpSession.setAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode(), true);
-	    }
-
 	    EmployeePreferences empPreferences = EmployeesPreferencesService.getEmployeePreferences(loginEmpData.getEmpId());
 	    if ((session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode()) != null) && (TransactionsTimelineService.getFutureTransactionsCount(loginEmpData.getEmpId()) > 0) && (!empPreferences.getTimeLineAutoHideFlagBoolean())) {
 		showTransactionsTimelineScreenFlag = (boolean) session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode());
@@ -146,7 +147,7 @@ public class Home extends BaseBacking {
 	return encryptedString.toString();
     }
 
-    public void calcAlertsData() {
+    public void calculateAlertsData() {
 	try {
 	    if (EmployeesService.isSocialIdExpired(loginEmpData)) {
 		socialIdExpiredWarning = true;
