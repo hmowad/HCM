@@ -27,7 +27,7 @@
 	}
 	</script>
 </h:head>
-<h:body styleClass="screenBg" onload="showTransactionsTimelineBasedOnFlag(); return false;">
+<h:body styleClass="screenBg" onload="document.getElementById('welcomeForm:calculateTransactionsTimelineShowFlagBtnId').click();">
 
 	<f:event type="preRenderView" listener="#{home.calculateDelegationsCount}" />
 
@@ -379,6 +379,9 @@
 					</h:panelGroup>
 				</h:panelGroup>
 				<h:inputHidden id="showTransactionsTimelineScreenFlagID" value="#{home.showTransactionsTimelineScreenFlag}" />
+				<h:commandButton id="calculateTransactionsTimelineShowFlagBtnId" style="display:none;" action="#{home.calculateTransactionsTimelineShowFlag()}" >
+					<f:ajax onevent="function(e){if(e.status == 'success') showTransactionsTimelineBasedOnFlag();}"  render="welcomeForm:showTransactionsTimelineScreenFlagID"/>
+				</h:commandButton>
 			</table>
 		</ui:decorate>
 	</h:form>
