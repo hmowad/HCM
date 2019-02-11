@@ -412,16 +412,15 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		    Set<Long> generalDirectorateUnitsIds = new HashSet<Long>();
 		    for (UnitData sentBackUnit : sentBackUnits) {
 			if (sentBackUnit.getRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) {
-			    i++;
 			    regionsIds.add(sentBackUnit.getId());
 			} else {
-			    i++;
 			    generalDirectorateUnitsIds.add(sentBackUnit.getId());
 			}
 		    }
 
 		    if (regionsIds.size() > 0) {// add tasks for all ssm and PayrollRegionManager
 			for (Long unitId : regionsIds) {
+			    i++;
 			    UnitData regionUnitData = UnitsService.getUnitById(unitId);
 			    addWFTask(instance.getInstanceId(), getDelegate(regionUnitData.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), regionUnitData.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
 			}
@@ -432,6 +431,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 			}
 		    } else if (generalDirectorateUnitsIds.size() > 0) {// add tasks for all sm and PayrollGeneralDirectorateManager
 			for (Long unitId : generalDirectorateUnitsIds) {
+			    i++;
 			    UnitData generalDirectorateUnitData = UnitsService.getUnitById(unitId);
 			    addWFTask(instance.getInstanceId(), getDelegate(generalDirectorateUnitData.getPhysicalManagerId(), instance.getProcessId(), requester.getEmpId()), generalDirectorateUnitData.getPhysicalManagerId(), curDate, curHijriDate, esmTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), esmTask.getLevel() + "." + i, session);
 			}
