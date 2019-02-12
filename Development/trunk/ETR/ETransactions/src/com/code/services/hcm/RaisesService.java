@@ -1279,7 +1279,7 @@ public class RaisesService extends BaseService {
 	    for (EmployeeData employee : employees) {
 		employee.setDegreeId(employee.getDegreeId() + 1);
 		EmployeeLog logEmp = new EmployeeLog.Builder()
-			.setDegreeId(employee.getDegreeId() + 1)
+			.setDegreeId(employee.getDegreeId())
 			.constructCommonFields(employee.getEmpId(), raise.getDecisionNumber(), raise.getDecisionDate(), raise.getExecutionDate())
 			.build();
 		LogService.logEmployeeData(logEmp, session);
