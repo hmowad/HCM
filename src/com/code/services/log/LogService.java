@@ -8,6 +8,7 @@ import java.util.Map;
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.employees.EmployeeData;
+import com.code.dal.orm.log.EmployeeLog;
 import com.code.dal.orm.log.EmployeeLogData;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
@@ -60,6 +61,36 @@ public class LogService extends BaseService {
 		session.commitTransaction();
 	} catch (Exception e) {
 	    employeeLogData.setId(null);
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
+    
+    /**
+     * Add a EmployeeLog object to database
+     * 
+     * @param EmployeeLog
+     * @param useSession
+     *            Optional parameter used to access the database if no other session opened
+     * @throws BusinessException
+     *             If any exceptions or errors occurs
+     */
+    public static void logEmployeeData(EmployeeLog employeeLog, CustomSession... useSession) throws BusinessException {
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+	    DataAccess.addEntity(employeeLog, session);
+
+	    if (!isOpenedSession)
+		session.commitTransaction();
+	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
 	    e.printStackTrace();
