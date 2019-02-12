@@ -12,6 +12,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.code.dal.orm.BaseEntity;
+import com.code.services.util.HijriDateService;
 
 @Entity
 @Table(name = "HCM_EMPLOYEES_LOG")
@@ -36,6 +37,30 @@ public class EmployeeLog extends BaseEntity {
     private Long medStaffRankId;
     private Long medStaffLevelId;
     private Long medStaffDegreeId;
+
+    public EmployeeLog() {
+    }
+    public EmployeeLog(Long empId, Long jobId, Long basicJobNameId, Long physicalUnitId, Long officialUnitId, Long rankId, Long rankTitleId, Long salaryRankId, Long degreeId, Integer socialStatus, Integer generalSpecialization, Date effectiveGregDate, Date effectiveHijriDate, String decisionNumber, Date decisionDate, Long insertionTime, Long medStaffRankId, Long medStaffLevelId, Long medStaffDegreeId) {
+	this.empId = empId;
+	this.jobId = jobId;
+	this.basicJobNameId = basicJobNameId;
+	this.physicalUnitId = physicalUnitId;
+	this.officialUnitId = officialUnitId;
+	this.rankId = rankId;
+	this.rankTitleId = rankTitleId;
+	this.salaryRankId = salaryRankId;
+	this.degreeId = degreeId;
+	this.socialStatus = socialStatus;
+	this.generalSpecialization = generalSpecialization;
+	this.effectiveGregDate = effectiveGregDate;
+	this.effectiveHijriDate = effectiveHijriDate;
+	this.decisionNumber = decisionNumber;
+	this.decisionDate = decisionDate;
+	this.insertionTime = insertionTime;
+	this.medStaffRankId = medStaffRankId;
+	this.medStaffLevelId = medStaffLevelId;
+	this.medStaffDegreeId = medStaffDegreeId;
+    }
 
     @SequenceGenerator(name = "HCMLogSeq",
 	    sequenceName = "HCM_LOG_SEQ",
@@ -240,6 +265,134 @@ public class EmployeeLog extends BaseEntity {
 
     public void setMedStaffDegreeId(Long medStaffDegreeId) {
 	this.medStaffDegreeId = medStaffDegreeId;
+    }
+
+    public static class Builder {
+	private Long empId;
+	private Long jobId;
+	private Long basicJobNameId;
+	private Long physicalUnitId;
+	private Long rankId;
+	private Long rankTitleId;
+	private Long salaryRankId;
+	private Long degreeId;
+	private Integer socialStatus;
+	private Integer generalSpecialization;
+	private Date effectiveGregDate;
+	private Date effectiveHijriDate;
+	private String decisionNumber;
+	private Date decisionDate;
+	private Long insertionTime;
+	private Long officialUnitId;
+	private Long medStaffRankId;
+	private Long medStaffLevelId;
+	private Long medStaffDegreeId;
+
+	public Builder() {
+	}
+
+	public void setEmpId(Long empId) {
+	    this.empId = empId;
+	}
+
+	public void setEffectiveGregDate(Date effectiveGregDate) {
+	    this.effectiveGregDate = effectiveGregDate;
+	}
+
+	public void setEffectiveHijriDate(Date effectiveHijriDate) {
+	    this.effectiveHijriDate = effectiveHijriDate;
+	}
+
+	public void setDecisionNumber(String decisionNumber) {
+	    this.decisionNumber = decisionNumber;
+	}
+
+	public void setDecisionDate(Date decisionDate) {
+	    this.decisionDate = decisionDate;
+	}
+
+	public void setInsertionTime(Long insertionTime) {
+	    this.insertionTime = insertionTime;
+	}
+
+	public Builder setJobId(Long jobId) {
+	    this.jobId = jobId;
+	    return this;
+	}
+
+	public Builder setBasicJobNameId(Long basicJobNameId) {
+	    this.basicJobNameId = basicJobNameId;
+	    return this;
+	}
+
+	public Builder setPhysicalUnitId(Long physicalUnitId) {
+	    this.physicalUnitId = physicalUnitId;
+	    return this;
+	}
+
+	public Builder setRankId(Long rankId) {
+	    this.rankId = rankId;
+	    return this;
+	}
+
+	public Builder setRankTitleId(Long rankTitleId) {
+	    this.rankTitleId = rankTitleId;
+	    return this;
+	}
+
+	public Builder setSalaryRankId(Long salaryRankId) {
+	    this.salaryRankId = salaryRankId;
+	    return this;
+	}
+
+	public Builder setDegreeId(Long degreeId) {
+	    this.degreeId = degreeId;
+	    return this;
+	}
+
+	public Builder setSocialStatus(Integer socialStatus) {
+	    this.socialStatus = socialStatus;
+	    return this;
+	}
+
+	public Builder setGeneralSpecialization(Integer generalSpecialization) {
+	    this.generalSpecialization = generalSpecialization;
+	    return this;
+	}
+
+	public Builder setOfficialUnitId(Long officialUnitId) {
+	    this.officialUnitId = officialUnitId;
+	    return this;
+	}
+
+	public Builder setMedStaffRankId(Long medStaffRankId) {
+	    this.medStaffRankId = medStaffRankId;
+	    return this;
+	}
+
+	public Builder setMedStaffLevelId(Long medStaffLevelId) {
+	    this.medStaffLevelId = medStaffLevelId;
+	    return this;
+	}
+
+	public Builder setMedStaffDegreeId(Long medStaffDegreeId) {
+	    this.medStaffDegreeId = medStaffDegreeId;
+	    return this;
+	}
+
+	public Builder constructCommonFields(Long empId, String decisionNumber, Date decisionDate, Date effectiveHijriDate) {
+	    this.empId = empId;
+	    this.decisionNumber = decisionNumber;
+	    this.decisionDate = decisionDate;
+	    this.insertionTime = System.currentTimeMillis();
+	    this.effectiveHijriDate = effectiveHijriDate;
+	    this.effectiveGregDate = HijriDateService.hijriToGregDate(effectiveHijriDate);
+	    return this;
+	}
+
+	public EmployeeLog build() {
+	    return new EmployeeLog(empId, jobId, basicJobNameId, physicalUnitId, officialUnitId, rankId, rankTitleId, salaryRankId, degreeId, socialStatus, generalSpecialization, effectiveGregDate, effectiveHijriDate, decisionNumber, decisionDate, insertionTime, medStaffRankId, medStaffLevelId, medStaffDegreeId);
+	}
     }
 
 }

@@ -19,6 +19,7 @@ import com.code.dal.orm.hcm.raises.RaiseEmployeeData;
 import com.code.dal.orm.hcm.raises.RaiseTransaction;
 import com.code.dal.orm.hcm.raises.RaiseTransactionData;
 import com.code.dal.orm.hcm.raises.RaiseTransactionLog;
+import com.code.dal.orm.log.EmployeeLog;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.RaiseEmployeesTypesEnum;
@@ -1255,7 +1256,11 @@ public class RaisesService extends BaseService {
 	    emp.getEmployee().setDegreeId(transaction.getEmpNewDegreeId());
 	    emp.getEmployee().setSystemUser(systemUser);
 	    EmployeesService.updateEmployee(emp, session);
-	    LogService.logEmployeeData(emp, transaction.getRaiseExecutionDate(), transaction.getRaiseDecisionNumber(), transaction.getRaiseDecisionDate(), session);
+	    EmployeeLog logEmp = new EmployeeLog.Builder()
+		    .setDegreeId(transaction.getEmpNewDegreeId())
+		    .constructCommonFields(emp.getEmpId(), transaction.getRaiseDecisionNumber(), transaction.getRaiseDecisionDate(), transaction.getRaiseExecutionDate())
+		    .build();
+	    LogService.logEmployeeData(logEmp, session);
 	}
     }
 
@@ -1273,7 +1278,11 @@ public class RaisesService extends BaseService {
 	    updateEmployeesDueToAnnualRaiseEffect(beans, raise.getExecutionDate(), raise.getId(), session);
 	    for (EmployeeData employee : employees) {
 		employee.setDegreeId(employee.getDegreeId() + 1);
-		LogService.logEmployeeData(employee, raise.getExecutionDate(), raise.getDecisionNumber(), raise.getDecisionDate(), session);
+		EmployeeLog logEmp = new EmployeeLog.Builder()
+			.setDegreeId(employee.getDegreeId() + 1)
+			.constructCommonFields(employee.getEmpId(), raise.getDecisionNumber(), raise.getDecisionDate(), raise.getExecutionDate())
+			.build();
+		LogService.logEmployeeData(logEmp, session);
 	    }
 	}
     }
@@ -1368,6 +1377,11 @@ public class RaisesService extends BaseService {
 			    transactions.get(i).setStatus(RaiseTransactionTypesEnum.INVALID.getCode());
 			    transactions.get(i).setSystemUser(loginEmpId);
 			    updatedTransactionList.add(transactions.get(i));
+			    EmployeeLog logEmp = new EmployeeLog.Builder()
+				    .setDegreeId(rankDegreesHashMap.get(employee.getRankId()) == null ? degrees.get(degrees.size() - 1).getId() : rankDegreesHashMap.get(employee.getRankId()))
+				    .constructCommonFields(employee.getEmpId(), transactions.get(i).getDecisionNumber(), transactions.get(i).getDecisionDate(), transactions.get(i).getExecutionDate())
+				    .build();
+			    LogService.logEmployeeData(logEmp, session);
 			    invalid = true;
 			} else {
 			    newDegree += transactions.get(i).getNewDegreeId() - transactions.get(i).getTransEmpDegreeId();
@@ -1387,6 +1401,11 @@ public class RaisesService extends BaseService {
 			    RaiseTransactionLog transactionLog = constructRaiseTransactionLogModification(transactions.get(i).getId(), promotionDecisionDate, oldDegree, newDegree, promotionDecisionNumber, employee.getRankDesc(), degrees.get((int) oldDegree - 1).getDescription());
 			    transactionLog.setSystemUser(loginEmpId);
 			    addedTransactionLogList.add(transactionLog);
+			    EmployeeLog logEmp = new EmployeeLog.Builder()
+				    .setDegreeId(newDegree)
+				    .constructCommonFields(employee.getEmpId(), transactions.get(i).getDecisionNumber(), transactions.get(i).getDecisionDate(), transactions.get(i).getExecutionDate())
+				    .build();
+			    LogService.logEmployeeData(logEmp, session);
 			    oldDegree = newDegree;
 			}
 			lastEmpId = transactions.get(i).getEmpId();
