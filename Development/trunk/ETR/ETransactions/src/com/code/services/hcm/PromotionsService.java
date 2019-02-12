@@ -994,10 +994,12 @@ public class PromotionsService extends BaseService {
      */
     private static void constructNewPromotionReportDetails(PromotionReportData promotionReportData, List<PromotionReportDetailData> promotionReportDetailDataList, List<EmployeeData> employeeList, PromotionTransactionData promotionTransactionData) throws BusinessException {
 
+	Log4jService.traceInfo(PromotionsService.class, "Start of constructNewPromotionReportDetails:");
 	HashMap<Long, PayrollSalary> newPayrollSalaryMap = new HashMap<Long, PayrollSalary>();
 	validateEmployeeData(employeeList, newPayrollSalaryMap);
 
 	Long[] empsIds = new Long[employeeList.size()];
+	Log4jService.traceInfo(PromotionsService.class, "Making a copy from employees list to correct degrees data");
 	HashMap<Long, PromotionReportDetailData> employeesPromotionReportDetailDataMap = new HashMap<Long, PromotionReportDetailData>();
 	List<EmployeeData> editedEmployeeList = new ArrayList<>();
 	for (EmployeeData employeeData : employeeList) {
@@ -1006,6 +1008,7 @@ public class PromotionsService extends BaseService {
 	    copiedEmployeeData.setDegreeId(employeeData.getDegreeId());
 	    editedEmployeeList.add(copiedEmployeeData);
 	}
+	Log4jService.traceInfo(PromotionsService.class, "Fetching the correct degrees data from raises transactions");
 	if (promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()))
 	    RaisesService.getEmployeesDegreesInGivenDate(editedEmployeeList, promotionReportData.getDueDate());
 	int index = 0;
@@ -1040,6 +1043,7 @@ public class PromotionsService extends BaseService {
 
 	    reportDetailData.setOldDegreeId(employee.getDegreeId());
 	    reportDetailData.setOldDegreeDesc(employee.getDegreeDesc());
+	    Log4jService.traceInfo(PromotionsService.class, "Editing degrees data based on retroactive promotion logic");
 	    if (promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && employee.getDegreeId() > editedEmployeeList.get(index).getDegreeId()) {
 		Long differenceBetweenCurrentDegreeAndRetroactiveDegree = employee.getDegreeId() - editedEmployeeList.get(index).getDegreeId();
 		PayrollSalary oldRetroactivePayrollSalary = PayrollsService.getPayrollSalary(reportDetailData.getOldRankId(), editedEmployeeList.get(index).getDegreeId());
@@ -1049,6 +1053,7 @@ public class PromotionsService extends BaseService {
 		reportDetailData.setNewDegreeId(deservedDegree > endOfLadderOfRank ? endOfLadderOfRank : deservedDegree);
 	    } else
 		reportDetailData.setNewDegreeId(newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId());
+	    Log4jService.traceInfo(PromotionsService.class, "Degrees editied successfully");
 	    reportDetailData.setOldJobId(employee.getJobId());
 	    reportDetailData.setOldJobCode(employee.getJobCode());
 	    reportDetailData.setOldJobDesc(employee.getJobDesc());
@@ -1152,6 +1157,7 @@ public class PromotionsService extends BaseService {
 		}
 	    }
 	}
+	Log4jService.traceInfo(PromotionsService.class, "End of constructNewPromotionReportDetails:");
     }
 
     /**
@@ -3589,8 +3595,10 @@ public class PromotionsService extends BaseService {
 
     public static void doPromotionTransactionEffect(PromotionReportData promotionReportData, List<PromotionReportDetailData> promotionReportDetailDataList, String subject, Long smTaskOriginalId, Long loginEmpId, CustomSession session) throws BusinessException {
 
+	Log4jService.traceInfo(PromotionsService.class, "Start of doPromotionTransactionEffect:");
 	List<PromotionTransactionData> promotionTransactionList = constructPromotionTransactionList(promotionReportData, promotionReportDetailDataList, smTaskOriginalId, session);
 	addPromotionsTransactions(promotionReportData, promotionTransactionList, subject, loginEmpId, session);
+	Log4jService.traceInfo(PromotionsService.class, "Start of raises transactions modification");
 	if (promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 	    Long[] empsIds = new Long[promotionReportDetailDataList.size()];
 	    int i = 0;
@@ -3599,6 +3607,7 @@ public class PromotionsService extends BaseService {
 		i++;
 	    }
 	    RaisesService.raisesModificationsAfterPromotions(EmployeesService.getEmployeesByEmpsIds(empsIds), promotionTransactionList.get(0).getDecisionDate(), promotionTransactionList.get(0).getDecisionNumber(), loginEmpId + "", session);
+	    Log4jService.traceInfo(PromotionsService.class, "End of doPromotionTransactionEffect");
 	}
     }
 
