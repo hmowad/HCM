@@ -674,6 +674,8 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    throw new BusinessException("error_general");
 	if (wfDisclaimerData.getEmpId() == null)
 	    throw new BusinessException("error_employeeMandatory");
+	if (wfDisclaimerData.getEmpOfficialUnitFullName() == null)
+	    throw new BusinessException("error_steOfficialUnitFullNameMandatory");
 	if (wfDisclaimerData.getTerminationTransactionId() == null)
 	    throw new BusinessException("error_steEmpShouldBeTerminated");
 	if (RetirementsService.getDisclaimerTransByTerminationTransId(wfDisclaimerData.getTerminationTransactionId()) != null)
