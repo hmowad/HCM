@@ -25,6 +25,7 @@ public class EmployeeLog extends BaseEntity {
     private Long rankId;
     private Long rankTitleId;
     private Long salaryRankId;
+    private Long salaryDegreeId;
     private Long degreeId;
     private Integer socialStatus;
     private Integer generalSpecialization;
@@ -40,7 +41,8 @@ public class EmployeeLog extends BaseEntity {
 
     public EmployeeLog() {
     }
-    public EmployeeLog(Long empId, Long jobId, Long basicJobNameId, Long physicalUnitId, Long officialUnitId, Long rankId, Long rankTitleId, Long salaryRankId, Long degreeId, Integer socialStatus, Integer generalSpecialization, Date effectiveGregDate, Date effectiveHijriDate, String decisionNumber, Date decisionDate, Long insertionTime, Long medStaffRankId, Long medStaffLevelId, Long medStaffDegreeId) {
+
+    public EmployeeLog(Long empId, Long jobId, Long basicJobNameId, Long physicalUnitId, Long officialUnitId, Long rankId, Long rankTitleId, Long salaryRankId, long salaryDegreeId, Long degreeId, Integer socialStatus, Integer generalSpecialization, Date effectiveGregDate, Date effectiveHijriDate, String decisionNumber, Date decisionDate, Long insertionTime, Long medStaffRankId, Long medStaffLevelId, Long medStaffDegreeId) {
 	this.empId = empId;
 	this.jobId = jobId;
 	this.basicJobNameId = basicJobNameId;
@@ -49,6 +51,7 @@ public class EmployeeLog extends BaseEntity {
 	this.rankId = rankId;
 	this.rankTitleId = rankTitleId;
 	this.salaryRankId = salaryRankId;
+	this.salaryDegreeId = salaryDegreeId;
 	this.degreeId = degreeId;
 	this.socialStatus = socialStatus;
 	this.generalSpecialization = generalSpecialization;
@@ -145,6 +148,16 @@ public class EmployeeLog extends BaseEntity {
 
     public void setSalaryRankId(Long salaryRankId) {
 	this.salaryRankId = salaryRankId;
+    }
+
+    @Basic
+    @Column(name = "SALARY_DEGREE_ID")
+    public Long getSalaryDegreeId() {
+	return salaryDegreeId;
+    }
+
+    public void setSalaryDegreeId(Long salaryDegreeId) {
+	this.salaryDegreeId = salaryDegreeId;
     }
 
     @Basic
@@ -275,6 +288,7 @@ public class EmployeeLog extends BaseEntity {
 	private Long rankId;
 	private Long rankTitleId;
 	private Long salaryRankId;
+	private Long salaryDegreeId;
 	private Long degreeId;
 	private Integer socialStatus;
 	private Integer generalSpecialization;
@@ -345,6 +359,11 @@ public class EmployeeLog extends BaseEntity {
 	    return this;
 	}
 
+	public Builder setSalaryDegreeId(Long salaryDegreeId) {
+	    this.salaryDegreeId = salaryDegreeId;
+	    return this;
+	}
+
 	public Builder setDegreeId(Long degreeId) {
 	    this.degreeId = degreeId;
 	    return this;
@@ -391,7 +410,7 @@ public class EmployeeLog extends BaseEntity {
 	}
 
 	public EmployeeLog build() {
-	    return new EmployeeLog(empId, jobId, basicJobNameId, physicalUnitId, officialUnitId, rankId, rankTitleId, salaryRankId, degreeId, socialStatus, generalSpecialization, effectiveGregDate, effectiveHijriDate, decisionNumber, decisionDate, insertionTime, medStaffRankId, medStaffLevelId, medStaffDegreeId);
+	    return new EmployeeLog(empId, jobId, basicJobNameId, physicalUnitId, officialUnitId, rankId, rankTitleId, salaryRankId, salaryDegreeId, degreeId, socialStatus, generalSpecialization, effectiveGregDate, effectiveHijriDate, decisionNumber, decisionDate, insertionTime, medStaffRankId, medStaffLevelId, medStaffDegreeId);
 	}
     }
 

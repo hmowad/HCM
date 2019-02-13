@@ -53,6 +53,8 @@ public class EmployeeLogData extends BaseEntity {
     private String rankTitleDesc;
     private Long salaryRankId;
     private String salaryRankDesc;
+    private Long salaryDegreeId;
+    private String salaryDegreeDesc;
     private Long degreeId;
     private Long degreeDesc;
     private Integer socialStatus;
@@ -243,6 +245,27 @@ public class EmployeeLogData extends BaseEntity {
 
     public void setSalaryRankDesc(String salaryRankDesc) {
 	this.salaryRankDesc = salaryRankDesc;
+    }
+
+    @Basic
+    @Column(name = "SALARY_DEGREE_ID")
+    public Long getSalaryDegreeId() {
+	return salaryDegreeId;
+    }
+
+    public void setSalaryDegreeId(Long salaryDegreeId) {
+	this.salaryDegreeId = salaryDegreeId;
+	employeelog.setSalaryDegreeId(salaryDegreeId);
+    }
+
+    @Basic
+    @Column(name = "SALARY_DEGREE_DESCRIPTION")
+    public String getSalaryDegreeDesc() {
+	return salaryDegreeDesc;
+    }
+
+    public void setSalaryDegreeDesc(String salaryDegreeDesc) {
+	this.salaryDegreeDesc = salaryDegreeDesc;
     }
 
     @Basic
