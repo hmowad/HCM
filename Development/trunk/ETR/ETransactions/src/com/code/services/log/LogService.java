@@ -244,4 +244,45 @@ public class LogService extends BaseService {
 	}
     }
 
+    /**
+     * Wrapper for {@link #getLastEmployeeLog()} to get last employee log
+     * 
+     * @param empId
+     * @param effectiveHijriDate
+     * @return the last {@link employeeLog} object for this employee
+     * @throws BusinessException
+     */
+    public static EmployeeLog getLastEmployeeLogBeforeGivenDate(long empId, Date effectiveHijriDate) throws BusinessException {
+	EmployeeLog employeeLog = getLastEmployeeLog(empId, effectiveHijriDate);
+	if (employeeLog == null)
+	    throw new BusinessException("error_employeeHasProblemInTransactionsLog");
+	return employeeLog;
+
+    }
+
+    /**
+     * Gets the last log for an employee.
+     * 
+     * @param empId
+     * @param effectiveHijriDate
+     * @return the last {@link employeeLog} object for this employee
+     * @throws NoDataException
+     *             if there is no logs for this employee
+     * @throws BusinessException
+     *             if a database error occurs
+     */
+    private static EmployeeLog getLastEmployeeLog(long empId, Date effectiveHijriDate) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_EMP_ID", empId);
+	    qParams.put("P_EFFECTIVE_HIJRI_DATE", HijriDateService.getHijriDateString(effectiveHijriDate));
+
+	    List<EmployeeLog> result = DataAccess.executeNamedQuery(EmployeeLog.class, QueryNamesEnum.HCM_EMPLOYEE_LOG_GET_LAST_EMPLOYEE_LOG.getCode(), qParams);
+	    return result.isEmpty() ? null : result.get(0);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
 }

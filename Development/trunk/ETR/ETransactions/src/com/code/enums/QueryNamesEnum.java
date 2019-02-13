@@ -507,6 +507,7 @@ public enum QueryNamesEnum {
 
     /* ****************************************** EmployeesLog ******************************************************* */
     HCM_EMPLOYEE_LOG_DATA_SEARCH_EMPLOYEES_LOG("hcm_employeeLogData_searchEmployeesLog"),
+    HCM_EMPLOYEE_LOG_GET_LAST_EMPLOYEE_LOG("hcm_employeeLog_getLastEmployeeLog"),
     /* ****************************************** General News ************************************************ */
     HCM_GET_GENERAL_NEWS("hcm_generalNews_getGeneralNews"),
 
