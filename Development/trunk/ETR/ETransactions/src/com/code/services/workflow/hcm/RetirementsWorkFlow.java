@@ -580,7 +580,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    wfDisclaimerData.setTerminationReason(terminationTransaction.getReasonDesc());
 	    UnitData empUnitData = UnitsService.getUnitByExactFullName(terminationTransaction.getTransEmpUnitFullName());
 	    if (empUnitData == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_steOfficialUnitFullNameMandatory");
 	    wfDisclaimerData.setEmpPhysicalRegionId(empUnitData.getRegionId());
 	}
 	return wfDisclaimerData;
