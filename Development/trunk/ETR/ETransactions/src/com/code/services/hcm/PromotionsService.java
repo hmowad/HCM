@@ -1053,6 +1053,7 @@ public class PromotionsService extends BaseService {
 		Long deservedDegree = differenceBetweenCurrentDegreeAndRetroactiveDegree + newRetroactivePayrollSalary.getDegreeId();
 		Long endOfLadderOfRank = PayrollsService.getEndOfLadderOfRank(getNextRank(reportDetailData.getOldRankId()));
 		reportDetailData.setNewDegreeId(deservedDegree > endOfLadderOfRank ? endOfLadderOfRank : deservedDegree);
+		Log4jService.traceInfo(PromotionsService.class, "Emp ID: " + employee.getEmpId() + " Retroactive degree from RaisesService:  " + editedEmployeeList.get(index).getDegreeId());
 	    } else
 		reportDetailData.setNewDegreeId(newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId());
 	    Log4jService.traceInfo(PromotionsService.class, "Degrees editied successfully");
