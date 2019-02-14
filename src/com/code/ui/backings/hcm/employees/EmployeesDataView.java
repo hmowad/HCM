@@ -28,7 +28,6 @@ import com.code.services.hcm.PayrollsService;
 import com.code.services.hcm.TrainingSetupService;
 import com.code.services.security.SecurityService;
 import com.code.services.util.CommonService;
-import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
 
 @SuppressWarnings("serial")
@@ -184,7 +183,6 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 	    else
 		employee.setCategoryClassificationId(null);
 
-	    EmployeesService.logEmployeeData(employee, HijriDateService.getHijriSysDate(), HijriDateService.getHijriSysDate());
 	    EmployeesService.updateEmployeeAndHisQualifications(employee, employeeQualificationsData);
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	    viewSaveBtnForYaqeen = socialIdNeedToBeUpdated();

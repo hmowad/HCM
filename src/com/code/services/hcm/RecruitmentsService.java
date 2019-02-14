@@ -17,6 +17,7 @@ import com.code.dal.orm.hcm.recruitments.RecruitmentDistributionData;
 import com.code.dal.orm.hcm.recruitments.RecruitmentTransaction;
 import com.code.dal.orm.hcm.recruitments.RecruitmentTransactionData;
 import com.code.dal.orm.hcm.recruitments.RecruitmentWishData;
+import com.code.dal.orm.log.EmployeeLog;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.FlagsEnum;
@@ -891,7 +892,9 @@ public class RecruitmentsService extends BaseService {
 			EmployeesService.updateEmployeeAndHisQualifications(emp, employeeQualificationsData, session);
 		    if (recruitmentTransaction.getRecruitmentDate() == null)
 			recruitmentTransaction.setRecruitmentDate(HijriDateService.gregToHijriDate(new Date()));
-		    LogService.logEmployeeData(emp, recruitmentTransaction.getRecruitmentDate(), recruitmentTransaction.getDecisionNumber(), recruitmentTransaction.getDecisionDate(), session);
+		    EmployeeLog log = new EmployeeLog.Builder().setJobId(recruitmentTransaction.getJobId()).setDegreeId(recruitmentTransaction.getDegreeId()).setRankId(recruitmentTransaction.getRankId()).setRankTitleId(recruitmentTransaction.getRankTitleId()).setSocialStatus(emp.getSocialStatus()).setOfficialUnitId(emp.getOfficialUnitId()).setGeneralSpecialization(emp.getGeneralSpecialization()).setPhysicalUnitId(emp.getPhysicalUnitId())
+			    .constructCommonFields(emp.getEmpId(), recruitmentTransaction.getDecisionNumber(), recruitmentTransaction.getDecisionDate(), recruitmentTransaction.getRecruitmentDate(), DataAccess.getTableName(RecruitmentTransaction.class)).build();
+		    LogService.logEmployeeData(log, session);
 		}
 	    }
 	} catch (BusinessException e) {
@@ -1760,7 +1763,9 @@ public class RecruitmentsService extends BaseService {
 		EmployeesService.addEmployee(empData, employeeQualificationsData, session);
 	    else
 		EmployeesService.updateEmployee(empData, session);
-	    LogService.logEmployeeData(empData, recruitmentTransaction.getRecruitmentDate(), recruitmentTransaction.getDecisionNumber(), recruitmentTransaction.getDecisionDate(), session);
+	    EmployeeLog log = new EmployeeLog.Builder().setJobId(recruitmentTransaction.getJobId()).setDegreeId(recruitmentTransaction.getDegreeId()).setRankId(recruitmentTransaction.getRankId()).setRankTitleId(recruitmentTransaction.getRankTitleId()).setSocialStatus(empData.getSocialStatus()).setOfficialUnitId(empData.getOfficialUnitId()).setGeneralSpecialization(empData.getGeneralSpecialization()).setPhysicalUnitId(empData.getPhysicalUnitId())
+		    .constructCommonFields(empData.getEmpId(), recruitmentTransaction.getDecisionNumber(), recruitmentTransaction.getDecisionDate(), recruitmentTransaction.getRecruitmentDate(), DataAccess.getTableName(RecruitmentTransaction.class)).build();
+	    LogService.logEmployeeData(log, session);
 	    JobsService.changeJobStatus(job, JobStatusEnum.OCCUPIED.getCode(), session);
 
 	    // set employee in case it did't exist before

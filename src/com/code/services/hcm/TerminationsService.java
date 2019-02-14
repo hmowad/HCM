@@ -21,6 +21,7 @@ import com.code.dal.orm.hcm.terminations.TerminationRecordDetail;
 import com.code.dal.orm.hcm.terminations.TerminationRecordDetailData;
 import com.code.dal.orm.hcm.terminations.TerminationTransaction;
 import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
+import com.code.dal.orm.log.EmployeeLog;
 import com.code.dal.orm.workflow.hcm.terminations.WFTerminationCancellationMovementData;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.EmployeeStatusEnum;
@@ -1951,10 +1952,8 @@ public class TerminationsService extends BaseService {
 
     public static void logTerminatedEmployeeData(List<TerminationTransactionData> terminationTransactionsList, CustomSession session) throws BusinessException {
 	for (TerminationTransactionData terminationTransactionData : terminationTransactionsList) {
-	    EmployeeData empData = EmployeesService.getEmployeeData(terminationTransactionData.getEmpId());
-	    empData.setJobId(null);
-	    empData.setPhysicalUnitId(null);
-	    LogService.logEmployeeData(empData, terminationTransactionData.getServiceTerminationDate(), terminationTransactionData.getDecisionNumber(), terminationTransactionData.getDecisionDate(), session);
+	    EmployeeLog log = new EmployeeLog.Builder().setJobId(null).setPhysicalUnitId(null).constructCommonFields(terminationTransactionData.getEmpId(), terminationTransactionData.getDecisionNumber(), terminationTransactionData.getDecisionDate(), terminationTransactionData.getServiceTerminationDate(), DataAccess.getTableName(TerminationTransaction.class)).build();
+	    LogService.logEmployeeData(log, session);
 	}
     }
 
