@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Table;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -45,6 +47,12 @@ public class DataAccess {
 
     public static CustomSession getSession() {
 	return new CustomSession(sessionFactory.openSession());
+    }
+
+    public static String getTableName(Class<?> className) {
+	Class<?> c = className;
+	Table table = c.getAnnotation(Table.class);
+	return table.name();
     }
 
     public static void addEntity(BaseEntity bean, CustomSession... useSession) throws DatabaseException {

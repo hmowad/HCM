@@ -10,13 +10,14 @@ import java.util.Set;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
-import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.organization.jobs.BasicJobNameData;
 import com.code.dal.orm.hcm.organization.jobs.JobClassification;
 import com.code.dal.orm.hcm.organization.jobs.JobData;
 import com.code.dal.orm.hcm.organization.jobs.JobTransaction;
 import com.code.dal.orm.hcm.organization.jobs.JobTransactionData;
 import com.code.dal.orm.hcm.organization.jobs.JobsBalanceData;
+import com.code.dal.orm.hcm.organization.units.UnitTransaction;
+import com.code.dal.orm.log.EmployeeLog;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.GeneralSpecializationsEnum;
@@ -34,6 +35,7 @@ import com.code.services.buswfcoop.EmployeesJobsConflictValidator;
 import com.code.services.log.LogService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
+import com.code.ui.backings.hcm.jobs.JobsTransactions;
 
 /**
  * The class <code>JobsService</code> provides methods for handling the jobs operations such as add, rename, freeze, unfreeze, scale, move, reserve, unreserve, or cancel jobs.
@@ -356,8 +358,12 @@ public class JobsService extends BaseService {
 			transCode, transBasicJobNameId, jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), jobData.getMinorSpecializationId(), session);
 
 		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode()) {
-		    EmployeeData empData = EmployeesService.getEmployeesByEmpsIds(new Long[] { jobData.getEmployeeId() }).get(0);
-		    LogService.logEmployeeData(empData, HijriDateService.getHijriSysDate(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), session);
+		    EmployeeLog employeeLog = new EmployeeLog.Builder()
+			    .setBasicJobNameId(jobData.getBasicJobNameId())
+			    .constructCommonFields(jobData.getEmployeeId(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobsTransactions.class))
+			    .build();
+		    LogService.logEmployeeData(employeeLog, session);
+
 		}
 	    }
 
@@ -586,8 +592,12 @@ public class JobsService extends BaseService {
 			transCode, transBasicJobNameId, jobData.getUnitId(), jobData.getUnitFullName(), transRankId, jobData.getMinorSpecializationId(), session);
 
 		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode()) {
-		    EmployeeData empData = EmployeesService.getEmployeesByEmpsIds(new Long[] { jobData.getEmployeeId() }).get(0);
-		    LogService.logEmployeeData(empData, HijriDateService.getHijriSysDate(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), session);
+		    EmployeeLog employeeLog = new EmployeeLog.Builder()
+			    .setRankId(jobData.getRankId())
+			    .setBasicJobNameId(jobData.getBasicJobNameId())
+			    .constructCommonFields(jobData.getEmployeeId(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobsTransactions.class))
+			    .build();
+		    LogService.logEmployeeData(employeeLog, session);
 		}
 	    }
 
@@ -701,8 +711,11 @@ public class JobsService extends BaseService {
 			jobData.getCode(), transBasicJobNameId, jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), transMinorSpecId, session);
 
 		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode()) {
-		    EmployeeData empData = EmployeesService.getEmployeesByEmpsIds(new Long[] { jobData.getEmployeeId() }).get(0);
-		    LogService.logEmployeeData(empData, HijriDateService.getHijriSysDate(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), session);
+		    EmployeeLog employeeLog = new EmployeeLog.Builder()
+			    .setBasicJobNameId(jobData.getBasicJobNameId())
+			    .constructCommonFields(jobData.getEmployeeId(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobsTransactions.class))
+			    .build();
+		    LogService.logEmployeeData(employeeLog, session);
 		}
 	    }
 
