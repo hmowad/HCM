@@ -16,6 +16,7 @@ import com.code.dal.orm.hcm.terminations.TerminationRecordData;
 import com.code.dal.orm.hcm.terminations.TerminationRecordDetailData;
 import com.code.dal.orm.hcm.terminations.TerminationTransaction;
 import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
+import com.code.dal.orm.log.EmployeeLog;
 import com.code.dal.orm.workflow.WFInstance;
 import com.code.dal.orm.workflow.WFPosition;
 import com.code.dal.orm.workflow.WFTask;
@@ -1278,8 +1279,10 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 		employee.setPhysicalUnitId(empJob.getUnitId());
 		employee.setServiceTerminationDate(null);
 		EmployeesService.updateEmployee(employee, session);
-		if (!empServiceTerminationDate.after(HijriDateService.getHijriSysDate()))
-		    LogService.logEmployeeData(employee, empServiceTerminationDate, terminationTransaction.getDecisionNumber(), terminationTransaction.getDecisionDate(), session);
+		if (!empServiceTerminationDate.after(HijriDateService.getHijriSysDate())) {
+		    EmployeeLog log = new EmployeeLog.Builder().setJobId(empJob.getId()).setOfficialUnitId(empJob.getUnitId()).setPhysicalUnitId(empJob.getUnitId()).constructCommonFields(employee.getEmpId(), terminationTransaction.getDecisionNumber(), terminationTransaction.getDecisionDate(), empServiceTerminationDate, DataAccess.getTableName(TerminationTransaction.class)).build();
+		    LogService.logEmployeeData(log, session);
+		}
 	    }
 
 	} catch (BusinessException e) {

@@ -14,6 +14,7 @@ import com.code.dal.orm.hcm.Rank;
 import com.code.dal.orm.hcm.SocialIdIssuePlace;
 import com.code.dal.orm.hcm.employees.Employee;
 import com.code.dal.orm.hcm.employees.EmployeeData;
+import com.code.dal.orm.hcm.employees.EmployeeExtraTransaction;
 import com.code.dal.orm.hcm.employees.EmployeeExtraTransactionData;
 import com.code.dal.orm.hcm.employees.EmployeePhoto;
 import com.code.dal.orm.hcm.employees.EmployeeQualificationsData;
@@ -144,21 +145,6 @@ public class EmployeesService extends BaseService {
 	} finally {
 	    if (!isOpenedSession)
 		session.close();
-	}
-    }
-
-    public static void logEmployeeData(EmployeeData empData, Date effectiveDate, Date decisionDate) throws BusinessException {
-	EmployeeData empOldData = getEmployeeData(empData.getEmpId());
-	if (((empOldData.getJobId() == null && empData.getJobId() != null) || empOldData.getJobId() != null && !empOldData.getJobId().equals(empData.getJobId())) ||
-		((empOldData.getPhysicalUnitId() == null && empData.getPhysicalUnitId() != null) || empOldData.getPhysicalUnitId() != null && !empOldData.getPhysicalUnitId().equals(empData.getPhysicalUnitId())) ||
-		((empOldData.getOfficialUnitId() == null && empData.getOfficialUnitId() != null) || empOldData.getOfficialUnitId() != null && !empOldData.getOfficialUnitId().equals(empData.getOfficialUnitId())) ||
-		((empOldData.getRankId() == null && empData.getRankId() != null) || empOldData.getRankId() != null && !empOldData.getRankId().equals(empData.getRankId())) ||
-		((empOldData.getRankTitleId() == null && empData.getRankTitleId() != null) || empOldData.getRankTitleId() != null && !empOldData.getRankTitleId().equals(empData.getRankTitleId())) ||
-		((empOldData.getSalaryRankId() == null && empData.getSalaryRankId() != null) || empOldData.getSalaryRankId() != null && !empOldData.getSalaryRankId().equals(empData.getSalaryRankId())) ||
-		((empOldData.getDegreeId() == null && empData.getDegreeId() != null) || empOldData.getDegreeId() != null && !empOldData.getDegreeId().equals(empData.getDegreeId())) ||
-		((empOldData.getSocialStatus() == null && empData.getSocialStatus() != null) || empOldData.getSocialStatus() != null && !empOldData.getSocialStatus().equals(empData.getSocialStatus())) ||
-		((empOldData.getGeneralSpecialization() == null && empData.getGeneralSpecialization() != null) || empOldData.getGeneralSpecialization() != null && !empOldData.getGeneralSpecialization().equals(empData.getGeneralSpecialization()))) {
-	    LogService.logEmployeeData(empData, effectiveDate, null, decisionDate);
 	}
     }
 
@@ -1684,7 +1670,9 @@ public class EmployeesService extends BaseService {
 		    employeeMedicalStaffData.setEmpId(employeeExtraTransactionData.getEmpId());
 		    addModifyEmployeeMedicalStaffData(employeeExtraTransactionData, employeeMedicalStaffData, session);
 		}
-		LogService.logEmployeeData(employee, employeeExtraTransactionData.getEffectiveDate(), employeeExtraTransactionData.getDecisionNumber(), employeeExtraTransactionData.getDecisionDate(), session);
+		EmployeeLog log = new EmployeeLog.Builder().setSocialStatus(employeeExtraTransactionData.getSocialStatus()).setGeneralSpecialization(employeeExtraTransactionData.getGeneralSpecialization()).setRankTitleId(employeeExtraTransactionData.getRankTitleId()).setSalaryRankId(employeeExtraTransactionData.getSalaryRankId()).setSalaryDegreeId(employeeExtraTransactionData.getSalaryDegreeId())
+			.constructCommonFields(employee.getEmpId(), employeeExtraTransactionData.getDecisionNumber(), employeeExtraTransactionData.getDecisionDate(), employeeExtraTransactionData.getEffectiveDate(), DataAccess.getTableName(EmployeeExtraTransaction.class)).build();
+		LogService.logEmployeeData(log, session);
 	    }
 
 	    DataAccess.addEntity(employeeExtraTransactionData.getEmployeeExtraTransaction(), session);

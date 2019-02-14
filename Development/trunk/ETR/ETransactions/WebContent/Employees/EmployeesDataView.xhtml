@@ -537,19 +537,11 @@
 										</td>
 										<th width="15%">#{msgs.label_salaryRank}</th>
 										<td width="20%">
-											<h:selectOneMenu value="#{employeesDataView.employee.salaryRankId}" rendered="#{not employeesDataView.viewOnly}">
-												<f:selectItem itemLabel="" />
-												<f:selectItems value="#{employeesDataView.salaryRanks}" var="salaryRank" itemLabel="#{salaryRank.description}" itemValue="#{salaryRank.id}" />
-											</h:selectOneMenu>
-											<h:outputText value="#{employeesDataView.employee.salaryRankDesc}" rendered="#{employeesDataView.viewOnly}" />
+											<h:outputText value="#{employeesDataView.employee.salaryRankDesc}" />
 										</td>
 										<th width="15%">#{msgs.label_salaryDegree}</th>
 										<td width="20%">
-											<h:selectOneMenu value="#{employeesDataView.employee.salaryDegreeId}" rendered="#{not employeesDataView.viewOnly}">
-												<f:selectItem itemLabel="" />
-												<f:selectItems value="#{employeesDataView.degrees}" var="salaryDegree" itemLabel="#{salaryDegree.description}" itemValue="#{salaryDegree.id}" />
-											</h:selectOneMenu>
-											<h:outputText value="#{employeesDataView.employee.salaryDegreeDesc}" rendered="#{employeesDataView.viewOnly}" />
+											<h:outputText value="#{employeesDataView.employee.salaryDegreeDesc}" />
 										</td>
 									</tr>
 
