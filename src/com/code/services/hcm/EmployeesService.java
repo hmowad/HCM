@@ -19,6 +19,8 @@ import com.code.dal.orm.hcm.employees.EmployeePhoto;
 import com.code.dal.orm.hcm.employees.EmployeeQualificationsData;
 import com.code.dal.orm.hcm.employees.medicalstuff.EmployeeMedicalStaffData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
+import com.code.dal.orm.hcm.organization.units.UnitTransaction;
+import com.code.dal.orm.log.EmployeeLog;
 import com.code.dal.orm.setup.Country;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.CountriesEnum;
@@ -258,7 +260,11 @@ public class EmployeesService extends BaseService {
 	    for (EmployeeData emp : unitsEmployees) {
 		emp.setPhysicalUnitId(toUnitId);
 		DataAccess.updateEntity(emp.getEmployee(), session);
-		LogService.logEmployeeData(emp, effectiveHijriDate, decisionNumber, decisionDate, session);
+		EmployeeLog employeeLog = new EmployeeLog.Builder()
+			.setPhysicalUnitId(toUnitId)
+			.constructCommonFields(emp.getEmpId(), decisionNumber, decisionDate, effectiveHijriDate, DataAccess.getTableName(UnitTransaction.class))
+			.build();
+		LogService.logEmployeeData(employeeLog, session);
 	    }
 
 	    if (!isOpenedSession)

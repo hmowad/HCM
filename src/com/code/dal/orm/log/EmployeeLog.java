@@ -48,11 +48,12 @@ public class EmployeeLog extends BaseEntity {
     private Long medStaffRankId;
     private Long medStaffLevelId;
     private Long medStaffDegreeId;
+    private String transactionTableName;
 
     public EmployeeLog() {
     }
 
-    public EmployeeLog(Long empId, Long jobId, Long basicJobNameId, Long physicalUnitId, Long officialUnitId, Long rankId, Long rankTitleId, Long salaryRankId, long salaryDegreeId, Long degreeId, Integer socialStatus, Integer generalSpecialization, Date effectiveGregDate, Date effectiveHijriDate, String decisionNumber, Date decisionDate, Long insertionTime, Long medStaffRankId, Long medStaffLevelId, Long medStaffDegreeId) {
+    public EmployeeLog(Long empId, Long jobId, Long basicJobNameId, Long physicalUnitId, Long officialUnitId, Long rankId, Long rankTitleId, Long salaryRankId, long salaryDegreeId,Long degreeId, Integer socialStatus, Integer generalSpecialization, Date effectiveGregDate, Date effectiveHijriDate, String decisionNumber, Date decisionDate, Long insertionTime, Long medStaffRankId, Long medStaffLevelId, Long medStaffDegreeId, String transactionTableName) {
 	this.empId = empId;
 	this.jobId = jobId;
 	this.basicJobNameId = basicJobNameId;
@@ -73,6 +74,7 @@ public class EmployeeLog extends BaseEntity {
 	this.medStaffRankId = medStaffRankId;
 	this.medStaffLevelId = medStaffLevelId;
 	this.medStaffDegreeId = medStaffDegreeId;
+	this.transactionTableName = transactionTableName;
     }
 
     @SequenceGenerator(name = "HCMLogSeq",
@@ -290,6 +292,16 @@ public class EmployeeLog extends BaseEntity {
 	this.medStaffDegreeId = medStaffDegreeId;
     }
 
+    @Basic
+    @Column(name = "TRANSACTION_TABLE_NAME")
+    public String getTransactionTableName() {
+	return transactionTableName;
+    }
+
+    public void setTransactionTableName(String transactionTableName) {
+	this.transactionTableName = transactionTableName;
+    }
+
     public static class Builder {
 	private Long empId;
 	private Long jobId;
@@ -311,6 +323,7 @@ public class EmployeeLog extends BaseEntity {
 	private Long medStaffRankId;
 	private Long medStaffLevelId;
 	private Long medStaffDegreeId;
+	private String transactionTableName;
 
 	public Builder() {
 	}
@@ -409,18 +422,23 @@ public class EmployeeLog extends BaseEntity {
 	    return this;
 	}
 
-	public Builder constructCommonFields(Long empId, String decisionNumber, Date decisionDate, Date effectiveHijriDate) {
+	public void setTransactionTableName(String transactionTableName) {
+	    this.transactionTableName = transactionTableName;
+	}
+
+	public Builder constructCommonFields(Long empId, String decisionNumber, Date decisionDate, Date effectiveHijriDate, String transactionTableName) {
 	    this.empId = empId;
 	    this.decisionNumber = decisionNumber;
 	    this.decisionDate = decisionDate;
 	    this.insertionTime = System.currentTimeMillis();
 	    this.effectiveHijriDate = effectiveHijriDate;
 	    this.effectiveGregDate = HijriDateService.hijriToGregDate(effectiveHijriDate);
+	    this.transactionTableName = transactionTableName;
 	    return this;
 	}
 
 	public EmployeeLog build() {
-	    return new EmployeeLog(empId, jobId, basicJobNameId, physicalUnitId, officialUnitId, rankId, rankTitleId, salaryRankId, salaryDegreeId, degreeId, socialStatus, generalSpecialization, effectiveGregDate, effectiveHijriDate, decisionNumber, decisionDate, insertionTime, medStaffRankId, medStaffLevelId, medStaffDegreeId);
+	    return new EmployeeLog(empId, jobId, basicJobNameId, physicalUnitId, officialUnitId, rankId, rankTitleId, salaryRankId, salaryDegreeId, degreeId, socialStatus, generalSpecialization, effectiveGregDate, effectiveHijriDate, decisionNumber, decisionDate, insertionTime, medStaffRankId, medStaffLevelId, medStaffDegreeId, transactionTableName);
 	}
     }
 

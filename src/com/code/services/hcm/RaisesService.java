@@ -1163,9 +1163,7 @@ public class RaisesService extends BaseService {
 		raiseTransactions.add(transaction.getRaiseTransaction());
 	    }
 	    DataAccess.addMultipleEntities(raiseTransactions, session);
-	    raiseTransactions.clear();
 	    for (int i = 0; i < raiseTransactions.size(); i++) {
-		raiseTransactions.get(i).setId(raiseTransactions.get(i).getId());
 		raiseTransactionsLog.get(i).setRaiseTransactionId(raiseTransactions.get(i).getId());
 	    }
 	    DataAccess.addMultipleEntities(raiseTransactionsLog, session);
@@ -1258,7 +1256,7 @@ public class RaisesService extends BaseService {
 	    EmployeesService.updateEmployee(emp, session);
 	    EmployeeLog logEmp = new EmployeeLog.Builder()
 		    .setDegreeId(transaction.getEmpNewDegreeId())
-		    .constructCommonFields(emp.getEmpId(), transaction.getRaiseDecisionNumber(), transaction.getRaiseDecisionDate(), transaction.getRaiseExecutionDate())
+		    .constructCommonFields(emp.getEmpId(), transaction.getRaiseDecisionNumber(), transaction.getRaiseDecisionDate(), transaction.getRaiseExecutionDate(), DataAccess.getTableName(RaiseTransaction.class))
 		    .build();
 	    LogService.logEmployeeData(logEmp, session);
 	}
@@ -1280,7 +1278,7 @@ public class RaisesService extends BaseService {
 		employee.setDegreeId(employee.getDegreeId() + 1);
 		EmployeeLog logEmp = new EmployeeLog.Builder()
 			.setDegreeId(employee.getDegreeId())
-			.constructCommonFields(employee.getEmpId(), raise.getDecisionNumber(), raise.getDecisionDate(), raise.getExecutionDate())
+			.constructCommonFields(employee.getEmpId(), raise.getDecisionNumber(), raise.getDecisionDate(), raise.getExecutionDate(), DataAccess.getTableName(RaiseTransaction.class))
 			.build();
 		LogService.logEmployeeData(logEmp, session);
 	    }
@@ -1379,7 +1377,7 @@ public class RaisesService extends BaseService {
 			    updatedTransactionList.add(transactions.get(i));
 			    EmployeeLog logEmp = new EmployeeLog.Builder()
 				    .setDegreeId(rankDegreesHashMap.get(employee.getRankId()) == null ? degrees.get(degrees.size() - 1).getId() : rankDegreesHashMap.get(employee.getRankId()))
-				    .constructCommonFields(employee.getEmpId(), transactions.get(i).getDecisionNumber(), transactions.get(i).getDecisionDate(), transactions.get(i).getExecutionDate())
+				    .constructCommonFields(employee.getEmpId(), transactions.get(i).getDecisionNumber(), transactions.get(i).getDecisionDate(), transactions.get(i).getExecutionDate(), DataAccess.getTableName(RaiseTransaction.class))
 				    .build();
 			    LogService.logEmployeeData(logEmp, session);
 			    invalid = true;
@@ -1403,7 +1401,7 @@ public class RaisesService extends BaseService {
 			    addedTransactionLogList.add(transactionLog);
 			    EmployeeLog logEmp = new EmployeeLog.Builder()
 				    .setDegreeId(newDegree)
-				    .constructCommonFields(employee.getEmpId(), transactions.get(i).getDecisionNumber(), transactions.get(i).getDecisionDate(), transactions.get(i).getExecutionDate())
+				    .constructCommonFields(employee.getEmpId(), transactions.get(i).getDecisionNumber(), transactions.get(i).getDecisionDate(), transactions.get(i).getExecutionDate(), DataAccess.getTableName(RaiseTransaction.class))
 				    .build();
 			    LogService.logEmployeeData(logEmp, session);
 			    oldDegree = newDegree;

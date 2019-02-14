@@ -53,7 +53,7 @@ public class EmployeeLogData extends BaseEntity {
     private String rankTitleDesc;
     private Long salaryRankId;
     private String salaryRankDesc;
-    private Long salaryDegreeId;
+    private Long salaryDegreeID;
     private String salaryDegreeDesc;
     private Long degreeId;
     private Long degreeDesc;
@@ -73,6 +73,7 @@ public class EmployeeLogData extends BaseEntity {
     private String medStaffLevelDesc;
     private Long medStaffDegreeId;
     private String medStaffDegreeDesc;
+    private String transactionTableName;
     private EmployeeLog employeelog;
 
     public EmployeeLogData() {
@@ -245,27 +246,6 @@ public class EmployeeLogData extends BaseEntity {
 
     public void setSalaryRankDesc(String salaryRankDesc) {
 	this.salaryRankDesc = salaryRankDesc;
-    }
-
-    @Basic
-    @Column(name = "SALARY_DEGREE_ID")
-    public Long getSalaryDegreeId() {
-	return salaryDegreeId;
-    }
-
-    public void setSalaryDegreeId(Long salaryDegreeId) {
-	this.salaryDegreeId = salaryDegreeId;
-	employeelog.setSalaryDegreeId(salaryDegreeId);
-    }
-
-    @Basic
-    @Column(name = "SALARY_DEGREE_DESCRIPTION")
-    public String getSalaryDegreeDesc() {
-	return salaryDegreeDesc;
-    }
-
-    public void setSalaryDegreeDesc(String salaryDegreeDesc) {
-	this.salaryDegreeDesc = salaryDegreeDesc;
     }
 
     @Basic
@@ -458,6 +438,36 @@ public class EmployeeLogData extends BaseEntity {
 
     public void setMedStaffDegreeDesc(String medStaffDegreeDesc) {
 	this.medStaffDegreeDesc = medStaffDegreeDesc;
+    }
+
+    @Basic
+    @Column(name = "TRANSACTION_TABLE_NAME")
+    public String getTransactionTableName() {
+	return transactionTableName;
+    }
+
+    public void setTransactionTableName(String transactionTableName) {
+	this.transactionTableName = transactionTableName;
+    }
+
+    @Basic
+    @Column(name = "SALARY_DEGREE_ID")
+    public Long getSalaryDegreeID() {
+	return salaryDegreeID;
+    }
+
+    public void setSalaryDegreeID(Long salaryDegreeID) {
+	this.salaryDegreeID = salaryDegreeID;
+    }
+
+    @Basic
+    @Column(name = "SALARY_DEGREE_DESCRIPTION")
+    public String getSalaryDegreeDesc() {
+	return salaryDegreeDesc;
+    }
+
+    public void setSalaryDegreeDesc(String salaryDegreeDesc) {
+	this.salaryDegreeDesc = salaryDegreeDesc;
     }
 
     @Transient
