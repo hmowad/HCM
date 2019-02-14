@@ -16,7 +16,6 @@ import com.code.dal.orm.hcm.organization.jobs.JobData;
 import com.code.dal.orm.hcm.organization.jobs.JobTransaction;
 import com.code.dal.orm.hcm.organization.jobs.JobTransactionData;
 import com.code.dal.orm.hcm.organization.jobs.JobsBalanceData;
-import com.code.dal.orm.hcm.organization.units.UnitTransaction;
 import com.code.dal.orm.log.EmployeeLog;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
