@@ -999,7 +999,7 @@ public class PromotionsService extends BaseService {
 	Log4jService.traceInfo(PromotionsService.class, "Start of constructNewPromotionReportDetails:");
 	HashMap<Long, PayrollSalary> newPayrollSalaryMap = new HashMap<Long, PayrollSalary>();
 	validateEmployeeData(employeeList, newPayrollSalaryMap);
-
+	Log4jService.traceInfo(PromotionsService.class, "Report number: " + promotionReportData.getReportNumber());
 	Long[] empsIds = new Long[employeeList.size()];
 	Log4jService.traceInfo(PromotionsService.class, "Making a copy from employees list to correct degrees data");
 	HashMap<Long, PromotionReportDetailData> employeesPromotionReportDetailDataMap = new HashMap<Long, PromotionReportDetailData>();
@@ -1015,7 +1015,7 @@ public class PromotionsService extends BaseService {
 	    RaisesService.getEmployeesDegreesInGivenDate(editedEmployeeList, promotionReportData.getDueDate());
 	int index = 0;
 	int i = 0;
-
+	String employeesLoggingData = "";
 	for (EmployeeData employee : employeeList) {
 	    PromotionReportDetailData reportDetailData = new PromotionReportDetailData();
 
@@ -1045,18 +1045,21 @@ public class PromotionsService extends BaseService {
 
 	    reportDetailData.setOldDegreeId(employee.getDegreeId());
 	    reportDetailData.setOldDegreeDesc(employee.getDegreeDesc());
-	    Log4jService.traceInfo(PromotionsService.class, "Editing degrees data based on retroactive promotion logic");
 	    if (promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && employee.getDegreeId() > editedEmployeeList.get(index).getDegreeId()) {
+		employeesLoggingData += "Retroactive promotion: EmpID: " + employee.getEmpId() + " EmployeeID: " + employee.getDegreeId() + " Degree from raises services: " + editedEmployeeList.get(index).getDegreeId();
 		Long differenceBetweenCurrentDegreeAndRetroactiveDegree = employee.getDegreeId() - editedEmployeeList.get(index).getDegreeId();
 		PayrollSalary oldRetroactivePayrollSalary = PayrollsService.getPayrollSalary(reportDetailData.getOldRankId(), editedEmployeeList.get(index).getDegreeId());
 		PayrollSalary newRetroactivePayrollSalary = PayrollsService.getPayrollNewSalary(getNextRank(reportDetailData.getOldRankId()), oldRetroactivePayrollSalary.getBasicSalary());
 		Long deservedDegree = differenceBetweenCurrentDegreeAndRetroactiveDegree + newRetroactivePayrollSalary.getDegreeId();
+		employeesLoggingData += " DeservedDegree: " + deservedDegree;
 		Long endOfLadderOfRank = PayrollsService.getEndOfLadderOfRank(getNextRank(reportDetailData.getOldRankId()));
+		employeesLoggingData += " endOdLadder: " + endOfLadderOfRank;
 		reportDetailData.setNewDegreeId(deservedDegree > endOfLadderOfRank ? endOfLadderOfRank : deservedDegree);
-		Log4jService.traceInfo(PromotionsService.class, "Emp ID: " + employee.getEmpId() + " Retroactive degree from RaisesService:  " + editedEmployeeList.get(index).getDegreeId());
-	    } else
+		employeesLoggingData += " Calculated degree: " + (deservedDegree > endOfLadderOfRank ? endOfLadderOfRank : deservedDegree) + ", ";
+	    } else {
 		reportDetailData.setNewDegreeId(newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId());
-	    Log4jService.traceInfo(PromotionsService.class, "Degrees editied successfully");
+		employeesLoggingData += "Non-Retroactive promotion: EmpId: " + employee.getEmpId() + " Calculated degree: " + newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId() + ", ";
+	    }
 	    reportDetailData.setOldJobId(employee.getJobId());
 	    reportDetailData.setOldJobCode(employee.getJobCode());
 	    reportDetailData.setOldJobDesc(employee.getJobDesc());
@@ -1137,6 +1140,7 @@ public class PromotionsService extends BaseService {
 	    }
 	    index++;
 	}
+	Log4jService.traceInfo(PromotionsService.class, employeesLoggingData);
 
 	if (promotionReportData.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && !promotionReportData.getPromotionTypeId().equals(PromotionsTypesEnum.EXCEPTIONAL_PROMOTION.getCode()) && !promotionReportData.getPromotionTypeId().equals(PromotionsTypesEnum.PROMOTION_CANCELLATION.getCode())) {
 	    // update soldiers degrees
