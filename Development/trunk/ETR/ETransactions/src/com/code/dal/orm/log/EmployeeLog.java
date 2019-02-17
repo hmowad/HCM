@@ -53,7 +53,7 @@ public class EmployeeLog extends BaseEntity {
     public EmployeeLog() {
     }
 
-    public EmployeeLog(Long empId, Long jobId, Long basicJobNameId, Long physicalUnitId, Long officialUnitId, Long rankId, Long rankTitleId, Long salaryRankId, long salaryDegreeId,Long degreeId, Integer socialStatus, Integer generalSpecialization, Date effectiveGregDate, Date effectiveHijriDate, String decisionNumber, Date decisionDate, Long insertionTime, Long medStaffRankId, Long medStaffLevelId, Long medStaffDegreeId, String transactionTableName) {
+    public EmployeeLog(Long empId, Long jobId, Long basicJobNameId, Long physicalUnitId, Long officialUnitId, Long rankId, Long rankTitleId, Long salaryRankId, Long salaryDegreeId, Long degreeId, Integer socialStatus, Integer generalSpecialization, Date effectiveGregDate, Date effectiveHijriDate, String decisionNumber, Date decisionDate, Long insertionTime, Long medStaffRankId, Long medStaffLevelId, Long medStaffDegreeId, String transactionTableName) {
 	this.empId = empId;
 	this.jobId = jobId;
 	this.basicJobNameId = basicJobNameId;
