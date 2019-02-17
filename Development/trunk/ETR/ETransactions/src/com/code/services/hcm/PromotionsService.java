@@ -4180,6 +4180,7 @@ public class PromotionsService extends BaseService {
 		    parameters.put("P_REFERRING", promotionTransactionData.getReferring());
 		    parameters.put("P_CANCELLED_TRANSACTION_DECISION_DATE", cancelledTransactionDecisionDate);
 		    parameters.put("P_CANCELLED_TRANSACTION_DECISION_NUMBER", cancelledTransactionDecisionNumber);
+		    parameters.put("P_PROMOTION_DATE", promotionTransactionData.getOldLastPromotionDate());
 		    reportName = ReportNamesEnum.PROMOTIONS_SOLDIERS_DECISION_CANCELLATION.getCode();
 		} else if (transactionsCount == 1) {
 		    reportName = ReportNamesEnum.PROMOTIONS_DECISION_SOLDIERS.getCode();

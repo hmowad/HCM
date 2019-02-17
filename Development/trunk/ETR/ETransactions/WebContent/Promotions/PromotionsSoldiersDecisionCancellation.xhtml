@@ -86,7 +86,7 @@
 													<h:outputText value=" " />
 													<h:commandButton value="#{msgs.fa_external_link}" onclick="getEmp('#{request.contextPath}');return false;" styleClass="btn_icon" />
 													<h:commandButton id="selectedEmpBtnId" style="display:none;" action="#{promotionsSoldiersDecisionCancellation.getEmployeeData()}">
-														<f:ajax execute="promotionsSoldiersDecisionCancellationFormId:empIDHId" render="promotionsSoldiersDecisionCancellationFormId:empNameId promotionsSoldiersDecisionCancellationFormId:promotionsSoldierTransactionDataSectionId promotionsSoldiersDecisionCancellationFormId:notifyMessagesId  promotionsSoldiersDecisionCancellationFormId:employeeDataId promotionsSoldiersDecisionCancellationFormId:actionsSectionId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														<f:ajax execute="promotionsSoldiersDecisionCancellationFormId:empIDHId" render="promotionsSoldiersDecisionCancellationFormId:empNameId promotionsSoldiersDecisionCancellationFormId:promotionsSoldierTransactionDataSectionId promotionsSoldiersDecisionCancellationFormId:notifyMessagesId  promotionsSoldiersDecisionCancellationFormId:employeeDataId promotionsSoldiersDecisionCancellationFormId:actionsSectionId promotionsSoldiersDecisionCancellationFormId:decisionCopiesPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 													</h:commandButton>
 												</td>
 											</tr>
@@ -286,7 +286,7 @@
 				<tr>
 					<td width="100%">
 						<h:panelGroup id="decisionCopiesPanelId">
-							<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData.id != null}">
+							<h:panelGroup rendered="#{promotionsSoldiersDecisionCancellation.promotionReportDetailData != null}">
 								<code:decisionCopies external="#{promotionsSoldiersDecisionCancellation.promotionReportData.externalCopies}" internal="#{promotionsSoldiersDecisionCancellation.internalCopies}" viewOnly="#{promotionsSoldiersDecisionCancellation.role != 'Requester' and promotionsSoldiersDecisionCancellation.role != 'ReviewerEmp'}" />
 							</h:panelGroup>
 						</h:panelGroup>
