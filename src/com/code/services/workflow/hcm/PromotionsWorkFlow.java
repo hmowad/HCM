@@ -97,7 +97,7 @@ public class PromotionsWorkFlow extends BaseWorkFlow {
 	    WFInstance instance = addWFInstance(processId, requester.getEmpId(), curDate, curHijriDate, WFInstanceStatusEnum.RUNNING.getCode(), null, getPromotionsReportsInstanceBeneficiariesIds(promotionReportDetails), session);
 
 	    if (promotionReportData.getCategoryId().longValue() == CategoriesEnum.SOLDIERS.getCode() && promotionReportData.getScaleUpFlagBoolean()) {
-		WFPosition position = getWFPosition(WFPositionsEnum.ORGANIZATION_ADMINISTRATIVE_UNIT_MANAGER.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+		WFPosition position = getWFPosition(WFPositionsEnum.HUMAN_RESOURCES_ORGANIZATION_UNIT_MANAGER.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
 		EmployeeData adminOrganizationManager = EmployeesService.getEmployeeByPosition(position.getUnitId(), position.getEmpId());
 		addWFTask(instance.getInstanceId(), getDelegate(adminOrganizationManager.getEmpId(), processId, requester.getEmpId()), adminOrganizationManager.getEmpId(), curDate, curHijriDate, taskUrl, WFTaskRolesEnum.ADMINISTRATIVE_ORGANIZATION_MANAGER.getCode(), "1", session);
 	    } else
