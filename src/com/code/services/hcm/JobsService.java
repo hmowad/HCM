@@ -359,7 +359,7 @@ public class JobsService extends BaseService {
 		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode()) {
 		    EmployeeLog employeeLog = new EmployeeLog.Builder()
 			    .setBasicJobNameId(jobData.getBasicJobNameId())
-			    .constructCommonFields(jobData.getEmployeeId(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobsTransactions.class))
+			    .constructCommonFields(jobData.getEmployeeId(), FlagsEnum.ON.getCode(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobsTransactions.class))
 			    .build();
 		    LogService.logEmployeeData(employeeLog, session);
 
@@ -594,7 +594,7 @@ public class JobsService extends BaseService {
 		    EmployeeLog employeeLog = new EmployeeLog.Builder()
 			    .setRankId(jobData.getRankId())
 			    .setBasicJobNameId(jobData.getBasicJobNameId())
-			    .constructCommonFields(jobData.getEmployeeId(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobsTransactions.class))
+			    .constructCommonFields(jobData.getEmployeeId(), FlagsEnum.ON.getCode(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobsTransactions.class))
 			    .build();
 		    LogService.logEmployeeData(employeeLog, session);
 		}
@@ -712,7 +712,7 @@ public class JobsService extends BaseService {
 		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode()) {
 		    EmployeeLog employeeLog = new EmployeeLog.Builder()
 			    .setBasicJobNameId(jobData.getBasicJobNameId())
-			    .constructCommonFields(jobData.getEmployeeId(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobsTransactions.class))
+			    .constructCommonFields(jobData.getEmployeeId(), FlagsEnum.ON.getCode(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobsTransactions.class))
 			    .build();
 		    LogService.logEmployeeData(employeeLog, session);
 		}
