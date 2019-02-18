@@ -1952,7 +1952,7 @@ public class TerminationsService extends BaseService {
 
     public static void logTerminatedEmployeeData(List<TerminationTransactionData> terminationTransactionsList, CustomSession session) throws BusinessException {
 	for (TerminationTransactionData terminationTransactionData : terminationTransactionsList) {
-	    EmployeeLog log = new EmployeeLog.Builder().setJobId(null).setPhysicalUnitId(null).constructCommonFields(terminationTransactionData.getEmpId(), terminationTransactionData.getDecisionNumber(), terminationTransactionData.getDecisionDate(), terminationTransactionData.getServiceTerminationDate(), DataAccess.getTableName(TerminationTransaction.class)).build();
+	    EmployeeLog log = new EmployeeLog.Builder().setJobId(null).setPhysicalUnitId(null).setOfficialUnitId(null).setBasicJobNameId(null).constructCommonFields(terminationTransactionData.getEmpId(), EmployeeStatusEnum.SERVICE_TERMINATED.getCode(), terminationTransactionData.getDecisionNumber(), terminationTransactionData.getDecisionDate(), terminationTransactionData.getServiceTerminationDate(), DataAccess.getTableName(TerminationTransaction.class)).build();
 	    LogService.logEmployeeData(log, session);
 	}
     }

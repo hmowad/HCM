@@ -1280,7 +1280,7 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 		employee.setServiceTerminationDate(null);
 		EmployeesService.updateEmployee(employee, session);
 		if (!empServiceTerminationDate.after(HijriDateService.getHijriSysDate())) {
-		    EmployeeLog log = new EmployeeLog.Builder().setJobId(empJob.getId()).setOfficialUnitId(empJob.getUnitId()).setPhysicalUnitId(empJob.getUnitId()).constructCommonFields(employee.getEmpId(), terminationTransaction.getDecisionNumber(), terminationTransaction.getDecisionDate(), empServiceTerminationDate, DataAccess.getTableName(TerminationTransaction.class)).build();
+		    EmployeeLog log = new EmployeeLog.Builder().setJobId(empJob.getId()).setOfficialUnitId(empJob.getUnitId()).setPhysicalUnitId(empJob.getUnitId()).setBasicJobNameId(empJob.getBasicJobNameId()).constructCommonFields(employee.getEmpId(), EmployeeStatusEnum.ON_DUTY.getCode(), terminationTransaction.getDecisionNumber(), terminationTransaction.getDecisionDate(), empServiceTerminationDate, DataAccess.getTableName(TerminationTransaction.class)).build();
 		    LogService.logEmployeeData(log, session);
 		}
 	    }

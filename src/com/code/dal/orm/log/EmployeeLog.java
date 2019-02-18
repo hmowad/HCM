@@ -29,6 +29,7 @@ import com.code.services.util.HijriDateService;
 public class EmployeeLog extends BaseEntity {
     private Long id;
     private Long empId;
+    private Long statusId;
     private Long jobId;
     private Long basicJobNameId;
     private Long physicalUnitId;
@@ -53,8 +54,9 @@ public class EmployeeLog extends BaseEntity {
     public EmployeeLog() {
     }
 
-    public EmployeeLog(Long empId, Long jobId, Long basicJobNameId, Long physicalUnitId, Long officialUnitId, Long rankId, Long rankTitleId, Long salaryRankId, Long salaryDegreeId, Long degreeId, Integer socialStatus, Integer generalSpecialization, Date effectiveGregDate, Date effectiveHijriDate, String decisionNumber, Date decisionDate, Long insertionTime, Long medStaffRankId, Long medStaffLevelId, Long medStaffDegreeId, String transactionTableName) {
+    public EmployeeLog(Long empId, Long statusId, Long jobId, Long basicJobNameId, Long physicalUnitId, Long officialUnitId, Long rankId, Long rankTitleId, Long salaryRankId, Long salaryDegreeId, Long degreeId, Integer socialStatus, Integer generalSpecialization, Date effectiveGregDate, Date effectiveHijriDate, String decisionNumber, Date decisionDate, Long insertionTime, Long medStaffRankId, Long medStaffLevelId, Long medStaffDegreeId, String transactionTableName) {
 	this.empId = empId;
+	this.statusId = statusId;
 	this.jobId = jobId;
 	this.basicJobNameId = basicJobNameId;
 	this.physicalUnitId = physicalUnitId;
@@ -100,6 +102,16 @@ public class EmployeeLog extends BaseEntity {
 
     public void setEmpId(Long empId) {
 	this.empId = empId;
+    }
+
+    @Basic
+    @Column(name = "STATUS_ID")
+    public Long getStatusId() {
+	return statusId;
+    }
+
+    public void setStatusId(Long statusId) {
+	this.statusId = statusId;
     }
 
     @Basic
@@ -304,6 +316,7 @@ public class EmployeeLog extends BaseEntity {
 
     public static class Builder {
 	private Long empId;
+	private Long statusId;
 	private Long jobId;
 	private Long basicJobNameId;
 	private Long physicalUnitId;
@@ -330,6 +343,10 @@ public class EmployeeLog extends BaseEntity {
 
 	public void setEmpId(Long empId) {
 	    this.empId = empId;
+	}
+
+	public void setStatusId(Long statusId) {
+	    this.statusId = statusId;
 	}
 
 	public void setEffectiveGregDate(Date effectiveGregDate) {
@@ -426,8 +443,9 @@ public class EmployeeLog extends BaseEntity {
 	    this.transactionTableName = transactionTableName;
 	}
 
-	public Builder constructCommonFields(Long empId, String decisionNumber, Date decisionDate, Date effectiveHijriDate, String transactionTableName) {
+	public Builder constructCommonFields(Long empId, Long statusId, String decisionNumber, Date decisionDate, Date effectiveHijriDate, String transactionTableName) {
 	    this.empId = empId;
+	    this.statusId = statusId;
 	    this.decisionNumber = decisionNumber;
 	    this.decisionDate = decisionDate;
 	    this.insertionTime = System.currentTimeMillis();
@@ -438,7 +456,7 @@ public class EmployeeLog extends BaseEntity {
 	}
 
 	public EmployeeLog build() {
-	    return new EmployeeLog(empId, jobId, basicJobNameId, physicalUnitId, officialUnitId, rankId, rankTitleId, salaryRankId, salaryDegreeId, degreeId, socialStatus, generalSpecialization, effectiveGregDate, effectiveHijriDate, decisionNumber, decisionDate, insertionTime, medStaffRankId, medStaffLevelId, medStaffDegreeId, transactionTableName);
+	    return new EmployeeLog(empId, statusId, jobId, basicJobNameId, physicalUnitId, officialUnitId, rankId, rankTitleId, salaryRankId, salaryDegreeId, degreeId, socialStatus, generalSpecialization, effectiveGregDate, effectiveHijriDate, decisionNumber, decisionDate, insertionTime, medStaffRankId, medStaffLevelId, medStaffDegreeId, transactionTableName);
 	}
     }
 

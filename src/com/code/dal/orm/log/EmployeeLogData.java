@@ -40,6 +40,7 @@ public class EmployeeLogData extends BaseEntity {
     private Long id;
     private Long empId;
     private String empName;
+    private Long statusId;
     private Long categoryId;
     private String categoryDesc;
     private Long jobId;
@@ -110,6 +111,16 @@ public class EmployeeLogData extends BaseEntity {
 
     public void setEmpName(String empName) {
 	this.empName = empName;
+    }
+
+    @Basic
+    @Column(name = "STATUS_ID")
+    public Long getStatusId() {
+	return statusId;
+    }
+
+    public void setStatusId(Long statusId) {
+	this.statusId = statusId;
     }
 
     @Basic
