@@ -3549,7 +3549,7 @@ public class PromotionsService extends BaseService {
 		JobData newJob = JobsService.getJobById(promotionTransactionData.getNewJobId());
 		EmployeesService.updateEmployeePromotionData(employee, promotionTransactionData.getNewJobId(), promotionTransactionData.getNewRankId(), null, promotionTransactionData.getNewDegreeId(), null, promotionTransactionData.getNewDueDate(), null, session);
 		EmployeeLog log = new EmployeeLog.Builder().setJobId(promotionTransactionData.getNewJobId()).setRankId(promotionTransactionData.getNewRankId()).setDegreeId(promotionTransactionData.getNewDegreeId()).setBasicJobNameId(newJob.getBasicJobNameId())
-			.constructCommonFields(employee.getEmpId(), employee.getStatusId(), promotionTransactionData.getDecisionNumber(), promotionTransactionData.getDecisionDate(), promotionTransactionData.getNewLastPromotionDate(), DataAccess.getTableName(PromotionTransaction.class))
+			.constructCommonFields(employee.getEmpId(), FlagsEnum.ON.getCode(), promotionTransactionData.getDecisionNumber(), promotionTransactionData.getDecisionDate(), promotionTransactionData.getNewLastPromotionDate(), DataAccess.getTableName(PromotionTransaction.class))
 			.build();
 		LogService.logEmployeeData(log, session);
 
@@ -3704,7 +3704,7 @@ public class PromotionsService extends BaseService {
 
 		    // Effect in employee
 		    EmployeesService.updateEmployeePromotionData(employee, null, getNextRank(employee.getRankId()), promotionTransactionDataItr.getRankTitleId(), promotionTransactionDataItr.getNewDegreeId(), promotionTransactionDataItr.getNewMilitaryNumber(), promotionTransactionDataItr.getNewDueDate(), promotionTransactionDataItr.getNewLastPromotionDate(), session);
-		    EmployeeLog log = new EmployeeLog.Builder().setRankId(getNextRank(employee.getRankId())).setRankTitleId(promotionTransactionDataItr.getRankTitleId()).setDegreeId(promotionTransactionDataItr.getNewDegreeId()).constructCommonFields(employee.getEmpId(), employee.getStatusId(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getNewLastPromotionDate(), DataAccess.getTableName(PromotionTransaction.class))
+		    EmployeeLog log = new EmployeeLog.Builder().setRankId(getNextRank(employee.getRankId())).setRankTitleId(promotionTransactionDataItr.getRankTitleId()).setDegreeId(promotionTransactionDataItr.getNewDegreeId()).constructCommonFields(employee.getEmpId(), FlagsEnum.ON.getCode(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getNewLastPromotionDate(), DataAccess.getTableName(PromotionTransaction.class))
 			    .build();
 		    LogService.logEmployeeData(log, session);
 
@@ -3725,7 +3725,7 @@ public class PromotionsService extends BaseService {
 
 		    EmployeesService.updateEmployeePromotionData(employee, promotionTransactionDataItr.getNewJobId(), getNextRank(employee.getRankId()), promotionTransactionDataItr.getRankTitleId(), promotionTransactionDataItr.getNewDegreeId(), promotionTransactionDataItr.getNewMilitaryNumber(), promotionTransactionDataItr.getNewDueDate(), promotionTransactionDataItr.getNewLastPromotionDate(), session);
 		    EmployeeLog log = new EmployeeLog.Builder().setRankId(getNextRank(employee.getRankId())).setJobId(promotionTransactionDataItr.getNewJobId()).setRankTitleId(promotionTransactionDataItr.getRankTitleId()).setDegreeId(promotionTransactionDataItr.getNewDegreeId())
-			    .setBasicJobNameId(newJob.getBasicJobNameId()).constructCommonFields(employee.getEmpId(), employee.getStatusId(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getNewLastPromotionDate(), DataAccess.getTableName(PromotionTransaction.class)).build();
+			    .setBasicJobNameId(newJob.getBasicJobNameId()).constructCommonFields(employee.getEmpId(), FlagsEnum.ON.getCode(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getNewLastPromotionDate(), DataAccess.getTableName(PromotionTransaction.class)).build();
 		    LogService.logEmployeeData(log, session);
 
 		} else if (employee.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && subject != null) {
@@ -3746,11 +3746,11 @@ public class PromotionsService extends BaseService {
 
 		    if (promotionReportData.getPromotionTypeId().equals(PromotionsTypesEnum.PROMOTION_CANCELLATION.getCode())) {
 			EmployeeLog log = new EmployeeLog.Builder().setRankId(promotionTransactionDataItr.getNewRankId()).setJobId(promotionTransactionDataItr.getNewJobId()).setDegreeId(promotionTransactionDataItr.getNewDegreeId()).setBasicJobNameId(newJob.getBasicJobNameId())
-				.constructCommonFields(employee.getEmpId(), employee.getStatusId(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getOldLastPromotionDate(), DataAccess.getTableName(PromotionTransaction.class)).build();
+				.constructCommonFields(employee.getEmpId(), FlagsEnum.ON.getCode(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getOldLastPromotionDate(), DataAccess.getTableName(PromotionTransaction.class)).build();
 			LogService.logEmployeeData(log, session);
 		    } else {
 			EmployeeLog log = new EmployeeLog.Builder().setRankId(promotionTransactionDataItr.getNewRankId()).setJobId(promotionTransactionDataItr.getNewJobId()).setDegreeId(promotionTransactionDataItr.getNewDegreeId()).setBasicJobNameId(newJob.getBasicJobNameId())
-				.constructCommonFields(employee.getEmpId(), employee.getStatusId(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getNewLastPromotionDate(), DataAccess.getTableName(PromotionTransaction.class)).build();
+				.constructCommonFields(employee.getEmpId(), FlagsEnum.ON.getCode(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getNewLastPromotionDate(), DataAccess.getTableName(PromotionTransaction.class)).build();
 			LogService.logEmployeeData(log, session);
 		    }
 		} else if (employee.getCategoryId().equals(CategoriesEnum.PERSONS.getCode()) && subject != null) {
@@ -3774,7 +3774,7 @@ public class PromotionsService extends BaseService {
 
 		    EmployeesService.updateEmployeePromotionData(employee, promotionTransactionDataItr.getNewJobId(), getNextRank(employee.getRankId()), null, promotionTransactionDataItr.getNewDegreeId(), null, null, null, session);
 		    EmployeeLog log = new EmployeeLog.Builder().setRankId(getNextRank(employee.getRankId())).setJobId(promotionTransactionDataItr.getNewJobId()).setDegreeId(promotionTransactionDataItr.getNewDegreeId()).setBasicJobNameId(newJob.getBasicJobNameId())
-			    .constructCommonFields(employee.getEmpId(), employee.getStatusId(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getDecisionDate(), DataAccess.getTableName(PromotionTransaction.class)).build();
+			    .constructCommonFields(employee.getEmpId(), FlagsEnum.ON.getCode(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getDecisionDate(), DataAccess.getTableName(PromotionTransaction.class)).build();
 		    LogService.logEmployeeData(log, session);
 		}
 		// add promotion transaction
