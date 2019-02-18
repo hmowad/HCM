@@ -29,7 +29,7 @@ import com.code.services.util.HijriDateService;
 public class EmployeeLog extends BaseEntity {
     private Long id;
     private Long empId;
-    private Long statusId;
+    private Integer onDutyFlag;
     private Long jobId;
     private Long basicJobNameId;
     private Long physicalUnitId;
@@ -54,9 +54,9 @@ public class EmployeeLog extends BaseEntity {
     public EmployeeLog() {
     }
 
-    public EmployeeLog(Long empId, Long statusId, Long jobId, Long basicJobNameId, Long physicalUnitId, Long officialUnitId, Long rankId, Long rankTitleId, Long salaryRankId, Long salaryDegreeId, Long degreeId, Integer socialStatus, Integer generalSpecialization, Date effectiveGregDate, Date effectiveHijriDate, String decisionNumber, Date decisionDate, Long insertionTime, Long medStaffRankId, Long medStaffLevelId, Long medStaffDegreeId, String transactionTableName) {
+    public EmployeeLog(Long empId, Integer onDutyFlag, Long jobId, Long basicJobNameId, Long physicalUnitId, Long officialUnitId, Long rankId, Long rankTitleId, Long salaryRankId, Long salaryDegreeId, Long degreeId, Integer socialStatus, Integer generalSpecialization, Date effectiveGregDate, Date effectiveHijriDate, String decisionNumber, Date decisionDate, Long insertionTime, Long medStaffRankId, Long medStaffLevelId, Long medStaffDegreeId, String transactionTableName) {
 	this.empId = empId;
-	this.statusId = statusId;
+	this.onDutyFlag = onDutyFlag;
 	this.jobId = jobId;
 	this.basicJobNameId = basicJobNameId;
 	this.physicalUnitId = physicalUnitId;
@@ -105,13 +105,13 @@ public class EmployeeLog extends BaseEntity {
     }
 
     @Basic
-    @Column(name = "STATUS_ID")
-    public Long getStatusId() {
-	return statusId;
+    @Column(name = "ON_DUTY_FLAG")
+    public Integer getOnDutyFlag() {
+	return onDutyFlag;
     }
 
-    public void setStatusId(Long statusId) {
-	this.statusId = statusId;
+    public void setOnDutyFlag(Integer onDutyFlag) {
+	this.onDutyFlag = onDutyFlag;
     }
 
     @Basic
@@ -316,7 +316,7 @@ public class EmployeeLog extends BaseEntity {
 
     public static class Builder {
 	private Long empId;
-	private Long statusId;
+	private Integer onDutyFlag;
 	private Long jobId;
 	private Long basicJobNameId;
 	private Long physicalUnitId;
@@ -345,8 +345,8 @@ public class EmployeeLog extends BaseEntity {
 	    this.empId = empId;
 	}
 
-	public void setStatusId(Long statusId) {
-	    this.statusId = statusId;
+	public void setOnDutyFlag(Integer onDutyFlag) {
+	    this.onDutyFlag = onDutyFlag;
 	}
 
 	public void setEffectiveGregDate(Date effectiveGregDate) {
@@ -443,9 +443,9 @@ public class EmployeeLog extends BaseEntity {
 	    this.transactionTableName = transactionTableName;
 	}
 
-	public Builder constructCommonFields(Long empId, Long statusId, String decisionNumber, Date decisionDate, Date effectiveHijriDate, String transactionTableName) {
+	public Builder constructCommonFields(Long empId, Integer onDutyFlag, String decisionNumber, Date decisionDate, Date effectiveHijriDate, String transactionTableName) {
 	    this.empId = empId;
-	    this.statusId = statusId;
+	    this.onDutyFlag = onDutyFlag;
 	    this.decisionNumber = decisionNumber;
 	    this.decisionDate = decisionDate;
 	    this.insertionTime = System.currentTimeMillis();
@@ -456,7 +456,7 @@ public class EmployeeLog extends BaseEntity {
 	}
 
 	public EmployeeLog build() {
-	    return new EmployeeLog(empId, statusId, jobId, basicJobNameId, physicalUnitId, officialUnitId, rankId, rankTitleId, salaryRankId, salaryDegreeId, degreeId, socialStatus, generalSpecialization, effectiveGregDate, effectiveHijriDate, decisionNumber, decisionDate, insertionTime, medStaffRankId, medStaffLevelId, medStaffDegreeId, transactionTableName);
+	    return new EmployeeLog(empId, onDutyFlag, jobId, basicJobNameId, physicalUnitId, officialUnitId, rankId, rankTitleId, salaryRankId, salaryDegreeId, degreeId, socialStatus, generalSpecialization, effectiveGregDate, effectiveHijriDate, decisionNumber, decisionDate, insertionTime, medStaffRankId, medStaffLevelId, medStaffDegreeId, transactionTableName);
 	}
     }
 

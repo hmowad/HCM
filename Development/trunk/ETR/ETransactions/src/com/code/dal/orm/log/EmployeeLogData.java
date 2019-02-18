@@ -40,7 +40,7 @@ public class EmployeeLogData extends BaseEntity {
     private Long id;
     private Long empId;
     private String empName;
-    private Long statusId;
+    private Integer onDutyFlag;
     private Long categoryId;
     private String categoryDesc;
     private Long jobId;
@@ -114,13 +114,14 @@ public class EmployeeLogData extends BaseEntity {
     }
 
     @Basic
-    @Column(name = "STATUS_ID")
-    public Long getStatusId() {
-	return statusId;
+    @Column(name = "ON_DUTY_FLAG")
+    public Integer getOnDutyFlag() {
+	return onDutyFlag;
     }
 
-    public void setStatusId(Long statusId) {
-	this.statusId = statusId;
+    public void setOnDutyFlag(Integer onDutyFlag) {
+	this.onDutyFlag = onDutyFlag;
+	employeelog.setOnDutyFlag(onDutyFlag);
     }
 
     @Basic

@@ -248,7 +248,7 @@ public class EmployeesService extends BaseService {
 		DataAccess.updateEntity(emp.getEmployee(), session);
 		EmployeeLog employeeLog = new EmployeeLog.Builder()
 			.setPhysicalUnitId(toUnitId)
-			.constructCommonFields(emp.getEmpId(), emp.getStatusId(), decisionNumber, decisionDate, effectiveHijriDate, DataAccess.getTableName(UnitTransaction.class))
+			.constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), decisionNumber, decisionDate, effectiveHijriDate, DataAccess.getTableName(UnitTransaction.class))
 			.build();
 		LogService.logEmployeeData(employeeLog, session);
 	    }
@@ -1671,7 +1671,7 @@ public class EmployeesService extends BaseService {
 		    addModifyEmployeeMedicalStaffData(employeeExtraTransactionData, employeeMedicalStaffData, session);
 		}
 		EmployeeLog log = new EmployeeLog.Builder().setSocialStatus(employeeExtraTransactionData.getSocialStatus()).setGeneralSpecialization(employeeExtraTransactionData.getGeneralSpecialization()).setRankTitleId(employeeExtraTransactionData.getRankTitleId()).setSalaryRankId(employeeExtraTransactionData.getSalaryRankId()).setSalaryDegreeId(employeeExtraTransactionData.getSalaryDegreeId())
-			.constructCommonFields(employee.getEmpId(), employee.getStatusId(), employeeExtraTransactionData.getDecisionNumber(), employeeExtraTransactionData.getDecisionDate(), employeeExtraTransactionData.getEffectiveDate(), DataAccess.getTableName(EmployeeExtraTransaction.class)).build();
+			.constructCommonFields(employee.getEmpId(), FlagsEnum.ON.getCode(), employeeExtraTransactionData.getDecisionNumber(), employeeExtraTransactionData.getDecisionDate(), employeeExtraTransactionData.getEffectiveDate(), DataAccess.getTableName(EmployeeExtraTransaction.class)).build();
 		LogService.logEmployeeData(log, session);
 	    }
 

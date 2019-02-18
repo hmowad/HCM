@@ -893,7 +893,7 @@ public class RecruitmentsService extends BaseService {
 		    if (recruitmentTransaction.getRecruitmentDate() == null)
 			recruitmentTransaction.setRecruitmentDate(HijriDateService.gregToHijriDate(new Date()));
 		    EmployeeLog log = new EmployeeLog.Builder().setJobId(recruitmentTransaction.getJobId()).setDegreeId(recruitmentTransaction.getDegreeId()).setRankId(recruitmentTransaction.getRankId()).setRankTitleId(recruitmentTransaction.getRankTitleId()).setSocialStatus(emp.getSocialStatus()).setOfficialUnitId(emp.getOfficialUnitId()).setGeneralSpecialization(emp.getGeneralSpecialization()).setPhysicalUnitId(emp.getPhysicalUnitId())
-			    .setBasicJobNameId(job.getBasicJobNameId()).constructCommonFields(emp.getEmpId(), emp.getStatusId(), recruitmentTransaction.getDecisionNumber(), recruitmentTransaction.getDecisionDate(), recruitmentTransaction.getRecruitmentDate(), DataAccess.getTableName(RecruitmentTransaction.class)).build();
+			    .setBasicJobNameId(job.getBasicJobNameId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), recruitmentTransaction.getDecisionNumber(), recruitmentTransaction.getDecisionDate(), recruitmentTransaction.getRecruitmentDate(), DataAccess.getTableName(RecruitmentTransaction.class)).build();
 		    LogService.logEmployeeData(log, session);
 		}
 	    }
@@ -1764,7 +1764,7 @@ public class RecruitmentsService extends BaseService {
 	    else
 		EmployeesService.updateEmployee(empData, session);
 	    EmployeeLog log = new EmployeeLog.Builder().setJobId(recruitmentTransaction.getJobId()).setDegreeId(recruitmentTransaction.getDegreeId()).setRankId(recruitmentTransaction.getRankId()).setRankTitleId(recruitmentTransaction.getRankTitleId()).setSocialStatus(empData.getSocialStatus()).setOfficialUnitId(empData.getOfficialUnitId()).setGeneralSpecialization(empData.getGeneralSpecialization()).setPhysicalUnitId(empData.getPhysicalUnitId())
-		    .setBasicJobNameId(job.getBasicJobNameId()).constructCommonFields(empData.getEmpId(), empData.getStatusId(), recruitmentTransaction.getDecisionNumber(), recruitmentTransaction.getDecisionDate(), recruitmentTransaction.getRecruitmentDate(), DataAccess.getTableName(RecruitmentTransaction.class)).build();
+		    .setBasicJobNameId(job.getBasicJobNameId()).constructCommonFields(empData.getEmpId(), FlagsEnum.ON.getCode(), recruitmentTransaction.getDecisionNumber(), recruitmentTransaction.getDecisionDate(), recruitmentTransaction.getRecruitmentDate(), DataAccess.getTableName(RecruitmentTransaction.class)).build();
 	    LogService.logEmployeeData(log, session);
 	    JobsService.changeJobStatus(job, JobStatusEnum.OCCUPIED.getCode(), session);
 
