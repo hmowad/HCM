@@ -3773,9 +3773,6 @@ public class PromotionsService extends BaseService {
 		    JobsService.changeJobStatus(newJob, JobStatusEnum.OCCUPIED.getCode(), session);
 
 		    EmployeesService.updateEmployeePromotionData(employee, promotionTransactionDataItr.getNewJobId(), getNextRank(employee.getRankId()), null, promotionTransactionDataItr.getNewDegreeId(), null, null, null, session);
-		    EmployeeLog log = new EmployeeLog.Builder().setRankId(getNextRank(employee.getRankId())).setJobId(promotionTransactionDataItr.getNewJobId()).setDegreeId(promotionTransactionDataItr.getNewDegreeId()).setBasicJobNameId(newJob.getBasicJobNameId())
-			    .constructCommonFields(employee.getEmpId(), FlagsEnum.ON.getCode(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getDecisionDate(), DataAccess.getTableName(PromotionTransaction.class)).build();
-		    LogService.logEmployeeData(log, session);
 		}
 		// add promotion transaction
 		DataAccess.addEntity(promotionTransactionDataItr.getPromotionTransaction(), session);
@@ -3933,8 +3930,13 @@ public class PromotionsService extends BaseService {
 		promotionTransactionData.setNewDueDate(newDueDate);
 		promotionTransactionData.setNewLastPromotionDate(joiningDate);
 
-		if (promotionTransactionData.getEflag().equals(FlagsEnum.ON.getCode()) && employee.getPromotionDueDate() == null)
+		if (promotionTransactionData.getEflag().equals(FlagsEnum.ON.getCode()) && employee.getPromotionDueDate() == null) {
 		    EmployeesService.updateEmployeePromotionData(employee, null, null, null, null, null, newDueDate, joiningDate, session);
+		    JobData newJob = JobsService.getJobById(promotionTransactionData.getNewJobId());
+		    EmployeeLog log = new EmployeeLog.Builder().setRankId(promotionTransactionData.getNewRankId()).setJobId(promotionTransactionData.getNewJobId()).setDegreeId(promotionTransactionData.getNewDegreeId()).setBasicJobNameId(newJob.getBasicJobNameId())
+			    .constructCommonFields(employee.getEmpId(), FlagsEnum.ON.getCode(), promotionTransactionData.getDecisionNumber(), promotionTransactionData.getDecisionDate(), joiningDate, DataAccess.getTableName(PromotionTransaction.class)).build();
+		    LogService.logEmployeeData(log, session);
+		}
 	    }
 
 	    promotionTransactionData.getPromotionTransaction().setSystemUser(loginEmpId + ""); // audit
