@@ -778,6 +778,10 @@ public class RecruitmentsService extends BaseService {
 
 	    DataAccess.updateEntity(recTransactionData.getRecruitmentTransaction(), session);
 	    DataAccess.updateEntity(emp.getEmployee(), session);
+	    JobData job = JobsService.getJobById(recTransactionData.getJobId());
+	    EmployeeLog log = new EmployeeLog.Builder().setJobId(recTransactionData.getJobId()).setDegreeId(recTransactionData.getDegreeId()).setRankId(recTransactionData.getRankId()).setRankTitleId(recTransactionData.getRankTitleId()).setSocialStatus(emp.getSocialStatus()).setOfficialUnitId(emp.getOfficialUnitId()).setGeneralSpecialization(emp.getGeneralSpecialization()).setPhysicalUnitId(emp.getPhysicalUnitId())
+		    .setBasicJobNameId(job.getBasicJobNameId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), recTransactionData.getDecisionNumber(), recTransactionData.getDecisionDate(), joiningDate, DataAccess.getTableName(RecruitmentTransaction.class)).build();
+	    LogService.logEmployeeData(log, session);
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -892,9 +896,11 @@ public class RecruitmentsService extends BaseService {
 			EmployeesService.updateEmployeeAndHisQualifications(emp, employeeQualificationsData, session);
 		    if (recruitmentTransaction.getRecruitmentDate() == null)
 			recruitmentTransaction.setRecruitmentDate(HijriDateService.gregToHijriDate(new Date()));
-		    EmployeeLog log = new EmployeeLog.Builder().setJobId(recruitmentTransaction.getJobId()).setDegreeId(recruitmentTransaction.getDegreeId()).setRankId(recruitmentTransaction.getRankId()).setRankTitleId(recruitmentTransaction.getRankTitleId()).setSocialStatus(emp.getSocialStatus()).setOfficialUnitId(emp.getOfficialUnitId()).setGeneralSpecialization(emp.getGeneralSpecialization()).setPhysicalUnitId(emp.getPhysicalUnitId())
-			    .setBasicJobNameId(job.getBasicJobNameId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), recruitmentTransaction.getDecisionNumber(), recruitmentTransaction.getDecisionDate(), recruitmentTransaction.getRecruitmentDate(), DataAccess.getTableName(RecruitmentTransaction.class)).build();
-		    LogService.logEmployeeData(log, session);
+		    if (recruitmentTransaction.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) || recruitmentTransaction.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
+			EmployeeLog log = new EmployeeLog.Builder().setJobId(recruitmentTransaction.getJobId()).setDegreeId(recruitmentTransaction.getDegreeId()).setRankId(recruitmentTransaction.getRankId()).setRankTitleId(recruitmentTransaction.getRankTitleId()).setSocialStatus(emp.getSocialStatus()).setOfficialUnitId(emp.getOfficialUnitId()).setGeneralSpecialization(emp.getGeneralSpecialization()).setPhysicalUnitId(emp.getPhysicalUnitId())
+				.setBasicJobNameId(job.getBasicJobNameId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), recruitmentTransaction.getDecisionNumber(), recruitmentTransaction.getDecisionDate(), recruitmentTransaction.getRecruitmentDate(), DataAccess.getTableName(RecruitmentTransaction.class)).build();
+			LogService.logEmployeeData(log, session);
+		    }
 		}
 	    }
 	} catch (BusinessException e) {
