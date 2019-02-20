@@ -37,7 +37,7 @@ public class CancelFieldVacation extends VacationBase {
 		this.vacRequest = new WFVacation();
 		this.vacRequest.setRequestType(RequestTypesEnum.CANCEL.getCode());
 		this.vacRequest.setVacationTypeId(VacationTypesEnum.FIELD.getCode());
-		this.lastVacation = VacationsService.getVacationsData(this.beneficiary.getEmpId(), this.vacRequest.getVacationTypeId()).get(0);
+		this.lastVacation = VacationsService.getLastVacationData(this.beneficiary.getEmpId(), this.vacRequest.getVacationTypeId());
 		if (this.lastVacation != null) {
 		    this.vacRequest.setOldVacationId(this.lastVacation.getId());
 		    this.vacRequest.setStartDateString(this.lastVacation.getStartDateString());
