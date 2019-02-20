@@ -7,6 +7,7 @@
 	  
     <composite:interface>
         <composite:attribute name="value" required="true"/>
+        <composite:attribute name="secondLastVacation" required="false"/>
         <composite:attribute name="printAction" method-signature="void print()" />
     </composite:interface>
 	
@@ -71,7 +72,69 @@
 					</td>
 				</tr>
                 
-			</table>			
+			</table>
+			<h:panelGroup rendered="#{cc.attrs.secondLastVacation != null}" >
+				<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+	            	<tr>
+	                    <th width="15%">#{msgs.label_vacType}</th>
+	                    <td width="35%">
+	                    	<h:outputText value="#{cc.attrs.secondLastVacation.vacationTypeDescription}"/>
+	                    	<h:outputText rendered="#{cc.attrs.secondLastVacation.subVacationTypeDescription != null}" value="&nbsp;"/>
+	                    	<h:outputText rendered="#{cc.attrs.secondLastVacation.subVacationTypeDescription != null}" value="#{cc.attrs.secondLastVacation.subVacationTypeDescription}"/>
+	                    </td>
+	                    
+	                    <th width="15%">#{msgs.label_period}</th>
+	                    <td width="35%"><h:outputText id="secondPeriodId" value="#{cc.attrs.secondLastVacation.period}"/></td>
+	                </tr>
+	                
+	                <tr>         
+	                    <th width="15%">#{msgs.label_startDate}</th>
+	                    <td width="35%"><h:outputText value="#{cc.attrs.secondLastVacation.startDateString}"/></td>
+	                    
+	                    <th width="15%">#{msgs.label_endDate}</th>
+	                    <td width="35%"><h:outputText value="#{cc.attrs.secondLastVacation.endDateString}"/></td>
+	                </tr>
+	                
+	                <h:panelGroup rendered="#{cc.attrs.secondLastVacation.transactionEmpCategoryId == 6 and cc.attrs.secondLastVacation.vacationTypeId == 1}">
+						<tr>
+							<th width="15%">#{msgs.label_contractorLastVactionContractualYear}</th>
+							<td width="35%">
+								<h:outputText value="#{cc.attrs.secondLastVacation.contractualYearStartDateString}" />
+							</td>
+							<th width="15%">#{msgs.label_to}</th>
+							<td width="35%">
+								<h:outputText value="#{cc.attrs.secondLastVacation.contractualYearEndDateString}" />
+							</td>
+						</tr>
+					</h:panelGroup>
+					
+	                <tr>
+	                    <th width="15%">#{msgs.label_decisionNumber}</th>
+	                    <td width="35%">
+	                    	<h:outputText id="secondDecisionNumberId1" value="#{cc.attrs.secondLastVacation.decisionNumber}"/>
+	                    </td>
+	                    
+	                    <th width="15%">#{msgs.label_decisionDate}</th>
+	                    <td width="35%">
+	                    	<h:outputText value="#{cc.attrs.secondLastVacation.decisionDateString}"/>
+	                    	<h:commandButton rendered="#{cc.attrs.secondLastVacation.id != null and cc.attrs.secondLastVacation.etrFlag == 1 and cc.attrs.printAction != null}" action="#{cc.attrs.printAction}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" title="#{msgs.label_print}" style="float: left !important;" />
+	                    </td>
+	                </tr>
+	                
+					<tr>
+						<th width="15%">#{msgs.label_location}</th>
+						<td width="35%">
+							<h:outputText value="#{msgs.label_locIn}"  rendered="#{cc.attrs.secondLastVacation.locationFlag == 0}"/>
+							<h:outputText value="#{msgs.label_locOut}" rendered="#{cc.attrs.secondLastVacation.locationFlag == 1}"/>
+						</td>
+						<th width="15%">#{msgs.title_countries}</th>
+						<td width="35%">
+							<h:outputText value="#{cc.attrs.secondLastVacation.location}" />
+						</td>
+					</tr>
+	                
+				</table>	
+			</h:panelGroup>		
         </h:panelGroup>
     </composite:implementation>  
 </html>	  

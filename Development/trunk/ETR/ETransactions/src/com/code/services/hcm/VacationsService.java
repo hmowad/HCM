@@ -332,7 +332,17 @@ public class VacationsService extends BaseService {
      *             if a database error occurs
      */
     public static VacationData getLastVacationData(long empId, long vacationTypeId) throws BusinessException {
-	return getLastVacationData(empId, vacationTypeId, FlagsEnum.ALL.getCode());
+	List<VacationData> vacationData = getVacationsData(empId, vacationTypeId, FlagsEnum.ALL.getCode());
+	return vacationData.isEmpty() ? null : vacationData.get(0);
+    }
+
+    public static VacationData getLastVacationData(long empId, long vacationTypeId, Integer subVacationType) throws BusinessException {
+	List<VacationData> vacationData = getVacationsData(empId, vacationTypeId, subVacationType);
+	return vacationData.isEmpty() ? null : vacationData.get(0);
+    }
+
+    public static List<VacationData> getVacationsData(long empId, long vacationTypeId) throws BusinessException {
+	return getVacationsData(empId, vacationTypeId, FlagsEnum.ALL.getCode());
     }
 
     /**
@@ -348,7 +358,7 @@ public class VacationsService extends BaseService {
      * @throws BusinessException
      *             if a database error occurs
      */
-    public static VacationData getLastVacationData(long empId, long vacationTypeId, Integer subVacationType) throws BusinessException {
+    public static List<VacationData> getVacationsData(long empId, long vacationTypeId, Integer subVacationType) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_ID", empId);
@@ -356,7 +366,7 @@ public class VacationsService extends BaseService {
 	    qParams.put("P_SUB_VACATION_TYPE", subVacationType == null ? FlagsEnum.ALL.getCode() : subVacationType);
 
 	    List<VacationData> result = DataAccess.executeNamedQuery(VacationData.class, QueryNamesEnum.HCM_GET_LAST_VACATION_DATA.getCode(), qParams);
-	    return result.isEmpty() ? null : result.get(0);
+	    return result;
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");

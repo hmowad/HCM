@@ -32,9 +32,8 @@ public abstract class VacationBase extends WFBaseBacking {
     protected int vacationMode;
     protected WFVacation vacRequest;
     protected VacationData lastVacation;
-
+    protected VacationData secondLastVacation;
     protected String vacationBalance;
-
     protected List<EmployeeData> reviewerEmps;
     protected Long selectedReviewerEmpId;
 
@@ -549,6 +548,14 @@ public abstract class VacationBase extends WFBaseBacking {
 
     public void setLastVacation(VacationData lastVacation) {
 	this.lastVacation = lastVacation;
+    }
+
+    public VacationData getSecondLastVacation() {
+	return secondLastVacation;
+    }
+
+    public void setSecondLastVacation(VacationData secondLastVacation) {
+	this.secondLastVacation = secondLastVacation;
     }
 
     public String getVacationBalance() {
