@@ -31,7 +31,7 @@ import com.code.services.util.HijriDateService;
 			" and v.vacationTypeId = :P_VACATION_TYPE_ID " +
 			" and (:P_SUB_VACATION_TYPE = -1 or v.subVacationType = :P_SUB_VACATION_TYPE) " +
 			" and v.status <> 4 " +
-			" and v.endDate = (select max(vac.endDate) from Vacation vac where vac.empId = :P_EMP_ID and vac.vacationTypeId = :P_VACATION_TYPE_ID and (:P_SUB_VACATION_TYPE = -1 or vac.subVacationType = :P_SUB_VACATION_TYPE) and vac.status <> 4 ) "),
+			" order by v.endDate desc"),
 
 	@NamedQuery(name = "hcm_vacationData_getLastVacationBeforeSpecificDate",
 		query = " select v from VacationData v " +

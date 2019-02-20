@@ -7,7 +7,8 @@
 	<h:outputStylesheet library="css" name="styles.css" />
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
 
-	<script type="text/javascript">          
+	<script type="text/javascript">  
+	//<![CDATA[
           function validateData(){
             var oldVacationId = document.getElementById('cancelSickVacationForm:oldVacationId').value;
             if(oldVacationId == null || oldVacationId == ''){
@@ -22,9 +23,14 @@
 	                return false;
 	            }
             }                  
-            
+            var cancelVacationPledge = document.getElementById('cancelSickVacationForm:cancelVacationPledgeId');
+            if(cancelVacationPledge != null && !cancelVacationPledge.checked){
+            	alert('#{msgs.error_mustPledgeBeforeSend}');
+            	return false;
+            }
             return true;
           }
+       // ]]>
         </script>
 </h:head>
 <h:body styleClass="screenBg">
@@ -195,6 +201,20 @@
 						<h:outputText rendered="#{cancelSickVacation.role == 'Notification' or cancelSickVacation.role == 'History'}" value="#{cancelSickVacation.notificationMessage}" styleClass="successMessage" />
 					</td>
 				</tr>
+				<h:panelGroup rendered="#{cancelSickVacation.role.equals('Requester') and cancelSickVacation.vacRequest.locationFlag != null and (cancelSickVacation.vacRequest.locationFlag == 1 or cancelSickVacation.vacRequest.locationFlag == 2)}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="50%">
+										<h:selectBooleanCheckbox id="cancelVacationPledgeId" />
+										#{msgs.label_cancelVacationPledge}
+									</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
 
 				<tr>
 					<td width="100%" height="15" />

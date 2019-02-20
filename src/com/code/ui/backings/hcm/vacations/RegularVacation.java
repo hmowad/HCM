@@ -1,5 +1,7 @@
 package com.code.ui.backings.hcm.vacations;
 
+import java.util.List;
+
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
@@ -45,11 +47,12 @@ public class RegularVacation extends VacationBase {
 
     protected void getBeneficiaryInfo() throws BusinessException {
 	this.inquiryBalance();
-	this.lastVacation = VacationsService.getLastVacationData(this.beneficiary.getEmpId(), VacationTypesEnum.REGULAR.getCode());
-	if (this.lastVacation != null) {
+	List<VacationData> lastVacations = VacationsService.getVacationsData(this.beneficiary.getEmpId(), this.vacRequest.getVacationTypeId());
+	this.lastVacation = (lastVacations != null && !lastVacations.isEmpty()) ? lastVacations.get(0) : new VacationData();
+	this.secondLastVacation = (lastVacations != null && lastVacations.size() > 1) ? lastVacations.get(1) : new VacationData();
+	if (lastVacations != null) {
 	    this.vacRequest.setOldVacationId(this.lastVacation.getId());
 	} else {
-	    this.lastVacation = new VacationData();
 	    this.vacRequest.setOldVacationId(null);
 	}
 	adjustProcess();

@@ -22,7 +22,12 @@
 	                alert('#{msgs.error_requestJustificationsMandatory}');
 	                return false;
 	            }
-            }                  
+            }   
+            var cancelVacationPledge = document.getElementById('cancelFieldVacationForm:cancelVacationPledgeId');
+            if(cancelVacationPledge != null && !cancelVacationPledge.checked){
+            	alert('#{msgs.error_mustPledgeBeforeSend}');
+            	return false;
+            }
             
             return true;
           }
@@ -195,6 +200,20 @@
 						<h:outputText rendered="#{cancelFieldVacation.role == 'Notification' or cancelFieldVacation.role == 'History'}" value="#{cancelFieldVacation.notificationMessage}" styleClass="successMessage" />
 					</td>
 				</tr>
+				<h:panelGroup rendered="#{cancelFieldVacation.role.equals('Requester') and cancelFieldVacation.vacRequest.locationFlag != null and cancelFieldVacation.vacRequest.locationFlag == 1}">
+					<tr>
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="50%">
+										<h:selectBooleanCheckbox id="cancelVacationPledgeId" />
+										#{msgs.label_cancelVacationPledge}
+									</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
 
 				<tr>
 					<td width="100%" height="15" />
