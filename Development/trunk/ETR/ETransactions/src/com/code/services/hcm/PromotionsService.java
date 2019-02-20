@@ -950,7 +950,7 @@ public class PromotionsService extends BaseService {
     public static void modifyReportDetailsDrugTestResult(List<PromotionReportDetailData> promotionReportDetailDataList) throws BusinessException {
 	Log4jService.traceInfo(PromotionsService.class, "Start of modifyReportDetailsDrugTestResult()");
 	try {
-	    if (promotionReportDetailDataList == null || promotionReportDetailDataList.size() == 0)
+	    if (promotionReportDetailDataList.equals(null) || promotionReportDetailDataList.size() == 0)
 		return;
 	    String comma = "";
 	    String socialIds = "";
@@ -958,10 +958,11 @@ public class PromotionsService extends BaseService {
 		socialIds += comma + promotionReportDetailData.getEmpSocialID();
 		comma = ",";
 	    }
+
+	    Log4jService.traceInfo(PromotionsService.class, "socialIds: " + socialIds);
 	    HCMWebServiceService infoSysGetDrugTestResultsWS = new HCMWebServiceService();
 	    HCMWebService webService = infoSysGetDrugTestResultsWS.getHCMWebServicePort();
 
-	    Log4jService.traceInfo(PromotionsService.class, "socialIds: " + socialIds);
 	    String result = webService.getLabCheckResults(socialIds);
 	    Log4jService.traceInfo(PromotionsService.class, "result: " + result);
 	    String[] resultParts = result.split(",");
