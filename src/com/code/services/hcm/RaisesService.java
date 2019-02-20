@@ -791,14 +791,15 @@ public class RaisesService extends BaseService {
 	try {
 	    List<EmployeeData> allDeservedEmployees = getDeservedEmployees(raise.getExecutionDate(), FlagsEnum.ALL.getCode(), raise.getType(), raise.getCategoryId());
 	    List<EmployeeData> currDeservedEmpData = new ArrayList<>();
-	    List<RaiseEmployeeData> excludedforEndOfLadder = new ArrayList<>();
+	    List<RaiseEmployeeData> prevExcludedforEndOfLadder = new ArrayList<>();
 	    List<RaiseEmployeeData> prevDeservedEmpData = getAnnualRaiseDeservedEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), raise.getDecisionDateString(), raise.getDecisionNumber(), new Integer[] { RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode() });
 	    Map<Long, Long> rankDegreesHashMap = getEndOfLadderDegreesMap(raise.getCategoryId());
 
 	    for (RaiseEmployeeData raiseEmployee : prevDeservedEmpData) {
 		if (raiseEmployee.getEmpDeservedFlag() == RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode())
-		    excludedforEndOfLadder.add(raiseEmployee);
+		    prevExcludedforEndOfLadder.add(raiseEmployee);
 	    }
+
 	    int excludedForEndOfLadderCount = 0;
 	    for (EmployeeData emp : allDeservedEmployees) {
 		boolean found = false;
@@ -806,7 +807,7 @@ public class RaisesService extends BaseService {
 		    currDeservedEmpData.add(emp);
 		} else {
 		    excludedForEndOfLadderCount++;
-		    for (RaiseEmployeeData raiseEmployee : excludedforEndOfLadder) {
+		    for (RaiseEmployeeData raiseEmployee : prevExcludedforEndOfLadder) {
 			if (raiseEmployee.getEmpId().equals(emp.getEmpId())) {
 			    found = true;
 			    break;
@@ -818,7 +819,7 @@ public class RaisesService extends BaseService {
 		    }
 		}
 	    }
-	    if (excludedForEndOfLadderCount != excludedforEndOfLadder.size()) {
+	    if (excludedForEndOfLadderCount != prevExcludedforEndOfLadder.size()) {
 		raise.setDirtyFlag(true);
 		throw new BusinessException("error_deservedEmployeesHaveChanged");
 	    }
