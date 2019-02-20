@@ -105,9 +105,8 @@ public class PromotionSoldiersReport extends PromotionsBase {
     public void addPromotionReportDetail() {
 	try {
 	    if (empId != FlagsEnum.ALL.getCode()) {
-		PromotionsService.modifyReportDetailsDrugTestResult(Arrays.asList(selectedPromotionReportDetailData));
 		selectedPromotionReportDetailData = PromotionsWorkFlow.addPromotionReportDetail(instance, empId, promotionReportData, loginEmpData.getEmpId());
-
+		PromotionsService.modifyReportDetailsDrugTestResult(Arrays.asList(selectedPromotionReportDetailData));
 		promotionReportDetailDataList.add(selectedPromotionReportDetailData);
 
 		this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
