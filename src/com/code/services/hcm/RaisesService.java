@@ -1194,8 +1194,7 @@ public class RaisesService extends BaseService {
     public static void approveAnnualRaise(Raise raise, long managerId, String loginEmpId, CustomSession... useSession) throws BusinessException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
-
-	List<RaiseEmployeeData> allEmployees = getRaiseEmployeeByRaiseId(raise.getId());
+	List<RaiseEmployeeData> allEmployees = getAnnualRaiseDeservedEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), raise.getDecisionDateString(), raise.getDecisionNumber(), new Integer[] { RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode() });
 	List<RaiseTransactionLog> raiseTransactionsLog = new ArrayList<>();
 	List<RaiseTransaction> raiseTransactions = new ArrayList<>();
 	try {
