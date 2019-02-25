@@ -3,8 +3,12 @@ package com.code.services.hcm;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.ws.WebServiceException;
 
@@ -19,6 +23,7 @@ import com.code.dal.orm.hcm.employees.EmployeeExtraTransactionData;
 import com.code.dal.orm.hcm.employees.EmployeePhoto;
 import com.code.dal.orm.hcm.employees.EmployeeQualificationsData;
 import com.code.dal.orm.hcm.employees.medicalstuff.EmployeeMedicalStaffData;
+import com.code.dal.orm.hcm.organization.jobs.JobData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.dal.orm.hcm.organization.units.UnitTransaction;
 import com.code.dal.orm.log.EmployeeLog;
@@ -232,7 +237,7 @@ public class EmployeesService extends BaseService {
 	updateEmployee(empData, useSession);
     }
 
-    public static void moveAllEmployeesFromUnitsToUnit(Long[] unitsIds, Long toUnitId, Date effectiveHijriDate, String decisionNumber, Date decisionDate, CustomSession... useSession) throws BusinessException {
+    public static void moveAllEmployeesFromUnitsToUnit(Long[] unitsIds, Long toUnitId, List<JobData> jobs, Date effectiveHijriDate, String decisionNumber, Date decisionDate, CustomSession... useSession) throws BusinessException {
 	List<EmployeeData> unitsEmployees = getEmployeesByUnitsIds(unitsIds);
 	if (unitsEmployees.size() == 0)
 	    return;
@@ -243,16 +248,55 @@ public class EmployeesService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
+	    logMergedUnitsEmployees(unitsIds, toUnitId, jobs, unitsEmployees, HijriDateService.getHijriSysDate(), decisionNumber, decisionDate, session);
 	    for (EmployeeData emp : unitsEmployees) {
 		emp.setPhysicalUnitId(toUnitId);
 		DataAccess.updateEntity(emp.getEmployee(), session);
+	    }
+
+	    if (!isOpenedSession)
+		session.commitTransaction();
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
+
+    public static void logMergedUnitsEmployees(Long[] mergedUnitsIds, Long toUnitId, List<JobData> jobs, List<EmployeeData> mergedUnitsEmployees, Date effectiveHijriDate, String decisionNumber, Date decisionDate, CustomSession... useSession) throws BusinessException {
+	Map<Long, EmployeeData> empMap = new HashMap<>();
+	Set<Long> unitsSet = new HashSet<>();
+	for (EmployeeData empData : mergedUnitsEmployees) {
+	    empMap.put(empData.getEmpId(), empData);
+	}
+	for (JobData job : jobs) {
+	    if (job.getEmployeeId() != null && !empMap.containsKey(job.getEmployeeId())) {
+		empMap.put(job.getEmployeeId(), null);
+	    }
+	}
+	for (Long unitId : mergedUnitsIds) {
+	    unitsSet.add(unitId);
+	}
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+
+	    Iterator<Entry<Long, EmployeeData>> it = empMap.entrySet().iterator();
+	    while (it.hasNext()) {
+		Map.Entry<Long, EmployeeData> empEntry = it.next();
 		EmployeeLog employeeLog = new EmployeeLog.Builder()
-			.setPhysicalUnitId(toUnitId)
-			.constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), decisionNumber, decisionDate, effectiveHijriDate, DataAccess.getTableName(UnitTransaction.class))
+			.setPhysicalUnitId(empEntry.getValue() != null && unitsSet.contains(empEntry.getValue().getPhysicalUnitId()) ? toUnitId : null)
+			.setOfficialUnitId(empEntry.getValue() == null || unitsSet.contains(empEntry.getValue().getOfficialUnitId()) ? toUnitId : null)
+			.constructCommonFields(empEntry.getKey(), FlagsEnum.ON.getCode(), decisionNumber, decisionDate, effectiveHijriDate, DataAccess.getTableName(UnitTransaction.class))
 			.build();
 		LogService.logEmployeeData(employeeLog, session);
 	    }
-
 	    if (!isOpenedSession)
 		session.commitTransaction();
 	} catch (Exception e) {
