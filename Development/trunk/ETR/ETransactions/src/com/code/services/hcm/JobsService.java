@@ -863,10 +863,10 @@ public class JobsService extends BaseService {
      * @throws BusinessException
      *             if any error occurs
      */
-    public static void moveAllJobsFromUnitsToUnit(Long[] unitsIds, long toUnitId, String toUnitFullName, String decisionNumber, Date decisionDate, Long userId, CustomSession... useSession) throws BusinessException {
+    public static List<JobData> moveAllJobsFromUnitsToUnit(Long[] unitsIds, long toUnitId, String toUnitFullName, String decisionNumber, Date decisionDate, Long userId, CustomSession... useSession) throws BusinessException {
 	List<JobData> unitsJobs = getJobsByUnitsIds(unitsIds);
 	if (unitsJobs.size() == 0)
-	    return;
+	    return new ArrayList<>();
 
 	for (JobData jd : unitsJobs) {
 	    jd.setNewUnitId(toUnitId);
@@ -882,6 +882,7 @@ public class JobsService extends BaseService {
 	decisionData.seteFlag(FlagsEnum.OFF.getCode());
 
 	moveJobs(unitsJobs, decisionData, null, useSession);
+	return unitsJobs;
     }
 
     private static Map<Long, List<String>> getRegionsNewSerials(List<JobData> jobsToAdd, List<JobData> jobsToMove) throws BusinessException {

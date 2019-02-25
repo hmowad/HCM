@@ -10,6 +10,7 @@ import java.util.StringTokenizer;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
+import com.code.dal.orm.hcm.organization.jobs.JobData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.dal.orm.hcm.organization.units.UnitTransaction;
 import com.code.dal.orm.hcm.organization.units.UnitTransactionData;
@@ -473,8 +474,8 @@ public class UnitsService extends BaseService {
 	    }
 
 	    // Integration points with jobs and employees services
-	    JobsService.moveAllJobsFromUnitsToUnit(mergedUnitsIds, unit.getId(), unit.getFullName(), decisionNumber, decisionDate, userId, session);
-	    EmployeesService.moveAllEmployeesFromUnitsToUnit(mergedUnitsIds, unit.getId(), HijriDateService.getHijriSysDate(), decisionNumber, decisionDate, session);
+	    List<JobData> jobs = JobsService.moveAllJobsFromUnitsToUnit(mergedUnitsIds, unit.getId(), unit.getFullName(), decisionNumber, decisionDate, userId, session);
+	    EmployeesService.moveAllEmployeesFromUnitsToUnit(mergedUnitsIds, unit.getId(), jobs, HijriDateService.getHijriSysDate(), decisionNumber, decisionDate, session);
 
 	    unit.setName(unit.getNewName().trim());
 	    renameUnit(unit, decisionDate, decisionNumber, TransactionTypesEnum.UNIT_MERGE.getCode(), userId, session);
