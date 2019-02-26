@@ -12,6 +12,7 @@ import com.code.enums.NavigationEnum;
 import com.code.enums.WFActionFlagsEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.MovementsService;
+import com.code.services.util.HijriDateService;
 import com.code.services.workflow.hcm.MovementsWorkFlow;
 import com.code.ui.backings.base.WFBaseBacking;
 
@@ -37,6 +38,10 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
 	    }
 
 	    for (WFMovementData wfm : wfMovementsList) {
+		if (wfm.getExecutionDateString() != null && ((wfm.getPeriodMonths() != null && wfm.getPeriodMonths() > 0) || (wfm.getPeriodDays() != null && wfm.getPeriodDays() > 0))) {
+		    wfm.setEndDateString(HijriDateService.addSubStringHijriMonthsDays(wfm.getExecutionDateString(), wfm.getPeriodMonths() == null ? 0 : wfm.getPeriodMonths(), wfm.getPeriodDays() == null ? -1 : wfm.getPeriodDays() - 1));
+		} else
+		    wfm.setEndDateString(null);
 		wfm.getWfMovement().setSystemUser(loginEmpData.getEmpId() + "");
 		updateWFMovementDecisionData(wfm, decisionData);
 	    }
@@ -233,6 +238,10 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
 		wfMovementsList.add(wfMovement);
 	    }
 	    for (WFMovementData wfm : wfMovementsList) {
+		if (wfm.getExecutionDateString() != null && ((wfm.getPeriodMonths() != null && wfm.getPeriodMonths() > 0) || (wfm.getPeriodDays() != null && wfm.getPeriodDays() > 0))) {
+		    wfm.setEndDateString(HijriDateService.addSubStringHijriMonthsDays(wfm.getExecutionDateString(), wfm.getPeriodMonths() == null ? 0 : wfm.getPeriodMonths(), wfm.getPeriodDays() == null ? -1 : wfm.getPeriodDays() - 1));
+		} else
+		    wfm.setEndDateString(null);
 		wfm.getWfMovement().setSystemUser(loginEmpData.getEmpId() + "");
 		updateWFMovementDecisionData(wfm, decisionData);
 	    }
