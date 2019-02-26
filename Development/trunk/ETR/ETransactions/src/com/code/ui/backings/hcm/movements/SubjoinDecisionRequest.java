@@ -152,6 +152,7 @@ public class SubjoinDecisionRequest extends MovementsBase implements Serializabl
 		subjoin.setEndDateString(null);
 	} catch (Exception e) {
 	    subjoin.setEndDateString(null);
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
