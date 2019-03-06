@@ -6,24 +6,7 @@
 	<h:outputStylesheet library="css" name="styles.css" />
 	<h:outputStylesheet library="css" name="grid.css" />
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
-
-	<script type="text/javascript">  
-         function validateData(){
-            var countryDescription = document.getElementById('countryForm:countryDescriptionId').value;
-            if(countryDescription == null || countryDescription == ''){
-                alert(document.getElementById('countryDescriptionMandatoryId').value);
-                return false;
-            }
-
-            var countryLatinDescription = document.getElementById('countryForm:countryLatinDescriptionId').value;
-            if(countryLatinDescription == null || countryLatinDescription == ''){
-                alert(document.getElementById('countryLatinDescriptionMandatoryId').value);
-                return false;
-            }                       
-            
-            return true;
-          }
-        </script>
+	<script type="text/javascript" />  
 </h:head>
 <h:body styleClass="screenBg">
 	<h:form id="countryForm" dir="#{msgs.dir}">
@@ -60,31 +43,6 @@
 													<f:ajax render="countryForm:countryListId countryForm:notifyMessagesId" execute="countryDescriptionId" />
 												</h:commandButton>
 											</td>
-											<th width="15%">
-												#{msgs.label_countryLatinDesc}
-												<font style="color: red;">*</font>
-											</th>
-											<td width="35%">
-												<h:inputText id="countryLatinDescriptionId" value="#{countrySetup.country.latinName}" />
-											</td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-
-							<tr>
-								<td width="100%" height="5" />
-							</tr>
-
-							<tr>
-								<td width="100%">
-									<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
-										<tr>
-											<td width="100%">
-												<h:commandButton value="#{msgs.label_add}" action="#{countrySetup.addCountry}" onclick="return validateData();" styleClass="btn_normal">
-													<f:ajax render="countryForm:countryListId countryForm:notifyMessagesId" execute="countryDescriptionId countryLatinDescriptionId" />
-												</h:commandButton>
-											</td>
 										</tr>
 									</table>
 								</td>
@@ -103,13 +61,11 @@
 		                                            </rich:column>
 										<rich:column>
 											<f:facet name="header">#{msgs.label_countryDesc}</f:facet>
-											<h:inputText value="#{row.name}" styleClass="inputDataLarge" rendered="#{row.countryFlag==0}" />
-											<h:outputText value="#{row.name}" rendered="#{row.countryFlag==1}" />
+											<h:outputText value="#{row.name}" />
 										</rich:column>
 										<rich:column>
 											<f:facet name="header">#{msgs.label_countryLatinDesc}</f:facet>
-											<h:inputText value="#{row.latinName}" styleClass="inputDataLarge" rendered="#{row.countryFlag==0}" />
-											<h:outputText value="#{row.latinName}" rendered="#{row.countryFlag==1}" />
+											<h:outputText value="#{row.latinName}" />
 										</rich:column>
 										<rich:column>
 											<f:facet name="header">#{msgs.label_blackListCountry}</f:facet>
@@ -120,17 +76,9 @@
 										</rich:column>
 										<rich:column>
 											<f:facet name="header">#{msgs.label_update}</f:facet>
-											<h:commandButton action="#{countrySetup.updateCountry(row)}" value="#{msgs.fa_floppy_o}" title="#{msgs.label_update}" styleClass="btn_icon">
+											<h:commandButton action="#{countrySetup.updateCountryBlackListFlag(row)}" value="#{msgs.fa_floppy_o}" title="#{msgs.label_update}" styleClass="btn_icon">
 												<f:ajax execute="@form" render="countryForm:countryListId countryForm:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
 											</h:commandButton>
-										</rich:column>
-										<rich:column>
-											<f:facet name="header">#{msgs.label_delete}</f:facet>
-											<h:panelGroup rendered="#{row.countryFlag==0}">
-												<h:commandButton value="#{msgs.fa_times}" action="#{countrySetup.removeCountry(row)}" onclick="return confirm('#{msgs.q_delete}');" title="#{msgs.label_delete}" styleClass="btn_icon">
-													<f:ajax render="countryForm:countryListId countryForm:notifyMessagesId" execute="countryListId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
-												</h:commandButton>
-											</h:panelGroup>
 										</rich:column>
 										<f:facet name="footer">
 											<rich:dataScroller oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
@@ -149,7 +97,5 @@
 			</table>
 		</ui:decorate>
 	</h:form>
-	<h:inputHidden id="countryDescriptionMandatoryId" value="#{msgs.error_countryDescriptionMandatory}" />
-	<h:inputHidden id="countryLatinDescriptionMandatoryId" value="#{msgs.error_countryLatinDescriptionMandatory}" />
 </h:body>
 </html>

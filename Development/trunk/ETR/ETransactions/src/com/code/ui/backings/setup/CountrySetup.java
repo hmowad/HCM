@@ -38,33 +38,9 @@ public class CountrySetup extends BaseBacking implements Serializable {
 	}
     }
 
-    public void addCountry() {
+    public void updateCountryBlackListFlag(Country country) {
 	try {
-	    country.setBlackListFlag(0);
-	    country.setSystemUser(this.loginEmpData.getEmpId() + ""); // For Auditing.
-	    CountryService.saveCountry(country);
-	    searchCountryList.add(country);
-	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
-	} catch (BusinessException e) {
-	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
-	}
-    }
-
-    public void updateCountry(Country country) {
-	try {
-	    country.setSystemUser(this.loginEmpData.getEmpId() + ""); // For Auditing.
-	    CountryService.updateCountry(country);
-	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
-	} catch (BusinessException e) {
-	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
-	}
-    }
-
-    public void removeCountry(Country country) {
-	try {
-	    country.setSystemUser(this.loginEmpData.getEmpId() + ""); // For Auditing.
-	    CountryService.deleteCountry(country);
-	    searchCountryList.remove(country);
+	    CountryService.updateCountryBlackListFlag(country, loginEmpData.getEmpId());
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));

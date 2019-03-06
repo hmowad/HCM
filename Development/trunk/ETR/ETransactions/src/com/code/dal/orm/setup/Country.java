@@ -13,10 +13,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlTransient;
 
-import com.code.dal.audit.DeletableAuditEntity;
-import com.code.dal.audit.InsertableAuditEntity;
-import com.code.dal.audit.UpdatableAuditEntity;
-import com.code.dal.orm.AuditEntity;
+import com.code.dal.orm.BaseEntity;
 
 /**
  * The <code>Country</code> class represents the data of the countries.
@@ -41,7 +38,7 @@ import com.code.dal.orm.AuditEntity;
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "HCM_COUNTRIES")
-public class Country extends AuditEntity implements Serializable, InsertableAuditEntity, UpdatableAuditEntity, DeletableAuditEntity {
+public class Country extends BaseEntity implements Serializable {
     private Long id;
     private String code;
     private String name;
@@ -188,22 +185,4 @@ public class Country extends AuditEntity implements Serializable, InsertableAudi
 	this.yaqeenName = yaqeenName;
     }
 
-    @Override
-    public Long calculateContentId() {
-	return id;
-    }
-
-    @Override
-    public String calculateContent() {
-	return "code:" + code + AUDIT_SEPARATOR +
-		"name:" + name + AUDIT_SEPARATOR +
-		"latinName:" + latinName + AUDIT_SEPARATOR +
-		"embassyName:" + embassyName + AUDIT_SEPARATOR +
-		"embassyLatinName:" + embassyLatinName + AUDIT_SEPARATOR +
-		"nationality:" + nationality + AUDIT_SEPARATOR +
-		"latinNationality:" + latinNationality + AUDIT_SEPARATOR +
-		"countryFlag:" + countryFlag + AUDIT_SEPARATOR +
-		"embassyFlag:" + embassyFlag + AUDIT_SEPARATOR +
-		"blackListFlag:" + blackListFlag;
-    }
 }
