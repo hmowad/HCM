@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.code.dal.DataAccess;
 import com.code.dal.orm.setup.Country;
+import com.code.dal.orm.setup.CountryBlacklist;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.exceptions.BusinessException;
@@ -16,6 +17,7 @@ public class CountryService {
     private CountryService() {
     }
 
+    // ------------------------------- Country entity operations -------------------
     public static List<Country> listEmbassies() throws BusinessException {
 	return getCountries(FlagsEnum.ALL.getCode() + "", null, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ON.getCode());
     }
@@ -77,32 +79,56 @@ public class CountryService {
 	}
     }
 
-    public static void saveCountry(Country country) throws BusinessException {
+    // ------------------------------- Country Blacklist entity operations -------------------
+    public static void updateCountryBlackListFlag(Country country, Long userId) throws BusinessException {
+	CountryBlacklist result = getCountryBlacklistByCountryId(country.getId());
+
+	if (country.getBlackListFlag() == FlagsEnum.OFF.getCode() && result != null) {
+	    result.setSystemUser(userId + "");
+	    deleteCountryBlacklistRecord(result);
+	}
+
+	if (country.getBlackListFlag() == FlagsEnum.ON.getCode() && result == null) {
+	    CountryBlacklist countryBlacklist = new CountryBlacklist();
+	    countryBlacklist.setCountryId(country.getId());
+	    countryBlacklist.setSystemUser(userId + "");
+	    insertCountryBlacklistRecord(countryBlacklist);
+	}
+
+    }
+
+    private static CountryBlacklist getCountryBlacklistByCountryId(Long countryId) throws BusinessException {
 	try {
-	    country.setCountryFlag(FlagsEnum.OFF.getCode());
-	    country.setEmbassyFlag(FlagsEnum.OFF.getCode());
-	    DataAccess.addEntity(country);
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_COUNTRY_ID", countryId);
+
+	    List<CountryBlacklist> result = DataAccess.executeNamedQuery(CountryBlacklist.class, QueryNamesEnum.HCM_GET_COUNTRY_BLACKLIST_BY_COUNTRY_ID.getCode(), qParams);
+	    if (result.isEmpty())
+		return null;
+	    else
+		return result.get(0);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
 
-    public static void updateCountry(Country country) throws BusinessException {
+    private static void insertCountryBlacklistRecord(CountryBlacklist countryBlacklist) throws BusinessException {
 	try {
-	    DataAccess.updateEntity(country);
+	    DataAccess.addEntity(countryBlacklist);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
 
-    public static void deleteCountry(Country country) throws BusinessException {
+    private static void deleteCountryBlacklistRecord(CountryBlacklist countryBlacklist) throws BusinessException {
 	try {
-	    DataAccess.deleteEntity(country);
+	    DataAccess.deleteEntity(countryBlacklist);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
+
     }
 }

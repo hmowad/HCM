@@ -80,6 +80,7 @@ public enum QueryNamesEnum {
 
     HCM_GET_COUNTRY_BY_COUNTRY_DESC("hcm_country_getCountryByCountryDesc"),
     HCM_GET_COUNTRY_BY_YAQEEN_NAME("hcm_country_getCountryByYaqeenName"),
+    HCM_GET_COUNTRY_BLACKLIST_BY_COUNTRY_ID("hcm_countryBlacklist_getCountryBlacklistByCountryId"),
 
     /* ************************************************ Vacations ********************************************************** */
 
