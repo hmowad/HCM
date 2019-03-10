@@ -34,7 +34,6 @@ import com.code.services.buswfcoop.EmployeesJobsConflictValidator;
 import com.code.services.log.LogService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
-import com.code.ui.backings.hcm.jobs.JobsTransactions;
 
 /**
  * The class <code>JobsService</code> provides methods for handling the jobs operations such as add, rename, freeze, unfreeze, scale, move, reserve, unreserve, or cancel jobs.
@@ -359,7 +358,7 @@ public class JobsService extends BaseService {
 		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode()) {
 		    EmployeeLog employeeLog = new EmployeeLog.Builder()
 			    .setBasicJobNameId(jobData.getBasicJobNameId())
-			    .constructCommonFields(jobData.getEmployeeId(), FlagsEnum.ON.getCode(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobsTransactions.class))
+			    .constructCommonFields(jobData.getEmployeeId(), FlagsEnum.ON.getCode(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobTransaction.class))
 			    .build();
 		    LogService.logEmployeeData(employeeLog, session);
 
@@ -594,7 +593,7 @@ public class JobsService extends BaseService {
 		    EmployeeLog employeeLog = new EmployeeLog.Builder()
 			    .setRankId(jobData.getRankId())
 			    .setBasicJobNameId(jobData.getBasicJobNameId())
-			    .constructCommonFields(jobData.getEmployeeId(), FlagsEnum.ON.getCode(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobsTransactions.class))
+			    .constructCommonFields(jobData.getEmployeeId(), FlagsEnum.ON.getCode(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobTransaction.class))
 			    .build();
 		    LogService.logEmployeeData(employeeLog, session);
 		}
@@ -712,7 +711,7 @@ public class JobsService extends BaseService {
 		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode()) {
 		    EmployeeLog employeeLog = new EmployeeLog.Builder()
 			    .setBasicJobNameId(jobData.getBasicJobNameId())
-			    .constructCommonFields(jobData.getEmployeeId(), FlagsEnum.ON.getCode(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobsTransactions.class))
+			    .constructCommonFields(jobData.getEmployeeId(), FlagsEnum.ON.getCode(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobTransaction.class))
 			    .build();
 		    LogService.logEmployeeData(employeeLog, session);
 		}
