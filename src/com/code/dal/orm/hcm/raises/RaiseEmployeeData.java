@@ -303,6 +303,7 @@ public class RaiseEmployeeData extends BaseEntity {
 
     public void setEmpDegreeId(Long empDegreeId) {
 	this.empDegreeId = empDegreeId;
+	raiseEmployee.setTransDegreeId(empDegreeId);
     }
 
     @Basic
@@ -323,6 +324,7 @@ public class RaiseEmployeeData extends BaseEntity {
 
     public void setEmpRankId(Long empRankId) {
 	this.empRankId = empRankId;
+	raiseEmployee.setTransRankId(empRankId);
     }
 
     public void setEmpJobRankDesc(String empJobRankDesc) {
