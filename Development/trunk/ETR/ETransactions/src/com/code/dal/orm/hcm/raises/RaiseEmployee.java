@@ -32,6 +32,8 @@ public class RaiseEmployee extends BaseEntity {
     private String exclusionReason;
     private Long newDegreeId;
     private Integer deservedFlag;
+    private Long transRankId;
+    private Long transDegreeId;
 
     @GenericGenerator(name = "HCMRaiseSeq",
 	    strategy = "enhanced-sequence",
@@ -106,4 +108,25 @@ public class RaiseEmployee extends BaseEntity {
     public void setDeservedFlag(Integer deservedFlag) {
 	this.deservedFlag = deservedFlag;
     }
+
+    @Basic
+    @Column(name = "TRANS_RANK_ID")
+    public Long getTransRankId() {
+	return transRankId;
+    }
+
+    public void setTransRankId(Long transRankId) {
+	this.transRankId = transRankId;
+    }
+
+    @Basic
+    @Column(name = "TRANS_DEGREE_ID")
+    public Long getTransDegreeId() {
+	return transDegreeId;
+    }
+
+    public void setTransDegreeId(Long transDegreeId) {
+	this.transDegreeId = transDegreeId;
+    }
+
 }

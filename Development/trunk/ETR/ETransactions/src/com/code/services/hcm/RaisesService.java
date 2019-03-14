@@ -759,21 +759,19 @@ public class RaisesService extends BaseService {
 	    throw new BusinessException("error_mustAddOneEmployeeAtLeastToSaveAdditionalRaise");
 
 	Map<Long, Long> rankDegreesHashMap = getEndOfLadderDegreesMap(raiseEmployees.get(0).getRaiseCategoryId());
+	Map<Long, EmployeeData> deservedEmpsMap = new HashMap<>();
 	List<EmployeeData> allDeservedEmployees = getDeservedEmployees(raiseEmployees.get(0).getRaiseExecutionDate(), FlagsEnum.ALL.getCode(), raiseEmployees.get(0).getRaiseType(), raiseEmployees.get(0).getRaiseCategoryId());
+	for (EmployeeData deservedEmp : allDeservedEmployees) {
+	    deservedEmpsMap.put(deservedEmp.getEmpId(), deservedEmp);
+	}
 
 	for (RaiseEmployeeData raiseEmp : raiseEmployees) {
 	    if (raiseEmp.getEmpDegreeId().equals(rankDegreesHashMap.get(raiseEmp.getEmpRankId())))
 		throw new BusinessException("error_deservedEmployeesHaveChanged");
 	}
 	for (RaiseEmployeeData raiseEmp : raiseEmployees) {
-	    boolean found = false;
-	    for (EmployeeData emp : allDeservedEmployees) {
-		if (raiseEmp.getEmpId().equals(emp.getEmpId())) {
-		    found = true;
-		    break;
-		}
-	    }
-	    if (!found)
+	    if (!deservedEmpsMap.containsKey(raiseEmp.getEmpId()) || !deservedEmpsMap.get(raiseEmp.getEmpId()).getRankId().equals(raiseEmp.getEmpRankId())
+		    || !deservedEmpsMap.get(raiseEmp.getEmpId()).getDegreeId().equals(raiseEmp.getEmpDegreeId()))
 		throw new BusinessException("error_deservedEmployeesHaveChanged");
 	}
     }
@@ -790,69 +788,38 @@ public class RaisesService extends BaseService {
     public static void isStillValidAnnualRaiseEmployee(Raise raise) throws BusinessException {
 	try {
 	    List<EmployeeData> allDeservedEmployees = getDeservedEmployees(raise.getExecutionDate(), FlagsEnum.ALL.getCode(), raise.getType(), raise.getCategoryId());
-	    List<EmployeeData> currDeservedEmpData = new ArrayList<>();
-	    List<RaiseEmployeeData> prevExcludedforEndOfLadder = new ArrayList<>();
+	    Map<Long, EmployeeData> currDeservedEmps = new HashMap<>();
+	    Map<Long, EmployeeData> currExculeddedForEndOfLadder = new HashMap<>();
+	    Map<Long, RaiseEmployeeData> prevExcludedforEndOfLadder = new HashMap<>();
+	    Map<Long, RaiseEmployeeData> prevDeservedEmps = new HashMap<>();
 	    List<RaiseEmployeeData> prevDeservedEmpData = getAnnualRaiseDeservedEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), raise.getDecisionDateString(), raise.getDecisionNumber(), new Integer[] { RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode() });
 	    Map<Long, Long> rankDegreesHashMap = getEndOfLadderDegreesMap(raise.getCategoryId());
 
+	    boolean atLeastOneDeserved = false;
 	    for (RaiseEmployeeData raiseEmployee : prevDeservedEmpData) {
 		if (raiseEmployee.getEmpDeservedFlag() == RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode())
-		    prevExcludedforEndOfLadder.add(raiseEmployee);
-	    }
-
-	    int excludedForEndOfLadderCount = 0;
-	    for (EmployeeData emp : allDeservedEmployees) {
-		boolean found = false;
-		if (!emp.getDegreeId().equals(rankDegreesHashMap.get(emp.getRankId()))) {
-		    currDeservedEmpData.add(emp);
-		} else {
-		    excludedForEndOfLadderCount++;
-		    for (RaiseEmployeeData raiseEmployee : prevExcludedforEndOfLadder) {
-			if (raiseEmployee.getEmpId().equals(emp.getEmpId())) {
-			    found = true;
-			    break;
-			}
-		    }
-		    if (!found) {
-			raise.setDirtyFlag(true);
-			throw new BusinessException("error_deservedEmployeesHaveChanged");
-		    }
+		    prevExcludedforEndOfLadder.put(raiseEmployee.getEmpId(), raiseEmployee);
+		else {
+		    prevDeservedEmps.put(raiseEmployee.getEmpId(), raiseEmployee);
+		    if (raiseEmployee.getEmpDeservedFlag().equals(RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode()))
+			atLeastOneDeserved = true;
 		}
 	    }
-	    if (excludedForEndOfLadderCount != prevExcludedforEndOfLadder.size()) {
-		raise.setDirtyFlag(true);
-		throw new BusinessException("error_deservedEmployeesHaveChanged");
-	    }
-	    if (currDeservedEmpData.size() != (prevDeservedEmpData.size() - excludedForEndOfLadderCount)) {
-		raise.setDirtyFlag(true);
-		throw new BusinessException("error_deservedEmployeesHaveChanged");
-	    }
-	    for (EmployeeData emp : currDeservedEmpData) {
-		boolean found = false;
-		for (RaiseEmployeeData raiseEmp : prevDeservedEmpData) {
-		    if (raiseEmp.getEmpId().equals(emp.getEmpId())) {
-			found = true;
-			break;
-		    }
-		}
-		if (!found) {
-		    raise.setDirtyFlag(true);
-		    throw new BusinessException("error_deservedEmployeesHaveChanged");
-		}
-	    }
-
-	    // check if annual raise still has deserved employees
-	    boolean atLeastOneDeserved = false;
-	    for (RaiseEmployeeData raiseEmp : prevDeservedEmpData) {
-		if (raiseEmp.getEmpDeservedFlag().equals(RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode())) {
-		    atLeastOneDeserved = true;
-		    break;
-		}
-	    }
+	    // In case all employees are excluded for another reason
 	    if (!atLeastOneDeserved) {
 		throw new BusinessException("error_annualRaiseMustHaveAtLeastOneDeservedEmployee");
 	    }
-
+	    for (EmployeeData emp : allDeservedEmployees) {
+		if (!emp.getDegreeId().equals(rankDegreesHashMap.get(emp.getRankId()))) {
+		    currDeservedEmps.put(emp.getEmpId(), emp);
+		} else {
+		    currExculeddedForEndOfLadder.put(emp.getEmpId(), emp);
+		}
+	    }
+	    if (!areEqualRaiseEmployeeMaps(currExculeddedForEndOfLadder, prevExcludedforEndOfLadder) || !areEqualRaiseEmployeeMaps(currDeservedEmps, prevDeservedEmps)) {
+		raise.setDirtyFlag(true);
+		throw new BusinessException("error_deservedEmployeesHaveChanged");
+	    }
 	} catch (Exception e) {
 	    if (e instanceof BusinessException)
 		throw (BusinessException) e;
@@ -860,6 +827,18 @@ public class RaisesService extends BaseService {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
+    }
+
+    private static boolean areEqualRaiseEmployeeMaps(Map<Long, EmployeeData> emps, Map<Long, RaiseEmployeeData> raiseEmps) {
+	if (emps.size() != raiseEmps.size())
+	    return false;
+	for (Map.Entry<Long, EmployeeData> entry : emps.entrySet()) {
+	    if (!raiseEmps.containsKey(entry.getKey())
+		    || !raiseEmps.get(entry.getKey()).getEmpDegreeId().equals(entry.getValue().getDegreeId())
+		    || !raiseEmps.get(entry.getKey()).getEmpRankId().equals(entry.getValue().getRankId()))
+		return false;
+	}
+	return true;
     }
 
     /*------------------------------------------Queries------------------------------------------------*/
