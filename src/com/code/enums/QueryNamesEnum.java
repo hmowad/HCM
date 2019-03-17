@@ -282,6 +282,7 @@ public enum QueryNamesEnum {
     WF_SEARCH_WFTASK_DATA("wf_taskData_searchWFTasksData"),
     WF_GET_WFINSTANCE_TASKS_DATA("wf_taskData_getWFInstanceTasksData"),
     WF_GET_WFINSTANCE_COMPLETED_TASKS_DATA("wf_taskData_getWFInstanceCompletedTasksData"),
+    WF_GET_WFINSTANCE_COMPLETED_TASKS_DATA_ORDERED_BY_LEVEL_LENGTH("wf_taskData_getWFInstanceCompletedTasksDataOrderedByLevelLength"),
 
     WF_GET_PROCESSES_GROUPS("wf_group_getProcessesGroups"),
     WF_GET_PROCESSES_GROUPS_APRRROVAL_COUNTS("wf_group_getProcessesGroupsApprovalCounts"),

@@ -10,6 +10,7 @@ import com.code.dal.orm.workflow.WFInstance;
 import com.code.dal.orm.workflow.WFTask;
 import com.code.dal.orm.workflow.WFTaskData;
 import com.code.enums.FlagsEnum;
+import com.code.enums.WFProcessesEnum;
 import com.code.enums.WFTaskActionsEnum;
 import com.code.enums.WFTaskRolesEnum;
 import com.code.services.config.ETRConfigurationService;
@@ -82,9 +83,12 @@ public abstract class WFBaseBacking extends BaseBacking implements Serializable 
 			    notificationMessage = null;
 		    }
 		} else {
-		    if (prevTasksNoLevelFlag)
-			prevTasks = BaseWorkFlow.getWFInstanceCompletedTasksData(currentTask.getInstanceId(), currentTask.getTaskId(), FlagsEnum.ALL.getCode() + "");
-		    else
+		    if (prevTasksNoLevelFlag) {
+			if (instance.getProcessId() == WFProcessesEnum.OFFICERS_DISCLAIMER_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.SOLDIERS_DISCLAIMER_REQUEST.getCode())
+			    prevTasks = BaseWorkFlow.getWFInstanceCompletedTasksDataOrderedByLevelLength(currentTask.getInstanceId(), currentTask.getTaskId());
+			else
+			    prevTasks = BaseWorkFlow.getWFInstanceCompletedTasksData(currentTask.getInstanceId(), currentTask.getTaskId(), FlagsEnum.ALL.getCode() + "");
+		    } else
 			prevTasks = BaseWorkFlow.getWFInstanceCompletedTasksData(currentTask.getInstanceId(), currentTask.getTaskId(), currentTask.getLevel());
 		}
 

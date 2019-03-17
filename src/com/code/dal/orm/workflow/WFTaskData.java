@@ -51,6 +51,13 @@ import com.code.services.util.HijriDateService;
 			"   and (:P_LEVELS_FLAG = -1 or (:P_LEVELS_FLAG = 1 and t.level in (:P_LEVELS))) " +
 			" order by t.level, t.assignDate "),
 
+	@NamedQuery(name = "wf_taskData_getWFInstanceCompletedTasksDataOrderedByLevelLength",
+		query = " select t from WFTaskData t " +
+			" where t.instanceId = :P_INSTANCE_ID" +
+			"   and t.action is not null " +
+			"   and t.taskId < :P_TASK_ID " +
+			" order by LENGTH(t.level), t.assignDate "),
+
 	@NamedQuery(name = "wf_taskData_getWFTaskDataById",
 		query = " select t from WFTaskData t " +
 			" where t.taskId = :P_TASK_ID ")
