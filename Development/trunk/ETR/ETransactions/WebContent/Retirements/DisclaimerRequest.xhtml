@@ -376,7 +376,7 @@
 
 									<h:panelGroup rendered="#{disclaimerRequest.role=='ExtraSignManager'}">
 										<h:commandButton onclick="return handleOnAction('#{msgs.q_superSign}', 'true');" action="#{disclaimerRequest.doRetirementsAprroveESM()}" value="#{msgs.label_superSign}  &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
-											<f:ajax />
+											<f:ajax render="notifyMessagesId" execute="@form" />
 										</h:commandButton>
 
 										<h:commandButton id="sentBackToUnitsEsmBtnId" onclick="return handleOnAction('#{msgs.q_sendBackToUnits}', 'true');" action="#{disclaimerRequest.doRetirementsSendBackUnitsESM()}" value="#{msgs.label_sendBackToUnits} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
