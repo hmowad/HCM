@@ -793,6 +793,19 @@ public abstract class BaseWorkFlow extends BaseService {
 	}
     }
 
+    public static List<WFTaskData> getWFInstanceCompletedTasksDataOrderedByLevelLength(long instanceId, long taskId) throws BusinessException {
+	try {
+
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_INSTANCE_ID", instanceId);
+	    qParams.put("P_TASK_ID", taskId);
+
+	    return DataAccess.executeNamedQuery(WFTaskData.class, QueryNamesEnum.WF_GET_WFINSTANCE_COMPLETED_TASKS_DATA_ORDERED_BY_LEVEL_LENGTH.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    throw new BusinessException("error_general");
+	}
+    }
+
     public static List<String> getWFTaskSecurityUrls(long assigneeId, String taskUrl, long taskId, boolean isRunning) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
