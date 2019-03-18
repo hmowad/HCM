@@ -24,6 +24,7 @@ import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.RetirementsService;
 import com.code.services.hcm.UnitsService;
 import com.code.services.security.SecurityService;
+import com.code.services.workflow.BaseWorkFlow;
 import com.code.services.workflow.hcm.RetirementsWorkFlow;
 import com.code.ui.backings.base.WFBaseBacking;
 
@@ -56,6 +57,7 @@ public class DisclaimerRequest extends WFBaseBacking {
 		employee.setCategoryId(new Long(mode));
 		wfDisclaimerData = new WFDisclaimerData();
 		reviewerEmpId = null;
+		prevTasks = BaseWorkFlow.getWFInstanceCompletedTasksDataOrderedByLevelLength(currentTask.getInstanceId(), currentTask.getTaskId());
 		switch (mode) {
 		case 1:
 		    setScreenTitle(getMessage("title_officersDisclaimerRequest"));
