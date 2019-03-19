@@ -498,9 +498,6 @@ public class TrainingEmployeesService extends BaseService {
 
 	EmployeeData employee = EmployeesService.getEmployeeData(trainingTransactionCategory == TrainingTransactionCategoryEnum.NOMINATION_REPLACEMENT.getCode() ? trainingTransaction.getReplacementEmployeeId() : trainingTransaction.getEmployeeId());
 
-	if (employee.getJobId() == null)
-	    throw new BusinessException("error_employeeSpecifiedStatusIsServiceTerminated", new Object[] { employee.getName() });
-
 	if (trainingTransactionCategory == TrainingTransactionCategoryEnum.NOMINATION.getCode() || trainingTransactionCategory == TrainingTransactionCategoryEnum.NOMINATION_APOLOGY.getCode() || trainingTransactionCategory == TrainingTransactionCategoryEnum.NOMINATION_REPLACEMENT.getCode()) {
 	    if (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.INTERNAL_MILITARY_COURSE.getCode()) {
 		if (courseEventData.getStatus().intValue() != TrainingCourseEventStatusEnum.PLANNED_TO_BE_HELD.getCode() && courseEventData.getStatus().intValue() != TrainingCourseEventStatusEnum.COURSE_EVENT_HOLDING_DECISION_ISSUED.getCode() && courseEventData.getStatus().intValue() != TrainingCourseEventStatusEnum.COURSE_EVENT_POSTPONEMENT_DECISION_ISSUED.getCode())
