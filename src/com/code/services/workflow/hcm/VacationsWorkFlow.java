@@ -223,7 +223,7 @@ public class VacationsWorkFlow extends BaseWorkFlow {
 			    if (EmployeesService.getEmployeeDirectManager(curDM.getEmpId()).getUnitTypeCode().intValue() >= UnitTypesEnum.PRESIDENCY.getCode()) {
 				vacRequest.setApprovedId(dmTask.getOriginalId());
 
-				WFPosition position = getWFPosition(WFPositionsEnum.SOLDIERS_INFORMATION_UNIT_VACATIONS_PERSONNEL.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+				WFPosition position = getWFPosition(WFPositionsEnum.SOLDIERS_FILES_UNIT_VACATIONS_PERSONNEL.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
 				EmployeeData vacEmployee = EmployeesService.getEmployeeByPosition(position.getUnitId(), position.getEmpId());
 
 				// New or modify external regular/maternity/motherhood/deathWaitingPeriod vacation for soldiers.
@@ -263,7 +263,7 @@ public class VacationsWorkFlow extends BaseWorkFlow {
 				if (LocationFlagsEnum.INTERNAL.getCode() == vacRequest.getLocationFlag().intValue()) {
 				    isWorkFlowClosed = true;
 				} else {
-				    WFPosition position = getWFPosition(WFPositionsEnum.SOLDIERS_INFORMATION_UNIT_VACATIONS_PERSONNEL.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+				    WFPosition position = getWFPosition(WFPositionsEnum.SOLDIERS_FILES_UNIT_VACATIONS_PERSONNEL.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
 				    EmployeeData vacEmployee = EmployeesService.getEmployeeByPosition(position.getUnitId(), position.getEmpId());
 
 				    // New external compelling vacation for soldiers.
@@ -350,7 +350,7 @@ public class VacationsWorkFlow extends BaseWorkFlow {
 			if (curDM.getUnitTypeCode().intValue() >= UnitTypesEnum.PRESIDENCY.getCode()) {
 			    vacRequest.setApprovedId(dmTask.getOriginalId());
 
-			    WFPosition position = getWFPosition(WFPositionsEnum.SOLDIERS_INFORMATION_UNIT_VACATIONS_PERSONNEL.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+			    WFPosition position = getWFPosition(WFPositionsEnum.SOLDIERS_FILES_UNIT_VACATIONS_PERSONNEL.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
 			    EmployeeData vacEmployee = EmployeesService.getEmployeeByPosition(position.getUnitId(), position.getEmpId());
 
 			    // New external exceptional vacation for soldiers.
