@@ -1048,15 +1048,10 @@ public class PromotionsService extends BaseService {
 	    reportDetailData.setOldDegreeDesc(employee.getDegreeDesc());
 	    if (promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && employee.getDegreeId() > editedEmployeeList.get(index).getDegreeId()) {
 		employeesLoggingData += "Retroactive promotion: EmpID: " + employee.getEmpId() + " EmployeeID: " + employee.getDegreeId() + " Degree from raises services: " + editedEmployeeList.get(index).getDegreeId();
-		Long differenceBetweenCurrentDegreeAndRetroactiveDegree = employee.getDegreeId() - editedEmployeeList.get(index).getDegreeId();
 		PayrollSalary oldRetroactivePayrollSalary = PayrollsService.getPayrollSalary(reportDetailData.getOldRankId(), editedEmployeeList.get(index).getDegreeId());
 		PayrollSalary newRetroactivePayrollSalary = PayrollsService.getPayrollNewSalary(getNextRank(reportDetailData.getOldRankId()), oldRetroactivePayrollSalary.getBasicSalary());
-		Long deservedDegree = differenceBetweenCurrentDegreeAndRetroactiveDegree + newRetroactivePayrollSalary.getDegreeId();
-		employeesLoggingData += " DeservedDegree: " + deservedDegree;
-		Long endOfLadderOfRank = PayrollsService.getEndOfLadderOfRank(getNextRank(reportDetailData.getOldRankId()));
-		employeesLoggingData += " endOdLadder: " + endOfLadderOfRank;
-		reportDetailData.setNewDegreeId(deservedDegree > endOfLadderOfRank ? endOfLadderOfRank : deservedDegree);
-		employeesLoggingData += " Calculated degree: " + (deservedDegree > endOfLadderOfRank ? endOfLadderOfRank : deservedDegree) + ", ";
+		reportDetailData.setNewDegreeId(newRetroactivePayrollSalary.getDegreeId());
+		employeesLoggingData += " Calculated degree: " + newRetroactivePayrollSalary.getDegreeId() + ", ";
 	    } else {
 		reportDetailData.setNewDegreeId(newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId());
 		employeesLoggingData += "Non-Retroactive promotion: EmpId: " + employee.getEmpId() + " Calculated degree: " + newPayrollSalaryMap.get(employee.getDegreeId()).getDegreeId() + ", ";
@@ -3606,20 +3601,8 @@ public class PromotionsService extends BaseService {
 
     public static void doPromotionTransactionEffect(PromotionReportData promotionReportData, List<PromotionReportDetailData> promotionReportDetailDataList, String subject, Long smTaskOriginalId, Long loginEmpId, CustomSession session) throws BusinessException {
 
-	Log4jService.traceInfo(PromotionsService.class, "Start of doPromotionTransactionEffect:");
 	List<PromotionTransactionData> promotionTransactionList = constructPromotionTransactionList(promotionReportData, promotionReportDetailDataList, smTaskOriginalId, session);
 	addPromotionsTransactions(promotionReportData, promotionTransactionList, subject, loginEmpId, session);
-	Log4jService.traceInfo(PromotionsService.class, "Start of raises transactions modification");
-	if (promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
-	    Long[] empsIds = new Long[promotionReportDetailDataList.size()];
-	    int i = 0;
-	    for (PromotionReportDetailData promotionReportDetail : promotionReportDetailDataList) {
-		empsIds[i] = promotionReportDetail.getEmpId();
-		i++;
-	    }
-	    RaisesService.raisesModificationsAfterPromotions(EmployeesService.getEmployeesByEmpsIds(empsIds), promotionTransactionList.get(0).getDecisionDate(), promotionTransactionList.get(0).getDecisionNumber(), loginEmpId + "", session);
-	    Log4jService.traceInfo(PromotionsService.class, "End of doPromotionTransactionEffect");
-	}
     }
 
     /**
@@ -3649,7 +3632,7 @@ public class PromotionsService extends BaseService {
 	    StringBuilder jobsToFreezeIds = new StringBuilder("");
 	    List<JobData> jobsToScaleUp = new ArrayList<JobData>();
 	    String[] etrCorInfo = new String[2];
-
+	    int index = 0;
 	    // All soldiers in the report has one decision, but civilians we make decision for every employee
 	    if (promotionReportData.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
 		etrCorInfo = ETRCorrespondence.doETRCorOut(subject, session);
@@ -3657,6 +3640,19 @@ public class PromotionsService extends BaseService {
 		promotionReportData.setDecisionDateString(etrCorInfo[1]);
 	    }
 
+	    List<EmployeeData> editedEmployeeList = new ArrayList<>();
+	    if (promotionReportData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+		for (PromotionTransactionData employeeTransactionData : promotionTransactionDataList) {
+		    EmployeeData copiedEmployeeData = new EmployeeData();
+		    copiedEmployeeData.setEmpId(employeeTransactionData.getEmpId());
+		    copiedEmployeeData.setDegreeId(employeeTransactionData.getNewDegreeId());
+		    copiedEmployeeData.setRankId(employeeTransactionData.getNewRankId());
+		    copiedEmployeeData.setCategoryId(employeeTransactionData.getCategoryId());
+		    copiedEmployeeData.setRankDesc(employeeTransactionData.getNewRankDesc());
+		    editedEmployeeList.add(copiedEmployeeData);
+		}
+		RaisesService.raisesModificationsAfterPromotions(editedEmployeeList, promotionTransactionDataList.get(0).getDecisionDate(), promotionTransactionDataList.get(0).getDecisionNumber(), loginEmpId + "", session);
+	    }
 	    for (PromotionTransactionData promotionTransactionDataItr : promotionTransactionDataList) {
 
 		EmployeeData employee = EmployeesService.getEmployeeData(promotionTransactionDataItr.getEmpId());
@@ -3704,6 +3700,7 @@ public class PromotionsService extends BaseService {
 		    promotionTransactionDataItr.getPromotionTransaction().setSystemUser(loginEmpId + "");
 
 		    // Effect in employee
+		    promotionTransactionDataItr.setNewDegreeId(editedEmployeeList.get(index).getDegreeId());
 		    EmployeesService.updateEmployeePromotionData(employee, null, getNextRank(employee.getRankId()), promotionTransactionDataItr.getRankTitleId(), promotionTransactionDataItr.getNewDegreeId(), promotionTransactionDataItr.getNewMilitaryNumber(), promotionTransactionDataItr.getNewDueDate(), promotionTransactionDataItr.getNewLastPromotionDate(), session);
 		    EmployeeLog log = new EmployeeLog.Builder().setRankId(getNextRank(employee.getRankId())).setRankTitleId(promotionTransactionDataItr.getRankTitleId()).setDegreeId(promotionTransactionDataItr.getNewDegreeId()).constructCommonFields(employee.getEmpId(), FlagsEnum.ON.getCode(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getNewLastPromotionDate(), DataAccess.getTableName(PromotionTransaction.class))
 			    .build();
@@ -3778,6 +3775,7 @@ public class PromotionsService extends BaseService {
 		// add promotion transaction
 		DataAccess.addEntity(promotionTransactionDataItr.getPromotionTransaction(), session);
 		promotionTransactionDataItr.setId(promotionTransactionDataItr.getPromotionTransaction().getId());
+		index++;
 	    }
 	    // scale up jobs
 	    if (promotionReportData.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && promotionReportData.getScaleUpFlagBoolean()) {
