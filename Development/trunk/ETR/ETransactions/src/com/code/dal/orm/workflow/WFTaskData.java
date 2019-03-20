@@ -56,7 +56,7 @@ import com.code.services.util.HijriDateService;
 			" where t.instanceId = :P_INSTANCE_ID" +
 			"   and t.action is not null " +
 			"   and t.taskId < :P_TASK_ID " +
-			" order by LENGTH(t.level), t.assignDate "),
+			" order by LENGTH(t.level), t.level, t.assignDate "),
 
 	@NamedQuery(name = "wf_taskData_getWFTaskDataById",
 		query = " select t from WFTaskData t " +
