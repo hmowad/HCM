@@ -57,7 +57,6 @@ public class DisclaimerRequest extends WFBaseBacking {
 		employee.setCategoryId(new Long(mode));
 		wfDisclaimerData = new WFDisclaimerData();
 		reviewerEmpId = null;
-		prevTasks = BaseWorkFlow.getWFInstanceCompletedTasksDataOrderedByLevelLength(currentTask.getInstanceId(), currentTask.getTaskId());
 		switch (mode) {
 		case 1:
 		    setScreenTitle(getMessage("title_officersDisclaimerRequest"));
@@ -141,6 +140,7 @@ public class DisclaimerRequest extends WFBaseBacking {
 		    wfDisclaimerData = RetirementsWorkFlow.constructWFDisclaimerData(loginEmpData);
 		}
 	    } else {
+		prevTasks = BaseWorkFlow.getWFInstanceCompletedTasksDataOrderedByLevelLength(currentTask.getInstanceId(), currentTask.getTaskId());
 		wfDisclaimerData = RetirementsWorkFlow.getWFDisclaimerDataByInstanceIds(new Long[] { (long) instance.getInstanceId() }).get(0);
 		updateAmounts();
 		employee = EmployeesService.getEmployeeData(wfDisclaimerData.getEmpId());
