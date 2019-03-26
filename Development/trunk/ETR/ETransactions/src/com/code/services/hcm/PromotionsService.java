@@ -3651,7 +3651,7 @@ public class PromotionsService extends BaseService {
 		    copiedEmployeeData.setRankDesc(employeeTransactionData.getNewRankDesc());
 		    editedEmployeeList.add(copiedEmployeeData);
 		}
-		RaisesService.raisesModificationsAfterPromotions(editedEmployeeList, promotionTransactionDataList.get(0).getDecisionDate(), promotionTransactionDataList.get(0).getDecisionNumber(), loginEmpId + "", session);
+		RaisesService.raisesModificationsAfterPromotions(editedEmployeeList, promotionReportData.getDueDate(), promotionReportData.getDecisionDate(), promotionReportData.getDecisionNumber(), loginEmpId + "", session);
 	    }
 	    for (PromotionTransactionData promotionTransactionDataItr : promotionTransactionDataList) {
 

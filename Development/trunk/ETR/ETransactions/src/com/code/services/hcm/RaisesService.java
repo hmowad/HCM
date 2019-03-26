@@ -1310,7 +1310,7 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    public static void raisesModificationsAfterPromotions(List<EmployeeData> employees, Date promotionDecisionDate, String promotionDecisionNumber, String loginEmpId, CustomSession session) throws BusinessException {
+    public static void raisesModificationsAfterPromotions(List<EmployeeData> employees, Date promotionDueDate, Date promotionDecisionDate, String promotionDecisionNumber, String loginEmpId, CustomSession session) throws BusinessException {
 	try {
 	    List<Degree> degrees = PayrollsService.getAllDegrees();
 	    if (employees != null && !employees.isEmpty()) {
