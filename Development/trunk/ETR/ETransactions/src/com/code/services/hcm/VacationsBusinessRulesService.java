@@ -592,9 +592,13 @@ public class VacationsBusinessRulesService extends BaseService {
 		frameEndDate = HijriDateService.addSubHijriDays(frameEndDate, -1);
 	    } while (!HijriDateService.isDateBetween(frameStartDate, frameEndDate, request.getStartDate()));
 
-	    if (request.getEndDate().after(frameEndDate))
-		throw new BusinessException("error_sickVacationBetweenTwoFrames");
+	    if (request.getEndDate().after(frameEndDate)) {
+		Integer periodAtCurrentFrame = HijriDateService.hijriDateDiff(request.getStartDate(), frameEndDate) + 1;
+		Date nextFrameStartDate = HijriDateService.addSubHijriDays(frameEndDate, 1);
+		Integer periodAtNextFrame = HijriDateService.hijriDateDiff(nextFrameStartDate, request.getEndDate()) + 1;
 
+		throw new BusinessException("error_sickVacationBetweenTwoFrames", new Object[] { request.getPeriod(), request.getStartDateString(), periodAtCurrentFrame, HijriDateService.getHijriDateString(frameEndDate), HijriDateService.getHijriDateString(nextFrameStartDate), periodAtNextFrame, request.getEndDateString() });
+	    }
 	    // external vacation should be greater than or equal 15 days for officers only.
 	    if (vacationBeneficiary.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())
 		    && request.getLocationFlag() == LocationFlagsEnum.EXTERNAL.getCode()
