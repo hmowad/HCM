@@ -549,7 +549,7 @@
 								<td width="100%">
 
 									<h:commandButton id="rBtnId" onclick="return handleOnAction('#{subjoinDecisionRequest.mode == 1 ? msgs.q_sendOfficers : (subjoinDecisionRequest.mode == 2 ? msgs.q_sendSoldiers : msgs.q_sendCivilians)}', 'validateSend(#{subjoinDecisionRequest.mode})');" action="#{subjoinDecisionRequest.initMovement()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{subjoinDecisionRequest.role == 'Requester'}">
-										<f:ajax render="notifyMessagesId" execute="@form" />
+										<f:ajax render="notifyMessagesId subjoinDecisionRequestFormId:subjoinListPanelId" execute="@form" />
 									</h:commandButton>
 
 									<h:commandButton id="approveReBtnId" action="#{subjoinDecisionRequest.approveMovementRE()}" onclick="return handleOnAction('#{subjoinDecisionRequest.mode == 1 ? msgs.q_reviewOfficers : (subjoinDecisionRequest.mode == 2 ? msgs.q_reviewSoldiers : msgs.q_reviewCivilians)}', 'validateSend(#{subjoinDecisionRequest.mode})');" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinDecisionRequest.role == 'ReviewerEmp'}">
