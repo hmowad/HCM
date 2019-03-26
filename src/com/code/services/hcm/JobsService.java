@@ -708,7 +708,7 @@ public class JobsService extends BaseService {
 		addJobTransaction(jobData, TransactionTypesEnum.JOB_MODIFY_MINOR_SPECIALIZATION.getCode(), decisionData,
 			jobData.getCode(), transBasicJobNameId, jobData.getUnitId(), jobData.getUnitFullName(), jobData.getRankId(), transMinorSpecId, session);
 
-		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode()) {
+		if (jobData.getStatus().intValue() == JobStatusEnum.OCCUPIED.getCode() && jobData.getNewBasicJobNameId() != null) {
 		    EmployeeLog employeeLog = new EmployeeLog.Builder()
 			    .setBasicJobNameId(jobData.getBasicJobNameId())
 			    .constructCommonFields(jobData.getEmployeeId(), FlagsEnum.ON.getCode(), decisionData.getDecisionNumber(), decisionData.getDecisionDate(), HijriDateService.getHijriSysDate(), DataAccess.getTableName(JobTransaction.class))
