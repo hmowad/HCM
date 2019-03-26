@@ -1321,7 +1321,7 @@ public class RaisesService extends BaseService {
 		for (int i = 0; i < employees.size(); i++) {
 		    empIds.add(employees.get(i).getEmpId());
 		    if (i == employees.size() - 1 || (i % 1000 == 0 && i != 0)) {
-			transactions.addAll(getAllRaisesForEmployeesAfterGivenDate(empIds.toArray(), promotionDecisionDate));
+			transactions.addAll(getAllRaisesForEmployeesAfterGivenDate(empIds.toArray(), promotionDueDate));
 			empIds.clear();
 		    }
 		}
