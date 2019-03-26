@@ -39,7 +39,11 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
 
 	    for (WFMovementData wfm : wfMovementsList) {
 		if (wfm.getExecutionDateString() != null && ((wfm.getPeriodMonths() != null && wfm.getPeriodMonths() > 0) || (wfm.getPeriodDays() != null && wfm.getPeriodDays() > 0))) {
-		    wfm.setEndDateString(HijriDateService.addSubStringHijriMonthsDays(wfm.getExecutionDateString(), wfm.getPeriodMonths() == null ? 0 : wfm.getPeriodMonths(), wfm.getPeriodDays() == null ? -1 : wfm.getPeriodDays() - 1));
+		    String endDate = HijriDateService.addSubStringHijriMonthsDays(wfm.getExecutionDateString(), wfm.getPeriodMonths() == null ? 0 : wfm.getPeriodMonths(), wfm.getPeriodDays() == null ? -1 : wfm.getPeriodDays() - 1);
+		    if (!endDate.equals(wfm.getEndDateString())) {
+			wfm.setEndDateString(endDate);
+			throw new BusinessException("error_endDateIsRecalculated");
+		    }
 		} else
 		    wfm.setEndDateString(null);
 		wfm.getWfMovement().setSystemUser(loginEmpData.getEmpId() + "");
@@ -239,7 +243,11 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
 	    }
 	    for (WFMovementData wfm : wfMovementsList) {
 		if (wfm.getExecutionDateString() != null && ((wfm.getPeriodMonths() != null && wfm.getPeriodMonths() > 0) || (wfm.getPeriodDays() != null && wfm.getPeriodDays() > 0))) {
-		    wfm.setEndDateString(HijriDateService.addSubStringHijriMonthsDays(wfm.getExecutionDateString(), wfm.getPeriodMonths() == null ? 0 : wfm.getPeriodMonths(), wfm.getPeriodDays() == null ? -1 : wfm.getPeriodDays() - 1));
+		    String endDate = HijriDateService.addSubStringHijriMonthsDays(wfm.getExecutionDateString(), wfm.getPeriodMonths() == null ? 0 : wfm.getPeriodMonths(), wfm.getPeriodDays() == null ? -1 : wfm.getPeriodDays() - 1);
+		    if (!endDate.equals(wfm.getEndDateString())) {
+			wfm.setEndDateString(endDate);
+			throw new BusinessException("error_endDateIsRecalculated");
+		    }
 		} else
 		    wfm.setEndDateString(null);
 		wfm.getWfMovement().setSystemUser(loginEmpData.getEmpId() + "");

@@ -380,7 +380,7 @@
 								<td width="100%">
 
 									<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateSend(#{subjoinRequest.mode})');" action="#{subjoinRequest.initMovement()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{subjoinRequest.role == 'Requester'}">
-										<f:ajax render="notifyMessagesId" execute="@form" />
+										<f:ajax render="notifyMessagesId dataPanelId" execute="@form" />
 									</h:commandButton>
 
 									<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;subjoinRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinRequest.approveMovementDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinRequest.role == 'DirectManager'}">
