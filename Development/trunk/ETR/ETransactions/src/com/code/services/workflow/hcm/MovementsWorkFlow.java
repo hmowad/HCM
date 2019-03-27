@@ -105,7 +105,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		else
 		    validateMovementRequests(movementRequests, requester, null, processId, null, false, isRequest ? MovementTransactionViewsEnum.REQUEST.getCode() : MovementTransactionViewsEnum.DECISION.getCode());
 	    } else {
-		if (!movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !movementRequests.get(0).getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && !checkIfEmployeeExistsInWFPositionUnit(movementRequests.get(0).getCategoryId(), requester))
+		if (!movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !movementRequests.get(0).getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && !checkIfEmployeeExistsInWFPositionUnit(movementRequests.get(0).getCategoryId(), requester, movementRequests.get(0).getMovementTypeId()))
 		    throw new BusinessException("error_unAuthorizedRequester");
 		validateMovementRequests(movementRequests, requester, null, processId, null, false, isRequest ? MovementTransactionViewsEnum.REQUEST.getCode() : MovementTransactionViewsEnum.DECISION.getCode());
 	    }
@@ -384,7 +384,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 					&& !requester.getPhysicalRegionId().equals(replacementEmployee.getPhysicalRegionId())) {
 
 				    role = WFTaskRolesEnum.SECONDARY_MANAGER_REDIRECT.getCode();
-				    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId()).getEmpId();
+				    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				    assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getEmpId());
 				} else {
 				    role = WFTaskRolesEnum.REPLACEMENT_DIRECT_MANAGER.getCode();
@@ -416,7 +416,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 					&& !requester.getPhysicalRegionId().equals(replacementEmployee.getPhysicalRegionId())) {
 
 				    role = WFTaskRolesEnum.SECONDARY_MANAGER_REDIRECT.getCode();
-				    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId()).getEmpId();
+				    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				    assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getEmpId());
 				} else {
 				    role = WFTaskRolesEnum.REPLACEMENT_DIRECT_MANAGER.getCode();
@@ -455,31 +455,31 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 			    if (generalDirectorateDecision) {
 				if (!requester.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode())) {
 				    role = WFTaskRolesEnum.SECONDARY_MANAGER_REDIRECT.getCode();
-				    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId()).getEmpId();
+				    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				} else {
 				    role = WFTaskRolesEnum.MANAGER_REDIRECT.getCode();
-				    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()).getEmpId();
+				    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				}
 			    } else {
 				role = WFTaskRolesEnum.MANAGER_REDIRECT.getCode();
-				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId()).getEmpId();
+				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 			    }
 			} else if (movementRequests.get(0).getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
 			    if (generalDirectorateDecision) {
 				if (!requester.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode())) {
 				    role = WFTaskRolesEnum.SECONDARY_MANAGER_REDIRECT.getCode();
-				    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId()).getEmpId();
+				    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				} else {
 				    role = WFTaskRolesEnum.MANAGER_REDIRECT_TO_SECRUITY.getCode();
-				    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()).getEmpId();
+				    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				}
 			    } else {
 				role = WFTaskRolesEnum.MANAGER_REDIRECT.getCode();
-				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId()).getEmpId();
+				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 			    }
 			} else {
 			    role = WFTaskRolesEnum.MANAGER_REDIRECT.getCode();
-			    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), generalDirectorateDecision ? RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() : requester.getPhysicalRegionId()).getEmpId();
+			    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), generalDirectorateDecision ? RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() : requester.getPhysicalRegionId(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 			}
 
 			assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getEmpId());
@@ -632,7 +632,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 				    && !requester.getPhysicalRegionId().equals(replacementEmployee.getPhysicalRegionId())) {
 
 				role = WFTaskRolesEnum.REPLACEMENT_SECONDARY_MANAGER_REDIRECT.getCode();
-				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), replacementEmployee.getPhysicalRegionId()).getEmpId();
+				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), replacementEmployee.getPhysicalRegionId(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				assigneeId = getDelegate(originalId, instance.getProcessId(), replacementEmployee.getEmpId());
 
 				// Two employees from general directorate
@@ -640,7 +640,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 				    && replacementEmployee.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode())) {
 
 				role = WFTaskRolesEnum.MANAGER_REDIRECT.getCode();
-				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()).getEmpId();
+				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getEmpId());
 
 				// Same region but general directorate decision
@@ -648,21 +648,21 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 				    && !replacementEmployee.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode())) {
 
 				role = WFTaskRolesEnum.SECONDARY_MANAGER_REDIRECT.getCode();
-				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId()).getEmpId();
+				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getEmpId());
 
 				// One employee from a region and the other one from general directorate
 			    } else {
 				role = WFTaskRolesEnum.SECONDARY_MANAGER_REDIRECT.getCode();
 				// If getMovementManager is changed to official region instead of physical region please change the condition to official
-				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) ? replacementEmployee.getPhysicalRegionId() : requester.getPhysicalRegionId()).getEmpId();
+				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) ? replacementEmployee.getPhysicalRegionId() : requester.getPhysicalRegionId(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) ? replacementEmployee.getEmpId() : requester.getEmpId());
 			    }
 
 			    // Two employees from the same region
 			} else {
 			    role = WFTaskRolesEnum.MANAGER_REDIRECT.getCode();
-			    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId()).getEmpId();
+			    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 			    assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getEmpId());
 			}
 		    } else if (movementRequests.get(0).getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
@@ -675,7 +675,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 				    && !requester.getPhysicalRegionId().equals(replacementEmployee.getPhysicalRegionId())) {
 
 				role = WFTaskRolesEnum.REPLACEMENT_SECONDARY_MANAGER_REDIRECT.getCode();
-				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), replacementEmployee.getPhysicalRegionId()).getEmpId();
+				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), replacementEmployee.getPhysicalRegionId(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				assigneeId = getDelegate(originalId, instance.getProcessId(), replacementEmployee.getEmpId());
 
 				// Two employees from general directorate
@@ -683,26 +683,26 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 				    && replacementEmployee.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode())) {
 
 				role = WFTaskRolesEnum.MANAGER_REDIRECT_TO_SECRUITY.getCode();
-				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()).getEmpId();
+				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getEmpId());
 
 				// One employee from a region and the other one from general directorate
 			    } else {
 				role = WFTaskRolesEnum.SECONDARY_MANAGER_REDIRECT.getCode();
 				// If getMovementManager is changed to official region instead of physical region please change the condition to official
-				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) ? replacementEmployee.getPhysicalRegionId() : requester.getPhysicalRegionId()).getEmpId();
+				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) ? replacementEmployee.getPhysicalRegionId() : requester.getPhysicalRegionId(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) ? replacementEmployee.getEmpId() : requester.getEmpId());
 			    }
 
 			    // Two employees from the same region
 			} else {
 			    role = WFTaskRolesEnum.MANAGER_REDIRECT.getCode();
-			    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId()).getEmpId();
+			    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), requester.getPhysicalRegionId(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 			    assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getEmpId());
 			}
 		    } else {
 			role = WFTaskRolesEnum.MANAGER_REDIRECT.getCode();
-			originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()).getEmpId();
+			originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 			assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getEmpId());
 		    }
 
@@ -970,7 +970,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		    updateWFInstanceBeneficiaries(instance.getInstanceId(), getMovementsInstanceBeneficiariesIds(movementRequests), session);
 
 		    boolean isRequest = isRequestProcess(instance.getProcessId(), movementRequests.get(0).getCategoryId());
-		    if (!isRequest && !movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !movementRequests.get(0).getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && !checkIfEmployeeExistsInWFPositionUnit(movementRequests.get(0).getCategoryId(), requester))
+		    if (!isRequest && !movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !movementRequests.get(0).getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && !checkIfEmployeeExistsInWFPositionUnit(movementRequests.get(0).getCategoryId(), requester, movementRequests.get(0).getMovementTypeId()))
 			throw new BusinessException("error_unAuthorizedRequester");
 
 		    validateMovementRequests(movementRequests, requester, instance.getInstanceId(), instance.getProcessId(), reTask, false, isRequest ? MovementTransactionViewsEnum.REQUEST.getCode() : MovementTransactionViewsEnum.DECISION.getCode());
@@ -1343,12 +1343,12 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 				assigneeId = getDelegate(originalId, instance.getProcessId(), replacementEmployee.getEmpId());
 			    } else {
 				role = WFTaskRolesEnum.MANAGER_REDIRECT.getCode();
-				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()).getEmpId();
+				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getEmpId());
 			    }
 			} else {
 			    role = WFTaskRolesEnum.MANAGER_REDIRECT.getCode();
-			    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()).getEmpId();
+			    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 			    assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getEmpId());
 			}
 		    } else {
@@ -1366,12 +1366,12 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 				assigneeId = getDelegate(originalId, instance.getProcessId(), replacementEmployee.getEmpId());
 			    } else {
 				role = WFTaskRolesEnum.MANAGER_REDIRECT_TO_SECRUITY.getCode();
-				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()).getEmpId();
+				originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 				assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getEmpId());
 			    }
 			} else {
 			    role = WFTaskRolesEnum.MANAGER_REDIRECT_TO_SECRUITY.getCode();
-			    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()).getEmpId();
+			    originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 			    assigneeId = getDelegate(originalId, instance.getProcessId(), requester.getEmpId());
 			}
 		    }
@@ -1494,14 +1494,13 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		    String role;
 		    long assigneeId = requester.getEmpId();
 		    long originalId = requester.getEmpId();
-
 		    if (movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 			role = WFTaskRolesEnum.MANAGER_REDIRECT.getCode();
-			originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()).getEmpId();
+			originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 		    } else {
 			// Only soldiers
 			role = WFTaskRolesEnum.MANAGER_REDIRECT_TO_SECRUITY.getCode();
-			originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()).getEmpId();
+			originalId = getMovementManager(movementRequests.get(0).getCategoryId().longValue(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode(), movementRequests.get(0).getMovementTypeId()).getEmpId();
 		    }
 
 		    assigneeId = getDelegate(originalId, instance.getProcessId(), replacementEmp.getEmpId());
@@ -2720,7 +2719,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
      *             if any error occurs
      * @see WFPositionsEnum
      */
-    private static WFPosition getWFPositionByCategoryIdAndRegionId(long categoryId, long regionId) throws BusinessException {
+    private static WFPosition getWFPositionByCategoryIdAndRegionId(long categoryId, long regionId, long movementTypeId) throws BusinessException {
 	int positionCode = -1;
 
 	if (regionId == RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) {
@@ -2728,7 +2727,10 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		positionCode = WFPositionsEnum.OFFICERS_MOVEMENTS_UNIT_MANAGER.getCode();
 
 	    else if (CategoriesEnum.SOLDIERS.getCode() == categoryId)
-		positionCode = WFPositionsEnum.SOLDIERS_MOVEMENTS_UNIT_MANAGER.getCode();
+		if (movementTypeId == MovementTypesEnum.SUBJOIN.getCode() || movementTypeId == MovementTypesEnum.MANDATE.getCode() || movementTypeId == MovementTypesEnum.SECONDMENT.getCode())
+		    positionCode = WFPositionsEnum.SOLDIERS_SUBJOIN_MOVEMENTS_UNIT_MANAGER.getCode();
+		else
+		    positionCode = WFPositionsEnum.SOLDIERS_MOVEMENTS_UNIT_MANAGER.getCode();
 
 	    else if (CategoriesEnum.CONTRACTORS.getCode() == categoryId)
 		positionCode = WFPositionsEnum.CONTRACTORS_UNIT_MANAGER.getCode();
@@ -2766,8 +2768,8 @@ public class MovementsWorkFlow extends BaseWorkFlow {
      */
 
     // Currently we are forwarding to the specialized unit according to the physical region of the employee
-    private static EmployeeData getMovementManager(long categoryId, long regionId) throws BusinessException {
-	WFPosition position = getWFPositionByCategoryIdAndRegionId(categoryId, regionId);
+    private static EmployeeData getMovementManager(long categoryId, long regionId, long movementTypeId) throws BusinessException {
+	WFPosition position = getWFPositionByCategoryIdAndRegionId(categoryId, regionId, movementTypeId);
 	if (position == null) {
 	    throw new BusinessException("error_general");
 	}
@@ -2790,8 +2792,8 @@ public class MovementsWorkFlow extends BaseWorkFlow {
      * @throws BusinessException
      *             if any error occurs
      */
-    private static boolean checkIfEmployeeExistsInWFPositionUnit(long categoryId, EmployeeData employee) throws BusinessException {
-	WFPosition position = getWFPositionByCategoryIdAndRegionId(categoryId, employee.getPhysicalRegionId());
+    private static boolean checkIfEmployeeExistsInWFPositionUnit(long categoryId, EmployeeData employee, long movementTypeId) throws BusinessException {
+	WFPosition position = getWFPositionByCategoryIdAndRegionId(categoryId, employee.getPhysicalRegionId(), movementTypeId);
 	if (position == null) {
 	    throw new BusinessException("error_general");
 	}
