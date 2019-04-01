@@ -16,6 +16,7 @@ import com.code.dal.orm.hcm.payroll.EmployeeAllowancesData;
 import com.code.dal.orm.hcm.payroll.EmployeeBonusesData;
 import com.code.dal.orm.hcm.payroll.EmployeePenalitiesData;
 import com.code.dal.orm.hcm.promotions.PromotionTransactionData;
+import com.code.dal.orm.hcm.raises.RaiseTransactionData;
 import com.code.dal.orm.hcm.recruitments.RecruitmentTransactionData;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransactionData;
 import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
@@ -35,6 +36,7 @@ import com.code.services.hcm.MissionsService;
 import com.code.services.hcm.MovementsService;
 import com.code.services.hcm.PayrollsService;
 import com.code.services.hcm.PromotionsService;
+import com.code.services.hcm.RaisesService;
 import com.code.services.hcm.RecruitmentsService;
 import com.code.services.hcm.RetirementsService;
 import com.code.services.hcm.TerminationsService;
@@ -64,6 +66,7 @@ public class EmployeeFile extends BaseBacking implements Serializable {
     private List<EmployeeBonusesData> bonuses;
     private List<EmployeePenalitiesData> penalities;
     private List<EmployeeAllowancesData> allowances;
+    private List<RaiseTransactionData> raises;
 
     private EmployeeData employee;
     private List<EmployeeMenuAction> employeeMenuActions;
@@ -136,6 +139,7 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 		penalities = PayrollsService.getEmployeePenalities(employee.getOldEmpId());
 		allowances = PayrollsService.getEmployeeAllowances(employee.getOldEmpId());
 		bonuses = PayrollsService.getEmployeeBonuses(employee.getOldEmpId());
+		raises = RaisesService.getAllRaisesByEmployeeId(employee.getEmpId());
 	    } else {
 		throw new BusinessException("error_notAuthorized");
 	    }
@@ -474,6 +478,14 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 
     public void setDisclaimerTransactions(List<DisclaimerTransactionData> disclaimerTransactions) {
 	this.disclaimerTransactions = disclaimerTransactions;
+    }
+
+    public List<RaiseTransactionData> getRaises() {
+	return raises;
+    }
+
+    public void setRaises(List<RaiseTransactionData> raises) {
+	this.raises = raises;
     }
 
 }

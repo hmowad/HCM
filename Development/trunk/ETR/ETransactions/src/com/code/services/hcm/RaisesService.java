@@ -1513,4 +1513,17 @@ public class RaisesService extends BaseService {
 	    throw new BusinessException("error_general");
 	}
     }
+
+    public static List<RaiseTransactionData> getAllRaisesByEmployeeId(long empId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_EMP_ID", empId);
+	    return DataAccess.executeNamedQuery(RaiseTransactionData.class, QueryNamesEnum.HCM_GET_ALL_RAISES_BY_EMP_ID.getCode(), qParams);
+
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+
+    }
 }
