@@ -553,7 +553,7 @@
 									</h:commandButton>
 
 									<h:commandButton id="approveReBtnId" action="#{subjoinDecisionRequest.approveMovementRE()}" onclick="return handleOnAction('#{subjoinDecisionRequest.mode == 1 ? msgs.q_reviewOfficers : (subjoinDecisionRequest.mode == 2 ? msgs.q_reviewSoldiers : msgs.q_reviewCivilians)}', 'validateSend(#{subjoinDecisionRequest.mode})');" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinDecisionRequest.role == 'ReviewerEmp'}">
-										<f:ajax render="notifyMessagesId" execute="@form" />
+										<f:ajax render="notifyMessagesId subjoinDecisionRequestFormId:subjoinListPanelId" execute="@form" />
 									</h:commandButton>
 									<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinDecisionRequest.rejectMovementRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinDecisionRequest.role == 'ReviewerEmp'}">
 										<f:ajax render="notifyMessagesId" execute="@form" />

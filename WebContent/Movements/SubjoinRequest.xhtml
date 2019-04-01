@@ -413,7 +413,7 @@
 									</h:commandButton>
 
 									<h:commandButton id="approveReBtnId" action="#{subjoinRequest.approveMovementRE()}" onclick="return handleOnAction('#{subjoinRequest.mode == 1 ? msgs.q_reviewOfficers : (subjoinRequest.mode == 2 ? msgs.q_reviewSoldiers : msgs.q_reviewCivilians)}', 'validateSend(#{subjoinRequest.mode})');" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinRequest.role == 'ReviewerEmp'}">
-										<f:ajax render="notifyMessagesId" execute="@form" />
+										<f:ajax render="notifyMessagesId dataPanelId" execute="@form" />
 									</h:commandButton>
 									<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;subjoinRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinRequest.rejectMovementRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinRequest.role == 'ReviewerEmp'}">
 										<f:ajax render="notifyMessagesId" execute="@form" />
