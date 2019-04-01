@@ -207,6 +207,12 @@
 											</h:commandButton>
 										</td>
 									</h:panelGroup>
+									<th width="12%">#{msgs.label_annualAndAdditionalRaises}</th>
+									<td width="24%">
+										<h:commandButton value="#{employeeFileReport.printRaises? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printRaisesListener()}" styleClass="#{employeeFileReport.printRaises ? 'btn_toggleOn' :  'btn_toggleOff'}">
+											<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
 								</tr>
 							</table>
 						</h:panelGroup>

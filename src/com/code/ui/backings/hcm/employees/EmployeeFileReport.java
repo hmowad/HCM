@@ -40,6 +40,7 @@ public class EmployeeFileReport extends BaseBacking implements Serializable {
     private boolean printAllowances;
     private boolean printServiceExtension;
     private boolean printExercises;
+    private boolean printRaises;
 
     public EmployeeFileReport() {
 	try {
@@ -133,6 +134,7 @@ public class EmployeeFileReport extends BaseBacking implements Serializable {
 	    printAllowances = true;
 	    printServiceExtension = true;
 	    printExercises = true;
+	    printRaises = true;
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -140,7 +142,7 @@ public class EmployeeFileReport extends BaseBacking implements Serializable {
 
     public void printEmployeeFileReport() {
 	try {
-	    byte[] bytes = EmployeesService.getEmployeesFileReportDataBytes(selectedEmployee.getEmpId(), selectedEmployee.getCategoryId(), printRecruitments, printSeniortiy, printPromotions, printVacations, printMovements, printPenalities, printBonuses, printServiceTermination, printTraining, printEducations, printAllowances, printServiceExtension, printExercises);
+	    byte[] bytes = EmployeesService.getEmployeesFileReportDataBytes(selectedEmployee.getEmpId(), selectedEmployee.getCategoryId(), printRecruitments, printSeniortiy, printPromotions, printVacations, printMovements, printPenalities, printBonuses, printServiceTermination, printTraining, printEducations, printAllowances, printServiceExtension, printExercises, printRaises);
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -197,6 +199,10 @@ public class EmployeeFileReport extends BaseBacking implements Serializable {
 
     public void printExercisesListener() {
 	printExercises = !printExercises;
+    }
+
+    public void printRaisesListener() {
+	printRaises = !printRaises;
     }
 
     public Long getEmployeeId() {
@@ -318,4 +324,13 @@ public class EmployeeFileReport extends BaseBacking implements Serializable {
     public void setPrintExercises(boolean printExercises) {
 	this.printExercises = printExercises;
     }
+
+    public boolean isPrintRaises() {
+	return printRaises;
+    }
+
+    public void setPrintRaises(boolean printRaises) {
+	this.printRaises = printRaises;
+    }
+
 }

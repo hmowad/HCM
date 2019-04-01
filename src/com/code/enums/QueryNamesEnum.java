@@ -67,6 +67,7 @@ public enum QueryNamesEnum {
     HCM_GET_FIRST_RAISE_TRRANSACTION_AFTER_GIVEN_DATE("hcm_raiseTransaction_getFirstRaiseTransactionAfterGivenDate"),
     HCM_GET_ALL_RAISES_FOR_EMPLOYEES_AFTER_GIVEN_DATE("hcm_raiseTransaction_getAllRaisesForEmployeesAfterGivenDate"),
     HCM_GET_FUTURE_RAISES_BY_EMP_ID("hcm_raiseTransactionData_getFutureRaisesByEmpId"),
+    HCM_GET_ALL_RAISES_BY_EMP_ID("hcm_raiseTransactionData_getAllRaisesByEmpId"),
 
     /* ************************************************ Navy Formations ********************************************** */
 
