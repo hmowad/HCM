@@ -1546,8 +1546,10 @@ public class TrainingCoursesEventsService extends BaseService {
 	    parameters.put("P_PRINT_DATE", HijriDateService.getHijriSysDateString());
 	    if (reportOutputFormat.equals(ReportOutputFormatsEnum.PDF.getCode()))
 		return getReportData(reportName, parameters);
-	    else
+	    else if (reportOutputFormat.equals(ReportOutputFormatsEnum.RTF.getCode()))
 		return getRTFReportData(reportName, parameters);
+	    else
+		return getXlsReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");

@@ -40,12 +40,15 @@ public class TrainingPlanDecisionsInquiry extends BaseBacking {
     public void printPlanDetailsPrint(TrainingYear trainingYear, int reportType) {
 	try {
 	    byte[] bytes;
-	    if (reportType == 1) {//PDF
+	    if (reportType == 1) {// PDF
 		bytes = TrainingCoursesEventsService.getTrainingPlanDecisionDetailsBytes(trainingYear.getId(), ReportOutputFormatsEnum.PDF.getCode());
 		super.print(bytes);
-	    } else {//WORD
+	    } else if (reportType == 2) {// WORD
 		bytes = TrainingCoursesEventsService.getTrainingPlanDecisionDetailsBytes(trainingYear.getId(), ReportOutputFormatsEnum.RTF.getCode());
 		super.printRTF(bytes);
+	    } else {
+		bytes = TrainingCoursesEventsService.getTrainingPlanDecisionDetailsBytes(trainingYear.getId(), ReportOutputFormatsEnum.XLS.getCode());
+		super.printXls(bytes);
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));

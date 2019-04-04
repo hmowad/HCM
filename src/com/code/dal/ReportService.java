@@ -36,6 +36,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperRunManager;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRRtfExporter;
+import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.util.JRElementsVisitor;
 import net.sf.jasperreports.engine.util.JRSaver;
@@ -94,6 +95,10 @@ public class ReportService extends DataAccess {
 	return getReportData(reportFilePath, parameters, ReportOutputFormatsEnum.RTF, reportsRoot);
     }
 
+    public static byte[] getXlsReportData(final String reportFilePath, final Map<String, Object> parameters, final String reportsRoot) throws Exception {
+	return getReportData(reportFilePath, parameters, ReportOutputFormatsEnum.XLS, reportsRoot);
+    }
+
     private static byte[] getReportData(final String reportFilePath, final Map<String, Object> parameters, final ReportOutputFormatsEnum reportOutputFormat, final String reportsRoot) throws Exception {
 	final List<byte[]> data = new ArrayList<byte[]>();
 
@@ -110,6 +115,8 @@ public class ReportService extends DataAccess {
 			data.add(exportReportToDocxFormat(JasperFillManager.fillReport(jasperReport, parameters, con)));
 		    else if (ReportOutputFormatsEnum.RTF.equals(reportOutputFormat))
 			data.add(exportReportToRtfFormat(JasperFillManager.fillReport(jasperReport, parameters, con)));
+		    else if (ReportOutputFormatsEnum.XLS.equals(reportOutputFormat))
+			data.add(exportReportToXlsFormat(JasperFillManager.fillReport(jasperReport, parameters, con)));
 		} catch (Exception e) {
 		    throw new SQLException(e.getMessage());
 		} catch (Throwable e) {
@@ -225,6 +232,16 @@ public class ReportService extends DataAccess {
 	return byteArrayOutputStream.toByteArray();
     }
 
+    private static byte[] exportReportToXlsFormat(JasperPrint jasperPrint) throws JRException {
+	JRXlsExporter exporter = new JRXlsExporter();
+	ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+	exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+	exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, byteArrayOutputStream);
+	exporter.setParameter(JRExporterParameter.CHARACTER_ENCODING, "UTF-8");
+	exporter.exportReport();
+	return byteArrayOutputStream.toByteArray();
+    }
+
     private static byte[] exportReportToPdfFormat(List<JasperPrint> jasperPrintList) throws JRException {
 	JRPdfExporter exporter = new JRPdfExporter();
 	ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -247,6 +264,16 @@ public class ReportService extends DataAccess {
 
     private static byte[] exportReportToRtfFormat(List<JasperPrint> jasperPrintList) throws JRException {
 	JRRtfExporter exporter = new JRRtfExporter();
+	ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+	exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrintList);
+	exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, byteArrayOutputStream);
+	exporter.setParameter(JRExporterParameter.CHARACTER_ENCODING, "UTF-8");
+	exporter.exportReport();
+	return byteArrayOutputStream.toByteArray();
+    }
+
+    private static byte[] exportReportToXlsFormat(List<JasperPrint> jasperPrintList) throws JRException {
+	JRXlsExporter exporter = new JRXlsExporter();
 	ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 	exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrintList);
 	exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, byteArrayOutputStream);

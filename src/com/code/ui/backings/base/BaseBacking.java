@@ -85,6 +85,10 @@ public abstract class BaseBacking implements Serializable {
 	print(bytes, ReportOutputFormatsEnum.RTF);
     }
 
+    protected void printXls(byte[] bytes) {
+	print(bytes, ReportOutputFormatsEnum.XLS);
+    }
+
     private void print(byte[] bytes, ReportOutputFormatsEnum reportOutputFormat) {
 	try {
 	    FacesContext context = FacesContext.getCurrentInstance();
@@ -100,6 +104,9 @@ public abstract class BaseBacking implements Serializable {
 	    } else if (ReportOutputFormatsEnum.RTF.equals(reportOutputFormat)) {
 		fileName = "\"fileName.rtf\"";
 		resp.setContentType("text/rtf;charset=UTF-8");
+	    } else if (ReportOutputFormatsEnum.XLS.equals(reportOutputFormat)) {
+		fileName = "\"fileName.xls\"";
+		resp.setContentType("application/vnd.ms-excel;charset=UTF-8");
 	    }
 
 	    resp.setHeader("Content-Disposition", "attachment; filename=" + fileName);
