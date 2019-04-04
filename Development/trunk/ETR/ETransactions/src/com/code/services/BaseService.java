@@ -142,4 +142,8 @@ public abstract class BaseService {
 	return ReportService.getRTFReportData(reportFilePath, parameters, ETRConfigurationService.getReportsRoot());
     }
 
+    public static byte[] getXlsReportData(final String reportFilePath, final Map<String, Object> parameters) throws Exception {
+	return ReportService.getXlsReportData(reportFilePath, parameters, ETRConfigurationService.getReportsRoot());
+    }
+
 }

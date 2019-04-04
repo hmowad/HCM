@@ -9,6 +9,7 @@ import com.code.dal.orm.hcm.movements.MovementTransactionData;
 import com.code.dal.orm.workflow.hcm.movements.WFMovementData;
 import com.code.enums.MovementTypesEnum;
 import com.code.enums.NavigationEnum;
+import com.code.enums.TransactionTypesEnum;
 import com.code.enums.WFActionFlagsEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.MovementsService;
@@ -38,14 +39,15 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
 	    }
 
 	    for (WFMovementData wfm : wfMovementsList) {
-		if (wfm.getExecutionDateString() != null && ((wfm.getPeriodMonths() != null && wfm.getPeriodMonths() > 0) || (wfm.getPeriodDays() != null && wfm.getPeriodDays() > 0))) {
-		    String endDate = HijriDateService.addSubStringHijriMonthsDays(wfm.getExecutionDateString(), wfm.getPeriodMonths() == null ? 0 : wfm.getPeriodMonths(), wfm.getPeriodDays() == null ? -1 : wfm.getPeriodDays() - 1);
-		    if (!endDate.equals(wfm.getEndDateString())) {
-			wfm.setEndDateString(endDate);
-			throw new BusinessException("error_endDateIsRecalculated");
+		if (wfm.getTransactionTypeId().equals(TransactionTypesEnum.MVT_NEW_DECISION.getCode()) || wfm.getTransactionTypeId().equals(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode())) {
+		    if (wfm.getExecutionDateString() != null && ((wfm.getPeriodMonths() != null && wfm.getPeriodMonths() > 0) || (wfm.getPeriodDays() != null && wfm.getPeriodDays() > 0))) {
+			String endDate = HijriDateService.addSubStringHijriMonthsDays(wfm.getExecutionDateString(), wfm.getPeriodMonths() == null ? 0 : wfm.getPeriodMonths(), wfm.getPeriodDays() == null ? -1 : wfm.getPeriodDays() - 1);
+			if (!endDate.equals(wfm.getEndDateString())) {
+			    wfm.setEndDateString(endDate);
+			    throw new BusinessException("error_endDateIsRecalculated");
+			}
 		    }
-		} else
-		    wfm.setEndDateString(null);
+		}
 		wfm.getWfMovement().setSystemUser(loginEmpData.getEmpId() + "");
 		updateWFMovementDecisionData(wfm, decisionData);
 	    }
@@ -242,14 +244,15 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
 		wfMovementsList.add(wfMovement);
 	    }
 	    for (WFMovementData wfm : wfMovementsList) {
-		if (wfm.getExecutionDateString() != null && ((wfm.getPeriodMonths() != null && wfm.getPeriodMonths() > 0) || (wfm.getPeriodDays() != null && wfm.getPeriodDays() > 0))) {
-		    String endDate = HijriDateService.addSubStringHijriMonthsDays(wfm.getExecutionDateString(), wfm.getPeriodMonths() == null ? 0 : wfm.getPeriodMonths(), wfm.getPeriodDays() == null ? -1 : wfm.getPeriodDays() - 1);
-		    if (!endDate.equals(wfm.getEndDateString())) {
-			wfm.setEndDateString(endDate);
-			throw new BusinessException("error_endDateIsRecalculated");
+		if (wfm.getTransactionTypeId().equals(TransactionTypesEnum.MVT_NEW_DECISION.getCode()) || wfm.getTransactionTypeId().equals(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode())) {
+		    if (wfm.getExecutionDateString() != null && ((wfm.getPeriodMonths() != null && wfm.getPeriodMonths() > 0) || (wfm.getPeriodDays() != null && wfm.getPeriodDays() > 0))) {
+			String endDate = HijriDateService.addSubStringHijriMonthsDays(wfm.getExecutionDateString(), wfm.getPeriodMonths() == null ? 0 : wfm.getPeriodMonths(), wfm.getPeriodDays() == null ? -1 : wfm.getPeriodDays() - 1);
+			if (!endDate.equals(wfm.getEndDateString())) {
+			    wfm.setEndDateString(endDate);
+			    throw new BusinessException("error_endDateIsRecalculated");
+			}
 		    }
-		} else
-		    wfm.setEndDateString(null);
+		}
 		wfm.getWfMovement().setSystemUser(loginEmpData.getEmpId() + "");
 		updateWFMovementDecisionData(wfm, decisionData);
 	    }
