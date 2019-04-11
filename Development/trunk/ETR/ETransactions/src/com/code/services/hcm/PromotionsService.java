@@ -3700,8 +3700,7 @@ public class PromotionsService extends BaseService {
 		    promotionTransactionDataItr.getPromotionTransaction().setSystemUser(loginEmpId + "");
 
 		    // Effect in employee
-		    promotionTransactionDataItr.setNewDegreeId(editedEmployeeList.get(index).getDegreeId());
-		    EmployeesService.updateEmployeePromotionData(employee, null, getNextRank(employee.getRankId()), promotionTransactionDataItr.getRankTitleId(), promotionTransactionDataItr.getNewDegreeId(), promotionTransactionDataItr.getNewMilitaryNumber(), promotionTransactionDataItr.getNewDueDate(), promotionTransactionDataItr.getNewLastPromotionDate(), session);
+		    EmployeesService.updateEmployeePromotionData(employee, null, getNextRank(employee.getRankId()), promotionTransactionDataItr.getRankTitleId(), editedEmployeeList.get(index).getDegreeId(), promotionTransactionDataItr.getNewMilitaryNumber(), promotionTransactionDataItr.getNewDueDate(), promotionTransactionDataItr.getNewLastPromotionDate(), session);
 		    EmployeeLog log = new EmployeeLog.Builder().setRankId(employee.getRankId()).setRankTitleId(promotionTransactionDataItr.getRankTitleId()).setDegreeId(promotionTransactionDataItr.getNewDegreeId()).constructCommonFields(employee.getEmpId(), FlagsEnum.ON.getCode(), promotionTransactionDataItr.getDecisionNumber(), promotionTransactionDataItr.getDecisionDate(), promotionTransactionDataItr.getNewLastPromotionDate(), DataAccess.getTableName(PromotionTransaction.class))
 			    .build();
 		    LogService.logEmployeeData(log, session);
