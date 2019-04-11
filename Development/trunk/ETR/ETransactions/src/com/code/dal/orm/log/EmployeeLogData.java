@@ -31,8 +31,13 @@ import com.code.dal.orm.BaseEntity;
 			" and (:P_EFFECTIVE_GREG_DATE_FLAG = -1 or e.effectiveGregDate = (TO_DATE(:P_EFFECTIVE_GREG_DATE, 'MI/MM/YYYY')))" +
 			" and (:P_DECISION_NUMBER = '-1' or e.decisionNumber = :P_DECISION_NUMBER) " +
 			" and (:P_DECISION_DATE_FLAG = -1 or e.decisionDate = (TO_DATE(:P_DECISION_DATE, 'MI/MM/YYYY')))" +
-			" order by e.empId")
+			" order by e.empId"),
 
+	@NamedQuery(name = "hcm_employeeLog_getLastEmployeeLog",
+		query = "select e from EmployeeLogData e " +
+			" where e.effectiveHijriDate = ( select max(e1.effectiveHijriDate) from EmployeeLogData e1 where e1.empId = :P_EMP_ID and e1.effectiveHijriDate < (TO_DATE(:P_EFFECTIVE_HIJRI_DATE, 'MI/MM/YYYY')) ) " +
+			" and e.empId = :P_EMP_ID " +
+			" and e.insertionTime = (select max(e2.insertionTime) from EmployeeLogData e2 where e2.empId = :P_EMP_ID and e2.effectiveHijriDate < (TO_DATE(:P_EFFECTIVE_HIJRI_DATE, 'MI/MM/YYYY'))) ")
 })
 @Entity
 @Table(name = "HCM_VW_EMPLOYEES_LOG")
@@ -57,7 +62,7 @@ public class EmployeeLogData extends BaseEntity {
     private Long salaryDegreeID;
     private String salaryDegreeDesc;
     private Long degreeId;
-    private Long degreeDesc;
+    private String degreeDesc;
     private Integer socialStatus;
     private String socialStatusDesc;
     private Integer generalSpecialization;
@@ -112,7 +117,6 @@ public class EmployeeLogData extends BaseEntity {
     public void setEmpName(String empName) {
 	this.empName = empName;
     }
-
     @Basic
     @Column(name = "ON_DUTY_FLAG")
     public Integer getOnDutyFlag() {
@@ -123,7 +127,7 @@ public class EmployeeLogData extends BaseEntity {
 	this.onDutyFlag = onDutyFlag;
 	employeelog.setOnDutyFlag(onDutyFlag);
     }
-
+    
     @Basic
     @Column(name = "CATEGORY_ID")
     public Long getCategoryId() {
@@ -273,11 +277,11 @@ public class EmployeeLogData extends BaseEntity {
 
     @Basic
     @Column(name = "DEGREE_DESCRIPTION")
-    public Long getDegreeDesc() {
+    public String getDegreeDesc() {
 	return degreeDesc;
     }
 
-    public void setDegreeDesc(Long degreeDesc) {
+    public void setDegreeDesc(String degreeDesc) {
 	this.degreeDesc = degreeDesc;
     }
 
