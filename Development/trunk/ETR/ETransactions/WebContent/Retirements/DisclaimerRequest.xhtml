@@ -280,6 +280,14 @@
 									<h:inputText id="notesId" value="#{disclaimerRequest.currentTask.notes}" styleClass="inputDataLarge" maxlength="500" />
 								</td>
 							</tr>
+							<h:panelGroup rendered="#{disclaimerRequest.role == 'ExtraSignManager'}">
+								<tr>
+									<th width="15%">#{msgs.label_refuseReasons}</th>
+									<td width="85%" colspan="3">
+										<h:inputText id="refuseReasonsId" value="#{disclaimerRequest.currentTask.refuseReasons}" styleClass="inputDataLarge" maxlength="500" />
+									</td>
+								</tr>
+							</h:panelGroup>
 						</code:curTask>
 					</td>
 				</tr>
@@ -328,8 +336,8 @@
 										<h:outputText id="unitsNamesId" value="#{disclaimerRequest.selectedSentBackUnitsNamesString}" />
 										<h:inputHidden id="unitsIDsHId" value="#{disclaimerRequest.wfDisclaimerData.sentBackUnitsString}" />
 										<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getUnit('#{request.contextPath}', '#{disclaimerRequest.sentBackUnitsIdsParam}');return false;" />
-										<h:commandButton id="addUnitBtnId" style="display:none;" action = "#{disclaimerRequest.getSentBackUnitsNames()}">
-											<f:ajax execute="disclaimerRequestFormId:unitsIDsHId disclaimerRequestFormId:unitsNamesId" render="disclaimerRequestFormId:sendBackPanelId disclaimerRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+										<h:commandButton id="addUnitBtnId" style="display:none;" action="#{disclaimerRequest.getSentBackUnitsNames()}">
+											<f:ajax execute="disclaimerRequestFormId:unitsIDsHId disclaimerRequestFormId:unitsNamesId" render="disclaimerRequestFormId:sendBackPanelId disclaimerRequestFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 										<h:commandButton id="clearUnitsBtnId" rendered="#{disclaimerRequest.selectedSentBackUnitsNamesString != null and disclaimerRequest.selectedSentBackUnitsNamesString.length() != 0}" action="#{disclaimerRequest.clearSentBackUnits()}" value="#{msgs.fa_times}" styleClass="btn_icon">
 											<f:ajax execute="disclaimerRequestFormId:sendBackPanelId" render="disclaimerRequestFormId:sendBackPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
@@ -375,15 +383,16 @@
 
 
 									<h:panelGroup rendered="#{disclaimerRequest.role=='ExtraSignManager'}">
-										<h:commandButton onclick="return handleOnAction('#{msgs.q_superSign}', 'true');" action="#{disclaimerRequest.doRetirementsAprroveESM()}" value="#{msgs.label_superSign}  &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+										<h:commandButton onclick="return handleOnAction('#{msgs.q_superSign}', 'validateRefuseAndNotes(1, &quot;disclaimerRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{disclaimerRequest.doRetirementsAprroveESM()}" value="#{msgs.label_superSign}  &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 											<f:ajax render="notifyMessagesId" execute="@form" />
 										</h:commandButton>
 
-										<h:commandButton id="sentBackToUnitsEsmBtnId" onclick="return handleOnAction('#{msgs.q_sendBackToUnits}', 'true');" action="#{disclaimerRequest.doRetirementsSendBackUnitsESM()}" value="#{msgs.label_sendBackToUnits} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+										<h:commandButton id="sentBackToUnitsEsmBtnId" onclick="return handleOnAction('#{msgs.q_sendBackToUnits}', 'validateRefuseAndNotes(2, &quot;disclaimerRequestFormId:curTaskId:refuseReasonsId&quot;, &quot;disclaimerRequestFormId:curTaskId:notesId&quot;)');"
+											 action="#{disclaimerRequest.doRetirementsSendBackUnitsESM()}" value="#{msgs.label_sendBackToUnits} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
 											<f:ajax render="notifyMessagesId" execute="@form" />
 										</h:commandButton>
 
-										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'true');" action="#{disclaimerRequest.doRetirementsRejectESM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
+										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;disclaimerRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{disclaimerRequest.doRetirementsRejectESM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
 											<f:ajax render="notifyMessagesId" execute="@form" />
 										</h:commandButton>
 									</h:panelGroup>
@@ -406,6 +415,9 @@
 			</table>
 		</ui:decorate>
 	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
+	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
+	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
 </h:body>
 </html>
 
