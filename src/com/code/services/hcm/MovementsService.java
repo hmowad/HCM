@@ -1058,11 +1058,7 @@ public class MovementsService extends BaseService {
 	    }
 	    if (predecessorTrans.getEffectFlag().intValue() == FlagsEnum.ON.getCode() && ((!isTermination && (!(sysDate.before(predecessorTrans.getExecutionDate()) || sysDate.after(predecessorTrans.getEndDate())))) || (isTermination && (movementTransaction.getEndDate().before(sysDate) && !predecessorTrans.getEndDate().before(sysDate))))) {
 
-		// if the employee was subjoined as manager we should revert
-		// unit physical manager to null
-		if (predecessorTrans.getManagerFlagBoolean()) {
-		    adjustUnitsManagers(unitsMap, emp, null, false, false);
-		}
+		adjustUnitsManagers(unitsMap, emp, null, false, false);
 
 		emp.setPhysicalUnitId(emp.getOfficialUnitId());
 		emp.setStatusId(EmployeeStatusEnum.ON_DUTY.getCode());
