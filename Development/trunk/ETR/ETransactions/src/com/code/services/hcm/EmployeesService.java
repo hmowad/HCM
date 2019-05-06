@@ -1666,10 +1666,10 @@ public class EmployeesService extends BaseService {
 	    throw new BusinessException("error_generalSpecializationMandatory");
 	if (employeeExtraTransactionData.getTransactionTypeId() == TransactionTypesEnum.EMPLOYEE_MEDICAL_STAFF_DATA.getCode() && (employeeExtraTransactionData.getMedStaffDegreeId() == null || employeeExtraTransactionData.getMedStaffRankId() == null || employeeExtraTransactionData.getMedStaffLevelId() == null))
 	    throw new BusinessException("error_medStaffDataMandatory");
-	if (employeeExtraTransactionData.getDecisionNumber() == null || employeeExtraTransactionData.getDecisionNumber().equals(""))
+	if (employeeExtraTransactionData.getTransactionTypeId() != CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId() && (employeeExtraTransactionData.getDecisionNumber() == null || employeeExtraTransactionData.getDecisionNumber().equals("")))
 	    throw new BusinessException("error_decisionNumberMandatory");
 	Date sysDate = HijriDateService.getHijriSysDate();
-	if (employeeExtraTransactionData.getDecisionDate().after(sysDate))
+	if (employeeExtraTransactionData.getTransactionTypeId() != CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId() && employeeExtraTransactionData.getDecisionDate().after(sysDate))
 	    throw new BusinessException("error_decDateAfterMandatory");
 	if (employeeExtraTransactionData.getEffectiveDate().after(sysDate))
 	    throw new BusinessException("error_incorrectEffectiveDate");
@@ -1765,12 +1765,16 @@ public class EmployeesService extends BaseService {
 	return (resultList == null || resultList.size() == 0) ? null : resultList.get(0);
     }
 
+    public static List<EmployeeExtraTransactionData> getEmployeeDataExtraTransactionById(Long id) throws BusinessException {
+	return searchEmployeeExtraTransactionData(id, null, null, null);
+    }
+
     public static List<EmployeeExtraTransactionData> getEmployeeDataExtraTransactionByEmpIdAndTransactionType(Long empId, Long transactionType) throws BusinessException {
-	return searchEmployeeExtraTransactionData(empId, transactionType, null);
+	return searchEmployeeExtraTransactionData(null, empId, transactionType, null);
     }
 
     public static List<EmployeeExtraTransactionData> getEmployeeExtraTransactionByDecisionNumber(String decisionNumber) throws BusinessException {
-	return searchEmployeeExtraTransactionData(null, null, decisionNumber);
+	return searchEmployeeExtraTransactionData(null, null, null, decisionNumber);
     }
 
     private static void addModifyEmployeeMedicalStaffData(EmployeeExtraTransactionData employeeExtraTransactionData, EmployeeMedicalStaffData employeeMedicalStaffData, CustomSession... useSession) throws BusinessException {
@@ -1806,9 +1810,10 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    private static List<EmployeeExtraTransactionData> searchEmployeeExtraTransactionData(Long empId, Long transactionType, String decisionNumber) throws BusinessException {
+    private static List<EmployeeExtraTransactionData> searchEmployeeExtraTransactionData(Long id, Long empId, Long transactionType, String decisionNumber) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_ID", id == null ? FlagsEnum.ALL.getCode() : id);
 	    qParams.put("P_EMP_ID", empId == null ? FlagsEnum.ALL.getCode() : empId);
 	    qParams.put("P_DECISCION_NUMBER", decisionNumber == null ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
 	    qParams.put("P_TRANSACTION_TYPE", transactionType == null ? FlagsEnum.ALL.getCode() + "" : transactionType);

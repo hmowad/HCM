@@ -22,7 +22,8 @@ import com.code.services.util.HijriDateService;
 @NamedQueries({
 	@NamedQuery(name = "hcm_empDataExtraTrnData_searchEmpExtraTrnData",
 		query = "select e from EmployeeExtraTransactionData e " +
-			" where (:P_EMP_ID = -1 or e.empId = :P_EMP_ID) " +
+			" where (:P_ID = -1 or e.id = :P_ID) " +
+			" and (:P_EMP_ID = -1 or e.empId = :P_EMP_ID) " +
 			" and (:P_DECISCION_NUMBER = '-1' or e.decisionNumber = :P_DECISCION_NUMBER) " +
 			" and (:P_TRANSACTION_TYPE = -1 or e.transactionTypeId = :P_TRANSACTION_TYPE) " +
 			" order by e.effectiveDate desc")
