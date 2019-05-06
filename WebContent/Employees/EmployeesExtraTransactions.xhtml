@@ -125,7 +125,6 @@
 																		<f:facet name="header">
 																			#{msgs.label_decisionNumber}
 																			<h:outputText value=" " />
-																			<font style="color: red;">*</font>
 																		</f:facet>
 																		<h:inputText value="#{socialStatusElement.decisionNumber}" rendered="#{socialStatusElement.id == null}" />
 																		<h:outputText value="#{socialStatusElement.decisionNumber}" rendered="#{socialStatusElement.id != null}" />
@@ -134,9 +133,8 @@
 																		<f:facet name="header">
 																			#{msgs.label_decisionDate}
 																			<h:outputText value=" " />
-																			<font style="color: red;">*</font>
 																		</f:facet>
-																		<util:hijri value="#{socialStatusElement.decisionDate}" rendered="#{socialStatusElement.id == null}" nullable="false" />
+																		<util:hijri value="#{socialStatusElement.decisionDate}" rendered="#{socialStatusElement.id == null}" nullable="true" />
 																		<h:outputText value="#{socialStatusElement.decisionDateString}" rendered="#{socialStatusElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width : 10%">

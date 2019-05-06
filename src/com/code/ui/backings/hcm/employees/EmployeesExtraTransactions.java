@@ -87,7 +87,7 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
 	    else if (employeeDataExtraTransactionList.equals(socialStatusList))
 		employeeExtraTransactionData.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
 	    EmployeesService.addEmployeeDataExtraTransaction(employee, employeeExtraTransactionData, null);
-	    employeeDataExtraTransactionList.set(index, EmployeesService.getEmployeeExtraTransactionByDecisionNumber(employeeExtraTransactionData.getDecisionNumber()).get(0));
+	    employeeDataExtraTransactionList.set(index, EmployeesService.getEmployeeDataExtraTransactionById(employeeExtraTransactionData.getId()).get(0));
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
