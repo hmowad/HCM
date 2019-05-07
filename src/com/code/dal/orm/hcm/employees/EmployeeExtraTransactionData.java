@@ -24,8 +24,17 @@ import com.code.services.util.HijriDateService;
 		query = "select e from EmployeeExtraTransactionData e " +
 			" where (:P_ID = -1 or e.id = :P_ID) " +
 			" and (:P_EMP_ID = -1 or e.empId = :P_EMP_ID) " +
-			" and (:P_DECISCION_NUMBER = '-1' or e.decisionNumber = :P_DECISCION_NUMBER) " +
+			" and (:P_DECISION_NUMBER = '-1' or e.decisionNumber = :P_DECISION_NUMBER) " +
+			" and (:P_DECISION_DATE_FLAG = -1 or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') = e.decisionDate)" +
 			" and (:P_TRANSACTION_TYPE = -1 or e.transactionTypeId = :P_TRANSACTION_TYPE) " +
+			" and (:P_RANK_TITLE_ID = -1 or e.rankTitleId = :P_RANK_TITLE_ID) " +
+			" and (:P_SALARY_RANK_ID = -1 or e.salaryRankId = :P_SALARY_RANK_ID) " +
+			" and (:P_SALARY_DEGREE_ID = -1 or e.salaryDegreeId = :P_SALARY_DEGREE_ID) " +
+			" and (:P_SOCIAL_STATUS = -1 or e.socialStatus = :P_SOCIAL_STATUS) " +
+			" and (:P_GENERAL_SPECIALIZATION = -1 or e.generalSpecialization = :P_GENERAL_SPECIALIZATION) " +
+			" and (:P_MED_STAFF_RANK_ID = -1 or e.medStaffRankId = :P_MED_STAFF_RANK_ID) " +
+			" and (:P_MED_STAFF_LEVEL_ID = -1 or e.medStaffLevelId = :P_MED_STAFF_LEVEL_ID) " +
+			" and (:P_MED_STAFF_DEGREE_ID = -1 or e.medStaffDegreeId = :P_MED_STAFF_DEGREE_ID) " +
 			" order by e.effectiveDate desc")
 
 })

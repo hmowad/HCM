@@ -75,23 +75,22 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
 	empDataExtraTransactionList.add(0, newEmpDataExtraTransaction);
     }
 
-    public void saveNewEmployeeDataExtraTransaction(List<EmployeeExtraTransactionData> employeeDataExtraTransactionList,
+    public void saveNewEmployeeDataExtraTransaction(int transactionTypeCode,
 	    EmployeeExtraTransactionData employeeExtraTransactionData, int index) {
 	try {
-	    if (employeeDataExtraTransactionList.equals(salaryRankList))
-		employeeExtraTransactionData.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SALARY_RANK.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
-	    else if (employeeDataExtraTransactionList.equals(generalSpecList))
-		employeeExtraTransactionData.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_GENERAL_SPECIALIZATION.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
-	    else if (employeeDataExtraTransactionList.equals(rankTitleList))
-		employeeExtraTransactionData.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_RANK_TITLE.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
-	    else if (employeeDataExtraTransactionList.equals(socialStatusList))
-		employeeExtraTransactionData.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
+	    employeeExtraTransactionData.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(transactionTypeCode, TransactionClassesEnum.EMPLOYEES.getCode()).getId());
 	    EmployeesService.addEmployeeDataExtraTransaction(employee, employeeExtraTransactionData, null);
-	    employeeDataExtraTransactionList.set(index, EmployeesService.getEmployeeDataExtraTransactionById(employeeExtraTransactionData.getId()).get(0));
+	    if (transactionTypeCode == TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SALARY_RANK.getCode())
+		salaryRankList.set(index, employeeExtraTransactionData);
+	    else if (transactionTypeCode == TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_GENERAL_SPECIALIZATION.getCode())
+		generalSpecList.set(index, employeeExtraTransactionData);
+	    else if (transactionTypeCode == TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_RANK_TITLE.getCode())
+		rankTitleList.set(index, employeeExtraTransactionData);
+	    else if (transactionTypeCode == TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS.getCode())
+		socialStatusList.set(index, employeeExtraTransactionData);
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
-	    setServerSideErrorMessages(getMessage(e.getMessage()));
-	    e.printStackTrace();
+	    setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
     }
 

@@ -65,10 +65,10 @@ public class MedicalStaffData extends BaseBacking {
 	    EmployeesService.constructEmployeeMedicalStaffData(addedEmployeeExtraTransactionData, employeeMedicalStaffData);
 	    addedEmployeeExtraTransactionData.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEE_MEDICAL_STAFF_DATA.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
 	    EmployeesService.addEmployeeDataExtraTransaction(selectedEmployee, addedEmployeeExtraTransactionData, employeeMedicalStaffData);
-	    employeeExtraTransactionDataList.set(index, EmployeesService.getEmployeeExtraTransactionByDecisionNumber(addedEmployeeExtraTransactionData.getDecisionNumber()).get(0));
+	    employeeExtraTransactionDataList.set(index, addedEmployeeExtraTransactionData);
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
-	    setServerSideErrorMessages(getMessage(e.getMessage()));
+	    setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
     }
 
