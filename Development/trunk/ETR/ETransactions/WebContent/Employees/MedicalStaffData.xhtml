@@ -165,20 +165,17 @@
 										<util:hijri value="#{employeeExtra.decisionDate}" rendered="#{employeeExtra.id == null}" />
 									</rich:column>
 									<rich:column style="width : 5%">
-										<h:outputText value="#{employeeExtra.medStaffRankDesc}" rendered="#{employeeExtra.id != null}" />
-										<h:selectOneMenu id="medStaffRankList" value="#{employeeExtra.medStaffRankId}" rendered="#{employeeExtra.id == null}">
+										<h:selectOneMenu id="medStaffRankList" value="#{employeeExtra.medStaffRankId}" disabled="#{employeeExtra.id != null}">
 											<f:selectItems value="#{medicalStaffData.medicalStaffRanks}" var="medicalRank" itemLabel="#{medicalRank.description}" itemValue="#{medicalRank.id}" />
 										</h:selectOneMenu>
 									</rich:column>
 									<rich:column style="width : 5%">
-										<h:outputText value="#{employeeExtra.medStaffLevelDesc}" rendered="#{employeeExtra.id != null}" />
-										<h:selectOneMenu id="medStaffLevelList" value="#{employeeExtra.medStaffLevelId}" rendered="#{employeeExtra.id == null}">
+										<h:selectOneMenu id="medStaffLevelList" value="#{employeeExtra.medStaffLevelId}" disabled="#{employeeExtra.id != null}">
 											<f:selectItems value="#{medicalStaffData.medicalStaffLevels}" var="medicalLevel" itemLabel="#{medicalLevel.description}" itemValue="#{medicalLevel.id}" />
 										</h:selectOneMenu>
 									</rich:column>
 									<rich:column style="width : 5%">
-										<h:outputText value="#{employeeExtra.medStaffDegreeDesc}" rendered="#{employeeExtra.id != null}" />
-										<h:selectOneMenu id="medStaffDegreeList" value="#{employeeExtra.medStaffDegreeId}" rendered="#{employeeExtra.id == null}">
+										<h:selectOneMenu id="medStaffDegreeList" value="#{employeeExtra.medStaffDegreeId}" disabled="#{employeeExtra.id != null}">
 											<f:selectItems value="#{medicalStaffData.medicalStaffDegrees}" var="medicalDegree" itemLabel="#{medicalDegree.description}" itemValue="#{medicalDegree.id}" />
 										</h:selectOneMenu>
 									</rich:column>

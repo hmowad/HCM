@@ -165,7 +165,7 @@
 																	</rich:column>
 																	<rich:column style="width:25%">
 																		<f:facet name="header">#{msgs.label_save}</f:facet>
-																		<h:commandButton value="#{msgs.fa_floppy_o}" styleClass="btn_icon" action="#{employeesDataExtraTransactions.saveNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.socialStatusList, socialStatusElement,index)}" onclick="return handleOnAction('#{msgs.q_checkEmployeesExtraDataSave}', 'true');" disabled="#{socialStatusElement.id != null}">
+																		<h:commandButton value="#{msgs.fa_floppy_o}" styleClass="btn_icon" action="#{employeesDataExtraTransactions.saveNewEmployeeDataExtraTransaction(10, socialStatusElement,index)}" onclick="return handleOnAction('#{msgs.q_checkEmployeesExtraDataSave}', 'true');" disabled="#{socialStatusElement.id != null}">
 																			<f:ajax execute="employeesDataExtraTransactionsFormId:socialStatusListId" render="employeesDataExtraTransactionsFormId:socialStatusListId employeesDataExtraTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 																		</h:commandButton>
 																	</rich:column>
@@ -238,10 +238,9 @@
 																			<h:outputText value=" " />
 																			<font style="color: red;">*</font>
 																		</f:facet>
-																		<h:selectOneMenu value="#{rankTitleElement.rankTitleId}" rendered="#{rankTitleElement.id == null}">
+																		<h:selectOneMenu value="#{rankTitleElement.rankTitleId}" disabled="#{rankTitleElement.id != null}">
 																			<f:selectItems value="#{employeesDataExtraTransactions.ranksTitles}" var="rankTitle" itemLabel="#{rankTitle.description}" itemValue="#{rankTitle.id}" />
 																		</h:selectOneMenu>
-																		<h:outputText value="#{rankTitleElement.rankTitleDesc}" rendered="#{rankTitleElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width:25%">
 																		<f:facet name="header">
@@ -254,7 +253,7 @@
 																	</rich:column>
 																	<rich:column style="width:25%">
 																		<f:facet name="header">#{msgs.label_save}</f:facet>
-																		<h:commandButton value="#{msgs.fa_floppy_o}" styleClass="btn_icon" action="#{employeesDataExtraTransactions.saveNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.rankTitleList,rankTitleElement,index)}" onclick="return handleOnAction('#{msgs.q_checkEmployeesExtraDataSave}', 'true');" disabled="#{rankTitleElement.id != null}">
+																		<h:commandButton value="#{msgs.fa_floppy_o}" styleClass="btn_icon" action="#{employeesDataExtraTransactions.saveNewEmployeeDataExtraTransaction(20,rankTitleElement,index)}" onclick="return handleOnAction('#{msgs.q_checkEmployeesExtraDataSave}', 'true');" disabled="#{rankTitleElement.id != null}">
 																			<f:ajax execute="employeesDataExtraTransactionsFormId:rankTitlePanelId" render="employeesDataExtraTransactionsFormId:rankTitlePanelId employeesDataExtraTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 																		</h:commandButton>
 																	</rich:column>
@@ -347,7 +346,7 @@
 																	</rich:column>
 																	<rich:column style="width:25%">
 																		<f:facet name="header">#{msgs.label_save}</f:facet>
-																		<h:commandButton value="#{msgs.fa_floppy_o}" styleClass="btn_icon" action="#{employeesDataExtraTransactions.saveNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.generalSpecList, generalSpecElement, index)}" onclick="return handleOnAction('#{msgs.q_checkEmployeesExtraDataSave}', 'true');" disabled="#{generalSpecElement.id != null}">
+																		<h:commandButton value="#{msgs.fa_floppy_o}" styleClass="btn_icon" action="#{employeesDataExtraTransactions.saveNewEmployeeDataExtraTransaction(30, generalSpecElement, index)}" onclick="return handleOnAction('#{msgs.q_checkEmployeesExtraDataSave}', 'true');" disabled="#{generalSpecElement.id != null}">
 																			<f:ajax execute="employeesDataExtraTransactionsFormId:generalSpecPanelId" render="employeesDataExtraTransactionsFormId:generalSpecPanelId employeesDataExtraTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 																		</h:commandButton>
 																	</rich:column>
@@ -420,10 +419,9 @@
 																			<h:outputText value=" " />
 																			<font style="color: red;">*</font>
 																		</f:facet>
-																		<h:selectOneMenu value="#{salaryRankElement.salaryRankId}" rendered="#{salaryRankElement.id == null}">
+																		<h:selectOneMenu value="#{salaryRankElement.salaryRankId}" disabled="#{salaryRankElement.id != null}">
 																			<f:selectItems value="#{employeesDataExtraTransactions.salaryRanks}" var="salaryRank" itemLabel="#{salaryRank.description}" itemValue="#{salaryRank.id}" />
 																		</h:selectOneMenu>
-																		<h:outputText value="#{salaryRankElement.salaryRankDesc}" rendered="#{salaryRankElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width : 10%">
 																		<f:facet name="header">
@@ -431,10 +429,9 @@
 																			<h:outputText value=" " />
 																			<font style="color: red;">*</font>
 																		</f:facet>
-																		<h:selectOneMenu value="#{salaryRankElement.salaryDegreeId}" rendered="#{salaryRankElement.id == null}">
+																		<h:selectOneMenu value="#{salaryRankElement.salaryDegreeId}" disabled="#{salaryRankElement.id != null}">
 																			<f:selectItems value="#{employeesDataExtraTransactions.salaryDegrees}" var="salaryDegree" itemLabel="#{salaryDegree.description}" itemValue="#{salaryDegree.id}" />
 																		</h:selectOneMenu>
-																		<h:outputText value="#{salaryRankElement.salaryDegreeDesc}" rendered="#{salaryRankElement.id != null}" />
 																	</rich:column>
 																	<rich:column style="width:25%">
 																		<f:facet name="header">
@@ -447,7 +444,7 @@
 																	</rich:column>
 																	<rich:column style="width:25%">
 																		<f:facet name="header">#{msgs.label_save}</f:facet>
-																		<h:commandButton value="#{msgs.fa_floppy_o}" styleClass="btn_icon" action="#{employeesDataExtraTransactions.saveNewEmployeeDataExtraTransaction(employeesDataExtraTransactions.salaryRankList ,salaryRankElement, index)}" onclick="return handleOnAction('#{msgs.q_checkEmployeesExtraDataSave}', 'true');" disabled="#{salaryRankElement.id != null}">
+																		<h:commandButton value="#{msgs.fa_floppy_o}" styleClass="btn_icon" action="#{employeesDataExtraTransactions.saveNewEmployeeDataExtraTransaction(40 ,salaryRankElement, index)}" onclick="return handleOnAction('#{msgs.q_checkEmployeesExtraDataSave}', 'true');" disabled="#{salaryRankElement.id != null}">
 																			<f:ajax execute="employeesDataExtraTransactionsFormId:salaryRankPanelId" render="employeesDataExtraTransactionsFormId:salaryRankPanelId employeesDataExtraTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 																		</h:commandButton>
 																	</rich:column>
@@ -467,7 +464,6 @@
 											</rich:collapsiblePanel>
 										</td>
 									</tr>
-
 								</table>
 							</h:panelGroup>
 						</h:panelGroup>
