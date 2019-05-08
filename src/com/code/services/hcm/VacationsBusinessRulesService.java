@@ -1488,8 +1488,8 @@ public class VacationsBusinessRulesService extends BaseService {
 	if (exceededDays == null || exceededDays < 0)
 	    throw new BusinessException("error_exceededDaysPositive");
 
-	if (!validateDataOnlyFlag && countLaterVacationsHasJoiningDate(empId, endDateString, vacationTypeId, subVacationType) > 0)
-	    throw new BusinessException("error_laterVacationHasJoiningDate");
+	// if (!validateDataOnlyFlag && countLaterVacationsHasJoiningDate(empId, endDateString, vacationTypeId, subVacationType) > 0)
+	// throw new BusinessException("error_laterVacationHasJoiningDate");
     }
 
     /*---------------------------------------------------------- Calculate Balances --------------------------------------------*/
