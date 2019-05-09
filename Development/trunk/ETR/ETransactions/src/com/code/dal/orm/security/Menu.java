@@ -42,6 +42,8 @@ public class Menu {
     private Integer menuFlag;
     private Integer externalMenu;
     private Long moduleId;
+    private String arabicName;
+    private String englishName;
     private List<Menu> subMenus;
 
     @Id
@@ -142,6 +144,26 @@ public class Menu {
 
     public void setModuleId(Long moduleId) {
 	this.moduleId = moduleId;
+    }
+
+    @Basic
+    @Column(name = "ARABIC_NAME")
+    public String getArabicName() {
+	return arabicName;
+    }
+
+    public void setArabicName(String arabicName) {
+	this.arabicName = arabicName;
+    }
+
+    @Basic
+    @Column(name = "ENGLISH_NAME")
+    public String getEnglishName() {
+	return englishName;
+    }
+
+    public void setEnglishName(String englishName) {
+	this.englishName = englishName;
     }
 
     @Transient
