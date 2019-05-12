@@ -60,6 +60,11 @@ public abstract class VacationBase extends WFBaseBacking {
 		else
 		    lastVacation = new VacationData();
 
+		if (vacRequest.getSecondOldVacationId() != null)
+		    secondLastVacation = VacationsService.getVacationDataById(vacRequest.getSecondOldVacationId());
+		else
+		    secondLastVacation = new VacationData();
+
 		if (this.role.equals(WFTaskRolesEnum.MANAGER_REDIRECT.getCode())) {
 		    selectedReviewerEmpId = 0L;
 		    reviewerEmps = EmployeesService.getManagerEmployees(currentEmployee.getEmpId());

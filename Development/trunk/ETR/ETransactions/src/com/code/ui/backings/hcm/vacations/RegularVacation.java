@@ -46,16 +46,30 @@ public class RegularVacation extends VacationBase {
     }
 
     protected void getBeneficiaryInfo() throws BusinessException {
+
+	adjustProcess();
 	this.inquiryBalance();
+
 	List<VacationData> lastVacations = VacationsService.getVacationsData(this.beneficiary.getEmpId(), this.vacRequest.getVacationTypeId());
-	this.lastVacation = (lastVacations != null && !lastVacations.isEmpty()) ? lastVacations.get(0) : new VacationData();
-	this.secondLastVacation = (lastVacations != null && lastVacations.size() > 1) ? lastVacations.get(1) : new VacationData();
-	if (lastVacations != null) {
+	if (lastVacations != null && !lastVacations.isEmpty()) {
+	    this.lastVacation = lastVacations.get(0);
+	    if (lastVacations.size() > 1)
+		this.secondLastVacation = lastVacations.get(1);
+	}
+
+	if (this.lastVacation != null) {
 	    this.vacRequest.setOldVacationId(this.lastVacation.getId());
 	} else {
+	    this.lastVacation = new VacationData();
 	    this.vacRequest.setOldVacationId(null);
 	}
-	adjustProcess();
+
+	if (this.secondLastVacation != null) {
+	    this.vacRequest.setSecondOldVacationId(this.secondLastVacation.getId());
+	} else {
+	    this.secondLastVacation = new VacationData();
+	    this.vacRequest.setSecondOldVacationId(null);
+	}
     }
 
     public void adjustProcess() {
