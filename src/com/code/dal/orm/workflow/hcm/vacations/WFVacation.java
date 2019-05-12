@@ -79,6 +79,7 @@ public class WFVacation extends BaseEntity {
     private String contactNumber;
     private String notes;
     private Long oldVacationId;
+    private Long secondOldVacationId;
     private Long beneficiaryId;
     private Long approvedId;
     private Long decisionApprovedId;
@@ -275,6 +276,17 @@ public class WFVacation extends BaseEntity {
 
     public void setOldVacationId(Long oldVacationId) {
 	this.oldVacationId = oldVacationId;
+    }
+
+    @Basic
+    @Column(name = "SECOND_OLD_VACATION_ID")
+    @XmlTransient
+    public Long getSecondOldVacationId() {
+	return secondOldVacationId;
+    }
+
+    public void setSecondOldVacationId(Long secondOldVacationId) {
+	this.secondOldVacationId = secondOldVacationId;
     }
 
     @Basic
