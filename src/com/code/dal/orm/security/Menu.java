@@ -157,7 +157,7 @@ public class Menu {
     }
 
     @Basic
-    @Column(name = "ENGLISH_NAME")
+    @Column(name = "LATIN_NAME")
     public String getEnglishName() {
 	return englishName;
     }
