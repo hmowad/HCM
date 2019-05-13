@@ -156,7 +156,11 @@ public class Home extends BaseBacking {
 		socialIdRenewalPeriodWarning = true;
 		socialIdExpiredWarning = false;
 	    }
-	    lastVacation = VacationsService.getLastVacationWithoutJoiningDate(loginEmpData.getEmpId());
+
+	    lastVacation = VacationsService.getLastVacationBeforeCurrentDate(loginEmpData.getEmpId());
+	    if (lastVacation != null && lastVacation.getJoiningDate() != null) {
+		lastVacation = null;
+	    }
 	    lastValidMovTrans = MovementsService.getLastValidMovementTransactionForJoiningDate(loginEmpData.getEmpId(), MovementTypesEnum.MOVE.getCode());
 	    lastValidSubjoinTran = MovementsService.getLastValidMovementTransactionForJoiningDate(loginEmpData.getEmpId(), MovementTypesEnum.SUBJOIN.getCode());
 	} catch (BusinessException e) {

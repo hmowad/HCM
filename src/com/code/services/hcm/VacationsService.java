@@ -615,6 +615,20 @@ public class VacationsService extends BaseService {
 	return VacationsBusinessRulesService.getLastVacationBeforeCurrentDate(empId, true);
     }
 
+    /**
+     * Gets the last vacation before given date
+     * 
+     * @param empId
+     *            the employee ID to get his last vacation
+     * 
+     * 
+     * @return the last {@link Vacation} object for this employee
+     * @throws BusinessException
+     */
+    public static VacationData getLastVacationBeforeCurrentDate(long empId) throws BusinessException {
+	return VacationsBusinessRulesService.getLastVacationBeforeCurrentDate(empId, false);
+    }
+
     public static void validateVacationJoiningData(boolean validateDataOnlyFlag, Long empId, Long vacationTypeId, Integer subVacationType, String endDateString, Integer exceededDays) throws BusinessException {
 	VacationsBusinessRulesService.validateVacationJoiningData(validateDataOnlyFlag, empId, vacationTypeId, subVacationType, endDateString, exceededDays);
     }
