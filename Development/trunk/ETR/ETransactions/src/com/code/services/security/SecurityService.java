@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import javax.naming.AuthenticationException;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -15,6 +18,7 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.ws.Holder;
 
 import org.apache.commons.codec.binary.Base64;
@@ -42,6 +46,9 @@ import com.code.services.integration.WSSessionsManagementService;
 import com.code.services.workflow.BaseWorkFlow;
 
 public class SecurityService extends BaseService {
+
+    private final static String algAESSerectKey = "Zp7Yx26TZigp6kBppwp+Aw==";
+
     private SecurityService() {
     }
 
@@ -255,6 +262,20 @@ public class SecurityService extends BaseService {
 	    e.printStackTrace();
 	}
 	return isServiceAvailable;
+    }
+
+    public static String decryptSymmetrically(String cipherText) {
+	try {
+	    Cipher aesCipher = Cipher.getInstance("AES");
+	    byte[] encodedKey = Base64.decodeBase64(algAESSerectKey);
+	    SecretKey originalKey = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
+	    aesCipher.init(Cipher.DECRYPT_MODE, originalKey);
+	    byte[] bytePlainText = aesCipher.doFinal(DatatypeConverter.parseHexBinary(cipherText));
+	    return new String(bytePlainText);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    return null;
+	}
     }
 
     // --------------------------------------------------------------------------------------------------------------
