@@ -11,10 +11,13 @@ import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.security.Menu;
 import com.code.enums.SessionAttributesEnum;
+import com.code.exceptions.BusinessException;
+import com.code.services.hcm.EmployeesService;
 import com.code.services.security.SecurityService;
 
 public class AppPhaseListener implements PhaseListener {
@@ -31,6 +34,29 @@ public class AppPhaseListener implements PhaseListener {
     public void beforePhase(PhaseEvent phaseEvent) {
 	if (PhaseId.RESTORE_VIEW.compareTo(phaseEvent.getPhaseId()) == 0) {
 	    HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+	    if (req.getParameterMap().containsKey("user") && req.getParameterMap().get("user") != null && req.getParameterMap().get("user")[0].length() != 0) {
+		try {
+		    String userNameDecrypted = req.getParameterMap().get("user")[0];
+		    String socialId = SecurityService.decryptSymmetrically(userNameDecrypted);
+		    EmployeeData empData = EmployeesService.getEmployeeBySocialID(socialId);
+
+		    HttpSession session = req.getSession();
+		    session.setAttribute(SessionAttributesEnum.EMP_DATA.getCode(), empData);
+		    if (empData.getManagerId() != null) {
+			session.setAttribute(SessionAttributesEnum.USER_TRANSACTIONS_MENU.getCode(), SecurityService.getEmployeeMenus(empData.getEmpId(), 1));
+			session.setAttribute(SessionAttributesEnum.USER_WORKFLOWS_MENU.getCode(), SecurityService.getEmployeeMenus(empData.getEmpId(), 2));
+			session.setAttribute(SessionAttributesEnum.USER_REPORTS_MENU.getCode(), SecurityService.getEmployeeMenus(empData.getEmpId(), 3));
+		    } else {
+			session.setAttribute(SessionAttributesEnum.USER_TRANSACTIONS_MENU.getCode(), SecurityService.getExternalMenus());
+			session.setAttribute(SessionAttributesEnum.USER_WORKFLOWS_MENU.getCode(), new ArrayList<Menu>());
+			session.setAttribute(SessionAttributesEnum.USER_REPORTS_MENU.getCode(), new ArrayList<Menu>());
+		    }
+
+		} catch (BusinessException e) {
+		    e.printStackTrace();
+		}
+	    }
+
 	    String requestURI = getRequestURI(req.getRequestURI());
 	    EmployeeData sessionUser = (EmployeeData) req.getSession().getAttribute(SessionAttributesEnum.EMP_DATA.getCode());
 
