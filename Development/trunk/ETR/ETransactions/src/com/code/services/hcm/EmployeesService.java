@@ -1666,9 +1666,11 @@ public class EmployeesService extends BaseService {
 	    params = new Object[] { getMessage("label_socialStatus") };
 	    if (employeeExtraTransactionData.getSocialStatus() == null)
 		throw new BusinessException("error_socialStatusMandatory");
-	    List<EmployeeExtraTransactionData> duplicatedEmployeeExtraTransactionDataWithSameDecDateAndSocialStatus = getEmployeeExtraTransactionByEmpIdAndDecisionDateAndSocialStatusAndTransactionTypeId(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getSocialStatus(), employeeExtraTransactionData.getDecisionDateString(), employeeExtraTransactionData.getTransactionTypeId());
-	    if (duplicatedEmployeeExtraTransactionDataWithSameDecDateAndSocialStatus != null && duplicatedEmployeeExtraTransactionDataWithSameDecDateAndSocialStatus.size() != 0)
-		throw new BusinessException("error_dataCantBeChangedAtSameDate", params);
+	    if (employeeExtraTransactionData.getDecisionDateString() != null && employeeExtraTransactionData.getDecisionDateString().length() != 0) {
+		List<EmployeeExtraTransactionData> duplicatedEmployeeExtraTransactionDataWithSameDecDateAndSocialStatus = getEmployeeExtraTransactionByEmpIdAndDecisionDateAndSocialStatusAndTransactionTypeId(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getSocialStatus(), employeeExtraTransactionData.getDecisionDateString(), employeeExtraTransactionData.getTransactionTypeId());
+		if (duplicatedEmployeeExtraTransactionDataWithSameDecDateAndSocialStatus != null && duplicatedEmployeeExtraTransactionDataWithSameDecDateAndSocialStatus.size() != 0)
+		    throw new BusinessException("error_dataCantBeChangedAtSameDate", params);
+	    }
 	}
 	if (employeeExtraTransactionData.getTransactionTypeId() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SALARY_RANK.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId()) {
 	    params = new Object[] { getMessage("label_salaryRank") };
