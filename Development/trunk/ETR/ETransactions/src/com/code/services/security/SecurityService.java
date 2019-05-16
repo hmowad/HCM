@@ -264,7 +264,7 @@ public class SecurityService extends BaseService {
 	return isServiceAvailable;
     }
 
-    public static String decryptAES(String cipherText) {
+    public static String decryptAES(String cipherText) throws BusinessException {
 	try {
 	    Cipher aesCipher = Cipher.getInstance("AES");
 	    byte[] encodedKey = Base64.decodeBase64(algAESSerectKey);
@@ -274,7 +274,7 @@ public class SecurityService extends BaseService {
 	    return new String(bytePlainText);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    return null;
+	    throw new BusinessException("error_general");
 	}
     }
 
