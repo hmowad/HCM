@@ -683,6 +683,11 @@ public class EmployeesService extends BaseService {
 	return searchEmployeesByCommunicationData(empName, socialId, jobDesc, physicalUnitName, searchOfficialMobileNumber, searchDirectPhoneNumber, searchPrivateMobileNumber, searchPhoneExt, searchShieldMobileNumber, searchIpPhoneExt, searchEmail, searchUserAccount);
     }
 
+    public static EmployeeData getEmployeeByUserAccount(String userAccount) throws BusinessException {
+	List<EmployeeData> result = searchEmployeesByCommunicationData(null, null, null, null, null, null, null, null, null, null, null, userAccount);
+	return result.isEmpty() ? null : result.get(0);
+    }
+
     private static List<EmployeeData> searchEmployeesByCommunicationData(String empName, String socialID, String jobDesc, String physicalUnitFullName, String officialMobileNumber, String directPhoneNumber, String privateMobileNumber,
 	    String phoneExt, String shieldMobileNumber, String ipPhoneExt, String email, String userAccount) throws BusinessException {
 	try {

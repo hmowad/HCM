@@ -36,9 +36,9 @@ public class AppPhaseListener implements PhaseListener {
 	    HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 	    if (req.getParameterMap().containsKey("user") && req.getParameterMap().get("user") != null && req.getParameterMap().get("user")[0].length() != 0) {
 		try {
-		    String userNameDecrypted = req.getParameterMap().get("user")[0];
-		    String socialId = SecurityService.decryptSymmetrically(userNameDecrypted);
-		    EmployeeData empData = EmployeesService.getEmployeeBySocialID(socialId);
+		    String userAccountDecrypted = req.getParameterMap().get("user")[0];
+		    String userAccount = SecurityService.decryptAES(userAccountDecrypted);
+		    EmployeeData empData = EmployeesService.getEmployeeByUserAccount(userAccount);
 
 		    HttpSession session = req.getSession();
 		    session.setAttribute(SessionAttributesEnum.EMP_DATA.getCode(), empData);
