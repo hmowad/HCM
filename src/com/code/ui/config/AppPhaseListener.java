@@ -38,18 +38,22 @@ public class AppPhaseListener implements PhaseListener {
 		try {
 		    String userAccountDecrypted = req.getParameterMap().get("user")[0];
 		    String userAccount = SecurityService.decryptAES(userAccountDecrypted);
-		    EmployeeData empData = EmployeesService.getEmployeeByUserAccount(userAccount);
+		    if (userAccount != null) {
+			EmployeeData empData = EmployeesService.getEmployeeByUserAccount(userAccount);
+			if (empData != null) {
 
-		    HttpSession session = req.getSession();
-		    session.setAttribute(SessionAttributesEnum.EMP_DATA.getCode(), empData);
-		    if (empData.getManagerId() != null) {
-			session.setAttribute(SessionAttributesEnum.USER_TRANSACTIONS_MENU.getCode(), SecurityService.getEmployeeMenus(empData.getEmpId(), 1));
-			session.setAttribute(SessionAttributesEnum.USER_WORKFLOWS_MENU.getCode(), SecurityService.getEmployeeMenus(empData.getEmpId(), 2));
-			session.setAttribute(SessionAttributesEnum.USER_REPORTS_MENU.getCode(), SecurityService.getEmployeeMenus(empData.getEmpId(), 3));
-		    } else {
-			session.setAttribute(SessionAttributesEnum.USER_TRANSACTIONS_MENU.getCode(), SecurityService.getExternalMenus());
-			session.setAttribute(SessionAttributesEnum.USER_WORKFLOWS_MENU.getCode(), new ArrayList<Menu>());
-			session.setAttribute(SessionAttributesEnum.USER_REPORTS_MENU.getCode(), new ArrayList<Menu>());
+			    HttpSession session = req.getSession();
+			    session.setAttribute(SessionAttributesEnum.EMP_DATA.getCode(), empData);
+			    if (empData.getManagerId() != null) {
+				session.setAttribute(SessionAttributesEnum.USER_TRANSACTIONS_MENU.getCode(), SecurityService.getEmployeeMenus(empData.getEmpId(), 1));
+				session.setAttribute(SessionAttributesEnum.USER_WORKFLOWS_MENU.getCode(), SecurityService.getEmployeeMenus(empData.getEmpId(), 2));
+				session.setAttribute(SessionAttributesEnum.USER_REPORTS_MENU.getCode(), SecurityService.getEmployeeMenus(empData.getEmpId(), 3));
+			    } else {
+				session.setAttribute(SessionAttributesEnum.USER_TRANSACTIONS_MENU.getCode(), SecurityService.getExternalMenus());
+				session.setAttribute(SessionAttributesEnum.USER_WORKFLOWS_MENU.getCode(), new ArrayList<Menu>());
+				session.setAttribute(SessionAttributesEnum.USER_REPORTS_MENU.getCode(), new ArrayList<Menu>());
+			    }
+			}
 		    }
 
 		} catch (BusinessException e) {
