@@ -264,7 +264,7 @@ public class SecurityService extends BaseService {
 	return isServiceAvailable;
     }
 
-    public static String decryptSymmetrically(String cipherText) {
+    public static String decryptAES(String cipherText) {
 	try {
 	    Cipher aesCipher = Cipher.getInstance("AES");
 	    byte[] encodedKey = Base64.decodeBase64(algAESSerectKey);
