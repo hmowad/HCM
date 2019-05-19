@@ -72,6 +72,7 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
 
     public void addNewEmployeeDataExtraTransaction(List<EmployeeExtraTransactionData> empDataExtraTransactionList) {
 	EmployeeExtraTransactionData newEmpDataExtraTransaction = new EmployeeExtraTransactionData();
+	newEmpDataExtraTransaction.setEmpId(employee.getEmpId());
 	empDataExtraTransactionList.add(0, newEmpDataExtraTransaction);
     }
 
