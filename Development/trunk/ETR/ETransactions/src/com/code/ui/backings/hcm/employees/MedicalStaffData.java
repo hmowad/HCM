@@ -56,6 +56,7 @@ public class MedicalStaffData extends BaseBacking {
 
     public void addEmployeeExtraData() {
 	EmployeeExtraTransactionData addedEmployeeExtraTransactionData = new EmployeeExtraTransactionData();
+	addedEmployeeExtraTransactionData.setEmpId(selectedEmployee.getEmpId());
 	employeeExtraTransactionDataList.add(0, addedEmployeeExtraTransactionData);
     }
 
