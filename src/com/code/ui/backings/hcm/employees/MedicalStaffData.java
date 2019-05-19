@@ -47,7 +47,7 @@ public class MedicalStaffData extends BaseBacking {
 	    selectedEmployee = EmployeesService.getEmployeeData(selectedEmployee.getEmpId());
 	    EmployeesService.validateSelectedEmployeeForExtraTransaction(selectedEmployee);
 	    employeeExtraTransactionDataList = new ArrayList<EmployeeExtraTransactionData>();
-	    employeeExtraTransactionDataList = EmployeesService.getMedicalStaffExtraTransactionDataList(selectedEmployee.getEmpId());
+	    employeeExtraTransactionDataList = EmployeesService.getEmployeeDataExtraTransactionByEmpIdAndTransactionType(selectedEmployee.getEmpId(), CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEE_MEDICAL_STAFF_DATA.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
 	} catch (BusinessException e) {
 	    selectedEmployee = new EmployeeData();
 	    setServerSideErrorMessages(getMessage(e.getMessage()));

@@ -60,10 +60,10 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
 	    employee = EmployeesService.getEmployeeData(employeeId);
 	    salaryRanks = CommonService.getRanks(null, new Long[] { employee.getCategoryId() });
 	    salaryDegrees = PayrollsService.getAllDegrees();
-	    socialStatusList = EmployeesService.getSocialStatusExtraTransactionDataList(employeeId);
-	    rankTitleList = EmployeesService.getRankTitleExtraTransactionDataList(employeeId);
-	    generalSpecList = EmployeesService.getGeneralSpecializationExtraTransactionDataList(employeeId);
-	    salaryRankList = EmployeesService.getSalaryRankExtraTransactionDataList(employeeId);
+	    socialStatusList = EmployeesService.getEmployeeDataExtraTransactionByEmpIdAndTransactionType(employeeId, CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
+	    rankTitleList = EmployeesService.getEmployeeDataExtraTransactionByEmpIdAndTransactionType(employeeId, CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_RANK_TITLE.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
+	    generalSpecList = EmployeesService.getEmployeeDataExtraTransactionByEmpIdAndTransactionType(employeeId, CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_GENERAL_SPECIALIZATION.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
+	    salaryRankList = EmployeesService.getEmployeeDataExtraTransactionByEmpIdAndTransactionType(employeeId, CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SALARY_RANK.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	    e.printStackTrace();

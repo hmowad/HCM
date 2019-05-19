@@ -1697,7 +1697,7 @@ public class EmployeesService extends BaseService {
 	List<EmployeeExtraTransactionData> duplicatedEmployeeExtraTransactionDataWithSameDecDateAndNumber = getEmployeeExtraTransactionByEmpIdAndDecisionDateAndDecisionNumberAndTransactionTypeId(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getDecisionNumber(), employeeExtraTransactionData.getDecisionDateString(), employeeExtraTransactionData.getTransactionTypeId());
 	if (duplicatedEmployeeExtraTransactionDataWithSameDecDateAndNumber != null && duplicatedEmployeeExtraTransactionDataWithSameDecDateAndNumber.size() != 0)
 	    throw new BusinessException("error_decDateAndDecNumberMustBeUnique", params);
-	List<EmployeeExtraTransactionData> duplicatedEmployeeExtraTransactionDataWithSameData = getEmployeeExtraTransactionByEmpIdAndTransactionTypeId(employeeExtraTransactionData);
+	List<EmployeeExtraTransactionData> duplicatedEmployeeExtraTransactionDataWithSameData = getEmployeeExtraTransactionDataByEmpIdAndTransactionTypeId(employeeExtraTransactionData);
 	if (duplicatedEmployeeExtraTransactionDataWithSameData != null && duplicatedEmployeeExtraTransactionDataWithSameData.size() != 0)
 	    throw new BusinessException("error_dataCantBeChangedAtSameDate", params);
 
@@ -1767,26 +1767,6 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    public static List<EmployeeExtraTransactionData> getMedicalStaffExtraTransactionDataList(Long empId) throws BusinessException {
-	return getEmployeeDataExtraTransactionByEmpIdAndTransactionType(empId, CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEE_MEDICAL_STAFF_DATA.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
-    }
-
-    public static List<EmployeeExtraTransactionData> getSocialStatusExtraTransactionDataList(Long empId) throws BusinessException {
-	return getEmployeeDataExtraTransactionByEmpIdAndTransactionType(empId, CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
-    }
-
-    public static List<EmployeeExtraTransactionData> getRankTitleExtraTransactionDataList(Long empId) throws BusinessException {
-	return getEmployeeDataExtraTransactionByEmpIdAndTransactionType(empId, CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_RANK_TITLE.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
-    }
-
-    public static List<EmployeeExtraTransactionData> getGeneralSpecializationExtraTransactionDataList(Long empId) throws BusinessException {
-	return getEmployeeDataExtraTransactionByEmpIdAndTransactionType(empId, CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_GENERAL_SPECIALIZATION.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
-    }
-
-    public static List<EmployeeExtraTransactionData> getSalaryRankExtraTransactionDataList(Long empId) throws BusinessException {
-	return getEmployeeDataExtraTransactionByEmpIdAndTransactionType(empId, CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SALARY_RANK.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
-    }
-
     public static EmployeeMedicalStaffData getEmployeeMedicalStaffDataByEmpId(Long empId) throws BusinessException {
 	List<EmployeeMedicalStaffData> resultList = searchEmployeeMedicalStaffDataByEmpId(empId);
 	return (resultList == null || resultList.size() == 0) ? null : resultList.get(0);
@@ -1804,7 +1784,7 @@ public class EmployeesService extends BaseService {
 	return searchEmployeeExtraTransactionData(null, empId, transactionType, decisionNumber, decisionDate, null, null, null, null, null, null, null, null);
     }
 
-    private static List<EmployeeExtraTransactionData> getEmployeeExtraTransactionByEmpIdAndTransactionTypeId(EmployeeExtraTransactionData employeeExtraTransactionData) throws BusinessException {
+    private static List<EmployeeExtraTransactionData> getEmployeeExtraTransactionDataByEmpIdAndTransactionTypeId(EmployeeExtraTransactionData employeeExtraTransactionData) throws BusinessException {
 	if (employeeExtraTransactionData.getTransactionTypeId() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId()) {
 	    return searchEmployeeExtraTransactionData(null, employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getTransactionTypeId(), null, null, null, null, null, employeeExtraTransactionData.getSocialStatus(), null, null, null, null);
 	} else if (employeeExtraTransactionData.getTransactionTypeId() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SALARY_RANK.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId()) {
