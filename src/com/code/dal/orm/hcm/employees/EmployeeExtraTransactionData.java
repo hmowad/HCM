@@ -35,7 +35,19 @@ import com.code.services.util.HijriDateService;
 			" and (:P_MED_STAFF_RANK_ID = -1 or e.medStaffRankId = :P_MED_STAFF_RANK_ID) " +
 			" and (:P_MED_STAFF_LEVEL_ID = -1 or e.medStaffLevelId = :P_MED_STAFF_LEVEL_ID) " +
 			" and (:P_MED_STAFF_DEGREE_ID = -1 or e.medStaffDegreeId = :P_MED_STAFF_DEGREE_ID) " +
-			" order by e.effectiveDate desc")
+			" order by e.effectiveDate desc"),
+	@NamedQuery(name = "hcm_empDataExtraTrnData_getAfterDecDateEmpExtraTrnData",
+		query = "select e from EmployeeExtraTransactionData e " +
+			" where (e.empId = :P_EMP_ID) " +
+			" and (to_date(:P_DECISION_DATE, 'MI/MM/YYYY') <= e.decisionDate)" +
+			" and (:P_TRANSACTION_TYPE = -1 or e.transactionTypeId = :P_TRANSACTION_TYPE) " +
+			" order by e.decisionDate"),
+	@NamedQuery(name = "hcm_empDataExtraTrnData_getBeforeDecDateEmpExtraTrnData",
+		query = "select e from EmployeeExtraTransactionData e " +
+			" where (e.empId = :P_EMP_ID) " +
+			" and (to_date(:P_DECISION_DATE, 'MI/MM/YYYY') >= e.decisionDate)" +
+			" and (:P_TRANSACTION_TYPE = -1 or e.transactionTypeId = :P_TRANSACTION_TYPE) " +
+			" order by e.decisionDate desc")
 
 })
 

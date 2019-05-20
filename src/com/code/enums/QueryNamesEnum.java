@@ -16,6 +16,8 @@ public enum QueryNamesEnum {
     HCM_SEARCH_MANAGER_EMPLOYEES("hcm_empData_searchManagerEmployees"),
     HCM_SEARCH_EMPLOYEES_BY_PHYSICAL_OR_OFFICIAL_UNIT("hcm_empData_searchEmpDataByOfficialOrPhysicalUnit"),
     HCM_SEARCH_EMPLOYEES_EXTRA_TRANSACTION_DATA("hcm_empDataExtraTrnData_searchEmpExtraTrnData"),
+    HCM_GET_AFTER_DEC_DATE_EMPLOYEES_EXTRA_TRANSACTION_DATA("hcm_empDataExtraTrnData_getAfterDecDateEmpExtraTrnData"),
+    HCM_GET_BEFORE_DEC_DATE_EMPLOYEES_EXTRA_TRANSACTION_DATA("hcm_empDataExtraTrnData_getBeforeDecDateEmpExtraTrnData"),
     HCM_SEARCH_EMPLOYEE_MEDICAL_STAFF_DATA("hcm_empData_searchEmployeeMedicalStaffData"),
 
     HCM_GET_EMPLOYEE_PREFERENCES_BY_ID("hcm_empPreferences_getEmployeePreferencesById"),
