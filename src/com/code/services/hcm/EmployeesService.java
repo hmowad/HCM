@@ -1697,12 +1697,10 @@ public class EmployeesService extends BaseService {
 	List<EmployeeExtraTransactionData> duplicatedEmployeeExtraTransactionDataWithSameDecDateAndNumber = getEmployeeExtraTransactionByEmpIdAndDecisionDateAndDecisionNumberAndTransactionTypeId(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getDecisionNumber(), employeeExtraTransactionData.getDecisionDateString(), employeeExtraTransactionData.getTransactionTypeId());
 	if (duplicatedEmployeeExtraTransactionDataWithSameDecDateAndNumber != null && duplicatedEmployeeExtraTransactionDataWithSameDecDateAndNumber.size() != 0)
 	    throw new BusinessException("error_decDateAndDecNumberMustBeUnique", params);
-	if (employeeExtraTransactionData.getDecisionDate() != null) {
-	    EmployeeExtraTransactionData employeeExtraTransactionDataBeforeCurrentDecDate = getBeforeDecDateEmployeeExtraTransactionData(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getDecisionDateString(), employeeExtraTransactionData.getTransactionTypeId());
-	    EmployeeExtraTransactionData employeeExtraTransactionDataAfterCurrentDecDate = getAfterDecDateEmployeeExtraTransactionData(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getDecisionDateString(), employeeExtraTransactionData.getTransactionTypeId());
-	    if (checkEmployeeExtraTransactionDataAtBeforeAndAfterDecDates(employeeExtraTransactionData, employeeExtraTransactionDataBeforeCurrentDecDate, employeeExtraTransactionDataAfterCurrentDecDate))
-		throw new BusinessException("error_dataCantBeChangedAtSameDate", params);
-	}
+	EmployeeExtraTransactionData employeeExtraTransactionDataBeforeCurrentDecDate = getBeforeEffDateEmployeeExtraTransactionData(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getEffectiveDateString(), employeeExtraTransactionData.getTransactionTypeId());
+	EmployeeExtraTransactionData employeeExtraTransactionDataAfterCurrentDecDate = getAfterEffDateEmployeeExtraTransactionData(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getEffectiveDateString(), employeeExtraTransactionData.getTransactionTypeId());
+	if (checkEmployeeExtraTransactionDataAtBeforeAndAfterDecDates(employeeExtraTransactionData, employeeExtraTransactionDataBeforeCurrentDecDate, employeeExtraTransactionDataAfterCurrentDecDate))
+	    throw new BusinessException("error_dataCantBeChangedAtSameDate", params);
 
     }
 
@@ -1882,14 +1880,14 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    private static EmployeeExtraTransactionData getBeforeDecDateEmployeeExtraTransactionData(Long empId, String decisionDate, Long transactionType) throws BusinessException {
+    private static EmployeeExtraTransactionData getBeforeEffDateEmployeeExtraTransactionData(Long empId, String effectiveDate, Long transactionType) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_ID", empId);
-	    qParams.put("P_DECISION_DATE", decisionDate);
+	    qParams.put("P_EFFECTIVE_DATE", effectiveDate);
 	    qParams.put("P_TRANSACTION_TYPE", transactionType == null ? FlagsEnum.ALL.getCode() + "" : transactionType);
 	    List<EmployeeExtraTransactionData> result;
-	    result = DataAccess.executeNamedQuery(EmployeeExtraTransactionData.class, QueryNamesEnum.HCM_GET_BEFORE_DEC_DATE_EMPLOYEES_EXTRA_TRANSACTION_DATA.getCode(), qParams);
+	    result = DataAccess.executeNamedQuery(EmployeeExtraTransactionData.class, QueryNamesEnum.HCM_GET_BEFORE_EFFECTIVE_DATE_EMPLOYEES_EXTRA_TRANSACTION_DATA.getCode(), qParams);
 	    return (result == null || result.size() == 0) ? null : result.get(0);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
@@ -1898,14 +1896,14 @@ public class EmployeesService extends BaseService {
 
     }
 
-    private static EmployeeExtraTransactionData getAfterDecDateEmployeeExtraTransactionData(Long empId, String decisionDate, Long transactionType) throws BusinessException {
+    private static EmployeeExtraTransactionData getAfterEffDateEmployeeExtraTransactionData(Long empId, String effectiveDate, Long transactionType) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_ID", empId);
-	    qParams.put("P_DECISION_DATE", decisionDate);
+	    qParams.put("P_EFFECTIVE_DATE", effectiveDate);
 	    qParams.put("P_TRANSACTION_TYPE", transactionType == null ? FlagsEnum.ALL.getCode() + "" : transactionType);
 	    List<EmployeeExtraTransactionData> result;
-	    result = DataAccess.executeNamedQuery(EmployeeExtraTransactionData.class, QueryNamesEnum.HCM_GET_AFTER_DEC_DATE_EMPLOYEES_EXTRA_TRANSACTION_DATA.getCode(), qParams);
+	    result = DataAccess.executeNamedQuery(EmployeeExtraTransactionData.class, QueryNamesEnum.HCM_GET_AFTER_EFFECTIVE_DATE_EMPLOYEES_EXTRA_TRANSACTION_DATA.getCode(), qParams);
 	    return (result == null || result.size() == 0) ? null : result.get(0);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();

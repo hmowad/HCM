@@ -36,18 +36,18 @@ import com.code.services.util.HijriDateService;
 			" and (:P_MED_STAFF_LEVEL_ID = -1 or e.medStaffLevelId = :P_MED_STAFF_LEVEL_ID) " +
 			" and (:P_MED_STAFF_DEGREE_ID = -1 or e.medStaffDegreeId = :P_MED_STAFF_DEGREE_ID) " +
 			" order by e.effectiveDate desc"),
-	@NamedQuery(name = "hcm_empDataExtraTrnData_getAfterDecDateEmpExtraTrnData",
+	@NamedQuery(name = "hcm_empDataExtraTrnData_getAfterEffDateEmpExtraTrnData",
 		query = "select e from EmployeeExtraTransactionData e " +
 			" where (e.empId = :P_EMP_ID) " +
-			" and (to_date(:P_DECISION_DATE, 'MI/MM/YYYY') <= e.decisionDate)" +
+			" and (to_date(:P_EFFECTIVE_DATE, 'MI/MM/YYYY') <= e.effectiveDate)" +
 			" and (:P_TRANSACTION_TYPE = -1 or e.transactionTypeId = :P_TRANSACTION_TYPE) " +
-			" order by e.decisionDate"),
-	@NamedQuery(name = "hcm_empDataExtraTrnData_getBeforeDecDateEmpExtraTrnData",
+			" order by e.effectiveDate"),
+	@NamedQuery(name = "hcm_empDataExtraTrnData_getBeforeEffDateEmpExtraTrnData",
 		query = "select e from EmployeeExtraTransactionData e " +
 			" where (e.empId = :P_EMP_ID) " +
-			" and (to_date(:P_DECISION_DATE, 'MI/MM/YYYY') >= e.decisionDate)" +
+			" and (to_date(:P_EFFECTIVE_DATE, 'MI/MM/YYYY') >= e.effectiveDate)" +
 			" and (:P_TRANSACTION_TYPE = -1 or e.transactionTypeId = :P_TRANSACTION_TYPE) " +
-			" order by e.decisionDate desc")
+			" order by e.effectiveDate desc")
 
 })
 
