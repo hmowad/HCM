@@ -79,8 +79,8 @@ public class ScholarshipDecisionRequest extends TrainingAndScholarshipBase {
 
     public void manipulateScholarShipEndDate() {
 	try {
-	    if (wfTraining.getStartDateString() != null && (wfTraining.getMonthsCount() != null && wfTraining.getMonthsCount() > 0)) {
-		wfTraining.setEndDateString(HijriDateService.addSubStringHijriMonthsDays(wfTraining.getStartDateString(), wfTraining.getMonthsCount(), FlagsEnum.ALL.getCode()));
+	    if (wfTraining.getStartDateString() != null) {
+		wfTraining.setEndDateString(HijriDateService.addSubStringHijriMonthsDays(wfTraining.getStartDateString(), wfTraining.getMonthsCount() == null ? 0 : wfTraining.getMonthsCount(), wfTraining.getDaysCount() == null ? FlagsEnum.ALL.getCode() : wfTraining.getDaysCount()));
 	    } else
 		wfTraining.setEndDateString(null);
 	} catch (BusinessException e) {
