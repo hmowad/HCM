@@ -52,7 +52,7 @@
 									<rich:column>#{msgs.label_startDate}</rich:column>
 									<rich:column>#{msgs.label_endDate}</rich:column>
 									<rich:column>#{msgs.label_trainingPlanDecisionPrint}</rich:column>
-									<rich:column colspan="2">#{msgs.label_trainingPlanPrint}</rich:column>
+									<rich:column colspan="3">#{msgs.label_trainingPlanPrint}</rich:column>
 
 								</rich:columnGroup>
 							</f:facet>
@@ -71,11 +71,14 @@
 							<rich:column style="width : 20%">
 								<h:commandButton action="#{trainingPlanDecisionsInquiry.printTrainingPlanDecisionApproval(trainingYear)}" value="#{msgs.fa_print}" title="#{msgs.label_print}" styleClass="btn_icon" />
 							</rich:column>
-							<rich:column style="width : 10%">
+							<rich:column style="width : 7%">
 								<h:commandButton action="#{trainingPlanDecisionsInquiry.printPlanDetailsPrint(trainingYear,1)}" value="#{msgs.fa_pdf}" title="#{msgs.label_print}" styleClass="btn_icon" />
 							</rich:column>
-							<rich:column style="width : 10%">
+							<rich:column style="width : 7%">
 								<h:commandButton action="#{trainingPlanDecisionsInquiry.printPlanDetailsPrint(trainingYear,2)}" value="#{msgs.fa_word}" title="#{msgs.label_print}" styleClass="btn_icon" />
+							</rich:column>
+							<rich:column rendered="#{trainingPlanDecisionsInquiry.excelPrintFlag}" style="width : 6%">
+								<h:commandButton action="#{trainingPlanDecisionsInquiry.printPlanDetailsPrint(trainingYear,3)}" value="#{msgs.fa_excel}" title="#{msgs.label_print}" styleClass="btn_icon" />
 							</rich:column>
 							<f:facet name="footer">
 								<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
