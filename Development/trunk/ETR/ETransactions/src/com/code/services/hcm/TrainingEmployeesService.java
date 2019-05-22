@@ -565,7 +565,7 @@ public class TrainingEmployeesService extends BaseService {
 	    if (!trainingTransaction.getStudyEndDate().after(trainingTransaction.getStudyStartDate()))
 		throw new BusinessException("error_trainingStudyEndDateBeforeStudyStartDate");
 
-	    if (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.SCHOLARSHIP.getCode() && (trainingTransaction.getStudyMonthsCount() <= 0 || trainingTransaction.getStudyMonthsCount() > MAX_MONTHS_PERIOD))
+	    if (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.SCHOLARSHIP.getCode() && trainingTransaction.getStudyMonthsCount() != null && (trainingTransaction.getStudyMonthsCount() <= 0 || trainingTransaction.getStudyMonthsCount() > MAX_MONTHS_PERIOD))
 		throw new BusinessException("error_minimumStudyMonthsRange");
 
 	    if (trainingTransaction.getStudyGraduationDate() != null && !trainingTransaction.getStudyGraduationDate().after(trainingTransaction.getStudyStartDate()))
@@ -1027,9 +1027,10 @@ public class TrainingEmployeesService extends BaseService {
 		    && !trainingTransactionDetail.getStudyStartDate().after(trainingTransactionDetail.getMinistryDecisionDate()))
 		throw new BusinessException("error_studyStartDateMustBeAfterMinistryDecisionDate");
 
-	    if ((transactionTypeNewDecisionId == trainingTransactionDetail.getTransactionTypeId() || transactionTypeExtensionDecisionId == trainingTransactionDetail.getTransactionTypeId())
-		    && !trainingTransactionDetail.getStudyStartDate().after(trainingTransactionDetail.getMinistryReportDate()))
-		throw new BusinessException("error_studyStartDateMustBeAfterReportDate");
+	    
+	     if (transactionTypeExtensionDecisionId == trainingTransactionDetail.getTransactionTypeId() && !trainingTransactionDetail.getStudyStartDate().after(trainingTransactionDetail.getMinistryReportDate())) 
+		 throw new BusinessException("error_studyStartDateMustBeAfterReportDate");
+	     
 
 	    if (trainingTransactionDetail.getMinistryDecisionDate().after(trainingTransactionDetail.getMinistryReportDate()))
 		throw new BusinessException("error_decisionDateMustBeBeforeOrEqualReportDate");
@@ -1065,9 +1066,11 @@ public class TrainingEmployeesService extends BaseService {
 			throw new BusinessException("error_invalidScholarShipCancellationDateRange");
 		}
 
-		if (trainingTransactionDetail.getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_EXTENSION_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()) {
+		if (trainingTransactionDetail.getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_EXTENSION_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId() || trainingTransactionDetail.getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_NEW_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()) {
 		    if (trainingTransactionDetail.getStudyDaysCount() != null && trainingTransactionDetail.getStudyDaysCount() > MAX_SCHOLARSHIP_DAYS_COUNT)
 			throw new BusinessException("error_invalidScholarshipExtensionDaysRange");
+		    if (trainingTransactionDetail.getStudyMonthsCount() != null && trainingTransactionDetail.getStudyMonthsCount() > MAX_MONTHS_PERIOD)
+			throw new BusinessException("error_minimumStudyMonthsRange");
 		}
 	    }
 	}
