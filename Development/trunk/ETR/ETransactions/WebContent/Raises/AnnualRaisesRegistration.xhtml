@@ -105,9 +105,16 @@
 									</tr>
 									<tr>
 										<th width="20%">#{msgs.label_remarks}</th>
-										<td>
+										<td width="30%">
 											<h:inputTextarea value="#{annualRaiseRegistration.annualRaise.remarks}" readonly="#{annualRaiseRegistration.viewAdminFlag}" styleClass="inputDataSuperLarge" maxlength="500" />
 										</td>
+										<h:panelGroup rendered="#{annualRaiseRegistration.annualRaise.reasons != null and annualRaiseRegistration.annualRaise.status == 1}">
+											<th width="20%">#{msgs.label_sendBackReasons}</th>
+											<td width="30%">
+												<h:inputTextarea value="#{annualRaiseRegistration.annualRaise.reasons}" readonly="true" styleClass="inputDataSuperLarge" maxlength="500" />
+											</td>
+										</h:panelGroup>
+										
 									</tr>
 									<tr>
 										<td colspan="4">
@@ -235,12 +242,35 @@
 										<td colspan="4">
 											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 												<tr>
-													<td >
-														<h:commandButton id="saveId" onclick="return handleOnAction('#{msgs.q_save}');" action="#{annualRaiseRegistration.saveRaiseEmployees()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" style="float: left;" rendered="#{!annualRaiseRegistration.approveAdminFlag and annualRaiseRegistration.modifyAdminFlag}">
+													
+													<h:panelGroup id = "refuseReasonsPanel" rendered="#{annualRaiseRegistration.annualRaise.status == 3 and annualRaiseRegistration.approveAdminFlag}">
+														<td>	
+															<table>
+																<tr>
+																	<th>#{msgs.label_sendBackReasons}</th>
+																	<td>
+																		<h:inputTextarea id ="refuseReasonsId" value="#{annualRaiseRegistration.reasons}" styleClass="inputDataSuperLarge" maxlength="500" />
+																	</td>	
+																	<td>
+																		<h:commandButton id="returnId" onclick="return handleOnAction('#{msgs.q_sendBackToSpecial}', 'validateRefuseAndNotes(0, &quot;annualRaiseRegistrationFormId:refuseReasonsId&quot;)' ,null);" action="#{annualRaiseRegistration.sendBack()}" value="#{msgs.label_sendBackToSpecial} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" >
+																			<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandButton>
+																	</td>
+																</tr>															
+															</table>
+														</td>
+													</h:panelGroup>
+													<td>
+														<h:commandButton id="saveId" onclick="return handleOnAction('#{msgs.q_save}');" action="#{annualRaiseRegistration.saveRaiseEmployees()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.annualRaise.status == 1 and annualRaiseRegistration.modifyAdminFlag}">
 															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
+														
+														<h:commandButton id="confirmId" onclick="return handleOnAction('#{msgs.q_confirmRaise}');" action="#{annualRaiseRegistration.confirm()}" value="#{msgs.label_confirmRaise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.annualRaise.status == 1 and annualRaiseRegistration.modifyAdminFlag}">
+															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														
 
-														<h:commandButton id="approvetnId" onclick="return handleOnAction('#{msgs.q_superSign}')" action="#{annualRaiseRegistration.approveRaise()}" value="#{msgs.label_saveAndSuperSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.approveAdminFlag and !annualRaiseRegistration.regenerateFlag}">
+														<h:commandButton id="approvetnId" onclick="return handleOnAction('#{msgs.q_superSign}')" action="#{annualRaiseRegistration.approveRaise()}" value="#{msgs.label_approveAndCloseRaise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.approveAdminFlag and annualRaiseRegistration.annualRaise.status == 3 and !annualRaiseRegistration.regenerateFlag}">
 															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
 												
@@ -255,12 +285,12 @@
 									</tr>
 								</table>
 							</h:panelGroup>
-
 						</h:panelGroup>
 					</td>
 				</tr>
 			</table>
 		</ui:decorate>
 	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_sendBackReasonsManadatory}" />
 </h:body>
 </html>

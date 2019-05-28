@@ -17,6 +17,7 @@ import com.code.enums.CategoriesEnum;
 import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
+import com.code.enums.NavigationEnum;
 import com.code.enums.RaiseEmployeesTypesEnum;
 import com.code.enums.RaiseStatusEnum;
 import com.code.enums.RaiseTypesEnum;
@@ -47,6 +48,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
     private List<RaiseEmployeeData> addedEmployeesList;
     private List<RaiseEmployeeData> deletedEmployeesList;
     private String statusIds;
+    private String reasons;
 
     public AdditionalRaisesRegistration() {
 	try {
@@ -97,6 +99,11 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 		    modifyAdminFlag = true;
 		    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ADDITIONAL_RAISES_REGISTERATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ADDITIONAL_RAISE.getCode()))
 			approveAdminFlag = true;
+		} else if (raise.getStatus() == RaiseStatusEnum.CONFIRMED.getCode() &&
+			SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ADDITIONAL_RAISES_REGISTERATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ADDITIONAL_RAISE.getCode())) {
+		    setScreenTitle(getMessage("title_additionalRaiseApproval"));
+		    modifyAdminFlag = true;
+		    approveAdminFlag = true;
 		} else
 		    setScreenTitle(getMessage("title_additionalRaisesView"));
 	    }
@@ -144,7 +151,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	}
     }
 
-    public void save() throws BusinessException {
+    public void save(int type) throws BusinessException {
 	try {
 	    raise.setSystemUser(loginEmpData.getEmpId() + "");
 	    if (addAdminFlag) {
@@ -152,36 +159,55 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	    } else if (modifyAdminFlag) {
 		RaisesService.saveAdditionalRaiseData(raise, addedEmployeesList, deletedEmployeesList, deservedEmployeesList);
 	    }
-	    if (!approveAdminFlag) {
+	    if (type == 1) {
 		super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 		modifyAdminFlag = true;
 		addAdminFlag = false;
 	    }
 	} catch (BusinessException e) {
-	    if (approveAdminFlag) {
+	    if (type == 2) {
 		throw (BusinessException) e;
 	    }
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
     }
 
-    public void saveAndApprove() {
+    public String saveAndApprove() {
 	try {
-	    save();
+	    save(2);
 	    deservedEmployeesList = RaisesService.approveAdditionalRaise(raise, loginEmpData.getEmpId(), loginEmpData.getEmpId() + "");
 	    categoryDesc = CommonService.getCategoryById(raise.getCategoryId()).getDescription();
-	    changeScreen();
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	    return NavigationEnum.SUCCESS.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    return null;
 	}
 
     }
 
-    private void changeScreen() {
-	setScreenTitle(getMessage("title_additionalRaisesView"));
-	addAdminFlag = false;
-	modifyAdminFlag = false;
+    public String confirm() {
+	try {
+	    this.save(2);
+	    raise.setStatus(RaiseStatusEnum.CONFIRMED.getCode());
+	    RaisesService.updateRaise(raise);
+	    return NavigationEnum.SUCCESS.toString();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    return null;
+	}
+    }
+
+    public String sendBack() {
+	try {
+	    raise.setReasons(reasons);
+	    raise.setStatus(RaiseStatusEnum.INITIAL.getCode());
+	    RaisesService.updateRaise(raise);
+	    return NavigationEnum.SUCCESS.toString();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    return null;
+	}
     }
 
     public Long getRaiseId() {
@@ -312,4 +338,11 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	this.statusIds = statusIds;
     }
 
+    public String getReasons() {
+	return reasons;
+    }
+
+    public void setReasons(String reasons) {
+	this.reasons = reasons;
+    }
 }

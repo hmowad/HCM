@@ -26,7 +26,7 @@ import com.code.services.util.HijriDateService;
 			" and(:P_ID = -1 or r.id = :P_ID)" +
 			" and (:P_DECISION_NUMBER = '-1' or r.decisionNumber = :P_DECISION_NUMBER)" +
 			" and (:P_TYPE = -1 or r.type = :P_TYPE)" +
-			" and (:P_STATUS = -1 or r.status = :P_STATUS )" +
+			" and (:P_STATUS_FLAG = -1 or r.status IN (:P_STATUS) )" +
 			" and (:P_CATEGORY_ID = -1 or r.categoryId = :P_CATEGORY_ID)" +
 			" and (:P_DECISION_DATE_FROM_FLAG = -1 or r.decisionDate >= (TO_DATE(:P_DECISION_DATE_FROM, 'MI/MM/YYYY')))" +
 			" and (:P_DECISION_DATE_TO_FLAG = -1 or r.decisionDate <= (TO_DATE(:P_DECISION_DATE_TO, 'MI/MM/YYYY')))" +
@@ -77,6 +77,7 @@ public class Raise extends AuditEntity implements InsertableAuditEntity, Updatab
     private Integer status;
     private Long categoryId;
     private String remarks;
+    private String reasons;
     private String decisionDateString;
     private String executionDateString;
     private boolean dirtyFlag;
@@ -164,6 +165,16 @@ public class Raise extends AuditEntity implements InsertableAuditEntity, Updatab
 
     public void setRemarks(String remarks) {
 	this.remarks = remarks;
+    }
+
+    @Basic
+    @Column(name = "REASONS")
+    public String getReasons() {
+	return reasons;
+    }
+
+    public void setReasons(String reasons) {
+	this.reasons = reasons;
     }
 
     @Transient

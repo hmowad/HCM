@@ -11,10 +11,13 @@ import com.code.dal.orm.hcm.Category;
 import com.code.dal.orm.hcm.raises.Raise;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
+import com.code.enums.MenuActionsEnum;
+import com.code.enums.MenuCodesEnum;
 import com.code.enums.RaiseEmployeesTypesEnum;
 import com.code.enums.RaiseTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.RaisesService;
+import com.code.services.security.SecurityService;
 import com.code.services.util.CommonService;
 import com.code.ui.backings.base.BaseBacking;
 
@@ -31,6 +34,7 @@ public class RaisesManagement extends BaseBacking {
     private Date decisionDateTo;
     private Date executionDateFrom;
     private Date executionDateTo;
+    private boolean approveAdminFlag;
 
     private List<Raise> raises;
     private List<Category> employeesCategories;
@@ -40,28 +44,42 @@ public class RaisesManagement extends BaseBacking {
     }
 
     public void init() {
-	employeesCategories = CommonService.getAllCategories();
-	if (getRequest().getParameter("mode") != null) {
-	    if (Integer.parseInt(getRequest().getParameter("mode")) == RaiseTypesEnum.ANNUAL.getCode()) {
-		mode = RaiseTypesEnum.ANNUAL.getCode();
-		setScreenTitle(getMessage("title_annualRaisesManagement"));
-		pageName = "Annual";
+	try {
+	    employeesCategories = CommonService.getAllCategories();
+	    if (getRequest().getParameter("mode") != null) {
+		if (Integer.parseInt(getRequest().getParameter("mode")) == RaiseTypesEnum.ANNUAL.getCode()) {
+		    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ANNUAL_RAISES_REGISTRATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ANNUAL_RAISE_REGISTRATION.getCode()))
+			approveAdminFlag = true;
+		    mode = RaiseTypesEnum.ANNUAL.getCode();
+		    setScreenTitle(getMessage("title_annualRaisesManagement"));
+		    pageName = "Annual";
 
-	    } else {
-		mode = RaiseTypesEnum.ADDITIONAL.getCode();
-		setScreenTitle(getMessage("title_additionalRaisesManagement"));
-		pageName = "Additional";
-		for (Iterator<Category> i = employeesCategories.iterator(); i.hasNext();) {
-		    Category category = i.next();
-		    if ((category.getId() == CategoriesEnum.CONTRACTORS.getCode()) || (category.getId() == CategoriesEnum.OFFICERS.getCode()) || (category.getId() == CategoriesEnum.SOLDIERS.getCode()))
-			i.remove();
+		} else {
+		    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ADDITIONAL_RAISES_REGISTERATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ADDITIONAL_RAISE.getCode()))
+			approveAdminFlag = true;
+		    mode = RaiseTypesEnum.ADDITIONAL.getCode();
+		    setScreenTitle(getMessage("title_additionalRaisesManagement"));
+		    pageName = "Additional";
+		    for (Iterator<Category> i = employeesCategories.iterator(); i.hasNext();) {
+			Category category = i.next();
+			if ((category.getId() == CategoriesEnum.CONTRACTORS.getCode()) || (category.getId() == CategoriesEnum.OFFICERS.getCode()) || (category.getId() == CategoriesEnum.SOLDIERS.getCode()))
+			    i.remove();
+		    }
+
 		}
-
+		reset();
 	    }
 
-	    reset();
+	} catch (BusinessException e) {
+	    e.printStackTrace();
+	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
 
+    }
+
+    public void showMessage() {
+	if ("true".equals(getRequest().getParameter("success")))
+	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
     }
 
     public void search() {
@@ -216,5 +234,9 @@ public class RaisesManagement extends BaseBacking {
 
     public void setPageName(String pageName) {
 	this.pageName = pageName;
+    }
+
+    public boolean getApproveAdminFlag() {
+	return this.approveAdminFlag;
     }
 }

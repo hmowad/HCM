@@ -99,6 +99,13 @@
 										<td>
 											<h:inputTextarea value="#{additionalRaisesRegistration.raise.remarks}" readonly="#{!(additionalRaisesRegistration.addAdminFlag or additionalRaisesRegistration.modifyAdminFlag)}" styleClass="inputDataSuperLarge" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" />
 										</td>
+										
+										<h:panelGroup rendered="#{additionalRaisesRegistration.raise.reasons != null and additionalRaisesRegistration.raise.status == 1}">
+											<th width="20%">#{msgs.label_sendBackReasons}</th>
+											<td width="30%">
+												<h:inputTextarea value="#{additionalRaisesRegistration.raise.reasons}" readonly="true" styleClass="inputDataSuperLarge" maxlength="500" />
+											</td>
+										</h:panelGroup>
 									</tr>
 									<tr>
 										<td height="5" />
@@ -189,14 +196,38 @@
 						<h:panelGroup id="actionsBtnsId" rendered="#{additionalRaisesRegistration.addAdminFlag or additionalRaisesRegistration.modifyAdminFlag}">
 							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 								<tr>
-									<td width="100%">
-										<h:commandButton action="#{additionalRaisesRegistration.save()}" onclick="return handleOnAction('#{msgs.q_save}');" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{! additionalRaisesRegistration.approveAdminFlag}" >
+									<h:panelGroup id = "refuseReasonsPanel" rendered="#{additionalRaisesRegistration.raise.status == 3 and additionalRaisesRegistration.approveAdminFlag}">
+										<td>	
+											<table>
+												<tr>
+													<th>#{msgs.label_sendBackReasons}</th>
+													<td>
+														<h:inputTextarea id ="refuseReasonsId" value="#{additionalRaisesRegistration.reasons}" styleClass="inputDataSuperLarge" maxlength="500" />
+													</td>	
+													<td>
+														<h:commandButton id="returnId" onclick="return handleOnAction('#{msgs.q_sendBackToSpecial}', 'validateRefuseAndNotes(0, &quot;additionalRaisesRegistrationFormId:refuseReasonsId&quot;)' ,null);" action="#{additionalRaisesRegistration.sendBack()}" value="#{msgs.label_sendBackToSpecial} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+															<f:ajax execute="@form" render="additionalRaisesRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</td>
+												</tr>															
+											</table>
+										</td>
+									</h:panelGroup>
+									<td>
+										<h:commandButton action="#{additionalRaisesRegistration.save(1)}" onclick="return handleOnAction('#{msgs.q_save}');" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{additionalRaisesRegistration.raise.status == 1}" >
 											<f:ajax execute="additionalRaisesRegistrationFormId:additionalRaiseDataPanelId additionalRaisesRegistrationFormId:addedEmployeesListId" render="additionalRaisesRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
-										<h:commandButton action="#{additionalRaisesRegistration.saveAndApprove()}" onclick="return handleOnAction('#{msgs.q_superSign}');"  value="#{msgs.label_approveAndCloseRaise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{additionalRaisesRegistration.approveAdminFlag}">
+										
+										<h:commandButton id="confirmId" onclick="return handleOnAction('#{msgs.q_confirmRaise}');" action="#{additionalRaisesRegistration.confirm()}" value="#{msgs.label_confirmRaise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" style="float: left;" rendered="#{additionalRaisesRegistration.raise.status == 1}">
+											<f:ajax execute="@form" render="additionalRaisesRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+										
+										<h:commandButton action="#{additionalRaisesRegistration.saveAndApprove()}" onclick="return handleOnAction('#{msgs.q_superSign}');"  value="#{msgs.label_approveAndCloseRaise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{additionalRaisesRegistration.approveAdminFlag and additionalRaisesRegistration.raise.status == 3}">
 											<f:ajax execute="additionalRaisesRegistrationFormId:additionalRaiseDataPanelId additionalRaisesRegistrationFormId:addedEmployeesListId" render="additionalRaisesRegistrationFormId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
+										
 									</td>
+									
 								</tr>
 							</table>
 						</h:panelGroup>
@@ -206,5 +237,6 @@
 			</table>
 		</ui:decorate>
 	</h:form>
+	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_sendBackReasonsManadatory}" />
 </h:body>
 </html>

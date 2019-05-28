@@ -14,6 +14,7 @@ import com.code.dal.orm.hcm.raises.RaiseEmployeeData;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
+import com.code.enums.NavigationEnum;
 import com.code.enums.RaiseEmployeesTypesEnum;
 import com.code.enums.RaiseStatusEnum;
 import com.code.enums.RaiseTypesEnum;
@@ -40,10 +41,12 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     private boolean modifyAdminFlag;
     private boolean viewAdminFlag;
     private boolean switchPanels;
+    private boolean confirmFlag = false;
     private boolean regenerateFlag = false;
     private Long raiseIdParam;
     private final int pageSize = 10;
     private Long selectedEmpId;
+    private String reasons;
 
     public AnnualRaiseRegistration() {
 	setScreenTitle(getMessage("title_annualRaiseAddition"));
@@ -67,6 +70,13 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 		    modifyAdminFlag = true;
 		    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ANNUAL_RAISES_REGISTRATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ANNUAL_RAISE_REGISTRATION.getCode()))
 			approveAdminFlag = true;
+
+		} else if (annualRaise.getStatus().equals(RaiseStatusEnum.CONFIRMED.getCode())) {
+		    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ANNUAL_RAISES_REGISTRATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ANNUAL_RAISE_REGISTRATION.getCode())) {
+			approveAdminFlag = true;
+			modifyAdminFlag = true;
+		    } else
+			viewAdminFlag = true;
 		} else
 		    viewAdminFlag = true;
 	    } catch (BusinessException e) {
@@ -143,25 +153,49 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     }
 
     // press save button
-    public void saveRaiseEmployees() throws BusinessException {
+    public String saveRaiseEmployees() throws BusinessException {
 	try {
 	    RaisesService.updateRaiseEmployeesList(updateRaiseEmployees);
-	    if (!approveAdminFlag) {
-		super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
-		modifyAdminFlag = false;
-		approveAdminFlag = false;
-		viewAdminFlag = true;
-	    }
+	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	    modifyAdminFlag = false;
+	    approveAdminFlag = false;
+	    viewAdminFlag = true;
+	    return NavigationEnum.SUCCESS.toString();
 	} catch (BusinessException e) {
-	    if (approveAdminFlag) {
-		throw (BusinessException) e;
-	    }
+	    if (confirmFlag || approveAdminFlag)
+		throw e;
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    return null;
 	}
 
     }
 
-    public void approveRaise() {
+    public String confirm() {
+	try {
+	    confirmFlag = true;
+	    this.saveRaiseEmployees();
+	    annualRaise.setStatus(RaiseStatusEnum.CONFIRMED.getCode());
+	    RaisesService.updateRaise(annualRaise);
+	    return NavigationEnum.SUCCESS.toString();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    return null;
+	}
+    }
+
+    public String sendBack() {
+	try {
+	    annualRaise.setReasons(this.reasons);
+	    annualRaise.setStatus(RaiseStatusEnum.INITIAL.getCode());
+	    RaisesService.updateRaise(annualRaise);
+	    return NavigationEnum.SUCCESS.toString();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    return null;
+	}
+    }
+
+    public String approveRaise() {
 	try {
 	    saveRaiseEmployees();
 	    RaisesService.approveAnnualRaise(annualRaise, loginEmpData.getEmpId(), loginEmpData.getEmpId() + "");
@@ -169,10 +203,12 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 	    modifyAdminFlag = false;
 	    approveAdminFlag = false;
 	    viewAdminFlag = true;
+	    return NavigationEnum.SUCCESS.toString();
 	} catch (BusinessException e) {
 	    if (annualRaise.isDirtyFlag())
 		regenerateFlag = true;
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    return null;
 
 	}
 
@@ -291,6 +327,14 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
     public void setRegenerateFlag(boolean regenerateFlag) {
 	this.regenerateFlag = regenerateFlag;
+    }
+
+    public String getReasons() {
+	return reasons;
+    }
+
+    public void setReasons(String reasons) {
+	this.reasons = reasons;
     }
 
 }
