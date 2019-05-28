@@ -176,7 +176,7 @@ public class TrainingCoursesEventsService extends BaseService {
 	}
     }
 
-    private static void updateTrainingCourseEvent(TrainingCourseEventData courseEvent, CustomSession... useSession) throws BusinessException {
+    public static void updateTrainingCourseEvent(TrainingCourseEventData courseEvent, CustomSession... useSession) throws BusinessException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 
@@ -1770,7 +1770,7 @@ public class TrainingCoursesEventsService extends BaseService {
 
     private static void validateTrainingCourseEventDecisionBusinessRules(TrainingCourseEventDecisionData courseEventDecision) throws BusinessException {
 	if (courseEventDecision.getTransactionTypeId() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_COURSE_EVENT_POSTPONE_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()
-		|| courseEventDecision.getTransactionTypeId() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_COURSE_EVENT_CANCEL_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()) { // cancellation and postponement
+		|| courseEventDecision.getTransactionTypeId() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_CANCELLATION_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()) { // cancellation and postponement
 	    // check if there is a trainee who joined the course that needs to be postponed or cancelled
 	    if (TrainingEmployeesService.courseEventHasJoinedEmployees(courseEventDecision.getCourseEventId(), TrainingTypesEnum.INTERNAL_MILITARY_COURSE.getCode()))
 		throw new BusinessException("error_traineesHasJoinedCourseEvent");

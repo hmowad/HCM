@@ -120,12 +120,6 @@
 											<h:outputText value="#{militaryCourseEventJoiningRegistration.selectedCourseEvent.actualEndDateString}" />
 										</td>
 									</tr>
-									<tr>
-										<th width="15%">#{msgs.label_attachments}</th>
-										<td width="85%" colspan="3">
-											<code:attachments loginEmpId="#{militaryCourseEventJoiningRegistration.loginEmpData.empId}" attachmentId="#{militaryCourseEventJoiningRegistration.selectedCourseEvent.attachments}" addEnableFlag="false" viewEnableFlag="true" deleteEnableFlag="false" />
-										</td>
-									</tr>
 								</table>
 							</h:panelGroup>
 						</td>
@@ -150,7 +144,35 @@
 												</table>
 											</td>
 										</tr>
-
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
+										
+										<tr>
+											<td width ="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<th width="15%">#{msgs.label_courseEventJoiningAttachment}</th>
+														<td width="85%" colspan="3">
+															<code:attachments loginEmpId="#{militaryCourseEventJoiningRegistration.loginEmpData.empId}" attachmentId="#{militaryCourseEventJoiningRegistration.selectedCourseEvent.attachments}" viewEnableFlag="true" addEnableFlag="true" deleteEnableFlag="true" />
+														</td>
+														
+														<td width="45%">
+															<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+																<tr>
+																	<td width="100%" style="text-align: left;">
+																		<h:commandButton id="saveAttachment" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}');">
+																			<f:ajax execute="@form" render="militaryCourseEventJoiningRegistrationFormId:notifyMessagesId" listener="#{militaryCourseEventJoiningRegistration.save()}" />
+																		</h:commandButton>
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										
 										<tr>
 											<td width="100%" height="5" />
 										</tr>

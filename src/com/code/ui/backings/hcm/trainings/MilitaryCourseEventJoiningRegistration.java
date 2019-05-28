@@ -86,6 +86,15 @@ public class MilitaryCourseEventJoiningRegistration extends BaseBacking {
 	}
     }
 
+    public void save() {
+	try {
+	    TrainingCoursesEventsService.updateTrainingCourseEvent(selectedCourseEvent);
+	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	} catch (BusinessException e) {
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
+    }
+
     public long getTrainingType() {
 	return trainingType;
     }
