@@ -316,7 +316,7 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      */
     public static Raise getRaiseById(long id) throws BusinessException {
-	List<Raise> result = searchRaises(FlagsEnum.ALL.getCode(), id, null, null, null, null, null, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode());
+	List<Raise> result = searchRaises(FlagsEnum.ALL.getCode(), id, null, null, null, null, null, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null);
 	return result.isEmpty() ? null : result.get(0);
     }
 
@@ -331,11 +331,11 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      */
     private static List<Raise> getRaises(long excludedId, Date decisionDate, String decisionNumber, long type) throws BusinessException {
-	return searchRaises(excludedId, FlagsEnum.ALL.getCode(), decisionDate, decisionDate, decisionNumber, null, null, FlagsEnum.ALL.getCode(), type, FlagsEnum.ALL.getCode());
+	return searchRaises(excludedId, FlagsEnum.ALL.getCode(), decisionDate, decisionDate, decisionNumber, null, null, FlagsEnum.ALL.getCode(), type, null);
     }
 
     private static List<Raise> getInitialRaiseForTheSameCategory(long categoryId) throws BusinessException {
-	return searchRaises(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, null, null, categoryId, RaiseTypesEnum.ANNUAL.getCode(), RaiseStatusEnum.INITIAL.getCode());
+	return searchRaises(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, null, null, categoryId, RaiseTypesEnum.ANNUAL.getCode(), new Integer[] { RaiseStatusEnum.INITIAL.getCode(), RaiseStatusEnum.CONFIRMED.getCode() });
     }
 
     /**
@@ -354,12 +354,12 @@ public class RaisesService extends BaseService {
      * @return array list of raises objects
      * @throws BusinessException
      */
-    public static List<Raise> getRaises(long excludedId, long id, Date decisionDateFrom, Date decisionDateTo, String decisionNumber, Date executionDateFrom, Date executionDateTo, long categoryId, long type, long status) throws BusinessException {
-	return searchRaises(excludedId, id, decisionDateFrom, decisionDateTo, decisionNumber, executionDateFrom, executionDateTo, categoryId, type, status);
+    public static List<Raise> getRaises(long excludedId, long id, Date decisionDateFrom, Date decisionDateTo, String decisionNumber, Date executionDateFrom, Date executionDateTo, long categoryId, long type, int status) throws BusinessException {
+	return searchRaises(excludedId, id, decisionDateFrom, decisionDateTo, decisionNumber, executionDateFrom, executionDateTo, categoryId, type, status == FlagsEnum.ALL.getCode() ? null : new Integer[] { status });
     }
 
     private static List<Raise> getFutureRaisesForCategory(long excludedId, long categoryId, long type) throws BusinessException {
-	return searchRaises(excludedId, FlagsEnum.ALL.getCode(), null, null, null, HijriDateService.getHijriSysDate(), null, categoryId, type, FlagsEnum.ALL.getCode());
+	return searchRaises(excludedId, FlagsEnum.ALL.getCode(), null, null, null, HijriDateService.getHijriSysDate(), null, categoryId, type, null);
     }
 
     /**
@@ -378,7 +378,7 @@ public class RaisesService extends BaseService {
      * @return array list of raises objects
      * @throws BusinessException
      */
-    private static List<Raise> searchRaises(long excludedId, long id, Date decisionDateFrom, Date decisionDateTo, String decisionNumber, Date executionDateFrom, Date executionDateTo, long categoryId, long type, long status) throws BusinessException {
+    private static List<Raise> searchRaises(long excludedId, long id, Date decisionDateFrom, Date decisionDateTo, String decisionNumber, Date executionDateFrom, Date executionDateTo, long categoryId, long type, Object[] status) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 
@@ -387,7 +387,13 @@ public class RaisesService extends BaseService {
 	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.length() == 0) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
 	    qParams.put("P_CATEGORY_ID", categoryId);
 	    qParams.put("P_TYPE", type);
-	    qParams.put("P_STATUS", status);
+	    if (status != null && status.length > 0) {
+		qParams.put("P_STATUS", status);
+		qParams.put("P_STATUS_FLAG", FlagsEnum.ON.getCode());
+	    } else {
+		qParams.put("P_STATUS", new Object[] { FlagsEnum.ALL.getCode() });
+		qParams.put("P_STATUS_FLAG", FlagsEnum.ALL.getCode());
+	    }
 
 	    if (decisionDateFrom != null) {
 		qParams.put("P_DECISION_DATE_FROM_FLAG", FlagsEnum.ON.getCode());

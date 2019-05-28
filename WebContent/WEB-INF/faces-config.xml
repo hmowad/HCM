@@ -100,6 +100,42 @@
     </navigation-rule>
     
     <navigation-rule>
+    	<from-view-id>/Raises/AnnualRaisesRegistration.xhtml</from-view-id>
+    	<navigation-case>
+    	 	<from-outcome>SUCCESS</from-outcome>
+            <to-view-id>/Raises/RaisesManagement.xhtml</to-view-id>
+            <redirect>
+	            <view-param>
+	                <name>mode</name>
+	                <value>1</value>
+	            </view-param>
+	            <view-param>
+	                <name>success</name>
+	                <value>true</value>
+	            </view-param>
+	        </redirect>
+    	</navigation-case>
+    </navigation-rule>
+    
+        <navigation-rule>
+    	<from-view-id>/Raises/AdditionalRaisesRegistration.xhtml</from-view-id>
+    	<navigation-case>
+    	 	<from-outcome>SUCCESS</from-outcome>
+            <to-view-id>/Raises/RaisesManagement.xhtml</to-view-id>
+            <redirect>
+	            <view-param>
+	                <name>mode</name>
+	                <value>2</value>
+	            </view-param>
+	            <view-param>
+	                <name>success</name>
+	                <value>true</value>
+	            </view-param>
+	        </redirect>
+    	</navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
   	    <from-view-id>*</from-view-id>
   	    <navigation-case>
             <from-outcome>LOGIN</from-outcome>
