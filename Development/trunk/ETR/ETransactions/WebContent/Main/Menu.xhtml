@@ -41,7 +41,7 @@
 	                                                        <td>
 	                                                            <img id="menuDivId_#{subMenu.menuId}_PlusMinus" src="#{request.contextPath}/resources/images/#{subMenu.menuId == menuTree.subParentOpened ? 'treeMinus.png' : 'treePlus.png'}"/>
 	                                                             
-	                                                            <span>#{menu.arabicName}</span>
+	                                                            <span>#{subMenu.arabicName}</span>
 	                                                        </td>
 	                                                    </tr>
 	                                                </table>
@@ -54,7 +54,7 @@
 	                                                        <ui:repeat value="#{subMenu.subMenus}" var="leafMenu">
 	                                                            <tr>
 	                                                                <td class="#{menuTree.checkCurrentURL(leafMenu.url) ? 'L3Selected' :'L3'}">
-	                                                                    <h:outputLink value="#{request.contextPath}#{leafMenu.url}">#{msgs[leafMenu.nameKey]}</h:outputLink>
+	                                                                    <h:outputLink value="#{request.contextPath}#{leafMenu.url}">#{leafMenu.arabicName}</h:outputLink>
 	                                                                </td>
 	                                                            </tr>
 	                                                        </ui:repeat>
@@ -66,7 +66,7 @@
                                         <h:panelGroup rendered="#{subMenu.url != null}">
 	                                        <tr>
 	                                            <td class="#{menuTree.checkCurrentURL(subMenu.url) ? 'L3Selected' :'L3'}">
-	                                                <h:outputLink value="#{request.contextPath}#{subMenu.url}">#{msgs[subMenu.nameKey]}</h:outputLink>
+	                                                <h:outputLink value="#{request.contextPath}#{subMenu.url}">#{subMenu.arabicName}</h:outputLink>
 	                                            </td>
 	                                        </tr>
 	                                    </h:panelGroup>
