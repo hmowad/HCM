@@ -35,6 +35,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_MAJOR_SPEC_ID = -1 or e.majorSpecId = :P_MAJOR_SPEC_ID) " +
 			" and (:P_MINOR_SPEC_ID = -1 or e.minorSpecId = :P_MINOR_SPEC_ID) " +
 			" and (:P_STATUSES_IDS_FLAG = -1 or e.statusId in ( :P_STATUSES_IDS )) " +
+			" and (:P_GENERAL_NUMBER = -1 or e.sequenceNumber = :P_GENERAL_NUMBER) " +
 			" and (:P_PHYSICAL_UNIT_HKEY = '-1' or physicalUnitHKey like :P_PHYSICAL_UNIT_HKEY ) " +
 			" and (:P_PHYSICAL_REGION_ID = -1 or physicalRegionId = :P_PHYSICAL_REGION_ID ) " +
 			" and (:P_OFFICIAL_REGION_ID = -1 or officialRegionId = :P_OFFICIAL_REGION_ID ) " +
@@ -53,6 +54,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_JOB_DESC = '-1' or e.jobDesc like :P_JOB_DESC ) " +
 			" and (:P_UNIT_FULL_NAME = '-1' or (e.physicalUnitFullName like :P_UNIT_FULL_NAME or e.officialUnitFullName like :P_UNIT_FULL_NAME)) " +
 			" and (:P_MILITARY_NUMBER = -1 or e.militaryNumber = :P_MILITARY_NUMBER) " +
+			" and (:P_GENERAL_NUMBER = -1 or e.sequenceNumber = :P_GENERAL_NUMBER) " +
 			" and (:P_REGION_ID = -1 or (e.physicalRegionId = :P_REGION_ID or e.officialRegionId = :P_REGION_ID )) " +
 			" and (:P_SOCIAL_ID = '-1' or e.socialID = :P_SOCIAL_ID) " +
 			" and (:P_UNIT_ID = -1 or ( e.physicalUnitId = :P_UNIT_ID or e.officialUnitId = :P_UNIT_ID )) " +
@@ -102,6 +104,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_STATUSES_IDS_FLAG = -1 or e.statusId in ( :P_STATUSES_IDS )) " +
 			" and ((e.militaryNumber is not null and e.recruitmentRegionId is not null) or :P_CATEGORY_ID <> 1) " +
 			" and (:P_EMP_NAME = '-1' or e.name like :P_EMP_NAME ) " +
+			" and (:P_GENERAL_NUMBER = -1 or e.sequenceNumber = :P_GENERAL_NUMBER) " +
 			" and (:P_SOCIAL_ID = '-1' or e.socialID = :P_SOCIAL_ID) " +
 			" and (:P_JOB_DESC = '-1' or e.jobDesc like :P_JOB_DESC ) " +
 			" and (:P_PHYSICAL_UNIT_FULL_NAME = '-1' or e.physicalUnitFullName like :P_PHYSICAL_UNIT_FULL_NAME ) " +
@@ -156,6 +159,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_EMP_NAME = '-1' or e.name like :P_EMP_NAME ) " +
 			" and (:P_SOCIAL_ID = '-1' or e.socialID = :P_SOCIAL_ID) " +
 			" and (:P_JOB_DESC = '-1' or e.jobDesc like :P_JOB_DESC ) " +
+			" and (:P_GENERAL_NUMBER = -1 or e.sequenceNumber = :P_GENERAL_NUMBER) " +
 			" and (:P_MILITARY_NUMBER = -1 or e.militaryNumber = :P_MILITARY_NUMBER) " +
 			" and (:P_OFFICIAL_REGION_ID = -1 or e.officialRegionId = :P_OFFICIAL_REGION_ID ) " +
 			" and ((e.rankId >= 205 and e.gender = 'F') or e.gender = 'M')" +

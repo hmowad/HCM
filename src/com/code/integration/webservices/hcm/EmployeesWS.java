@@ -44,7 +44,7 @@ public class EmployeesWS {
 	    if (empData == null)
 		throw new BusinessException("error_general");
 
-	    response.setEmployees(EmployeesService.getEmpByEmpName(socialId, employeeName, jobDescription, physicalUnitFullName, null, empData.getPhysicalRegionId() == null ? FlagsEnum.OFF.getCode() : empData.getPhysicalRegionId(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode()));
+	    response.setEmployees(EmployeesService.getEmpByEmpName(socialId, employeeName, jobDescription, physicalUnitFullName, null, empData.getPhysicalRegionId() == null ? FlagsEnum.OFF.getCode() : empData.getPhysicalRegionId(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null));
 
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {

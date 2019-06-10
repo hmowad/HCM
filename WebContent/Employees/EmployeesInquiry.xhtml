@@ -55,11 +55,14 @@
 			unitIdValue = document.getElementById('employeesInquiryFormId:unitIDId').value;
 			jobIdValue = document.getElementById('employeesInquiryFormId:jobIDId').value;
 			MinorSpecIdValue = document.getElementById('employeesInquiryFormId:minorSpecIDId').value;
+			generalNumberValue = document.getElementById('employeesInquiryFormId:generalNumberId').value;
+			
 			
 			if ((socialIdValue == null || socialIdValue == '')
 					&amp;&amp; (unitIdValue == null || unitIdValue == '')
 					&amp;&amp; (jobIdValue == null || jobIdValue == '')
-					&amp;&amp; (MinorSpecIdValue == null || MinorSpecIdValue == '')) {
+					&amp;&amp; (MinorSpecIdValue == null || MinorSpecIdValue == '')
+					&amp;&amp; (generalNumberValue == null || generalNumberValue == '')) {
 
 				if(nameValue == null || nameValue == '') {
 					
@@ -167,6 +170,14 @@
 										<th width="10%">#{msgs.label_privateNumber}</th>
 										<td width="40%">
 											<h:inputText id="militaryNumberId" onkeypress="return isDigit(event);" value="#{employeesInquiry.militaryNumber}" maxlength="6" />
+										</td>
+									</h:panelGroup>
+								</tr>
+								<tr>
+									<h:panelGroup rendered="#{employeesInquiry.mode==2}">
+										<th width="10%">#{msgs.label_generalNumber}</th>
+										<td width="40%">
+											<h:inputText id="generalNumberId" value="#{employeesInquiry.generalNumber}" onkeypress="return isDigit(event);"/>
 										</td>
 									</h:panelGroup>
 								</tr>
