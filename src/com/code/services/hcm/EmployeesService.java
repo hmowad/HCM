@@ -586,8 +586,8 @@ public class EmployeesService extends BaseService {
 
     }
 
-    public static List<EmployeeData> getEmployeesByPhysicalUnitHkeyNameAndStatusesID(String socialId, String empName, String jobDesc, String physicalUnitFullName, String unitHkey, Long[] statusesId, Long[] categoriesIds, long regionId, int militaryNumber, long officialRegionId, Integer generalNumber) throws BusinessException {
-	return searchEmployees(empName, categoriesIds, FlagsEnum.ALL.getCode(), militaryNumber, socialId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), statusesId, unitHkey, regionId, officialRegionId, jobDesc, physicalUnitFullName, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), generalNumber);
+    public static List<EmployeeData> getEmployeesByPhysicalUnitHkeyNameAndStatusesID(String socialId, String empName, String jobDesc, String physicalUnitFullName, String unitHkey, Long[] statusesId, Long[] categoriesIds, long regionId, int militaryNumber, long officialRegionId, Long sequenceNumber) throws BusinessException {
+	return searchEmployees(empName, categoriesIds, FlagsEnum.ALL.getCode(), militaryNumber, socialId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), statusesId, unitHkey, regionId, officialRegionId, jobDesc, physicalUnitFullName, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), sequenceNumber);
     }
 
     public static List<EmployeeData> getEmpDataByPhysicalUnitId(long physicalUnitId) throws BusinessException {
@@ -598,15 +598,15 @@ public class EmployeesService extends BaseService {
 	return searchEmployees(FlagsEnum.ALL.getCode() + "", null, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), officialUnitId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), null);
     }
 
-    public static List<EmployeeData> getEmpByEmpName(String socialId, String empName, String jobDesc, String physicalUnitFullName, Long[] categoriesIds, long physicalRegionId, long officialRegionId, int militaryNumber, Integer generalNumber) throws BusinessException {
-	return searchEmployees(empName, categoriesIds, FlagsEnum.ALL.getCode(), militaryNumber, socialId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, physicalRegionId, officialRegionId, jobDesc, physicalUnitFullName, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), generalNumber);
+    public static List<EmployeeData> getEmpByEmpName(String socialId, String empName, String jobDesc, String physicalUnitFullName, Long[] categoriesIds, long physicalRegionId, long officialRegionId, int militaryNumber, Long sequenceNumber) throws BusinessException {
+	return searchEmployees(empName, categoriesIds, FlagsEnum.ALL.getCode(), militaryNumber, socialId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, physicalRegionId, officialRegionId, jobDesc, physicalUnitFullName, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), sequenceNumber);
     }
 
-    public static List<EmployeeData> getEmployeesByEmpStatusesId(String socialId, String empName, String jobDesc, String physicalUnitFullName, Long[] statusesIds, Long[] categoriesIds, long physicalRegionId, long officialRegionId, String gender, long exceptionalRecruitmentFlag, int militaryNumber, Integer generalNumber) throws BusinessException {
-	return searchEmployees(empName, categoriesIds, FlagsEnum.ALL.getCode(), militaryNumber, socialId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), statusesIds, null, physicalRegionId, officialRegionId, jobDesc, physicalUnitFullName, gender, exceptionalRecruitmentFlag, generalNumber);
+    public static List<EmployeeData> getEmployeesByEmpStatusesId(String socialId, String empName, String jobDesc, String physicalUnitFullName, Long[] statusesIds, Long[] categoriesIds, long physicalRegionId, long officialRegionId, String gender, long exceptionalRecruitmentFlag, int militaryNumber, Long sequenceNumber) throws BusinessException {
+	return searchEmployees(empName, categoriesIds, FlagsEnum.ALL.getCode(), militaryNumber, socialId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), statusesIds, null, physicalRegionId, officialRegionId, jobDesc, physicalUnitFullName, gender, exceptionalRecruitmentFlag, sequenceNumber);
     }
 
-    private static List<EmployeeData> searchEmployees(String empName, Long[] categoriesIds, long jobId, int militaryNumber, String socialID, long physicalUnitId, long officialUnitId, long jobMajorSpecId, long jobMinorSpecId, Long[] statusesIds, String physicalUnitHKey, long physicalRegionId, long officialRegionId, String jobDesc, String physicalUnitFullName, String gender, long exceptionalRecruitmentFlag, Integer generalNumber) throws BusinessException {
+    private static List<EmployeeData> searchEmployees(String empName, Long[] categoriesIds, long jobId, int militaryNumber, String socialID, long physicalUnitId, long officialUnitId, long jobMajorSpecId, long jobMinorSpecId, Long[] statusesIds, String physicalUnitHKey, long physicalRegionId, long officialRegionId, String jobDesc, String physicalUnitFullName, String gender, long exceptionalRecruitmentFlag, Long sequenceNumber) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_NAME", (empName == null || empName.equals("") || empName.equals(FlagsEnum.ALL.getCode() + "")) ? FlagsEnum.ALL.getCode() + "" : "%" + empName + "%");
@@ -641,7 +641,7 @@ public class EmployeesService extends BaseService {
 	    qParams.put("P_PHYSICAL_UNIT_FULL_NAME", (physicalUnitFullName == null || physicalUnitFullName.equals("") || physicalUnitFullName.equals(FlagsEnum.ALL.getCode() + "")) ? FlagsEnum.ALL.getCode() + "" : "%" + physicalUnitFullName + "%");
 	    qParams.put("P_GENDER", gender);
 	    qParams.put("P_EXCEPTIONAL_RECRUITMENT_FLAG", exceptionalRecruitmentFlag);
-	    qParams.put("P_GENERAL_NUMBER", (generalNumber == null) ? FlagsEnum.ALL.getCode() : generalNumber);
+	    qParams.put("P_SEQUENCE_NUMBER", (sequenceNumber == null) ? FlagsEnum.ALL.getCode() : sequenceNumber);
 
 	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_SEARCH_EMPLOYEES.getCode(), qParams);
 	} catch (DatabaseException e) {
@@ -650,11 +650,11 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    public static List<EmployeeData> getEmpByPhysicalOrOfficialUnit(String empName, Long[] categoriesIds, int militaryNumber, String socialId, String jobDesc, String searchUnitFullName, long jobId, long unitId, long jobMinorSpecId, long regionId, Integer generalNmuber) throws BusinessException {
-	return searchEmployeesByPhysicalOrOfficialUnit(empName, categoriesIds, jobId, militaryNumber, socialId, unitId, jobMinorSpecId, regionId, jobDesc, searchUnitFullName, generalNmuber);
+    public static List<EmployeeData> getEmpByPhysicalOrOfficialUnit(String empName, Long[] categoriesIds, int militaryNumber, String socialId, String jobDesc, String searchUnitFullName, long jobId, long unitId, long jobMinorSpecId, long regionId, Long sequenceNmuber) throws BusinessException {
+	return searchEmployeesByPhysicalOrOfficialUnit(empName, categoriesIds, jobId, militaryNumber, socialId, unitId, jobMinorSpecId, regionId, jobDesc, searchUnitFullName, sequenceNmuber);
     }
 
-    private static List<EmployeeData> searchEmployeesByPhysicalOrOfficialUnit(String empName, Long[] categoriesIds, long jobId, int militaryNumber, String socialID, long unitId, long jobMinorSpecId, long regionId, String jobDesc, String unitFullName, Integer generalNumber) throws BusinessException {
+    private static List<EmployeeData> searchEmployeesByPhysicalOrOfficialUnit(String empName, Long[] categoriesIds, long jobId, int militaryNumber, String socialID, long unitId, long jobMinorSpecId, long regionId, String jobDesc, String unitFullName, Long sequenceNumber) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_NAME", (empName == null || empName.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + empName + "%");
@@ -673,7 +673,7 @@ public class EmployeesService extends BaseService {
 	    qParams.put("P_REGION_ID", regionId);
 	    qParams.put("P_JOB_DESC", (jobDesc == null || jobDesc.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + jobDesc + "%");
 	    qParams.put("P_UNIT_FULL_NAME", (unitFullName == null || unitFullName.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + unitFullName + "%");
-	    qParams.put("P_GENERAL_NUMBER", (generalNumber == null) ? FlagsEnum.ALL.getCode() : generalNumber);
+	    qParams.put("P_SEQUENCE_NUMBER", (sequenceNumber == null) ? FlagsEnum.ALL.getCode() : sequenceNumber);
 	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_SEARCH_EMPLOYEES_BY_PHYSICAL_OR_OFFICIAL_UNIT.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
@@ -714,7 +714,7 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    public static List<EmployeeData> getEmployeesByCategoryIdAndRankIdAndPromotionDueDate(String socialId, String empName, String jobDesc, String physicalUnitFullName, Long[] categoriesIds, long rankId, String promotionDueDate, long officialRegionId, int militaryNumber, Integer generalNumber) throws BusinessException {
+    public static List<EmployeeData> getEmployeesByCategoryIdAndRankIdAndPromotionDueDate(String socialId, String empName, String jobDesc, String physicalUnitFullName, Long[] categoriesIds, long rankId, String promotionDueDate, long officialRegionId, int militaryNumber, Long sequenceNumber) throws BusinessException {
 	Long[] rankIds;
 
 	if (rankId == RanksEnum.FIRST.getCode())
@@ -726,10 +726,10 @@ public class EmployeesService extends BaseService {
 	else
 	    rankIds = new Long[] { rankId };
 
-	return searchEmployeesByRankIdAndPromotionDueDate(socialId, empName, jobDesc, physicalUnitFullName, categoriesIds, rankIds, promotionDueDate, officialRegionId, militaryNumber, generalNumber);
+	return searchEmployeesByRankIdAndPromotionDueDate(socialId, empName, jobDesc, physicalUnitFullName, categoriesIds, rankIds, promotionDueDate, officialRegionId, militaryNumber, sequenceNumber);
     }
 
-    private static List<EmployeeData> searchEmployeesByRankIdAndPromotionDueDate(String socialId, String empName, String jobDesc, String physicalUnitFullName, Long[] categoriesIds, Long[] rankIds, String promotionDueDate, long officialRegionId, int militaryNumber, Integer generalNumber) throws BusinessException {
+    private static List<EmployeeData> searchEmployeesByRankIdAndPromotionDueDate(String socialId, String empName, String jobDesc, String physicalUnitFullName, Long[] categoriesIds, Long[] rankIds, String promotionDueDate, long officialRegionId, int militaryNumber, Long sequenceNumber) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_NAME", (empName == null || empName.equals("") || empName.equals(FlagsEnum.ALL.getCode() + "")) ? FlagsEnum.ALL.getCode() + "" : "%" + empName + "%");
@@ -756,7 +756,7 @@ public class EmployeesService extends BaseService {
 	    qParams.put("P_MILITARY_NUMBER", militaryNumber);
 	    qParams.put("P_JOB_DESC", (jobDesc == null || jobDesc.equals("") || jobDesc.equals(FlagsEnum.ALL.getCode() + "")) ? FlagsEnum.ALL.getCode() + "" : "%" + jobDesc + "%");
 	    qParams.put("P_PHYSICAL_UNIT_FULL_NAME", (physicalUnitFullName == null || physicalUnitFullName.equals("") || physicalUnitFullName.equals(FlagsEnum.ALL.getCode() + "")) ? FlagsEnum.ALL.getCode() + "" : "%" + physicalUnitFullName + "%");
-	    qParams.put("P_GENERAL_NUMBER", (generalNumber == null) ? FlagsEnum.ALL.getCode() : generalNumber);
+	    qParams.put("P_SEQUENCE_NUMBER", (sequenceNumber == null) ? FlagsEnum.ALL.getCode() : sequenceNumber);
 
 	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_SEARCH_EMPLOYEE_BY_RANK_ID_PROMOTION_DUE_DATE.getCode(), qParams);
 	} catch (DatabaseException e) {
@@ -773,12 +773,12 @@ public class EmployeesService extends BaseService {
 	return searchEmployeesByRecruitmentInfo(null, null, null, null, CategoriesEnum.SOLDIERS.getCode(), statusesIds, recruitmentRankId, recruitmentRegionId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), recTrainingUnitId, "M", FlagsEnum.OFF.getCode(), FlagsEnum.ALL.getCode(), null);
     }
 
-    public static List<EmployeeData> getEmployeesForRecruitment(String socialId, String empName, String jobDesc, String physicalUnitFullName, long CategoryId, long recruitmentRegionId, int graduationGroupNumber, int graduationGroupPlace, long recruitmentRankId, long recruitmentTrainingUnitId, String gender, long exceptionalRecruitmentFlag, Long[] statusIds, int militaryNumber, Integer generalNumber) throws BusinessException {
+    public static List<EmployeeData> getEmployeesForRecruitment(String socialId, String empName, String jobDesc, String physicalUnitFullName, long CategoryId, long recruitmentRegionId, int graduationGroupNumber, int graduationGroupPlace, long recruitmentRankId, long recruitmentTrainingUnitId, String gender, long exceptionalRecruitmentFlag, Long[] statusIds, int militaryNumber, Long sequenceNumber) throws BusinessException {
 	if (statusIds == null)
 	    statusIds = new Long[] { EmployeeStatusEnum.UNDER_RECRUITMENT.getCode(), EmployeeStatusEnum.NEW_STUDENT_SOLDIER.getCode(), EmployeeStatusEnum.NEW_STUDENT_RANKED_SOLDIER.getCode(), EmployeeStatusEnum.ON_DUTY_UNDER_RECRUITMENT.getCode() };
 
 	return searchEmployeesByRecruitmentInfo(socialId, empName, jobDesc, physicalUnitFullName, CategoryId, statusIds, recruitmentRankId, recruitmentRegionId, FlagsEnum.ALL.getCode(), graduationGroupNumber, graduationGroupPlace, recruitmentTrainingUnitId, gender,
-		exceptionalRecruitmentFlag, militaryNumber, generalNumber);
+		exceptionalRecruitmentFlag, militaryNumber, sequenceNumber);
     }
 
     public static List<EmployeeData> getExceptionalEmployeesForRecruitment(String socialId, String empName, String jobDesc, String physicalUnitFullName, String gender, Long[] statusIds, int militaryNumber) throws BusinessException {
@@ -786,7 +786,7 @@ public class EmployeesService extends BaseService {
 		FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), gender, FlagsEnum.ON.getCode(), militaryNumber, null);
     }
 
-    private static List<EmployeeData> searchEmployeesByRecruitmentInfo(String socialId, String empName, String jobDesc, String physicalUnitFullName, long categoryId, Long[] statusesIds, long recruitmentRankId, long recruitmentRegionId, long recruitmentMinorSpecId, int graduationGroupNumber, int graduationGroupPlace, long recTrainingUnitId, String gender, long exceptionalRecruitmentFlag, int militaryNumber, Integer generalNumber) throws BusinessException {
+    private static List<EmployeeData> searchEmployeesByRecruitmentInfo(String socialId, String empName, String jobDesc, String physicalUnitFullName, long categoryId, Long[] statusesIds, long recruitmentRankId, long recruitmentRegionId, long recruitmentMinorSpecId, int graduationGroupNumber, int graduationGroupPlace, long recTrainingUnitId, String gender, long exceptionalRecruitmentFlag, int militaryNumber, Long sequenceNumber) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_NAME", (empName == null || empName.length() == 0) ? FlagsEnum.ALL.getCode() + "" : "%" + empName + "%");
@@ -813,7 +813,7 @@ public class EmployeesService extends BaseService {
 
 	    qParams.put("P_GENDER", (gender == null || gender.equals("")) ? FlagsEnum.ALL.getCode() + "" : gender);
 	    qParams.put("P_EXCEPTIONAL_RECRUITMENT_FLAG", exceptionalRecruitmentFlag);
-	    qParams.put("P_GENERAL_NUMBER", (generalNumber == null) ? FlagsEnum.ALL.getCode() : generalNumber);
+	    qParams.put("P_SEQUENCE_NUMBER", (sequenceNumber == null) ? FlagsEnum.ALL.getCode() : sequenceNumber);
 
 	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_SEARCH_EMPLOYEE_DATA_BY_REC_INFO.getCode(), qParams);
 	} catch (DatabaseException e) {

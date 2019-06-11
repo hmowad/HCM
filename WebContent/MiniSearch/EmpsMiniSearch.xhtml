@@ -23,14 +23,14 @@
 			  var searchsearchJobDescValue = document.getElementById('searchEmpForm:searchJobDescId').value;
 			  var searchsearchPhysicalUnitDescValue = document.getElementById('searchEmpForm:searchUnitDescId').value;
 			  var searchMilitaryNumber = document.getElementById('searchEmpForm:searchMilitaryNumberId').value;
-			  var searchGeneralNumber = document.getElementById('searchEmpForm:searchGeneralNumberId').value;
+			  var searchSequenceNumber = document.getElementById('searchEmpForm:searchSequenceNumberId').value;
 			  
 			  if((searchNameValue == null || searchNameValue == '') &amp;&amp; 
 			  	(searchSocialIDValue == null || searchSocialIDValue == '') &amp;&amp;
 			  	(searchMilitaryNumber == null || searchMilitaryNumber == '') &amp;&amp;
 			  	(searchsearchJobDescValue == null || searchsearchJobDescValue == '') &amp;&amp;
 			  	(searchsearchPhysicalUnitDescValue == null || searchsearchPhysicalUnitDescValue == '') &amp;&amp;
-			  	(searchGeneralNumber == null || searchGeneralNumber == '')) {
+			  	(searchSequenceNumber == null || searchSequenceNumber == '')) {
 				  alert("#{msgs.error_oneSearchFieldNeededAtLeast}");
 				  return false;
 			  }
@@ -55,7 +55,7 @@
 		    	  return true;
 		      } else if (searchsearchPhysicalUnitDescValue != null &amp;&amp; searchsearchPhysicalUnitDescValue != '' &amp;&amp; searchsearchPhysicalUnitDescValue.length &gt; 2) {
 		    	  return true;
-			  }	else if (searchGeneralNumber != null &amp;&amp; searchGeneralNumber != '' &amp;&amp; searchGeneralNumber.length &gt; 0) {
+			  }	else if (searchSequenceNumber != null &amp;&amp; searchSequenceNumber != '' &amp;&amp; searchSequenceNumber.length &gt; 0) {
 		    	  return true;
 			  } else {
 				  alert("#{msgs.error_cannotSearchByLessThanThreeCharacters}");
@@ -133,9 +133,9 @@
 								<td width="35%">
 									<h:inputText id="searchMilitaryNumberId" value="#{empsMiniSearch.searchMilitaryNumber}" styleClass="inputDataLarge" onkeypress="return isDigit(event);" maxlength="6"/>
 								</td>
-								<th width="15%">#{msgs.label_generalNumberForSoldiersOnly}</th>
+								<th width="15%">#{msgs.lable_sequenceNumberForSoldiersOnly}</th>
 								<td width="35%">
-									<h:inputText id="searchGeneralNumberId" value="#{empsMiniSearch.generalNumber}" styleClass="inputDataLarge" onkeypress="return isDigit(event);"/>
+									<h:inputText id="searchSequenceNumberId" value="#{empsMiniSearch.sequenceNumber}" styleClass="inputDataLarge" onkeypress="return isDigit(event);"/>
 								</td>																
 							</tr>
 						</table>
@@ -150,7 +150,7 @@
 							<tr>
 								<td width="100%">
 									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon" onclick="return validateSearchParameter();" action="#{empsMiniSearch.searchEmployee}" title="#{msgs.label_searchByRoot}" >
-										<f:ajax render="empList notifyMessagesId" execute="searchEmpForm:searchNameId searchEmpForm:searchSocialIDId searchEmpForm:searchJobDescId searchEmpForm:searchUnitDescId searchEmpForm:searchMilitaryNumberId searchEmpForm:searchGeneralNumberId" />
+										<f:ajax render="empList notifyMessagesId" execute="searchEmpForm:searchNameId searchEmpForm:searchSocialIDId searchEmpForm:searchJobDescId searchEmpForm:searchUnitDescId searchEmpForm:searchMilitaryNumberId searchEmpForm:searchSequenceNumberId" />
 									</h:commandButton>
 								</td>
 							</tr>

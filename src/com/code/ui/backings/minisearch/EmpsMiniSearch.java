@@ -40,7 +40,7 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
     private Long[] statusIds;
     private String gender;
     private long exceptionalRecruitmentFlag = -1;
-    private Integer generalNumber;
+    private Long sequenceNumber;
 
     private boolean multipleSelectFlag;
 
@@ -105,42 +105,42 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 	    int militaryNumber = (searchMilitaryNumber == null || searchMilitaryNumber.isEmpty()) ? FlagsEnum.ALL.getCode() : Integer.parseInt(searchMilitaryNumber);
 	    switch (mode) {
 	    case 1: // Get employees by category and name
-		searchEmployeeList = EmployeesService.getEmpByEmpName(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, categoryMode == -1 ? null : getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, militaryNumber, generalNumber);
+		searchEmployeeList = EmployeesService.getEmpByEmpName(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, categoryMode == -1 ? null : getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, militaryNumber, sequenceNumber);
 		break;
 	    case 2: // Get employees by category and name used
 		    // in [Recruitment work flow screens O/S/P/U/W/C/M]
-		searchEmployeeList = EmployeesService.getEmployeesForRecruitment(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, categoryMode, recruitmentRegionId, graduationGroupNumber, graduationGroupPlace, recruitmentRankId, recruitmentTrainingUnitId, gender, exceptionalRecruitmentFlag, statusIds, militaryNumber, generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesForRecruitment(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, categoryMode, recruitmentRegionId, graduationGroupNumber, graduationGroupPlace, recruitmentRankId, recruitmentTrainingUnitId, gender, exceptionalRecruitmentFlag, statusIds, militaryNumber, sequenceNumber);
 		break;
 	    case 4: // Get employees with status ON_DUTY by category and name
 		    // used in Mandate/Secondment requests for [S], and Subjoin
 		    // for [P]
 		statusIds = new Long[] { EmployeeStatusEnum.ON_DUTY.getCode() };
-		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, sequenceNumber);
 		break;
 	    case 5: // Get employees with status ON_DUTY or ASSIGNED by category
 		    // and name
 		    // used in Move/Subjoin/Assignment for [O,S,P],
 		    // Assignment Ext/Term/Cancel [O]
 		statusIds = new Long[] { EmployeeStatusEnum.ON_DUTY.getCode(), EmployeeStatusEnum.ASSIGNED.getCode() };
-		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, sequenceNumber);
 		break;
 	    case 6: // Get employees with status ON_DUTY, ASSIGNED, SUBJOIND,or
 		    // PERSONS_SUBJOIND by category and name
 		    // Used in Decision Copies
 		statusIds = new Long[] { EmployeeStatusEnum.ON_DUTY.getCode(), EmployeeStatusEnum.ASSIGNED.getCode(), EmployeeStatusEnum.SUBJOINED.getCode(), EmployeeStatusEnum.PERSONS_SUBJOINED.getCode() };
-		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, sequenceNumber);
 		break;
 	    case 7: // Get employees with status ON_DUTY, or MANDATED by
 		    // category and name
 		    // used in Mandate Ext/Term/Cancel for [S]
 		statusIds = new Long[] { EmployeeStatusEnum.ON_DUTY.getCode(), EmployeeStatusEnum.MANDATED.getCode() };
-		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, sequenceNumber);
 		break;
 	    case 8: // Get employees with status ON_DUTY, or SECONDMENTED by
 		    // category and name
 		    // used in Secondment Ext/Term/Cancel for [S]
 		statusIds = new Long[] { EmployeeStatusEnum.ON_DUTY.getCode(), EmployeeStatusEnum.SECONDMENTED.getCode() };
-		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, sequenceNumber);
 		break;
 	    case 9: // Get employees with status ON_DUTY, Subjoined or
 		    // Assigned[O] by category and name
@@ -149,36 +149,36 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 		if (unitHKey == null || unitHKey.equals("-1") || unitHKey.isEmpty())
 		    unitHKey = null;
 		statusIds = new Long[] { EmployeeStatusEnum.ON_DUTY.getCode(), EmployeeStatusEnum.SUBJOINED.getCode(), EmployeeStatusEnum.PERSONS_SUBJOINED.getCode(), EmployeeStatusEnum.ASSIGNED.getCode() };
-		searchEmployeeList = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, unitHKey, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, militaryNumber, FlagsEnum.ALL.getCode(), generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, unitHKey, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, militaryNumber, FlagsEnum.ALL.getCode(), sequenceNumber);
 		break;
 	    case 10: // Get employees by category, name, rank id and promotion
 		     // due date
 		if (promotionDueDate == null || promotionDueDate.equals("-1") || promotionDueDate.isEmpty())
 		    promotionDueDate = null;
-		searchEmployeeList = EmployeesService.getEmployeesByCategoryIdAndRankIdAndPromotionDueDate(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, categoryMode == -1 ? null : getCategoriesIdsArrayByMode(categoryMode), rankId, promotionDueDate, officialRegionId, militaryNumber, generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByCategoryIdAndRankIdAndPromotionDueDate(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, categoryMode == -1 ? null : getCategoriesIdsArrayByMode(categoryMode), rankId, promotionDueDate, officialRegionId, militaryNumber, sequenceNumber);
 		break;
 	    case 11: // Get employees with NEW_STUDENT_RANKED_SOLDIER and
 		     // ON_DUTY_UNDER_RECRUITMENT
 		     // Used in recruitment wishes.
 		statusIds = new Long[] { EmployeeStatusEnum.NEW_STUDENT_RANKED_SOLDIER.getCode(), EmployeeStatusEnum.ON_DUTY_UNDER_RECRUITMENT.getCode() };
-		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, "M", FlagsEnum.OFF.getCode(), militaryNumber, generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, "M", FlagsEnum.OFF.getCode(), militaryNumber, sequenceNumber);
 		break;
 	    case 12: // Get employees that still works in BG by category and name
 		     // used in employees service termination
 		statusIds = new Long[] { EmployeeStatusEnum.ON_DUTY_UNDER_RECRUITMENT.getCode(), EmployeeStatusEnum.ON_DUTY.getCode(), EmployeeStatusEnum.SUBJOINED.getCode(), EmployeeStatusEnum.PERSONS_SUBJOINED.getCode(),
 			EmployeeStatusEnum.ASSIGNED.getCode(), EmployeeStatusEnum.MANDATED.getCode(), EmployeeStatusEnum.SECONDMENTED.getCode(), EmployeeStatusEnum.ASSIGNED_EXTERNALLY.getCode(), EmployeeStatusEnum.PERSONS_SUBJOINED_EXTERNALLY.getCode(), EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode() };
-		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, sequenceNumber);
 		break;
 	    case 13: // Get employees that moved externally category and name
 		     // used in employees service termination movement
 		statusIds = new Long[] { EmployeeStatusEnum.MOVED_EXTERNALLY.getCode() };
-		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, sequenceNumber);
 		break;
 	    case 14: // Get employees that still works in BG by category Id (which means all different categories of civilians) and name
 		     // used in employees service termination
 		statusIds = new Long[] { EmployeeStatusEnum.ON_DUTY_UNDER_RECRUITMENT.getCode(), EmployeeStatusEnum.ON_DUTY.getCode(), EmployeeStatusEnum.SUBJOINED.getCode(), EmployeeStatusEnum.PERSONS_SUBJOINED.getCode(),
 			EmployeeStatusEnum.ASSIGNED.getCode(), EmployeeStatusEnum.MANDATED.getCode(), EmployeeStatusEnum.SECONDMENTED.getCode(), EmployeeStatusEnum.ASSIGNED_EXTERNALLY.getCode(), EmployeeStatusEnum.PERSONS_SUBJOINED_EXTERNALLY.getCode(), EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode() };
-		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, new Long[] { (long) categoryMode }, physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, new Long[] { (long) categoryMode }, physicalRegionId, officialRegionId, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, sequenceNumber);
 		break;
 	    case 15: // Get employees For Internal Assignment Registration for [O,S,P]
 		if (unitHKey == null || unitHKey.equals("-1") || unitHKey.isEmpty())
@@ -193,7 +193,7 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 			EmployeeStatusEnum.PERSONS_SUBJOINED_EXTERNALLY.getCode(),
 			EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode()
 		};
-		searchEmployeeList = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, unitHKey, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, militaryNumber, officialRegionId, generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, unitHKey, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, militaryNumber, officialRegionId, sequenceNumber);
 		break;
 	    case 16:
 		if (unitHKey == null || unitHKey.equals("-1") || unitHKey.isEmpty())
@@ -208,14 +208,14 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 			EmployeeStatusEnum.PERSONS_SUBJOINED_EXTERNALLY.getCode(),
 			EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode(),
 			EmployeeStatusEnum.SERVICE_TERMINATED.getCode() };
-		searchEmployeeList = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, unitHKey, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, militaryNumber, officialRegionId, generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, unitHKey, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, militaryNumber, officialRegionId, sequenceNumber);
 		break;
 	    case 17:
 		searchEmployeeList = EmployeesService.getEmpByPhysicalOrOfficialUnit(searchEmpName, categoryMode == -1 ? null : getCategoriesIdsArrayByMode(categoryMode), militaryNumber,
-			searchSocialId, searchJobDesc, searchUnitFullName, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), physicalRegionId, generalNumber);
+			searchSocialId, searchJobDesc, searchUnitFullName, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), physicalRegionId, sequenceNumber);
 		break;
 	    case 18:
-		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, new Long[] { (long) categoryMode }, physicalRegionId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, generalNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, new Long[] { (long) categoryMode }, physicalRegionId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, sequenceNumber);
 		break;
 	    }
 
@@ -360,12 +360,12 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 	this.mode = mode;
     }
 
-    public Integer getGeneralNumber() {
-	return generalNumber;
+    public Long getSequenceNumber() {
+	return sequenceNumber;
     }
 
-    public void setGeneralNumber(Integer generalNumber) {
-	this.generalNumber = generalNumber;
+    public void setSequenceNumber(Long sequenceNumber) {
+	this.sequenceNumber = sequenceNumber;
     }
 
 }
