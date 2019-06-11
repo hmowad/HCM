@@ -34,7 +34,7 @@ public class EmployeesInquiry extends BaseBacking implements Serializable {
     private Long jobId;
     private Long minorSpecId;
     private Integer militaryNumber;
-    private Integer generalNumber;
+    private Long sequenceNumber;
 
     private List<Region> regionsList;
 
@@ -69,7 +69,7 @@ public class EmployeesInquiry extends BaseBacking implements Serializable {
 		name = null;
 	    if (socialId != null && socialId.isEmpty())
 		socialId = null;
-	    employeesList = EmployeesService.getEmpByPhysicalOrOfficialUnit(name, getCategoriesIdsArrayByMode(mode), militaryNumber == null ? FlagsEnum.ALL.getCode() : militaryNumber, socialId, null, null, jobId == null ? FlagsEnum.ALL.getCode() : jobId, unitId == null ? FlagsEnum.ALL.getCode() : unitId, minorSpecId == null ? FlagsEnum.ALL.getCode() : minorSpecId, regionId == null ? FlagsEnum.ALL.getCode() : regionId, generalNumber);
+	    employeesList = EmployeesService.getEmpByPhysicalOrOfficialUnit(name, getCategoriesIdsArrayByMode(mode), militaryNumber == null ? FlagsEnum.ALL.getCode() : militaryNumber, socialId, null, null, jobId == null ? FlagsEnum.ALL.getCode() : jobId, unitId == null ? FlagsEnum.ALL.getCode() : unitId, minorSpecId == null ? FlagsEnum.ALL.getCode() : minorSpecId, regionId == null ? FlagsEnum.ALL.getCode() : regionId, sequenceNumber);
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -150,12 +150,12 @@ public class EmployeesInquiry extends BaseBacking implements Serializable {
 	this.militaryNumber = militaryNumber;
     }
 
-    public Integer getGeneralNumber() {
-	return generalNumber;
+    public Long getSequenceNumber() {
+	return sequenceNumber;
     }
 
-    public void setGeneralNumber(Integer generalNumber) {
-	this.generalNumber = generalNumber;
+    public void setSequenceNumber(Long sequenceNumber) {
+	this.sequenceNumber = sequenceNumber;
     }
 
     public int getPageSize() {
