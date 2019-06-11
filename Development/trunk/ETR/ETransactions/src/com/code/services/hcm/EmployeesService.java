@@ -1698,18 +1698,14 @@ public class EmployeesService extends BaseService {
 	    throw new BusinessException("error_decDateAfterMandatory");
 	if (employeeExtraTransactionData.getEffectiveDate().after(sysDate))
 	    throw new BusinessException("error_incorrectEffectiveDate");
+	List<EmployeeExtraTransactionData> transactionsWithTheSameEffectiveDate = getEmployeeDataExtraTransactionByEmpIdAndTransactionTypeAndEffectiveDate(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getTransactionTypeId(), employeeExtraTransactionData.getEffectiveDateString());
+	if (transactionsWithTheSameEffectiveDate != null && transactionsWithTheSameEffectiveDate.size() != 0)
+	    throw new BusinessException("error_effectiveDateMustBeUniqueForSameTransaction", params);
 	List<EmployeeExtraTransactionData> duplicatedEmployeeExtraTransactionDataWithSameDecDateAndNumber = getEmployeeExtraTransactionByEmpIdAndDecisionDateAndDecisionNumberAndTransactionTypeId(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getDecisionNumber(), employeeExtraTransactionData.getDecisionDateString(), employeeExtraTransactionData.getTransactionTypeId());
 	if (duplicatedEmployeeExtraTransactionDataWithSameDecDateAndNumber != null && duplicatedEmployeeExtraTransactionDataWithSameDecDateAndNumber.size() != 0)
 	    throw new BusinessException("error_decDateAndDecNumberMustBeUnique", params);
 	EmployeeExtraTransactionData employeeExtraTransactionDataBeforeCurrentDecDate = getBeforeEffDateEmployeeExtraTransactionData(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getEffectiveDateString(), employeeExtraTransactionData.getTransactionTypeId());
-	List<EmployeeExtraTransactionData> employeeExtraTransactionDataAfterCurrentDecDateList = getAfterEffDateEmployeeExtraTransactionDataList(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getEffectiveDateString(), employeeExtraTransactionData.getTransactionTypeId());
-	EmployeeExtraTransactionData employeeExtraTransactionDataAfterCurrentDecDate = (employeeExtraTransactionDataAfterCurrentDecDateList != null && employeeExtraTransactionDataAfterCurrentDecDateList.size() != 0) ? employeeExtraTransactionDataAfterCurrentDecDateList.get(0) : null;
-	if (employeeExtraTransactionDataBeforeCurrentDecDate != null && employeeExtraTransactionDataAfterCurrentDecDate != null && employeeExtraTransactionDataBeforeCurrentDecDate.getId().equals(employeeExtraTransactionDataAfterCurrentDecDate.getId())) {
-	    if (employeeExtraTransactionDataAfterCurrentDecDateList.size() > 1)
-		employeeExtraTransactionDataAfterCurrentDecDate = employeeExtraTransactionDataAfterCurrentDecDateList.get(1);
-	    else
-		employeeExtraTransactionDataAfterCurrentDecDate = null;
-	}
+	EmployeeExtraTransactionData employeeExtraTransactionDataAfterCurrentDecDate = getAfterEffDateEmployeeExtraTransactionData(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getEffectiveDateString(), employeeExtraTransactionData.getTransactionTypeId());
 	if (checkEmployeeExtraTransactionDataAtBeforeAndAfterDecDates(employeeExtraTransactionData, employeeExtraTransactionDataBeforeCurrentDecDate, employeeExtraTransactionDataAfterCurrentDecDate))
 	    throw new BusinessException("error_dataCantBeChangedAtSameDate", params);
 
@@ -1785,15 +1781,19 @@ public class EmployeesService extends BaseService {
     }
 
     public static List<EmployeeExtraTransactionData> getEmployeeDataExtraTransactionByEmpIdAndTransactionType(Long empId, Long transactionType) throws BusinessException {
-	return searchEmployeeExtraTransactionData(null, empId, transactionType, null, null, null, null, null, null, null, null, null, null);
+	return searchEmployeeExtraTransactionData(null, empId, transactionType, null, null, null, null, null, null, null, null, null, null, null);
     }
 
     public static List<EmployeeExtraTransactionData> getEmployeeExtraTransactionByDecisionNumber(String decisionNumber) throws BusinessException {
-	return searchEmployeeExtraTransactionData(null, null, null, decisionNumber, null, null, null, null, null, null, null, null, null);
+	return searchEmployeeExtraTransactionData(null, null, null, decisionNumber, null, null, null, null, null, null, null, null, null, null);
     }
 
     private static List<EmployeeExtraTransactionData> getEmployeeExtraTransactionByEmpIdAndDecisionDateAndDecisionNumberAndTransactionTypeId(Long empId, String decisionNumber, String decisionDate, Long transactionType) throws BusinessException {
-	return searchEmployeeExtraTransactionData(null, empId, transactionType, decisionNumber, decisionDate, null, null, null, null, null, null, null, null);
+	return searchEmployeeExtraTransactionData(null, empId, transactionType, decisionNumber, decisionDate, null, null, null, null, null, null, null, null, null);
+    }
+
+    public static List<EmployeeExtraTransactionData> getEmployeeDataExtraTransactionByEmpIdAndTransactionTypeAndEffectiveDate(Long empId, Long transactionType, String effectiveDate) throws BusinessException {
+	return searchEmployeeExtraTransactionData(null, empId, transactionType, null, null, null, null, null, null, null, null, null, null, effectiveDate);
     }
 
     private static Boolean checkEmployeeExtraTransactionDataAtBeforeAndAfterDecDates(EmployeeExtraTransactionData employeeExtraTransactionData, EmployeeExtraTransactionData dateBeforeExtraTransactionData, EmployeeExtraTransactionData dateAfterExtraTransactionData) throws BusinessException {
@@ -1851,7 +1851,7 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    private static List<EmployeeExtraTransactionData> searchEmployeeExtraTransactionData(Long id, Long empId, Long transactionType, String decisionNumber, String decisionDate, Long rankTitleId, Long salaryRankId, Long salaryDegreeId, Integer socialStatus, Integer generalSpecialization, Long medStaffRankId, Long medStaffLevelId, Long medStaffDegreeId) throws BusinessException {
+    private static List<EmployeeExtraTransactionData> searchEmployeeExtraTransactionData(Long id, Long empId, Long transactionType, String decisionNumber, String decisionDate, Long rankTitleId, Long salaryRankId, Long salaryDegreeId, Integer socialStatus, Integer generalSpecialization, Long medStaffRankId, Long medStaffLevelId, Long medStaffDegreeId, String effectiveDate) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_ID", id == null ? FlagsEnum.ALL.getCode() : id);
@@ -1863,6 +1863,13 @@ public class EmployeesService extends BaseService {
 	    } else {
 		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.OFF.getCode());
 		qParams.put("P_DECISION_DATE", decisionDate);
+	    }
+	    if (effectiveDate == null) {
+		qParams.put("P_EFFECTIVE_DATE_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_EFFECTIVE_DATE", HijriDateService.getHijriSysDateString());
+	    } else {
+		qParams.put("P_EFFECTIVE_DATE_FLAG", FlagsEnum.OFF.getCode());
+		qParams.put("P_EFFECTIVE_DATE", effectiveDate);
 	    }
 	    qParams.put("P_TRANSACTION_TYPE", transactionType == null ? FlagsEnum.ALL.getCode() + "" : transactionType);
 	    qParams.put("P_RANK_TITLE_ID", rankTitleId == null ? FlagsEnum.ALL.getCode() + "" : rankTitleId);
@@ -1907,13 +1914,14 @@ public class EmployeesService extends BaseService {
 
     }
 
-    private static List<EmployeeExtraTransactionData> getAfterEffDateEmployeeExtraTransactionDataList(Long empId, String effectiveDate, Long transactionType) throws BusinessException {
+    private static EmployeeExtraTransactionData getAfterEffDateEmployeeExtraTransactionData(Long empId, String effectiveDate, Long transactionType) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_ID", empId);
 	    qParams.put("P_EFFECTIVE_DATE", effectiveDate);
 	    qParams.put("P_TRANSACTION_TYPE", transactionType == null ? FlagsEnum.ALL.getCode() + "" : transactionType);
-	    return DataAccess.executeNamedQuery(EmployeeExtraTransactionData.class, QueryNamesEnum.HCM_GET_AFTER_EFFECTIVE_DATE_EMPLOYEES_EXTRA_TRANSACTION_DATA.getCode(), qParams);
+	    List<EmployeeExtraTransactionData> result = DataAccess.executeNamedQuery(EmployeeExtraTransactionData.class, QueryNamesEnum.HCM_GET_AFTER_EFFECTIVE_DATE_EMPLOYEES_EXTRA_TRANSACTION_DATA.getCode(), qParams);
+	    return (result == null || result.size() == 0) ? null : result.get(0);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
