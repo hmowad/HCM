@@ -125,7 +125,7 @@ public class VacationsService extends BaseService {
 	    VacationsBusinessRulesService.validatePreviousVacationJoining(vacationBeneficiary.getEmpId(), vacationBeneficiary.getCategoryId(), request.getStartDate());
 
 	if (request.getStatus() == RequestTypesEnum.MODIFY.getCode() || request.getStatus() == RequestTypesEnum.CANCEL.getCode())
-	    VacationsBusinessRulesService.validateModifyAndCancelEVacation(request.getVacationId());
+	    VacationsBusinessRulesService.validateModifyAndCancelEVacation(request.getVacationId(), request.getStatus());
 
 	if (request.getStatus() == RequestTypesEnum.NEW.getCode() || request.getStatus() == RequestTypesEnum.MODIFY.getCode()) {
 
