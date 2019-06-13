@@ -1457,12 +1457,16 @@ public class VacationsBusinessRulesService extends BaseService {
      * 
      * @see RequestTypesEnum
      */
-    protected static void validateModifyAndCancelEVacation(Long oldVacationId) throws BusinessException {
+    protected static void validateModifyAndCancelEVacation(Long oldVacationId, Integer status) throws BusinessException {
 	Vacation oldVac = VacationsService.getVacationById(oldVacationId);
 	if (oldVac == null)
 	    throw new BusinessException("error_general");
 	if (oldVac.getEtrFlag() != FlagsEnum.ON.getCode())
 	    throw new BusinessException("error_cannotModifyOrCancelNotElectronicVacation");
+	if (oldVac.getJoiningDate() != null && status == RequestTypesEnum.MODIFY.getCode())
+	    throw new BusinessException("error_modifyVacAfterJoining");
+	if (oldVac.getJoiningDate() != null && status == RequestTypesEnum.CANCEL.getCode())
+	    throw new BusinessException("error_cancelVacAfterJoining");
     }
 
     /**
