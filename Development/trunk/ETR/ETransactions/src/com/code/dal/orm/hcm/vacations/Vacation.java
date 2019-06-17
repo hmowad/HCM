@@ -720,6 +720,7 @@ public class Vacation extends AuditEntity implements UpdatableAuditEntity {
 
     @Basic
     @Column(name = "FRAME_START_DATE")
+    @XmlTransient
     public Date getFrameStartDate() {
 	return frameStartDate;
     }
@@ -730,6 +731,7 @@ public class Vacation extends AuditEntity implements UpdatableAuditEntity {
 
     @Basic
     @Column(name = "FRAME_END_DATE")
+    @XmlTransient
     public Date getFrameEndDate() {
 	return frameEndDate;
     }
