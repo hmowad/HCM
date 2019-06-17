@@ -560,6 +560,10 @@ public class VacationsService extends BaseService {
 	}
     }
 
+    public static Date[] getSickVacationsFrameStartAndEndDate(EmployeeData emp, Integer subVacationType, Date StartDate) throws BusinessException {
+	return VacationsBusinessRulesService.getSickVacationsFrameStartAndEndDate(emp, subVacationType, StartDate);
+    }
+
     /**
      * Checks if there is any dates conflict for this employee vacations.
      * 

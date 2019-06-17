@@ -1878,6 +1878,58 @@ public class VacationsBusinessRulesService extends BaseService {
     }
 
     /**
+     * get sick vacation frame
+     * 
+     * @param emp
+     * @param subVacationType
+     * @param Vacation
+     *            Start Date
+     * @return string array contain frame Start Date and frame end Date
+     * @throws BusinessException
+     */
+    public static Date[] getSickVacationsFrameStartAndEndDate(EmployeeData emp, Integer subVacationType, Date StartDate) throws BusinessException {
+
+	try {
+
+	    VacationConfiguration activeVacationConfiguration;
+
+	    if (emp.getRecruitmentDate() == null || StartDate.before(emp.getRecruitmentDate()))
+		return null;
+
+	    Date frameStartDate = null, frameEndDate = null;
+	    long categoryId = emp.getCategoryId();
+
+	    // get first sick vacation for the employee.
+	    Vacation firstSickVacation = getFirstVacation(emp.getEmpId(), VacationTypesEnum.SICK.getCode(), subVacationType);
+
+	    frameEndDate = StartDate;
+	    if (CategoriesEnum.SOLDIERS.getCode() == categoryId || CategoriesEnum.CONTRACTORS.getCode() == categoryId) {
+		frameEndDate = emp.getRecruitmentDate();
+	    } else {
+		// officers, persons, users and wages.
+		if (firstSickVacation != null && firstSickVacation.getStartDate().before(StartDate))
+		    frameEndDate = firstSickVacation.getStartDate();
+	    }
+
+	    activeVacationConfiguration = getActiveVacationConfigurations(emp.getCategoryId(), VacationTypesEnum.SICK.getCode(), subVacationType, FlagsEnum.ALL.getCode()).get(0);
+
+	    frameEndDate = HijriDateService.addSubHijriDays(frameEndDate, -1);
+	    do {
+		frameStartDate = HijriDateService.addSubHijriDays(frameEndDate, 1);
+		String[] frameStartDateArray = HijriDateService.getHijriDateString(frameStartDate).split("/");
+		frameEndDate = HijriDateService.getHijriDate(frameStartDateArray[0] + "/" + frameStartDateArray[1] + "/" + (Integer.parseInt(frameStartDateArray[2]) + activeVacationConfiguration.getBalanceFrame()));
+		frameEndDate = HijriDateService.addSubHijriDays(frameEndDate, -1);
+	    } while (!HijriDateService.isDateBetween(frameStartDate, frameEndDate, StartDate));
+	    Date[] result = { frameStartDate, frameEndDate };
+	    return result;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+
+    }
+
+    /**
      * Calculates the available Field vacation balance for an employee.
      * 
      * @param emp
