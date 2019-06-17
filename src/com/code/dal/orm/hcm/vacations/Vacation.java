@@ -174,6 +174,8 @@ public class Vacation extends AuditEntity implements UpdatableAuditEntity {
     private String referring;
     private Integer relatedDeductedBalance;
     private Integer exceededDays;
+    private Date frameStartDate;
+    private Date frameEndDate;
 
     public void setVacationId(Long vacationId) {
 	this.vacationId = vacationId;
@@ -714,6 +716,26 @@ public class Vacation extends AuditEntity implements UpdatableAuditEntity {
 
     public void setExceededDays(Integer exceededDays) {
 	this.exceededDays = exceededDays;
+    }
+
+    @Basic
+    @Column(name = "FRAME_START_DATE")
+    public Date getFrameStartDate() {
+	return frameStartDate;
+    }
+
+    public void setFrameStartDate(Date frameStartDate) {
+	this.frameStartDate = frameStartDate;
+    }
+
+    @Basic
+    @Column(name = "FRAME_END_DATE")
+    public Date getFrameEndDate() {
+	return frameEndDate;
+    }
+
+    public void setFrameEndDate(Date frameEndDate) {
+	this.frameEndDate = frameEndDate;
     }
 
     @Override

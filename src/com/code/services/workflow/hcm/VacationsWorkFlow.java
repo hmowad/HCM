@@ -806,6 +806,13 @@ public class VacationsWorkFlow extends BaseWorkFlow {
 
     private static void doVacationIntegration(WFVacation vacRequest, EmployeeData vacBeneficiary, long processId, String attachments, CustomSession useSession) throws BusinessException {
 	Vacation vacation = constructVacationTransaction(vacRequest, vacBeneficiary, attachments);
+	if (vacRequest.getVacationTypeId() == VacationTypesEnum.SICK.getCode()) {
+	    Date[] sickVacationBalanceFrame = VacationsService.getSickVacationsFrameStartAndEndDate(vacBeneficiary, vacRequest.getSubVacationType(), vacRequest.getStartDate());
+	    if (sickVacationBalanceFrame != null) {
+		vacation.setFrameStartDate(sickVacationBalanceFrame[0]);
+		vacation.setFrameEndDate(sickVacationBalanceFrame[1]);
+	    }
+	}
 	VacationsService.handleVacRequest(vacation, vacBeneficiary, getWFProcess(processId).getProcessName(), useSession);
     }
 
