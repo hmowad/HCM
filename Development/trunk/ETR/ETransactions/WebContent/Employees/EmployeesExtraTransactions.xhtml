@@ -8,7 +8,7 @@
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
 	<script type="text/javascript">
 		function getEmployee(contextPath){
-			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, -1);
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, '#{employeesDataExtraTransactions.mode}', -1, -1, -1, -1, -1, -1);
 		}
 		
 		function handleEmpMiniSearchResult(ret){
@@ -49,7 +49,7 @@
 									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 										<tr>
 											<th width="15%">
-												<h:outputText value="#{msgs.label_selectEmp}" />
+												<h:outputText value="#{employeesDataExtraTransactions.mode ==1 ? msgs.label_selectOfficer : (employeesDataExtraTransactions.mode == 2 ? msgs.label_selectSoldier : msgs.label_selectPerson)}" />
 												<h:outputText value=" " />
 												<font style="color: red;">*</font>
 											</th>

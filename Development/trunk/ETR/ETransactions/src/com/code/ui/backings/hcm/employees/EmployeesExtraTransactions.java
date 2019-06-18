@@ -24,6 +24,7 @@ import com.code.ui.backings.base.BaseBacking;
 @ViewScoped
 public class EmployeesExtraTransactions extends BaseBacking implements Serializable {
 
+    private int mode;
     private int rowsCount = 5;
     private Long employeeId;
     private EmployeeData employee;
@@ -37,13 +38,29 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
     private List<EmployeeExtraTransactionData> salaryRankList;
 
     public EmployeesExtraTransactions() {
-	setScreenTitle(getMessage("title_employeesDataExtraTransactions"));
-	ranksTitles = CommonService.getAllRanksTitles();
-	socialStatusList = new ArrayList<EmployeeExtraTransactionData>();
-	rankTitleList = new ArrayList<EmployeeExtraTransactionData>();
-	generalSpecList = new ArrayList<EmployeeExtraTransactionData>();
-	salaryRankList = new ArrayList<EmployeeExtraTransactionData>();
-	reset();
+	if (getRequest().getParameter("mode") != null) {
+	    mode = Integer.parseInt(getRequest().getParameter("mode"));
+	    switch (mode) {
+	    case 1:
+		setScreenTitle(getMessage("title_officersDataExtraTransactions"));
+		break;
+	    case 2:
+		setScreenTitle(getMessage("title_soldiersDataExtraTransactions"));
+		break;
+	    case 3:
+		setScreenTitle(getMessage("title_personsDataExtraTransactions"));
+		break;
+	    default:
+		setServerSideErrorMessages(getMessage("error_general"));
+		break;
+	    }
+	    ranksTitles = CommonService.getAllRanksTitles();
+	    socialStatusList = new ArrayList<EmployeeExtraTransactionData>();
+	    rankTitleList = new ArrayList<EmployeeExtraTransactionData>();
+	    generalSpecList = new ArrayList<EmployeeExtraTransactionData>();
+	    salaryRankList = new ArrayList<EmployeeExtraTransactionData>();
+	    reset();
+	}
     }
 
     public void reset() {
@@ -93,6 +110,14 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
+    }
+
+    public int getMode() {
+	return mode;
+    }
+
+    public void setMode(int mode) {
+	this.mode = mode;
     }
 
     public int getRowsCount() {
