@@ -63,7 +63,7 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static void addRaise(Raise raise, CustomSession... useSession) throws BusinessException {
+    private static void addRaise(Raise raise, CustomSession... useSession) throws BusinessException {
 	validateRaise(raise);
 
 	boolean isOpenedSession = isSessionOpened(useSession);
@@ -180,6 +180,7 @@ public class RaisesService extends BaseService {
      */
     public static void updateRaise(Raise raise, CustomSession... useSession) throws BusinessException {
 	validateRaise(raise);
+	validateRaiseStatus(raise.getId());
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -216,7 +217,7 @@ public class RaisesService extends BaseService {
      */
     public static void deleteRaise(Raise raise, CustomSession... useSession) throws BusinessException {
 	if (raise.getStatus().intValue() == RaiseStatusEnum.APPROVED.getCode())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_cannotModifyOrDeleteApprovedRaise");
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -451,7 +452,7 @@ public class RaisesService extends BaseService {
     public static void saveAdditionalRaiseData(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataToAddList, List<RaiseEmployeeData> raiseEmployeeDataToDeleteList, List<RaiseEmployeeData> currRaiseEmployees, CustomSession... useSession) throws BusinessException {
 	if (currRaiseEmployees == null || currRaiseEmployees.isEmpty())
 	    throw new BusinessException("error_mustAddOneEmployeeAtLeastToSaveAdditionalRaise");
-
+	
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -488,7 +489,7 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    public static void addRaiseEmployees(List<RaiseEmployeeData> raiseEmployeesData, long raiseId, CustomSession... useSession) throws BusinessException {
+    private static void addRaiseEmployees(List<RaiseEmployeeData> raiseEmployeesData, long raiseId, CustomSession... useSession) throws BusinessException {
 	for (RaiseEmployeeData raiseEmployee : raiseEmployeesData) {
 	    validateRaiseEmployee(raiseEmployee);
 	}
@@ -576,6 +577,15 @@ public class RaisesService extends BaseService {
 	}
     }
 
+    public static void sendBack(String refuseReasons, Raise raise) throws BusinessException {
+	validateRaiseStatus(raise.getId());
+	if (refuseReasons == null || "".equals(refuseReasons.trim()))
+	    throw new BusinessException("error_sendBackReasonsManadatory");
+	raise.setReasons(refuseReasons);
+	raise.setStatus(RaiseStatusEnum.INITIAL.getCode());
+	RaisesService.updateRaise(raise);
+    }
+
     /**
      * Deletes raiseEmployeeDataList of objects from database
      * 
@@ -588,6 +598,9 @@ public class RaisesService extends BaseService {
      *             If any exceptions or errors occurs
      */
     public static void deleteRaiseEmployees(List<RaiseEmployeeData> raiseEmployeeDataList, CustomSession... useSession) throws BusinessException {
+	if (getRaiseById(raiseEmployeeDataList.get(0).getRaiseId()).getStatus().equals(RaiseStatusEnum.APPROVED.getCode())) {
+	    throw new BusinessException("error_cannotModifyOrDeleteApprovedRaise");
+	}
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -647,7 +660,7 @@ public class RaisesService extends BaseService {
 	return raiseEmployeeData;
     }
 
-    public static List<RaiseEmployeeData> generateRaiseEmployeesForAnnualRaise(Raise raise, CustomSession session) throws BusinessException {
+    private static List<RaiseEmployeeData> generateRaiseEmployeesForAnnualRaise(Raise raise, CustomSession session) throws BusinessException {
 	List<RaiseEmployeeData> endOfLadderEmpRaiseData = new ArrayList<>();
 	List<RaiseEmployeeData> allRaiseEmployees = new ArrayList<>();
 	List<RaiseEmployeeData> deservedEmpRaiseData = new ArrayList<>();
@@ -683,6 +696,7 @@ public class RaisesService extends BaseService {
     }
 
     public static List<RaiseEmployeeData> regenerateRaiseEmployeesForAnnualRaise(Raise raise, CustomSession... useSession) throws BusinessException {
+	validateRaiseStatus(raise.getId());
 	List<RaiseEmployeeData> raiseEmployees = new ArrayList<>();
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -709,6 +723,65 @@ public class RaisesService extends BaseService {
 	}
 
 	return raiseEmployees;
+    }
+
+    public static void confirmAnnualRaise(Raise raise, List<RaiseEmployeeData> updateRaiseEmployees, CustomSession... useSession) throws BusinessException {
+	validateRaiseStatus(raise.getId());
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+
+	    RaisesService.updateRaiseEmployeesList(updateRaiseEmployees, session);
+	    raise.setStatus(RaiseStatusEnum.CONFIRMED.getCode());
+	    RaisesService.updateRaise(raise, session);
+
+	    if (!isOpenedSession)
+		session.commitTransaction();
+
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
+
+    public static void confirmAdditionalRaise(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataToAddList, List<RaiseEmployeeData> raiseEmployeeDataToDeleteList, List<RaiseEmployeeData> currRaiseEmployees, CustomSession... useSession) throws BusinessException {
+	validateRaiseStatus(raise.getId());
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+	    raise.setStatus(RaiseStatusEnum.CONFIRMED.getCode());
+	    if (raise.getId() == null) {
+		RaisesService.addAdditionalRaise(raise, currRaiseEmployees, session);
+	    } else {
+		RaisesService.saveAdditionalRaiseData(raise, raiseEmployeeDataToAddList, raiseEmployeeDataToDeleteList, currRaiseEmployees, session);
+	    }
+	    if (!isOpenedSession)
+		session.commitTransaction();
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
     }
 
     /*----------------------------------------Validations----------------------------------------------*/
@@ -760,7 +833,7 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    public static void isStillValidAdditionalRaiseEmployee(List<RaiseEmployeeData> raiseEmployees) throws BusinessException {
+    private static void isStillValidAdditionalRaiseEmployee(List<RaiseEmployeeData> raiseEmployees) throws BusinessException {
 	if (raiseEmployees == null || raiseEmployees.isEmpty())
 	    throw new BusinessException("error_mustAddOneEmployeeAtLeastToSaveAdditionalRaise");
 
@@ -791,7 +864,7 @@ public class RaisesService extends BaseService {
 	return rankDegreesHashMap;
     }
 
-    public static void isStillValidAnnualRaiseEmployee(Raise raise) throws BusinessException {
+    private static void isStillValidAnnualRaiseEmployee(Raise raise) throws BusinessException {
 	try {
 	    List<EmployeeData> allDeservedEmployees = getDeservedEmployees(raise.getExecutionDate(), FlagsEnum.ALL.getCode(), raise.getType(), raise.getCategoryId());
 	    Map<Long, EmployeeData> currDeservedEmps = new HashMap<>();
@@ -845,6 +918,15 @@ public class RaisesService extends BaseService {
 		return false;
 	}
 	return true;
+    }
+
+    private static void validateRaiseStatus(Long raiseId) throws BusinessException {
+	if (raiseId != null) {
+	    Raise savedRaise = getRaiseById(raiseId);
+	    if (savedRaise != null && savedRaise.getStatus().equals(RaiseStatusEnum.APPROVED.getCode())) {
+		throw new BusinessException("error_cannotModifyOrDeleteApprovedRaise");
+	    }
+	}
     }
 
     /*------------------------------------------Queries------------------------------------------------*/
@@ -917,7 +999,7 @@ public class RaisesService extends BaseService {
      * @return array list of raiseEmployee objects
      * @throws BusinessException
      */
-    public static List<RaiseEmployeeData> searchRaiseEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, Date decisionDate, String decisionNumber, Integer[] deservedFlagValues, long raiseId, long empId) throws BusinessException {
+    private static List<RaiseEmployeeData> searchRaiseEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, Date decisionDate, String decisionNumber, Integer[] deservedFlagValues, long raiseId, long empId) throws BusinessException {
 	Map<String, Object> qParams = new HashMap<String, Object>();
 	try {
 	    qParams.put("P_SOCIAL_ID", (socialId == null || socialId.equals("")) ? FlagsEnum.ALL.getCode() + "" : socialId);
@@ -949,7 +1031,7 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    public static void deleteRaiseEmployeesByRaiseId(long raiseId, CustomSession session) throws BusinessException {
+    private static void deleteRaiseEmployeesByRaiseId(long raiseId, CustomSession session) throws BusinessException {
 	Map<String, Object> qParams = new HashMap<String, Object>();
 	try {
 	    qParams.put("P_RAISE_ID", raiseId);
@@ -1126,8 +1208,8 @@ public class RaisesService extends BaseService {
 	return transactionLog;
     }
 
-    public static List<RaiseEmployeeData> approveAdditionalRaise(Raise raise, long managerId, String loginEmpId, CustomSession... useSession) throws BusinessException {
-	List<RaiseEmployeeData> deserved = getRaiseEmployeeByRaiseId(raise.getId());
+    public static List<RaiseEmployeeData> approveAdditionalRaise(Raise raise, List<RaiseEmployeeData> deserved, List<RaiseEmployeeData> addedEmployeesList, List<RaiseEmployeeData> deletedEmployeesList, long managerId, String loginEmpId, CustomSession... useSession) throws BusinessException {
+	validateRaiseStatus(raise.getId());
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	List<RaiseTransactionLog> raiseTransactionsLog = new ArrayList<>();
@@ -1136,6 +1218,7 @@ public class RaisesService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
+	    RaisesService.saveAdditionalRaiseData(raise, addedEmployeesList, deletedEmployeesList, deserved, session);
 	    isStillValidAdditionalRaiseEmployee(deserved);
 
 	    for (RaiseEmployeeData raiseEmployee : deserved) {
@@ -1176,7 +1259,8 @@ public class RaisesService extends BaseService {
 	return deserved;
     }
 
-    public static void approveAnnualRaise(Raise raise, long managerId, String loginEmpId, CustomSession... useSession) throws BusinessException {
+    public static void approveAnnualRaise(Raise raise, List<RaiseEmployeeData> updateRaiseEmployees, long managerId, String loginEmpId, CustomSession... useSession) throws BusinessException {
+	validateRaiseStatus(raise.getId());
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	List<RaiseEmployeeData> allEmployees = getAnnualRaiseDeservedEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), raise.getDecisionDateString(), raise.getDecisionNumber(), new Integer[] { RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode() });
@@ -1185,6 +1269,8 @@ public class RaisesService extends BaseService {
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
+
+	    RaisesService.updateRaiseEmployeesList(updateRaiseEmployees, session);
 
 	    isStillValidAnnualRaiseEmployee(raise);
 

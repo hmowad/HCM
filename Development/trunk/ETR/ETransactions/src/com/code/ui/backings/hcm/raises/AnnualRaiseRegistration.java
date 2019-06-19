@@ -41,7 +41,6 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     private boolean modifyAdminFlag;
     private boolean viewAdminFlag;
     private boolean switchPanels;
-    private boolean confirmFlag = false;
     private boolean regenerateFlag = false;
     private Long raiseIdParam;
     private final int pageSize = 10;
@@ -102,7 +101,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     }
 
     public void saveRaise() {
-
+	
 	try {
 	    annualRaise.setSystemUser(loginEmpData.getEmpId() + "");
 	    // a new raise is created for the first time
@@ -162,8 +161,6 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 	    viewAdminFlag = true;
 	    return NavigationEnum.SUCCESS.toString();
 	} catch (BusinessException e) {
-	    if (confirmFlag || approveAdminFlag)
-		throw e;
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	    return null;
 	}
@@ -172,10 +169,11 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
     public String confirm() {
 	try {
-	    confirmFlag = true;
-	    this.saveRaiseEmployees();
-	    annualRaise.setStatus(RaiseStatusEnum.CONFIRMED.getCode());
-	    RaisesService.updateRaise(annualRaise);
+	    RaisesService.confirmAnnualRaise(annualRaise, updateRaiseEmployees);
+	    modifyAdminFlag = false;
+	    approveAdminFlag = false;
+	    viewAdminFlag = true;
+	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	    return NavigationEnum.SUCCESS.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
@@ -185,9 +183,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
     public String sendBack() {
 	try {
-	    annualRaise.setReasons(this.reasons);
-	    annualRaise.setStatus(RaiseStatusEnum.INITIAL.getCode());
-	    RaisesService.updateRaise(annualRaise);
+	    RaisesService.sendBack(this.reasons, annualRaise);
 	    return NavigationEnum.SUCCESS.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
@@ -197,8 +193,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
     public String approveRaise() {
 	try {
-	    saveRaiseEmployees();
-	    RaisesService.approveAnnualRaise(annualRaise, loginEmpData.getEmpId(), loginEmpData.getEmpId() + "");
+	    RaisesService.approveAnnualRaise(annualRaise, updateRaiseEmployees, loginEmpData.getEmpId(), loginEmpData.getEmpId() + "");
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	    modifyAdminFlag = false;
 	    approveAdminFlag = false;
