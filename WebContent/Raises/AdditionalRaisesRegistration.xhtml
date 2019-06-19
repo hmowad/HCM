@@ -214,7 +214,7 @@
 										</td>
 									</h:panelGroup>
 									<td>
-										<h:commandButton action="#{additionalRaisesRegistration.save(1)}" onclick="return handleOnAction('#{msgs.q_save}');" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{additionalRaisesRegistration.raise.status == 1}" >
+										<h:commandButton action="#{additionalRaisesRegistration.save()}" onclick="return handleOnAction('#{msgs.q_save}');" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{additionalRaisesRegistration.raise.status == 1}" >
 											<f:ajax execute="additionalRaisesRegistrationFormId:additionalRaiseDataPanelId additionalRaisesRegistrationFormId:addedEmployeesListId" render="additionalRaisesRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 										

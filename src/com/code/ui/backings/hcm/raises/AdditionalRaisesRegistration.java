@@ -151,7 +151,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	}
     }
 
-    public void save(int type) throws BusinessException {
+    public void save() throws BusinessException {
 	try {
 	    raise.setSystemUser(loginEmpData.getEmpId() + "");
 	    if (addAdminFlag) {
@@ -159,23 +159,19 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 	    } else if (modifyAdminFlag) {
 		RaisesService.saveAdditionalRaiseData(raise, addedEmployeesList, deletedEmployeesList, deservedEmployeesList);
 	    }
-	    if (type == 1) {
-		super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
-		modifyAdminFlag = true;
-		addAdminFlag = false;
-	    }
+	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	    modifyAdminFlag = true;
+	    addAdminFlag = false;
+
 	} catch (BusinessException e) {
-	    if (type == 2) {
-		throw (BusinessException) e;
-	    }
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
     }
 
     public String saveAndApprove() {
 	try {
-	    save(2);
-	    deservedEmployeesList = RaisesService.approveAdditionalRaise(raise, loginEmpData.getEmpId(), loginEmpData.getEmpId() + "");
+	    raise.setSystemUser(loginEmpData.getEmpId() + "");
+	    deservedEmployeesList = RaisesService.approveAdditionalRaise(raise, deservedEmployeesList, addedEmployeesList, deletedEmployeesList, loginEmpData.getEmpId(), loginEmpData.getEmpId() + "");
 	    categoryDesc = CommonService.getCategoryById(raise.getCategoryId()).getDescription();
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	    return NavigationEnum.SUCCESS.toString();
@@ -188,9 +184,8 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 
     public String confirm() {
 	try {
-	    this.save(2);
-	    raise.setStatus(RaiseStatusEnum.CONFIRMED.getCode());
-	    RaisesService.updateRaise(raise);
+	    raise.setSystemUser(loginEmpData.getEmpId() + "");
+	    RaisesService.confirmAdditionalRaise(raise, addedEmployeesList, deletedEmployeesList, deservedEmployeesList);
 	    return NavigationEnum.SUCCESS.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
@@ -200,9 +195,7 @@ public class AdditionalRaisesRegistration extends BaseBacking implements Seriali
 
     public String sendBack() {
 	try {
-	    raise.setReasons(reasons);
-	    raise.setStatus(RaiseStatusEnum.INITIAL.getCode());
-	    RaisesService.updateRaise(raise);
+	    RaisesService.sendBack(reasons, raise);
 	    return NavigationEnum.SUCCESS.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));

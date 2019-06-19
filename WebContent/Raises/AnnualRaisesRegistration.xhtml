@@ -118,7 +118,7 @@
 									</tr>
 									<tr>
 										<td colspan="4">
-											<h:commandButton id="rBtnId" action="#{annualRaiseRegistration.saveRaise()}" value="#{msgs.label_next}" styleClass="btn_normal_icon_left" >
+											<h:commandButton id="rBtnId" action="#{annualRaiseRegistration.saveRaise()}" value="#{msgs.label_saveAndNext}" styleClass="btn_normal_icon_left" >
 												<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseDInfoTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 										</td>
@@ -247,7 +247,11 @@
 														<td>	
 															<table>
 																<tr>
-																	<th>#{msgs.label_sendBackReasons}</th>
+																	<th>
+																		#{msgs.label_sendBackReasons}
+																		<h:outputText value=" " />
+																		<font style="color: red;">*</font>
+																	</th>
 																	<td>
 																		<h:inputTextarea id ="refuseReasonsId" value="#{annualRaiseRegistration.reasons}" styleClass="inputDataSuperLarge" maxlength="500" />
 																	</td>	
