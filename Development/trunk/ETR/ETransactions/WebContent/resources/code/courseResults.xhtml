@@ -11,6 +11,7 @@
 	<composite:attribute name="claim" required="true" />
 	<composite:attribute name="successFlagChangeListener" required="false" />
 	<composite:attribute name="successRankingDesc" required="false" />
+	<composite:attribute name="successRankingMandatoryFlag" required="false" default="true"/>
 </composite:interface>
 
 <composite:implementation>
@@ -96,18 +97,33 @@
 		
 		if(passedIndicatorChecked) {
 			var successRanking = document.getElementById('#{cc.clientId}' +':successRankingId').value;
-			if(successRanking == null || successRanking == ''){
-				alert('#{msgs.error_successRankMandatory}');
-			    return false;
+			if(#{cc.attrs.successRankingMandatoryFlag}){
+				if(successRanking == null || successRanking == ''){
+					alert('#{msgs.error_successRankMandatory}');
+				    return false;
+				}
+				if(successRanking <= 0 ) {
+					alert('#{msgs.error_successRankingCannotBeZeroOrLess}');
+					return false;
+				}
+				if(successRanking > 1000){
+					alert('#{msgs.error_successRankingCannotBeHigherThanThousand}');
+					return false;
+				}
+			}	
+			else{
+				if(successRanking != null && successRanking != ''){
+					if(successRanking <= 0 ) {
+						alert('#{msgs.error_successRankingCannotBeZeroOrLess}');
+						return false;
+					}
+					if(successRanking > 1000){
+						alert('#{msgs.error_successRankingCannotBeHigherThanThousand}');
+						return false;
+					}
+				}
 			}
-			 if(successRanking <= 0) {
-				alert('#{msgs.error_successRankingCannotBeZeroOrLess}');
-				return false;
-			}
-			if(successRanking > 1000){
-				alert('#{msgs.error_successRankingCannotBeHigherThanThousand}');
-				return false;
-			}
+				
 		    // qualification grade
 		    var excellentMilitaryQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':militaryQualificationGradeId:0').checked;
 			var veryGoodMilitaryQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':militaryQualificationGradeId:1').checked;
@@ -185,8 +201,10 @@
 							<tr>
 								<th width="15%">
 									#{msgs.label_theRanking}
-									<h:outputText value=" " />
-									<font style="color: red;">*</font>
+									<h:panelGroup rendered="#{cc.attrs.successRankingMandatoryFlag}">
+										<h:outputText value=" " />
+										<font style="color: red;">*</font>
+									</h:panelGroup>
 								</th>
 								<td width="50%">
 									<h:inputText id="successRankingId" value="#{cc.attrs.trainingObject.successRanking}" rendered="#{!cc.attrs.viewOnly}" styleClass="inputDataNormal" maxlength="5" onkeypress="return isDigit(event);" >
