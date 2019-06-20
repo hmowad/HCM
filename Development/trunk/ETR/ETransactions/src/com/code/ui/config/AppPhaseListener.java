@@ -69,11 +69,13 @@ public class AppPhaseListener implements PhaseListener {
 
 	    String requestURI = getRequestURI(req.getRequestURI());
 	    EmployeeData sessionUser = (EmployeeData) req.getSession().getAttribute(SessionAttributesEnum.EMP_DATA.getCode());
+	    Log4jService.traceInfo(AppPhaseListener.class, "Trying to authorize user.. ");
 
 	    if (sessionUser == null && !requestURI.endsWith("/Main/Login.jsf")) {
 		redirect("/Main/Login.jsf", false);
 	    } else if (sessionUser != null && requestURI.endsWith("/Main/Login.jsf")) {
 		// Navigation Option is for by-passing the normal navigation rules for external channels.
+		Log4jService.traceInfo(AppPhaseListener.class, "sessionUser != null && requestURI.endsWith /Main/Login.jsf ");
 		String navigationOption = req.getParameter("navigationOption");
 		if (navigationOption != null && navigationOption.equals("INBOX"))
 		    redirect("/WorkList/WFInbox.jsf?init=1", false);
@@ -86,10 +88,12 @@ public class AppPhaseListener implements PhaseListener {
 
 		// If request contains parameter "taskId" then make sure that the session user is this task owner.
 		if (taskId != null) {
+		    Log4jService.traceInfo(AppPhaseListener.class, "taskId is not null");
 		    if (!isRequestParametersValid(SecurityService.getUserWFTaskUrl(sessionUser.getEmpId(), requestURI, Long.parseLong(taskId)), req, true))
 			redirect("/Main/Welcome.jsf", true);
 		} else {
 		    // If request doesn't contain parameter "taskId" then check the privilege against the session user menus.
+		    Log4jService.traceInfo(AppPhaseListener.class, "Checking the privilege against the session user menus");
 		    boolean authorized = false;
 		    List<Menu> allMenus = new ArrayList<Menu>();
 		    allMenus.addAll((List<Menu>) req.getSession().getAttribute(SessionAttributesEnum.USER_TRANSACTIONS_MENU.getCode()));
@@ -100,6 +104,7 @@ public class AppPhaseListener implements PhaseListener {
 			if (menuEntry.getUrl() != null && menuEntry.getUrl().contains(requestURI)) {
 			    if (isRequestParametersValid(menuEntry.getUrl(), req, true)) {
 				authorized = true;
+				Log4jService.traceInfo(AppPhaseListener.class, "User is authorized");
 				break;
 			    }
 			}
@@ -111,13 +116,16 @@ public class AppPhaseListener implements PhaseListener {
 			for (String grantedUrl : grantedUrls) {
 			    if (isRequestParametersValid(grantedUrl, req, false)) {
 				authorized = true;
+				Log4jService.traceInfo(AppPhaseListener.class, "User is authorized");
 				break;
 			    }
 			}
 		    }
 
-		    if (!authorized)
+		    if (!authorized) {
+			Log4jService.traceInfo(AppPhaseListener.class, "User is not authorized");
 			redirect("/Main/Welcome.jsf", true);
+		    }
 		}
 	    }
 	} else if (PhaseId.RENDER_RESPONSE.compareTo(phaseEvent.getPhaseId()) == 0) {
@@ -137,6 +145,8 @@ public class AppPhaseListener implements PhaseListener {
 	    // FacesContext.getCurrentInstance().getViewRoot().setLocale(new Locale(curLang));
 	    // }
 	}
+	Log4jService.traceInfo(AppPhaseListener.class, "End of beforePhase()");
+
     }
 
     // isDirectAccess should be true whenever an access to a new page is requested (Link - Navigation).
