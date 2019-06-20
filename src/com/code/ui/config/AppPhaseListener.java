@@ -19,6 +19,7 @@ import com.code.enums.SessionAttributesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.security.SecurityService;
+import com.code.services.util.Log4jService;
 
 public class AppPhaseListener implements PhaseListener {
     private static final long serialVersionUID = 1L;
@@ -33,15 +34,20 @@ public class AppPhaseListener implements PhaseListener {
     @SuppressWarnings("unchecked")
     public void beforePhase(PhaseEvent phaseEvent) {
 	if (PhaseId.RESTORE_VIEW.compareTo(phaseEvent.getPhaseId()) == 0) {
+	    Log4jService.traceInfo(AppPhaseListener.class, "Start of beforePhase()");
 	    HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 	    if (req.getParameterMap().containsKey("user") && req.getParameterMap().get("user") != null && req.getParameterMap().get("user")[0].length() != 0) {
 		try {
-		    String userAccountDecrypted = req.getParameterMap().get("user")[0];
-		    String userAccount = SecurityService.decryptAES(userAccountDecrypted);
+		    Log4jService.traceInfo(AppPhaseListener.class, "user paramater is not null");
+		    String userAccountEncrypted = req.getParameterMap().get("user")[0];
+		    Log4jService.traceInfo(AppPhaseListener.class, "userAccountEncrypted: " + userAccountEncrypted);
+		    String userAccount = SecurityService.decryptAES(userAccountEncrypted);
+		    Log4jService.traceInfo(AppPhaseListener.class, "userAccountDecrypted: " + userAccount);
 		    if (userAccount != null) {
 			EmployeeData empData = EmployeesService.getEmployeeByUserAccount(userAccount);
+			Log4jService.traceInfo(AppPhaseListener.class, "EmpSocialId: " + empData.getSocialID());
 			if (empData != null) {
-
+			    Log4jService.traceInfo(AppPhaseListener.class, "EmpData is not null");
 			    HttpSession session = req.getSession();
 			    session.setAttribute(SessionAttributesEnum.EMP_DATA.getCode(), empData);
 			    if (empData.getManagerId() != null) {
