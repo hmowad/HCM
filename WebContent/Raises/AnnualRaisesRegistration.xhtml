@@ -118,7 +118,10 @@
 									</tr>
 									<tr>
 										<td colspan="4">
-											<h:commandButton id="rBtnId" action="#{annualRaiseRegistration.saveRaise()}" value="#{msgs.label_saveAndNext}" styleClass="btn_normal_icon_left" >
+											<h:commandButton id="rBtnId" rendered="#{annualRaiseRegistration.annualRaise.status == 1 and annualRaiseRegistration.modifyAdminFlag}" action="#{annualRaiseRegistration.saveRaise()}" value="#{msgs.label_saveAndNext}" styleClass="btn_normal_icon_left" >
+												<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseDInfoTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:commandButton id="rNextBtnId" rendered="#{annualRaiseRegistration.approveAdminFlag and annualRaiseRegistration.annualRaise.status == 3}" action="#{annualRaiseRegistration.saveRaise()}" value="#{msgs.label_next}" styleClass="btn_normal_icon_left" >
 												<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseDInfoTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 										</td>
