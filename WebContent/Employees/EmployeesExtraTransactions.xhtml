@@ -8,7 +8,7 @@
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
 	<script type="text/javascript">
 		function getEmployee(contextPath){
-			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, '#{employeesDataExtraTransactions.mode}', -1, -1, -1, -1, -1, -1);
+			openEmployeesMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)', 1, '#{employeesDataExtraTransactions.mode}', -1, -1, -1, -1, -1, '#{employeesDataExtraTransactions.regionId}');
 		}
 		
 		function handleEmpMiniSearchResult(ret){
