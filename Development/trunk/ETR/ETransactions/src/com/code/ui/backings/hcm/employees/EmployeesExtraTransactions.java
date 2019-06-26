@@ -26,6 +26,7 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
 
     private int mode;
     private int rowsCount = 5;
+    private Long regionId;
     private Long employeeId;
     private EmployeeData employee;
 
@@ -59,6 +60,7 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
 	    rankTitleList = new ArrayList<EmployeeExtraTransactionData>();
 	    generalSpecList = new ArrayList<EmployeeExtraTransactionData>();
 	    salaryRankList = new ArrayList<EmployeeExtraTransactionData>();
+	    regionId = getLoginEmpPhysicalRegionFlag(true);
 	    reset();
 	}
     }
@@ -126,6 +128,14 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
 
     public void setRowsCount(int rowsCount) {
 	this.rowsCount = rowsCount;
+    }
+
+    public Long getRegionId() {
+	return regionId;
+    }
+
+    public void setRegionId(Long regionId) {
+	this.regionId = regionId;
     }
 
     public Long getEmployeeId() {
