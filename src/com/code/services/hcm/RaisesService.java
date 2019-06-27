@@ -470,7 +470,7 @@ public class RaisesService extends BaseService {
 		deleteRaiseEmployees(raiseEmployeeDataToDeleteList, session);
 	    }
 
-	    updateRaiseEmployeesList(currRaiseEmployees, session);
+	    updateRaiseEmployeesList(raise, currRaiseEmployees, session);
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -541,11 +541,12 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static void updateRaiseEmployeesList(List<RaiseEmployeeData> raiseEmployeeDataToUpdateList, CustomSession... useSession) throws BusinessException {
+    public static void updateRaiseEmployeesList(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataToUpdateList, CustomSession... useSession) throws BusinessException {
 	if (raiseEmployeeDataToUpdateList != null && !raiseEmployeeDataToUpdateList.isEmpty()) {
 	    for (RaiseEmployeeData raiseEmployee : raiseEmployeeDataToUpdateList) {
 		validateRaiseEmployee(raiseEmployee);
 	    }
+	    validateRaiseStatus(raise);
 	    boolean isOpenedSession = isSessionOpened(useSession);
 	    CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	    try {
@@ -733,7 +734,7 @@ public class RaisesService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
-	    RaisesService.updateRaiseEmployeesList(updateRaiseEmployees, session);
+	    RaisesService.updateRaiseEmployeesList(raise, updateRaiseEmployees, session);
 	    raise.setStatus(RaiseStatusEnum.CONFIRMED.getCode());
 	    RaisesService.updateRaise(raise, session);
 
@@ -1276,7 +1277,7 @@ public class RaisesService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
-	    RaisesService.updateRaiseEmployeesList(updateRaiseEmployees, session);
+	    RaisesService.updateRaiseEmployeesList(raise, updateRaiseEmployees, session);
 
 	    isStillValidAnnualRaiseEmployee(raise);
 

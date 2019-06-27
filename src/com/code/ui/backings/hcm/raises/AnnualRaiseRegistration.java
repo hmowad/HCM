@@ -38,7 +38,6 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     private List<RaiseEmployeeData> updateRaiseEmployees;
     private int empPrintType;
     private boolean approveAdminFlag;
-    private boolean modifyAdminFlag;
     private boolean viewAdminFlag;
     private boolean switchPanels;
     private boolean regenerateFlag = false;
@@ -55,7 +54,6 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
 	if (raiseIdParam == null) {
 	    annualRaise = RaisesService.constructRaise(RaiseTypesEnum.ANNUAL.getCode());
-	    modifyAdminFlag = true;
 	    try {
 		if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ANNUAL_RAISES_REGISTRATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ANNUAL_RAISE_REGISTRATION.getCode()))
 		    approveAdminFlag = true;
@@ -66,14 +64,12 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 	    try {
 		annualRaise = RaisesService.getRaiseById(raiseIdParam);
 		if (annualRaise.getStatus() == RaiseStatusEnum.INITIAL.getCode()) {
-		    modifyAdminFlag = true;
 		    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ANNUAL_RAISES_REGISTRATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ANNUAL_RAISE_REGISTRATION.getCode()))
 			approveAdminFlag = true;
 
 		} else if (annualRaise.getStatus().equals(RaiseStatusEnum.CONFIRMED.getCode())) {
 		    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.RAISES_ANNUAL_RAISES_REGISTRATION.getCode(), MenuActionsEnum.RAISES_APPROVE_ANNUAL_RAISE_REGISTRATION.getCode())) {
 			approveAdminFlag = true;
-			modifyAdminFlag = true;
 		    } else
 			viewAdminFlag = true;
 		} else
@@ -101,7 +97,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     }
 
     public void saveRaise() {
-	
+
 	try {
 	    annualRaise.setSystemUser(loginEmpData.getEmpId() + "");
 	    // a new raise is created for the first time
@@ -109,7 +105,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 		raiseEmployees = RaisesService.addAnnualRaise(annualRaise);
 	    }
 	    // the raise is updated
-	    else if (modifyAdminFlag) {
+	    else if (!viewAdminFlag) {
 		// check if there are any changes in execution date or category
 		loadedAnnualRaise = RaisesService.getRaiseById(annualRaise.getId());
 		RaisesService.updateRaise(annualRaise);
@@ -154,9 +150,8 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     // press save button
     public String saveRaiseEmployees() throws BusinessException {
 	try {
-	    RaisesService.updateRaiseEmployeesList(updateRaiseEmployees);
+	    RaisesService.updateRaiseEmployeesList(annualRaise, updateRaiseEmployees);
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
-	    modifyAdminFlag = false;
 	    approveAdminFlag = false;
 	    viewAdminFlag = true;
 	    return NavigationEnum.SUCCESS.toString();
@@ -170,7 +165,6 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     public String confirm() {
 	try {
 	    RaisesService.confirmAnnualRaise(annualRaise, updateRaiseEmployees);
-	    modifyAdminFlag = false;
 	    approveAdminFlag = false;
 	    viewAdminFlag = true;
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
@@ -195,7 +189,6 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 	try {
 	    RaisesService.approveAnnualRaise(annualRaise, updateRaiseEmployees, loginEmpData.getEmpId(), loginEmpData.getEmpId() + "");
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
-	    modifyAdminFlag = false;
 	    approveAdminFlag = false;
 	    viewAdminFlag = true;
 	    return NavigationEnum.SUCCESS.toString();
@@ -286,14 +279,6 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
     public void setApproveAdminFlag(boolean approveAdminFlag) {
 	this.approveAdminFlag = approveAdminFlag;
-    }
-
-    public boolean isModifyAdminFlag() {
-	return modifyAdminFlag;
-    }
-
-    public void setModifyAdminFlag(boolean modifyAdminFlag) {
-	this.modifyAdminFlag = modifyAdminFlag;
     }
 
     public boolean isViewAdminFlag() {
