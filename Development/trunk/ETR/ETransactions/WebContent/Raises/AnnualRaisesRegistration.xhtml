@@ -77,7 +77,7 @@
 										</th>
 										<td colspan="3">
 											<h:outputText rendered="#{annualRaiseRegistration.viewAdminFlag}" value="#{annualRaiseRegistration.annualRaise.decisionDateString}" />
-											<util:hijri id="decisionDateId" rendered="#{annualRaiseRegistration.modifyAdminFlag}" value="#{annualRaiseRegistration.annualRaise.decisionDate}" />
+											<util:hijri id="decisionDateId" rendered="#{!annualRaiseRegistration.viewAdminFlag}" value="#{annualRaiseRegistration.annualRaise.decisionDate}" />
 										</td>
 									</tr>
 									<tr>
@@ -100,7 +100,7 @@
 
 										<td colspan="3">
 											<h:outputText rendered="#{annualRaiseRegistration.viewAdminFlag}" value="#{annualRaiseRegistration.annualRaise.executionDateString}" />
-											<util:hijri id="dateId" rendered="#{annualRaiseRegistration.modifyAdminFlag}" value="#{annualRaiseRegistration.annualRaise.executionDate}" />
+											<util:hijri id="dateId" rendered="#{!annualRaiseRegistration.viewAdminFlag}" value="#{annualRaiseRegistration.annualRaise.executionDate}" />
 										</td>
 									</tr>
 									<tr>
@@ -118,10 +118,10 @@
 									</tr>
 									<tr>
 										<td colspan="4">
-											<h:commandButton id="rBtnId" rendered="#{annualRaiseRegistration.annualRaise.status == 1 and annualRaiseRegistration.modifyAdminFlag}" action="#{annualRaiseRegistration.saveRaise()}" value="#{msgs.label_saveAndNext}" styleClass="btn_normal_icon_left" >
+											<h:commandButton id="rBtnId" rendered="#{(annualRaiseRegistration.annualRaise.status == 1 or (annualRaiseRegistration.annualRaise.status == 3 and annualRaiseRegistration.approveAdminFlag)) and !annualRaiseRegistration.viewAdminFlag}" action="#{annualRaiseRegistration.saveRaise()}" value="#{msgs.label_saveAndNext}" styleClass="btn_normal_icon_left" >
 												<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseDInfoTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
-											<h:commandButton id="rNextBtnId" rendered="#{annualRaiseRegistration.approveAdminFlag and annualRaiseRegistration.annualRaise.status == 3}" action="#{annualRaiseRegistration.saveRaise()}" value="#{msgs.label_next}" styleClass="btn_normal_icon_left" >
+											<h:commandButton id="rNextBtnId" rendered="#{annualRaiseRegistration.annualRaise.status == 2 or (annualRaiseRegistration.annualRaise.status == 3 and !annualRaiseRegistration.approveAdminFlag) or annualRaiseRegistration.viewAdminFlag}" action="#{annualRaiseRegistration.saveRaise()}" value="#{msgs.label_next}" styleClass="btn_normal_icon_left" >
 												<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseDInfoTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 										</td>
@@ -164,7 +164,7 @@
 												<tr>
 													<td>
 														<h:outputText value="#{msgs.label_excludedEmployees}" />
-														<h:commandButton id="addEmpId" value="#{msgs.label_add}" rendered="#{annualRaiseRegistration.modifyAdminFlag}" styleClass="btn_normal" onclick="getEmployee(); return false;" />
+														<h:commandButton id="addEmpId" value="#{msgs.label_add}" rendered="#{!annualRaiseRegistration.viewAdminFlag}" styleClass="btn_normal" onclick="getEmployee(); return false;" />
 														<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{annualRaiseRegistration.addExcludedForAnotherReason()}">
 															<f:ajax execute="annualRaiseRegistrationFormId:employeeIDId annualRaiseRegistrationFormId:annualRaiseEmpTableId" render="annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" />
 														</h:commandButton>
@@ -268,11 +268,11 @@
 														</td>
 													</h:panelGroup>
 													<td>
-														<h:commandButton id="saveId" onclick="return handleOnAction('#{msgs.q_save}');" action="#{annualRaiseRegistration.saveRaiseEmployees()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.annualRaise.status == 1 and annualRaiseRegistration.modifyAdminFlag}">
+														<h:commandButton id="saveId" onclick="return handleOnAction('#{msgs.q_save}');" action="#{annualRaiseRegistration.saveRaiseEmployees()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.annualRaise.status == 1}">
 															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
 														
-														<h:commandButton id="confirmId" onclick="return handleOnAction('#{msgs.q_confirmRaise}');" action="#{annualRaiseRegistration.confirm()}" value="#{msgs.label_confirmRaise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.annualRaise.status == 1 and annualRaiseRegistration.modifyAdminFlag}">
+														<h:commandButton id="confirmId" onclick="return handleOnAction('#{msgs.q_confirmRaise}');" action="#{annualRaiseRegistration.confirm()}" value="#{msgs.label_confirmRaise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.annualRaise.status == 1}">
 															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
 														
