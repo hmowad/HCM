@@ -31,7 +31,6 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
     // private long category;
     private Raise annualRaise;
-    private Raise loadedAnnualRaise;
     private List<Category> categoriesList;
     private List<RaiseEmployeeData> raiseEmployees;
     private RaiseEmployeeData raiseEmployee;
@@ -107,12 +106,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 	    // the raise is updated
 	    else if (!viewAdminFlag) {
 		// check if there are any changes in execution date or category
-		loadedAnnualRaise = RaisesService.getRaiseById(annualRaise.getId());
-		RaisesService.updateRaise(annualRaise);
-		if ((loadedAnnualRaise.getCategoryId() == annualRaise.getCategoryId()) && (loadedAnnualRaise.getExecutionDateString().equals(annualRaise.getExecutionDateString())))
-		    raiseEmployees = RaisesService.getEndOfLadderAndExcludedForAnotherReasonEmployees(annualRaise.getId());
-		else
-		    raiseEmployees = RaisesService.regenerateRaiseEmployeesForAnnualRaise(annualRaise);
+		raiseEmployees = RaisesService.saveAnnualRaise(annualRaise);
 	    }
 	    // view mode is on
 	    else {
@@ -150,7 +144,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     // press save button
     public String saveRaiseEmployees() throws BusinessException {
 	try {
-	    RaisesService.updateRaiseEmployeesList(annualRaise, updateRaiseEmployees);
+	    RaisesService.saveRaiseEmployeesList(annualRaise, updateRaiseEmployees);
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	    approveAdminFlag = false;
 	    viewAdminFlag = true;
