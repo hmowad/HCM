@@ -36,6 +36,7 @@ public class AppPhaseListener implements PhaseListener {
 	if (PhaseId.RESTORE_VIEW.compareTo(phaseEvent.getPhaseId()) == 0) {
 	    Log4jService.traceInfo(AppPhaseListener.class, "Start of beforePhase()");
 	    HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+	    Log4jService.traceInfo(AppPhaseListener.class, "URI: " + req.getRequestURL());
 	    if (req.getParameterMap().containsKey("user") && req.getParameterMap().get("user") != null && req.getParameterMap().get("user")[0].length() != 0) {
 		try {
 		    Log4jService.traceInfo(AppPhaseListener.class, "user paramater is not null");
@@ -45,9 +46,8 @@ public class AppPhaseListener implements PhaseListener {
 		    Log4jService.traceInfo(AppPhaseListener.class, "userAccountDecrypted: " + userAccount);
 		    if (userAccount != null) {
 			EmployeeData empData = EmployeesService.getEmployeeByUserAccount(userAccount);
-			Log4jService.traceInfo(AppPhaseListener.class, "EmpSocialId: " + empData.getSocialID());
 			if (empData != null) {
-			    Log4jService.traceInfo(AppPhaseListener.class, "EmpData is not null");
+			    Log4jService.traceInfo(AppPhaseListener.class, "EmpSocialId: " + empData.getSocialID());
 			    HttpSession session = req.getSession();
 			    session.setAttribute(SessionAttributesEnum.EMP_DATA.getCode(), empData);
 			    if (empData.getManagerId() != null) {
@@ -99,8 +99,9 @@ public class AppPhaseListener implements PhaseListener {
 		    allMenus.addAll((List<Menu>) req.getSession().getAttribute(SessionAttributesEnum.USER_TRANSACTIONS_MENU.getCode()));
 		    allMenus.addAll((List<Menu>) req.getSession().getAttribute(SessionAttributesEnum.USER_WORKFLOWS_MENU.getCode()));
 		    allMenus.addAll((List<Menu>) req.getSession().getAttribute(SessionAttributesEnum.USER_REPORTS_MENU.getCode()));
-
+		    Log4jService.traceInfo(AppPhaseListener.class, "Request URI:  " + requestURI);
 		    for (Menu menuEntry : allMenus) {
+			Log4jService.traceInfo(AppPhaseListener.class, "Menu URI:  " + menuEntry.getUrl());
 			if (menuEntry.getUrl() != null && menuEntry.getUrl().contains(requestURI)) {
 			    if (isRequestParametersValid(menuEntry.getUrl(), req, true)) {
 				authorized = true;
