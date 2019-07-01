@@ -109,10 +109,6 @@
 	                <name>mode</name>
 	                <value>1</value>
 	            </view-param>
-	            <view-param>
-	                <name>success</name>
-	                <value>true</value>
-	            </view-param>
 	        </redirect>
     	</navigation-case>
     </navigation-rule>
@@ -126,10 +122,6 @@
 	            <view-param>
 	                <name>mode</name>
 	                <value>2</value>
-	            </view-param>
-	            <view-param>
-	                <name>success</name>
-	                <value>true</value>
 	            </view-param>
 	        </redirect>
     	</navigation-case>

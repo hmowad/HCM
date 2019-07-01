@@ -6,25 +6,22 @@
 	<h:outputStylesheet library="css" name="styles.css" />
 	<h:outputStylesheet library="css" name="grid.css" />
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+		function getEmployee(){
+			openEmpsMiniSearchForAdditionalRaises('#{request.contextPath}', 'handleEmpMiniSearchResult(ret)', 18, #{additionalRaisesRegistration.raise.categoryId}, #{additionalRaisesRegistration.physicalRegionId}, '#{additionalRaisesRegistration.statusIds}');
+		}
+			
+		function handleEmpMiniSearchResult(ret){
+			if(ret!=null){
+				document.getElementById('additionalRaisesRegistrationFormId:employeeIDId').value = ret[0];
+				document.getElementById('additionalRaisesRegistrationFormId:searchEmpBtnId').click();
+			} 
+		}
+	</script>
 </h:head>
 
 <h:body styleClass="screenBg">
 	<h:form id="additionalRaisesRegistrationFormId" dir="#{msgs.dir}">
-		<h:panelGroup id="scriptPanelId">
-			<script type="text/javascript">
-			function getEmployee(){
-				openEmpsMiniSearchForAdditionalRaises('#{request.contextPath}', 'handleEmpMiniSearchResult(ret)', 18, #{additionalRaisesRegistration.raise.categoryId}, #{additionalRaisesRegistration.physicalRegionId}, '#{additionalRaisesRegistration.statusIds}');
-		 	}
-			
-		 	function handleEmpMiniSearchResult(ret){
-		 		if(ret!=null){
-				    document.getElementById('additionalRaisesRegistrationFormId:employeeIDId').value = ret[0];
-				    document.getElementById('additionalRaisesRegistrationFormId:searchEmpBtnId').click();
-			    } 
-		 	}
-			</script>
-		</h:panelGroup>
-		<ui:debug />
 		<ui:decorate template="/Main/Template.xhtml">
 			<table border="0" cellpadding="0" cellspacing="0" width="100%">
 				<tr>
@@ -80,7 +77,7 @@
 										<td width="30%">
 											<h:selectOneMenu id="selectMenuId" value="#{additionalRaisesRegistration.raise.categoryId}" rendered="#{additionalRaisesRegistration.addAdminFlag or additionalRaisesRegistration.modifyAdminFlag}">
 												<f:selectItems value="#{additionalRaisesRegistration.categories}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
-												<f:ajax event="change" execute="selectMenuId additionalRaisesRegistrationFormId:addedEmployeesListId" render="scriptPanelId additionalRaisesRegistrationFormId:employeeAdditionPanelId additionalRaisesRegistrationFormId:notifyMessagesId" listener="#{additionalRaisesRegistration.deleteAllDeservedEmployee()}" />
+												<f:ajax event="change" execute="additionalRaisesRegistrationFormId:selectMenuId additionalRaisesRegistrationFormId:addedEmployeesListId" render="additionalRaisesRegistrationFormId:employeeAdditionPanelId additionalRaisesRegistrationFormId:notifyMessagesId" listener="#{additionalRaisesRegistration.deleteAllDeservedEmployee()}" />
 											</h:selectOneMenu>
 											<h:outputText value="#{additionalRaisesRegistration.categoryDesc}" rendered="#{!(additionalRaisesRegistration.addAdminFlag or additionalRaisesRegistration.modifyAdminFlag)}" />
 										</td>
@@ -206,7 +203,7 @@
 													</td>	
 													<td>
 														<h:commandButton id="returnId" onclick="return handleOnAction('#{msgs.q_sendBackToSpecial}', 'validateRefuseAndNotes(0, &quot;additionalRaisesRegistrationFormId:refuseReasonsId&quot;)' ,null);" action="#{additionalRaisesRegistration.sendBack()}" value="#{msgs.label_sendBackToSpecial} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
-															<f:ajax execute="@form" render="additionalRaisesRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															<f:ajax execute="@form" render="additionalRaisesRegistrationFormId:notifyMessagesId" />
 														</h:commandButton>
 													</td>
 												</tr>															
@@ -215,15 +212,15 @@
 									</h:panelGroup>
 									<td>
 										<h:commandButton action="#{additionalRaisesRegistration.save()}" onclick="return handleOnAction('#{msgs.q_save}');" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{additionalRaisesRegistration.raise.status == 1}" >
-											<f:ajax execute="additionalRaisesRegistrationFormId:additionalRaiseDataPanelId additionalRaisesRegistrationFormId:addedEmployeesListId" render="additionalRaisesRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											<f:ajax execute="additionalRaisesRegistrationFormId:additionalRaiseDataPanelId additionalRaisesRegistrationFormId:addedEmployeesListId" render="additionalRaisesRegistrationFormId:notifyMessagesId" />
 										</h:commandButton>
 										
 										<h:commandButton id="confirmId" onclick="return handleOnAction('#{msgs.q_confirmRaise}');" action="#{additionalRaisesRegistration.confirm()}" value="#{msgs.label_confirmRaise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" style="float: left;" rendered="#{additionalRaisesRegistration.raise.status == 1}">
-											<f:ajax execute="@form" render="additionalRaisesRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											<f:ajax execute="@form" render="additionalRaisesRegistrationFormId:notifyMessagesId" />
 										</h:commandButton>
 										
 										<h:commandButton action="#{additionalRaisesRegistration.saveAndApprove()}" onclick="return handleOnAction('#{msgs.q_superSign}');"  value="#{msgs.label_approveAndCloseRaise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{additionalRaisesRegistration.approveAdminFlag and additionalRaisesRegistration.raise.status == 3}">
-											<f:ajax execute="additionalRaisesRegistrationFormId:additionalRaiseDataPanelId additionalRaisesRegistrationFormId:addedEmployeesListId" render="additionalRaisesRegistrationFormId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											<f:ajax execute="additionalRaisesRegistrationFormId:additionalRaiseDataPanelId additionalRaisesRegistrationFormId:addedEmployeesListId" render="additionalRaisesRegistrationFormId:notifyMessagesId" />
 										</h:commandButton>
 										
 									</td>

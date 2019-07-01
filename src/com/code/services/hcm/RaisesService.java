@@ -178,9 +178,8 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static void updateRaise(Raise raise, CustomSession... useSession) throws BusinessException {
+    private static void updateRaise(Raise raise, CustomSession... useSession) throws BusinessException {
 	validateRaise(raise);
-	validateRaiseStatus(raise);
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -191,6 +190,43 @@ public class RaisesService extends BaseService {
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
+
+    public static List<RaiseEmployeeData> saveAnnualRaise(Raise raise, CustomSession... useSession) throws BusinessException {
+	validateRaiseStatus(raise);
+
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+
+	    updateRaise(raise);
+
+	    Raise loadedAnnualRaise = RaisesService.getRaiseById(raise.getId());
+	    List<RaiseEmployeeData> raiseEmployees;
+	    if ((loadedAnnualRaise.getCategoryId() == raise.getCategoryId()) && (loadedAnnualRaise.getExecutionDateString().equals(raise.getExecutionDateString()))) {
+		raiseEmployees = RaisesService.getEndOfLadderAndExcludedForAnotherReasonEmployees(raise.getId());
+	    } else {
+		deleteRaiseEmployeesByRaiseId(raise.getId(), session);
+		raiseEmployees = generateRaiseEmployeesForAnnualRaise(raise, session);
+	    }
+
+	    if (!isOpenedSession)
+		session.commitTransaction();
+
+	    return raiseEmployees;
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
@@ -449,9 +485,10 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static void saveAdditionalRaiseData(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataToAddList, List<RaiseEmployeeData> raiseEmployeeDataToDeleteList, List<RaiseEmployeeData> currRaiseEmployees, CustomSession... useSession) throws BusinessException {
+    public static void updateAdditionalRaiseData(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataToAddList, List<RaiseEmployeeData> raiseEmployeeDataToDeleteList, List<RaiseEmployeeData> currRaiseEmployees, CustomSession... useSession) throws BusinessException {
 	if (currRaiseEmployees == null || currRaiseEmployees.isEmpty())
 	    throw new BusinessException("error_mustAddOneEmployeeAtLeastToSaveAdditionalRaise");
+	validateRaiseStatus(raise);
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -541,12 +578,11 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      *             If any exceptions or errors occurs
      */
-    public static void updateRaiseEmployeesList(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataToUpdateList, CustomSession... useSession) throws BusinessException {
+    private static void updateRaiseEmployeesList(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataToUpdateList, CustomSession... useSession) throws BusinessException {
 	if (raiseEmployeeDataToUpdateList != null && !raiseEmployeeDataToUpdateList.isEmpty()) {
 	    for (RaiseEmployeeData raiseEmployee : raiseEmployeeDataToUpdateList) {
 		validateRaiseEmployee(raiseEmployee);
 	    }
-	    validateRaiseStatus(raise);
 	    boolean isOpenedSession = isSessionOpened(useSession);
 	    CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	    try {
@@ -576,6 +612,11 @@ public class RaisesService extends BaseService {
 		    session.close();
 	    }
 	}
+    }
+
+    public static void saveRaiseEmployeesList(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataToUpdateList) throws BusinessException {
+	validateRaiseStatus(raise);
+	updateRaiseEmployeesList(raise, raiseEmployeeDataToUpdateList);
     }
 
     public static void sendBack(String refuseReasons, Raise raise) throws BusinessException {
@@ -766,7 +807,7 @@ public class RaisesService extends BaseService {
 	    if (raise.getId() == null) {
 		RaisesService.addAdditionalRaise(raise, currRaiseEmployees, session);
 	    } else {
-		RaisesService.saveAdditionalRaiseData(raise, raiseEmployeeDataToAddList, raiseEmployeeDataToDeleteList, currRaiseEmployees, session);
+		RaisesService.updateAdditionalRaiseData(raise, raiseEmployeeDataToAddList, raiseEmployeeDataToDeleteList, currRaiseEmployees, session);
 	    }
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -925,7 +966,7 @@ public class RaisesService extends BaseService {
 	if (raise.getId() != null) {
 	    Raise savedRaise = getRaiseById(raise.getId());
 	    if (savedRaise != null) {
-		if (savedRaise != null && savedRaise.getStatus().equals(RaiseStatusEnum.APPROVED.getCode())) {
+		if (savedRaise.getStatus().equals(RaiseStatusEnum.APPROVED.getCode())) {
 		    throw new BusinessException("error_cannotModifyOrDeleteApprovedRaise");
 		} else if (savedRaise.getStatus().equals(RaiseStatusEnum.CONFIRMED.getCode()) && raise.getStatus().equals(RaiseStatusEnum.INITIAL.getCode())) {
 		    throw new BusinessException("error_cannotModifyOrDeleteConfirmedRaise");
@@ -1225,7 +1266,7 @@ public class RaisesService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
-	    RaisesService.saveAdditionalRaiseData(raise, addedEmployeesList, deletedEmployeesList, deserved, session);
+	    RaisesService.updateAdditionalRaiseData(raise, addedEmployeesList, deletedEmployeesList, deserved, session);
 	    isStillValidAdditionalRaiseEmployee(deserved);
 
 	    for (RaiseEmployeeData raiseEmployee : deserved) {
