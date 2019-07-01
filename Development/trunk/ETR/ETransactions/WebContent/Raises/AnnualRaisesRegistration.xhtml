@@ -114,14 +114,14 @@
 												<h:inputTextarea value="#{annualRaiseRegistration.annualRaise.reasons}" readonly="true" styleClass="inputDataSuperLarge" maxlength="500" />
 											</td>
 										</h:panelGroup>
-										
+
 									</tr>
 									<tr>
 										<td colspan="4">
-											<h:commandButton id="rBtnId" rendered="#{(annualRaiseRegistration.annualRaise.status == 1 or (annualRaiseRegistration.annualRaise.status == 3 and annualRaiseRegistration.approveAdminFlag)) and !annualRaiseRegistration.viewAdminFlag}" action="#{annualRaiseRegistration.saveRaise()}" value="#{msgs.label_saveAndNext}" styleClass="btn_normal_icon_left" >
+											<h:commandButton id="rBtnId" rendered="#{(annualRaiseRegistration.annualRaise.status == 1 or (annualRaiseRegistration.annualRaise.status == 3 and annualRaiseRegistration.approveAdminFlag)) and !annualRaiseRegistration.viewAdminFlag}" action="#{annualRaiseRegistration.saveRaise()}" value="#{msgs.label_saveAndNext}" styleClass="btn_normal_icon_left">
 												<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseDInfoTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
-											<h:commandButton id="rNextBtnId" rendered="#{annualRaiseRegistration.annualRaise.status == 2 or (annualRaiseRegistration.annualRaise.status == 3 and !annualRaiseRegistration.approveAdminFlag) or annualRaiseRegistration.viewAdminFlag}" action="#{annualRaiseRegistration.saveRaise()}" value="#{msgs.label_next}" styleClass="btn_normal_icon_left" >
+											<h:commandButton id="rNextBtnId" rendered="#{annualRaiseRegistration.annualRaise.status == 2 or (annualRaiseRegistration.annualRaise.status == 3 and !annualRaiseRegistration.approveAdminFlag) or annualRaiseRegistration.viewAdminFlag}" action="#{annualRaiseRegistration.saveRaise()}" value="#{msgs.label_next}" styleClass="btn_normal_icon_left">
 												<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseDInfoTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 										</td>
@@ -245,9 +245,9 @@
 										<td colspan="4">
 											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 												<tr>
-													
-													<h:panelGroup id = "refuseReasonsPanel" rendered="#{annualRaiseRegistration.annualRaise.status == 3 and annualRaiseRegistration.approveAdminFlag}">
-														<td>	
+
+													<h:panelGroup id="refuseReasonsPanel" rendered="#{annualRaiseRegistration.annualRaise.status == 3 and annualRaiseRegistration.approveAdminFlag}">
+														<td>
 															<table>
 																<tr>
 																	<th>
@@ -256,31 +256,30 @@
 																		<font style="color: red;">*</font>
 																	</th>
 																	<td>
-																		<h:inputTextarea id ="refuseReasonsId" value="#{annualRaiseRegistration.reasons}" styleClass="inputDataSuperLarge" maxlength="500" />
-																	</td>	
+																		<h:inputTextarea id="refuseReasonsId" value="#{annualRaiseRegistration.reasons}" styleClass="inputDataSuperLarge" maxlength="500" />
+																	</td>
 																	<td>
-																		<h:commandButton id="returnId" onclick="return handleOnAction('#{msgs.q_sendBackToSpecial}', 'validateRefuseAndNotes(0, &quot;annualRaiseRegistrationFormId:refuseReasonsId&quot;)' ,null);" action="#{annualRaiseRegistration.sendBack()}" value="#{msgs.label_sendBackToSpecial} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" >
+																		<h:commandButton id="returnId" onclick="return handleOnAction('#{msgs.q_sendBackToSpecial}', 'validateRefuseAndNotes(0, &quot;annualRaiseRegistrationFormId:refuseReasonsId&quot;)' ,null);" action="#{annualRaiseRegistration.sendBack()}" value="#{msgs.label_sendBackToSpecial} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
 																			<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 																		</h:commandButton>
 																	</td>
-																</tr>															
+																</tr>
 															</table>
 														</td>
 													</h:panelGroup>
 													<td>
-														<h:commandButton id="saveId" onclick="return handleOnAction('#{msgs.q_save}');" action="#{annualRaiseRegistration.saveRaiseEmployees()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.annualRaise.status == 1}">
-															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
-														</h:commandButton>
-														
 														<h:commandButton id="confirmId" onclick="return handleOnAction('#{msgs.q_confirmRaise}');" action="#{annualRaiseRegistration.confirm()}" value="#{msgs.label_confirmRaise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.annualRaise.status == 1}">
 															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
-														
+
+														<h:commandButton id="saveId" onclick="return handleOnAction('#{msgs.q_save}');" action="#{annualRaiseRegistration.saveRaiseEmployees()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.annualRaise.status == 1}">
+															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
 
 														<h:commandButton id="approvetnId" onclick="return handleOnAction('#{msgs.q_superSign}')" action="#{annualRaiseRegistration.approveRaise()}" value="#{msgs.label_approveAndCloseRaise} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.approveAdminFlag and annualRaiseRegistration.annualRaise.status == 3 and !annualRaiseRegistration.regenerateFlag}">
 															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
-												
+
 														<h:commandButton id="regenerateId" onclick="return handleOnAction('#{msgs.q_regenerateRaiseEmployees}')" action="#{annualRaiseRegistration.regenerateRaiseEmployees()}" value="#{msgs.label_regenerateDeservedEmployees} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" style="float: left;" rendered="#{annualRaiseRegistration.regenerateFlag}">
 															<f:ajax execute="@form" render="annualRaiseRegistrationFormId:empAnnualRaiseDInfoTableId annualRaiseRegistrationFormId:annualRaiseEmpTableId annualRaiseRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
