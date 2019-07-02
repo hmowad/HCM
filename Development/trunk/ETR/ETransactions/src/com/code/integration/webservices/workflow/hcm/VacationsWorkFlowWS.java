@@ -102,6 +102,16 @@ public class VacationsWorkFlowWS {
 		vacRequest.setLocation(location);
 		vacRequest.setContactNumber(contactNumber);
 		vacRequest.setContactAddress(contactAddress);
+
+		List<VacationData> lastVacations = VacationsService.getVacationsData(requesterId, vacationTypeId);
+		if (lastVacations != null && !lastVacations.isEmpty())
+		    vacRequest.setOldVacationId(lastVacations.get(0).getId());
+		else
+		    vacRequest.setOldVacationId(null);
+		if (lastVacations.size() > 1)
+		    vacRequest.setSecondOldVacationId(lastVacations.get(1).getId());
+		else
+		    vacRequest.setSecondOldVacationId(null);
 	    } else {
 		VacationData lastVacation = VacationsService.getLastVacationData(requesterId, vacationTypeId);
 		if (lastVacation == null)
