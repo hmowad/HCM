@@ -130,7 +130,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_EMP_RANK_FLAG = -1 or e.rankId in (:P_EMP_RANK))" +
 			" and (:P_REGION_ID = -1 or e.officialRegionId = :P_REGION_ID ) " +
 			" and (SELECT count(rd.empId) from PromotionReportDetail rd where rd.status <> 35 and rd.empId = e.empId and (select r.status from PromotionReport r where r.id = rd.reportId ) != 20 ) = 0 " +
-			" and ((e.rankId >= 205 and e.gender = 'F') or e.gender = 'M')" +
+			" and ((e.rankId >= 202 and e.gender = 'F') or e.gender = 'M')" +
 			" and e.statusId >= 15 and e.statusId < 50 " +
 			" order by e.militaryNumber, e.rankId ,e.recruitmentDate ,e.degreeId, e.jobClassificationCode, e.name "),
 
