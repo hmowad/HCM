@@ -43,6 +43,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_PHYSICAL_UNIT_FULL_NAME = '-1' or e.physicalUnitFullName like :P_PHYSICAL_UNIT_FULL_NAME ) " +
 			" and (:P_GENDER = '-1' or e.gender = :P_GENDER) " +
 			" and (:P_EXCEPTIONAL_RECRUITMENT_FLAG = -1 or e.exceptionalRecruitmentFlag = :P_EXCEPTIONAL_RECRUITMENT_FLAG ) " +
+			" and (:P_RANK_ID = -1 OR e.rankId = :P_RANK_ID)" +
 			" order by e.militaryNumber, e.rankId, e.recruitmentDate, e.name "),
 
 	@NamedQuery(name = "hcm_empData_searchEmpDataByOfficialOrPhysicalUnit",

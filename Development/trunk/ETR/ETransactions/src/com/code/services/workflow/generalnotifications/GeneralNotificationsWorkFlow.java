@@ -21,9 +21,9 @@ import com.code.services.workflow.BaseWorkFlow;
 
 public class GeneralNotificationsWorkFlow extends BaseWorkFlow {
 
-    public static void sendNotificationMessages(long requesterId, long originalRequesterId, long regionId, String unitHkey, long categoryId, String notificationMessage, String attachments, String taskUrl) throws BusinessException {
+    public static void sendNotificationMessages(long requesterId, long originalRequesterId, long regionId, String unitHkey, long categoryId, long rankId, String notificationMessage, String attachments, String taskUrl) throws BusinessException {
 
-	List<EmployeeData> employees = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(null, null, null, null, unitHkey, null, categoryId == FlagsEnum.ALL.getCode() ? null : new Long[] { categoryId }, regionId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null);
+	List<EmployeeData> employees = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(null, null, null, null, unitHkey, null, categoryId == FlagsEnum.ALL.getCode() ? null : new Long[] { categoryId }, regionId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, rankId);
 
 	validateNotificationMessagesData(notificationMessage, employees);
 

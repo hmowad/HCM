@@ -90,8 +90,9 @@
 													</th>
 													<td width="85%">
 														<h:selectOneMenu id="regionId" value="#{notificationMessages.selectedRegionId}" disabled="#{notificationMessages.getLoginEmpPhysicalRegionFlag(notificationMessages.admin) != -1}">
+															<f:selectItem itemLabel= "#{msgs.label_all}" itemValue = "-1"/>
 															<f:selectItems value="#{notificationMessages.regionsList}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
-															<f:ajax event="change" execute="@this" listener="#{notificationMessages.resetUnits}" render="notificationMessagesFormId:unitPanelGroupId" />
+															<f:ajax event="change" execute="@this" listener="#{notificationMessages.resetUnitsListener}" render="notificationMessagesFormId:unitPanelGroupId" />
 														</h:selectOneMenu>
 													</td>
 												</tr>
@@ -120,9 +121,24 @@
 														<h:selectOneMenu value="#{notificationMessages.selectedCategoryId}">
 															<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
 															<f:selectItems value="#{notificationMessages.categorieslist}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
+															<f:ajax event="change" execute="@this" listener="#{notificationMessages.resetRanks}" render="notificationMessagesFormId:managerAdminPanelGroupId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
 														</h:selectOneMenu>
 													</td>
 												</tr>
+												<h:panelGroup id="rankPanelGroupId" rendered="#{notificationMessages.selectedCategoryId != null and(notificationMessages.selectedCategoryId == 1 or notificationMessages.selectedCategoryId == 2)}">
+													<tr>
+														<th width="15%">
+															#{msgs.label_rank}
+															<font style="color: red;">*</font>
+														</th>
+														<td width="85%">
+															<h:selectOneMenu value="#{notificationMessages.selectedRankId}" >
+																<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+																<f:selectItems value="#{notificationMessages.ranksList}" var="rank" itemLabel="#{rank.description}" itemValue="#{rank.id}" />
+															</h:selectOneMenu>
+														</td>
+													</tr>
+												</h:panelGroup>
 											</table>
 										</td>
 									</tr>

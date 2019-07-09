@@ -149,7 +149,7 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 		if (unitHKey == null || unitHKey.equals("-1") || unitHKey.isEmpty())
 		    unitHKey = null;
 		statusIds = new Long[] { EmployeeStatusEnum.ON_DUTY.getCode(), EmployeeStatusEnum.SUBJOINED.getCode(), EmployeeStatusEnum.PERSONS_SUBJOINED.getCode(), EmployeeStatusEnum.ASSIGNED.getCode() };
-		searchEmployeeList = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, unitHKey, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, militaryNumber, FlagsEnum.ALL.getCode(), sequenceNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, unitHKey, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, militaryNumber, FlagsEnum.ALL.getCode(), sequenceNumber, FlagsEnum.ALL.getCode());
 		break;
 	    case 10: // Get employees by category, name, rank id and promotion
 		     // due date
@@ -193,7 +193,7 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 			EmployeeStatusEnum.PERSONS_SUBJOINED_EXTERNALLY.getCode(),
 			EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode()
 		};
-		searchEmployeeList = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, unitHKey, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, militaryNumber, officialRegionId, sequenceNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, unitHKey, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, militaryNumber, officialRegionId, sequenceNumber, FlagsEnum.ALL.getCode());
 		break;
 	    case 16:
 		if (unitHKey == null || unitHKey.equals("-1") || unitHKey.isEmpty())
@@ -208,7 +208,7 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 			EmployeeStatusEnum.PERSONS_SUBJOINED_EXTERNALLY.getCode(),
 			EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode(),
 			EmployeeStatusEnum.SERVICE_TERMINATED.getCode() };
-		searchEmployeeList = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, unitHKey, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, militaryNumber, officialRegionId, sequenceNumber);
+		searchEmployeeList = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, unitHKey, statusIds, getCategoriesIdsArrayByMode(categoryMode), physicalRegionId, militaryNumber, officialRegionId, sequenceNumber, FlagsEnum.ALL.getCode());
 		break;
 	    case 17:
 		searchEmployeeList = EmployeesService.getEmpByPhysicalOrOfficialUnit(searchEmpName, categoryMode == -1 ? null : getCategoriesIdsArrayByMode(categoryMode), militaryNumber,
