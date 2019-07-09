@@ -121,7 +121,7 @@
 														<h:selectOneMenu value="#{notificationMessages.selectedCategoryId}">
 															<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
 															<f:selectItems value="#{notificationMessages.categorieslist}" var="category" itemLabel="#{category.description}" itemValue="#{category.id}" />
-															<f:ajax event="change" execute="@this" listener="#{notificationMessages.resetRanks}" render="notificationMessagesFormId:managerAdminPanelGroupId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+															<f:ajax event="change" execute="notificationMessagesFormId:managerAdminPanelGroupId" listener="#{notificationMessages.resetRanks}" render="notificationMessagesFormId:managerAdminPanelGroupId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
 														</h:selectOneMenu>
 													</td>
 												</tr>
