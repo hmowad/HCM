@@ -104,6 +104,8 @@ public class NotificationMessages extends WFBaseBacking {
 	try {
 	    if (selectedCategoryId == CategoriesEnum.OFFICERS.getCode() || selectedCategoryId == CategoriesEnum.SOLDIERS.getCode()) {
 		ranksList = CommonService.getRanks(null, new Long[] { selectedCategoryId });
+	    } else {
+		selectedRankId = null;
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -197,10 +199,6 @@ public class NotificationMessages extends WFBaseBacking {
 
     public List<Rank> getRanksList() {
 	return ranksList;
-    }
-
-    public void setRanksList(List<Rank> ranksList) {
-	ranksList = ranksList;
     }
 
     public boolean isRankDisplay() {
