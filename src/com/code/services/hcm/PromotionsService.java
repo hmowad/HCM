@@ -1104,6 +1104,7 @@ public class PromotionsService extends BaseService {
 
 		    empsIds[i++] = employee.getEmpId();
 		    employeesPromotionReportDetailDataMap.put(employee.getEmpId(), reportDetailData);
+		    promotionReportDetailDataList.add(reportDetailData); //TODO: to be revised by sherif ibrahim
 		}
 
 		reportDetailData.setRequirementsFlagBoolean(true);
@@ -4729,6 +4730,12 @@ public class PromotionsService extends BaseService {
 		    promotionDueDate = HijriDateService.addSubHijriDays(dateOfRankBeginning, PromotionRankDaysEnum.FIRST_SOLDIER_FEMALE.getCode(), true);
 		else if (rankId == RanksEnum.CORPORAL.getCode())
 		    promotionDueDate = HijriDateService.addSubHijriDays(dateOfRankBeginning, PromotionRankDaysEnum.CORPORAL_FEMALE.getCode(), true);
+		else if (rankId == RanksEnum.UNDER_SERGEANT.getCode())
+		    promotionDueDate = HijriDateService.addSubHijriDays(dateOfRankBeginning, PromotionRankDaysEnum.UNDER_SERGEANT_FEMALE.getCode(), true);
+		else if (rankId == RanksEnum.SERGEANT.getCode())
+		    promotionDueDate = HijriDateService.addSubHijriDays(dateOfRankBeginning, PromotionRankDaysEnum.SERGEANT_FEMALE.getCode(), true);
+		else if (rankId == RanksEnum.STAFF_SERGEANT.getCode())
+		    promotionDueDate = HijriDateService.addSubHijriDays(dateOfRankBeginning, PromotionRankDaysEnum.STAFF_SERGEANT_FEMALE.getCode(), true);
 
 	    } else if (categoryId == CategoriesEnum.PERSONS.getCode()) {
 		if (rankId == RanksEnum.FIRST.getCode())

@@ -18,9 +18,12 @@ public enum PromotionRankDaysEnum {
     FIRST_SOLDIER(720),             // Gondy awal
     SOLDIER(720),                   // Gondy
     
-    CORPORAL_FEMALE(1440),          // mofatesha 3areef
-    FIRST_SOLDIER_FEMALE(1080),      // mofatesha Gondy awal
-    SOLDIER_FEMALE(1080),            // mofatesha Gondy
+    STAFF_SERGEANT_FEMALE(1800),           // mofatesha Raqeeb awal
+    SERGEANT_FEMALE(1440),                 // mofatesha Raqeeb
+    UNDER_SERGEANT_FEMALE(1080),           // mofatesha Wakeel raqeeb
+    CORPORAL_FEMALE(1080),          // mofatesha 3areef
+    FIRST_SOLDIER_FEMALE(720),      // mofatesha Gondy awal
+    SOLDIER_FEMALE(720),            // mofatesha Gondy
     
     THIRTEENTH(720),
     TWELFTH(720),
