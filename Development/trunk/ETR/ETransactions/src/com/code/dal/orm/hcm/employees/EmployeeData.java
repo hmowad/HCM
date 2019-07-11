@@ -163,7 +163,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_SEQUENCE_NUMBER = -1 or e.sequenceNumber = :P_SEQUENCE_NUMBER) " +
 			" and (:P_MILITARY_NUMBER = -1 or e.militaryNumber = :P_MILITARY_NUMBER) " +
 			" and (:P_OFFICIAL_REGION_ID = -1 or e.officialRegionId = :P_OFFICIAL_REGION_ID ) " +
-			" and ((e.rankId >= 205 and e.gender = 'F') or e.gender = 'M')" +
+			" and ((e.rankId >= 202 and e.gender = 'F') or e.gender = 'M')" +
 			" and e.statusId >= 15 and e.statusId < 50 " +
 			" and (:P_PHYSICAL_UNIT_FULL_NAME = '-1' or e.physicalUnitFullName like :P_PHYSICAL_UNIT_FULL_NAME ) " +
 			" order by e.militaryNumber, e.rankId, e.recruitmentDate, e.name "),
