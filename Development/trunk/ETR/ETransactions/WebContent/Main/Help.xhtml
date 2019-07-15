@@ -16,6 +16,7 @@
 			document.getElementById('terminationsTDId').className = 'L3';
 			document.getElementById('movementsTDId').className = 'L3';
 			document.getElementById('promotionsTDId').className = 'L3';
+			document.getElementById('raisesTDId').className = 'L3';
 			document.getElementById('missionsTDId').className = 'L3';
 			document.getElementById('vacationsTDId').className = 'L3';
 			document.getElementById('trainingsTDId').className = 'L3';
@@ -94,6 +95,11 @@
 						<tr>
 							<td id="promotionsTDId" class="L3">
 								<a href="#{request.contextPath}/Docs/Promotions_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_promotions} </a>
+							</td>
+						</tr>
+						<tr>
+							<td id="raisesTDId" class="L3">
+								<a href="#{request.contextPath}/Docs/AnnualRaise_manual.pdf" target="PDFViewer" onclick="selectModule(this)"> #{msgs.title_raises} </a>
 							</td>
 						</tr>
 						<tr>
