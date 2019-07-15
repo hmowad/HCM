@@ -1104,7 +1104,6 @@ public class PromotionsService extends BaseService {
 
 		    empsIds[i++] = employee.getEmpId();
 		    employeesPromotionReportDetailDataMap.put(employee.getEmpId(), reportDetailData);
-		    promotionReportDetailDataList.add(reportDetailData); //TODO: to be revised by sherif ibrahim
 		}
 
 		reportDetailData.setRequirementsFlagBoolean(true);
