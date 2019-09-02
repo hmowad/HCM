@@ -60,7 +60,19 @@
             if(contactAdd == null || contactAdd == ''){
             	alert('#{msgs.error_contactAddressMandatory}');
                 return false;
-            }   
+            }
+
+            if(locFlag == 1){
+            	var externalVacationsCommitmentFlagCheckbox = document.getElementById('exceptionalVacationForm:externalVacationsCommitmentFlagId');
+            	if(externalVacationsCommitmentFlagCheckbox != null) {
+		            var externalVacationsCommitmentFlag = document.getElementById('exceptionalVacationForm:externalVacationsCommitmentFlagId').checked;
+		            if(!externalVacationsCommitmentFlag){
+		                alert('#{msgs.error_externalVacationsCommitmentFlagMandatory}');
+		                return false;
+		            }
+		            document.getElementById('exceptionalVacationForm:externalVacationsCommitmentFlagId').checked = false;
+            	}
+            }
             
             return true;
           }
@@ -132,7 +144,7 @@
 														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
 														<h:inputHidden id="beneficiarySearchId" value="#{exceptionalVacation.beneficiarySearchId}" />
 														<h:commandButton id="searchEmpButton" style="display: none;" action="#{exceptionalVacation.searchBeneficiary}">
-															<f:ajax render="exceptionalVacationForm:beneficiaryPanelId exceptionalVacationForm:lastVacId:data exceptionalVacationForm:screenTitleId exceptionalVacationForm:requestInfoPanelId exceptionalVacationForm:vacationsPercentagePanelId exceptionalVacationForm:notifyMessagesId"
+															<f:ajax render="exceptionalVacationForm:beneficiaryPanelId exceptionalVacationForm:lastVacId:data exceptionalVacationForm:screenTitleId exceptionalVacationForm:requestInfoPanelId exceptionalVacationForm:vacationsPercentagePanelId exceptionalVacationForm:pledgePanelId exceptionalVacationForm:notifyMessagesId"
 																	execute="beneficiarySearchId"
 																	onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
@@ -230,7 +242,7 @@
 												<f:selectItem itemValue="0" itemLabel="#{msgs.label_locIn}" />
 												<f:selectItem itemValue="1" itemLabel="#{msgs.label_locOut}" />
 
-												<f:ajax event="click" listener="#{exceptionalVacation.locationFlagChangeListner}" execute="@this" render="countriesNamesId locationId locationBtnId notifyMessagesId" />
+												<f:ajax event="click" listener="#{exceptionalVacation.locationFlagChangeListner}" execute="@this" render="pledgePanelId countriesNamesId locationId locationBtnId notifyMessagesId" />
 											</h:selectOneRadio>
 										</td>
 
@@ -425,6 +437,45 @@
 								</tr>
 							</h:panelGroup>
 						</code:curTask>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="pledgePanelId">
+							<h:panelGroup rendered="#{exceptionalVacation.vacationMode == 2 and exceptionalVacation.role == 'Requester' and exceptionalVacation.vacRequest.locationFlag == 1}">
+								<table border="0" cellpadding="0" cellspacing="0" width="100%">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td>
+														<h:outputText value="#{msgs.label_soldiersExternalVacationPledgeTitle}" />
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%" style="font-weight: bold;">
+														<h:selectBooleanCheckbox id="externalVacationsCommitmentFlagId" />
+														#{msgs.label_externalVacationsCommitmentFlag}
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
 					</td>
 				</tr>
 

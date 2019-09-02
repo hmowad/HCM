@@ -60,7 +60,19 @@
             if(contactNumber == null || contactNumber == ''){
                 alert(document.getElementById('contactNumberMandatoryId').value);
                 return false;
-            }   
+            }
+
+            if(locFlag == 1){
+            	var externalVacationsCommitmentFlagCheckbox = document.getElementById('regularVacationForm:externalVacationsCommitmentFlagId');
+            	if(externalVacationsCommitmentFlagCheckbox != null) {
+		            var externalVacationsCommitmentFlag = document.getElementById('regularVacationForm:externalVacationsCommitmentFlagId').checked;
+		            if(!externalVacationsCommitmentFlag){
+		                alert('#{msgs.error_externalVacationsCommitmentFlagMandatory}');
+		                return false;
+		            }
+		            document.getElementById('regularVacationForm:externalVacationsCommitmentFlagId').checked = false;
+            	}
+            }
             
             return true;
           }
@@ -378,7 +390,7 @@
 						</h:panelGroup>
 					</td>
 				</tr>
-
+				
 				<code:prevTasks rendered="#{regularVacation.role != 'Requester'}" value="#{regularVacation.prevTasks}" refuseRoles="DirectManager,ReviewerEmp,ReviewerEmpRedirect,SignManager," />
 
 				<tr>
@@ -423,121 +435,127 @@
 					<td width="100%">
 						<h:panelGroup id="pledgePanelId">
 							<h:panelGroup rendered="#{regularVacation.vacationMode == 2 and (regularVacation.role == 'Requester' or regularVacation.role == 'DirectManager')}">
-								<table border="0" cellpadding="0" cellspacing="0" width="100%">
-									<tr>
-										<td>
-											<h:panelGroup rendered="#{regularVacation.vacationMode == 2 and regularVacation.role == 'Requester' and regularVacation.vacRequest.locationFlag == 0}">
-												<tr>
-													<td width="100%" height="5" />
-												</tr>
+								<h:panelGroup rendered="#{regularVacation.role == 'Requester' and regularVacation.vacRequest.locationFlag == 0}">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
 
-												<tr>
-													<td width="100%">
-														<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
-															<tr>
-																<td>
-																	<h:outputText value="#{msgs.label_soldiersInternalVacationPledgeTitle}" />
-																</td>
-															</tr>
-														</table>
-													</td>
-												</tr>
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+															<h:outputText value="#{msgs.label_soldiersInternalVacationPledgeTitle}" />
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
 
-												<tr>
-													<td width="100%">
-														<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-															<tr>
-																<td width="100%">
-																	<h:outputText value="#{msgs.label_soldiersInternalVacationPledge}" />
-																</td>
-															</tr>
-														</table>
-													</td>
-												</tr>
-											</h:panelGroup>
+										<tr>
+											<td width="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:outputText value="#{msgs.label_soldiersInternalVacationPledge}" />
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
 
-											<h:panelGroup rendered="#{regularVacation.vacationMode == 2 and regularVacation.role == 'Requester' and regularVacation.vacRequest.locationFlag == 1}">
-												<tr>
-													<td width="100%" height="5" />
-												</tr>
+								<h:panelGroup rendered="#{regularVacation.role == 'Requester' and regularVacation.vacRequest.locationFlag == 1}">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
 
-												<tr>
-													<td width="100%">
-														<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
-															<tr>
-																<td>
-																	<h:outputText value="#{msgs.label_soldiersExternalVacationPledgeTitle}" />
-																</td>
-															</tr>
-														</table>
-													</td>
-												</tr>
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+															<h:outputText value="#{msgs.label_soldiersExternalVacationPledgeTitle}" />
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
 
-												<tr>
-													<td width="100%">
-														<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-															<tr>
-																<td width="100%">
-																	<h:outputText value="#{msgs.label_soldiersExternalVacationPledgeOne}" />
-																</td>
-															</tr>
-															<tr>
-																<td width="100%">
-																	<h:outputText value="#{msgs.label_soldiersExternalVacationPledgeTwo}" />
-																</td>
-															</tr>
-															<tr>
-																<td width="100%">
-																	<h:outputText value="#{msgs.label_soldiersExternalVacationPledgeThree}" />
-																</td>
-															</tr>
-															<tr>
-																<td width="100%">
-																	<h:outputText value="#{msgs.label_soldiersExternalVacationPledgeFour}" />
-																</td>
-															</tr>
-														</table>
-													</td>
-												</tr>
-											</h:panelGroup>
+										<tr>
+											<td width="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:outputText value="#{msgs.label_soldiersExternalVacationPledgeOne}" />
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<h:outputText value="#{msgs.label_soldiersExternalVacationPledgeTwo}" />
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<h:outputText value="#{msgs.label_soldiersExternalVacationPledgeThree}" />
+														</td>
+													</tr>
+													<tr>
+														<td width="100%">
+															<h:outputText value="#{msgs.label_soldiersExternalVacationPledgeFour}" />
+														</td>
+													</tr>
+													<tr>
+														<td width="100%" style="font-weight: bold;">
+															<h:selectBooleanCheckbox id="externalVacationsCommitmentFlagId" />
+															#{msgs.label_externalVacationsCommitmentFlag}
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
 
-											<h:panelGroup rendered="#{regularVacation.vacationMode == 2 and regularVacation.role == 'DirectManager'}">
-												<tr>
-													<td width="100%" height="5" />
-												</tr>
+								<h:panelGroup rendered="#{regularVacation.role == 'DirectManager'}">
+									<table border="0" cellpadding="0" cellspacing="0" width="100%">
+										<tr>
+											<td width="100%" height="5" />
+										</tr>
 
-												<tr>
-													<td width="100%">
-														<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
-															<tr>
-																<td>
-																	<h:outputText value="#{msgs.label_directManagerSpecificTitle}" />
-																</td>
-															</tr>
-														</table>
-													</td>
-												</tr>
+										<tr>
+											<td width="100%">
+												<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+															<h:outputText value="#{msgs.label_directManagerSpecificTitle}" />
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
 
-												<tr>
-													<td width="100%">
-														<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-															<tr>
-																<td width="100%">
-																	<h:outputText value="#{msgs.label_directManagerSpecific}" />
-																</td>
-															</tr>
-														</table>
-													</td>
-												</tr>
-											</h:panelGroup>
-										</td>
-									</tr>
-								</table>
+										<tr>
+											<td width="100%">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%">
+															<h:outputText value="#{msgs.label_directManagerSpecific}" />
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
 							</h:panelGroup>
 						</h:panelGroup>
 					</td>
 				</tr>
-
+				
 				<tr>
 					<td width="100%">
 						<h:outputText rendered="#{regularVacation.role == 'Notification' or regularVacation.role == 'History'}" value="#{regularVacation.notificationMessage}" styleClass="successMessage" />
