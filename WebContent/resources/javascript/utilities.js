@@ -598,3 +598,11 @@ function viewAttachments(attachmentsViewURL){
 	var specsStr = getPopupWindowSpecsString(0.85, 0.85, 'no', 'yes');
 	window.open(attachmentsViewURL.replace(/&amp;/g, '&'), null, specsStr);
 }
+
+/********************************************** historical vacations mini search *****************************************************/
+function openHistoricalVacationsMiniSearch(contextPath, miniSearchReturnHandler, categoryCode, empId,searchMode){
+	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
+	maskOpenerScreen();
+	var childWindow = window.open(contextPath+'/MiniSearch/HistoricalVacationsMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&categoryMode='+categoryCode+'&empId='+empId+'&searchMode='+searchMode,null, specsStr);
+	   unMaskOnPopupClose(childWindow);
+	}

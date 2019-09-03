@@ -96,6 +96,7 @@ public enum QueryNamesEnum {
     HCM_SUM_VAC_DAYS_WITHIN_CONTRACTUAL_YEAR("hcm_vacation_sumVacDaysWithinContractualYear"),
     HCM_VACATION_INCLUDE_DATE("hcm_vacation_includeDate"),
     HCM_GET_VACATION_BY_BENEFICIARY_AND_START_DATE("hcm_vacation_getVacationByBeneficiaryAndStartDate"),
+    HCM_GET_VACATIONS_BETWEEN_DATE("hcm_vacation_getVacationsBetweenDates"),
     HCM_GET_FIRST_VACATION("hcm_vacation_getFirstVacation"),
     HCM_SUM_VAC_RELATED_DEDUCTED_BALANCE("hcm_vacation_sumRelatedDeductedBalance"),
     HCM_COUNT_LATER_VACATIONS("hcm_vacation_countLaterVacations"),
@@ -111,6 +112,10 @@ public enum QueryNamesEnum {
     HCM_GET_VACATION_CONFIGURATIONS("hcm_vacationConfig_getVacationConfigurations"),
     HCM_GET_ACTIVE_VACATION_CONFIGURATIONS("hcm_vacationConfig_getActiveVacationConfigurations"),
     HCM_SEARCH_VACATIONS_CONFIGURATIONS("hcm_vacationConfig_searchVacationsConfigurations"),
+
+    HCM_SEARCH_HISTORICAL_VACATIONS("hcm_historicalVacationTransactionData_searchHistoricalVacations"),
+    HCM_COUNT_HISTORICAL_VACATIONS_BY_DECISION_NUMBER_AND_DATE("hcm_historicalVacationTransaction_countHistoricalVacationsByDecisionNumberAndDate"),
+    HCM_GET_HISTORICAL_VACATION_TRANSACTION_BY_ID("hcm_historicalVacationTransactionData_getHistoricalVacationById"),
 
     /* ************************************************ Payroll ********************************************************** */
     HCM_GET_PAYROLL_DIFF_BY_TRANS_STATUS("hcm_EmployeePayrollDifferenceData_getPayrollDiffByTrnsStatus"),

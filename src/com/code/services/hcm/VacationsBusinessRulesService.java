@@ -1477,7 +1477,7 @@ public class VacationsBusinessRulesService extends BaseService {
      * @throws BusinessException
      *             if this employee is not found in the old database
      */
-    private static void validateOldEmpId(String oldEmpId) throws BusinessException {
+    public static void validateOldEmpId(String oldEmpId) throws BusinessException {
 	if (oldEmpId == null || oldEmpId.isEmpty()) {
 	    throw new BusinessException("error_userNotFoundInOldDB");
 	}
@@ -1823,7 +1823,7 @@ public class VacationsBusinessRulesService extends BaseService {
      * @throws BusinessException
      *             if any error occurs
      */
-    private static String calculateEmpSickBalance(EmployeeData emp, Integer subVacationType, Date balanceToDate, List<VacationConfiguration> activeVacationConfigurations) throws BusinessException {
+    public static String calculateEmpSickBalance(EmployeeData emp, Integer subVacationType, Date balanceToDate, List<VacationConfiguration> activeVacationConfigurations) throws BusinessException {
 	validateOldEmpId(emp.getOldEmpId());
 
 	try {
@@ -2608,7 +2608,7 @@ public class VacationsBusinessRulesService extends BaseService {
      * @throws DatabaseException
      *             if a database exception occurs
      */
-    private static int deductedDays(EmployeeData employeeData, Date fromDate, Date toDate) throws BusinessException {
+    public static int deductedDays(EmployeeData employeeData, Date fromDate, Date toDate) throws BusinessException {
 	int deductedDays = EmployeesDeductionsService.deductedDays(employeeData, fromDate, toDate);
 
 	if (employeeData.getCategoryId().equals(CategoriesEnum.PERSONS.getCode()) || employeeData.getCategoryId().equals(CategoriesEnum.WAGES.getCode())
@@ -2631,7 +2631,7 @@ public class VacationsBusinessRulesService extends BaseService {
      * @throws BusinessException
      *             if a database error occurs
      */
-    private static Vacation getFirstVacation(long empId, long vacationTypeId, Integer subVacationType) throws BusinessException {
+    public static Vacation getFirstVacation(long empId, long vacationTypeId, Integer subVacationType) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_ID", empId);
@@ -2661,7 +2661,7 @@ public class VacationsBusinessRulesService extends BaseService {
      * @throws BusinessException
      *             if database error occurs
      */
-    private static int sumVacDays(long empId, long vacationTypeId, String fromDateString, String toDateString) throws BusinessException {
+    public static int sumVacDays(long empId, long vacationTypeId, String fromDateString, String toDateString) throws BusinessException {
 	return sumVacDays(empId, vacationTypeId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), fromDateString, toDateString, FlagsEnum.ALL.getCode());
     }
 
@@ -2669,7 +2669,7 @@ public class VacationsBusinessRulesService extends BaseService {
 	return sumVacDays(empId, vacationTypeId, subVacationType, locationFlag, fromDateString, toDateString, FlagsEnum.ALL.getCode());
     }
 
-    private static int sumVacDays(long empId, long vacationTypeId, String fromDateString, String toDateString, long allowedThrshold) throws BusinessException {
+    public static int sumVacDays(long empId, long vacationTypeId, String fromDateString, String toDateString, long allowedThrshold) throws BusinessException {
 	return sumVacDays(empId, vacationTypeId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), fromDateString, toDateString, allowedThrshold);
     }
 
@@ -2781,7 +2781,7 @@ public class VacationsBusinessRulesService extends BaseService {
 	}
     }
 
-    private static int sumRelatedDeductedBalance(long empId, long vacationTypeId, String fromDateString, String toDateString) throws BusinessException {
+    public static int sumRelatedDeductedBalance(long empId, long vacationTypeId, String fromDateString, String toDateString) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_ID", empId);
@@ -2921,7 +2921,7 @@ public class VacationsBusinessRulesService extends BaseService {
 	    throw new BusinessException("error_periodsRequired");
     }
 
-    private static VacationConfiguration getActiveRegularVacationConfigurationForContractors(EmployeeData emp) throws BusinessException {
+    public static VacationConfiguration getActiveRegularVacationConfigurationForContractors(EmployeeData emp) throws BusinessException {
 	VacationConfiguration activeVacationConfiguration = null;
 	if (emp.getCategoryId() == CategoriesEnum.CONTRACTORS.getCode()) {
 	    List<VacationConfiguration> activeVacationConfigurations = getActiveVacationConfigurations(emp.getCategoryId(), VacationTypesEnum.REGULAR.getCode());
@@ -2954,7 +2954,7 @@ public class VacationsBusinessRulesService extends BaseService {
      * @throws DatabaseException
      *             if database error occurs
      */
-    private static List<VacationConfiguration> getVacationConfigurations(Long categoryId, Long vacationTypeId) throws BusinessException {
+    public static List<VacationConfiguration> getVacationConfigurations(Long categoryId, Long vacationTypeId) throws BusinessException {
 	try {
 	    Map<String, Object> queryParam = new HashMap<String, Object>();
 	    queryParam.put("P_CATEGORY_ID", categoryId);
@@ -2979,7 +2979,7 @@ public class VacationsBusinessRulesService extends BaseService {
      * @throws DatabaseException
      *             if database error occurs
      */
-    private static List<VacationConfiguration> getActiveVacationConfigurations(Long categoryId, Long vacationTypeId) throws BusinessException {
+    public static List<VacationConfiguration> getActiveVacationConfigurations(Long categoryId, Long vacationTypeId) throws BusinessException {
 	return getActiveVacationConfigurations(categoryId, vacationTypeId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode());
     }
 
@@ -2996,7 +2996,7 @@ public class VacationsBusinessRulesService extends BaseService {
      * @throws DatabaseException
      *             if database error occurs
      */
-    private static List<VacationConfiguration> getActiveVacationConfigurations(Long categoryId, Long vacationTypeId, Integer subVacationType, Integer locationFlag) throws BusinessException {
+    public static List<VacationConfiguration> getActiveVacationConfigurations(Long categoryId, Long vacationTypeId, Integer subVacationType, Integer locationFlag) throws BusinessException {
 	try {
 	    Map<String, Object> queryParam = new HashMap<String, Object>();
 	    queryParam.put("P_CATEGORY_ID", categoryId);
