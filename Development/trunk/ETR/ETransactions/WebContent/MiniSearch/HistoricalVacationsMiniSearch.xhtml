@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript"> 
+		  window.onkeypress = function(e) {
+			// window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+		    if (keyCode == '13'){
+		    	document.getElementById('searchHistoricalVacationsFormId:searchBtnID').click();
+		    	return false;
+		    }
+		  };
+  
+          function selectHistoricalVacation(index){
+            var historicalVacIdValue = document.getElementById('searchHistoricalVacationsFormId:historicalvacationsListId:'+index+':historicalVacId').value;
+            
+            ret = new Array();
+            ret[0] = historicalVacIdValue;
+            window.close();
+     		eval('(' + window.opener.#{param['miniSearchReturnHandler']} + ')');
+
+          }
+  			
+  </script>
+</h:head>
+<h:body onload="document.getElementById('searchHistoricalVacationsFormId:decisionNumberId').focus();" onunload="window.opener.unMaskOpenerScreen();">
+	<h:form id="searchHistoricalVacationsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/PlainTemplate.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{msgs.title_searchHistoricalVacations}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th width="15%">#{msgs.label_vacType}</th>
+								<td width="35%">
+									<h:selectOneMenu id="vacationTypeId" value="#{historicalVacationsMiniSearch.vacationTypeId}">
+										<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+										<f:selectItems value="#{historicalVacationsMiniSearch.vacTypeList}" var="vacType" itemLabel="#{(historicalVacationsMiniSearch.categoryMode == null or historicalVacationsMiniSearch.categoryMode == 1 or historicalVacationsMiniSearch.categoryMode == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
+									</h:selectOneMenu>
+								</td>
+								<th width="15%">#{msgs.label_period}</th>
+								<td width="35%">
+									<h:inputText id="periodId" value="#{historicalVacationsMiniSearch.period}" maxlength="4" onkeypress="return isDigit(event);" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">#{msgs.label_decisionNumber}</th>
+								<td width="35%">
+									<h:inputText id="decisionNumberId" value="#{historicalVacationsMiniSearch.decisionNumber}" maxlength="50" />
+								</td>
+								<th width="15%">#{msgs.label_decisionDate}</th>
+								<td width="35%">
+									<util:hijri id="decisionDateId" value="#{historicalVacationsMiniSearch.decisionDate}" nullable="true" viewOldRange="true" />
+								</td>
+							</tr>
+							
+							<tr>
+								<th width="15%">#{msgs.label_startDate}</th>
+								<td width="35%">
+									<util:hijri id="startDateId" value="#{historicalVacationsMiniSearch.fromDate}" nullable="true" viewOldRange="true" />
+								</td>
+								<th width="15%">#{msgs.label_endDate}</th>
+
+								<td width="35%">
+									<util:hijri id="endDateId" value="#{historicalVacationsMiniSearch.toDate}" nullable="true" viewOldRange="true" />
+								</td>
+							</tr>
+							<tr>
+								<th width="15%">#{msgs.label_location}</th>
+								<td width="35%">
+									<h:selectOneMenu id="vacationLocationId" value="#{historicalVacationsMiniSearch.vacationLocationFlag}">
+										<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+										<f:selectItem itemValue="0" itemLabel="#{msgs.label_locIn}" />
+										<f:selectItem itemValue="1" itemLabel="#{msgs.label_locOut}" />
+									</h:selectOneMenu>
+								</td>
+								<th width="15%">#{msgs.label_country}</th>
+								<td width="35%">
+									<h:inputText id="countryId" value="#{historicalVacationsMiniSearch.countryName}" maxlength="50" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon" action="#{historicalVacationsMiniSearch.searchHistoricalVacations()}" title="#{msgs.label_searchByRoot}">
+										<f:ajax render="historicalvacationsListId notifyMessagesId" execute="searchHistoricalVacationsFormId:vacationTypeId searchHistoricalVacationsFormId:periodId searchHistoricalVacationsFormId:decisionNumberId searchHistoricalVacationsFormId:decisionDateId searchHistoricalVacationsFormId:startDateId searchHistoricalVacationsFormId:endDateId searchHistoricalVacationsFormId:vacationLocationId searchHistoricalVacationsFormId:countryId" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="historicalvacationsListId" rows="#{historicalVacationsMiniSearch.rowsCount}" rowKeyVar="index" var="row" value="#{historicalVacationsMiniSearch.searchHistoricalVacationsList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+							<rich:column style="width : 5%">
+								<f:facet name="header">#</f:facet>
+								<h:outputText value="#{index + 1}" title="#{msgs.label_tableId} : #{row.empId}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_vacType}</f:facet>
+								<h:outputText value="#{row.vacationTypeDescription}" />
+								<h:inputHidden id="historicalVacId" value="#{row.id}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_decisionType}</f:facet>
+									<h:outputText value="#{row.requestType == 1 ? (msgs.label_newVacationDecision) : (row.requestType == 2 ? (msgs.label_modifyVacationDecision) : (msgs.label_cancelVacationDecision))}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_period}</f:facet>
+								<h:outputText value="#{row.period}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_location}</f:facet>
+								<h:outputText value="#{(row.locationFlag == 0) ? msgs.label_locIn : msgs.label_locOut}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_country}</f:facet>
+								<h:outputText value="#{row.location}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+									<f:facet name="header">#{msgs.label_approvalStatus}</f:facet>
+									<h:outputText value="#{row.approvedFlag == 1 ? msgs.label_approved : msgs.label_initial}"  />
+								</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+								<h:outputText value="#{row.decisionNumber}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+								<h:outputText value="#{row.decisionDateString}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_startDate}</f:facet>
+								<h:outputText value="#{row.startDateString}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_endDate}</f:facet>
+								<h:outputText value="#{row.endDateString}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_select}</f:facet>
+								<h:commandButton onclick="selectHistoricalVacation(#{index}); return false;" value="#{msgs.fa_check_square}" title="#{msgs.label_selectAddtitionalSpecialization}" styleClass="btn_icon" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()" maxPages="5">
+									<f:facet name="first"> #{msgs.label_first} </f:facet>
+									<f:facet name="last"> #{msgs.label_last} </f:facet>
+									<f:facet name="next"> #{msgs.label_next} </f:facet>
+									<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

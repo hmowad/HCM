@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:rich="http://richfaces.org/rich">
+<h:head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+    //<![CDATA[ 
+               	function getEmp(contextPath) {
+			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',1, -1, -1, -1, -1, -1, -1);
+		}
+
+		function handleEmpMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('historicalVacationsManagementFormId:empIdHId').value = ret[0];
+				document.getElementById('historicalVacationsManagementFormId:empNameId').innerHTML = ret[1];
+				document.getElementById('historicalVacationsManagementFormId:empNameHId').value = ret[1];
+
+				document.getElementById('historicalVacationsManagementFormId:selectEmpBtnHId').click();
+			}
+		}
+		function highlightRow(commandButton) {
+			var commandBtnParentRow = commandButton.parentElement.parentElement;
+			var table = commandBtnParentRow.parentElement.parentElement;
+			var r = 0;
+			while (row = table.rows[r++]) {
+				row.classList.remove("ui-state-highlight");
+				row.classList.remove("ui-state-hover");
+			}
+			commandBtnParentRow.classList.add("ui-state-highlight");
+		}
+    // ]]>
+        </script>
+</h:head>
+	<h:body styleClass="screenBg">
+		<h:form id="historicalVacationsManagementFormId" dir="#{msgs.dir}">
+			<ui:decorate template="/Main/Template.xhtml">
+				<table border="0" cellpadding="0" cellspacing="0" width="100%">
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+	
+					<tr>
+						<td class="screenTitle">#{historicalVacationsManagement.screenTitle}</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_searchData}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					
+					<tr>
+						<td width="100%">
+							<h:panelGroup id="searchPanelId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_selectEmp}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%" colspan="3">
+											<h:outputText id="empNameId" value="#{historicalVacationsManagement.currentEmployee.name}" />
+											<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+											<h:inputHidden id="empIdHId" value="#{historicalVacationsManagement.currentEmployee.empId}" />
+											<h:inputHidden id="empNameHId" value="#{historicalVacationsManagement.currentEmployee.name}" />
+											<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{historicalVacationsManagement.selectEmployee()}">
+												<f:ajax execute="historicalVacationsManagementFormId:empIdHId" render="historicalVacationsManagementFormId:vacTypeId  historicalVacationsManagementFormId:historicalVacationTableId " />
+											</h:commandButton>
+										</td>
+										
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_decisionNumber}
+										</th>
+										<td width="15%">
+											<h:inputText value="#{historicalVacationsManagement.decisionNumber}"  />
+										</td>
+										<th width="15%">#{msgs.label_decisionType}</th>
+										<td>
+											<h:selectOneMenu  value="#{historicalVacationsManagement.requestType}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_newVacationDecision}" />
+												<f:selectItem itemValue="2" itemLabel="#{msgs.label_modifyVacationDecision}" />
+												<f:selectItem itemValue="4" itemLabel="#{msgs.label_cancelVacationDecision}" />
+											</h:selectOneMenu>
+										</td>
+										
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_vacType}</th>
+										<td>
+											<h:selectOneMenu id="vacTypeId" value="#{historicalVacationsManagement.vacationTypeId}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItems value="#{historicalVacationsManagement.vacTypeList}" var="vacType" itemLabel="#{(historicalVacationsManagement.currentEmployee.categoryId == null or historicalVacationsManagement.currentEmployee.categoryId == 1 or historicalVacationsManagement.currentEmployee.categoryId == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
+											</h:selectOneMenu>
+										</td>
+										<th width="15%">#{msgs.label_approvalStatus}</th>
+										<td>
+											<h:selectOneMenu id="approvalStatusId" value="#{historicalVacationsManagement.approvedFlag}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItem itemValue="0" itemLabel="#{msgs.label_initial}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_approved}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+									<tr>
+									<th width="15%">#{msgs.label_startDate}</th>
+										<td width="35%">
+											<util:hijri id="startDateId" value="#{historicalVacationsManagement.fromDate}" nullable="true" viewOldRange="true" />
+										</td>
+										<th width="15%">#{msgs.label_endDate}</th>
+										<td width="35%">
+											<util:hijri id="endDateId" value="#{historicalVacationsManagement.toDate}" nullable="true" viewOldRange="true" />
+										</td>
+										
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_period}</th>
+										<td width="15%">
+											<h:inputText value="#{historicalVacationsManagement.period}" maxlength="4" onkeypress="return isDigit(event);" />
+										</td>
+										<th width="15%">#{msgs.label_location}</th>
+										<td>
+											<h:selectOneMenu id="locationFlagId" value="#{historicalVacationsManagement.locationFlag}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItem itemValue="0" itemLabel="#{msgs.label_locIn}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_locOut}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="10" />
+					</tr>
+						<tr>
+						<td>
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{historicalVacationsManagement.searchHistoricalVacations()}" styleClass="btn_normal_icon" title="#{msgs.label_searchByRoot}" >
+											<f:ajax execute="historicalVacationsManagementFormId:searchPanelId" render="historicalVacationsManagementFormId:historicalVacationTableId  historicalVacationsManagementFormId:notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{historicalVacationsManagement.reset()}" styleClass="btn_normal_icon">
+											<f:ajax render="historicalVacationsManagementFormId:searchPanelId historicalVacationsManagementFormId:historicalVacationTableId  historicalVacationsManagementFormId:notifyMessagesId" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_historicalVacationLog}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td align="center" width="100%">
+						
+							<rich:dataTable id="historicalVacationTableId" rowIndexVar="index" var="historicalVacation" value="#{historicalVacationsManagement.historicalVacationData}" rows="#{historicalVacationsManagement.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" >
+								<rich:column style="width : 5%">
+									<f:facet name="header">#</f:facet>
+		                           #{index + 1}
+		                     	</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+									<h:outputText value="#{historicalVacation.decisionNumber}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_decisionType}</f:facet>
+									<h:outputText value="#{historicalVacation.requestType == 1 ? (msgs.label_newVacationDecision) : (historicalVacation.requestType == 2 ? (msgs.label_modifyVacationDecision) : (msgs.label_cancelVacationDecision))}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_vacType}</f:facet>
+									<h:outputText value="#{historicalVacation.vacationTypeDescription}" />
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">#{msgs.label_period}</f:facet>
+									<h:outputText value="#{historicalVacation.period}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_startDate}</f:facet>
+									<h:outputText value="#{historicalVacation.startDateString}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_endDate}</f:facet>
+									<h:outputText value="#{historicalVacation.endDateString}" />
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_location}</f:facet>
+									<h:outputText value="#{historicalVacation.locationFlag == 0 ? msgs.label_locIn : msgs.label_locOut}"  />
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">#{msgs.label_approvalStatus}</f:facet>
+									<h:outputText value="#{historicalVacation.approvedFlag == 1 ? msgs.label_approved : msgs.label_initial}"  />
+								</rich:column>
+								<rich:column style="width : 5%">
+									<f:facet name="header">#{msgs.label_details}</f:facet>
+									<h:panelGroup rendered="#{historicalVacation.requestType == 1}">
+										<a target="_blank" href="#{request.contextPath}/Vacations/AddHistoricalVacation.jsf?employeeId=#{historicalVacationsManagement.currentEmployee.empId}&amp;vacId=#{historicalVacation.id}
+												&amp;mode=1" style="text-decoration: none;">
+											<i class="fa  fa-info-circle fa-3x link-icon" title="#{msgs.label_select}"></i>
+										</a>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{historicalVacation.requestType == 2}">
+										<a target="_blank" href="#{request.contextPath}/Vacations/ModifyHistoricalVacation.jsf?employeeId=#{historicalVacationsManagement.currentEmployee.empId}&amp;vacId=#{historicalVacation.id}&amp;mode=1" style="text-decoration: none;">
+											<i class="fa  fa-info-circle fa-3x link-icon" title="#{msgs.label_select}"></i>
+										</a>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{historicalVacation.requestType == 4}">
+										<a target="_blank" href="#{request.contextPath}/Vacations/CancelHistoricalVacation.jsf?employeeId=#{historicalVacationsManagement.currentEmployee.empId}&amp;vacId=#{historicalVacation.id}&amp;mode=1" style="text-decoration: none;">
+											<i class="fa  fa-info-circle fa-3x link-icon" title="#{msgs.label_select}"></i>
+										</a>
+									</h:panelGroup>
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_update}</f:facet>
+										<h:panelGroup rendered="#{historicalVacation.requestType == 1 and historicalVacation.approvedFlag == 0}">
+										<a target="_blank" href="#{request.contextPath}/Vacations/AddHistoricalVacation.jsf?employeeId=#{historicalVacationsManagement.currentEmployee.empId}&amp;vacId=#{historicalVacation.id}&amp;mode=2" style="text-decoration: none;">
+											<i class="fa fa-edit fa-3x link-icon" title="#{msgs.label_update}"></i>
+										</a>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{historicalVacation.requestType == 2 and historicalVacation.approvedFlag == 0}">
+										<a target="_blank" href="#{request.contextPath}/Vacations/ModifyHistoricalVacation.jsf?employeeId=#{historicalVacationsManagement.currentEmployee.empId}&amp;vacId=#{historicalVacation.id}&amp;mode=2" style="text-decoration: none;">
+											<i class="fa fa-edit fa-3x link-icon" title="#{msgs.label_select}"></i>
+										</a>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{historicalVacation.requestType == 4 and historicalVacation.approvedFlag == 0}">
+										<a target="_blank" href="#{request.contextPath}/Vacations/CancelHistoricalVacation.jsf?employeeId=#{historicalVacationsManagement.currentEmployee.empId}&amp;vacId=#{historicalVacation.id}&amp;mode=2" style="text-decoration: none;">
+											<i class="fa fa-edit fa-3x link-icon" title="#{msgs.label_select}"></i>
+										</a>
+									</h:panelGroup>
+								</rich:column>
+								<rich:column style="width : 10%">
+									<f:facet name="header">#{msgs.label_delete}</f:facet>
+									<h:commandButton rendered="#{historicalVacation.approvedFlag == 0}" action="#{historicalVacationsManagement.deleteVacation(historicalVacation)}" onclick="return confirm('#{msgs.q_delete}');" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon">
+										<f:ajax event="click" execute="historicalVacationsManagementFormId:historicalVacationTableId" render="historicalVacationsManagementFormId:historicalVacationTableId historicalVacationsManagementFormId:notifyMessagesId" 
+										onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+									</h:commandButton>
+								</rich:column>
+								<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+							</rich:dataTable>
+							
+						</td>
+					</tr>
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+				</table>
+			</ui:decorate>
+		</h:form>
+	</h:body>
+</html>

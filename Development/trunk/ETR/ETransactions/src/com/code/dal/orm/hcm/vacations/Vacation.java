@@ -120,7 +120,16 @@ import com.code.services.util.HijriDateService;
 			" and v.vacationTypeId = :P_VACATION_TYPE_ID " +
 			" and (:P_SUB_VACATION_TYPE = -1 or v.subVacationType = :P_SUB_VACATION_TYPE) " +
 			" and v.status <> 4 " +
-			" and v.startDate > to_date(:P_END_DATE, 'MI/MM/YYYY') ")
+			" and v.startDate > to_date(:P_END_DATE, 'MI/MM/YYYY') "),
+
+	@NamedQuery(name = "hcm_vacation_getVacationsBetweenDates",
+		query = " select v from Vacation v " +
+			" where( v.startDate between to_date (:P_PERIOD_START_DATE ,'MI/MM/YYYY') and to_date (:P_PERIOD_END_DATE ,'MI/MM/YYYY') )" +
+			" and v.empId = :P_EMP_ID " +
+			" and v.vacationTypeId = :P_VACATION_TYPE_ID " +
+			" and (:P_SUB_VACATION_TYPE = -1 or v.subVacationType = :P_SUB_VACATION_TYPE) " +
+			" and v.status <> 4 " +
+			" order by v.startDate ")
 
 })
 @Entity
