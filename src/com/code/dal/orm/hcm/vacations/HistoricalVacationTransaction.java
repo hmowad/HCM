@@ -56,7 +56,7 @@ public class HistoricalVacationTransaction extends BaseEntity {
     private String joiningDateString;
     private Integer activeFlag;
     private String remarks;
-    private String joinigRemarks;
+    private String joiningRemarks;
     private String attachments;
 
     @SequenceGenerator(name = "HCMHistoricalVacationSeq",
@@ -344,12 +344,12 @@ public class HistoricalVacationTransaction extends BaseEntity {
 
     @Basic
     @Column(name = "JOINING_REMARKS")
-    public String getJoinigRemarks() {
-	return joinigRemarks;
+    public String getJoiningRemarks() {
+	return joiningRemarks;
     }
 
-    public void setJoinigRemarks(String joinigRemarks) {
-	this.joinigRemarks = joinigRemarks;
+    public void setJoiningRemarks(String joiningRemarks) {
+	this.joiningRemarks = joiningRemarks;
     }
 
     @Basic
