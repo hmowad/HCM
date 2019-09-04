@@ -101,6 +101,7 @@ public enum QueryNamesEnum {
     HCM_SUM_VAC_RELATED_DEDUCTED_BALANCE("hcm_vacation_sumRelatedDeductedBalance"),
     HCM_COUNT_LATER_VACATIONS("hcm_vacation_countLaterVacations"),
     HCM_COUNT_LATER_VACATIONS_HAS_JOINING_DATE("hcm_vacation_countLaterVacationsHasJoiningDate"),
+    HCM_COUNT_VACATION_BY_DECISION_NUMBER("hcm_vacation_countVacationByDecisionNumber"),
 
     HCM_GET_VACATION_DATA_BY_ID("hcm_vacationData_getVacationDataById"),
     HCM_GET_LAST_VACATION_DATA("hcm_vacationData_getLastVacation"),

@@ -68,7 +68,13 @@ public class HistoricalVacationsService extends BaseService {
 	}
 	deleteHistoricalVacation(historicalVacationTransaction, useSession);
     }
+
     /*---------------------------------------------------------- Validations --------------------------------------------*/
+    public static void validateOldHistoricalVacationActivationState(Long vacationId) throws BusinessException {
+	HistoricalVacationTransactionData oldHistoricalVacationTransactionData = getHistoricalVacationTransactionDataById(vacationId);
+	if (oldHistoricalVacationTransactionData.getActiveFlag() == FlagsEnum.OFF.getCode())
+	    throw new BusinessException("error_vacationHasBeenmModifiedOrCanceled");
+    }
 
     public static void validateHistoricalVacationRules(HistoricalVacationTransaction historicalVacationTransaction, EmployeeData vacationBeneficiary) throws BusinessException {
 	validateHistoricalVacationData(historicalVacationTransaction, vacationBeneficiary);
@@ -158,7 +164,8 @@ public class HistoricalVacationsService extends BaseService {
 	if (historicalVacationTransaction.getContactAddress() == null || historicalVacationTransaction.getContactAddress().trim().equals(""))
 	    throw new BusinessException("error_contactAddressMandatory");
 
-	if (countHistoricalVacationsByDecisionNumberAndDate(historicalVacationTransaction.getDecisionNumber(), historicalVacationTransaction.getId()) > 0)
+	if (countHistoricalVacationsByDecisionNumberAndDate(historicalVacationTransaction.getDecisionNumber(), historicalVacationTransaction.getId()) > 0
+		|| VacationsService.countVacationByDecisionNumber(historicalVacationTransaction.getDecisionNumber(), historicalVacationTransaction.getVacationTransactionId()) > 0)
 	    throw new BusinessException("error_historicalDecisionNumberRepeted");
     }
 

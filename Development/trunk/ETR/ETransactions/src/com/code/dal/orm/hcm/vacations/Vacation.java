@@ -129,7 +129,12 @@ import com.code.services.util.HijriDateService;
 			" and v.vacationTypeId = :P_VACATION_TYPE_ID " +
 			" and (:P_SUB_VACATION_TYPE = -1 or v.subVacationType = :P_SUB_VACATION_TYPE) " +
 			" and v.status <> 4 " +
-			" order by v.startDate ")
+			" order by v.startDate "),
+
+	@NamedQuery(name = "hcm_vacation_countVacationByDecisionNumber",
+		query = "select count(v.vacationId) from Vacation v " +
+			" where v.decisionNumber = :P_DECISION_NUMBER " +
+			" and (:P_VACATION_ID = -1 or v.vacationId <> :P_VACATION_ID)")
 
 })
 @Entity

@@ -77,6 +77,7 @@ public class ModifyHistoricalVacation extends BaseBacking {
     /*---------------------------------------------------------- Operation  -----------------------------------------------*/
     public void saveVacation() {
 	try {
+	    HistoricalVacationsService.validateOldHistoricalVacationActivationState(historicalVacationTransaction.getId());
 	    if (newHistoricalVacationTransaction.getId() == null) {
 		newHistoricalVacationTransaction.setRequestType(RequestTypesEnum.MODIFY.getCode());
 		newHistoricalVacationTransaction.setActiveFlag(FlagsEnum.ON.getCode());
@@ -95,6 +96,7 @@ public class ModifyHistoricalVacation extends BaseBacking {
 
     public void signVacation() {
 	try {
+	    HistoricalVacationsService.validateOldHistoricalVacationActivationState(historicalVacationTransaction.getId());
 	    newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.ON.getCode());
 	    HistoricalVacationsService.modifyHistoricalVacationTransaction(newHistoricalVacationTransaction, currentEmployee, true, false);
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
@@ -135,6 +137,7 @@ public class ModifyHistoricalVacation extends BaseBacking {
 		newHistoricalVacationTransaction.setVacationTransactionId(historicalVacationTransaction.getVacationTransactionId());
 		newHistoricalVacationTransaction.setStartDate(historicalVacationTransaction.getStartDate());
 		newHistoricalVacationTransaction.setJoiningDate(historicalVacationTransaction.getJoiningDate());
+		newHistoricalVacationTransaction.setJoiningRemarks(historicalVacationTransaction.getJoiningRemarks());
 		newHistoricalVacationTransaction.setExceededDays(historicalVacationTransaction.getExceededDays());
 		newHistoricalVacationTransaction.setLocation(historicalVacationTransaction.getLocation());
 		newHistoricalVacationTransaction.setLocationFlag(historicalVacationTransaction.getLocationFlag());
