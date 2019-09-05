@@ -33,7 +33,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_PERIOD = -1 or v.period = :P_PERIOD )" +
 			" and (:P_APPROVED_FLAG = -1 or v.approvedFlag = :P_APPROVED_FLAG)" +
 			" and  v.activeFlag = 1" +
-			" order by v.startDate , v.approvedFlag,v.vacationTypeId,v.requestType"),
+			" order by v.empId,v.decisionDate , v.approvedFlag"),
 
 	@NamedQuery(name = "hcm_historicalVacationTransactionData_getHistoricalVacationById",
 		query = " select v from HistoricalVacationTransactionData v " +

@@ -48,23 +48,23 @@ public class HistoricalVacationsService extends BaseService {
     }
 
     public static void modifyHistoricalVacationTransaction(HistoricalVacationTransaction historicalVacationTransaction, EmployeeData vacationBeneficiary, boolean signHistoricalVacationFlag, boolean skipValidationFlag, CustomSession... useSession) throws BusinessException {
-	// HistoricalVacationTransactionData vacationData = getHistoricalVacationTransactionDataById(historicalVacationTransaction.getId());
-	// if (vacationData != null) {
-	if (historicalVacationTransaction.getRequestType() != RequestTypesEnum.CANCEL.getCode() && !skipValidationFlag) {
-	    historicalVacationTransaction.setPaidVacationType(VacationsBusinessRulesService.getPaidVacationType(historicalVacationTransaction.getVacationTypeId(), historicalVacationTransaction.getSubVacationType(), vacationBeneficiary, historicalVacationTransaction.getStartDate(), null));
-	    validateHistoricalVacationRules(historicalVacationTransaction, vacationBeneficiary);
+	HistoricalVacationTransactionData vacationData = getHistoricalVacationTransactionDataById(historicalVacationTransaction.getId());
+	if (vacationData != null) {
+	    if (historicalVacationTransaction.getRequestType() != RequestTypesEnum.CANCEL.getCode() && !skipValidationFlag) {
+		historicalVacationTransaction.setPaidVacationType(VacationsBusinessRulesService.getPaidVacationType(historicalVacationTransaction.getVacationTypeId(), historicalVacationTransaction.getSubVacationType(), vacationBeneficiary, historicalVacationTransaction.getStartDate(), null));
+		validateHistoricalVacationRules(historicalVacationTransaction, vacationBeneficiary);
+	    }
+	    modifyHistoricalVacation(historicalVacationTransaction, signHistoricalVacationFlag, useSession);
+	} else {
+	    throw new BusinessException("error_historicalVacationDeleted");
 	}
-	modifyHistoricalVacation(historicalVacationTransaction, signHistoricalVacationFlag, useSession);
-	// } else {
-	// throw new BusinessException("error_historicalVacationDeleted");
-	// }
     }
 
     public static void deleteHistoricalVacationTransaction(HistoricalVacationTransaction historicalVacationTransaction, CustomSession... useSession) throws BusinessException {
 
-	/*
-	 * HistoricalVacationTransactionData vacationData = getHistoricalVacationTransactionDataById(historicalVacationTransaction.getId()); if (vacationData.getApprovedFlag() == FlagsEnum.ON.getCode()) throw new BusinessException("error_vacationHasBeenModifiedOrCanceled");
-	 */
+	HistoricalVacationTransactionData vacationData = getHistoricalVacationTransactionDataById(historicalVacationTransaction.getId());
+	if (vacationData.getApprovedFlag() == FlagsEnum.ON.getCode())
+	    throw new BusinessException("error_vacationHasBeenModifiedOrCanceled");
 	// if the deletion for initial cancel/modify vacation get the parent and set the active flag to on
 	if (historicalVacationTransaction.getRequestType() != RequestTypesEnum.NEW.getCode()) {
 	    HistoricalVacationTransaction oldHistoricalVacation = getHistoricalVacationTransactionDataById(historicalVacationTransaction.getHistoricalVacationParentId()).getHistoricalVacationTransaction();
@@ -75,7 +75,7 @@ public class HistoricalVacationsService extends BaseService {
     }
 
     /*---------------------------------------------------------- Validations --------------------------------------------*/
-    public static void validateOldHistoricalVacationActivationState(Long vacationId) throws BusinessException {
+    public static void validateOldHistoricalVacationActivationStatus(Long vacationId) throws BusinessException {
 	HistoricalVacationTransactionData oldHistoricalVacationTransactionData = getHistoricalVacationTransactionDataById(vacationId);
 	if (oldHistoricalVacationTransactionData.getActiveFlag() == FlagsEnum.OFF.getCode())
 	    throw new BusinessException("error_vacationHasBeenModifiedOrCanceled");
