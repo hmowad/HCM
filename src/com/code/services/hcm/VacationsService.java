@@ -12,17 +12,20 @@ import com.code.dal.orm.hcm.vacations.Vacation;
 import com.code.dal.orm.hcm.vacations.VacationConfiguration;
 import com.code.dal.orm.hcm.vacations.VacationData;
 import com.code.dal.orm.hcm.vacations.VacationType;
+import com.code.dal.orm.workflow.WFPosition;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.GendersEnum;
 import com.code.enums.LocationFlagsEnum;
 import com.code.enums.PaidVacationTypesEnum;
 import com.code.enums.QueryNamesEnum;
+import com.code.enums.RegionsEnum;
 import com.code.enums.ReportNamesEnum;
 import com.code.enums.RequestTypesEnum;
 import com.code.enums.SubVacationTypesEnum;
 import com.code.enums.TransactionClassesEnum;
 import com.code.enums.VacationTypesEnum;
+import com.code.enums.WFPositionsEnum;
 import com.code.enums.WFProcessesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
@@ -30,6 +33,7 @@ import com.code.services.BaseService;
 import com.code.services.buswfcoop.EmployeesTransactionsConflictValidator;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.util.HijriDateService;
+import com.code.services.workflow.BaseWorkFlow;
 
 /**
  * The class <code>VacationsService</code> provides methods for handling the Internal and External vacations requests (Regular, Compelling and Sick vacations) for Officers, Soldiers and Employees.
@@ -66,7 +70,7 @@ public class VacationsService extends BaseService {
      * 
      * @see RequestTypesEnum
      */
-    public static void handleVacRequest(Vacation request, EmployeeData vacationBeneficiary, String subject, CustomSession... useSession) throws BusinessException {
+    public static void handleVacRequest(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
 	if (request.getStatus() == RequestTypesEnum.NEW.getCode()) {
 	    // Order of the next two lines is CRITICAL
 	    request.setRelatedDeductedBalance(VacationsBusinessRulesService.getRelatedDeductedBalance(vacationBeneficiary, request.getVacationTypeId(), request.getStartDate(), request.getPeriod()));
@@ -74,11 +78,11 @@ public class VacationsService extends BaseService {
 
 	    request.setDecisionData(VacationsBusinessRulesService.getDecisionData(request.getVacationTypeId(), vacationBeneficiary, request.getStartDateString()));
 
-	    VacationsDataHandlingService.insertVacData(request, vacationBeneficiary, subject, useSession);
+	    VacationsDataHandlingService.insertVacData(request, vacationBeneficiary, skipWFFlag, subject, useSession);
 	} else if (request.getStatus() == RequestTypesEnum.MODIFY.getCode()) {
-	    VacationsDataHandlingService.modifyVacData(request, vacationBeneficiary, subject, useSession);
+	    VacationsDataHandlingService.modifyVacData(request, vacationBeneficiary, skipWFFlag, subject, useSession);
 	} else if (request.getStatus() == RequestTypesEnum.CANCEL.getCode()) {
-	    VacationsDataHandlingService.cancelVacData(request, vacationBeneficiary, subject, useSession);
+	    VacationsDataHandlingService.cancelVacData(request, vacationBeneficiary, skipWFFlag, subject, useSession);
 	}
     }
 
@@ -110,7 +114,7 @@ public class VacationsService extends BaseService {
      * 
      * @see VacationTypesEnum
      */
-    public static void validateVacationRules(Vacation request, EmployeeData vacationBeneficiary) throws BusinessException {
+    public static void validateVacationRules(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag) throws BusinessException {
 	VacationsBusinessRulesService.validateVacationDates(request);
 	VacationsBusinessRulesService.validateVacationLocation(request);
 
@@ -125,7 +129,7 @@ public class VacationsService extends BaseService {
 	    VacationsBusinessRulesService.validatePreviousVacationJoining(vacationBeneficiary.getEmpId(), vacationBeneficiary.getCategoryId(), request.getStartDate());
 
 	if (request.getStatus() == RequestTypesEnum.MODIFY.getCode() || request.getStatus() == RequestTypesEnum.CANCEL.getCode())
-	    VacationsBusinessRulesService.validateModifyAndCancelEVacation(request.getVacationId(), request.getStatus());
+	    VacationsBusinessRulesService.validateModifyAndCancelEVacation(request.getVacationId(), request.getStatus(), skipWFFlag);
 
 	if (request.getStatus() == RequestTypesEnum.NEW.getCode() || request.getStatus() == RequestTypesEnum.MODIFY.getCode()) {
 
@@ -343,6 +347,14 @@ public class VacationsService extends BaseService {
 
     public static List<VacationData> getVacationsData(long empId, long vacationTypeId) throws BusinessException {
 	return getVacationsData(empId, vacationTypeId, FlagsEnum.ALL.getCode());
+    }
+
+    /************************************** get President and VicePresident For BeneficiaryVacationsTypes Method ********************************/
+    public static String getPresidencyManagers() throws BusinessException {
+	WFPosition vicePresidentPosition = BaseWorkFlow.getWFPosition(WFPositionsEnum.VICE_PRESIDENT.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+	EmployeeData vicePresident = EmployeesService.getEmployeeByPosition(vicePresidentPosition.getUnitId(), vicePresidentPosition.getEmpId());
+	StringBuilder emp = new StringBuilder();
+	return emp.append(vicePresident.getEmpId() + "," + vicePresident.getManagerId()).toString();
     }
 
     /**

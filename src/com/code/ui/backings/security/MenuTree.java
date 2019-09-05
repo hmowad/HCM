@@ -115,7 +115,7 @@ public class MenuTree extends BaseBacking {
 		String[] testParams = testUrl.substring(testUrl.indexOf("?") + 1).split("&");
 		for (int i = 0; i < testParams.length; i++) {
 		    String[] testParamNameValue = testParams[i].split("=");
-		    if (!(req.getParameter(testParamNameValue[0]) != null && req.getParameter(testParamNameValue[0]).equals(testParamNameValue[1])))
+		    if (!(req.getParameter(testParamNameValue[0]) != null && req.getParameter(testParamNameValue[0]).equals(testParamNameValue[1]) && getRequest().getParameterMap().size() == testParams.length))
 			return false;
 		}
 	    }

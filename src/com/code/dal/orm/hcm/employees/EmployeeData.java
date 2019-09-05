@@ -46,6 +46,19 @@ import com.code.services.util.HijriDateService;
 			" and (:P_RANK_ID = -1 OR e.rankId = :P_RANK_ID)" +
 			" order by e.militaryNumber, e.rankId, e.recruitmentDate, e.name "),
 
+	@NamedQuery(name = "hcm_empData_searchEmpDataForBeneficiary",
+		query = " select e from EmployeeData e" +
+			" where "
+			+ "   (:P_EMP_NAME = '-1' or e.name like :P_EMP_NAME ) " +
+			" and (:P_CATEGORIES_IDS_FLAG = -1 or e.categoryId in ( :P_CATEGORIES_IDS )) " +
+			" and (:P_MILITARY_NUMBER = -1 or e.militaryNumber = :P_MILITARY_NUMBER) " +
+			" and (:P_SEQUENCE_NUMBER = -1 or e.sequenceNumber = :P_SEQUENCE_NUMBER) " +
+			" and (:P_SOCIAL_ID = '-1' or e.socialID = :P_SOCIAL_ID) " +
+			" and ( e.statusId in ( :P_STATUSES_IDS ) or (:P_EMP_IDS_FLAG = -1 or e.empId in ( :P_EMP_IDS ))) " +
+			" and (:P_JOB_DESC = '-1' or e.jobDesc like :P_JOB_DESC ) " +
+			" and (:P_PHYSICAL_UNIT_FULL_NAME = '-1' or e.physicalUnitFullName like :P_PHYSICAL_UNIT_FULL_NAME ) " +
+			" order by e.rankId, e.militaryNumber, e.recruitmentDate, e.name "),
+
 	@NamedQuery(name = "hcm_empData_searchEmpDataByOfficialOrPhysicalUnit",
 		query = " select e from EmployeeData e" +
 			" where "

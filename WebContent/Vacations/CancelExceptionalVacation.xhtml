@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:rich="http://richfaces.org/rich">
 <h:head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
@@ -9,14 +9,43 @@
 
 	<script type="text/javascript">
 	//<![CDATA[  
+			 function getEmp(contextPath){
+				 
+	                openEmployeesMiniSearchForBeneficiary(contextPath, 'handleEmpsMiniSearchResult(ret)', 19, #{cancelExceptionalVacation.vacationMode}, '#{cancelExceptionalVacation.employeeIds}');
+					                  
+        	    }
+            
+            function handleEmpsMiniSearchResult(ret){
+            	if(ret != null){
+                    document.getElementById('cancelExceptionalVacationForm:beneficiarySearchId').value = ret[0];
+                    document.getElementById('cancelExceptionalVacationForm:searchEmpButton').click();
+                 }
+            }
+            
 		function validateData(){
+			
             var oldVacationId = document.getElementById('cancelExceptionalVacationForm:oldVacationId').value;
             if(oldVacationId == null || oldVacationId == ''){
                	alert('#{msgs.error_noPrevVacation}');
                    return false;
             }
+            
+      	  if (#{cancelExceptionalVacation.admin}) {
+            	var decisionNumber = document.getElementById('cancelExceptionalVacationForm:decisionNumberId').value.trim();
+            	var decisionDateDay = document.getElementById('cancelExceptionalVacationForm:decisionDateId:day').value;            	
+            	
+           	 	if(decisionNumber == null || decisionNumber == '') {
+                 	alert('#{msgs.error_decNumberMandatory}');
+                 	return false;
+           	 	}
 
-            if (#{cancelExceptionalVacation.vacationMode} == 2) { 
+            	if (decisionDateDay == null || decisionDateDay == 0) {
+					alert('#{msgs.error_decDateMandatory}');
+					return false;
+				}
+            }
+
+            if (#{cancelExceptionalVacation.vacationMode} == 2 && #{!cancelExceptionalVacation.admin}) { 
 	            var requestJustifications = document.getElementById('cancelExceptionalVacationForm:requestJustificationsId').value;
 	            if(requestJustifications == null || requestJustifications == ''){
 	                alert('#{msgs.error_requestJustificationsMandatory}');
@@ -77,6 +106,45 @@
 						<code:emp value="#{cancelExceptionalVacation.requester}" />
 					</td>
 				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiary}" switchType="client" 
+						onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{cancelExceptionalVacation.beneficiary.empId == cancelExceptionalVacation.requester.empId}) &amp;&amp; (#{cancelExceptionalVacation.role == 'Requester'})) { getEmp('#{request.contextPath}'); return false;} else {return true;}"
+							expanded="#{cancelExceptionalVacation.requester.empId != cancelExceptionalVacation.beneficiary.empId}" 
+							rendered="#{cancelExceptionalVacation.role == 'Requester' and cancelExceptionalVacation.admin == true}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+								<h:panelGroup rendered="#{cancelExceptionalVacation.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+														<h:inputHidden id="beneficiarySearchId" value="#{cancelExceptionalVacation.beneficiarySearchId}" />
+														<h:commandButton id="searchEmpButton" style="display: none;" action="#{cancelExceptionalVacation.searchBeneficiary}">
+															<f:ajax render="cancelExceptionalVacationForm:beneficiaryPanelId cancelExceptionalVacationForm:lastVactionId:data cancelExceptionalVacationForm:approveBenfBtnId cancelExceptionalVacationForm:requestInfoPanelId cancelExceptionalVacationForm:warningsPanelId cancelExceptionalVacationForm:notifyMessagesId" 
+															execute="beneficiarySearchId"
+																onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp id="beneficiaryId" value="#{cancelExceptionalVacation.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
 
 				<tr>
 					<td width="100%" height="15" />
@@ -94,7 +162,7 @@
 
 				<tr>
 					<td width="100%">
-						<code:vac value="#{cancelExceptionalVacation.lastVacation}" />
+						<code:vac id="lastVactionId" value="#{cancelExceptionalVacation.lastVacation}" />
 					</td>
 				</tr>
 
@@ -114,32 +182,55 @@
 
 				<tr>
 					<td width="100%">
-						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-							<h:panelGroup rendered="#{cancelExceptionalVacation.vacationMode == 2}">
+						<h:panelGroup id="requestInfoPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+							<h:panelGroup rendered="#{cancelExceptionalVacation.role == 'Requester' and cancelExceptionalVacation.admin}">
+									<tr>
+										<th width="15%">
+											#{msgs.label_decisionNumber}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="decisionNumberId" value="#{cancelExceptionalVacation.decisionNumber}" />
+										</td>
+										<th width="15%">
+											#{msgs.label_decisionDate}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<util:hijri id="decisionDateId" value="#{cancelExceptionalVacation.decisionDate}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+							
+								<h:panelGroup rendered="#{!cancelExceptionalVacation.admin}">
+									<h:panelGroup rendered="#{cancelExceptionalVacation.vacationMode == 2}">
+										<tr>
+											<th width="15%">
+												#{msgs.label_requestJustifications}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="85%" colspan="3">
+												<h:inputText id="requestJustificationsId" value="#{cancelExceptionalVacation.vacRequest.reasons}" readonly="#{cancelExceptionalVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<th width="15%">#{msgs.label_notes}</th>
+										<td width="85%" colspan="3">
+											<h:inputText value="#{cancelExceptionalVacation.vacRequest.notes}" readonly="#{cancelExceptionalVacation.role != 'Requester'}" maxlength="100" styleClass="inputDataLarge" />
+										</td>
+									</tr>
+								</h:panelGroup>
 								<tr>
-									<th width="15%">
-										#{msgs.label_requestJustifications}
-										<font style="color: red;">*</font>
-									</th>
-									<td width="85%">
-										<h:inputText id="requestJustificationsId" value="#{cancelExceptionalVacation.vacRequest.reasons}" readonly="#{cancelExceptionalVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+									<th width="15%">#{msgs.label_attachments}</th>
+									<td width="85%" colspan="3">
+										<h:inputHidden id="oldVacationId" value="#{cancelExceptionalVacation.vacRequest.oldVacationId}" />
+										<code:attachments loginEmpId="#{cancelExceptionalVacation.loginEmpData.empId}" attachmentId="#{cancelExceptionalVacation.attachments}" addEnableFlag="#{cancelExceptionalVacation.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{cancelExceptionalVacation.role == 'Requester'}" />
 									</td>
 								</tr>
-							</h:panelGroup>
-							<tr>
-								<th width="15%">#{msgs.label_notes}</th>
-								<td width="85%">
-									<h:inputHidden id="oldVacationId" value="#{cancelExceptionalVacation.vacRequest.oldVacationId}" />
-									<h:inputText value="#{cancelExceptionalVacation.vacRequest.notes}" readonly="#{cancelExceptionalVacation.role != 'Requester'}" maxlength="100" styleClass="inputDataLarge" />
-								</td>
-							</tr>
-							<tr>
-								<th width="15%">#{msgs.label_attachments}</th>
-								<td width="85%">
-									<code:attachments loginEmpId="#{cancelExceptionalVacation.loginEmpData.empId}" attachmentId="#{cancelExceptionalVacation.attachments}" addEnableFlag="#{cancelExceptionalVacation.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{cancelExceptionalVacation.role == 'Requester'}" />
-								</td>
-							</tr>
-						</table>
+							</table>
+						</h:panelGroup>
 					</td>
 				</tr>
 				
@@ -181,17 +272,19 @@
 				
 				<tr>
 					<td width="100%">
-						<h:panelGroup rendered="#{cancelExceptionalVacation.hasEarlierStartDateWarning()}">
-							<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
-								<tr>
-									<th>#{msgs.label_warnings}</th>
-								</tr>
-								<tr>
-									<td>
-										<h:outputText value="#{msgs.label_warningsEarlierStartDateForVacation}" />
-									</td>
-								</tr>
-							</table>
+						<h:panelGroup id="warningsPanelId">
+							<h:panelGroup rendered="#{cancelExceptionalVacation.hasEarlierStartDateWarning()}">
+								<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th>#{msgs.label_warnings}</th>
+									</tr>
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.label_warningsEarlierStartDateForVacation}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
 						</h:panelGroup>
 					</td>
 				</tr>
@@ -266,9 +359,18 @@
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-									<h:panelGroup rendered="#{cancelExceptionalVacation.role == 'Requester'}">
+									<h:panelGroup rendered="#{cancelExceptionalVacation.role == 'Requester' and !cancelExceptionalVacation.admin}">
 										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateData()');" action="#{cancelExceptionalVacation.initProcess}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
 											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup id="benfActionPanelId" rendered="#{cancelExceptionalVacation.role == 'Requester' and cancelExceptionalVacation.admin}">
+										<h:commandButton id="approveBenfBtnId" action="#{cancelExceptionalVacation.saveBeneficiaryVacation}" rendered="#{!cancelExceptionalVacation.vacApprovedFlag}" disabled="#{cancelExceptionalVacation.requester.empId == cancelExceptionalVacation.beneficiary.empId}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateData()');" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="cancelExceptionalVacationForm:benfActionPanelId cancelExceptionalVacationForm:notifyMessagesId" execute="@form" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+										<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{cancelExceptionalVacation.resetForm}">
+											<f:ajax render="cancelExceptionalVacationForm:beneficiaryPanelId cancelExceptionalVacationForm:lastVactionId:data cancelExceptionalVacationForm:requestInfoPanelId  cancelExceptionalVacationForm:benfActionPanelId cancelExceptionalVacationForm:warningsPanelId cancelExceptionalVacationForm:notifyMessagesId " onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
 										</h:commandButton>
 									</h:panelGroup>
 

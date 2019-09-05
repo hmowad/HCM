@@ -44,6 +44,7 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 
     private boolean multipleSelectFlag;
 
+    private Long[] employeeIds;
     private final int SELECTED_EMPS_MAX = 100;
 
     private List<EmployeeData> searchEmployeeList;
@@ -87,6 +88,13 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 	    statusIds = new Long[statusIdsStringArray.length];
 	    for (int i = 0; i < statusIdsStringArray.length; i++)
 		statusIds[i] = Long.parseLong(statusIdsStringArray[i]);
+	}
+	if (!getRequest().getParameter("employeeIds").equals("-1")) {
+	    String employeeIdsString = getRequest().getParameter("employeeIds");
+	    String[] employeeIdsStringArray = employeeIdsString.split(",");
+	    employeeIds = new Long[employeeIdsStringArray.length];
+	    for (int i = 0; i < employeeIdsStringArray.length; i++)
+		employeeIds[i] = Long.parseLong(employeeIdsStringArray[i]);
 	}
 	if (getRequest().getParameter("multipleSelectFlag") != null) {
 	    multipleSelectFlag = Integer.parseInt(getRequest().getParameter("multipleSelectFlag")) == 1;
@@ -216,6 +224,13 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 		break;
 	    case 18:
 		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, new Long[] { (long) categoryMode }, physicalRegionId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, sequenceNumber);
+		break;
+	    case 19: // Get employees with statusIds and get President and vicePresident
+		// used to make vac Request to President , vicePresident , External Mission Employees
+		
+		statusIds = new Long[] { EmployeeStatusEnum.MOVED_EXTERNALLY.getCode(), EmployeeStatusEnum.PERSONS_SUBJOINED_EXTERNALLY.getCode(), EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode() };
+
+		searchEmployeeList = EmployeesService.searchEmployeesForBeneficiary(searchEmpName, getCategoriesIdsArrayByMode(categoryMode), employeeIds, militaryNumber, searchSocialId, statusIds, searchJobDesc, searchUnitFullName, sequenceNumber);
 		break;
 	    }
 

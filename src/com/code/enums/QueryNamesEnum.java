@@ -13,6 +13,7 @@ public enum QueryNamesEnum {
     HCM_SEARCH_EMPLOYEE_DIRECT_MANAGER("hcm_empData_searchEmployeeDirectManager"),
     HCM_SEARCH_EMPLOYEES_BY_COMMUNICATION_DATA("hcm_empData_searchEmployeeByCommunicationData"),
     HCM_SEARCH_EMPLOYEES("hcm_empData_searchEmpData"),
+    HCM_SEARCH_EMPLOYEES_FOR_BENEFICIARY("hcm_empData_searchEmpDataForBeneficiary"),
     HCM_SEARCH_MANAGER_EMPLOYEES("hcm_empData_searchManagerEmployees"),
     HCM_SEARCH_EMPLOYEES_BY_PHYSICAL_OR_OFFICIAL_UNIT("hcm_empData_searchEmpDataByOfficialOrPhysicalUnit"),
     HCM_SEARCH_EMPLOYEES_EXTRA_TRANSACTION_DATA("hcm_empDataExtraTrnData_searchEmpExtraTrnData"),

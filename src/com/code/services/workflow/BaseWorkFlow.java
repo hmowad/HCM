@@ -1248,7 +1248,8 @@ public abstract class BaseWorkFlow extends BaseService {
     /****************************************************************************************************************/
 
     /********************************************** Positions Methods ***********************************************/
-    protected static WFPosition getWFPosition(int positionCode, long regionId) throws BusinessException {
+    public static WFPosition getWFPosition(int positionCode, long regionId) throws BusinessException {
+
 	Map<String, Object> qParams = new HashMap<String, Object>();
 	qParams.put("P_CODE", positionCode);
 	qParams.put("P_REGION_ID", regionId);
