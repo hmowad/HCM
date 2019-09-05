@@ -64,6 +64,7 @@ public class ModifyHistoricalVacation extends BaseBacking {
 		historicalVacationTransaction = new HistoricalVacationTransaction();
 		newHistoricalVacationTransaction = new HistoricalVacationTransaction();
 		newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.OFF.getCode());
+
 	    }
 	    decisionRegions = CommonService.getAllRegions();
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
@@ -118,6 +119,7 @@ public class ModifyHistoricalVacation extends BaseBacking {
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
 	    historicalVacationTransaction = new HistoricalVacationTransaction();
 	    newHistoricalVacationTransaction = new HistoricalVacationTransaction();
+	    newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.OFF.getCode());
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}

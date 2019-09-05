@@ -58,6 +58,7 @@ public class CancelHistoricalVacation extends BaseBacking {
 		historicalVacationTransaction = new HistoricalVacationTransaction();
 		newHistoricalVacationTransaction = new HistoricalVacationTransaction();
 		newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.OFF.getCode());
+
 	    }
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
 	    signAuthorized = SecurityService.isEmployeeMenuActionGranted(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_HISTORICAL_VAC_CANCEL_HISTORICAL_VACATION.getCode(), MenuActionsEnum.VAC_HISTORICAL_VACATIONS_SIGN_CANCELD_HISTORICAL_VACATION.getCode());
@@ -113,6 +114,7 @@ public class CancelHistoricalVacation extends BaseBacking {
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
 	    historicalVacationTransaction = new HistoricalVacationTransaction();
 	    newHistoricalVacationTransaction = new HistoricalVacationTransaction();
+	    newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.OFF.getCode());
 
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
