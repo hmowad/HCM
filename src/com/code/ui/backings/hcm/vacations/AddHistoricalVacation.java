@@ -47,7 +47,7 @@ public class AddHistoricalVacation extends BaseBacking {
 
     public AddHistoricalVacation() {
 	super.init();
-	super.setScreenTitle(this.getMessage("title_addNewHistoricalVacation"));
+	this.setScreenTitle(this.getMessage("title_addNewHistoricalVacation"));
 	try {
 	    if (this.getRequest().getParameter("mode") != null)
 		viewMode = Integer.parseInt(this.getRequest().getParameter("mode").trim());
@@ -60,9 +60,8 @@ public class AddHistoricalVacation extends BaseBacking {
 		    this.setScreenTitle(this.getMessage("title_newHistoricalVacationDetail"));
 		currentEmployee = EmployeesService.getEmployeeData(empId);
 		historicalVacationTransactionData = HistoricalVacationsService.getHistoricalVacationTransactionDataById(vacationId);
-		if (historicalVacationTransactionData.getExceededDays() != null)
-		    if (historicalVacationTransactionData.getExceededDays() > 0)
-			exceededFlag = FlagsEnum.ON.getCode();
+		if (historicalVacationTransactionData.getExceededDays() != null && historicalVacationTransactionData.getExceededDays() > 0)
+		    exceededFlag = FlagsEnum.ON.getCode();
 		inquiryBalance();
 		vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
 	    } else {

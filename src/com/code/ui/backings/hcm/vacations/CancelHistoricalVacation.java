@@ -73,10 +73,12 @@ public class CancelHistoricalVacation extends BaseBacking {
 	    HistoricalVacationsService.validateOldHistoricalVacationActivationState(historicalVacationTransaction.getId());
 	    newHistoricalVacationTransaction.setRequestType(RequestTypesEnum.CANCEL.getCode());
 	    newHistoricalVacationTransaction.setActiveFlag(FlagsEnum.ON.getCode());
+
 	    if (newHistoricalVacationTransaction.getId() == null)
 		HistoricalVacationsService.insertHistoricalVacationTransaction(newHistoricalVacationTransaction, currentEmployee);
 	    else
 		HistoricalVacationsService.modifyHistoricalVacationTransaction(newHistoricalVacationTransaction, currentEmployee, false, false);
+
 	    historicalVacationTransaction.setActiveFlag(FlagsEnum.OFF.getCode());
 	    HistoricalVacationsService.modifyHistoricalVacationTransaction(historicalVacationTransaction, currentEmployee, false, true);
 	    // historicalVacationTransactionData.setId(historicalVacationTransactionData.getHistoricalVacationTransaction().getId());
@@ -90,8 +92,10 @@ public class CancelHistoricalVacation extends BaseBacking {
     public void signVacation() {
 	try {
 	    HistoricalVacationsService.validateOldHistoricalVacationActivationState(historicalVacationTransaction.getId());
+
 	    newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.ON.getCode());
 	    HistoricalVacationsService.modifyHistoricalVacationTransaction(newHistoricalVacationTransaction, currentEmployee, true, false);
+
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    historicalVacationTransaction.setApprovedFlag(FlagsEnum.OFF.getCode());
