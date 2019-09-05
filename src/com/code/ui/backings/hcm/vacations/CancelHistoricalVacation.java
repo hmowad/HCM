@@ -27,7 +27,6 @@ public class CancelHistoricalVacation extends BaseBacking {
     private HistoricalVacationTransaction newHistoricalVacationTransaction;
     private String balance;
     private List<VacationType> vacTypeList;
-    boolean saveAuthorized;
     boolean signAuthorized;
     // mode= 0 open the page from menu
     // mode =1 opened as detail from management page
@@ -55,12 +54,13 @@ public class CancelHistoricalVacation extends BaseBacking {
 		historicalVacationTransaction = HistoricalVacationsService.getHistoricalVacationTransactionDataById(newHistoricalVacationTransaction.getHistoricalVacationParentId()).getHistoricalVacationTransaction();
 	    } else {
 		currentEmployee = new EmployeeData();
+		viewMode = 0;
 		historicalVacationTransaction = new HistoricalVacationTransaction();
 		newHistoricalVacationTransaction = new HistoricalVacationTransaction();
+		newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.OFF.getCode());
 	    }
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
-	    saveAuthorized = SecurityService.isEmployeeMenuActionGranted(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_CANCEL_HISTORICAL_VACATION.getCode(), MenuActionsEnum.VAC_SAVE_CANCELD_HISTORICAL_VACATION.getCode());
-	    signAuthorized = SecurityService.isEmployeeMenuActionGranted(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_CANCEL_HISTORICAL_VACATION.getCode(), MenuActionsEnum.VAC_SIGN_CANCELD_HISTORICAL_VACATION.getCode());
+	    signAuthorized = SecurityService.isEmployeeMenuActionGranted(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_HISTORICAL_VAC_CANCEL_HISTORICAL_VACATION.getCode(), MenuActionsEnum.VAC_HISTORICAL_VACATIONS_SIGN_CANCELD_HISTORICAL_VACATION.getCode());
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -194,10 +194,6 @@ public class CancelHistoricalVacation extends BaseBacking {
 
     public void setVacTypeList(List<VacationType> vacTypeList) {
 	this.vacTypeList = vacTypeList;
-    }
-
-    public boolean isSaveAuthorized() {
-	return saveAuthorized;
     }
 
     public boolean isSignAuthorized() {

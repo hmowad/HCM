@@ -19,16 +19,16 @@ import com.code.services.util.HijriDateService;
 @NamedQueries({
 	@NamedQuery(name = "hcm_historicalVacationTransactionData_searchHistoricalVacations",
 		query = " select v from HistoricalVacationTransactionData v " +
-			" where v.empId = :P_EMP_ID " +
+			" where (:P_EMP_ID = -1 or v.empId = :P_EMP_ID )" +
 			" and (:P_REQUEST_TYPE_FLAG = -1 or v.requestType in (:P_REQUEST_TYPES) ) " +
 			" and (:P_DECISION_NUMBER = '-1' or v.decisionNumber = :P_DECISION_NUMBER)" +
 			" and (:P_DECISION_DATE_SKIP_FLAG = -1 or v.decisionDate = to_date(:P_DECISION_DATE, 'MI/MM/YYYY')) " +
 			" and (:P_LOCATION_FLAG = -1 or v.locationFlag = :P_LOCATION_FLAG ) " +
 			" and (:P_COUNTRY_NAME = '-1' or v.location like :P_COUNTRY_NAME )" +
 			" and (:P_VACATION_TYPE_FLAG = -1 or v.vacationTypeId in (:P_VACATION_TYPES_ID))" +
-			" and (   (v.startDate between to_date(:P_FROM_DATE, 'MI/MM/YYYY') and to_date(:P_TO_DATE, 'MI/MM/YYYY')) " +
+			" and (   (:P_SKIP_START_DATE = -1 or v.startDate between to_date(:P_FROM_DATE, 'MI/MM/YYYY') and to_date(:P_TO_DATE, 'MI/MM/YYYY')) " +
 			"        OR (v.endDate between to_date(:P_FROM_DATE, 'MI/MM/YYYY') and to_date(:P_TO_DATE, 'MI/MM/YYYY')) " +
-			"        OR (v.startDate < to_date(:P_FROM_DATE, 'MI/MM/YYYY') and v.endDate > to_date(:P_TO_DATE, 'MI/MM/YYYY')) " +
+			"        OR ((:P_SKIP_START_DATE = -1 or v.startDate < to_date(:P_FROM_DATE, 'MI/MM/YYYY')) and v.endDate > to_date(:P_TO_DATE, 'MI/MM/YYYY')) " +
 			"   ) " +
 			" and (:P_PERIOD = -1 or v.period = :P_PERIOD )" +
 			" and (:P_APPROVED_FLAG = -1 or v.approvedFlag = :P_APPROVED_FLAG)" +
