@@ -31,20 +31,17 @@ public class HistoricalVacationsManagement extends BaseBacking {
     private String decisionNumber;
     private Integer locationFlag;
     private Integer approvedFlag;
-    private int pageSize;
+    private int pageSize = 5;
 
     private List<HistoricalVacationTransactionData> historicalVacationData;
 
     public HistoricalVacationsManagement() {
 	super.init();
-	pageSize = 5;
-	super.setScreenTitle(this.getMessage("title_historicalVacationManagement"));
 	reset();
     }
 
     public void searchHistoricalVacations() {
 	try {
-
 	    historicalVacationData = HistoricalVacationsService.searchHistoricalVacations(currentEmployee, requestType, new Integer[] { requestType }, decisionNumber, FlagsEnum.ALL.getCode(), HijriDateService.getHijriSysDate(), vacationTypeId, new Long[] { vacationTypeId }, fromDate, toDate, period, approvedFlag, locationFlag, FlagsEnum.ALL.getCode() + "");
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));

@@ -97,8 +97,10 @@ public class ModifyHistoricalVacation extends BaseBacking {
     public void signVacation() {
 	try {
 	    HistoricalVacationsService.validateOldHistoricalVacationActivationState(historicalVacationTransaction.getId());
+
 	    newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.ON.getCode());
 	    HistoricalVacationsService.modifyHistoricalVacationTransaction(newHistoricalVacationTransaction, currentEmployee, true, false);
+
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    historicalVacationTransaction.setApprovedFlag(FlagsEnum.OFF.getCode());
