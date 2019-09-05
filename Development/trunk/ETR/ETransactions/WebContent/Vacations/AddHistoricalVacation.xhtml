@@ -56,12 +56,13 @@
 				alert('#{msgs.error_periodNotNegative}');
 				return false;
 			}
-
+			var vacationTypeId  = document.getElementById('historicalVacationFormId:historicalvacTypeId').value;
+	       if(vacationTypeId == 1 || vacationTypeId == 2 || vacationTypeId == 3 ||vacationTypeId == 11){
 			var location = document.getElementById('historicalVacationFormId:locationId').innerHTML;
 			if (location == null || location == '') {
 				alert('#{msgs.error_locationMandatory}');
 				return false;
-			}
+			}}
 
 			var contactNumber = document.getElementById('historicalVacationFormId:contactNumberId').value;
 			if (contactNumber == null || contactNumber == '') {
@@ -178,7 +179,7 @@
 										<td width="35%">
 											<h:selectOneMenu id="historicalvacTypeId" value="#{historicalVacation.historicalVacationTransactionData.vacationTypeId}" disabled="#{historicalVacation.historicalVacationTransactionData.id != null}">
 												<f:selectItems value="#{historicalVacation.vacTypeList}" var="vacType" itemLabel="#{(historicalVacation.currentEmployee.categoryId == 1 or historicalVacation.currentEmployee.categoryId == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
-												<f:ajax event="change" listener="#{historicalVacation.inquiryBalance()}" execute="@this" render="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												<f:ajax event="change" listener="#{historicalVacation.inquiryBalance()}" execute="historicalVacationFormId:historicalvacTypeId" render="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:selectOneMenu>
 										</td>
 										<th width="15%">
@@ -225,7 +226,7 @@
 											<font style="color: red;"> *</font>
 										</th>
 										<td width="35%" colspan="3">
-											<h:selectOneMenu value="#{historicalVacation.historicalVacationTransactionData.decisionRegionId}" disabled="#{historicalVacation.viewMode == 1}">
+											<h:selectOneMenu value="#{historicalVacation.historicalVacationTransactionData.decisionRegionId}" disabled="#{historicalVacation.viewMode == 1 or historicalVacation.historicalVacationTransactionData.approvedFlag == 1}">
 												<f:selectItems value="#{historicalVacation.decisionRegions}" var="decRegion" itemLabel="#{decRegion.description}" itemValue="#{decRegion.id}" />
 											</h:selectOneMenu>
 										</td>
@@ -240,9 +241,9 @@
 												<f:ajax event="blur" execute="historicalVacationFormId:selectedVacationStartDateId historicalVacationFormId:historicalvacTypeId" listener="#{historicalVacation.startDateAndPeriodChangeListener}" render="historicalVacationFormId:selectedVacationEndDateId historicalVacationFormId:joiningVacationId historicalVacationFormId:notifyMessagesId" />
 											</h:inputText>
 										</td>
-										<th width="15%">#{msgs.label_vacationBalance}</th>
+										<th width="15%"> <h:outputText value="#{msgs.label_vacationBalance}" rendered="#{historicalVacation.viewMode != 1}"/></th>
 										<td width="35%">
-											<h:outputText id="vacationBalanceId" value="#{historicalVacation.balance}" />
+											<h:outputText id="vacationBalanceId" value="#{historicalVacation.balance}" rendered="#{historicalVacation.viewMode != 1}"/>
 										</td>
 									</tr>
 									<tr>
@@ -400,7 +401,7 @@
 											<h:commandButton rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1 and historicalVacation.historicalVacationTransactionData.id != null and historicalVacation.isSignAuthorized()}" onclick="return handleOnAction('#{msgs.q_send}', 'validateVacationData()');" action="#{historicalVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 												<f:ajax execute="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationId" render="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationId historicalVacationFormId:actionsPanelId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
-											<h:commandButton rendered="#{historicalVacation.viewMode!=1}" action="#{historicalVacation.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+											<h:commandButton rendered="#{historicalVacation.viewMode == 0}" action="#{historicalVacation.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
 												<f:ajax execute="@form" render="@form" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 										</h:panelGroup>

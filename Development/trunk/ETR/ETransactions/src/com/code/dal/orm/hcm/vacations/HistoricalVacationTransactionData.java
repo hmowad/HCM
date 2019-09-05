@@ -33,7 +33,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_PERIOD = -1 or v.period = :P_PERIOD )" +
 			" and (:P_APPROVED_FLAG = -1 or v.approvedFlag = :P_APPROVED_FLAG)" +
 			" and  v.activeFlag = 1" +
-			" order by v.empId,v.decisionDate , v.approvedFlag"),
+			" order by v.rankId,v.decisionDate , v.approvedFlag"),
 
 	@NamedQuery(name = "hcm_historicalVacationTransactionData_getHistoricalVacationById",
 		query = " select v from HistoricalVacationTransactionData v " +
@@ -48,6 +48,7 @@ public class HistoricalVacationTransactionData extends BaseEntity {
     private Long vacationTransactionId;
     private Long historicalVacationParentId;
     private Long empId;
+    private Long rankId;
     private String empName;
     private Long currentEmpPhysicalUnitId;
     private Long vacationTypeId;
@@ -126,6 +127,16 @@ public class HistoricalVacationTransactionData extends BaseEntity {
     public void setEmpId(Long empId) {
 	this.empId = empId;
 	historicalVacationTransaction.setEmpId(empId);
+    }
+
+    @Basic
+    @Column(name = "RANK_ID")
+    public Long getRankId() {
+	return rankId;
+    }
+
+    public void setRankId(Long rankId) {
+	this.rankId = rankId;
     }
 
     @Basic
