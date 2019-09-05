@@ -565,7 +565,8 @@ public class VacationsService extends BaseService {
 	    Map<String, Object> queryParam = new HashMap<String, Object>();
 	    queryParam.put("P_DECISION_NUMBER", decisionNumber);
 	    queryParam.put("P_VACATION_ID", vacationId == null ? FlagsEnum.ALL.getCode() : vacationId);
-	    return DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_VACATION_BY_DECISION_NUMBER.getCode(), queryParam).get(0);
+	    List<Long> count = DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_VACATION_BY_DECISION_NUMBER.getCode(), queryParam);
+	    return (count.isEmpty() || count == null ? 0 : count.get(0));
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");

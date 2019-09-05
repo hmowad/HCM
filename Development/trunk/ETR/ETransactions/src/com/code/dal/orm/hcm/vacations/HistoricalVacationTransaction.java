@@ -59,11 +59,11 @@ public class HistoricalVacationTransaction extends BaseEntity {
     private String joiningRemarks;
     private String attachments;
 
-    @SequenceGenerator(name = "HCMHistoricalVacationSeq",
+    @SequenceGenerator(name = "HCMHistoricalVacationsSeq",
 	    sequenceName = "HCM_HISTORCAL_VACATIONS_SEQ",
 	    allocationSize = 1)
     @Id
-    @GeneratedValue(generator = "HCMHistoricalVacationSeq",
+    @GeneratedValue(generator = "HCMHistoricalVacationsSeq",
 	    strategy = GenerationType.SEQUENCE)
     @Column(name = "ID")
     public Long getId() {

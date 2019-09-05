@@ -47,10 +47,10 @@ public class HistoricalVacationsService extends BaseService {
 	insertHistoricalVacation(historicalVacationTransaction, useSession);
     }
 
-    public static void modifyHistoricalVacationTransaction(HistoricalVacationTransaction historicalVacationTransaction, EmployeeData vacationBeneficiary, boolean signHistoricalVacationFlag, boolean skIpValidationFlag, CustomSession... useSession) throws BusinessException {
+    public static void modifyHistoricalVacationTransaction(HistoricalVacationTransaction historicalVacationTransaction, EmployeeData vacationBeneficiary, boolean signHistoricalVacationFlag, boolean skipValidationFlag, CustomSession... useSession) throws BusinessException {
 	HistoricalVacationTransactionData vacationData = getHistoricalVacationTransactionDataById(historicalVacationTransaction.getId());
 	if (vacationData != null) {
-	    if (historicalVacationTransaction.getRequestType() != RequestTypesEnum.CANCEL.getCode() && !skIpValidationFlag) {
+	    if (historicalVacationTransaction.getRequestType() != RequestTypesEnum.CANCEL.getCode() && !skipValidationFlag) {
 		historicalVacationTransaction.setPaidVacationType(VacationsBusinessRulesService.getPaidVacationType(historicalVacationTransaction.getVacationTypeId(), historicalVacationTransaction.getSubVacationType(), vacationBeneficiary, historicalVacationTransaction.getStartDate(), null));
 		validateHistoricalVacationRules(historicalVacationTransaction, vacationBeneficiary);
 	    }
@@ -61,10 +61,15 @@ public class HistoricalVacationsService extends BaseService {
     }
 
     public static void deleteHistoricalVacationTransaction(HistoricalVacationTransaction historicalVacationTransaction, CustomSession... useSession) throws BusinessException {
+
+	HistoricalVacationTransactionData vacationData = getHistoricalVacationTransactionDataById(historicalVacationTransaction.getId());
+	if (vacationData.getApprovedFlag() == FlagsEnum.ON.getCode())
+	    throw new BusinessException("error_vacationHasBeenModifiedOrCanceled");
+	// if the deletion for initial cancel/modify vacation get the parent and set the active flag to on
 	if (historicalVacationTransaction.getRequestType() != RequestTypesEnum.NEW.getCode()) {
-	    HistoricalVacationTransaction oldHistoricalVacatio = getHistoricalVacationTransactionDataById(historicalVacationTransaction.getHistoricalVacationParentId()).getHistoricalVacationTransaction();
-	    oldHistoricalVacatio.setActiveFlag(FlagsEnum.ON.getCode());
-	    modifyHistoricalVacation(oldHistoricalVacatio, false, useSession);
+	    HistoricalVacationTransaction oldHistoricalVacation = getHistoricalVacationTransactionDataById(historicalVacationTransaction.getHistoricalVacationParentId()).getHistoricalVacationTransaction();
+	    oldHistoricalVacation.setActiveFlag(FlagsEnum.ON.getCode());
+	    modifyHistoricalVacation(oldHistoricalVacation, false, useSession);
 	}
 	deleteHistoricalVacation(historicalVacationTransaction, useSession);
     }
@@ -73,7 +78,7 @@ public class HistoricalVacationsService extends BaseService {
     public static void validateOldHistoricalVacationActivationState(Long vacationId) throws BusinessException {
 	HistoricalVacationTransactionData oldHistoricalVacationTransactionData = getHistoricalVacationTransactionDataById(vacationId);
 	if (oldHistoricalVacationTransactionData.getActiveFlag() == FlagsEnum.OFF.getCode())
-	    throw new BusinessException("error_vacationHasBeenmModifiedOrCanceled");
+	    throw new BusinessException("error_vacationHasBeenModifiedOrCanceled");
     }
 
     public static void validateHistoricalVacationRules(HistoricalVacationTransaction historicalVacationTransaction, EmployeeData vacationBeneficiary) throws BusinessException {
@@ -130,18 +135,13 @@ public class HistoricalVacationsService extends BaseService {
 	if (historicalVacationTransaction.getRequestType().equals(RequestTypesEnum.NEW.getCode()) && !HijriDateService.isValidHijriDate(historicalVacationTransaction.getStartDate()))
 	    throw new BusinessException("error_invalidHijriDate");
 	if (historicalVacationTransaction.getStartDate().after(HijriDateService.getHijriSysDate()))
-	    throw new BusinessException("error_invalidHijriDate");
+	    throw new BusinessException("error_startDateBeforeToday");
     }
 
     protected static void validateVacationLocation(HistoricalVacationTransaction historicalVacationTransaction) throws BusinessException {
 	if (historicalVacationTransaction.getRequestType() == RequestTypesEnum.NEW.getCode()
 		&& historicalVacationTransaction.getLocationFlag().equals(LocationFlagsEnum.EXTERNAL.getCode())
 		&& historicalVacationTransaction.getLocation().contains(getMessage("label_ksa")))
-	    throw new BusinessException("error_invalidLocation");
-
-	if (historicalVacationTransaction.getVacationTypeId() == VacationTypesEnum.SICK.getCode()
-		&& historicalVacationTransaction.getRequestType() == RequestTypesEnum.MODIFY.getCode()
-		&& historicalVacationTransaction.getLocationFlag().equals(LocationFlagsEnum.INTERNAL_EXTERNAL.getCode()))
 	    throw new BusinessException("error_invalidLocation");
     }
 
@@ -170,7 +170,7 @@ public class HistoricalVacationsService extends BaseService {
     }
 
     protected static void validateHistoricalRegularVacationRules(HistoricalVacationTransaction historicalVacationTransaction, EmployeeData vacationBeneficiary) throws BusinessException {
-	validateRegularHistoricalVacationEffect(historicalVacationTransaction, vacationBeneficiary);
+	validateHistoricalRegularVacationEffect(historicalVacationTransaction, vacationBeneficiary);
 	try {
 	    if (vacationBeneficiary.getRecruitmentDate() == null)
 		throw new BusinessException("error_empRecruitmentDateMandatoryForVacations");
@@ -362,7 +362,7 @@ public class HistoricalVacationsService extends BaseService {
      * @param HistoricalVacationTransaction
      *            vacationBeneficiary algorithm: 1st get the last regular vacation data 2nd get the list of vacations between historical vacation and last vacation 3rd loop over the list and calculate if this vacation will cause a negative balance to any future balance if true throw error_regularBalanceConflect
      **/
-    private static void validateRegularHistoricalVacationEffect(HistoricalVacationTransaction historicalVacationTransaction, EmployeeData vacationBeneficiary) throws BusinessException {
+    private static void validateHistoricalRegularVacationEffect(HistoricalVacationTransaction historicalVacationTransaction, EmployeeData vacationBeneficiary) throws BusinessException {
 	try {
 	    VacationData lastVacation = VacationsService.getLastVacationData(vacationBeneficiary.getEmpId(), VacationTypesEnum.REGULAR.getCode());
 	    if (lastVacation != null) {
@@ -705,11 +705,11 @@ public class HistoricalVacationsService extends BaseService {
 		vacation = constructVacation(historicalVacationTransaction);
 		if (historicalVacationTransaction.getRequestType() == RequestTypesEnum.MODIFY.getCode() || historicalVacationTransaction.getRequestType() == RequestTypesEnum.CANCEL.getCode()) {
 		    HistoricalVacationTransaction oldHistoricalVacationTransaction = getHistoricalVacationTransactionDataById(historicalVacationTransaction.getHistoricalVacationParentId()).getHistoricalVacationTransaction();
-		    oldHistoricalVacationTransaction.setActiveFlag(FlagsEnum.OFF.getCode());
-		    DataAccess.updateEntity(oldHistoricalVacationTransaction, session);
 		    vacation.setVacationId(oldHistoricalVacationTransaction.getVacationTransactionId());
 		    if (historicalVacationTransaction.getRequestType() == RequestTypesEnum.CANCEL.getCode())
 			vacation.setStatus(RequestTypesEnum.CANCEL.getCode());
+		    else
+			vacation.setStatus(RequestTypesEnum.MODIFY.getCode());
 		    DataAccess.updateEntity(vacation, session);
 		} else {
 		    DataAccess.addEntity(vacation, session);
@@ -913,10 +913,11 @@ public class HistoricalVacationsService extends BaseService {
     public static List<HistoricalVacationTransactionData> searchHistoricalVacations(EmployeeData employee, Integer requestTypeFlag, Integer[] requestTypes, String decisionNumber, Integer skipDecisionDateFlag, Date decisionDate, long vacationTypeFlag, Long[] vacationTypes, Date fromDate, Date toDate, Integer period, int approvedFlag, int locationFlag, String countryName) throws BusinessException {
 	try {
 	    Map<String, Object> qParam = new HashMap<String, Object>();
-	    qParam.put("P_EMP_ID", employee.getEmpId());
+	    qParam.put("P_EMP_ID", employee.getEmpId() == null ? FlagsEnum.ALL.getCode() : employee.getEmpId());
 	    qParam.put("P_VACATION_TYPE_FLAG", vacationTypeFlag);
 	    qParam.put("P_VACATION_TYPES_ID", vacationTypes);
-	    qParam.put("P_FROM_DATE", (fromDate == null ? HijriDateService.getHijriDateString(employee.getRecruitmentDate()) : HijriDateService.getHijriDateString(fromDate)));
+	    qParam.put("P_SKIP_START_DATE", (fromDate == null && employee.getRecruitmentDate() == null) ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode());
+	    qParam.put("P_FROM_DATE", (fromDate == null ? HijriDateService.getHijriDateString(employee.getRecruitmentDate() == null ? HijriDateService.getHijriSysDate() : employee.getRecruitmentDate()) : HijriDateService.getHijriDateString(fromDate)));
 	    qParam.put("P_TO_DATE", (toDate == null ? HijriDateService.getHijriDateString(HijriDateService.getHijriSysDate()) : HijriDateService.getHijriDateString(toDate)));
 	    qParam.put("P_PERIOD", (period == null ? FlagsEnum.ALL.getCode() : period));
 	    qParam.put("P_APPROVED_FLAG", approvedFlag);
@@ -952,8 +953,8 @@ public class HistoricalVacationsService extends BaseService {
 	    Map<String, Object> queryParam = new HashMap<String, Object>();
 	    queryParam.put("P_DECISION_NUMBER", decisionNumber);
 	    queryParam.put("P_VACATION_ID", historicalVacationId == null ? FlagsEnum.ALL.getCode() : historicalVacationId);
-
-	    return DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_HISTORICAL_VACATIONS_BY_DECISION_NUMBER_AND_DATE.getCode(), queryParam).get(0);
+	    List<Long> count = DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_HISTORICAL_VACATIONS_BY_DECISION_NUMBER_AND_DATE.getCode(), queryParam);
+	    return (count.isEmpty() || count == null ? 0 : count.get(0));
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_getVacationsData");

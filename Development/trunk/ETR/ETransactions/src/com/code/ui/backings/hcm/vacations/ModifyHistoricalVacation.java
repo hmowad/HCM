@@ -32,7 +32,6 @@ public class ModifyHistoricalVacation extends BaseBacking {
     private String balance;
     private List<VacationType> vacTypeList;
     private List<Region> decisionRegions;
-    boolean saveAuthorized;
     boolean signAuthorized;
     // mode= 0 open the page from menu
     // mode =1 opened as detail from management page
@@ -61,13 +60,14 @@ public class ModifyHistoricalVacation extends BaseBacking {
 		vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
 	    } else {
 		currentEmployee = new EmployeeData();
+		viewMode = 0;
 		historicalVacationTransaction = new HistoricalVacationTransaction();
 		newHistoricalVacationTransaction = new HistoricalVacationTransaction();
+		newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.OFF.getCode());
 	    }
 	    decisionRegions = CommonService.getAllRegions();
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
-	    saveAuthorized = SecurityService.isEmployeeMenuActionGranted(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_MODIFY_HISTORICAL_VACATION.getCode(), MenuActionsEnum.VAC_SAVE_MODIFIED_HISTORICAL_VACATION.getCode());
-	    signAuthorized = SecurityService.isEmployeeMenuActionGranted(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_MODIFY_HISTORICAL_VACATION.getCode(), MenuActionsEnum.VAC_SIGN_MODIFIED_HISTORICAL_VACATION.getCode());
+	    signAuthorized = SecurityService.isEmployeeMenuActionGranted(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_HISTORICAL_VAC_MODIFY_HISTORICAL_VACATION.getCode(), MenuActionsEnum.VAC_HISTORICAL_VACATIONS_SIGN_MODIFIED_HISTORICAL_VACATION.getCode());
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -215,10 +215,6 @@ public class ModifyHistoricalVacation extends BaseBacking {
 
     public void setDecisionRegions(List<Region> decisionRegions) {
 	this.decisionRegions = decisionRegions;
-    }
-
-    public boolean isSaveAuthorized() {
-	return saveAuthorized;
     }
 
     public boolean isSignAuthorized() {

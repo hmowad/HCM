@@ -129,7 +129,7 @@
 												</th>
 												<td width="85%" colspan="3">
 													<h:outputText id="empNameId" value="#{historicalVacation.currentEmployee.name}" />
-													<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" rendered="#{historicalVacation.viewMode != 1 or historicalVacation.historicalVacationTransactionData.activeFlag != 1 }" />
+													<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" rendered="#{historicalVacation.viewMode == 0 and historicalVacation.historicalVacationTransactionData.approvedFlag == 0 }" />
 													<h:inputHidden id="empIdHId" value="#{historicalVacation.currentEmployee.empId}" />
 													<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{historicalVacation.selectEmployee}">
 														<f:ajax execute="historicalVacationFormId:empIdHId" render=" historicalVacationFormId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
@@ -394,7 +394,7 @@
 								<td width="100%">
 									<h:panelGroup id="actionsPanelId">
 										<h:panelGroup rendered="#{historicalVacation.currentEmployee.empId != null}">
-											<h:commandButton rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1 and  historicalVacation.isSaveAuthorized()}" onclick="return handleOnAction('#{msgs.q_send}', 'validateVacationData()');" action="#{historicalVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
+											<h:commandButton rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}" onclick="return handleOnAction('#{msgs.q_send}', 'validateVacationData()');" action="#{historicalVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
 												<f:ajax execute="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationId" render="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationId historicalVacationFormId:actionsPanelId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 											<h:commandButton rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1 and historicalVacation.historicalVacationTransactionData.id != null and historicalVacation.isSignAuthorized()}" onclick="return handleOnAction('#{msgs.q_send}', 'validateVacationData()');" action="#{historicalVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
