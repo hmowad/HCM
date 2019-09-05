@@ -138,7 +138,7 @@ public class AddHistoricalVacation extends BaseBacking {
 	try {
 	    if (historicalVacationTransactionData.getStartDate() != null && historicalVacationTransactionData.getPeriod() != null && historicalVacationTransactionData.getPeriod() > 0) {
 		historicalVacationTransactionData.setEndDateString(HijriDateService.addSubStringHijriDays(historicalVacationTransactionData.getStartDateString(), historicalVacationTransactionData.getPeriod() - 1));
-		historicalVacationTransactionData.setJoiningDateString(HijriDateService.addSubStringHijriDays(historicalVacationTransactionData.getStartDateString(), historicalVacationTransactionData.getPeriod()));
+		historicalVacationTransactionData.setJoiningDateString(HijriDateService.addSubStringHijriDays(historicalVacationTransactionData.getStartDateString(), historicalVacationTransactionData.getPeriod() + (historicalVacationTransactionData.getExceededDays() == null ? 0 : historicalVacationTransactionData.getExceededDays()) + 1));
 	    }
 
 	    inquiryBalance();
@@ -207,7 +207,7 @@ public class AddHistoricalVacation extends BaseBacking {
 	historicalVacationTransactionData.setApprovedFlag(FlagsEnum.OFF.getCode());
 	historicalVacationTransactionData.setLocation(getMessage("label_ksa"));
 	historicalVacationTransactionData.setVacationTypeId(VacationTypesEnum.REGULAR.getCode());
-
+	exceededFlag = FlagsEnum.OFF.getCode();
 	balance = "";
 	try {
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
