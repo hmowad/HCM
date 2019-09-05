@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:rich="http://richfaces.org/rich">
 <h:head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
@@ -9,14 +9,44 @@
 
 	<script type="text/javascript">    
 	//<![CDATA[
-          function validateData(){
-            var oldVacationId = document.getElementById('cancelCompellingVacationForm:oldVacationId').value;
-            if(oldVacationId == null || oldVacationId == ''){
-                alert(document.getElementById('noPrevVacationId').value);
-                return false;
-            }
+		  function getEmp(contextPath){
+			  
+                openEmployeesMiniSearchForBeneficiary(contextPath, 'handleEmpsMiniSearchResult(ret)', 19, #{cancelCompellingVacation.vacationMode}, '#{cancelCompellingVacation.employeeIds}');
 
-            if (#{cancelCompellingVacation.vacationMode} == 2) {
+           	    }
+            
+            function handleEmpsMiniSearchResult(ret){
+            	if(ret != null){
+                    document.getElementById('cancelCompellingVacationForm:beneficiarySearchId').value = ret[0];
+                    document.getElementById('cancelCompellingVacationForm:searchEmpButton').click();
+                 }
+            }
+            
+          function validateData(){
+              
+              var oldVacationId = document.getElementById('cancelCompellingVacationForm:oldVacationId').value;
+              if(oldVacationId == null || oldVacationId == ''){
+                  alert(document.getElementById('noPrevVacationId').value);
+                  return false;
+              }
+              
+        	  if (#{cancelCompellingVacation.admin}) {
+                	var decisionNumber = document.getElementById('cancelCompellingVacationForm:decisionNumberId').value.trim();
+                	var decisionDateDay = document.getElementById('cancelCompellingVacationForm:decisionDateId:day').value;            	
+                	
+               	 	if(decisionNumber == null || decisionNumber == '') {
+                     	alert('#{msgs.error_decNumberMandatory}');
+                     	return false;
+               	 	}
+
+                	if (decisionDateDay == null || decisionDateDay == 0) {
+    					alert('#{msgs.error_decDateMandatory}');
+    					return false;
+    				}
+                }
+
+
+            if (#{cancelCompellingVacation.vacationMode} == 2 && #{!cancelCompellingVacation.admin}) {
 	            var requestJustifications = document.getElementById('cancelCompellingVacationForm:requestJustificationsId').value;
 	            if(requestJustifications == null || requestJustifications == ''){
 	                alert('#{msgs.error_requestJustificationsMandatory}');
@@ -68,6 +98,45 @@
 						<code:emp value="#{cancelCompellingVacation.requester}" />
 					</td>
 				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiary}" switchType="client" 
+						onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{cancelCompellingVacation.beneficiary.empId == cancelCompellingVacation.requester.empId}) &amp;&amp; (#{cancelCompellingVacation.role == 'Requester'})) { getEmp('#{request.contextPath}'); return false;} else {return true;}"
+							expanded="#{cancelCompellingVacation.requester.empId != cancelCompellingVacation.beneficiary.empId}" 
+							rendered="#{cancelCompellingVacation.role == 'Requester' and cancelCompellingVacation.admin == true}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+								<h:panelGroup rendered="#{cancelCompellingVacation.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+														<h:inputHidden id="beneficiarySearchId" value="#{cancelCompellingVacation.beneficiarySearchId}" />
+														<h:commandButton id="searchEmpButton" style="display: none;" action="#{cancelCompellingVacation.searchBeneficiary}">
+															<f:ajax render="cancelCompellingVacationForm:beneficiaryPanelId cancelCompellingVacationForm:lastVactionId:data cancelCompellingVacationForm:approveBenfBtnId cancelCompellingVacationForm:requestInfoPanelId cancelCompellingVacationForm:warningsPanelId cancelCompellingVacationForm:notifyMessagesId" 
+															execute="beneficiarySearchId" 
+															onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp id="beneficiaryId" value="#{cancelCompellingVacation.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
 
 				<tr>
 					<td width="100%" height="15" />
@@ -85,7 +154,7 @@
 
 				<tr>
 					<td width="100%">
-						<code:vac value="#{cancelCompellingVacation.lastVacation}" />
+						<code:vac id="lastVactionId" value="#{cancelCompellingVacation.lastVacation}" />
 					</td>
 				</tr>
 
@@ -105,32 +174,55 @@
 
 				<tr>
 					<td width="100%">
-						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-							<h:panelGroup rendered="#{cancelCompellingVacation.vacationMode == 2}">
+						<h:panelGroup id="requestInfoPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<h:panelGroup rendered="#{cancelCompellingVacation.role == 'Requester' and cancelCompellingVacation.admin}">
+									<tr>
+										<th width="15%">
+											#{msgs.label_decisionNumber}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="decisionNumberId" value="#{cancelCompellingVacation.decisionNumber}" />
+										</td>
+										<th width="15%">
+											#{msgs.label_decisionDate}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<util:hijri id="decisionDateId" value="#{cancelCompellingVacation.decisionDate}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+							
+								<h:panelGroup rendered="#{!cancelCompellingVacation.admin}">
+									<h:panelGroup rendered="#{cancelCompellingVacation.vacationMode == 2}">
+										<tr>
+											<th width="15%">
+												#{msgs.label_requestJustifications}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="85%" colspan="3">
+												<h:inputText id="requestJustificationsId" value="#{cancelCompellingVacation.vacRequest.reasons}" readonly="#{cancelCompellingVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<th width="15%">#{msgs.label_notes}</th>
+										<td width="85%" colspan="3">
+											<h:inputText value="#{cancelCompellingVacation.vacRequest.notes}" readonly="#{cancelCompellingVacation.role != 'Requester'}" maxlength="100" styleClass="inputDataLarge" />
+										</td>
+									</tr>
+								</h:panelGroup>
 								<tr>
-									<th width="15%">
-										#{msgs.label_requestJustifications}
-										<font style="color: red;">*</font>
-									</th>
-									<td width="85%">
-										<h:inputText id="requestJustificationsId" value="#{cancelCompellingVacation.vacRequest.reasons}" readonly="#{cancelCompellingVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+									<th width="15%">#{msgs.label_attachments}</th>
+									<td width="85%" colspan="3">
+										<h:inputHidden id="oldVacationId" value="#{cancelCompellingVacation.vacRequest.oldVacationId}" />
+										<code:attachments loginEmpId="#{cancelCompellingVacation.loginEmpData.empId}" attachmentId="#{cancelCompellingVacation.attachments}" addEnableFlag="#{cancelCompellingVacation.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{cancelCompellingVacation.role == 'Requester'}" />
 									</td>
 								</tr>
-							</h:panelGroup>
-							<tr>
-								<th width="15%">#{msgs.label_notes}</th>
-								<td width="85%">
-									<h:inputHidden id="oldVacationId" value="#{cancelCompellingVacation.vacRequest.oldVacationId}" />
-									<h:inputText value="#{cancelCompellingVacation.vacRequest.notes}" readonly="#{cancelCompellingVacation.role != 'Requester'}" maxlength="100" styleClass="inputDataLarge" />
-								</td>
-							</tr>
-							<tr>
-								<th width="15%">#{msgs.label_attachments}</th>
-								<td width="85%">
-									<code:attachments loginEmpId="#{cancelCompellingVacation.loginEmpData.empId}" attachmentId="#{cancelCompellingVacation.attachments}" addEnableFlag="#{cancelCompellingVacation.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{cancelCompellingVacation.role == 'Requester'}" />
-								</td>
-							</tr>
-						</table>
+							</table>
+						</h:panelGroup>
 					</td>
 				</tr>
 
@@ -140,17 +232,20 @@
 
 				<tr>
 					<td width="100%">
-						<h:panelGroup rendered="#{cancelCompellingVacation.hasEarlierStartDateWarning()}">
-							<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
-								<tr>
-									<th>#{msgs.label_warnings}</th>
-								</tr>
-								<tr>
-									<td>
-										<h:outputText value="#{msgs.label_warningsEarlierStartDateForVacation}" />
-									</td>
-								</tr>
-							</table>
+						<h:panelGroup id="warningsPanelId">
+
+							<h:panelGroup rendered="#{cancelCompellingVacation.hasEarlierStartDateWarning()}">
+								<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th>#{msgs.label_warnings}</th>
+									</tr>
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.label_warningsEarlierStartDateForVacation}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
 						</h:panelGroup>
 					</td>
 				</tr>
@@ -255,11 +350,21 @@
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-									<h:panelGroup rendered="#{cancelCompellingVacation.role == 'Requester'}">
+									<h:panelGroup rendered="#{cancelCompellingVacation.role == 'Requester' and !cancelCompellingVacation.admin}">
 										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{(cancelCompellingVacation.vacationMode == 2 and cancelCompellingVacation.lastVacation.locationFlag == 1) ? (msgs.q_cancelSoldierExternalVacWarning) : (msgs.q_send)}', 'validateData()');" action="#{cancelCompellingVacation.initProcess}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
 											<f:ajax render="notifyMessagesId" execute="@form" />
 										</h:commandButton>
 									</h:panelGroup>
+
+									<h:panelGroup id="benfActionPanelId" rendered="#{cancelCompellingVacation.role == 'Requester' and cancelCompellingVacation.admin}">
+										<h:commandButton id="approveBenfBtnId" action="#{cancelCompellingVacation.saveBeneficiaryVacation}" rendered="#{!cancelCompellingVacation.vacApprovedFlag}" disabled="#{cancelCompellingVacation.requester.empId == cancelCompellingVacation.beneficiary.empId}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateData()');" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="cancelCompellingVacationForm:benfActionPanelId cancelCompellingVacationForm:notifyMessagesId" execute="@form" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+										<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{cancelCompellingVacation.resetForm}">
+											<f:ajax render="cancelCompellingVacationForm:beneficiaryPanelId cancelCompellingVacationForm:lastVactionId:data cancelCompellingVacationForm:requestInfoPanelId  cancelCompellingVacationForm:benfActionPanelId cancelCompellingVacationForm:warningsPanelId cancelCompellingVacationForm:notifyMessagesId " onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+									</h:panelGroup>
+
 
 									<h:panelGroup rendered="#{cancelCompellingVacation.role == 'DirectManager'}">
 										<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;cancelCompellingVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{cancelCompellingVacation.approveDM}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">

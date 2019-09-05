@@ -650,6 +650,40 @@ public class EmployeesService extends BaseService {
 	}
     }
 
+    public static List<EmployeeData> searchEmployeesForBeneficiary(String empName, Long[] categoriesIds, Long[] employeesId, int militaryNumber, String socialID, Long[] statusesIds, String jobDesc, String physicalUnitFullName, Long sequenceNumber) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_EMP_NAME", (empName == null || empName.equals("") || empName.equals(FlagsEnum.ALL.getCode() + "")) ? FlagsEnum.ALL.getCode() + "" : "%" + empName + "%");
+	    if (categoriesIds != null && categoriesIds.length > 0) {
+		qParams.put("P_CATEGORIES_IDS_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_CATEGORIES_IDS", categoriesIds);
+	    } else {
+		qParams.put("P_CATEGORIES_IDS_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_CATEGORIES_IDS", new Long[] { (long) FlagsEnum.ALL.getCode() });
+	    }
+	    qParams.put("P_MILITARY_NUMBER", militaryNumber);
+	    qParams.put("P_SOCIAL_ID", (socialID == null || socialID.equals("")) ? FlagsEnum.ALL.getCode() + "" : socialID);
+	    qParams.put("P_STATUSES_IDS", statusesIds);
+	    if (employeesId != null && employeesId.length > 0) {
+		qParams.put("P_EMP_IDS_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_EMP_IDS", employeesId);
+	    } else {
+		qParams.put("P_EMP_IDS_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_EMP_IDS", new Long[] { (long) FlagsEnum.ALL.getCode() });
+	    }
+	    qParams.put("P_JOB_DESC", (jobDesc == null || jobDesc.equals("") || jobDesc.equals(FlagsEnum.ALL.getCode() + "")) ? FlagsEnum.ALL.getCode() + "" : "%" + jobDesc + "%");
+	    qParams.put("P_PHYSICAL_UNIT_FULL_NAME", (physicalUnitFullName == null || physicalUnitFullName.equals("") || physicalUnitFullName.equals(FlagsEnum.ALL.getCode() + "")) ? FlagsEnum.ALL.getCode() + "" : "%" + physicalUnitFullName + "%");
+	    qParams.put("P_SEQUENCE_NUMBER", (sequenceNumber == null) ? FlagsEnum.ALL.getCode() : sequenceNumber);
+
+	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_SEARCH_EMPLOYEES_FOR_BENEFICIARY.getCode(), qParams);
+	} catch (
+
+	DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
     public static List<EmployeeData> getEmpByPhysicalOrOfficialUnit(String empName, Long[] categoriesIds, int militaryNumber, String socialId, String jobDesc, String searchUnitFullName, long jobId, long unitId, long jobMinorSpecId, long regionId, Long sequenceNmuber) throws BusinessException {
 	return searchEmployeesByPhysicalOrOfficialUnit(empName, categoriesIds, jobId, militaryNumber, socialId, unitId, jobMinorSpecId, regionId, jobDesc, searchUnitFullName, sequenceNmuber);
     }

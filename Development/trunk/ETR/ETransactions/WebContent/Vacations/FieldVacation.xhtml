@@ -10,8 +10,13 @@
 	<script type="text/javascript">
     //<![CDATA[  
 		   function getEmp(contextPath){
+               if(#{fieldVacation.admin}){
+         	 	    openEmployeesMiniSearchForBeneficiary(contextPath, 'handleEmpsMiniSearchResult(ret)', 19, #{fieldVacation.vacationMode}, '#{fieldVacation.employeeIds}');
+             
+           		  }else{
             	openEmployeesMiniSearch(contextPath, 'handleEmpsMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{fieldVacation.getLoginEmpPhysicalRegionFlag(false)});
              }
+		   }
             
             function handleEmpsMiniSearchResult(ret){
             	if(ret != null){
@@ -32,6 +37,20 @@
           }
 
           function validateData(){
+        	  if (#{fieldVacation.admin}) {
+                	var decisionNumber = document.getElementById('fieldVacationForm:decisionNumberId').value.trim();
+                	var decisionDateDay = document.getElementById('fieldVacationForm:decisionDateId:day').value;            	
+                	
+               	 	if(decisionNumber == null || decisionNumber == '') {
+                     	alert('#{msgs.error_decNumberMandatory}');
+                     	return false;
+               	 	}
+
+                	if (decisionDateDay == null || decisionDateDay == 0) {
+    					alert('#{msgs.error_decDateMandatory}');
+    					return false;
+    				}
+                }
             var period = document.getElementById('fieldVacationForm:periodId').value;
             if(period == null || period == ''){
             	alert('#{msgs.error_periodMandatory}');
@@ -108,9 +127,10 @@
 
 				<tr>
 					<td width="100%">
-						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiary}" switchType="client"
-							onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{fieldVacation.beneficiary.empId == fieldVacation.requester.empId}) &amp;&amp; (#{fieldVacation.role == 'Requester'})) { getEmp('#{request.contextPath}'); return false;} else {return true;}"
-							expanded="#{fieldVacation.requester.empId != fieldVacation.beneficiary.empId}" rendered="#{fieldVacation.role == 'Requester' or fieldVacation.requester.empId != fieldVacation.beneficiary.empId}">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiary}" switchType="client" 
+						onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{fieldVacation.beneficiary.empId == fieldVacation.requester.empId}) &amp;&amp; (#{fieldVacation.role == 'Requester'})) { getEmp('#{request.contextPath}'); return false;} else {return true;}" 
+						expanded="#{fieldVacation.requester.empId != fieldVacation.beneficiary.empId}"
+							rendered="#{fieldVacation.role == 'Requester' or fieldVacation.admin == true or fieldVacation.requester.empId != fieldVacation.beneficiary.empId}">
 							<table border="0" cellpadding="0" cellspacing="0" width="100%">
 
 								<h:panelGroup rendered="#{fieldVacation.role == 'Requester'}">
@@ -122,9 +142,9 @@
 														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
 														<h:inputHidden id="beneficiarySearchId" value="#{fieldVacation.beneficiarySearchId}" />
 														<h:commandButton id="searchEmpButton" style="display: none;" action="#{fieldVacation.searchBeneficiary}">
-															<f:ajax render="fieldVacationForm:beneficiaryPanelId fieldVacationForm:lastVacId:data fieldVacationForm:screenTitleId fieldVacationForm:requestInfoPanelId fieldVacationForm:vacationsPercentagePanelId fieldVacationForm:notifyMessagesId"
-																	execute="beneficiarySearchId"
-																	onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															<f:ajax render="fieldVacationForm:beneficiaryPanelId fieldVacationForm:lastVacId:data fieldVacationForm:screenTitleId fieldVacationForm:requestInfoPanelId fieldVacationForm:vacationsPercentagePanelId fieldVacationForm:approveBenfBtnId fieldVacationForm:warningsPanelId fieldVacationForm:notifyMessagesId" 
+															execute="beneficiarySearchId" 
+															onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 														</h:commandButton>
 													</td>
 												</tr>
@@ -158,7 +178,7 @@
 
 				<tr>
 					<td width="100%">
-						<code:vac id="lastVacId" value="#{fieldVacation.lastVacation}" secondLastVacation="#{fieldVacation.secondLastVacation}"/>
+						<code:vac id="lastVacId" value="#{fieldVacation.lastVacation}" secondLastVacation="#{fieldVacation.secondLastVacation}" />
 					</td>
 				</tr>
 
@@ -180,6 +200,24 @@
 					<td width="100%">
 						<h:panelGroup id="requestInfoPanelId">
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<h:panelGroup rendered="#{fieldVacation.role == 'Requester' and fieldVacation.admin}">
+									<tr>
+										<th width="15%">
+											#{msgs.label_decisionNumber}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="decisionNumberId" value="#{fieldVacation.decisionNumber}" />
+										</td>
+										<th width="15%">
+											#{msgs.label_decisionDate}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<util:hijri id="decisionDateId" value="#{fieldVacation.decisionDate}" />
+										</td>
+									</tr>
+								</h:panelGroup>
 								<tr>
 									<th width="15%">
 										#{msgs.label_period}
@@ -261,20 +299,22 @@
 										<h:inputText id="contactAddressId" value="#{fieldVacation.vacRequest.contactAddress}" readonly="#{fieldVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
 									</td>
 								</tr>
-								<h:panelGroup rendered="#{fieldVacation.vacationMode == 2}">
+								<h:panelGroup rendered="#{!fieldVacation.admin}">
+									<h:panelGroup rendered="#{fieldVacation.vacationMode == 2}">
+										<tr>
+											<th width="15%">#{msgs.label_requestJustifications}</th>
+											<td width="85%" colspan="3">
+												<h:inputText value="#{fieldVacation.vacRequest.reasons}" readonly="#{fieldVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+											</td>
+										</tr>
+									</h:panelGroup>
 									<tr>
-										<th width="15%">#{msgs.label_requestJustifications}</th>
+										<th width="15%">#{msgs.label_notes}</th>
 										<td width="85%" colspan="3">
-											<h:inputText value="#{fieldVacation.vacRequest.reasons}" readonly="#{fieldVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+											<h:inputText value="#{fieldVacation.vacRequest.notes}" readonly="#{fieldVacation.role != 'Requester'}" maxlength="100" styleClass="inputDataLarge" />
 										</td>
 									</tr>
 								</h:panelGroup>
-								<tr>
-									<th width="15%">#{msgs.label_notes}</th>
-									<td width="85%" colspan="3">
-										<h:inputText value="#{fieldVacation.vacRequest.notes}" readonly="#{fieldVacation.role != 'Requester'}" maxlength="100" styleClass="inputDataLarge" />
-									</td>
-								</tr>
 								<tr>
 									<th width="15%">#{msgs.label_attachments}</th>
 									<td width="85%" colspan="3">
@@ -411,9 +451,18 @@
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-									<h:panelGroup rendered="#{fieldVacation.role == 'Requester'}">
+									<h:panelGroup rendered="#{fieldVacation.role == 'Requester' and !fieldVacation.admin}">
 										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateData()');" action="#{fieldVacation.initProcess}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
 											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup id="benfActionPanelId" rendered="#{fieldVacation.role == 'Requester' and fieldVacation.admin}">
+										<h:commandButton id="approveBenfBtnId" action="#{fieldVacation.saveBeneficiaryVacation}" rendered="#{!fieldVacation.vacApprovedFlag}" disabled="#{fieldVacation.requester.empId == fieldVacation.beneficiary.empId}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateData()');" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="fieldVacationForm:benfActionPanelId fieldVacationForm:notifyMessagesId" execute="@form" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+										<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{fieldVacation.resetForm}">
+											<f:ajax render="fieldVacationForm:beneficiaryPanelId fieldVacationForm:lastVacId:data fieldVacationForm:requestInfoPanelId  fieldVacationForm:benfActionPanelId fieldVacationForm:warningsPanelId fieldVacationForm:notifyMessagesId " onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
 										</h:commandButton>
 									</h:panelGroup>
 

@@ -54,7 +54,7 @@ public class VacationsWorkFlow extends BaseWorkFlow {
 	Long originalId = (requester.getEmpId().equals(vacBeneficiary.getEmpId())) ? requester.getManagerId() : requester.getEmpId();
 	vacRequest.setBeneficiaryId(vacBeneficiary.getEmpId());
 
-	validateVacationRequestData(vacBeneficiary, vacRequest);
+	validateVacationRequestData(vacBeneficiary, vacRequest, FlagsEnum.OFF.getCode());
 
 	CustomSession session = DataAccess.getSession();
 	try {
@@ -777,6 +777,33 @@ public class VacationsWorkFlow extends BaseWorkFlow {
 	}
     }
 
+    // used to make vac Request to President , vicePresident , External Mission Employees
+    public static void insertVacationRequest(EmployeeData requester, EmployeeData vacBeneficiary, WFVacation vacRequest, Integer skipWFFlag, String decisionNumber, Date decisionDate, long processId, String attachments, String taskUrl) throws BusinessException {
+
+	vacRequest.setBeneficiaryId(vacBeneficiary.getEmpId());
+
+	validateVacationRequestData(vacBeneficiary, vacRequest, skipWFFlag);
+
+	CustomSession session = DataAccess.getSession();
+	try {
+	    session.beginTransaction();
+	    Vacation vacation = constructVacationTransactionForBeneficiary(vacRequest, vacBeneficiary, attachments, decisionNumber, decisionDate);
+
+	    VacationsService.handleVacRequest(vacation, vacBeneficiary, skipWFFlag, getWFProcess(processId).getProcessName(), session);
+
+	    session.commitTransaction();
+	} catch (BusinessException e) {
+	    session.rollbackTransaction();
+	    throw e;
+	} catch (Exception e) {
+	    session.rollbackTransaction();
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    session.close();
+	}
+
+    }
     /*------------------------------------------------ Integration --------------------------------------------------*/
 
     private static void closeVacationWorkFlow(EmployeeData requester, EmployeeData vacBeneficiary, WFInstance instance, WFVacation vacRequest, WFTask finalTask, long originalDecisionApprovedId, long decisionRegionId, CustomSession session) throws BusinessException, DatabaseException {
@@ -813,14 +840,14 @@ public class VacationsWorkFlow extends BaseWorkFlow {
 		vacation.setFrameEndDate(sickVacationBalanceFrame[1]);
 	    }
 	}
-	VacationsService.handleVacRequest(vacation, vacBeneficiary, getWFProcess(processId).getProcessName(), useSession);
+	VacationsService.handleVacRequest(vacation, vacBeneficiary, FlagsEnum.OFF.getCode(), getWFProcess(processId).getProcessName(), useSession);
     }
 
     /*------------------------------------------------ Validations --------------------------------------------------*/
 
-    private static void validateVacationRequestData(EmployeeData vacBeneficiary, WFVacation vacRequest) throws BusinessException {
+    private static void validateVacationRequestData(EmployeeData vacBeneficiary, WFVacation vacRequest, Integer skipWFFlag) throws BusinessException {
 
-	VacationsService.validateVacationRules(constructVacationTransaction(vacRequest, vacBeneficiary, null), vacBeneficiary);
+	VacationsService.validateVacationRules(constructVacationTransaction(vacRequest, vacBeneficiary, null), vacBeneficiary, skipWFFlag);
     }
 
     public static void validateRunningVacationRequests(long beneficiaryId, long vacationTypeId) throws BusinessException {
@@ -1050,6 +1077,12 @@ public class VacationsWorkFlow extends BaseWorkFlow {
     }
 
     /*------------------------------------------------ Utilities --------------------------------------------------*/
+    private static Vacation constructVacationTransactionForBeneficiary(WFVacation vacRequest, EmployeeData vacBeneficiary, String attachments, String decisionNumber, Date decisionDate) throws BusinessException {
+	Vacation vacation = constructVacationTransaction(vacRequest, vacBeneficiary, attachments);
+	vacation.setDecisionNumber(decisionNumber);
+	vacation.setDecisionDate(decisionDate);
+	return vacation;
+    }
 
     private static Vacation constructVacationTransaction(WFVacation vacRequest, EmployeeData vacBeneficiary, String attachments) throws BusinessException {
 

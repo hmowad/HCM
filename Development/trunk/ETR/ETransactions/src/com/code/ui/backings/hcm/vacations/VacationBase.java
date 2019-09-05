@@ -1,5 +1,6 @@
 package com.code.ui.backings.hcm.vacations;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.faces.event.AjaxBehaviorEvent;
@@ -36,6 +37,13 @@ public abstract class VacationBase extends WFBaseBacking {
     protected String vacationBalance;
     protected List<EmployeeData> reviewerEmps;
     protected Long selectedReviewerEmpId;
+    protected boolean isAdmin;
+    protected String employeeIds;
+    protected boolean vacApprovedFlag;
+    protected Integer beneficiaryType;
+    protected boolean skipLastTwoVacations;
+    protected String decisionNumber;
+    protected Date decisionDate;
 
     public void init() {
 	try {
@@ -43,9 +51,10 @@ public abstract class VacationBase extends WFBaseBacking {
 
 	    if (this.getRequest().getParameter("mode") != null)
 		vacationMode = Integer.parseInt(this.getRequest().getParameter("mode"));
-
+	    if (this.getRequest().getParameter("beneficiaryType") != null)
+		beneficiaryType = Integer.parseInt(this.getRequest().getParameter("beneficiaryType"));
 	    this.beneficiary = this.requester;
-
+	    skipLastTwoVacations = false;
 	    if (!this.role.equals(WFTaskRolesEnum.REQUESTER.getCode())) {
 		vacRequest = VacationsWorkFlow.getWFVacationByInstanceId(this.instance.getInstanceId());
 
@@ -165,6 +174,7 @@ public abstract class VacationBase extends WFBaseBacking {
 			    this.taskUrl = this.taskUrl.replace("mode=" + vacationMode, "mode=" + newVacationMode);
 			    vacationMode = newVacationMode;
 			}
+			skipLastTwoVacations = false;
 			getBeneficiaryInfo();
 		    }
 		} else {
@@ -173,6 +183,76 @@ public abstract class VacationBase extends WFBaseBacking {
 	    }
 	} catch (Exception e) {
 	    this.setServerSideErrorMessages(this.getMessage(e.getMessage()));
+	}
+    }
+
+    public void getLastTwoVacations() throws BusinessException {
+
+	List<VacationData> lastVacations = VacationsService.getVacationsData(this.beneficiary.getEmpId(), this.vacRequest.getVacationTypeId());
+	if (lastVacations != null && !lastVacations.isEmpty()) {
+	    this.lastVacation = lastVacations.get(0);
+	    if (lastVacations.size() > 1)
+		this.secondLastVacation = lastVacations.get(1);
+	    else
+		this.secondLastVacation = null;
+	}
+
+	if (this.lastVacation != null && !lastVacations.isEmpty()) {
+	    this.vacRequest.setOldVacationId(this.lastVacation.getId());
+	} else {
+	    this.lastVacation = new VacationData();
+	    this.vacRequest.setOldVacationId(null);
+	}
+
+	if (this.secondLastVacation != null && !lastVacations.isEmpty()) {
+	    this.vacRequest.setSecondOldVacationId(this.secondLastVacation.getId());
+	} else {
+	    this.secondLastVacation = new VacationData();
+	    this.vacRequest.setSecondOldVacationId(null);
+	}
+    }
+
+    public void resetForm() throws BusinessException {
+
+	reset();
+	this.beneficiary = this.requester;
+    }
+
+    public void reset() {
+	try {
+	    if (vacRequest.getRequestType() == RequestTypesEnum.NEW.getCode()) {
+		this.vacRequest.setLocationFlag(LocationFlagsEnum.INTERNAL.getCode());
+		this.vacRequest.setLocation(getMessage("label_ksa"));
+		this.vacRequest.setStartDate(HijriDateService.getHijriSysDate());
+		this.vacRequest.setContactNumber(null);
+		this.vacRequest.setContactAddress(null);
+	    }
+	    if (vacRequest.getRequestType() == RequestTypesEnum.MODIFY.getCode() && vacRequest.getVacationTypeId() == VacationTypesEnum.SICK.getCode()) {
+		this.vacRequest.setLocationFlag(null);
+		this.vacRequest.setExtPeriod(null);
+		this.vacRequest.setExtStartDate(HijriDateService.getHijriSysDate());
+		this.vacRequest.setExtLocation(null);
+	    }
+	    this.vacRequest.setStartDate(HijriDateService.getHijriSysDate());
+	    this.vacRequest.setOldVacationId(null);
+	    this.vacRequest.setSecondOldVacationId(null);
+	    this.vacRequest.setPeriod(null);
+
+	    this.lastVacation = null;
+	    this.secondLastVacation = null;
+	    this.setVacationBalance(null);
+	    this.decisionDate = HijriDateService.getHijriSysDate();
+	    this.decisionNumber = null;
+	    this.attachments = null;
+	    if (beneficiaryType == null) {
+		this.vacRequest.setNotes(null);
+		this.vacRequest.setReasons(null);
+	    }
+	    vacApprovedFlag = false;
+	    this.setAttachments(null);
+	} catch (BusinessException e) {
+	    e.printStackTrace();
+	    this.setServerSideErrorMessages(this.getMessage("error_reset"));
 	}
     }
 
@@ -523,6 +603,20 @@ public abstract class VacationBase extends WFBaseBacking {
     }
 
     /**************************************************************************/
+    // used to make vac Request to President , vicePresident , External Mission Employees
+
+    public void saveBeneficiaryVacation() {
+	try {
+
+	    VacationsWorkFlow.insertVacationRequest(this.requester, this.beneficiary, vacRequest, FlagsEnum.ON.getCode(), this.decisionNumber, this.decisionDate, this.processId, this.attachments, this.taskUrl);
+	    // vacApprovedFlag used to Rendered SuperSign Button
+	    vacApprovedFlag = true;
+	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(this.getParameterizedMessage(e.getMessage(), e.getParams()));
+
+	}
+    }
 
     public int getVacationMode() {
 	return vacationMode;
@@ -530,6 +624,19 @@ public abstract class VacationBase extends WFBaseBacking {
 
     public void setVacationMode(int vacationMode) {
 	this.vacationMode = vacationMode;
+    }
+
+    /***
+     * This Method used To get Beneficiary Param from request To Draw Beneficiary vacations types Requests
+     * 
+     * @return
+     */
+    public Integer getBeneficiaryType() {
+	return beneficiaryType;
+    }
+
+    public void setBeneficiaryType(Integer beneficiaryType) {
+	this.beneficiaryType = beneficiaryType;
     }
 
     public String getNormalizedModeFromVacationMode() {
@@ -585,6 +692,76 @@ public abstract class VacationBase extends WFBaseBacking {
 
     public void setSelectedReviewerEmpId(Long selectedReviewerEmpId) {
 	this.selectedReviewerEmpId = selectedReviewerEmpId;
+    }
+
+    public void setAdmin(boolean isAdmin) {
+	this.isAdmin = isAdmin;
+    }
+
+    /***
+     * This Method Verify that user is Authenticate To make Beneficiary vacations types Requests
+     * 
+     * @return
+     */
+    public boolean isAdmin() {
+	return isAdmin;
+    }
+
+    public void setEmployeeIds(String employeeIds) {
+	this.employeeIds = employeeIds;
+    }
+
+    /***
+     * This Method used To get President and Vice President To make Beneficiary vacations types Requests
+     * 
+     * @return
+     */
+    public String getEmployeeIds() {
+	return employeeIds;
+    }
+
+    public void setVacApprovedFlag(boolean vacApprovedFlag) {
+	this.vacApprovedFlag = vacApprovedFlag;
+    }
+
+    /***
+     * This Method Used To disable SuperSign Button that used to make Beneficiary vacations types Requests
+     * 
+     * @return
+     */
+    public boolean isVacApprovedFlag() {
+	return vacApprovedFlag;
+    }
+
+    public void setSkipLastTwoVacations(boolean skipLastTwoVacations) {
+	this.skipLastTwoVacations = skipLastTwoVacations;
+    }
+
+    /***
+     * This Method used to skip lastVacation and SecondLastVacation at init Methods Beneficiary vacations types Requests
+     * 
+     * @return
+     */
+    public boolean isSkipLastTwoVacations() {
+	return skipLastTwoVacations;
+    }
+
+    // Used For Beneficiary vacations types Requests
+    public String getDecisionNumber() {
+	return decisionNumber;
+    }
+
+    public void setDecisionNumber(String decisionNumber) {
+	this.decisionNumber = decisionNumber;
+    }
+
+    // Used For Beneficiary vacations types Requests
+    public Date getDecisionDate() {
+	return decisionDate;
+    }
+
+    public void setDecisionDate(Date decisionDate) {
+	this.decisionDate = decisionDate;
     }
 
 }

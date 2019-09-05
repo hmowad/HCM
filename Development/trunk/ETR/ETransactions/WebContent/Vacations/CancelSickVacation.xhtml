@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:rich="http://richfaces.org/rich">
 <h:head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
@@ -9,14 +9,44 @@
 
 	<script type="text/javascript">  
 	//<![CDATA[
-          function validateData(){
-            var oldVacationId = document.getElementById('cancelSickVacationForm:oldVacationId').value;
-            if(oldVacationId == null || oldVacationId == ''){
-                alert('#{msgs.error_noPrevVacation}');
-                return false;
-            }
+	
+		  function getEmp(contextPath){
+			  
+                openEmployeesMiniSearchForBeneficiary(contextPath, 'handleEmpsMiniSearchResult(ret)', 19, #{cancelSickVacation.vacationMode}, '#{cancelSickVacation.employeeIds}');
 
-            if (#{cancelSickVacation.vacationMode} == 2 || #{cancelSickVacation.vacationMode} == 22) {
+           	    }
+           	    
+          function handleEmpsMiniSearchResult(ret){
+          	if(ret != null){
+                  document.getElementById('cancelSickVacationForm:beneficiarySearchId').value = ret[0];
+                  document.getElementById('cancelSickVacationForm:searchEmpButton').click();
+               }
+          }
+          
+          function validateData(){
+
+              var oldVacationId = document.getElementById('cancelSickVacationForm:oldVacationId').value;
+              if(oldVacationId == null || oldVacationId == ''){
+                  alert('#{msgs.error_noPrevVacation}');
+                  return false;
+              }
+              
+        	  if (#{cancelSickVacation.admin}) {
+                	var decisionNumber = document.getElementById('cancelSickVacationForm:decisionNumberId').value.trim();
+                	var decisionDateDay = document.getElementById('cancelSickVacationForm:decisionDateId:day').value;            	
+                	
+               	 	if(decisionNumber == null || decisionNumber == '') {
+                     	alert('#{msgs.error_decNumberMandatory}');
+                     	return false;
+               	 	}
+
+                	if (decisionDateDay == null || decisionDateDay == 0) {
+    					alert('#{msgs.error_decDateMandatory}');
+    					return false;
+    				}
+                }
+
+            if ((#{cancelSickVacation.vacationMode} == 2 || #{cancelSickVacation.vacationMode} == 22) && #{!cancelSickVacation.admin}) {
 	            var requestJustifications = document.getElementById('cancelSickVacationForm:requestJustificationsId').value;
 	            if(requestJustifications == null || requestJustifications == ''){
 	                alert('#{msgs.error_requestJustificationsMandatory}');
@@ -67,6 +97,45 @@
 						<code:emp value="#{cancelSickVacation.requester}" />
 					</td>
 				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiary}" switchType="client" 
+						onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{cancelSickVacation.beneficiary.empId == cancelSickVacation.requester.empId}) &amp;&amp; (#{cancelSickVacation.role == 'Requester'})) { getEmp('#{request.contextPath}'); return false;} else {return true;}"
+							expanded="#{cancelSickVacation.requester.empId != cancelSickVacation.beneficiary.empId}" 
+							rendered="#{cancelSickVacation.role == 'Requester' and cancelSickVacation.admin == true}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+								<h:panelGroup rendered="#{cancelSickVacation.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+														<h:inputHidden id="beneficiarySearchId" value="#{cancelSickVacation.beneficiarySearchId}" />
+														<h:commandButton id="searchEmpButton" style="display: none;" action="#{cancelSickVacation.searchBeneficiary}">
+															<f:ajax render="cancelSickVacationForm:beneficiaryPanelId cancelSickVacationForm:lastVactionId:data cancelSickVacationForm:approveBenfBtnId cancelSickVacationForm:requestInfoPanelId cancelSickVacationForm:warningsPanelId cancelSickVacationForm:notifyMessagesId" 
+															execute="beneficiarySearchId" 
+															onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp id="beneficiaryId" value="#{cancelSickVacation.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
 
 				<tr>
 					<td width="100%" height="15" />
@@ -84,7 +153,7 @@
 
 				<tr>
 					<td width="100%">
-						<code:vac value="#{cancelSickVacation.lastVacation}" />
+						<code:vac id="lastVactionId" value="#{cancelSickVacation.lastVacation}" />
 					</td>
 				</tr>
 
@@ -104,33 +173,56 @@
 
 				<tr>
 					<td width="100%">
-						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-							<h:panelGroup rendered="#{cancelSickVacation.vacationMode == 2 or cancelSickVacation.vacationMode == 22}">
+						<h:panelGroup id="requestInfoPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<h:panelGroup rendered="#{cancelSickVacation.role == 'Requester' and cancelSickVacation.admin}">
+									<tr>
+										<th width="15%">
+											#{msgs.label_decisionNumber}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="decisionNumberId" value="#{cancelSickVacation.decisionNumber}" />
+										</td>
+										<th width="15%">
+											#{msgs.label_decisionDate}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<util:hijri id="decisionDateId" value="#{cancelSickVacation.decisionDate}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+							
+								<h:panelGroup rendered="#{!cancelSickVacation.admin}">
+									<h:panelGroup rendered="#{cancelSickVacation.vacationMode == 2 or cancelSickVacation.vacationMode == 22}">
+										<tr>
+											<th width="15%">
+												#{msgs.label_requestJustifications}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="85%" colspan="3">
+												<h:inputText id="requestJustificationsId" value="#{cancelSickVacation.vacRequest.reasons}" readonly="#{cancelSickVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+											</td>
+										</tr>
+									</h:panelGroup>
+
+									<tr>
+										<th width="15%">#{msgs.label_notes}</th>
+										<td width="85%" colspan="3">
+											<h:inputText value="#{cancelSickVacation.vacRequest.notes}" readonly="#{cancelSickVacation.role != 'Requester'}" maxlength="100" styleClass="inputDataLarge" />
+										</td>
+									</tr>
+								</h:panelGroup>
 								<tr>
-									<th width="15%">
-										#{msgs.label_requestJustifications}
-										<font style="color: red;">*</font>
-									</th>
-									<td width="85%">
-										<h:inputText id="requestJustificationsId" value="#{cancelSickVacation.vacRequest.reasons}" readonly="#{cancelSickVacation.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+									<th width="15%">#{msgs.label_attachments}</th>
+									<td width="85%" colspan="3">
+										<h:inputHidden id="oldVacationId" value="#{cancelSickVacation.vacRequest.oldVacationId}" />
+										<code:attachments loginEmpId="#{cancelSickVacation.loginEmpData.empId}" attachmentId="#{cancelSickVacation.attachments}" addEnableFlag="#{cancelSickVacation.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{cancelSickVacation.role == 'Requester'}" />
 									</td>
 								</tr>
-							</h:panelGroup>
-
-							<tr>
-								<th width="15%">#{msgs.label_notes}</th>
-								<td width="85%">
-									<h:inputHidden id="oldVacationId" value="#{cancelSickVacation.vacRequest.oldVacationId}" />
-									<h:inputText value="#{cancelSickVacation.vacRequest.notes}" readonly="#{cancelSickVacation.role != 'Requester'}" maxlength="100" styleClass="inputDataLarge" />
-								</td>
-							</tr>
-							<tr>
-								<th width="15%">#{msgs.label_attachments}</th>
-								<td width="85%">
-									<code:attachments loginEmpId="#{cancelSickVacation.loginEmpData.empId}" attachmentId="#{cancelSickVacation.attachments}" addEnableFlag="#{cancelSickVacation.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{cancelSickVacation.role == 'Requester'}" />
-								</td>
-							</tr>
-						</table>
+							</table>
+						</h:panelGroup>
 					</td>
 				</tr>
 				
@@ -140,17 +232,19 @@
 				
 				<tr>
 					<td width="100%">
-						<h:panelGroup rendered="#{cancelSickVacation.hasEarlierStartDateWarning()}">
-							<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
-								<tr>
-									<th>#{msgs.label_warnings}</th>
-								</tr>
-								<tr>
-									<td>
-										<h:outputText value="#{msgs.label_warningsEarlierStartDateForVacation}" />
-									</td>
-								</tr>
-							</table>
+						<h:panelGroup id="warningsPanelId">
+							<h:panelGroup rendered="#{cancelSickVacation.hasEarlierStartDateWarning()}">
+								<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th>#{msgs.label_warnings}</th>
+									</tr>
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.label_warningsEarlierStartDateForVacation}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
 						</h:panelGroup>
 					</td>
 				</tr>
@@ -225,11 +319,21 @@
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-									<h:panelGroup rendered="#{cancelSickVacation.role == 'Requester'}">
+									<h:panelGroup rendered="#{cancelSickVacation.role == 'Requester' and !cancelSickVacation.admin}">
 										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateData()');" action="#{cancelSickVacation.initProcess}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
 											<f:ajax render="notifyMessagesId" execute="@form" />
 										</h:commandButton>
 									</h:panelGroup>
+
+									<h:panelGroup id="benfActionPanelId" rendered="#{cancelSickVacation.role == 'Requester' and cancelSickVacation.admin}">
+										<h:commandButton id="approveBenfBtnId" action="#{cancelSickVacation.saveBeneficiaryVacation}" rendered="#{!cancelSickVacation.vacApprovedFlag}" disabled="#{cancelSickVacation.requester.empId == cancelSickVacation.beneficiary.empId}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateData()');" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="cancelSickVacationForm:benfActionPanelId cancelSickVacationForm:notifyMessagesId" execute="@form" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+										<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{cancelSickVacation.resetForm}">
+											<f:ajax render="cancelSickVacationForm:beneficiaryPanelId cancelSickVacationForm:lastVactionId:data cancelSickVacationForm:requestInfoPanelId  cancelSickVacationForm:benfActionPanelId cancelSickVacationForm:warningsPanelId cancelSickVacationForm:notifyMessagesId " onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+									</h:panelGroup>
+
 
 									<h:panelGroup rendered="#{cancelSickVacation.role == 'DirectManager'}">
 										<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;cancelSickVacationForm:curTaskId:refuseReasonsId&quot;)');" action="#{cancelSickVacation.approveDM}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">

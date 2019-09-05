@@ -54,7 +54,7 @@ public class VacationsDataHandlingService extends BaseService {
      * @see VacationTypesEnum
      * @see CategoriesEnum
      */
-    protected static void insertVacData(Vacation vacation, EmployeeData vacationBeneficiary, String subject, CustomSession... useSession) throws BusinessException {
+    protected static void insertVacData(Vacation vacation, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -64,25 +64,30 @@ public class VacationsDataHandlingService extends BaseService {
 		session.beginTransaction();
 
 	    vacation.setStatus(RequestTypesEnum.NEW.getCode());
-
-	    String[] etrCorInfo = ETRCorrespondence.doETRCorOut(subject, session);
-	    vacation.setDecisionNumber(etrCorInfo[0]);
-	    vacation.setDecisionDateString(etrCorInfo[1]);
-
-	    EmployeeData approvedEmp = EmployeesService.getEmployeeData(vacation.getApprovedId());
-	    vacation.setTransactionApprovedRankDesc(approvedEmp.getRankDesc());
-	    vacation.setTransactionApprovedJobDesc(approvedEmp.getJobDesc());
-
 	    vacation.setTransactionEmpRankDesc(vacationBeneficiary.getRankDesc() + (vacationBeneficiary.getRankTitleDesc() != null ? " " + vacationBeneficiary.getRankTitleDesc() : ""));
 	    vacation.setTransactionEmpJobCode(vacationBeneficiary.getJobCode());
 	    vacation.setTransactionEmpJobDesc(vacationBeneficiary.getJobDesc());
 	    vacation.setTransactionEmpUnitDesc(vacationBeneficiary.getPhysicalUnitFullName());
 	    vacation.setTransactionEmpCategoryId(vacationBeneficiary.getCategoryId());
 
-	    vacation.setEtrFlag(FlagsEnum.ON.getCode());
-	    vacation.setMigrationFlag(FlagsEnum.OFF.getCode());
+	    if (skipWFFlag == FlagsEnum.ON.getCode()) {
+		vacation.setEtrFlag(FlagsEnum.OFF.getCode());
+		vacation.setMigrationFlag(FlagsEnum.ON.getCode());
+		vacation.setExceededDays(FlagsEnum.OFF.getCode());
+		vacation.setJoiningDate(HijriDateService.addSubHijriDays(vacation.getEndDate(), 1));
 
-	    vacation.setExternalCopies(handleExternalCopies(vacation.getDecisionRegionId(), vacation.getTransactionEmpCategoryId(), vacation.getVacationTypeId(), vacation.getTransactionApprovedJobDesc(), vacation.getApprovedId(), vacation.getOriginalDecisionApprovedId()));
+	    } else {
+		String[] etrCorInfo = ETRCorrespondence.doETRCorOut(subject, session);
+		vacation.setDecisionNumber(etrCorInfo[0]);
+		vacation.setDecisionDateString(etrCorInfo[1]);
+		EmployeeData approvedEmp = EmployeesService.getEmployeeData(vacation.getApprovedId());
+		vacation.setTransactionApprovedRankDesc(approvedEmp.getRankDesc());
+		vacation.setTransactionApprovedJobDesc(approvedEmp.getJobDesc());
+		vacation.setEtrFlag(FlagsEnum.ON.getCode());
+		vacation.setMigrationFlag(FlagsEnum.OFF.getCode());
+		vacation.setExternalCopies(handleExternalCopies(vacation.getDecisionRegionId(), vacation.getTransactionEmpCategoryId(), vacation.getVacationTypeId(), vacation.getTransactionApprovedJobDesc(), vacation.getApprovedId(), vacation.getOriginalDecisionApprovedId()));
+
+	    }
 
 	    DataAccess.addEntity(vacation, session);
 
@@ -118,7 +123,7 @@ public class VacationsDataHandlingService extends BaseService {
      * @throws BusinessException
      *             if any error occurs like a database error
      */
-    protected static void modifyVacData(Vacation request, EmployeeData vacationBeneficiary, String subject, CustomSession... useSession) throws BusinessException {
+    protected static void modifyVacData(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
 
 	Vacation originalVacation = VacationsService.getVacationById(request.getVacationId());
 
@@ -135,17 +140,9 @@ public class VacationsDataHandlingService extends BaseService {
 
 	    originalVacation.setStatus(RequestTypesEnum.MODIFY.getCode());
 
-	    String[] etrCorInfo = ETRCorrespondence.doETRCorOut(subject, session);
-	    originalVacation.setDecisionNumber(etrCorInfo[0]);
-	    originalVacation.setDecisionDateString(etrCorInfo[1]);
-
 	    originalVacation.setPeriod(request.getPeriod());
 	    originalVacation.setEndDateString(request.getEndDateString());
-
 	    originalVacation.setApprovedId(request.getApprovedId());
-	    EmployeeData approvedEmp = EmployeesService.getEmployeeData(request.getApprovedId());
-	    originalVacation.setTransactionApprovedRankDesc(approvedEmp.getRankDesc());
-	    originalVacation.setTransactionApprovedJobDesc(approvedEmp.getJobDesc());
 
 	    originalVacation.setTransactionEmpRankDesc(vacationBeneficiary.getRankDesc() + (vacationBeneficiary.getRankTitleDesc() != null ? " " + vacationBeneficiary.getRankTitleDesc() : ""));
 	    originalVacation.setTransactionEmpJobCode(vacationBeneficiary.getJobCode());
@@ -156,8 +153,6 @@ public class VacationsDataHandlingService extends BaseService {
 	    originalVacation.setDecisionApprovedId(request.getDecisionApprovedId());
 	    originalVacation.setOriginalDecisionApprovedId(request.getOriginalDecisionApprovedId());
 	    originalVacation.setDecisionRegionId(request.getDecisionRegionId());
-
-	    originalVacation.setExternalCopies(handleExternalCopies(originalVacation.getDecisionRegionId(), originalVacation.getTransactionEmpCategoryId(), originalVacation.getVacationTypeId(), originalVacation.getTransactionApprovedJobDesc(), originalVacation.getApprovedId(), originalVacation.getOriginalDecisionApprovedId()));
 
 	    if (request.getLocationFlag() == LocationFlagsEnum.INTERNAL_EXTERNAL.getCode()) {
 		originalVacation.setExtLocation(request.getExtLocation());
@@ -176,6 +171,22 @@ public class VacationsDataHandlingService extends BaseService {
 
 	    originalVacation.setAttachments(request.getAttachments());
 	    originalVacation.setReferring(request.getReferring());
+
+	    if (skipWFFlag == FlagsEnum.ON.getCode()) {
+		originalVacation.setDecisionNumber(request.getDecisionNumber());
+		originalVacation.setDecisionDate(request.getDecisionDate());
+		originalVacation.setExceededDays(FlagsEnum.OFF.getCode());
+		originalVacation.setJoiningDate(HijriDateService.addSubHijriDays(originalVacation.getEndDate(), 1));
+
+	    } else {
+		String[] etrCorInfo = ETRCorrespondence.doETRCorOut(subject, session);
+		originalVacation.setDecisionNumber(etrCorInfo[0]);
+		originalVacation.setDecisionDateString(etrCorInfo[1]);
+		EmployeeData approvedEmp = EmployeesService.getEmployeeData(request.getApprovedId());
+		originalVacation.setTransactionApprovedRankDesc(approvedEmp.getRankDesc());
+		originalVacation.setTransactionApprovedJobDesc(approvedEmp.getJobDesc());
+		originalVacation.setExternalCopies(handleExternalCopies(originalVacation.getDecisionRegionId(), originalVacation.getTransactionEmpCategoryId(), originalVacation.getVacationTypeId(), originalVacation.getTransactionApprovedJobDesc(), originalVacation.getApprovedId(), originalVacation.getOriginalDecisionApprovedId()));
+	    }
 
 	    DataAccess.updateEntity(originalVacation, session);
 	    logVacationData(originalVacation, session);
@@ -212,7 +223,7 @@ public class VacationsDataHandlingService extends BaseService {
      * @throws BusinessException
      *             if any error occurs like a database error
      */
-    protected static void cancelVacData(Vacation request, EmployeeData vacationBeneficiary, String subject, CustomSession... useSession) throws BusinessException {
+    protected static void cancelVacData(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
 
 	Vacation originalVacation = VacationsService.getVacationById(request.getVacationId());
 
@@ -229,14 +240,7 @@ public class VacationsDataHandlingService extends BaseService {
 
 	    originalVacation.setStatus(RequestTypesEnum.CANCEL.getCode());
 
-	    String[] etrCorInfo = ETRCorrespondence.doETRCorOut(subject, session);
-	    originalVacation.setDecisionNumber(etrCorInfo[0]);
-	    originalVacation.setDecisionDateString(etrCorInfo[1]);
-
 	    originalVacation.setApprovedId(request.getApprovedId());
-	    EmployeeData approvedEmp = EmployeesService.getEmployeeData(request.getApprovedId());
-	    originalVacation.setTransactionApprovedRankDesc(approvedEmp.getRankDesc());
-	    originalVacation.setTransactionApprovedJobDesc(approvedEmp.getJobDesc());
 
 	    originalVacation.setTransactionEmpRankDesc(vacationBeneficiary.getRankDesc() + (vacationBeneficiary.getRankTitleDesc() != null ? " " + vacationBeneficiary.getRankTitleDesc() : ""));
 	    originalVacation.setTransactionEmpJobCode(vacationBeneficiary.getJobCode());
@@ -248,10 +252,22 @@ public class VacationsDataHandlingService extends BaseService {
 	    originalVacation.setOriginalDecisionApprovedId(request.getOriginalDecisionApprovedId());
 	    originalVacation.setDecisionRegionId(request.getDecisionRegionId());
 
-	    originalVacation.setExternalCopies(handleExternalCopies(originalVacation.getDecisionRegionId(), originalVacation.getTransactionEmpCategoryId(), originalVacation.getVacationTypeId(), originalVacation.getTransactionApprovedJobDesc(), originalVacation.getApprovedId(), originalVacation.getOriginalDecisionApprovedId()));
-
 	    originalVacation.setAttachments(request.getAttachments());
 	    originalVacation.setReferring(request.getReferring());
+	    if (skipWFFlag == FlagsEnum.ON.getCode()) {
+		originalVacation.setDecisionNumber(request.getDecisionNumber());
+		originalVacation.setDecisionDate(request.getDecisionDate());
+
+	    } else {
+		String[] etrCorInfo = ETRCorrespondence.doETRCorOut(subject, session);
+		originalVacation.setDecisionNumber(etrCorInfo[0]);
+		originalVacation.setDecisionDateString(etrCorInfo[1]);
+		EmployeeData approvedEmp = EmployeesService.getEmployeeData(request.getApprovedId());
+		originalVacation.setTransactionApprovedRankDesc(approvedEmp.getRankDesc());
+		originalVacation.setTransactionApprovedJobDesc(approvedEmp.getJobDesc());
+		originalVacation.setExternalCopies(handleExternalCopies(originalVacation.getDecisionRegionId(), originalVacation.getTransactionEmpCategoryId(), originalVacation.getVacationTypeId(), originalVacation.getTransactionApprovedJobDesc(), originalVacation.getApprovedId(), originalVacation.getOriginalDecisionApprovedId()));
+
+	    }
 
 	    DataAccess.updateEntity(originalVacation, session);
 	    logVacationData(originalVacation, session);

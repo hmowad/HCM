@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:rich="http://richfaces.org/rich">
 <h:head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
@@ -9,14 +9,43 @@
 
 	<script type="text/javascript">          
 	//<![CDATA[  
+				
+		  function getEmp(contextPath){
+			  
+                openEmployeesMiniSearchForBeneficiary(contextPath, 'handleEmpsMiniSearchResult(ret)', 19, #{cancelManyVacations.vacationMode}, '#{cancelManyVacations.employeeIds}');
+
+           	    }
+          function handleEmpsMiniSearchResult(ret){
+          	if(ret != null){
+                  document.getElementById('cancelManyVacationsForm:beneficiarySearchId').value = ret[0];
+                  document.getElementById('cancelManyVacationsForm:searchEmpButton').click();
+               }
+          }
+          
 		function validateData(){
+
             var oldVacationId = document.getElementById('cancelManyVacationsForm:oldVacationId').value;
             if(oldVacationId == null || oldVacationId == ''){
             	alert('#{msgs.error_noPrevVacation}');
                 return false;
             }
+            
+      	  if (#{cancelManyVacations.admin}) {
+            	var decisionNumber = document.getElementById('cancelManyVacationsForm:decisionNumberId').value.trim();
+            	var decisionDateDay = document.getElementById('cancelManyVacationsForm:decisionDateId:day').value;            	
+            	
+           	 	if(decisionNumber == null || decisionNumber == '') {
+                 	alert('#{msgs.error_decNumberMandatory}');
+                 	return false;
+           	 	}
 
-            if (#{cancelManyVacations.getNormalizedModeFromVacationMode() == 2}) {
+            	if (decisionDateDay == null || decisionDateDay == 0) {
+					alert('#{msgs.error_decDateMandatory}');
+					return false;
+				}
+            }
+
+            if (#{cancelManyVacations.getNormalizedModeFromVacationMode() == 2} && #{!cancelManyVacations.admin}) {
 	            var requestJustifications = document.getElementById('cancelManyVacationsForm:requestJustificationsId').value;
 	            if(requestJustifications == null || requestJustifications == ''){
 	                alert('#{msgs.error_requestJustificationsMandatory}');
@@ -77,7 +106,45 @@
 						<code:emp value="#{cancelManyVacations.requester}" />
 					</td>
 				</tr>
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiary}" switchType="client" 
+						onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{cancelManyVacations.beneficiary.empId == cancelManyVacations.requester.empId}) &amp;&amp; (#{cancelManyVacations.role == 'Requester'})) { getEmp('#{request.contextPath}'); return false;} else {return true;}"
+							expanded="#{cancelManyVacations.requester.empId != cancelManyVacations.beneficiary.empId}" 
+							rendered="#{cancelManyVacations.role == 'Requester' and cancelManyVacations.admin == true}">
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
 
+								<h:panelGroup rendered="#{cancelManyVacations.role == 'Requester'}">
+									<tr>
+										<td width="100%">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="50%">
+														<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+														<h:inputHidden id="beneficiarySearchId" value="#{cancelManyVacations.beneficiarySearchId}" />
+														<h:commandButton id="searchEmpButton" style="display: none;" action="#{cancelManyVacations.searchBeneficiary}">
+															<f:ajax render="cancelManyVacationsForm:beneficiaryPanelId cancelManyVacationsForm:lastVactionId:data cancelManyVacationsForm:approveBenfBtnId cancelManyVacationsForm:requestInfoPanelId cancelManyVacationsForm:warningsPanelId cancelManyVacationsForm:notifyMessagesId" 
+															execute="beneficiarySearchId" 
+															onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</h:panelGroup>
+								<tr>
+									<td width="100%">
+										<code:emp id="beneficiaryId" value="#{cancelManyVacations.beneficiary}" />
+									</td>
+								</tr>
+							</table>
+						</rich:collapsiblePanel>
+					</td>
+				</tr>
 				<tr>
 					<td width="100%" height="15" />
 				</tr>
@@ -94,7 +161,7 @@
 
 				<tr>
 					<td width="100%">
-						<code:vac value="#{cancelManyVacations.lastVacation}" />
+						<code:vac id="lastVactionId" value="#{cancelManyVacations.lastVacation}" />
 					</td>
 				</tr>
 
@@ -114,29 +181,56 @@
 
 				<tr>
 					<td width="100%">
-						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-							<h:panelGroup rendered="#{cancelManyVacations.getNormalizedModeFromVacationMode() == 2}">
+						<h:panelGroup id="requestInfoPanelId">
+
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<h:panelGroup rendered="#{cancelManyVacations.role == 'Requester' and cancelManyVacations.admin}">
+									<tr>
+										<th width="15%">
+											#{msgs.label_decisionNumber}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="decisionNumberId" value="#{cancelManyVacations.decisionNumber}" />
+										</td>
+										<th width="15%">
+											#{msgs.label_decisionDate}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<util:hijri id="decisionDateId" value="#{cancelManyVacations.decisionDate}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+							
+								<h:panelGroup rendered="#{!cancelManyVacations.admin}">
+									<h:panelGroup rendered="#{cancelManyVacations.getNormalizedModeFromVacationMode() == 2}">
+										<tr>
+											<th width="15%">
+												#{msgs.label_requestJustifications}
+												<font style="color: red;">*</font>
+											</th>
+											<td width="85%" colspan="3">
+												<h:inputText id="requestJustificationsId" value="#{cancelManyVacations.vacRequest.reasons}" readonly="#{cancelManyVacations.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr>
+										<th width="15%">#{msgs.label_notes}</th>
+										<td width="85%" colspan="3">
+											<h:inputText value="#{cancelManyVacations.vacRequest.notes}" readonly="#{cancelManyVacations.role != 'Requester'}" maxlength="100" styleClass="inputDataLarge" />
+										</td>
+									</tr>
+								</h:panelGroup>
 								<tr>
-									<th width="15%">#{msgs.label_requestJustifications}<font style="color: red;">*</font></th>
-									<td width="85%">
-										<h:inputText id="requestJustificationsId" value="#{cancelManyVacations.vacRequest.reasons}" readonly="#{cancelManyVacations.role != 'Requester'}" maxlength="200" styleClass="inputDataLarge" />
+									<th width="15%">#{msgs.label_attachments}</th>
+									<td width="85%" colspan="3">
+										<h:inputHidden id="oldVacationId" value="#{cancelManyVacations.vacRequest.oldVacationId}" />
+										<code:attachments loginEmpId="#{cancelManyVacations.loginEmpData.empId}" attachmentId="#{cancelManyVacations.attachments}" addEnableFlag="#{cancelManyVacations.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{cancelManyVacations.role == 'Requester'}" />
 									</td>
 								</tr>
-							</h:panelGroup>
-							<tr>
-								<th width="15%">#{msgs.label_notes}</th>
-								<td width="85%">
-									<h:inputHidden id="oldVacationId" value="#{cancelManyVacations.vacRequest.oldVacationId}" />
-									<h:inputText value="#{cancelManyVacations.vacRequest.notes}" readonly="#{cancelManyVacations.role != 'Requester'}" maxlength="100" styleClass="inputDataLarge" />
-								</td>
-							</tr>
-							<tr>
-								<th width="15%">#{msgs.label_attachments}</th>
-								<td width="85%">
-									<code:attachments loginEmpId="#{cancelManyVacations.loginEmpData.empId}" attachmentId="#{cancelManyVacations.attachments}" addEnableFlag="#{cancelManyVacations.role == 'Requester'}" viewEnableFlag="true" deleteEnableFlag="#{cancelManyVacations.role == 'Requester'}" />
-								</td>
-							</tr>
-						</table>
+							</table>
+						</h:panelGroup>
 					</td>
 				</tr>
 
@@ -178,17 +272,19 @@
 
 				<tr>
 					<td width="100%">
-						<h:panelGroup rendered="#{cancelManyVacations.hasEarlierStartDateWarning()}">
-							<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
-								<tr>
-									<th>#{msgs.label_warnings}</th>
-								</tr>
-								<tr>
-									<td>
-										<h:outputText value="#{msgs.label_warningsEarlierStartDateForVacation}" />
-									</td>
-								</tr>
-							</table>
+						<h:panelGroup id="warningsPanelId">
+							<h:panelGroup rendered="#{cancelManyVacations.hasEarlierStartDateWarning()}">
+								<table class="sectionWarning" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th>#{msgs.label_warnings}</th>
+									</tr>
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.label_warningsEarlierStartDateForVacation}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
 						</h:panelGroup>
 					</td>
 				</tr>
@@ -262,9 +358,18 @@
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-									<h:panelGroup rendered="#{cancelManyVacations.role == 'Requester'}">
+									<h:panelGroup rendered="#{cancelManyVacations.role == 'Requester' and !cancelManyVacations.admin}">
 										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}', 'validateData()');" action="#{cancelManyVacations.initProcess}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon">
 											<f:ajax render="notifyMessagesId" execute="@form" />
+										</h:commandButton>
+									</h:panelGroup>
+
+									<h:panelGroup id="benfActionPanelId" rendered="#{cancelManyVacations.role == 'Requester' and cancelManyVacations.admin}">
+										<h:commandButton id="approveBenfBtnId" action="#{cancelManyVacations.saveBeneficiaryVacation}" rendered="#{!cancelManyVacations.vacApprovedFlag}" disabled="#{cancelManyVacations.requester.empId == cancelManyVacations.beneficiary.empId}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateData()');" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="cancelManyVacationsForm:benfActionPanelId cancelManyVacationsForm:notifyMessagesId" execute="@form" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+										</h:commandButton>
+										<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{cancelManyVacations.resetForm}">
+											<f:ajax render="cancelManyVacationsForm:beneficiaryPanelId cancelManyVacationsForm:lastVactionId:data cancelManyVacationsForm:requestInfoPanelId  cancelManyVacationsForm:benfActionPanelId cancelManyVacationsForm:warningsPanelId cancelManyVacationsForm:notifyMessagesId " onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
 										</h:commandButton>
 									</h:panelGroup>
 
