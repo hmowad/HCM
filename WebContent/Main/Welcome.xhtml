@@ -289,16 +289,18 @@
 													</table>
 												</td>
 												<td width="30%">
-													<table class="homeStatisticsContent" width="100%">
-														<tr>
-															<td width="20%">
-																<h:graphicImage value="/resources/images/timeLineIcon.png" />
-															</td>
-															<td>
-																<h:commandLink value="#{msgs.label_timeLine}" onclick="openTransactionsTimelineScreen(); return false;" style="color:Black;font-weight: bold" />	
-															</td>
-														</tr>
-													</table>
+													<h:panelGroup rendered="#{home.loginEmpData.statusId &lt; 70}">
+														<table class="homeStatisticsContent" width="100%">
+															<tr>
+																<td width="20%">
+																	<h:graphicImage value="/resources/images/timeLineIcon.png" />
+																</td>
+																<td>
+																	<h:commandLink value="#{msgs.label_timeLine}" onclick="openTransactionsTimelineScreen(); return false;" style="color:Black;font-weight: bold" />
+																</td>
+															</tr>
+														</table>
+													</h:panelGroup>
 												</td>
 											</tr>
 										</table>
@@ -312,7 +314,7 @@
 						<td width="100%" height="10" />
 					</tr>
 
-					<h:panelGroup rendered="#{(home.socialIdRenewalPeriodWarning or home.socialIdExpiredWarning) or home.lastVacation != null or home.lastValidMovTrans != null or home.lastValidSubjoinTran != null}" >
+					<h:panelGroup rendered="#{home.loginEmpData.statusId &lt; 70 and ((home.socialIdRenewalPeriodWarning or home.socialIdExpiredWarning) or home.lastVacation != null or home.lastValidMovTrans != null or home.lastValidSubjoinTran != null)}">
 						<tr>
 							<td width="100%">
 								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
@@ -328,7 +330,7 @@
 						<tr>
 							<td>
 								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-									<h:panelGroup rendered="#{home.socialIdRenewalPeriodWarning or home.socialIdExpiredWarning}" >
+									<h:panelGroup rendered="#{home.socialIdRenewalPeriodWarning or home.socialIdExpiredWarning}">
 										<tr>
 											<th width="10%">#{msgs.label_nationalIdentity}</th>
 											<td>
@@ -340,7 +342,7 @@
 											</td>
 										</tr>
 									</h:panelGroup>
-									<h:panelGroup rendered="#{home.lastVacation != null}" >
+									<h:panelGroup rendered="#{home.lastVacation != null}">
 										<tr>
 											<th width="10%">#{msgs.label_vacationJoining}</th>
 											<td>
@@ -351,7 +353,7 @@
 											</td>
 										</tr>
 									</h:panelGroup>
-									<h:panelGroup rendered="#{home.lastValidMovTrans != null}" >
+									<h:panelGroup rendered="#{home.lastValidMovTrans != null}">
 										<tr>
 											<th width="10%">#{msgs.label_moveJoining}</th>
 											<td>
@@ -362,7 +364,7 @@
 											</td>
 										</tr>
 									</h:panelGroup>
-									<h:panelGroup rendered="#{home.lastValidSubjoinTran != null}" >
+									<h:panelGroup rendered="#{home.lastValidSubjoinTran != null}">
 										<tr>
 											<th width="10%">#{msgs.label_subjoinJoining}</th>
 											<td>
@@ -379,8 +381,8 @@
 					</h:panelGroup>
 				</h:panelGroup>
 				<h:inputHidden id="showTransactionsTimelineScreenFlagID" value="#{home.showTransactionsTimelineScreenFlag}" />
-				<h:commandButton id="calculateTransactionsTimelineShowFlagBtnId" style="display:none;" action="#{home.calculateTransactionsTimelineShowFlag()}" >
-					<f:ajax onevent="function(e){if(e.status == 'success') showTransactionsTimelineBasedOnFlag();}"  render="welcomeForm:showTransactionsTimelineScreenFlagID"/>
+				<h:commandButton id="calculateTransactionsTimelineShowFlagBtnId" style="display:none;" action="#{home.calculateTransactionsTimelineShowFlag()}">
+					<f:ajax onevent="function(e){if(e.status == 'success') showTransactionsTimelineBasedOnFlag();}" render="welcomeForm:showTransactionsTimelineScreenFlagID" />
 				</h:commandButton>
 			</table>
 		</ui:decorate>

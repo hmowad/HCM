@@ -10,6 +10,7 @@ import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.security.EmployeeMenuAction;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
+import com.code.enums.GendersEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
 import com.code.enums.RegionsEnum;
@@ -107,13 +108,25 @@ public class EmployeeFileReport extends BaseBacking implements Serializable {
 		    ||
 		    SecurityService.isEmployeeMenuActionGranted(searchEmployeeOfficialRegionId, searchEmployee.getOfficialUnitHKey(), MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_OFFICERS.getCode(), employeeMenuActions);
 	} else if (searchEmployee.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
-	    return SecurityService.isEmployeeMenuActionGranted(searchEmployeePhysicalRegionId, searchEmployee.getPhysicalUnitHKey(), MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_SOLDIERS.getCode(), employeeMenuActions)
-		    ||
-		    SecurityService.isEmployeeMenuActionGranted(searchEmployeeOfficialRegionId, searchEmployee.getOfficialUnitHKey(), MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_SOLDIERS.getCode(), employeeMenuActions);
+	    if (searchEmployee.getGender().equals(GendersEnum.MALE.getCode())) {
+		return SecurityService.isEmployeeMenuActionGranted(searchEmployeePhysicalRegionId, searchEmployee.getPhysicalUnitHKey(), MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_SOLDIERS.getCode(), employeeMenuActions)
+			||
+			SecurityService.isEmployeeMenuActionGranted(searchEmployeeOfficialRegionId, searchEmployee.getOfficialUnitHKey(), MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_SOLDIERS.getCode(), employeeMenuActions);
+	    } else {
+		return SecurityService.isEmployeeMenuActionGranted(searchEmployeePhysicalRegionId, searchEmployee.getPhysicalUnitHKey(), MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_FEMALE_SOLDIERS.getCode(), employeeMenuActions)
+			||
+			SecurityService.isEmployeeMenuActionGranted(searchEmployeeOfficialRegionId, searchEmployee.getOfficialUnitHKey(), MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_FEMALE_SOLDIERS.getCode(), employeeMenuActions);
+	    }
 	} else {
-	    return SecurityService.isEmployeeMenuActionGranted(searchEmployeePhysicalRegionId, searchEmployee.getPhysicalUnitHKey(), MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_CIVILIANS.getCode(), employeeMenuActions)
-		    ||
-		    SecurityService.isEmployeeMenuActionGranted(searchEmployeeOfficialRegionId, searchEmployee.getOfficialUnitHKey(), MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_CIVILIANS.getCode(), employeeMenuActions);
+	    if (searchEmployee.getGender().equals(GendersEnum.MALE.getCode())) {
+		return SecurityService.isEmployeeMenuActionGranted(searchEmployeePhysicalRegionId, searchEmployee.getPhysicalUnitHKey(), MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_CIVILIANS.getCode(), employeeMenuActions)
+			||
+			SecurityService.isEmployeeMenuActionGranted(searchEmployeeOfficialRegionId, searchEmployee.getOfficialUnitHKey(), MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_CIVILIANS.getCode(), employeeMenuActions);
+	    } else {
+		return SecurityService.isEmployeeMenuActionGranted(searchEmployeePhysicalRegionId, searchEmployee.getPhysicalUnitHKey(), MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_FEMALE_CIVILIANS.getCode(), employeeMenuActions)
+			||
+			SecurityService.isEmployeeMenuActionGranted(searchEmployeeOfficialRegionId, searchEmployee.getOfficialUnitHKey(), MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_FEMALE_CIVILIANS.getCode(), employeeMenuActions);
+	    }
 	}
     }
 

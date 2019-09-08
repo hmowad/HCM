@@ -70,19 +70,22 @@ public class DefinitionLettersWorkFlow extends BaseWorkFlow {
 	}
     }
 
-    public static byte[] getDefinitionLetterBytes(String letterType, Long empId, Long embassyId, String empEnglishName) throws BusinessException {
+    public static byte[] getDefinitionLetterBytes(String letterType, Long empId, Long embassyId, String empEnglishName, Integer onOfficialPaper) throws BusinessException {
 	try {
 	    Map<String, Object> parameters = new HashMap<String, Object>();
 	    String reportName = "";
 	    String hijriDateString = HijriDateService.getHijriSysDateString();
 
-	    if (letterType.equals("10"))
+	    if (letterType.equals("10")) {
+		parameters.put("P_ON_OFFICIAL_PAPER_FLAG", onOfficialPaper);
 		reportName = ReportNamesEnum.DEFINITION_LETTERS_NET_SALARY.getCode();
-	    else if (letterType.equals("20"))
+	    } else if (letterType.equals("20")) {
+		parameters.put("P_ON_OFFICIAL_PAPER_FLAG", onOfficialPaper);
 		reportName = ReportNamesEnum.DEFINITION_LETTERS_BASIC_SALARY.getCode();
-	    else if (letterType.equals("30"))
+	    } else if (letterType.equals("30")) {
+		parameters.put("P_ON_OFFICIAL_PAPER_FLAG", onOfficialPaper);
 		reportName = ReportNamesEnum.DEFINITION_LETTERS_TOTAL_SALARY.getCode();
-	    else if (letterType.equals("40")) {
+	    } else if (letterType.equals("40")) {
 		reportName = ReportNamesEnum.DEFINITION_LETTERS_NET_SALARY_ENGLISH.getCode();
 
 		String embassyNameParameter = TO_WHOM_IT_MAY_CONCERN;

@@ -183,6 +183,23 @@
 												</tr>
 											</table>
 										</h:panelGroup>
+										<h:panelGroup rendered="#{definitionLetter.WFDefLetter.letterType=='10' or definitionLetter.WFDefLetter.letterType=='20' or definitionLetter.WFDefLetter.letterType=='30'}">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="15%">
+														#{msgs.label_printingPaperOption}
+													</td>
+													<td>
+														<h:selectOneRadio id="printingPaperOptions" value="#{definitionLetter.onOfficialPaper}" layout="pageDirection">
+															<f:selectItem itemLabel="#{msgs.label_officialPaper}" itemValue="1" />
+															<f:selectItem itemLabel="#{msgs.label_normalPaper}" itemValue="0" />
+															<f:ajax event="change" execute="@this"/>
+														</h:selectOneRadio>
+													</td>
+												</tr>
+											</table>
+
+										</h:panelGroup>
 									</h:panelGroup>
 								</td>
 							</tr>
@@ -232,7 +249,7 @@
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-									<h:commandButton id="printBtnId" action="#{definitionLetter.print()}" value="#{msgs.label_showOrPrint} &nbsp; #{msgs.fa_print}" onclick="return validateData(1);" styleClass="btn_normal_icon" />
+									<h:commandButton id="printBtnId" action="#{definitionLetter.print()}" value="#{msgs.label_showOrPrint} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
 
 									<h:commandButton rendered="#{definitionLetter.role == 'Requester' and definitionLetter.requester.managerId != null}" id="sendId" onclick="return handleOnAction('#{msgs.q_send}', 'validateData(2)');" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" action="#{definitionLetter.initProcess}" styleClass="btn_normal_icon">
 										<f:ajax render="notifyMessagesId" execute="letterTypesId letterTypesForRetiredId embassyListId empEngNameId" />
