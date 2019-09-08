@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.RegionsEnum;
 import com.code.enums.ReportOutputFormatsEnum;
@@ -185,6 +186,22 @@ public abstract class BaseBacking implements Serializable {
 	}
     }
 
+    // Used For Beneficiary vacations types Requests Employees Mini Search
+    public Long[] getCategoriesIdsArrayByBeneficiaryMode(int mode) {
+	switch (mode) {
+	case 1:
+	    return CommonService.getOfficerCategoriesIdsArray();
+	case 2:
+	    return CommonService.getSoldiersCategoriesIdsArray();
+	case 3:
+	    return CommonService.getCivilCategoriesIdsArray();
+	case 6:
+	    return new Long[] { CategoriesEnum.CONTRACTORS.getCode() };
+
+	default:
+	    return CommonService.getCivilCategoriesIdsWithOutContractorsArray();
+	}
+    }
     // -------------------------------------------------------------------------
 
     public long getLoginEmpPhysicalRegionFlag(boolean isAdmin) {

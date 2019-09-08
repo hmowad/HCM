@@ -257,6 +257,8 @@ public class VacationsDataHandlingService extends BaseService {
 	    if (skipWFFlag == FlagsEnum.ON.getCode()) {
 		originalVacation.setDecisionNumber(request.getDecisionNumber());
 		originalVacation.setDecisionDate(request.getDecisionDate());
+		originalVacation.setExceededDays(null);
+		originalVacation.setJoiningDate(null);
 
 	    } else {
 		String[] etrCorInfo = ETRCorrespondence.doETRCorOut(subject, session);

@@ -230,6 +230,10 @@ public class CommonService extends BaseService {
 	return new Long[] { CategoriesEnum.PERSONS.getCode(), CategoriesEnum.USERS.getCode(), CategoriesEnum.WAGES.getCode(), CategoriesEnum.CONTRACTORS.getCode(), CategoriesEnum.MEDICAL_STAFF.getCode() };
     }
 
+    public static Long[] getCivilCategoriesIdsWithOutContractorsArray() {
+	return new Long[] { CategoriesEnum.PERSONS.getCode(), CategoriesEnum.USERS.getCode(), CategoriesEnum.WAGES.getCode(), CategoriesEnum.MEDICAL_STAFF.getCode() };
+    }
+
     public static Long[] getAllCategoriesIdsArray() {
 	return new Long[] { CategoriesEnum.OFFICERS.getCode(), CategoriesEnum.SOLDIERS.getCode(), CategoriesEnum.PERSONS.getCode(), CategoriesEnum.USERS.getCode(), CategoriesEnum.WAGES.getCode(), CategoriesEnum.CONTRACTORS.getCode(), CategoriesEnum.MEDICAL_STAFF.getCode() };
     }

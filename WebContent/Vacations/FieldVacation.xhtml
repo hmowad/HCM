@@ -11,7 +11,7 @@
     //<![CDATA[  
 		   function getEmp(contextPath){
                if(#{fieldVacation.admin}){
-         	 	    openEmployeesMiniSearchForBeneficiary(contextPath, 'handleEmpsMiniSearchResult(ret)', 19, #{fieldVacation.vacationMode}, '#{fieldVacation.employeeIds}');
+         	 	    openEmployeesMiniSearchForBeneficiary(contextPath, 'handleEmpsMiniSearchResult(ret)', 19, '#{fieldVacation.beneficiaryType}', '#{fieldVacation.employeeIds}');
              
            		  }else{
             	openEmployeesMiniSearch(contextPath, 'handleEmpsMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{fieldVacation.getLoginEmpPhysicalRegionFlag(false)});
