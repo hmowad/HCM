@@ -82,12 +82,12 @@ public class HistoricalVacationsMiniSearch extends BaseBacking {
 		    searchHistoricalVacationsList = HistoricalVacationsService.searchHistoricalVacations(employee, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ON.getCode(), FlagsEnum.ON.getCode(), FlagsEnum.ALL.getCode(), new Integer[] { FlagsEnum.ON.getCode(), FlagsEnum.OFF.getCode() },
 			    decisionNumber, decisionDate == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode(), decisionDate, FlagsEnum.ON.getCode(),
 			    new Long[] { VacationTypesEnum.REGULAR.getCode(), VacationTypesEnum.SICK.getCode() }, fromDate, toDate, period,
-			    FlagsEnum.ON.getCode(), vacationLocationFlag, countryName, FlagsEnum.ON.getCode());
+			    FlagsEnum.ALL.getCode(), vacationLocationFlag, countryName, FlagsEnum.ON.getCode());
 		else
 		    searchHistoricalVacationsList = HistoricalVacationsService.searchHistoricalVacations(employee, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ON.getCode(), FlagsEnum.ON.getCode(), FlagsEnum.ALL.getCode(), new Integer[] { FlagsEnum.ON.getCode(), FlagsEnum.OFF.getCode() },
 			    decisionNumber, decisionDate == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode(), decisionDate, vacationTypeId,
 			    new Long[] { vacationTypeId }, fromDate, toDate, period,
-			    FlagsEnum.ON.getCode(), vacationLocationFlag, countryName, FlagsEnum.ON.getCode());
+			    FlagsEnum.ALL.getCode(), vacationLocationFlag, countryName, FlagsEnum.ON.getCode());
 	    } else {
 
 		searchHistoricalVacationsList = HistoricalVacationsService.searchHistoricalVacations(employee, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ON.getCode(), FlagsEnum.ON.getCode(), FlagsEnum.ON.getCode(), new Integer[] { FlagsEnum.ON.getCode() },

@@ -179,15 +179,15 @@
 					<td align="center" width="100%">
 
 						<rich:dataTable id="historicalVacationTableId" rowKeyVar="index" var="historicalVacation" value="#{historicalVacationsManagement.historicalVacationData}" rows="#{historicalVacationsManagement.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
-							<rich:column style="width : 5%">
+							<rich:column style="width : 2%">
 								<f:facet name="header">#</f:facet>
 		                         #{index + 1}
 		                    </rich:column>
-							<rich:column style="width : 10%">
+							<rich:column style="width : 7%">
 								<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
 								<h:outputText value="#{historicalVacation.decisionNumber}" />
 							</rich:column>
-							<rich:column style="width : 10%">
+							<rich:column style="width : 5%">
 								<f:facet name="header">#{msgs.label_decisionType}</f:facet>
 								<h:outputText value="#{historicalVacation.requestType == 1 ? (msgs.label_newVacationDecision) : (historicalVacation.requestType == 2 ? (msgs.label_modifyVacationDecision) : (msgs.label_cancelVacationDecision))}" />
 							</rich:column>
@@ -195,7 +195,7 @@
 								<f:facet name="header">#{msgs.label_empName}</f:facet>
 								<h:outputText value="#{historicalVacation.empName}" />
 							</rich:column>
-							<rich:column style="width : 10%">
+							<rich:column style="width : 25%">
 								<f:facet name="header">#{msgs.label_vacType}</f:facet>
 								<h:outputText value="#{historicalVacation.vacationTypeDescription}" />
 							</rich:column>
@@ -211,7 +211,7 @@
 								<f:facet name="header">#{msgs.label_endDate}</f:facet>
 								<h:outputText value="#{historicalVacation.endDateString}" />
 							</rich:column>
-							<rich:column style="width : 10%">
+							<rich:column style="width : 5%">
 								<f:facet name="header">#{msgs.label_location}</f:facet>
 								<h:outputText value="#{historicalVacation.locationFlag == 0 ? msgs.label_locIn : msgs.label_locOut}" />
 							</rich:column>
