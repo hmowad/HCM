@@ -167,7 +167,7 @@ public class PromotionsWorkFlow extends BaseWorkFlow {
 		Date curHijriDate = HijriDateService.getHijriSysDate();
 
 		if (report.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() && report.getScaleUpFlagBoolean()) {
-		    WFPosition position = getWFPosition(WFPositionsEnum.ORGANIZATION_ADMINISTRATIVE_UNIT_MANAGER.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+		    WFPosition position = getWFPosition(WFPositionsEnum.HUMAN_RESOURCES_ORGANIZATION_UNIT_MANAGER.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
 		    EmployeeData adminOrganizationManager = EmployeesService.getEmployeeByPosition(position.getUnitId(), position.getEmpId());
 		    completeWFTask(reTask, WFTaskActionsEnum.REVIEW.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(adminOrganizationManager.getEmpId(), instance.getProcessId(), requester.getEmpId()), adminOrganizationManager.getEmpId(), reTask.getTaskUrl(), WFTaskRolesEnum.ADMINISTRATIVE_ORGANIZATION_MANAGER.getCode(), "1", session);
 		} else

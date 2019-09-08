@@ -12,6 +12,7 @@ import com.code.dal.orm.setup.Country;
 import com.code.dal.orm.workflow.hcm.WFDefinitionLetter;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.EmployeeStatusEnum;
+import com.code.enums.FlagsEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
 import com.code.enums.NavigationEnum;
@@ -39,10 +40,12 @@ public class DefinitionLetter extends WFBaseBacking {
 
     private boolean retiredFlag;
     private boolean isAdmin = false;
+    private Integer onOfficialPaper;
 
     public DefinitionLetter() {
 	super.init();
 	super.setScreenTitle(getMessage("title_definitionLetter"));
+	onOfficialPaper = FlagsEnum.ON.getCode();
 	processId = WFProcessesEnum.DEFINITION_LETTERS.getCode();
 	try {
 	    if (this.role.equals(WFTaskRolesEnum.REQUESTER.getCode())) {
@@ -116,7 +119,7 @@ public class DefinitionLetter extends WFBaseBacking {
 
     public void print() {
 	try {
-	    byte[] bytes = DefinitionLettersWorkFlow.getDefinitionLetterBytes(WFDefLetter.getLetterType(), beneficiary.getEmpId(), WFDefLetter.getEmbassyId(), WFDefLetter.getEmployeeEnglishName());
+	    byte[] bytes = DefinitionLettersWorkFlow.getDefinitionLetterBytes(WFDefLetter.getLetterType(), beneficiary.getEmpId(), WFDefLetter.getEmbassyId(), WFDefLetter.getEmployeeEnglishName(), onOfficialPaper);
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -239,4 +242,13 @@ public class DefinitionLetter extends WFBaseBacking {
     public void setAdmin(boolean isAdmin) {
 	this.isAdmin = isAdmin;
     }
+
+    public Integer getOnOfficialPaper() {
+	return onOfficialPaper;
+    }
+
+    public void setOnOfficialPaper(Integer onOfficialPaper) {
+	this.onOfficialPaper = onOfficialPaper;
+    }
+
 }
