@@ -13,8 +13,6 @@ import com.code.dal.orm.hcm.vacations.VacationType;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.LocationFlagsEnum;
-import com.code.enums.MenuActionsEnum;
-import com.code.enums.MenuCodesEnum;
 import com.code.enums.RequestTypesEnum;
 import com.code.enums.SubVacationTypesEnum;
 import com.code.enums.VacationTypesEnum;
@@ -22,7 +20,6 @@ import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.HistoricalVacationsService;
 import com.code.services.hcm.VacationsService;
-import com.code.services.security.SecurityService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
@@ -36,7 +33,6 @@ public class AddHistoricalVacation extends BaseBacking {
     private List<VacationType> vacTypeList;
     private List<Region> decisionRegions;
     private int exceededFlag = 0;
-    boolean signAuthorized;
     // mode= 0 open the page from menu
     // mode =1 opened as detail from management page
     // mode = 2 opened as edit from management page
@@ -74,7 +70,6 @@ public class AddHistoricalVacation extends BaseBacking {
 
 	    }
 	    decisionRegions = CommonService.getAllRegions();
-	    signAuthorized = SecurityService.isEmployeeMenuActionGranted(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_HISTORICAL_VAC_ADD_HISTORICAL_VACATION.getCode(), MenuActionsEnum.VAC_HISTORICAL_VACATIONS_SIGN_NEW_HISTORICAL_VACATION.getCode());
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 
@@ -84,6 +79,8 @@ public class AddHistoricalVacation extends BaseBacking {
     /*---------------------------------------------------------- Operation  -----------------------------------------------*/
     public void saveVacation() {
 	try {
+	    if (currentEmployee.getEmpId().equals(this.loginEmpData.getEmpId()))
+		throw new BusinessException("error_selfHistoricalVacationIsinvalid");
 	    if (historicalVacationTransactionData.getId() == null) {
 		historicalVacationTransactionData.setRequestType(RequestTypesEnum.NEW.getCode());
 		historicalVacationTransactionData.setActiveFlag(FlagsEnum.ON.getCode());
@@ -105,6 +102,8 @@ public class AddHistoricalVacation extends BaseBacking {
 
     public void signVacation() {
 	try {
+	    if (currentEmployee.getEmpId().equals(this.loginEmpData.getEmpId()))
+		throw new BusinessException("error_selfHistoricalVacationIsinvalid");
 	    historicalVacationTransactionData.setApprovedFlag(FlagsEnum.ON.getCode());
 
 	    HistoricalVacationsService.modifyHistoricalVacationTransaction(historicalVacationTransactionData.getHistoricalVacationTransaction(), currentEmployee, true, false);
@@ -258,10 +257,6 @@ public class AddHistoricalVacation extends BaseBacking {
 
     public void setExceededFlag(int exceededFlag) {
 	this.exceededFlag = exceededFlag;
-    }
-
-    public boolean isSignAuthorized() {
-	return signAuthorized;
     }
 
     public int getViewMode() {

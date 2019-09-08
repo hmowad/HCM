@@ -11,14 +11,11 @@ import com.code.dal.orm.hcm.organization.Region;
 import com.code.dal.orm.hcm.vacations.HistoricalVacationTransaction;
 import com.code.dal.orm.hcm.vacations.VacationType;
 import com.code.enums.FlagsEnum;
-import com.code.enums.MenuActionsEnum;
-import com.code.enums.MenuCodesEnum;
 import com.code.enums.RequestTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.HistoricalVacationsService;
 import com.code.services.hcm.VacationsService;
-import com.code.services.security.SecurityService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
@@ -32,7 +29,6 @@ public class ModifyHistoricalVacation extends BaseBacking {
     private String balance;
     private List<VacationType> vacTypeList;
     private List<Region> decisionRegions;
-    boolean signAuthorized;
     // mode= 0 open the page from menu
     // mode =1 opened as detail from management page
     // mode = 2 opened as edit from management page
@@ -68,7 +64,6 @@ public class ModifyHistoricalVacation extends BaseBacking {
 	    }
 	    decisionRegions = CommonService.getAllRegions();
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
-	    signAuthorized = SecurityService.isEmployeeMenuActionGranted(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_HISTORICAL_VAC_MODIFY_HISTORICAL_VACATION.getCode(), MenuActionsEnum.VAC_HISTORICAL_VACATIONS_SIGN_MODIFIED_HISTORICAL_VACATION.getCode());
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -78,6 +73,8 @@ public class ModifyHistoricalVacation extends BaseBacking {
     /*---------------------------------------------------------- Operation  -----------------------------------------------*/
     public void saveVacation() {
 	try {
+	    if (currentEmployee.getEmpId().equals(this.loginEmpData.getEmpId()))
+		throw new BusinessException("error_selfHistoricalVacationIsinvalid");
 	    HistoricalVacationsService.validateOldHistoricalVacationActivationStatus(historicalVacationTransaction.getId());
 	    if (newHistoricalVacationTransaction.getId() == null) {
 		newHistoricalVacationTransaction.setRequestType(RequestTypesEnum.MODIFY.getCode());
@@ -99,6 +96,8 @@ public class ModifyHistoricalVacation extends BaseBacking {
 
     public void signVacation() {
 	try {
+	    if (currentEmployee.getEmpId().equals(this.loginEmpData.getEmpId()))
+		throw new BusinessException("error_selfHistoricalVacationIsinvalid");
 	    HistoricalVacationsService.validateOldHistoricalVacationActivationStatus(historicalVacationTransaction.getId());
 
 	    newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.ON.getCode());
@@ -219,10 +218,6 @@ public class ModifyHistoricalVacation extends BaseBacking {
 
     public void setDecisionRegions(List<Region> decisionRegions) {
 	this.decisionRegions = decisionRegions;
-    }
-
-    public boolean isSignAuthorized() {
-	return signAuthorized;
     }
 
     public int getViewMode() {
