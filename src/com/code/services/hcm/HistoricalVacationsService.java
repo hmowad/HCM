@@ -164,7 +164,7 @@ public class HistoricalVacationsService extends BaseService {
 	if (historicalVacationTransaction.getContactAddress() == null || historicalVacationTransaction.getContactAddress().trim().equals(""))
 	    throw new BusinessException("error_contactAddressMandatory");
 
-	if (countHistoricalVacationsByDecisionNumberAndDate(historicalVacationTransaction.getDecisionNumber(), historicalVacationTransaction.getId()) > 0
+	if (countHistoricalVacationsByDecisionNumber(historicalVacationTransaction.getDecisionNumber(), historicalVacationTransaction.getId()) > 0
 		|| VacationsService.countVacationByDecisionNumber(historicalVacationTransaction.getDecisionNumber(), historicalVacationTransaction.getVacationTransactionId()) > 0)
 	    throw new BusinessException("error_historicalDecisionNumberRepeted");
     }
@@ -657,12 +657,6 @@ public class HistoricalVacationsService extends BaseService {
 	VacationsBusinessRulesService.validateNewBabyVacationRules(constructVacation(historicalVacationTransaction), vacationBeneficiary);
     }
 
-    private static void validateSearchHistoricalVacations(EmployeeData employee, Date fromDate, Date toDate, Integer period) throws BusinessException {
-	if (employee.getEmpId() == null)
-	    throw new BusinessException("error_selectEmployee");
-	if (period != null && period <= 0)
-	    throw new BusinessException("error_periodNotNegative");
-    }
     /*----------------------------------------------------------End of Validations --------------------------------------------*/
 
     /*---------------------------------------------------------- Data Handling --------------------------------------------*/
@@ -910,7 +904,8 @@ public class HistoricalVacationsService extends BaseService {
 
     }
 
-    public static List<HistoricalVacationTransactionData> searchHistoricalVacations(EmployeeData employee, Integer requestTypeFlag, Integer[] requestTypes, String decisionNumber, Integer skipDecisionDateFlag, Date decisionDate, long vacationTypeFlag, Long[] vacationTypes, Date fromDate, Date toDate, Integer period, int approvedFlag, int locationFlag, String countryName) throws BusinessException {
+    public static List<HistoricalVacationTransactionData> searchHistoricalVacations(EmployeeData employee, Integer requestTypeFlag, Integer requestType, Integer newRequestFlag, Integer modifyRequestFlag, Integer cancelRequestFlag, Integer[] approvalFlag, String decisionNumber, Integer skipDecisionDateFlag, Date decisionDate, long vacationTypeFlag, Long[] vacationTypes, Date fromDate, Date toDate, Integer period, int approvedFlag, int locationFlag, String countryName, Integer miniSearchFlag)
+	    throws BusinessException {
 	try {
 	    Map<String, Object> qParam = new HashMap<String, Object>();
 	    qParam.put("P_EMP_ID", employee.getEmpId() == null ? FlagsEnum.ALL.getCode() : employee.getEmpId());
@@ -921,13 +916,18 @@ public class HistoricalVacationsService extends BaseService {
 	    qParam.put("P_TO_DATE", (toDate == null ? HijriDateService.getHijriDateString(HijriDateService.getHijriSysDate()) : HijriDateService.getHijriDateString(toDate)));
 	    qParam.put("P_PERIOD", (period == null ? FlagsEnum.ALL.getCode() : period));
 	    qParam.put("P_APPROVED_FLAG", approvedFlag);
-	    qParam.put("P_REQUEST_TYPES", requestTypes);
+	    qParam.put("P_REQUEST_TYPE", requestType);
 	    qParam.put("P_DECISION_DATE_SKIP_FLAG", skipDecisionDateFlag);
 	    qParam.put("P_DECISION_DATE", decisionDate == null ? HijriDateService.getHijriDateString(HijriDateService.getHijriSysDate()) : HijriDateService.getHijriDateString(decisionDate));
 	    qParam.put("P_LOCATION_FLAG", locationFlag);
 	    qParam.put("P_COUNTRY_NAME", countryName.equals("") ? FlagsEnum.ALL.getCode() + "" : countryName);
 	    qParam.put("P_DECISION_NUMBER", decisionNumber.equals("") ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
 	    qParam.put("P_REQUEST_TYPE_FLAG", requestTypeFlag);
+	    qParam.put("P_NEW_REQUEST_FLAG", newRequestFlag);
+	    qParam.put("P_MODIFY_REQUEST_FLAG", modifyRequestFlag);
+	    qParam.put("P_CANCEL_REQUEST_FLAG", cancelRequestFlag);
+	    qParam.put("P_MINI_SEARCH_FLAG", miniSearchFlag);
+	    qParam.put("P_APPROVAL_FLAGS", approvalFlag);
 	    return DataAccess.executeNamedQuery(HistoricalVacationTransactionData.class, QueryNamesEnum.HCM_SEARCH_HISTORICAL_VACATIONS.getCode(), qParam);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
@@ -948,12 +948,12 @@ public class HistoricalVacationsService extends BaseService {
 	}
     }
 
-    private static long countHistoricalVacationsByDecisionNumberAndDate(String decisionNumber, Long historicalVacationId) throws BusinessException {
+    private static long countHistoricalVacationsByDecisionNumber(String decisionNumber, Long historicalVacationId) throws BusinessException {
 	try {
 	    Map<String, Object> queryParam = new HashMap<String, Object>();
 	    queryParam.put("P_DECISION_NUMBER", decisionNumber);
 	    queryParam.put("P_VACATION_ID", historicalVacationId == null ? FlagsEnum.ALL.getCode() : historicalVacationId);
-	    List<Long> count = DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_HISTORICAL_VACATIONS_BY_DECISION_NUMBER_AND_DATE.getCode(), queryParam);
+	    List<Long> count = DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_HISTORICAL_VACATIONS_BY_DECISION_NUMBER.getCode(), queryParam);
 	    return (count.isEmpty() || count == null ? 0 : count.get(0));
 	} catch (DatabaseException e) {
 	    e.printStackTrace();

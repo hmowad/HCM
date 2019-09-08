@@ -12,7 +12,6 @@ import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.vacations.HistoricalVacationTransactionData;
 import com.code.dal.orm.hcm.vacations.VacationType;
 import com.code.enums.FlagsEnum;
-import com.code.enums.RequestTypesEnum;
 import com.code.enums.VacationTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
@@ -79,33 +78,23 @@ public class HistoricalVacationsMiniSearch extends BaseBacking {
 	    EmployeeData employee = EmployeesService.getEmployeeData(employeeId);
 	    searchHistoricalVacationsList = new ArrayList<HistoricalVacationTransactionData>();
 	    if (searchMode == 0) {
-		if (vacationTypeId == FlagsEnum.ALL.getCode()) {
-		    searchHistoricalVacationsList = HistoricalVacationsService.searchHistoricalVacations(employee, FlagsEnum.ON.getCode(), new Integer[] { RequestTypesEnum.NEW.getCode(), RequestTypesEnum.MODIFY.getCode() },
+		if (vacationTypeId == FlagsEnum.ALL.getCode())
+		    searchHistoricalVacationsList = HistoricalVacationsService.searchHistoricalVacations(employee, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ON.getCode(), FlagsEnum.ON.getCode(), FlagsEnum.ALL.getCode(), new Integer[] { FlagsEnum.ON.getCode(), FlagsEnum.OFF.getCode() },
 			    decisionNumber, decisionDate == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode(), decisionDate, FlagsEnum.ON.getCode(),
-			    new Long[] { VacationTypesEnum.SICK.getCode(), VacationTypesEnum.REGULAR.getCode() }, fromDate, toDate, period,
-			    FlagsEnum.ON.getCode(), vacationLocationFlag, countryName);
-
-		    searchHistoricalVacationsList.addAll(HistoricalVacationsService.searchHistoricalVacations(employee, FlagsEnum.ON.getCode(), new Integer[] { RequestTypesEnum.MODIFY.getCode() },
-			    decisionNumber, decisionDate == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode(), decisionDate, FlagsEnum.ON.getCode(),
-			    new Long[] { VacationTypesEnum.SICK.getCode(), VacationTypesEnum.REGULAR.getCode() }, fromDate, toDate, period,
-			    FlagsEnum.OFF.getCode(), vacationLocationFlag, countryName));
-		} else {
-		    searchHistoricalVacationsList = HistoricalVacationsService.searchHistoricalVacations(employee, FlagsEnum.ON.getCode(), new Integer[] { RequestTypesEnum.NEW.getCode(), RequestTypesEnum.MODIFY.getCode() },
+			    new Long[] { VacationTypesEnum.REGULAR.getCode(), VacationTypesEnum.SICK.getCode() }, fromDate, toDate, period,
+			    FlagsEnum.ON.getCode(), vacationLocationFlag, countryName, FlagsEnum.ON.getCode());
+		else
+		    searchHistoricalVacationsList = HistoricalVacationsService.searchHistoricalVacations(employee, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ON.getCode(), FlagsEnum.ON.getCode(), FlagsEnum.ALL.getCode(), new Integer[] { FlagsEnum.ON.getCode(), FlagsEnum.OFF.getCode() },
 			    decisionNumber, decisionDate == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode(), decisionDate, vacationTypeId,
-			    new Long[] { vacationTypeId }, fromDate, toDate, period, FlagsEnum.ON.getCode(), vacationLocationFlag, countryName);
-
-		    searchHistoricalVacationsList.addAll(HistoricalVacationsService.searchHistoricalVacations(employee, FlagsEnum.ON.getCode(), new Integer[] { RequestTypesEnum.MODIFY.getCode() },
-			    decisionNumber, decisionDate == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode(), decisionDate, vacationTypeId,
-			    new Long[] { vacationTypeId }, fromDate, toDate, period, FlagsEnum.OFF.getCode(), vacationLocationFlag, countryName));
-		}
+			    new Long[] { vacationTypeId }, fromDate, toDate, period,
+			    FlagsEnum.ON.getCode(), vacationLocationFlag, countryName, FlagsEnum.ON.getCode());
 	    } else {
-		searchHistoricalVacationsList = HistoricalVacationsService.searchHistoricalVacations(employee, FlagsEnum.ON.getCode(), new Integer[] { RequestTypesEnum.NEW.getCode(), RequestTypesEnum.MODIFY.getCode() },
-			decisionNumber, decisionDate == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode(), decisionDate, vacationTypeId,
-			new Long[] { vacationTypeId }, fromDate, toDate, period, FlagsEnum.ON.getCode(), vacationLocationFlag, countryName);
 
-		searchHistoricalVacationsList.addAll(HistoricalVacationsService.searchHistoricalVacations(employee, FlagsEnum.ON.getCode(), new Integer[] { RequestTypesEnum.CANCEL.getCode() },
+		searchHistoricalVacationsList = HistoricalVacationsService.searchHistoricalVacations(employee, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ON.getCode(), FlagsEnum.ON.getCode(), FlagsEnum.ON.getCode(), new Integer[] { FlagsEnum.ON.getCode() },
 			decisionNumber, decisionDate == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode(), decisionDate, vacationTypeId,
-			new Long[] { vacationTypeId }, fromDate, toDate, period, FlagsEnum.OFF.getCode(), vacationLocationFlag, countryName));
+			new Long[] { vacationTypeId }, fromDate, toDate, period,
+			FlagsEnum.ALL.getCode(), vacationLocationFlag, countryName, FlagsEnum.ON.getCode());
+
 	    }
 	    if (searchHistoricalVacationsList == null || searchHistoricalVacationsList.isEmpty())
 		throw new BusinessException("error_noVacationMatchThisCriteria");

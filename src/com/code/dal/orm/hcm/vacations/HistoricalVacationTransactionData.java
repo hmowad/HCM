@@ -20,7 +20,11 @@ import com.code.services.util.HijriDateService;
 	@NamedQuery(name = "hcm_historicalVacationTransactionData_searchHistoricalVacations",
 		query = " select v from HistoricalVacationTransactionData v " +
 			" where (:P_EMP_ID = -1 or v.empId = :P_EMP_ID )" +
-			" and (:P_REQUEST_TYPE_FLAG = -1 or v.requestType in (:P_REQUEST_TYPES) ) " +
+			" and (:P_REQUEST_TYPE_FLAG = -1 or v.requestType = :P_REQUEST_TYPE ) " +
+			" and (:P_MINI_SEARCH_FLAG = -1 or ((:P_NEW_REQUEST_FLAG = 1 and v.requestType=1 and v.approvedFlag = 1) " +
+			" or (:P_MODIFY_REQUEST_FLAG = 1 and v.requestType = 2 and v.approvedFlag in (:P_APPROVAL_FLAGS)) " +
+			" or (:P_CANCEL_REQUEST_FLAG = 1 and v.requestType = 4 and v.approvedFlag = 0)" +
+			")) " +
 			" and (:P_DECISION_NUMBER = '-1' or v.decisionNumber = :P_DECISION_NUMBER)" +
 			" and (:P_DECISION_DATE_SKIP_FLAG = -1 or v.decisionDate = to_date(:P_DECISION_DATE, 'MI/MM/YYYY')) " +
 			" and (:P_LOCATION_FLAG = -1 or v.locationFlag = :P_LOCATION_FLAG ) " +

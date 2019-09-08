@@ -315,7 +315,7 @@
 									<tr>
 										<th width="15%">#{msgs.label_attachments}</th>
 										<td width="85%" colspan="3">
-											<code:attachments loginEmpId="#{historicalVacation.currentEmployee.empId}" attachmentId="#{historicalVacation.historicalVacationTransactionData.attachments}" addEnableFlag="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 or historicalVacation.viewMode != 1}" viewEnableFlag="true" deleteEnableFlag="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0}" />
+											<code:attachments loginEmpId="#{historicalVacation.currentEmployee.empId}" attachmentId="#{historicalVacation.historicalVacationTransactionData.attachments}" addEnableFlag="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}" viewEnableFlag="true" deleteEnableFlag="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0}" />
 										</td>
 									</tr>
 								</table>
