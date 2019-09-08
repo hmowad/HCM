@@ -116,7 +116,7 @@ public enum QueryNamesEnum {
     HCM_SEARCH_VACATIONS_CONFIGURATIONS("hcm_vacationConfig_searchVacationsConfigurations"),
 
     HCM_SEARCH_HISTORICAL_VACATIONS("hcm_historicalVacationTransactionData_searchHistoricalVacations"),
-    HCM_COUNT_HISTORICAL_VACATIONS_BY_DECISION_NUMBER_AND_DATE("hcm_historicalVacationTransaction_countHistoricalVacationsByDecisionNumberAndDate"),
+    HCM_COUNT_HISTORICAL_VACATIONS_BY_DECISION_NUMBER("hcm_historicalVacationTransaction_countHistoricalVacationsByDecisionNumber"),
     HCM_GET_HISTORICAL_VACATION_TRANSACTION_BY_ID("hcm_historicalVacationTransactionData_getHistoricalVacationById"),
 
     /* ************************************************ Payroll ********************************************************** */

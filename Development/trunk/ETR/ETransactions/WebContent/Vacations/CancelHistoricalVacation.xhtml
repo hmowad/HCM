@@ -260,7 +260,7 @@
 									<tr>
 										<th width="15%">#{msgs.label_attachments}</th>
 										<td width="85%" colspan="3">
-											<code:attachments loginEmpId="#{cancelHistoricalVacation.currentEmployee.empId}" attachmentId="#{cancelHistoricalVacation.historicalVacationTransaction.attachments}" addEnableFlag="#{cancelHistoricalVacation.newHistoricalVacationTransaction.approvedFlag == 0 or cancelHistoricalVacation.viewMode != 1}" viewEnableFlag="true" />
+											<code:attachments loginEmpId="#{cancelHistoricalVacation.currentEmployee.empId}" attachmentId="#{cancelHistoricalVacation.historicalVacationTransaction.attachments}" addEnableFlag="#{cancelHistoricalVacation.newHistoricalVacationTransaction.approvedFlag == 0 and cancelHistoricalVacation.viewMode != 1}" viewEnableFlag="true" />
 										</td>
 									</tr>
 								</table>
