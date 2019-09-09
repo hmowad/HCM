@@ -42,7 +42,7 @@ public class HistoricalVacationsManagement extends BaseBacking {
 
     public void searchHistoricalVacations() {
 	try {
-	    historicalVacationData = HistoricalVacationsService.searchHistoricalVacations(currentEmployee, requestType, requestType, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), new Integer[] { FlagsEnum.ALL.getCode() }, decisionNumber, FlagsEnum.ALL.getCode(), HijriDateService.getHijriSysDate(), vacationTypeId, new Long[] { vacationTypeId }, fromDate, toDate, period, approvedFlag, locationFlag, FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode());
+	    historicalVacationData = HistoricalVacationsService.searchHistoricalVacations(currentEmployee, requestType, requestType, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), new Integer[] { FlagsEnum.ALL.getCode() }, decisionNumber, FlagsEnum.ALL.getCode(), HijriDateService.getHijriSysDate(), vacationTypeId, new Long[] { vacationTypeId }, fromDate, toDate, period, approvedFlag, locationFlag, "", FlagsEnum.ALL.getCode());
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
