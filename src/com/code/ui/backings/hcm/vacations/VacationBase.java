@@ -92,13 +92,11 @@ public abstract class VacationBase extends WFBaseBacking {
 	    if (this.beneficiarySearchId != null && !this.beneficiarySearchId.equals("")) {
 		EmployeeData tempBeneficiary = EmployeesService.getEmployeeData(Long.parseLong(this.beneficiarySearchId));
 		if (tempBeneficiary != null) {
-		    if (beneficiaryType == null) {
-			if (tempBeneficiary.getEmpId().equals(this.requester.getEmpId())
-				|| ((FlagsEnum.ON.getCode() != this.requester.getIsManager() || !tempBeneficiary.getPhysicalUnitHKey().startsWith(UnitsService.getHKeyPrefix(this.requester.getPhysicalUnitHKey())))
-					&& !isEmployeeAuthorizedRequestVacation())) {
+		    if (beneficiaryType == null && (tempBeneficiary.getEmpId().equals(this.requester.getEmpId())
+			    || ((FlagsEnum.ON.getCode() != this.requester.getIsManager() || !tempBeneficiary.getPhysicalUnitHKey().startsWith(UnitsService.getHKeyPrefix(this.requester.getPhysicalUnitHKey())))
+				    && !isEmployeeAuthorizedRequestVacation()))) {
 
-			    this.setServerSideErrorMessages(this.getMessage("error_notAuthorized"));
-			}
+			this.setServerSideErrorMessages(this.getMessage("error_notAuthorized"));
 		    } else {
 			this.beneficiary = tempBeneficiary;
 			// adjust the vacation mode and the task url.
