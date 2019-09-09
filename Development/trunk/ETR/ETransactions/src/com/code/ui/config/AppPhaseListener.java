@@ -166,7 +166,7 @@ public class AppPhaseListener implements PhaseListener {
 		return false;
 
 	    if (isDirectAccess) {
-		if (req.getParameter(grantedUrlParamArray[0]) != null && !req.getParameter(grantedUrlParamArray[0]).equals(grantedUrlParamArray[1]))
+		if (req.getParameter(grantedUrlParamArray[0]) != null && !(req.getParameter(grantedUrlParamArray[0]).equals(grantedUrlParamArray[1]) && req.getParameterMap().size() == grantedUrlParams.length))
 		    return false;
 	    } else {
 		if (req.getParameter(grantedUrlParamArray[0]) != null)
