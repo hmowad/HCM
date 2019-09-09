@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
-import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.RegionsEnum;
 import com.code.enums.ReportOutputFormatsEnum;
@@ -196,7 +195,7 @@ public abstract class BaseBacking implements Serializable {
 	case 3:
 	    return CommonService.getCivilCategoriesIdsArray();
 	case 6:
-	    return new Long[] { CategoriesEnum.CONTRACTORS.getCode() };
+	    return CommonService.getCivilContractorsCategoriesIdsArray();
 
 	default:
 	    return CommonService.getCivilCategoriesIdsWithOutContractorsArray();
