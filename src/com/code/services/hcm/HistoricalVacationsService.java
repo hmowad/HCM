@@ -41,7 +41,8 @@ public class HistoricalVacationsService extends BaseService {
 
     public static void insertHistoricalVacationTransaction(HistoricalVacationTransaction historicalVacationTransaction, EmployeeData vacationBeneficiary, CustomSession... useSession) throws BusinessException {
 	if (historicalVacationTransaction.getRequestType() != RequestTypesEnum.CANCEL.getCode()) {
-	    historicalVacationTransaction.setPaidVacationType(VacationsBusinessRulesService.getPaidVacationType(historicalVacationTransaction.getVacationTypeId(), historicalVacationTransaction.getSubVacationType(), vacationBeneficiary, historicalVacationTransaction.getStartDate(), null));
+	    if (historicalVacationTransaction.getRequestType() == RequestTypesEnum.NEW.getCode())
+		historicalVacationTransaction.setPaidVacationType(VacationsBusinessRulesService.getPaidVacationType(historicalVacationTransaction.getVacationTypeId(), historicalVacationTransaction.getSubVacationType(), vacationBeneficiary, historicalVacationTransaction.getStartDate(), null));
 	    validateHistoricalVacationRules(historicalVacationTransaction, vacationBeneficiary);
 	}
 	insertHistoricalVacation(historicalVacationTransaction, useSession);
@@ -51,7 +52,6 @@ public class HistoricalVacationsService extends BaseService {
 	HistoricalVacationTransactionData vacationData = getHistoricalVacationTransactionDataById(historicalVacationTransaction.getId());
 	if (vacationData != null) {
 	    if (historicalVacationTransaction.getRequestType() != RequestTypesEnum.CANCEL.getCode() && !skipValidationFlag) {
-		historicalVacationTransaction.setPaidVacationType(VacationsBusinessRulesService.getPaidVacationType(historicalVacationTransaction.getVacationTypeId(), historicalVacationTransaction.getSubVacationType(), vacationBeneficiary, historicalVacationTransaction.getStartDate(), null));
 		validateHistoricalVacationRules(historicalVacationTransaction, vacationBeneficiary);
 	    }
 	    modifyHistoricalVacation(historicalVacationTransaction, signHistoricalVacationFlag, useSession);
@@ -170,7 +170,7 @@ public class HistoricalVacationsService extends BaseService {
     }
 
     protected static void validateHistoricalRegularVacationRules(HistoricalVacationTransaction historicalVacationTransaction, EmployeeData vacationBeneficiary) throws BusinessException {
-	validateHistoricalRegularVacationEffect(historicalVacationTransaction, vacationBeneficiary);
+
 	try {
 	    if (vacationBeneficiary.getRecruitmentDate() == null)
 		throw new BusinessException("error_empRecruitmentDateMandatoryForVacations");
@@ -346,9 +346,16 @@ public class HistoricalVacationsService extends BaseService {
 		    throw new BusinessException("error_vacationRequestLimits", new Object[] { activeVacationConfiguration.getMinValue(), activeVacationConfiguration.getMaxValue() });
 		}
 	    }
-
-	    if (historicalVacationTransaction.getPeriod() > (VacationsBusinessRulesService.calculateEmpRegularBalance(vacationBeneficiary, historicalVacationTransaction.getStartDate(), activeVacationConfiguration, historicalVacationTransaction.getPeriod()) + ((historicalVacationTransaction.getRequestType() == RequestTypesEnum.MODIFY.getCode()) ? 1 : 0)))
-		throw new BusinessException("error_vacCredit");
+	    if (historicalVacationTransaction.getRequestType() == RequestTypesEnum.NEW.getCode()) {
+		if (historicalVacationTransaction.getPeriod() > (VacationsBusinessRulesService.calculateEmpRegularBalance(vacationBeneficiary, historicalVacationTransaction.getStartDate(), activeVacationConfiguration, historicalVacationTransaction.getPeriod()) + ((historicalVacationTransaction.getRequestType() == RequestTypesEnum.MODIFY.getCode()) ? 1 : 0)))
+		    throw new BusinessException("error_vacCredit");
+		validateHistoricalRegularVacationEffect(historicalVacationTransaction, vacationBeneficiary);
+	    } else {
+		int balance = (int) VacationsBusinessRulesService.calculateEmpRegularBalance(vacationBeneficiary, historicalVacationTransaction.getStartDate(), activeVacationConfiguration, historicalVacationTransaction.getPeriod());
+		balance = balance + oldVacationData.getPeriod();
+		if (historicalVacationTransaction.getPeriod() > balance)
+		    throw new BusinessException("error_vacCredit");
+	    }
 
 	} catch (BusinessException e) {
 	    throw e;
@@ -504,7 +511,21 @@ public class HistoricalVacationsService extends BaseService {
 		    && historicalVacationTransaction.getLocationFlag() == LocationFlagsEnum.EXTERNAL.getCode()
 		    && historicalVacationTransaction.getPeriod() < activeVacationConfiguration.getExternalMinVacationDays())
 		throw new BusinessException("error_sickVacationExternalPeriodLimit", new Object[] { activeVacationConfiguration.getExternalMinVacationDays() });
-	    validateSickHistoricalVacationEffect(historicalVacationTransaction, vacationBeneficiary, frameEndDate);
+	    if (historicalVacationTransaction.getRequestType().equals(RequestTypesEnum.MODIFY.getCode())) {
+		if (oldSickVacationData.getPaidVacationType().equals(sickBalanceType)) {
+		    int balance = sickBalance + oldSickVacationData.getPeriod();
+		    if (historicalVacationTransaction.getPeriod() > balance)
+			throw new BusinessException("error_vacCredit");
+
+		} else {
+		    if (historicalVacationTransaction.getPeriod() > oldSickVacationData.getPeriod()) {
+			throw new BusinessException("error_vacCredit");
+		    }
+		}
+
+	    } else {
+		validateSickHistoricalVacationEffect(historicalVacationTransaction, vacationBeneficiary, frameEndDate);
+	    }
 	    /*
 	     * // internal vacation has been changed to be external vacation. if (request.getLocationFlag() == LocationFlagsEnum.INTERNAL_EXTERNAL.getCode()) {
 	     * 

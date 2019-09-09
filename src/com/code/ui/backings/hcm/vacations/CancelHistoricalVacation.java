@@ -145,6 +145,7 @@ public class CancelHistoricalVacation extends BaseBacking {
 		newHistoricalVacationTransaction.setHistoricalVacationParentId(historicalVacationTransaction.getId());
 		newHistoricalVacationTransaction.setEndDate(historicalVacationTransaction.getEndDate());
 		newHistoricalVacationTransaction.setPeriod(historicalVacationTransaction.getPeriod());
+		newHistoricalVacationTransaction.setPaidVacationType(historicalVacationTransaction.getPaidVacationType());
 		newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.OFF.getCode());
 	    }
 	} catch (BusinessException e) {
