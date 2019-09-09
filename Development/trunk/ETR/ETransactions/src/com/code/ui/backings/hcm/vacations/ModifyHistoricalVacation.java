@@ -147,6 +147,7 @@ public class ModifyHistoricalVacation extends BaseBacking {
 		newHistoricalVacationTransaction.setLocation(historicalVacationTransaction.getLocation());
 		newHistoricalVacationTransaction.setLocationFlag(historicalVacationTransaction.getLocationFlag());
 		newHistoricalVacationTransaction.setHistoricalVacationParentId(historicalVacationTransaction.getId());
+		newHistoricalVacationTransaction.setPaidVacationType(historicalVacationTransaction.getPaidVacationType());
 		newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.OFF.getCode());
 
 	    }
