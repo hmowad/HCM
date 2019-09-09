@@ -237,9 +237,11 @@
 											</h:inputText>
 											<h:outputText rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1}" value="#{historicalVacation.historicalVacationTransactionData.period}" />
 										</td>
-										<th width="15%"> <h:outputText value="#{msgs.label_vacationBalance}" rendered="#{historicalVacation.viewMode != 1}"/></th>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_vacationBalance}" rendered="#{historicalVacation.viewMode != 1}" />
+										</th>
 										<td width="35%">
-											<h:outputText id="vacationBalanceId" value="#{historicalVacation.balance}" rendered="#{historicalVacation.viewMode != 1}"/>
+											<h:outputText id="vacationBalanceId" value="#{historicalVacation.balance}" rendered="#{historicalVacation.viewMode != 1}" />
 										</td>
 									</tr>
 									<tr>
@@ -262,12 +264,13 @@
 											<tr>
 												<th width="15%">#{msgs.label_location}</th>
 												<td width="35%">
-													<h:selectOneRadio id="locationFlagId" value="#{historicalVacation.historicalVacationTransactionData.locationFlag}" disabled="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1 }">
+													<h:selectOneRadio id="locationFlagId" value="#{historicalVacation.historicalVacationTransactionData.locationFlag}" rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}">
 														<f:selectItem itemValue="0" itemLabel="#{msgs.label_locIn}" />
 														<f:selectItem itemValue="1" itemLabel="#{msgs.label_locOut}" />
 
 														<f:ajax event="click" execute="@this" listener="#{historicalVacation.locationFlagChangeListner}" render="countriesNamesId locationId locationBtnId notifyMessagesId locationFlagId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 													</h:selectOneRadio>
+													<h:outputText rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1 }" value="#{historicalVacation.historicalVacationTransactionData.locationFlag == 0 ? msgs.label_locIn : msgs.label_locOut}" />
 												</td>
 
 												<th width="15%">
@@ -378,7 +381,8 @@
 									<tr>
 										<th width="15%">#{msgs.label_notes}</th>
 										<td width="85%" colspan="3">
-											<h:inputText value="#{historicalVacation.historicalVacationTransactionData.joiningRemarks}" disabled="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1}" maxlength="100" styleClass="inputDataLarge" />
+											<h:inputText value="#{historicalVacation.historicalVacationTransactionData.joiningRemarks}" rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}" maxlength="100" styleClass="inputDataLarge" />
+											<h:outputText value="#{historicalVacation.historicalVacationTransactionData.joiningRemarks}" rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1}" />
 										</td>
 									</tr>
 								</table>
