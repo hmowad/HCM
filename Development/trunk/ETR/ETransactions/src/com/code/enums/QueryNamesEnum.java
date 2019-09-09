@@ -118,6 +118,7 @@ public enum QueryNamesEnum {
     HCM_SEARCH_HISTORICAL_VACATIONS("hcm_historicalVacationTransactionData_searchHistoricalVacations"),
     HCM_COUNT_HISTORICAL_VACATIONS_BY_DECISION_NUMBER("hcm_historicalVacationTransaction_countHistoricalVacationsByDecisionNumber"),
     HCM_GET_HISTORICAL_VACATION_TRANSACTION_BY_ID("hcm_historicalVacationTransactionData_getHistoricalVacationById"),
+    HCM_GET_HISTORICAL_VACATION_TRANSACTION_BY_PARENT_ID("hcm_historicalVacationTransactionData_getHistoricalVacationByParentId"),
 
     /* ************************************************ Payroll ********************************************************** */
     HCM_GET_PAYROLL_DIFF_BY_TRANS_STATUS("hcm_EmployeePayrollDifferenceData_getPayrollDiffByTrnsStatus"),

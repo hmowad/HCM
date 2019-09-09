@@ -75,9 +75,9 @@ public class HistoricalVacationsService extends BaseService {
     }
 
     /*---------------------------------------------------------- Validations --------------------------------------------*/
-    public static void validateOldHistoricalVacationActivationStatus(Long vacationId) throws BusinessException {
-	HistoricalVacationTransactionData oldHistoricalVacationTransactionData = getHistoricalVacationTransactionDataById(vacationId);
-	if (oldHistoricalVacationTransactionData.getActiveFlag() == FlagsEnum.OFF.getCode())
+    public static void validateOldHistoricalVacationActivationStatus(Long parentVacationId, Long vacationId) throws BusinessException {
+	HistoricalVacationTransactionData oldHistoricalVacationTransactionData = getHistoricalVacationTransactionDataByParentId(parentVacationId, vacationId);
+	if (oldHistoricalVacationTransactionData != null)
 	    throw new BusinessException("error_vacationHasBeenModifiedOrCanceled");
     }
 
@@ -920,7 +920,7 @@ public class HistoricalVacationsService extends BaseService {
 	    qParam.put("P_DECISION_DATE_SKIP_FLAG", skipDecisionDateFlag);
 	    qParam.put("P_DECISION_DATE", decisionDate == null ? HijriDateService.getHijriDateString(HijriDateService.getHijriSysDate()) : HijriDateService.getHijriDateString(decisionDate));
 	    qParam.put("P_LOCATION_FLAG", locationFlag);
-	    qParam.put("P_COUNTRY_NAME", countryName.equals("") ? FlagsEnum.ALL.getCode() + "" : countryName);
+	    qParam.put("P_COUNTRY_NAME", countryName.equals("") ? FlagsEnum.ALL.getCode() + "" : "%" + countryName + "%");
 	    qParam.put("P_DECISION_NUMBER", decisionNumber.equals("") ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
 	    qParam.put("P_REQUEST_TYPE_FLAG", requestTypeFlag);
 	    qParam.put("P_NEW_REQUEST_FLAG", newRequestFlag);
@@ -941,6 +941,19 @@ public class HistoricalVacationsService extends BaseService {
 	    qParams.put("P_VACATION_ID", id);
 
 	    List<HistoricalVacationTransactionData> result = DataAccess.executeNamedQuery(HistoricalVacationTransactionData.class, QueryNamesEnum.HCM_GET_HISTORICAL_VACATION_TRANSACTION_BY_ID.getCode(), qParams);
+	    return result.isEmpty() ? null : result.get(0);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_getVacationData");
+	}
+    }
+
+    public static HistoricalVacationTransactionData getHistoricalVacationTransactionDataByParentId(Long parentId, Long vacationId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_PARENT_ID", parentId);
+	    qParams.put("P_VACATION_ID", vacationId == null ? FlagsEnum.ALL.getCode() : vacationId);
+	    List<HistoricalVacationTransactionData> result = DataAccess.executeNamedQuery(HistoricalVacationTransactionData.class, QueryNamesEnum.HCM_GET_HISTORICAL_VACATION_TRANSACTION_BY_PARENT_ID.getCode(), qParams);
 	    return result.isEmpty() ? null : result.get(0);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();

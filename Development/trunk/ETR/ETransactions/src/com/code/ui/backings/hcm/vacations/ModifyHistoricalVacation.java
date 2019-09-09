@@ -75,7 +75,7 @@ public class ModifyHistoricalVacation extends BaseBacking {
 	try {
 	    if (currentEmployee.getEmpId().equals(this.loginEmpData.getEmpId()))
 		throw new BusinessException("error_selfHistoricalVacationIsinvalid");
-	    HistoricalVacationsService.validateOldHistoricalVacationActivationStatus(historicalVacationTransaction.getId());
+	    HistoricalVacationsService.validateOldHistoricalVacationActivationStatus(newHistoricalVacationTransaction.getHistoricalVacationParentId(), newHistoricalVacationTransaction.getId());
 	    if (newHistoricalVacationTransaction.getId() == null) {
 		newHistoricalVacationTransaction.setRequestType(RequestTypesEnum.MODIFY.getCode());
 		newHistoricalVacationTransaction.setActiveFlag(FlagsEnum.ON.getCode());
@@ -98,7 +98,7 @@ public class ModifyHistoricalVacation extends BaseBacking {
 	try {
 	    if (currentEmployee.getEmpId().equals(this.loginEmpData.getEmpId()))
 		throw new BusinessException("error_selfHistoricalVacationIsinvalid");
-	    HistoricalVacationsService.validateOldHistoricalVacationActivationStatus(historicalVacationTransaction.getId());
+	    HistoricalVacationsService.validateOldHistoricalVacationActivationStatus(newHistoricalVacationTransaction.getHistoricalVacationParentId(), newHistoricalVacationTransaction.getId());
 
 	    newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.ON.getCode());
 	    HistoricalVacationsService.modifyHistoricalVacationTransaction(newHistoricalVacationTransaction, currentEmployee, true, false);
@@ -159,6 +159,7 @@ public class ModifyHistoricalVacation extends BaseBacking {
 	currentEmployee = new EmployeeData();
 	historicalVacationTransaction = new HistoricalVacationTransaction();
 	newHistoricalVacationTransaction = new HistoricalVacationTransaction();
+	newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.OFF.getCode());
     }
 
     public void periodChangeListener(AjaxBehaviorEvent event) {
