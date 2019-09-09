@@ -49,11 +49,15 @@ public class HistoricalVacationsManagement extends BaseBacking {
     }
 
     public void reset() {
-	currentEmployee = new EmployeeData();
 	historicalVacationData = new ArrayList<HistoricalVacationTransactionData>();
+	currentEmployee = new EmployeeData();
+	decisionNumber = null;
+	requestType = FlagsEnum.ALL.getCode();
 	fromDate = null;
 	toDate = null;
 	approvedFlag = FlagsEnum.ALL.getCode();
+	locationFlag = FlagsEnum.ALL.getCode();
+	period = null;
 	getVacationTypesByEmpCategoryId();
     }
 
