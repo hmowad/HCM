@@ -68,7 +68,7 @@ public class CancelHistoricalVacation extends BaseBacking {
 	try {
 	    if (currentEmployee.getEmpId().equals(this.loginEmpData.getEmpId()))
 		throw new BusinessException("error_selfHistoricalVacationIsinvalid");
-	    HistoricalVacationsService.validateOldHistoricalVacationActivationStatus(historicalVacationTransaction.getId());
+	    HistoricalVacationsService.validateOldHistoricalVacationActivationStatus(newHistoricalVacationTransaction.getHistoricalVacationParentId(), newHistoricalVacationTransaction.getId());
 	    newHistoricalVacationTransaction.setRequestType(RequestTypesEnum.CANCEL.getCode());
 	    newHistoricalVacationTransaction.setActiveFlag(FlagsEnum.ON.getCode());
 	    newHistoricalVacationTransaction.setExceededDays(null);
@@ -93,7 +93,7 @@ public class CancelHistoricalVacation extends BaseBacking {
 	try {
 	    if (currentEmployee.getEmpId().equals(this.loginEmpData.getEmpId()))
 		throw new BusinessException("error_selfHistoricalVacationIsinvalid");
-	    HistoricalVacationsService.validateOldHistoricalVacationActivationStatus(historicalVacationTransaction.getId());
+	    HistoricalVacationsService.validateOldHistoricalVacationActivationStatus(newHistoricalVacationTransaction.getHistoricalVacationParentId(), newHistoricalVacationTransaction.getId());
 
 	    newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.ON.getCode());
 	    HistoricalVacationsService.modifyHistoricalVacationTransaction(newHistoricalVacationTransaction, currentEmployee, true, false);
@@ -145,7 +145,6 @@ public class CancelHistoricalVacation extends BaseBacking {
 		newHistoricalVacationTransaction.setHistoricalVacationParentId(historicalVacationTransaction.getId());
 		newHistoricalVacationTransaction.setEndDate(historicalVacationTransaction.getEndDate());
 		newHistoricalVacationTransaction.setPeriod(historicalVacationTransaction.getPeriod());
-		newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.OFF.getCode());
 
 	    }
 	} catch (BusinessException e) {
@@ -157,6 +156,7 @@ public class CancelHistoricalVacation extends BaseBacking {
 	currentEmployee = new EmployeeData();
 	historicalVacationTransaction = new HistoricalVacationTransaction();
 	newHistoricalVacationTransaction = new HistoricalVacationTransaction();
+	newHistoricalVacationTransaction.setApprovedFlag(FlagsEnum.OFF.getCode());
     }
 
     public EmployeeData getCurrentEmployee() {

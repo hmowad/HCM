@@ -116,40 +116,32 @@
 				<tr>
 					<td width="100%">
 						<h:panelGroup id="selectEmpId">
-							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 
-								<tr>
-									<td width="100%">
+									<tr>
+										<th width="15%">
+											#{msgs.label_selectEmp}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="85%" colspan="3">
+											<h:outputText id="empNameId" value="#{historicalVacation.currentEmployee.name}" />
+											<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" rendered="#{historicalVacation.viewMode == 0 and historicalVacation.historicalVacationTransactionData.approvedFlag == 0 }" />
+											<h:inputHidden id="empIdHId" value="#{historicalVacation.currentEmployee.empId}" />
+											<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{historicalVacation.selectEmployee}">
+												<f:ajax execute="historicalVacationFormId:empIdHId" render=" historicalVacationFormId:selectEmpId historicalVacationFormId:currentEmployeeId historicalVacationFormId:HistoricalVacationTitle historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationTitle historicalVacationFormId:joiningVacationId historicalVacationFormId:actionsPanelId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</tr>
 
-										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-
-											<tr>
-												<th width="15%">
-													#{msgs.label_selectEmp}
-													<font style="color: red;"> *</font>
-												</th>
-												<td width="85%" colspan="3">
-													<h:outputText id="empNameId" value="#{historicalVacation.currentEmployee.name}" />
-													<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" rendered="#{historicalVacation.viewMode == 0 and historicalVacation.historicalVacationTransactionData.approvedFlag == 0 }" />
-													<h:inputHidden id="empIdHId" value="#{historicalVacation.currentEmployee.empId}" />
-													<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{historicalVacation.selectEmployee}">
-														<f:ajax execute="historicalVacationFormId:empIdHId" render=" historicalVacationFormId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
-													</h:commandButton>
-												</td>
-											</tr>
-
-										</table>
-
-									</td>
-								</tr>
-
-								<tr>
-									<td width="100%">
-										<code:emp id="currentEmployeeId" value="#{historicalVacation.currentEmployee}" rendered="#{historicalVacation.currentEmployee.empId != null}" />
-									</td>
-								</tr>
-							</table>
+								</table>
 						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+					<h:panelGroup id="currentEmployeeId">
+						<code:emp  value="#{historicalVacation.currentEmployee}" rendered="#{historicalVacation.currentEmployee.empId != null}" />
+					</h:panelGroup>
 					</td>
 				</tr>
 				<tr>
@@ -157,6 +149,7 @@
 				</tr>
 				<tr>
 					<td width="100%">
+					<h:panelGroup id="HistoricalVacationTitle"> 
 						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
 							<h:panelGroup rendered="#{historicalVacation.currentEmployee.empId != null}">
 								<tr>
@@ -164,6 +157,7 @@
 								</tr>
 							</h:panelGroup>
 						</table>
+					</h:panelGroup>
 					</td>
 				</tr>
 				<tr>
@@ -333,6 +327,7 @@
 				</tr>
 				<tr>
 					<td width="100%">
+					<h:panelGroup id= "joiningVacationTitle">
 						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
 							<h:panelGroup rendered="#{historicalVacation.currentEmployee.empId != null}">
 								<tr>
@@ -340,6 +335,7 @@
 								</tr>
 							</h:panelGroup>
 						</table>
+					</h:panelGroup>
 					</td>
 				</tr>
 				<tr>
@@ -407,7 +403,7 @@
 												<f:ajax execute="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationId" render="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationId historicalVacationFormId:actionsPanelId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 											<h:commandButton rendered="#{historicalVacation.viewMode == 0}" action="#{historicalVacation.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
-												<f:ajax execute="@form" render="@form" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												<f:ajax execute="@form" render=" historicalVacationFormId:selectEmpId historicalVacationFormId:currentEmployeeId historicalVacationFormId:HistoricalVacationTitle historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationTitle historicalVacationFormId:joiningVacationId historicalVacationFormId:actionsPanelId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 										</h:panelGroup>
 									</h:panelGroup>

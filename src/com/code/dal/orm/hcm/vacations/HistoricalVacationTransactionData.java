@@ -42,6 +42,11 @@ import com.code.services.util.HijriDateService;
 	@NamedQuery(name = "hcm_historicalVacationTransactionData_getHistoricalVacationById",
 		query = " select v from HistoricalVacationTransactionData v " +
 			" where v.id = :P_VACATION_ID "),
+
+	@NamedQuery(name = "hcm_historicalVacationTransactionData_getHistoricalVacationByParentId",
+		query = " select v from HistoricalVacationTransactionData v " +
+			" where v.historicalVacationParentId = :P_PARENT_ID " +
+			" and (:P_VACATION_ID = -1 or v.id <> :P_VACATION_ID )"),
 })
 
 @Entity
