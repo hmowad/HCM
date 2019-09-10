@@ -8,6 +8,7 @@ import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.movements.MovementTransactionData;
+import com.code.dal.orm.workflow.WFTask;
 import com.code.dal.orm.workflow.hcm.movements.WFMovementData;
 import com.code.enums.FlagsEnum;
 import com.code.enums.LocationFlagsEnum;
@@ -15,6 +16,7 @@ import com.code.enums.MovementTypesEnum;
 import com.code.enums.MovementsReasonTypesEnum;
 import com.code.enums.TransactionTypesEnum;
 import com.code.enums.WFProcessesEnum;
+import com.code.enums.WFTaskActionsEnum;
 import com.code.enums.WFTaskRolesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
@@ -29,6 +31,7 @@ public class SubjoinExtensionRequest extends MovementsBase implements Serializab
      * 1 for Officers, 2 for Soldiers and 3 for Persons
      **/
     private MovementTransactionData lastValidTran;
+    private Boolean passSecurityScan;
 
     public SubjoinExtensionRequest() {
 	super.init();
@@ -73,6 +76,13 @@ public class SubjoinExtensionRequest extends MovementsBase implements Serializab
 		}
 
 		if (this.role.equals(WFTaskRolesEnum.MANAGER_REDIRECT.getCode()) || this.role.equals(WFTaskRolesEnum.SECONDARY_MANAGER_REDIRECT.getCode())) {
+		    if (this.role.equals(WFTaskRolesEnum.MANAGER_REDIRECT.getCode())) {
+			WFTask securityEmpTask = MovementsWorkFlow.getSecurityEmpTaskByInstanceId(instance.getInstanceId());
+			if (securityEmpTask.getAction().equals(WFTaskActionsEnum.PASS_SECURITY_SCAN.getCode()))
+			    passSecurityScan = true;
+			else
+			    passSecurityScan = false;
+		    }
 		    selectedReviewerEmpId = 0L;
 		    reviewerEmps = EmployeesService.getManagerEmployees(currentEmployee.getEmpId());
 		    if (mode == 1)
@@ -109,5 +119,13 @@ public class SubjoinExtensionRequest extends MovementsBase implements Serializab
 
     public void setLastValidTran(MovementTransactionData lastValidTran) {
 	this.lastValidTran = lastValidTran;
+    }
+
+    public Boolean getPassSecurityScan() {
+	return passSecurityScan;
+    }
+
+    public void setPassSecurityScan(Boolean passSecurityScan) {
+	this.passSecurityScan = passSecurityScan;
     }
 }

@@ -217,7 +217,7 @@
 										<td width="100%">
 											<code:curTask id="curTaskId" value="#{subjoinCancellationRequest.currentEmployee}"
 												rendered="#{subjoinCancellationRequest.role == 'DirectManager' or subjoinCancellationRequest.role == 'ManagerRedirect' or subjoinCancellationRequest.role == 'ManagerRedirectToSecurity' or subjoinCancellationRequest.role == 'SecurityEmp' or subjoinCancellationRequest.role == 'ReviewerEmp' or subjoinCancellationRequest.role == 'SignManager' or subjoinCancellationRequest.role == 'SecondaryManagerRedirect' or subjoinCancellationRequest.role == 'SecondaryReviewerEmp' or subjoinCancellationRequest.role == 'SecondarySignManager'}">
-												<h:panelGroup rendered="#{subjoinCancellationRequest.role == 'ManagerRedirect' or subjoinCancellationRequest.role == 'SecondaryManagerRedirect'}">
+												<h:panelGroup rendered="#{(subjoinCancellationRequest.role == 'ManagerRedirect' and subjoinCancellationRequest.passSecurityScan) or subjoinCancellationRequest.role == 'SecondaryManagerRedirect'}">
 													<tr>
 														<th width="15%">
 															#{msgs.label_selectEmp}
@@ -284,15 +284,19 @@
 															<f:ajax render="notifyMessagesId" execute="@form" />
 														</h:commandButton>
 
-														<h:commandButton id="approveSeBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;subjoinCancellationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinCancellationRequest.approveMovementSE()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SecurityEmp'}">
+														<h:commandButton id="approveSeBtnId" onclick="return handleOnAction('#{msgs.q_approve}');" action="#{subjoinCancellationRequest.approveMovementSE()}" value="#{msgs.label_employeeSecurityScanPassing} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SecurityEmp'}">
 															<f:ajax render="notifyMessagesId" execute="@form" />
 														</h:commandButton>
-														<h:commandButton id="rejectSeBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{subjoinCancellationRequest.rejectMovementSE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SecurityEmp'}">
+														<h:commandButton id="rejectSeBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{subjoinCancellationRequest.rejectMovementSE()}" value="#{msgs.label_employeeSecurityScanFailing} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SecurityEmp'}">
 															<f:ajax render="notifyMessagesId" execute="@form" />
 														</h:commandButton>
 
-														<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinCancellationRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinCancellationRequest.redirectMovementMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'ManagerRedirect'}">
+														<h:commandButton id="mrApproveBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinCancellationRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinCancellationRequest.redirectMovementMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'ManagerRedirect' and subjoinCancellationRequest.passSecurityScan}">
 															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+
+														<h:commandButton id="mrRejectBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{subjoinCancellationRequest.rejectMovementMR()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'ManagerRedirect' and not subjoinCancellationRequest.passSecurityScan}">
+															<f:ajax execute="@form" render="notifyMessagesId" />
 														</h:commandButton>
 
 														<h:commandButton id="smrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinCancellationRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinCancellationRequest.redirectMovementSMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinCancellationRequest.role == 'SecondaryManagerRedirect'}">

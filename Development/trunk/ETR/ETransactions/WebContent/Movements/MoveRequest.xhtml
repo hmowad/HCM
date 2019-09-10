@@ -373,7 +373,7 @@
 				<tr>
 					<td width="100%">
 						<code:curTask id="curTaskId" value="#{moveRequest.currentEmployee}" rendered="#{moveRequest.role == 'DirectManager' or moveRequest.role == 'ManagerRedirect' or moveRequest.role == 'ManagerRedirectToSecurity' or moveRequest.role == 'SecurityEmp' or moveRequest.role == 'ReviewerEmp' or moveRequest.role == 'SignManager' or moveRequest.role == 'SecondaryReviewerEmp' or moveRequest.role == 'SecondarySignManager' or moveRequest.role == 'SecondaryManagerRedirect'}">
-							<h:panelGroup rendered="#{moveRequest.role == 'ManagerRedirect' or moveRequest.role == 'SecondaryManagerRedirect'}">
+							<h:panelGroup rendered="#{(moveRequest.role == 'ManagerRedirect' and moveRequest.passSecurityScan) or moveRequest.role == 'SecondaryManagerRedirect'}">
 								<tr>
 									<th width="15%">#{msgs.label_selectEmp}</th>
 									<td width="40%" colspan="2">
@@ -457,14 +457,18 @@
 										<f:ajax render="notifyMessagesId" execute="@form" />
 									</h:commandButton>
 
-									<h:commandButton id="approveSeBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveRequest.approveMovementSE()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'SecurityEmp'}">
+									<h:commandButton id="approveSeBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;moveRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveRequest.approveMovementSE()}" value="#{msgs.label_employeeSecurityScanPassing} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'SecurityEmp'}">
 										<f:ajax render="notifyMessagesId" execute="@form" />
 									</h:commandButton>
-									<h:commandButton id="rejectSeBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{moveRequest.rejectMovementSE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'SecurityEmp'}">
+									<h:commandButton id="rejectSeBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{moveRequest.rejectMovementSE()}" value="#{msgs.label_employeeSecurityScanFailing} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'SecurityEmp'}">
 										<f:ajax render="notifyMessagesId" execute="@form" />
 									</h:commandButton>
 
-									<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;moveRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{moveRequest.redirectMovementMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'ManagerRedirect'}">
+									<h:commandButton id="mrApproveBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;moveRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{moveRequest.redirectMovementMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'ManagerRedirect' and moveRequest.passSecurityScan}">
+										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									
+									<h:commandButton id="mrRejectBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{moveRequest.rejectMovementMR()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveRequest.role == 'ManagerRedirect' and not moveRequest.passSecurityScan}">
 										<f:ajax execute="@form" render="moveRequestFormId:notifyMessagesId" />
 									</h:commandButton>
 

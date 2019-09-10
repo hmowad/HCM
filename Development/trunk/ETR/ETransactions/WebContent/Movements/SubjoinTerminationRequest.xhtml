@@ -235,7 +235,7 @@
 										<td width="100%">
 											<code:curTask id="curTaskId" value="#{subjoinTerminationRequest.currentEmployee}"
 												rendered="#{subjoinTerminationRequest.role == 'DirectManager' or subjoinTerminationRequest.role == 'ManagerRedirect' or subjoinTerminationRequest.role == 'ManagerRedirectToSecurity' or subjoinTerminationRequest.role == 'SecurityEmp' or subjoinTerminationRequest.role == 'ReviewerEmp' or subjoinTerminationRequest.role == 'SignManager' or subjoinTerminationRequest.role == 'SecondaryReviewerEmp' or subjoinTerminationRequest.role == 'SecondaryManagerRedirect' or subjoinTerminationRequest.role == 'SecondarySignManager'}">
-												<h:panelGroup rendered="#{subjoinTerminationRequest.role == 'ManagerRedirect' or subjoinTerminationRequest.role == 'SecondaryManagerRedirect'}">
+												<h:panelGroup rendered="#{(subjoinTerminationRequest.role == 'ManagerRedirect' and subjoinTerminationRequest.passSecurityScan) or subjoinTerminationRequest.role == 'SecondaryManagerRedirect'}">
 													<tr>
 														<th width="15%">
 															#{msgs.label_selectEmp}
@@ -302,15 +302,19 @@
 															<f:ajax render="notifyMessagesId" execute="@form" />
 														</h:commandButton>
 
-														<h:commandButton id="approveSeBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;subjoinTerminationRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{subjoinTerminationRequest.approveMovementSE()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SecurityEmp'}">
+														<h:commandButton id="approveSeBtnId" onclick="return handleOnAction('#{msgs.q_approve}');" action="#{subjoinTerminationRequest.approveMovementSE()}" value="#{msgs.label_employeeSecurityScanPassing} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SecurityEmp'}">
 															<f:ajax render="notifyMessagesId" execute="@form" />
 														</h:commandButton>
-														<h:commandButton id="rejectSeBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{subjoinTerminationRequest.rejectMovementSE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SecurityEmp'}">
+														<h:commandButton id="rejectSeBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{subjoinTerminationRequest.rejectMovementSE()}" value="#{msgs.label_employeeSecurityScanFailing} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SecurityEmp'}">
 															<f:ajax render="notifyMessagesId" execute="@form" />
 														</h:commandButton>
 
-														<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinTerminationRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinTerminationRequest.redirectMovementMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'ManagerRedirect'}">
+														<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinTerminationRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinTerminationRequest.redirectMovementMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'ManagerRedirect' and subjoinTerminationRequest.passSecurityScan}">
 															<f:ajax render="notifyMessagesId" execute="@form" />
+														</h:commandButton>
+														
+														<h:commandButton id="mrRejectBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{subjoinTerminationRequest.rejectMovementMR()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'ManagerRedirect' and not subjoinTerminationRequest.passSecurityScan}">
+															<f:ajax execute="@form" render="notifyMessagesId" />
 														</h:commandButton>
 
 														<h:commandButton id="smrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinTerminationRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinTerminationRequest.redirectMovementSMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinTerminationRequest.role == 'SecondaryManagerRedirect'}">

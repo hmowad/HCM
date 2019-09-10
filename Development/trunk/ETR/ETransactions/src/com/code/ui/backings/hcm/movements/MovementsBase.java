@@ -196,7 +196,18 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
 
     public String redirectMovementMR() {
 	try {
-	    MovementsWorkFlow.doMovementMR(requester, instance, currentTask, selectedReviewerEmpId);
+	    MovementsWorkFlow.doMovementMR(requester, instance, currentTask, selectedReviewerEmpId, true);
+	    return NavigationEnum.INBOX.toString();
+
+	} catch (BusinessException e1) {
+	    setServerSideErrorMessages(getParameterizedMessage(e1.getMessage(), e1.getParams()));
+	    return null;
+	}
+    }
+
+    public String rejectMovementMR() {
+	try {
+	    MovementsWorkFlow.doMovementMR(requester, instance, currentTask, selectedReviewerEmpId, false);
 	    return NavigationEnum.INBOX.toString();
 
 	} catch (BusinessException e1) {

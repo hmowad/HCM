@@ -811,11 +811,12 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 	    Date curDate = new Date();
 	    Date curHijriDate = HijriDateService.getHijriSysDate();
 
+	    WFTask managerRedirectToSecurityTask = getWFInstanceTasksByRole(instance.getInstanceId(), WFTaskRolesEnum.MANAGER_REDIRECT_TO_SECRUITY.getCode()).get(0);
+
 	    if (isApproved) {
-		WFTask managerRedirectToSecurityTask = getWFInstanceTasksByRole(instance.getInstanceId(), WFTaskRolesEnum.MANAGER_REDIRECT_TO_SECRUITY.getCode()).get(0);
-		completeWFTask(seTask, WFTaskActionsEnum.APPROVE.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(managerRedirectToSecurityTask.getOriginalId(), instance.getProcessId(), requester.getEmpId()), managerRedirectToSecurityTask.getOriginalId(), seTask.getTaskUrl(), WFTaskRolesEnum.MANAGER_REDIRECT.getCode(), seTask.getLevel(), session);
+		completeWFTask(seTask, WFTaskActionsEnum.PASS_SECURITY_SCAN.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(managerRedirectToSecurityTask.getOriginalId(), instance.getProcessId(), requester.getEmpId()), managerRedirectToSecurityTask.getOriginalId(), seTask.getTaskUrl(), WFTaskRolesEnum.MANAGER_REDIRECT.getCode(), seTask.getLevel(), session);
 	    } else {
-		closeWFInstanceByAction(requester.getEmpId(), instance, seTask, WFTaskActionsEnum.REJECT.getCode(), null, session);
+		completeWFTask(seTask, WFTaskActionsEnum.NOT_PASS_SECURITY_SCAN.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(managerRedirectToSecurityTask.getOriginalId(), instance.getProcessId(), requester.getEmpId()), managerRedirectToSecurityTask.getOriginalId(), seTask.getTaskUrl(), WFTaskRolesEnum.MANAGER_REDIRECT.getCode(), seTask.getLevel(), session);
 	    }
 	    session.commitTransaction();
 	} catch (BusinessException e) {
@@ -844,12 +845,15 @@ public class MovementsWorkFlow extends BaseWorkFlow {
      * @throws BusinessException
      *             if any error occurs
      */
-    public static void doMovementMR(EmployeeData requester, WFInstance instance, WFTask mrTask, long reviewerEmpId) throws BusinessException {
+    public static void doMovementMR(EmployeeData requester, WFInstance instance, WFTask mrTask, long reviewerEmpId, boolean isApproved) throws BusinessException {
 	try {
 	    Date curDate = new Date();
 	    Date curHijriDate = HijriDateService.getHijriSysDate();
 
-	    completeWFTask(mrTask, WFTaskActionsEnum.REDIRECT.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(reviewerEmpId, instance.getProcessId(), requester.getEmpId()), reviewerEmpId, mrTask.getTaskUrl(), WFTaskRolesEnum.REVIEWER_EMP.getCode(), mrTask.getLevel());
+	    if (isApproved)
+		completeWFTask(mrTask, WFTaskActionsEnum.REDIRECT.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(reviewerEmpId, instance.getProcessId(), requester.getEmpId()), reviewerEmpId, mrTask.getTaskUrl(), WFTaskRolesEnum.REVIEWER_EMP.getCode(), mrTask.getLevel());
+	    else
+		closeWFInstanceByAction(requester.getEmpId(), instance, mrTask, WFTaskActionsEnum.REJECT.getCode(), null);
 	} catch (BusinessException e) {
 	    throw e;
 	} catch (Exception e) {
@@ -2274,6 +2278,10 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
+    }
+
+    public static WFTask getSecurityEmpTaskByInstanceId(Long instanceId) throws BusinessException {
+	return getWFInstanceTasksByRole(instanceId, WFTaskRolesEnum.SECURITY_EMP.getCode()).get(0);
     }
 
     /**
