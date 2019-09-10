@@ -85,34 +85,18 @@
 			</c:if>
 
 			<c:if test="#{cc.attrs.viewOldRange}">
-				<c:forEach begin="0" end="99" var="i">
+				<c:forEach begin="0" end="74" var="i">
 					<f:selectItem itemLabel="#{i+1325}" itemValue="#{i+1325}" />
 				</c:forEach>
 			</c:if>
-
-			<f:selectItem itemLabel="1425" itemValue="1425" />
-			<f:selectItem itemLabel="1426" itemValue="1426" />
-			<f:selectItem itemLabel="1427" itemValue="1427" />
-			<f:selectItem itemLabel="1428" itemValue="1428" />
-			<f:selectItem itemLabel="1429" itemValue="1429" />
-			<f:selectItem itemLabel="1430" itemValue="1430" />
-			<f:selectItem itemLabel="1431" itemValue="1431" />
-			<f:selectItem itemLabel="1432" itemValue="1432" />
-			<f:selectItem itemLabel="1433" itemValue="1433" />
-			<f:selectItem itemLabel="1434" itemValue="1434" />
-			<f:selectItem itemLabel="1435" itemValue="1435" />
-			<f:selectItem itemLabel="1436" itemValue="1436" />
-			<f:selectItem itemLabel="1437" itemValue="1437" />
-			<f:selectItem itemLabel="1438" itemValue="1438" />
-			<f:selectItem itemLabel="1439" itemValue="1439" />
-			<f:selectItem itemLabel="1440" itemValue="1440" />
-			<f:selectItem itemLabel="1441" itemValue="1441" />
-			<f:selectItem itemLabel="1442" itemValue="1442" />
-			<f:selectItem itemLabel="1443" itemValue="1443" />
+			
+			<c:forEach begin="0" end="50" var="i">
+					<f:selectItem itemLabel="#{i+1400}" itemValue="#{i+1400}" />
+			</c:forEach>
 			
 			<c:if test="#{cc.attrs.viewFutureRange}">
-				<c:forEach begin="0" end="56" var="i">
-					<f:selectItem itemLabel="#{i+1444}" itemValue="#{i+1444}" />
+				<c:forEach begin="0" end="49" var="i">
+					<f:selectItem itemLabel="#{i+1451}" itemValue="#{i+1451}" />
 				</c:forEach>
 			</c:if>
 			
