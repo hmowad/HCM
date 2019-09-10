@@ -309,7 +309,7 @@
 				<tr>
 					<td width="100%">
 						<code:curTask id="curTaskId" value="#{subjoinRequest.currentEmployee}" rendered="#{subjoinRequest.role == 'DirectManager' or subjoinRequest.role == 'ManagerRedirect' or subjoinRequest.role == 'ManagerRedirectToSecurity' or subjoinRequest.role == 'SecurityEmp' or subjoinRequest.role == 'ReviewerEmp' or subjoinRequest.role == 'SignManager' or subjoinRequest.role == 'SecondaryManagerRedirect' or subjoinRequest.role == 'SecondaryReviewerEmp' or subjoinRequest.role == 'SecondarySignManager'}">
-							<h:panelGroup rendered="#{subjoinRequest.role == 'ManagerRedirect' or subjoinRequest.role == 'SecondaryManagerRedirect'}">
+							<h:panelGroup rendered="#{(subjoinRequest.role == 'ManagerRedirect' and subjoinRequest.passSecurityScan) or subjoinRequest.role == 'SecondaryManagerRedirect'}">
 								<tr>
 									<th width="15%">
 										#{msgs.label_selectEmp}
@@ -397,15 +397,19 @@
 										<f:ajax render="notifyMessagesId" execute="@form" />
 									</h:commandButton>
 
-									<h:commandButton id="approveSeBtnId" onclick="return handleOnAction('#{msgs.q_approve}');" action="#{subjoinRequest.approveMovementSE()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinRequest.role == 'SecurityEmp'}">
+									<h:commandButton id="approveSeBtnId" onclick="return handleOnAction('#{msgs.q_approve}');" action="#{subjoinRequest.approveMovementSE()}" value="#{msgs.label_employeeSecurityScanPassing} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinRequest.role == 'SecurityEmp'}">
 										<f:ajax render="notifyMessagesId" execute="@form" />
 									</h:commandButton>
-									<h:commandButton id="rejectSeBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{subjoinRequest.rejectMovementSE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinRequest.role == 'SecurityEmp'}">
+									<h:commandButton id="rejectSeBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{subjoinRequest.rejectMovementSE()}" value="#{msgs.label_employeeSecurityScanFailing} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinRequest.role == 'SecurityEmp'}">
 										<f:ajax render="notifyMessagesId" execute="@form" />
 									</h:commandButton>
 
-									<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinRequest.redirectMovementMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinRequest.role == 'ManagerRedirect'}">
+									<h:commandButton id="mrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinRequest.redirectMovementMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinRequest.role == 'ManagerRedirect' and subjoinRequest.passSecurityScan}">
 										<f:ajax render="notifyMessagesId" execute="@form" />
+									</h:commandButton>
+
+									<h:commandButton id="mrRejectBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{subjoinRequest.rejectMovementMR()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinRequest.role == 'ManagerRedirect' and not subjoinRequest.passSecurityScan}">
+										<f:ajax execute="@form" render="notifyMessagesId" />
 									</h:commandButton>
 
 									<h:commandButton id="smrBtnId" onclick="return handleOnAction('#{msgs.q_redirect}', 'validateEmpSelection(&quot;subjoinRequestFormId:curTaskId:reviewersId&quot;)');" action="#{subjoinRequest.redirectMovementSMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{subjoinRequest.role == 'SecondaryManagerRedirect'}">
