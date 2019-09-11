@@ -58,6 +58,7 @@ public class HistoricalVacationsManagement extends BaseBacking {
 	approvedFlag = FlagsEnum.ALL.getCode();
 	locationFlag = FlagsEnum.ALL.getCode();
 	period = null;
+	vacationTypeId = FlagsEnum.ALL.getCode();
 	getVacationTypesByEmpCategoryId();
     }
 
