@@ -330,7 +330,7 @@
 															<f:ajax render="notifyMessagesId" execute="@form" />
 														</h:commandButton>
 														
-														<h:commandButton id="mrRejectBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{subjoinExtensionRequest.rejectMovementMR()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'ManagerRedirect' and not subjoinCancellationRequest.passSecurityScan}">
+														<h:commandButton id="mrRejectBtnId" onclick="return handleOnAction('#{msgs.q_reject}');" action="#{subjoinExtensionRequest.rejectMovementMR()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{subjoinExtensionRequest.role == 'ManagerRedirect' and not subjoinExtensionRequest.passSecurityScan}">
 															<f:ajax execute="@form" render="notifyMessagesId" />
 														</h:commandButton>
 
