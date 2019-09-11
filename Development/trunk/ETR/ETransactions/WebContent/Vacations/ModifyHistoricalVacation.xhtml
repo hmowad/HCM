@@ -261,7 +261,9 @@
 										<td width="35%">
 											<h:inputText id="decisionNumberId" disabled="#{modifyHistoricalVacation.newHistoricalVacationTransaction.approvedFlag == 1 or modifyHistoricalVacation.viewMode== 1}" value="#{modifyHistoricalVacation.newHistoricalVacationTransaction.decisionNumber}" />
 										</td>
-										<th width="15%">#{msgs.label_decisionDate}</th>
+										<th width="15%">#{msgs.label_decisionDate}
+											<font style="color: red;"> *</font>
+										</th>
 										<td width="35%">
 											<util:hijri id="decisionDateId" rendered="#{modifyHistoricalVacation.newHistoricalVacationTransaction.approvedFlag == 0 and modifyHistoricalVacation.viewMode != 1}" value="#{modifyHistoricalVacation.newHistoricalVacationTransaction.decisionDate}" nullable="true" viewOldRange="true" />
 											<h:outputText rendered="#{modifyHistoricalVacation.newHistoricalVacationTransaction.approvedFlag == 1 or modifyHistoricalVacation.viewMode== 1}" value="#{modifyHistoricalVacation.newHistoricalVacationTransaction.decisionDateString}" />
