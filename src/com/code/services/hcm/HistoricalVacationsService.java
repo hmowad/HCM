@@ -40,6 +40,7 @@ public class HistoricalVacationsService extends BaseService {
     /*---------------------------------------------------------- Operations ---------------------------------------------*/
 
     public static void insertHistoricalVacationTransaction(HistoricalVacationTransaction historicalVacationTransaction, EmployeeData vacationBeneficiary, CustomSession... useSession) throws BusinessException {
+	validateDecisionNumber(historicalVacationTransaction);
 	if (historicalVacationTransaction.getRequestType() != RequestTypesEnum.CANCEL.getCode()) {
 	    if (historicalVacationTransaction.getRequestType() == RequestTypesEnum.NEW.getCode())
 		historicalVacationTransaction.setPaidVacationType(VacationsBusinessRulesService.getPaidVacationType(historicalVacationTransaction.getVacationTypeId(), historicalVacationTransaction.getSubVacationType(), vacationBeneficiary, historicalVacationTransaction.getStartDate(), null));
@@ -51,6 +52,7 @@ public class HistoricalVacationsService extends BaseService {
     public static void modifyHistoricalVacationTransaction(HistoricalVacationTransaction historicalVacationTransaction, EmployeeData vacationBeneficiary, boolean signHistoricalVacationFlag, boolean skipValidationFlag, CustomSession... useSession) throws BusinessException {
 	HistoricalVacationTransactionData vacationData = getHistoricalVacationTransactionDataById(historicalVacationTransaction.getId());
 	if (vacationData != null) {
+	    validateDecisionNumber(historicalVacationTransaction);
 	    if (historicalVacationTransaction.getRequestType() != RequestTypesEnum.CANCEL.getCode() && !skipValidationFlag) {
 		validateHistoricalVacationRules(historicalVacationTransaction, vacationBeneficiary);
 	    }
@@ -164,6 +166,9 @@ public class HistoricalVacationsService extends BaseService {
 	if (historicalVacationTransaction.getContactAddress() == null || historicalVacationTransaction.getContactAddress().trim().equals(""))
 	    throw new BusinessException("error_contactAddressMandatory");
 
+    }
+
+    public static void validateDecisionNumber(HistoricalVacationTransaction historicalVacationTransaction) throws BusinessException {
 	if (countHistoricalVacationsByDecisionNumber(historicalVacationTransaction.getDecisionNumber(), historicalVacationTransaction.getId()) > 0
 		|| VacationsService.countVacationByDecisionNumber(historicalVacationTransaction.getDecisionNumber(), historicalVacationTransaction.getVacationTransactionId()) > 0)
 	    throw new BusinessException("error_historicalDecisionNumberRepeted");

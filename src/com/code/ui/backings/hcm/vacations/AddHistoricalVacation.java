@@ -127,6 +127,8 @@ public class AddHistoricalVacation extends BaseBacking {
 	    historicalVacationTransactionData.setLocation(getMessage("label_ksa"));
 	    historicalVacationTransactionData.setDecisionRegionId(currentEmployee.getPhysicalRegionId());
 	    historicalVacationTransactionData.setVacationTypeId(VacationTypesEnum.REGULAR.getCode());
+	    exceededFlag = FlagsEnum.OFF.getCode();
+
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -138,6 +140,9 @@ public class AddHistoricalVacation extends BaseBacking {
 	    if (historicalVacationTransactionData.getStartDate() != null && historicalVacationTransactionData.getPeriod() != null && historicalVacationTransactionData.getPeriod() > 0) {
 		historicalVacationTransactionData.setEndDateString(HijriDateService.addSubStringHijriDays(historicalVacationTransactionData.getStartDateString(), historicalVacationTransactionData.getPeriod() - 1));
 		historicalVacationTransactionData.setJoiningDateString(HijriDateService.addSubStringHijriDays(historicalVacationTransactionData.getEndDateString(), (historicalVacationTransactionData.getExceededDays() == null ? 0 : historicalVacationTransactionData.getExceededDays()) + 1));
+	    } else {
+		historicalVacationTransactionData.setEndDateString("");
+		historicalVacationTransactionData.setJoiningDateString("");
 	    }
 
 	    inquiryBalance();
@@ -158,6 +163,12 @@ public class AddHistoricalVacation extends BaseBacking {
 	    e.printStackTrace();
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
+    }
+
+    public void vacationTypeListener() {
+	historicalVacationTransactionData.setLocationFlag(LocationFlagsEnum.INTERNAL.getCode());
+	historicalVacationTransactionData.setLocation(getMessage("label_ksa"));
+	inquiryBalance();
     }
 
     public void exceededFlagListener() {

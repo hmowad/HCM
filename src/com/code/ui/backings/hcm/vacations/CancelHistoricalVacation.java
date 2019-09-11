@@ -68,6 +68,8 @@ public class CancelHistoricalVacation extends BaseBacking {
 	try {
 	    if (currentEmployee.getEmpId().equals(this.loginEmpData.getEmpId()))
 		throw new BusinessException("error_selfHistoricalVacationIsinvalid");
+	    if (historicalVacationTransaction.getId() == null)
+		throw new BusinessException("error_vacationId");
 	    HistoricalVacationsService.validateOldHistoricalVacationActivationStatus(newHistoricalVacationTransaction.getHistoricalVacationParentId(), newHistoricalVacationTransaction.getId());
 	    newHistoricalVacationTransaction.setRequestType(RequestTypesEnum.CANCEL.getCode());
 	    newHistoricalVacationTransaction.setActiveFlag(FlagsEnum.ON.getCode());

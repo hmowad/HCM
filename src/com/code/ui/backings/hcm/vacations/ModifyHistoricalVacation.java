@@ -75,6 +75,8 @@ public class ModifyHistoricalVacation extends BaseBacking {
 	try {
 	    if (currentEmployee.getEmpId().equals(this.loginEmpData.getEmpId()))
 		throw new BusinessException("error_selfHistoricalVacationIsinvalid");
+	    if (historicalVacationTransaction.getId() == null)
+		throw new BusinessException("error_vacationId");
 	    HistoricalVacationsService.validateOldHistoricalVacationActivationStatus(newHistoricalVacationTransaction.getHistoricalVacationParentId(), newHistoricalVacationTransaction.getId());
 	    if (newHistoricalVacationTransaction.getId() == null) {
 		newHistoricalVacationTransaction.setRequestType(RequestTypesEnum.MODIFY.getCode());

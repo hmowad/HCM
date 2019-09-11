@@ -32,6 +32,11 @@
 	   		    	}
    		       }
    		    function validateVacationData() {
+   		 	var oldVacationId = document.getElementById('cancelHistoricalVacationFormId:vacationId').value;
+				if(oldVacationId == null || oldVacationId == ''){
+					alert("#{msgs.error_vacationId}");
+					return false;
+				}
    				var decisionNumber = document.getElementById('cancelHistoricalVacationFormId:decisionNumberId').value;
    				if(decisionNumber == null || decisionNumber == ''){
    					alert("#{msgs.error_decisionNumberMandatory}");
@@ -280,10 +285,10 @@
 								<td width="100%">
 									<h:panelGroup id="actionsPanelId">
 										<h:panelGroup rendered="#{cancelHistoricalVacation.currentEmployee.empId != null}">
-											<h:commandButton rendered="#{cancelHistoricalVacation.newHistoricalVacationTransaction.approvedFlag == 0 and cancelHistoricalVacation.viewMode!=1}" onclick="return handleOnAction('#{msgs.q_send}', 'validateVacationData()');" action="#{cancelHistoricalVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
+											<h:commandButton rendered="#{cancelHistoricalVacation.newHistoricalVacationTransaction.approvedFlag == 0 and cancelHistoricalVacation.viewMode!=1}" onclick="return handleOnAction('#{msgs.q_save}', 'validateVacationData()');" action="#{cancelHistoricalVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
 												<f:ajax execute="@form" render="cancelHistoricalVacationFormId:actionsPanelId cancelHistoricalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
-											<h:commandButton rendered="#{cancelHistoricalVacation.newHistoricalVacationTransaction.approvedFlag == 0 and cancelHistoricalVacation.newHistoricalVacationTransaction.id != null and cancelHistoricalVacation.viewMode!=1}" onclick="return handleOnAction('#{msgs.q_send}', 'validateVacationData()');" action="#{cancelHistoricalVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<h:commandButton rendered="#{cancelHistoricalVacation.newHistoricalVacationTransaction.approvedFlag == 0 and cancelHistoricalVacation.newHistoricalVacationTransaction.id != null and cancelHistoricalVacation.viewMode!=1}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{cancelHistoricalVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 												<f:ajax execute="@form" render="cancelHistoricalVacationFormId:selectEmpId cancelHistoricalVacationFormId:currentEmployeeId  cancelHistoricalVacationFormId:historicalVacationTitle cancelHistoricalVacationFormId:historicalVacationData cancelHistoricalVacationFormId:newDataTitle cancelHistoricalVacationFormId:newDataId cancelHistoricalVacationFormId:actionsPanelId cancelHistoricalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 											<h:commandButton rendered="#{cancelHistoricalVacation.viewMode==0}" action="#{cancelHistoricalVacation.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
