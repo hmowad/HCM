@@ -102,7 +102,7 @@ public class CancelSickVacation extends VacationBase {
 		    break;
 		case 2:
 		    this.processId = WFProcessesEnum.CANCEL_SOLDIERS_SICK_VACATION.getCode();
-		    this.setScreenTitle(this.getMessage("title_cancelBenefciarySoldiersReqularVacation"));
+		    this.setScreenTitle(this.getMessage("title_cancelBenefciarySoldiersSickVacation"));
 		    this.setAdmin(SecurityService.isEmployeeMenuActionGranted(this.requester.getEmpId(), MenuCodesEnum.VAC_BENF_SOLDIERS_CANCEL_SICK_VACATION.getCode(), MenuActionsEnum.VAC_SICK_CANCEL_REQUEST_BENF_SOLDIERS.getCode()));
 		    this.employeeIds = FlagsEnum.ALL.getCode() + "";
 		    break;
