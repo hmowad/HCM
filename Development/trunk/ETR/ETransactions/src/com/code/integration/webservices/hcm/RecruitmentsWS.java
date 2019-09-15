@@ -49,7 +49,7 @@ public class RecruitmentsWS {
 		    employee.setThirdName(wsSoldier.getThirdName());
 		    employee.setLastName(wsSoldier.getLastName());
 		    employee.setFirstNameEn(wsSoldier.getFirstNameEn());
-		    employee.setSecondName(wsSoldier.getSecondNameEn());
+		    employee.setSecondNameEn(wsSoldier.getSecondNameEn());
 		    employee.setThirdNameEn(wsSoldier.getThirdNameEn());
 		    employee.setLastNameEn(wsSoldier.getLastNameEn());
 		    employee.setBirthPlace(wsSoldier.getBirthPlace());
