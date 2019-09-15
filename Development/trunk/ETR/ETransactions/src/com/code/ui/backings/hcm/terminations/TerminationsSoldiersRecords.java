@@ -113,6 +113,12 @@ public class TerminationsSoldiersRecords extends TerminationsRecordsBase {
 	    selectedTerminationRecordDetailData.setDismissBasedOnDesc(getMessage("label_serviceTerminationSoldiersBasedOnSixth"));
 	else if (selectedTerminationRecordDetailData.getDismissBasedOn().equals(7))
 	    selectedTerminationRecordDetailData.setDismissBasedOnDesc(getMessage("label_serviceTerminationSoldiersBasedOnSeventh"));
+	else if (selectedTerminationRecordDetailData.getDismissBasedOn().equals(8))
+	    selectedTerminationRecordDetailData.setDismissBasedOnDesc(getMessage("label_serviceTerminationSoldiersBasedOnEighth"));
+	else if (selectedTerminationRecordDetailData.getDismissBasedOn().equals(9))
+	    selectedTerminationRecordDetailData.setDismissBasedOnDesc(getMessage("label_serviceTerminationSoldiersBasedOnNinth"));
+	else if (selectedTerminationRecordDetailData.getDismissBasedOn().equals(10))
+	    selectedTerminationRecordDetailData.setDismissBasedOnDesc(getMessage("label_serviceTerminationSoldiersBasedOnTenth"));
     }
 
     public void dismissApprovalDateChanged() {
