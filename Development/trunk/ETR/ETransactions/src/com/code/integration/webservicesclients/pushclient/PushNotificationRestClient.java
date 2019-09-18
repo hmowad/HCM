@@ -32,11 +32,7 @@ public class PushNotificationRestClient {
 	    String[] pushNotificationServerConfigurationsArray = pushNotificationServerConfigurations.split(",");
 
 	    serverUrl = pushNotificationServerConfigurationsArray[0];
-	    String pushApplicationId = pushNotificationServerConfigurationsArray[1];
-	    String masterSecret = pushNotificationServerConfigurationsArray[2];
-
-	    String credentials = pushApplicationId + ":" + masterSecret;
-	    autherizationHeaderValue = "Basic " + java.util.Base64.getEncoder().encodeToString(credentials.getBytes());
+	    autherizationHeaderValue = "key=" + pushNotificationServerConfigurationsArray[1];
 
 	} catch (Exception e) {
 	    System.out.println("### ERROR_PUSH_CLIENT : Could not establish push server rest client.");
@@ -57,25 +53,24 @@ public class PushNotificationRestClient {
 	    if ((FlagsEnum.ON.getCode() + "").equals(ETRConfigurationService.getMobilePushFlag())) {
 		// Construct the message object.
 		JsonObject messageObject = Json.createObjectBuilder()
-			.add("message", Json.createObjectBuilder()
-				.add("alert", message)
+			.add("notification", Json.createObjectBuilder()
+				.add("body", message)
 				.add("sound", "default")
 				.add("badge", 1))
-			.add("criteria", Json.createObjectBuilder()
-				.add("alias", Json.createArrayBuilder().add(notifierId + "")))
+			.add("to", "/topics/" + notifierId)
 			.build();
 
 		// push the notification
 		client.target(serverUrl)
-			.path("sender")
 			.request()
 			.header(HttpHeaders.AUTHORIZATION, autherizationHeaderValue)
+			.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
 			.async()
 			.post(Entity.entity(messageObject, MediaType.APPLICATION_JSON + "; charset=utf-8"), new InvocationCallback<Response>() {
 
 			    @Override
 			    public void completed(Response response) {
-				if (response.getStatus() != Status.ACCEPTED.getStatusCode())
+				if (response.getStatus() != Status.OK.getStatusCode())
 				    System.out.println("### ERROR_PUSH_CLIENT : Message has not been accepted.");
 
 				response.close();
