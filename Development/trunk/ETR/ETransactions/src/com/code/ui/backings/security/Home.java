@@ -13,6 +13,7 @@ import com.code.dal.orm.hcm.employees.EmployeePreferences;
 import com.code.dal.orm.hcm.movements.MovementTransactionData;
 import com.code.dal.orm.hcm.vacations.VacationData;
 import com.code.enums.CategoriesEnum;
+import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.MovementTypesEnum;
 import com.code.enums.SessionAttributesEnum;
@@ -58,7 +59,7 @@ public class Home extends BaseBacking {
 	try {
 	    HttpSession session = getSession();
 	    EmployeePreferences empPreferences = EmployeesPreferencesService.getEmployeePreferences(loginEmpData.getEmpId());
-	    if ((session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode()) != null) && (TransactionsTimelineService.getFutureTransactionsCount(loginEmpData.getEmpId()) > 0) && (!empPreferences.getTimeLineAutoHideFlagBoolean())) {
+	    if ((loginEmpData.getStatusId() < EmployeeStatusEnum.SERVICE_TERMINATED.getCode()) && (session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode()) != null) && (TransactionsTimelineService.getFutureTransactionsCount(loginEmpData.getEmpId()) > 0) && (!empPreferences.getTimeLineAutoHideFlagBoolean())) {
 		showTransactionsTimelineScreenFlag = (boolean) session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode());
 	    }
 	    session.setAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode(), false);
