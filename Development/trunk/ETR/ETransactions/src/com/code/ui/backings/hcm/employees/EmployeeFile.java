@@ -122,11 +122,13 @@ public class EmployeeFile extends BaseBacking implements Serializable {
     public void getEmployeeFileData() {
 	try {
 	    EmployeeData selectedEmployee = EmployeesService.getEmployeeData(employee.getEmpId());
+	    Boolean tempIsModifyAdmin = isModifyAdmin;
+	    Boolean tempIsViewAdmin = isViewAdmin;
 	    if (selectedEmployee == null)
 		throw new BusinessException("error_general");
 	    else if (loginEmpData.getEmpId().equals(selectedEmployee.getEmpId())
 		    || (this.loginEmpData.getIsManager().equals(FlagsEnum.ON.getCode()) && selectedEmployee.getPhysicalUnitHKey() != null && selectedEmployee.getPhysicalUnitHKey().startsWith(UnitsService.getHKeyPrefix(this.loginEmpData.getPhysicalUnitHKey())))
-		    || isModifyAdmin || isRequesterAuthorizedForViewOnly(selectedEmployee)) {
+		    || isRequesterAuthorizedForModifyOnly(selectedEmployee) || isRequesterAuthorizedForViewOnly(selectedEmployee)) {
 		employee = selectedEmployee;
 		movements = MovementsService.getMovementTransactionsHistory(employee.getEmpId());
 		recruitments = RecruitmentsService.getRecruitmentTransactionsHistory(employee.getEmpId(), new Integer[] { RecruitmentTypeEnum.RECRUITMENT.getCode(), RecruitmentTypeEnum.RE_RECRUITMENT.getCode(), RecruitmentTypeEnum.RECRUITMENT_BY_EXTERNAL_MOVE.getCode() });
@@ -142,6 +144,8 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 		bonuses = PayrollsService.getEmployeeBonuses(employee.getOldEmpId());
 		raises = RaisesService.getAllRaisesByEmployeeId(employee.getEmpId());
 	    } else {
+		isModifyAdmin = tempIsModifyAdmin;
+		isViewAdmin = tempIsViewAdmin;
 		throw new BusinessException("error_notAuthorized");
 	    }
 	} catch (BusinessException e) {
@@ -195,6 +199,57 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 
 	    }
 	}
+    }
+
+    private boolean isRequesterAuthorizedForModifyOnly(EmployeeData searchEmployee) throws BusinessException {
+	isModifyAdmin = false;
+	for (EmployeeMenuAction menuAction : employeeMenuActions) {
+	    if (menuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_MODIFY_OFFICERS.getCode()) || menuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_MODIFY_SOLDIERS.getCode()) || menuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_MODIFY_CIVILIANS.getCode())) {
+		isModifyAdmin = true;
+		return isModifyAdmin;
+	    }
+	}
+	if (searchEmployee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()))
+	    return isModifyAdmin;
+	else if (searchEmployee.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
+	    if (searchEmployee.getGender().equals(GendersEnum.MALE.getCode())) {
+		for (EmployeeMenuAction menuAction : employeeMenuActions) {
+		    if (menuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_MODIFY_MALE_SOLDIERS.getCode())) {
+			isModifyAdmin = true;
+			isViewAdmin = false;
+			return isModifyAdmin;
+		    }
+		}
+	    } else {
+		for (EmployeeMenuAction menuAction : employeeMenuActions) {
+		    if (menuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_MODIFY_FEMALE_SOLDIERS.getCode())) {
+			isModifyAdmin = true;
+			isViewAdmin = false;
+			return isModifyAdmin;
+		    }
+		}
+	    }
+	} else {
+	    if (searchEmployee.getGender().equals(GendersEnum.MALE.getCode())) {
+		for (EmployeeMenuAction menuAction : employeeMenuActions) {
+		    if (menuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_MODIFY_MALE_CIVILIANS.getCode())) {
+			isModifyAdmin = true;
+			isViewAdmin = false;
+			return isModifyAdmin;
+		    }
+		}
+	    } else {
+		for (EmployeeMenuAction menuAction : employeeMenuActions) {
+		    if (menuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_MODIFY_FEMALE_CIVILIANS.getCode())) {
+			isModifyAdmin = true;
+			isViewAdmin = false;
+			return isModifyAdmin;
+		    }
+		}
+	    }
+
+	}
+	return isModifyAdmin;
     }
 
     public void updateRecruitmentJoiningDate(RecruitmentTransactionData recruitment) {

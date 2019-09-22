@@ -46,9 +46,7 @@
 										<h:inputHidden id="employeeIDId" value="#{employeeFile.employee.empId}" />
 										<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
 										<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{employeeFile.getEmployeeFileData()}">
-											<f:ajax execute="employeeFileFormId:employeeIDId"
-												render="employeeFileFormId:recruitmentsTableId employeeFileFormId:graduationLetterPanelId employeeFileFormId:movementsTableId employeeFileFormId:vacationsTableId employeeFileFormId:missionsTableId employeeFileFormId:promotionsCollapsiblePanelId employeeFileFormId:terminationsCollapsiblePanelId employeeFileFormId:additionalSpecializationsTableId employeeFileFormId:searchPanelId employeeFileFormId:updateMovementBlackListFlagBtnId employeeFileFormId:movementBlackListFlagId employeeFileFormId:penalitiesTableId employeeFileFormId:bonusesTableId employeeFileFormId:allowancesTableId employeeFileFormId:disclaimersTableId employeeFileFormId:employeeDataPanelId employeeFileFormId:raisesTableId employeeFileFormId:notifyMessagesId"
-												onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											<f:ajax execute="employeeFileFormId:employeeIDId" render="@form" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											<h:outputText value=" " />
 										</h:commandButton>
 									</td>
@@ -242,7 +240,9 @@
 													<rich:column rowspan="2" rendered="#{employeeFile.isModifyAdmin}">#{msgs.label_save}</rich:column>
 													<rich:column rowspan="2">#{msgs.label_showOrPrint}</rich:column>
 													<rich:column rowspan="2">#{msgs.label_joiningDocument}</rich:column>
-													<rich:column rowspan="2"><h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon"/></rich:column>
+													<rich:column rowspan="2">
+														<h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon" />
+													</rich:column>
 													<rich:column breakRowBefore="true">#{msgs.label_job}</rich:column>
 													<rich:column>#{employeeFile.mode ==3 ? msgs.label_personRank : msgs.label_rank}</rich:column>
 													<rich:column>#{msgs.label_unit}</rich:column>
@@ -372,7 +372,7 @@
 											</rich:column>
 											<rich:column style="width:5%">
 												<f:facet name="header">#{msgs.label_numberOfExceededDays}</f:facet>
-												<h:outputText value="#{vacation.exceededDays}" style="#{vacation.exceededDays > 0 ? 'color: red !important; font-weight: bold !important;' : ''}"  />
+												<h:outputText value="#{vacation.exceededDays}" style="#{vacation.exceededDays &gt; 0 ? 'color: red !important; font-weight: bold !important;' : ''}" />
 											</rich:column>
 											<rich:column style="width:5%" rendered="#{employeeFile.isModifyAdmin}">
 												<f:facet name="header">#{msgs.label_save}</f:facet>
@@ -537,7 +537,9 @@
 													<rich:column rowspan="2">#{msgs.label_joiningDate}</rich:column>
 													<rich:column rowspan="2" rendered="#{employeeFile.isModifyAdmin}">#{msgs.label_save}</rich:column>
 													<rich:column rowspan="2">#{msgs.label_showOrPrint}</rich:column>
-													<rich:column rowspan="2" rendered="#{employeeFile.mode != 3}"><h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon"/></rich:column>
+													<rich:column rowspan="2" rendered="#{employeeFile.mode != 3}">
+														<h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon" />
+													</rich:column>
 													<rich:column breakRowBefore="true">#{msgs.label_job}</rich:column>
 													<rich:column>#{employeeFile.mode ==3 ? msgs.label_personRank : msgs.label_rank}</rich:column>
 													<rich:column>#{msgs.label_unit}</rich:column>
@@ -646,7 +648,9 @@
 													<rich:column colspan="2">#{employeeFile.employee.categoryId == 1 ? msgs.label_terminationData :(employeeFile.employee.categoryId == 2 ? msgs.label_terminationsDataForSoldiers : msgs.label_terminationsDataForCivilians)}</rich:column>
 													<rich:column colspan="#{employeeFile.mode == 1 ? 4 : 3}">#{employeeFile.employee.categoryId == 2 ? msgs.label_soldiersTerminationExtensionsDetails : msgs.label_terminationExtensionsDetails}</rich:column>
 													<rich:column rowspan="2" rendered="#{employeeFile.mode != 1}">#{msgs.label_showOrPrint}</rich:column>
-													<rich:column rowspan="2"><h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon" /></rich:column>
+													<rich:column rowspan="2">
+														<h:outputText value="#{msgs.fa_paperclip}" styleClass="text_icon" />
+													</rich:column>
 													<rich:column breakRowBefore="true">#{employeeFile.employee.categoryId == 1 ? msgs.label_terminationReason : (employeeFile.employee.categoryId == 2 ? msgs.label_terminationReasonForSoldiers : msgs.label_terminationReasonForCivilians)}</rich:column>
 													<rich:column>#{msgs.label_serviceTerminationDate}</rich:column>
 													<rich:column rendered="#{employeeFile.mode == 1}">#{msgs.label_extensionPeriodByDays}</rich:column>
@@ -953,7 +957,7 @@
 						</rich:collapsiblePanel>
 					</td>
 				</tr>
-				
+
 				<tr>
 					<td width="100%">
 						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_annualAndAdditionalRaises}">
@@ -1009,7 +1013,7 @@
 						</rich:collapsiblePanel>
 					</td>
 				</tr>
-				
+
 				<tr>
 					<td width="100%" height="5" />
 				</tr>
