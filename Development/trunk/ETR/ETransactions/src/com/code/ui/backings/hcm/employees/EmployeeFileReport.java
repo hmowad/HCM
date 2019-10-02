@@ -93,14 +93,17 @@ public class EmployeeFileReport extends BaseBacking implements Serializable {
 		if (employeeMenuAction.getBeneficiaryRegionId() == null && employeeMenuAction.getBeneficiaryUnitId() == null) {
 		    if (searchEmployeeCategoryId == CategoriesEnum.OFFICERS.getCode() && employeeMenuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_OFFICERS.getCode()))
 			return true;
-		    else if (searchEmployeeCategoryId == CategoriesEnum.SOLDIERS.getCode() && employeeMenuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_SOLDIERS.getCode()))
+		    else if (searchEmployeeCategoryId == CategoriesEnum.SOLDIERS.getCode() && ((searchEmployee.getGender().equals(GendersEnum.MALE.getCode()) && employeeMenuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_SOLDIERS.getCode())) ||
+			    (searchEmployee.getGender().equals(GendersEnum.FEMALE.getCode()) && employeeMenuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_FEMALE_SOLDIERS.getCode()))))
 			return true;
 		    else if ((CategoriesEnum.PERSONS.getCode() == searchEmployeeCategoryId || CategoriesEnum.USERS.getCode() == searchEmployeeCategoryId
 			    || CategoriesEnum.WAGES.getCode() == searchEmployeeCategoryId || CategoriesEnum.CONTRACTORS.getCode() == searchEmployeeCategoryId
-			    || CategoriesEnum.MEDICAL_STAFF.getCode() == searchEmployeeCategoryId) && employeeMenuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_CIVILIANS.getCode()))
+			    || CategoriesEnum.MEDICAL_STAFF.getCode() == searchEmployeeCategoryId) && ((searchEmployee.getGender().equals(GendersEnum.MALE.getCode()) && employeeMenuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_CIVILIANS.getCode())) ||
+				    (searchEmployee.getGender().equals(GendersEnum.FEMALE.getCode()) && employeeMenuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_FEMALE_CIVILIANS.getCode()))))
 			return true;
 		}
 	    }
+	    return false;
 	}
 
 	if (searchEmployee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
