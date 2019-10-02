@@ -167,8 +167,18 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 	// check needed for service terminated employees
 	if (searchEmployee.getPhysicalRegionId() == null) {
 	    for (EmployeeMenuAction employeeMenuAction : employeeMenuActions) {
-		if (employeeMenuAction.getBeneficiaryRegionId() == null && employeeMenuAction.getBeneficiaryUnitId() == null)
-		    return true;
+		if (employeeMenuAction.getBeneficiaryRegionId() == null && employeeMenuAction.getBeneficiaryUnitId() == null) {
+		    if (searchEmployee.getCategoryId() == CategoriesEnum.OFFICERS.getCode() && employeeMenuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_VIEW_OFFICERS.getCode()))
+			return true;
+		    else if (searchEmployee.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() && ((searchEmployee.getGender().equals(GendersEnum.MALE.getCode()) && employeeMenuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_VIEW_SOLDIERS.getCode())) ||
+			    (searchEmployee.getGender().equals(GendersEnum.FEMALE.getCode()) && employeeMenuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_VIEW_FEMALE_SOLDIERS.getCode()))))
+			return true;
+		    else if ((CategoriesEnum.PERSONS.getCode() == searchEmployee.getCategoryId() || CategoriesEnum.USERS.getCode() == searchEmployee.getCategoryId()
+			    || CategoriesEnum.WAGES.getCode() == searchEmployee.getCategoryId() || CategoriesEnum.CONTRACTORS.getCode() == searchEmployee.getCategoryId()
+			    || CategoriesEnum.MEDICAL_STAFF.getCode() == searchEmployee.getCategoryId()) && ((searchEmployee.getGender().equals(GendersEnum.MALE.getCode()) && employeeMenuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_VIEW_CIVILIANS.getCode())) ||
+				    (searchEmployee.getGender().equals(GendersEnum.FEMALE.getCode()) && employeeMenuAction.getAction().equals(MenuActionsEnum.PRS_EMPS_FILE_VIEW_FEMALE_CIVILIANS.getCode()))))
+			return true;
+		}
 	    }
 	    return false;
 	}
