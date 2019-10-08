@@ -40,6 +40,7 @@ public class ManyVacations extends VacationBase {
 	    } else
 		adjustProcess();
 
+	    this.updateBeneficiaryPanelTitle();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(this.getParameterizedMessage(e.getMessage(), e.getParams()));
 	} catch (Exception e) {
@@ -51,10 +52,10 @@ public class ManyVacations extends VacationBase {
     protected void getBeneficiaryInfo() throws BusinessException {
 
 	adjustProcess();
-	
+
 	if (!skipLastTwoVacations) {
 	    reset();
-		this.inquiryBalance();
+	    this.inquiryBalance();
 	    this.getLastTwoVacations();
 	}
     }

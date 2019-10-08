@@ -44,6 +44,7 @@ public abstract class VacationBase extends WFBaseBacking {
     protected boolean skipLastTwoVacations;
     protected String decisionNumber;
     protected Date decisionDate;
+    private String beneficiaryPanelTitle;
 
     public void init() {
 	try {
@@ -182,6 +183,22 @@ public abstract class VacationBase extends WFBaseBacking {
 	    }
 	} catch (Exception e) {
 	    this.setServerSideErrorMessages(this.getMessage(e.getMessage()));
+	}
+    }
+
+    public void updateBeneficiaryPanelTitle() {
+	int firstDigit = vacationMode;
+	while (firstDigit > 10)
+	    firstDigit /= 10;
+	if (isAdmin) {
+	    if (firstDigit == 1)
+		setBeneficiaryPanelTitle(getMessage("label_adminBeneficiaryOfficers"));
+	    else if (firstDigit == 2)
+		setBeneficiaryPanelTitle(getMessage("label_adminBeneficiarySoldiers"));
+	    else
+		setBeneficiaryPanelTitle(getMessage("label_adminBeneficiaryEmployees"));
+	} else {
+	    setBeneficiaryPanelTitle(getMessage("label_beneficiary"));
 	}
     }
 
@@ -761,6 +778,14 @@ public abstract class VacationBase extends WFBaseBacking {
 
     public void setDecisionDate(Date decisionDate) {
 	this.decisionDate = decisionDate;
+    }
+
+    public String getBeneficiaryPanelTitle() {
+	return beneficiaryPanelTitle;
+    }
+
+    public void setBeneficiaryPanelTitle(String beneficiaryPanelTitle) {
+	this.beneficiaryPanelTitle = beneficiaryPanelTitle;
     }
 
 }

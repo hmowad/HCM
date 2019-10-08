@@ -38,7 +38,7 @@ public class AccompanyVacation extends VacationBase {
 		getBeneficiaryInfo();
 	    } else
 		adjustProcess();
-
+	    this.updateBeneficiaryPanelTitle();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(this.getParameterizedMessage(e.getMessage(), e.getParams()));
 	} catch (Exception e) {
@@ -53,7 +53,7 @@ public class AccompanyVacation extends VacationBase {
 
 	if (!skipLastTwoVacations) {
 	    reset();
-		this.inquiryBalance();
+	    this.inquiryBalance();
 	    this.getLastTwoVacations();
 	}
     }
