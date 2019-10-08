@@ -150,7 +150,7 @@
 
 				<tr>
 					<td width="100%">
-						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{msgs.label_beneficiary}" switchType="client" 
+						<rich:collapsiblePanel id="beneficiaryPanelId" header="#{exceptionalVacation.beneficiaryPanelTitle}" switchType="client" 
 						onbeforeswitch="if ((#{rich:component('beneficiaryPanelId')}.activeItem == &quot;false&quot;) &amp;&amp; (#{exceptionalVacation.beneficiary.empId == exceptionalVacation.requester.empId}) &amp;&amp; (#{exceptionalVacation.role == 'Requester'})) { getEmp('#{request.contextPath}'); return false;} else {return true;}"
 							expanded="#{exceptionalVacation.requester.empId != exceptionalVacation.beneficiary.empId}" 
 							rendered="#{exceptionalVacation.role == 'Requester' or exceptionalVacation.admin == true or exceptionalVacation.requester.empId != exceptionalVacation.beneficiary.empId}">
