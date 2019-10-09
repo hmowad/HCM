@@ -35,9 +35,9 @@ import com.code.dal.orm.BaseEntity;
 
 	@NamedQuery(name = "hcm_employeeLog_getLastEmployeeLog",
 		query = "select e from EmployeeLogData e " +
-			" where e.effectiveHijriDate = ( select max(e1.effectiveHijriDate) from EmployeeLogData e1 where e1.empId = :P_EMP_ID and e1.effectiveHijriDate < (TO_DATE(:P_EFFECTIVE_HIJRI_DATE, 'MI/MM/YYYY')) ) " +
+			" where e.effectiveHijriDate = ( select max(e1.effectiveHijriDate) from EmployeeLogData e1 where e1.empId = :P_EMP_ID and e1.effectiveHijriDate <= (TO_DATE(:P_EFFECTIVE_HIJRI_DATE, 'MI/MM/YYYY')) ) " +
 			" and e.empId = :P_EMP_ID " +
-			" and e.insertionTime = (select max(e2.insertionTime) from EmployeeLogData e2 where e2.empId = :P_EMP_ID and e2.effectiveHijriDate < (TO_DATE(:P_EFFECTIVE_HIJRI_DATE, 'MI/MM/YYYY'))) ")
+			" and e.insertionTime = (select max(e2.insertionTime) from EmployeeLogData e2 where e2.empId = :P_EMP_ID and e2.effectiveHijriDate = e.effectiveHijriDate ")
 })
 @Entity
 @Table(name = "HCM_VW_EMPLOYEES_LOG")
@@ -117,6 +117,7 @@ public class EmployeeLogData extends BaseEntity {
     public void setEmpName(String empName) {
 	this.empName = empName;
     }
+
     @Basic
     @Column(name = "ON_DUTY_FLAG")
     public Integer getOnDutyFlag() {
@@ -127,7 +128,7 @@ public class EmployeeLogData extends BaseEntity {
 	this.onDutyFlag = onDutyFlag;
 	employeelog.setOnDutyFlag(onDutyFlag);
     }
-    
+
     @Basic
     @Column(name = "CATEGORY_ID")
     public Long getCategoryId() {
