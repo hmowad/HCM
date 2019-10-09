@@ -127,6 +127,7 @@ public class AddHistoricalVacation extends BaseBacking {
 	    historicalVacationTransactionData.setLocation(getMessage("label_ksa"));
 	    historicalVacationTransactionData.setDecisionRegionId(currentEmployee.getPhysicalRegionId());
 	    historicalVacationTransactionData.setVacationTypeId(VacationTypesEnum.REGULAR.getCode());
+	    balance = "";
 	    exceededFlag = FlagsEnum.OFF.getCode();
 
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
