@@ -767,7 +767,8 @@ public class MovementsService extends BaseService {
 		}
 
 		EmployeesService.updateEmployee(emp, session);
-		if (transactionTypeId == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
+		if ((transactionTypeId == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId())
+			|| (movementTransaction.getExecutionDate().before(sysDate))) { // for extension
 		    EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), movementTransaction.getExecutionDate(), DataAccess.getTableName(MovementTransaction.class)).build();
 		    LogService.logEmployeeData(employeeLog, session);
 		}
@@ -904,7 +905,8 @@ public class MovementsService extends BaseService {
 		emp.setStatusId(EmployeeStatusEnum.MANDATED.getCode());
 		emp.setPhysicalUnitId(emp.getOfficialUnitId());
 		EmployeesService.updateEmployee(emp, session);
-		if (movementTransaction.getTransactionTypeId() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
+		if ((movementTransaction.getTransactionTypeId() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId())
+			|| (movementTransaction.getExecutionDate().before(sysDate))) { // for extension
 		    EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), movementTransaction.getExecutionDate(), DataAccess.getTableName(MovementTransaction.class)).build();
 		    LogService.logEmployeeData(employeeLog, session);
 		}
@@ -959,7 +961,8 @@ public class MovementsService extends BaseService {
 		emp.setStatusId(EmployeeStatusEnum.SECONDMENTED.getCode());
 		emp.setPhysicalUnitId(emp.getOfficialUnitId());
 		EmployeesService.updateEmployee(emp, session);
-		if (movementTransaction.getTransactionTypeId() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
+		if ((movementTransaction.getTransactionTypeId() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId())
+			|| (movementTransaction.getExecutionDate().before(sysDate))) { // for extension
 		    EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), movementTransaction.getExecutionDate(), DataAccess.getTableName(MovementTransaction.class)).build();
 		    LogService.logEmployeeData(employeeLog, session);
 		}
@@ -1051,7 +1054,7 @@ public class MovementsService extends BaseService {
 	    movementTransaction = empsMovTransactionsMap.get(emp.getEmpId());
 
 	    predecessorTrans.setSuccessorDecisionEffectFlag(isTermination ? TransactionTypesEnum.MVT_TERMINATION_DECISION.getCode() : TransactionTypesEnum.MVT_CANCEL_DECISION.getCode());
-	    if ((isTermination && movementTransaction.getEndDate().before(sysDate)) || (!isTermination && predecessorTrans.getEffectFlag().intValue() == FlagsEnum.ON.getCode())) {
+	    if (predecessorTrans.getEffectFlag().intValue() == FlagsEnum.ON.getCode() && ((!isTermination && sysDate.after(predecessorTrans.getEndDate())) || (isTermination && movementTransaction.getEndDate().before(sysDate) && predecessorTrans.getEndDate().before(sysDate)))) {
 		EmployeeLogData lastEmployeeLog = LogService.getLastEmployeeLogBeforeGivenDate(emp.getEmpId(), movementTransaction.getExecutionDate());
 		EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(lastEmployeeLog.getOfficialUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), isTermination ? movementTransaction.getEndDate() : movementTransaction.getExecutionDate(), DataAccess.getTableName(MovementTransaction.class)).build();
 		LogService.logEmployeeData(employeeLog, session);
@@ -1063,7 +1066,7 @@ public class MovementsService extends BaseService {
 		emp.setPhysicalUnitId(emp.getOfficialUnitId());
 		emp.setStatusId(EmployeeStatusEnum.ON_DUTY.getCode());
 		EmployeesService.updateEmployee(emp, session);
-		EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), movementTransaction.getExecutionDate(), DataAccess.getTableName(MovementTransaction.class)).build();
+		EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), isTermination ? movementTransaction.getEndDate() : movementTransaction.getExecutionDate(), DataAccess.getTableName(MovementTransaction.class)).build();
 		LogService.logEmployeeData(employeeLog, session);
 
 		// add empId to the affected list to do changes after effect like invalidating the inbox
