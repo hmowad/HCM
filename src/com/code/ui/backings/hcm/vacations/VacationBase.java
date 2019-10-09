@@ -44,7 +44,7 @@ public abstract class VacationBase extends WFBaseBacking {
     protected boolean skipLastTwoVacations;
     protected String decisionNumber;
     protected Date decisionDate;
-    private String beneficiaryPanelTitle;
+    private String beneficiaryPanelHeader;
 
     public void init() {
 	try {
@@ -186,19 +186,18 @@ public abstract class VacationBase extends WFBaseBacking {
 	}
     }
 
-    public void updateBeneficiaryPanelTitle() {
-	int firstDigit = vacationMode;
-	while (firstDigit > 10)
-	    firstDigit /= 10;
+    public void getBeneficiaryPanelTitle() {
+
+	String categoryId = getNormalizedModeFromVacationMode();
 	if (isAdmin) {
-	    if (firstDigit == 1)
-		setBeneficiaryPanelTitle(getMessage("label_adminBeneficiaryOfficers"));
-	    else if (firstDigit == 2)
-		setBeneficiaryPanelTitle(getMessage("label_adminBeneficiarySoldiers"));
+	    if (categoryId.equals("1"))
+		setBeneficiaryPanelHeader(getMessage("label_adminBeneficiaryOfficers"));
+	    else if (categoryId.equals("2"))
+		setBeneficiaryPanelHeader(getMessage("label_adminBeneficiarySoldiers"));
 	    else
-		setBeneficiaryPanelTitle(getMessage("label_adminBeneficiaryEmployees"));
+		setBeneficiaryPanelHeader(getMessage("label_adminBeneficiaryEmployees"));
 	} else {
-	    setBeneficiaryPanelTitle(getMessage("label_beneficiary"));
+	    setBeneficiaryPanelHeader(getMessage("label_beneficiary"));
 	}
     }
 
@@ -780,12 +779,12 @@ public abstract class VacationBase extends WFBaseBacking {
 	this.decisionDate = decisionDate;
     }
 
-    public String getBeneficiaryPanelTitle() {
-	return beneficiaryPanelTitle;
+    public String getBeneficiaryPanelHeader() {
+	return beneficiaryPanelHeader;
     }
 
-    public void setBeneficiaryPanelTitle(String beneficiaryPanelTitle) {
-	this.beneficiaryPanelTitle = beneficiaryPanelTitle;
+    public void setBeneficiaryPanelHeader(String beneficiaryPanelHeader) {
+	this.beneficiaryPanelHeader = beneficiaryPanelHeader;
     }
 
 }

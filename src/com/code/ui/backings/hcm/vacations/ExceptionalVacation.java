@@ -41,7 +41,7 @@ public class ExceptionalVacation extends VacationBase {
 	    } else
 		adjustProcess();
 
-	    this.updateBeneficiaryPanelTitle();
+	    this.getBeneficiaryPanelTitle();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(this.getParameterizedMessage(e.getMessage(), e.getParams()));
 	} catch (Exception e) {
