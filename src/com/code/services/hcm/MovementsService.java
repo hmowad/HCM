@@ -719,8 +719,8 @@ public class MovementsService extends BaseService {
 		affectedEmployeesIds.add(emp.getEmpId());
 
 		if (sysDate.after(movementTransaction.getEndDate())) {
-		    Date executionDate = isNewDecision ? movementTransaction.getExecutionDate() : HijriDateService.addSubHijriDays(movementTransaction.getExecutionDate(), -1);
-		    EmployeeLog transactionEmployeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), executionDate, DataAccess.getTableName(MovementTransaction.class)).build();
+		    // Date executionDate = isNewDecision ? movementTransaction.getExecutionDate() : HijriDateService.addSubHijriDays(movementTransaction.getExecutionDate(), -1);
+		    EmployeeLog transactionEmployeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), movementTransaction.getExecutionDate(), DataAccess.getTableName(MovementTransaction.class)).build();
 		    LogService.logEmployeeData(transactionEmployeeLog, session);
 		    EmployeeLogData lastEmployeeLog = LogService.getLastEmployeeLogBeforeGivenDate(emp.getEmpId(), movementTransaction.getExecutionDate());
 		    EmployeeLog revertEmployeeLog = new EmployeeLog.Builder().setPhysicalUnitId(lastEmployeeLog.getOfficialUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), HijriDateService.addSubHijriDays(movementTransaction.getEndDate(), 1), DataAccess.getTableName(MovementTransaction.class)).build();
@@ -769,9 +769,9 @@ public class MovementsService extends BaseService {
 		}
 
 		EmployeesService.updateEmployee(emp, session);
-		Date executionDate = isNewDecision ? movementTransaction.getExecutionDate() : HijriDateService.addSubHijriDays(movementTransaction.getExecutionDate(), -1);
+		// Date executionDate = isNewDecision ? movementTransaction.getExecutionDate() : HijriDateService.addSubHijriDays(movementTransaction.getExecutionDate(), -1);
 		if (isNewDecision || (movementTransaction.getExecutionDate().before(sysDate))) { // for extension
-		    EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), executionDate, DataAccess.getTableName(MovementTransaction.class)).build();
+		    EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), movementTransaction.getExecutionDate(), DataAccess.getTableName(MovementTransaction.class)).build();
 		    LogService.logEmployeeData(employeeLog, session);
 		}
 
@@ -894,8 +894,8 @@ public class MovementsService extends BaseService {
 		    throw new BusinessException("error_general");
 
 		if (sysDate.after(movementTransaction.getEndDate())) {
-		    Date executionDate = isNewDecision ? movementTransaction.getExecutionDate() : HijriDateService.addSubHijriDays(movementTransaction.getExecutionDate(), -1);
-		    EmployeeLog transactionEmployeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), executionDate, DataAccess.getTableName(MovementTransaction.class)).build();
+		    // Date executionDate = isNewDecision ? movementTransaction.getExecutionDate() : HijriDateService.addSubHijriDays(movementTransaction.getExecutionDate(), -1);
+		    EmployeeLog transactionEmployeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), movementTransaction.getExecutionDate(), DataAccess.getTableName(MovementTransaction.class)).build();
 		    LogService.logEmployeeData(transactionEmployeeLog, session);
 		    EmployeeLogData lastEmployeeLog = LogService.getLastEmployeeLogBeforeGivenDate(emp.getEmpId(), movementTransaction.getExecutionDate());
 		    EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(lastEmployeeLog.getOfficialUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), HijriDateService.addSubHijriDays(movementTransaction.getEndDate(), 1), DataAccess.getTableName(MovementTransaction.class)).build();
@@ -909,9 +909,9 @@ public class MovementsService extends BaseService {
 		emp.setStatusId(EmployeeStatusEnum.MANDATED.getCode());
 		emp.setPhysicalUnitId(emp.getOfficialUnitId());
 		EmployeesService.updateEmployee(emp, session);
-		Date executionDate = isNewDecision ? movementTransaction.getExecutionDate() : HijriDateService.addSubHijriDays(movementTransaction.getExecutionDate(), -1);
+		// Date executionDate = isNewDecision ? movementTransaction.getExecutionDate() : HijriDateService.addSubHijriDays(movementTransaction.getExecutionDate(), -1);
 		if (isNewDecision || (movementTransaction.getExecutionDate().before(sysDate))) { // for extension
-		    EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), executionDate, DataAccess.getTableName(MovementTransaction.class)).build();
+		    EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), movementTransaction.getExecutionDate(), DataAccess.getTableName(MovementTransaction.class)).build();
 		    LogService.logEmployeeData(employeeLog, session);
 		}
 	    }
@@ -954,8 +954,8 @@ public class MovementsService extends BaseService {
 		    throw new BusinessException("error_general");
 
 		if (sysDate.after(movementTransaction.getEndDate())) {
-		    Date executionDate = isNewDecision ? movementTransaction.getExecutionDate() : HijriDateService.addSubHijriDays(movementTransaction.getExecutionDate(), -1);
-		    EmployeeLog transactionEmployeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), executionDate, DataAccess.getTableName(MovementTransaction.class)).build();
+		    // Date executionDate = isNewDecision ? movementTransaction.getExecutionDate() : HijriDateService.addSubHijriDays(movementTransaction.getExecutionDate(), -1);
+		    EmployeeLog transactionEmployeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), movementTransaction.getExecutionDate(), DataAccess.getTableName(MovementTransaction.class)).build();
 		    LogService.logEmployeeData(transactionEmployeeLog, session);
 		    EmployeeLogData lastEmployeeLog = LogService.getLastEmployeeLogBeforeGivenDate(emp.getEmpId(), movementTransaction.getExecutionDate());
 		    EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(lastEmployeeLog.getOfficialUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), HijriDateService.addSubHijriDays(movementTransaction.getEndDate(), 1), DataAccess.getTableName(MovementTransaction.class)).build();
@@ -969,9 +969,9 @@ public class MovementsService extends BaseService {
 		emp.setStatusId(EmployeeStatusEnum.SECONDMENTED.getCode());
 		emp.setPhysicalUnitId(emp.getOfficialUnitId());
 		EmployeesService.updateEmployee(emp, session);
-		Date executionDate = isNewDecision ? movementTransaction.getExecutionDate() : HijriDateService.addSubHijriDays(movementTransaction.getExecutionDate(), -1);
+		// Date executionDate = isNewDecision ? movementTransaction.getExecutionDate() : HijriDateService.addSubHijriDays(movementTransaction.getExecutionDate(), -1);
 		if (isNewDecision || (movementTransaction.getExecutionDate().before(sysDate))) { // for extension
-		    EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), executionDate, DataAccess.getTableName(MovementTransaction.class)).build();
+		    EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(movementTransaction.getUnitId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), movementTransaction.getExecutionDate(), DataAccess.getTableName(MovementTransaction.class)).build();
 		    LogService.logEmployeeData(employeeLog, session);
 		}
 	    }
@@ -1068,7 +1068,7 @@ public class MovementsService extends BaseService {
 	    if (predecessorTrans.getEffectFlag().intValue() == FlagsEnum.ON.getCode() && ((!isTermination && sysDate.after(predecessorTrans.getEndDate())) || (isTermination && movementTransaction.getEndDate().before(sysDate) && predecessorTrans.getEndDate().before(sysDate)))) {
 		EmployeeLogData lastEmployeeLog = LogService.getLastEmployeeLogBeforeGivenDate(emp.getEmpId(), movementTransaction.getExecutionDate());
 		EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(lastEmployeeLog.getOfficialUnitId())
-			.constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), isTermination ? HijriDateService.addSubHijriDays(movementTransaction.getEndDate(), 1) : (isPredecessorNewDecision ? movementTransaction.getExecutionDate() : HijriDateService.addSubHijriDays(movementTransaction.getExecutionDate(), -1)), DataAccess.getTableName(MovementTransaction.class)).build();
+			.constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), isTermination ? HijriDateService.addSubHijriDays(movementTransaction.getEndDate(), 1) : movementTransaction.getExecutionDate(), DataAccess.getTableName(MovementTransaction.class)).build();
 		LogService.logEmployeeData(employeeLog, session);
 	    }
 	    if (predecessorTrans.getEffectFlag().intValue() == FlagsEnum.ON.getCode() && ((!isTermination && (!(sysDate.before(predecessorTrans.getExecutionDate()) || sysDate.after(predecessorTrans.getEndDate())))) || (isTermination && (movementTransaction.getEndDate().before(sysDate) && !predecessorTrans.getEndDate().before(sysDate))))) {
@@ -1080,7 +1080,7 @@ public class MovementsService extends BaseService {
 		EmployeesService.updateEmployee(emp, session);
 		EmployeeLogData lastEmployeeLog = LogService.getLastEmployeeLogBeforeGivenDate(emp.getEmpId(), movementTransaction.getExecutionDate());
 		EmployeeLog employeeLog = new EmployeeLog.Builder().setPhysicalUnitId(lastEmployeeLog.getOfficialUnitId())
-			.constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), isTermination ? HijriDateService.addSubHijriDays(movementTransaction.getEndDate(), 1) : (isPredecessorNewDecision ? movementTransaction.getExecutionDate() : HijriDateService.addSubHijriDays(movementTransaction.getExecutionDate(), -1)), DataAccess.getTableName(MovementTransaction.class)).build();
+			.constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), movementTransaction.getDecisionNumber(), movementTransaction.getDecisionDate(), isTermination ? HijriDateService.addSubHijriDays(movementTransaction.getEndDate(), 1) : movementTransaction.getExecutionDate(), DataAccess.getTableName(MovementTransaction.class)).build();
 		LogService.logEmployeeData(employeeLog, session);
 
 		// add empId to the affected list to do changes after effect like invalidating the inbox
