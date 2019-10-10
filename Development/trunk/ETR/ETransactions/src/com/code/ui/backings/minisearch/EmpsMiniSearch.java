@@ -228,7 +228,11 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 	    case 19: // Get employees with statusIds and get President and vicePresident
 		// used to make vac Request to President , vicePresident for officiers category and External Mission Employees
 
-		statusIds = new Long[] { EmployeeStatusEnum.ASSIGNED_EXTERNALLY.getCode(), EmployeeStatusEnum.PERSONS_SUBJOINED_EXTERNALLY.getCode(), EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode() };
+		statusIds = new Long[] { EmployeeStatusEnum.MANDATED.getCode(),
+			EmployeeStatusEnum.SECONDMENTED.getCode(),
+			EmployeeStatusEnum.ASSIGNED_EXTERNALLY.getCode(),
+			EmployeeStatusEnum.PERSONS_SUBJOINED_EXTERNALLY.getCode(),
+			EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode() };
 
 		searchEmployeeList = EmployeesService.searchEmployeesForBeneficiary(searchEmpName, getCategoriesIdsArrayByBeneficiaryMode(categoryMode), employeeIds, militaryNumber, searchSocialId, statusIds, searchJobDesc, searchUnitFullName, sequenceNumber);
 		break;
