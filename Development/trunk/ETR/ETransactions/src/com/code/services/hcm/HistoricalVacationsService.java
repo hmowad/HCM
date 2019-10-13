@@ -563,7 +563,7 @@ public class HistoricalVacationsService extends BaseService {
 
 	if (!vacationAfterHistoricalVacation.isEmpty()) {
 	    for (Vacation vacation : vacationAfterHistoricalVacation)
-		if (historicalVacationTransaction.getPaidVacationType() != vacation.getPaidVacationType())
+		if (!historicalVacationTransaction.getPaidVacationType().equals(vacation.getPaidVacationType()))
 		    throw new BusinessException("error_sickPaidTypeConflict");
 	}
     }
