@@ -1,4 +1,4 @@
-package com.code.enums.databasecolumnamemappingsý;
+package com.code.enums.databasecolumnamemappings;
 
 public enum TransactionIdMappingEnum {
 
