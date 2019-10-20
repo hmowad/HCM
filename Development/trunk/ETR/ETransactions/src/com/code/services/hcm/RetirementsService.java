@@ -1,5 +1,7 @@
 package com.code.services.hcm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -7,9 +9,12 @@ import java.util.Map;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
+import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransactionData;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransactionDetail;
 import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
+import com.code.dal.orm.setup.AdminDecision;
+import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
@@ -18,6 +23,7 @@ import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.services.BaseService;
 import com.code.services.cor.ETRCorrespondence;
+import com.code.services.integration.PayrollEngineService;
 import com.code.services.util.HijriDateService;
 
 public class RetirementsService extends BaseService {
@@ -78,6 +84,7 @@ public class RetirementsService extends BaseService {
 	    }
 	    DataAccess.addEntity(disclaimerTransactionData.getDisclaimerTransaction(), session);
 	    disclaimerTransactionData.setId(disclaimerTransactionData.getDisclaimerTransaction().getId());
+	    doPayrollIntegration(disclaimerTransactionData, session);
 	    if (!isOpenedSession)
 		session.commitTransaction();
 
@@ -86,7 +93,7 @@ public class RetirementsService extends BaseService {
 		session.rollbackTransaction();
 	    disclaimerTransactionData.setId(null);
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException(e.getMessage());
 	} finally {
 	    if (!isOpenedSession)
 		session.close();
@@ -114,6 +121,33 @@ public class RetirementsService extends BaseService {
 	} finally {
 	    if (!isOpenedSession)
 		session.close();
+	}
+    }
+
+    private static void doPayrollIntegration(DisclaimerTransactionData disclaimerTransactionData, CustomSession session) throws BusinessException {
+
+	try {
+	    AdminDecision disclaimerAdminDecision = null;
+	    if (disclaimerTransactionData.getTransEmpCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+		disclaimerAdminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_DISCLAIMER.getCode());
+	    } else if (disclaimerTransactionData.getTransEmpCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
+		disclaimerAdminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.SOLDIERS_DISCLAIMER.getCode());
+	    }
+	    if (disclaimerAdminDecision == null)
+		throw new BusinessException("error_adminDecisionRecordDosntExist");
+	    List<EmployeeData> employeeList = new ArrayList<EmployeeData>(Arrays.asList(EmployeesService.getEmployeeData(disclaimerTransactionData.getEmpId())));
+	    String gregDecisionDateString = HijriDateService.hijriToGregDateString(disclaimerTransactionData.getDecisionDateString());
+	    String gregTerminationDateString = HijriDateService.hijriToGregDateString(disclaimerTransactionData.getTransServiceTerminationDateString());
+	    TerminationTransactionData terminationTransactionData = TerminationsService.getTerminationTransactionById(disclaimerTransactionData.getTerminationTransactionId());
+	    if (terminationTransactionData.getTransEmpUnitId() == null) {
+		throw new BusinessException("error_noUnitIdInTerminationTransaction");
+	    }
+	    session.flushTransaction();
+	    PayrollEngineService.doPayrollIntegration(disclaimerAdminDecision.getId(), disclaimerTransactionData.getTransEmpCategoryId(), gregTerminationDateString, employeeList, terminationTransactionData.getTransEmpUnitId(), gregDecisionDateString, gregTerminationDateString, gregTerminationDateString,
+		    disclaimerTransactionData.getId() + "");
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(e.getMessage());
 	}
     }
 

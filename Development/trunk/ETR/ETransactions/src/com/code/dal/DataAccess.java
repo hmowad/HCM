@@ -214,7 +214,7 @@ public class DataAccess {
 	return executeQuery(dataClass, null, dynamicQueryBuffer, null, parameters);
     }
 
-    private static <T> List<T> executeNativeQuery(Class<T> dataClass, StringBuffer nativeQueryBuffer, Map<String, Object> parameters) throws DatabaseException {
+    public static <T> List<T> executeNativeQuery(Class<T> dataClass, StringBuffer nativeQueryBuffer, Map<String, Object> parameters) throws DatabaseException {
 	return executeQuery(dataClass, null, null, nativeQueryBuffer, parameters);
     }
 
