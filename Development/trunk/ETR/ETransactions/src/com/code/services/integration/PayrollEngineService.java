@@ -17,8 +17,8 @@ import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.setup.AdminDecision;
 import com.code.enums.QueryNamesEnum;
-import com.code.enums.databasecolumnamemappingsý.EmployeeIdMappingEnum;
-import com.code.enums.databasecolumnamemappingsý.TransactionIdMappingEnum;
+import com.code.enums.databasecolumnamemappings.EmployeeIdMappingEnum;
+import com.code.enums.databasecolumnamemappings.TransactionIdMappingEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.integration.responses.payroll.AdminDecisionResponse;
@@ -41,11 +41,11 @@ public class PayrollEngineService {
 	}
     }
 
-    public static void doPayrollIntegration(Long adminDecisionId, Long categoryId, String executionDateString, List<EmployeeData> employeeDataList, Long unitId, String decisionDateString, String decisionStartDateString, String decisionEndDateString, String transactionIdý) throws BusinessException {
+    public static void doPayrollIntegration(Long adminDecisionId, Long categoryId, String executionDateString, List<EmployeeData> employeeDataList, Long unitId, String decisionDateString, String decisionStartDateString, String decisionEndDateString, String transactionId) throws BusinessException {
 	PayrollRestClient.init();
 	String adminDecisionVariables = PayrollRestClient.getAdminDecisionVariables(adminDecisionId, categoryId, executionDateString);
 	List<AdminDecisionResponse> adminDecisionList = getAdminDecisionVariablesMap(adminDecisionVariables);
-	JsonObject applyAdminDecisionBody = getApplyAdminDecisionBody(adminDecisionList, employeeDataList, unitId, decisionDateString, decisionStartDateString, decisionEndDateString, adminDecisionId, categoryId, transactionIdý);
+	JsonObject applyAdminDecisionBody = getApplyAdminDecisionBody(adminDecisionList, employeeDataList, unitId, decisionDateString, decisionStartDateString, decisionEndDateString, adminDecisionId, categoryId, transactionId);
 	PayrollRestClient.applyAdminDecision(applyAdminDecisionBody);
 	PayrollRestClient.destroy();
     }
