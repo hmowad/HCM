@@ -528,7 +528,10 @@ public enum QueryNamesEnum {
     HCM_RANKINGS_SEARCH_RANKINGS("hcm_rankings_searchRankings"),
 
     /* ******************************************* Timeline ****************************************************** */
-    HCM_GET_ALL_FUTURE_TRANSACTIONS("hcm_transactionTimeline_getAllFutureTransactions");
+    HCM_GET_ALL_FUTURE_TRANSACTIONS("hcm_transactionTimeline_getAllFutureTransactions"),
+
+    /* ******************************************* Payroll integration ****************************************************** */
+    GET_ADMIN_DECISION_BY_NAME("hcm_admin_decision_getAdminDecisionByName");
 
     private String code;
 

@@ -222,6 +222,10 @@ public class ETRConfigurationService extends BaseService {
     public static int getSocialIdRenewalPeriodWarning() {
 	return Integer.parseInt(configurationMap.get("SOCIAL_ID_RENEWAL_PERIOD_WARNING"));
     }
+
+    public static String getPayrollRestServiceURL() {
+	return getETRConfigByCode("PAYROLL_REST_SERVICES_URL").getValue();
+    }
     /*------------------------------------------------------General Notifications Configurations------------------------------------------------------*/
 
     public static String getGeneralMessagesUrl() {

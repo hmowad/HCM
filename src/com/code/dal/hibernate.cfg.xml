@@ -35,6 +35,8 @@
 		<mapping class="com.code.dal.orm.hijri.HijriCalendar" />
 		<mapping class="com.code.dal.orm.setup.Country" />
 		<mapping class="com.code.dal.orm.setup.CountryBlacklist" />
+		<mapping class="com.code.dal.orm.setup.AdminDecision" />
+		
 		
 		<mapping class="com.code.dal.orm.cor.ETRCor" />
 		<mapping class="com.code.dal.orm.cor.ETRCorOut" />
