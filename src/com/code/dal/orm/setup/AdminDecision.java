@@ -9,7 +9,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @NamedQueries({
-	@NamedQuery(name = "hcm_adminDecision_getAdminDecisionByName‎",
+	@NamedQuery(name = "hcm_adminDecision_getAdminDecisionByName",
 		query = " select a from AdminDecision a" +
 			" where (:P_ADMIN_DECISION_NAME = '-1' OR a.name = :P_ADMIN_DECISION_NAME)")
 })
