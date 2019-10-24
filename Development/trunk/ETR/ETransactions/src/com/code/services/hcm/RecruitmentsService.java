@@ -18,6 +18,8 @@ import com.code.dal.orm.hcm.recruitments.RecruitmentTransaction;
 import com.code.dal.orm.hcm.recruitments.RecruitmentTransactionData;
 import com.code.dal.orm.hcm.recruitments.RecruitmentWishData;
 import com.code.dal.orm.log.EmployeeLog;
+import com.code.dal.orm.setup.AdminDecision;
+import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.FlagsEnum;
@@ -30,9 +32,11 @@ import com.code.enums.SequenceNamesEnum;
 import com.code.enums.TransactionClassesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
 import com.code.services.BaseService;
 import com.code.services.buswfcoop.EmployeesJobsConflictValidator;
 import com.code.services.cor.ETRCorrespondence;
+import com.code.services.integration.PayrollEngineService;
 import com.code.services.log.LogService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
@@ -648,8 +652,10 @@ public class RecruitmentsService extends BaseService {
 			    }
 			}
 		    }
-		for (RecruitmentTransactionData recruitmentTransactionData : recruitmentTransactionsData)
+		for (RecruitmentTransactionData recruitmentTransactionData : recruitmentTransactionsData) {
 		    DataAccess.addEntity(recruitmentTransactionData.getRecruitmentTransaction(), session);
+		    recruitmentTransactionData.setId(recruitmentTransactionData.getRecruitmentTransaction().getId());
+		}
 	    }
 
 	    if (!isOpenedSession)
@@ -823,7 +829,7 @@ public class RecruitmentsService extends BaseService {
 		for (RecruitmentTransactionData recruitmentTransaction : recruitmentTransactions) {
 		    JobData job = JobsService.getJobById(recruitmentTransaction.getJobId());
 		    EmployeeData emp = EmployeesService.getEmployeeData(recruitmentTransaction.getEmployeeId());
-
+		    recruitmentTransaction.setEmployeeName(emp.getName());
 		    JobsService.changeJobStatus(job, JobStatusEnum.OCCUPIED.getCode(), session);
 
 		    if (recruitmentTransaction.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && recruitmentTransaction.getRecruitmentType().equals(RecruitmentTypeEnum.GRADUATION_LETTER.getCode())) {
@@ -902,12 +908,31 @@ public class RecruitmentsService extends BaseService {
 			LogService.logEmployeeData(log, session);
 		    }
 		}
+		if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode())) {
+		    doPayrollIntegration(recruitmentTransactions, session);
+		}
 	    }
 	} catch (BusinessException e) {
 	    throw e;
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
+	}
+    }
+
+    private static void doPayrollIntegration(List<RecruitmentTransactionData> recruitmentTransactions, CustomSession session) throws BusinessException {
+	if (recruitmentTransactions.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+	    AdminDecision officersRecAdminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_RECRUITMENT.getCode());
+	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
+	    for (RecruitmentTransactionData recruitmentTransactionData : recruitmentTransactions) {
+		String gregRecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactionData.getRecruitmentDateString());
+		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(recruitmentTransactionData.getEmployeeId(), recruitmentTransactionData.getEmployeeName(), recruitmentTransactionData.getId(), gregRecDateString, gregRecDateString));
+	    }
+	    String gregRecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getRecruitmentDateString());
+	    String gregDecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getDecisionDateString());
+	    session.flushTransaction();
+	    EmployeeData emp = EmployeesService.getEmployeeData(recruitmentTransactions.get(0).getEmployeeId());
+	    PayrollEngineService.doPayrollIntegration(officersRecAdminDecision == null ? null : officersRecAdminDecision.getId(), CategoriesEnum.OFFICERS.getCode(), gregRecDateString, adminDecisionEmployeeDataList, emp.getPhysicalUnitId(), gregDecDateString);
 	}
     }
 
