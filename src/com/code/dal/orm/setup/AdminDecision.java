@@ -9,9 +9,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @NamedQueries({
-	@NamedQuery(name = "hcm_admin_decision_getAdminDecisionByName",
+	@NamedQuery(name = "hcm_adminDecision_getAdminDecisionByName‎",
 		query = " select a from AdminDecision a" +
-			" where (a.name = :P_ADMIN_DECISION_NAME)")
+			" where (:P_ADMIN_DECISION_NAME = '-1' OR a.name = :P_ADMIN_DECISION_NAME)")
 })
 @Entity
 @Table(name = "HCM_VW_ADMIN_DECISIONS")
