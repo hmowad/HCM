@@ -18,6 +18,7 @@ import com.code.enums.CategoriesEnum;
 import com.code.enums.CategoryModesEnum;
 import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.FlagsEnum;
+import com.code.enums.GendersEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
 import com.code.enums.RanksEnum;
@@ -118,18 +119,22 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 
 	    mode = CategoryModesEnum.OFFICERS.getCode();
 	} else if (categoryId == CategoriesEnum.SOLDIERS.getCode()) {
-	    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_SOLDIER_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_MODIFY_SOLDIERS.getCode()))
+	    if ((SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_SOLDIER_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_MODIFY_SOLDIERS.getCode()) && GendersEnum.MALE.getCode().equals(employee.getGender())) ||
+		    (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_SOLDIER_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_MODIFY_FEMALE_SOLDIERS.getCode()) && GendersEnum.FEMALE.getCode().equals(employee.getGender())))
 		viewOnly = false;
-	    else if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_SOLDIER_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_SHOW_SOLDIERS.getCode()))
+	    else if ((SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_SOLDIER_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_SHOW_SOLDIERS.getCode()) && GendersEnum.MALE.getCode().equals(employee.getGender())) ||
+		    (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_SOLDIER_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_SHOW_FEMALE_SOLDIERS.getCode()) && GendersEnum.FEMALE.getCode().equals(employee.getGender())))
 		viewOnly = true;
 	    else
 		throw new BusinessException("error_general");
 
 	    mode = CategoryModesEnum.SOLDIERS.getCode();
 	} else {
-	    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_CIVILIAN_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_MODIFY_CIVILIANS.getCode()))
+	    if ((SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_CIVILIAN_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_MODIFY_CIVILIANS.getCode()) && GendersEnum.MALE.getCode().equals(employee.getGender())) ||
+		    (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_CIVILIAN_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_MODIFY_FEMALE_CIVILIANS.getCode()) && GendersEnum.FEMALE.getCode().equals(employee.getGender())))
 		viewOnly = false;
-	    else if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_CIVILIAN_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_SHOW_CIVILIANS.getCode()))
+	    else if ((SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_CIVILIAN_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_SHOW_CIVILIANS.getCode()) && GendersEnum.MALE.getCode().equals(employee.getGender())) ||
+		    (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_CIVILIAN_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_SHOW_FEMALE_CIVILIANS.getCode()) && GendersEnum.FEMALE.getCode().equals(employee.getGender())))
 		viewOnly = true;
 	    else
 		throw new BusinessException("error_general");

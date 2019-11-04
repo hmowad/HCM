@@ -55,7 +55,13 @@
 			unitIdValue = document.getElementById('employeesInquiryFormId:unitIDId').value;
 			jobIdValue = document.getElementById('employeesInquiryFormId:jobIDId').value;
 			MinorSpecIdValue = document.getElementById('employeesInquiryFormId:minorSpecIDId').value;
-			sequenceNumberValue = document.getElementById('employeesInquiryFormId:sequenceNumberId').value;
+			sequenceNumber = document.getElementById('employeesInquiryFormId:sequenceNumberId');
+
+			if(sequenceNumber == null) {
+				sequenceNumberValue = "";
+			} else {
+				sequenceNumberValue = document.getElementById('employeesInquiryFormId:sequenceNumberId').value;
+			}
 			
 			
 			if ((socialIdValue == null || socialIdValue == '')

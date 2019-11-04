@@ -19,6 +19,7 @@ import com.code.dal.orm.hcm.trainings.QualificationLevel;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.CategoryClassificationEnum;
 import com.code.enums.FlagsEnum;
+import com.code.enums.GendersEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
 import com.code.enums.RegionsEnum;
@@ -105,11 +106,13 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 		    break;
 
 		case 2:
-		    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_DATA_VIEW.getCode(), MenuActionsEnum.PRS_EMPS_DATA_VIEW_MODIFY_SOLDIERS.getCode())) {
+		    if ((SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_DATA_VIEW.getCode(), MenuActionsEnum.PRS_EMPS_DATA_VIEW_MODIFY_SOLDIERS.getCode()) && GendersEnum.MALE.getCode().equals(empParam.getGender())) ||
+			    (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_DATA_VIEW.getCode(), MenuActionsEnum.PRS_EMPS_DATA_VIEW_MODIFY_FEMALE_SOLDIERS.getCode()) && GendersEnum.FEMALE.getCode().equals(empParam.getGender()))) {
 			employee = empParam;
 			employeeQualificationsData = employeeQualificationsDataParam;
 			viewOnly = false;
-		    } else if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_DATA_VIEW.getCode(), MenuActionsEnum.PRS_EMPS_DATA_VIEW_SHOW_SOLDIERS.getCode())) {
+		    } else if ((SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_DATA_VIEW.getCode(), MenuActionsEnum.PRS_EMPS_DATA_VIEW_SHOW_SOLDIERS.getCode()) && GendersEnum.MALE.getCode().equals(empParam.getGender())) ||
+			    (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_DATA_VIEW.getCode(), MenuActionsEnum.PRS_EMPS_DATA_VIEW_SHOW_FEMALE_SOLDIERS.getCode()) && GendersEnum.FEMALE.getCode().equals(empParam.getGender()))) {
 			employee = empParam;
 			employeeQualificationsData = employeeQualificationsDataParam;
 		    }
@@ -121,11 +124,13 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 		case 5:
 		case 6:
 		case 9:
-		    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_DATA_VIEW.getCode(), MenuActionsEnum.PRS_EMPS_DATA_VIEW_MODIFY_CIVILIANS.getCode())) {
+		    if ((SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_DATA_VIEW.getCode(), MenuActionsEnum.PRS_EMPS_DATA_VIEW_MODIFY_CIVILIANS.getCode()) && GendersEnum.MALE.getCode().equals(empParam.getGender())) ||
+			    (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_DATA_VIEW.getCode(), MenuActionsEnum.PRS_EMPS_DATA_VIEW_MODIFY_FEMALE_CIVILIANS.getCode()) && GendersEnum.FEMALE.getCode().equals(empParam.getGender()))) {
 			employee = empParam;
 			employeeQualificationsData = employeeQualificationsDataParam;
 			viewOnly = false;
-		    } else if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_DATA_VIEW.getCode(), MenuActionsEnum.PRS_EMPS_DATA_VIEW_SHOW_CIVILIANS.getCode())) {
+		    } else if ((SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_DATA_VIEW.getCode(), MenuActionsEnum.PRS_EMPS_DATA_VIEW_SHOW_CIVILIANS.getCode()) && GendersEnum.MALE.getCode().equals(empParam.getGender())) ||
+			    (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_DATA_VIEW.getCode(), MenuActionsEnum.PRS_EMPS_DATA_VIEW_SHOW_FEMALE_CIVILIANS.getCode()) && GendersEnum.FEMALE.getCode().equals(empParam.getGender()))) {
 			employee = empParam;
 			employeeQualificationsData = employeeQualificationsDataParam;
 		    }

@@ -220,7 +220,7 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 		break;
 	    case 17:
 		searchEmployeeList = EmployeesService.getEmpByPhysicalOrOfficialUnit(searchEmpName, categoryMode == -1 ? null : getCategoriesIdsArrayByMode(categoryMode), militaryNumber,
-			searchSocialId, searchJobDesc, searchUnitFullName, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), physicalRegionId, sequenceNumber);
+			searchSocialId, searchJobDesc, searchUnitFullName, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), physicalRegionId, sequenceNumber, null);
 		break;
 	    case 18:
 		searchEmployeeList = EmployeesService.getEmployeesByEmpStatusesId(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, statusIds, new Long[] { (long) categoryMode }, physicalRegionId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode() + "", FlagsEnum.ALL.getCode(), militaryNumber, sequenceNumber);
