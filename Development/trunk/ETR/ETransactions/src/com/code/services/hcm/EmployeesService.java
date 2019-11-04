@@ -684,11 +684,11 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    public static List<EmployeeData> getEmpByPhysicalOrOfficialUnit(String empName, Long[] categoriesIds, int militaryNumber, String socialId, String jobDesc, String searchUnitFullName, long jobId, long unitId, long jobMinorSpecId, long regionId, Long sequenceNmuber) throws BusinessException {
-	return searchEmployeesByPhysicalOrOfficialUnit(empName, categoriesIds, jobId, militaryNumber, socialId, unitId, jobMinorSpecId, regionId, jobDesc, searchUnitFullName, sequenceNmuber);
+    public static List<EmployeeData> getEmpByPhysicalOrOfficialUnit(String empName, Long[] categoriesIds, int militaryNumber, String socialId, String jobDesc, String searchUnitFullName, long jobId, long unitId, long jobMinorSpecId, long regionId, Long sequenceNmuber, String gender) throws BusinessException {
+	return searchEmployeesByPhysicalOrOfficialUnit(empName, categoriesIds, jobId, militaryNumber, socialId, unitId, jobMinorSpecId, regionId, jobDesc, searchUnitFullName, sequenceNmuber, gender);
     }
 
-    private static List<EmployeeData> searchEmployeesByPhysicalOrOfficialUnit(String empName, Long[] categoriesIds, long jobId, int militaryNumber, String socialID, long unitId, long jobMinorSpecId, long regionId, String jobDesc, String unitFullName, Long sequenceNumber) throws BusinessException {
+    private static List<EmployeeData> searchEmployeesByPhysicalOrOfficialUnit(String empName, Long[] categoriesIds, long jobId, int militaryNumber, String socialID, long unitId, long jobMinorSpecId, long regionId, String jobDesc, String unitFullName, Long sequenceNumber, String gender) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_NAME", (empName == null || empName.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + empName + "%");
@@ -708,6 +708,7 @@ public class EmployeesService extends BaseService {
 	    qParams.put("P_JOB_DESC", (jobDesc == null || jobDesc.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + jobDesc + "%");
 	    qParams.put("P_UNIT_FULL_NAME", (unitFullName == null || unitFullName.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + unitFullName + "%");
 	    qParams.put("P_SEQUENCE_NUMBER", (sequenceNumber == null) ? FlagsEnum.ALL.getCode() : sequenceNumber);
+	    qParams.put("P_GENDER", (gender == null || gender.equals("")) ? FlagsEnum.ALL.getCode() + "" : gender);
 	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_SEARCH_EMPLOYEES_BY_PHYSICAL_OR_OFFICIAL_UNIT.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();

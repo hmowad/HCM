@@ -73,6 +73,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_SOCIAL_ID = '-1' or e.socialID = :P_SOCIAL_ID) " +
 			" and (:P_UNIT_ID = -1 or ( e.physicalUnitId = :P_UNIT_ID or e.officialUnitId = :P_UNIT_ID )) " +
 			" and (:P_MINOR_SPEC_ID = -1 or e.minorSpecId = :P_MINOR_SPEC_ID) " +
+			" and (:P_GENDER = '-1' or e.gender = :P_GENDER) " +
 			" order by e.militaryNumber, e.rankId, e.recruitmentDate, e.name "),
 
 	@NamedQuery(name = "hcm_empData_searchEmployeeById",

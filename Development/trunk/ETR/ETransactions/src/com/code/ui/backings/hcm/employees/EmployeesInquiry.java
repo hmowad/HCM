@@ -10,8 +10,12 @@ import javax.faces.bean.ViewScoped;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.organization.Region;
 import com.code.enums.FlagsEnum;
+import com.code.enums.GendersEnum;
+import com.code.enums.MenuActionsEnum;
+import com.code.enums.MenuCodesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
+import com.code.services.security.SecurityService;
 import com.code.services.util.CommonService;
 import com.code.ui.backings.base.BaseBacking;
 
@@ -35,6 +39,8 @@ public class EmployeesInquiry extends BaseBacking implements Serializable {
     private Long minorSpecId;
     private Integer militaryNumber;
     private Long sequenceNumber;
+    private Boolean isAuthorizedForMales;
+    private Boolean isAuthorizedForFemales;
 
     private List<Region> regionsList;
 
@@ -42,21 +48,34 @@ public class EmployeesInquiry extends BaseBacking implements Serializable {
 
     public EmployeesInquiry() {
 	if (getRequest().getParameter("mode") != null) {
-	    mode = Integer.parseInt(getRequest().getParameter("mode"));
-	    switch (mode) {
-	    case 1:
-		setScreenTitle(getMessage("title_officersDataInquiry"));
-		break;
-	    case 2:
-		setScreenTitle(getMessage("title_soldiersDataInquiry"));
-		break;
-	    case 3:
-		setScreenTitle(getMessage("title_personsDataInquiry"));
-		break;
-	    default:
+	    try {
+		mode = Integer.parseInt(getRequest().getParameter("mode"));
+		isAuthorizedForMales = false;
+		isAuthorizedForFemales = false;
+		switch (mode) {
+		case 1:
+		    setScreenTitle(getMessage("title_officersDataInquiry"));
+		    isAuthorizedForMales = true;
+		    isAuthorizedForFemales = true;
+		    break;
+		case 2:
+		    setScreenTitle(getMessage("title_soldiersDataInquiry"));
+		    isAuthorizedForMales = SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_SOLDIER_INQUIRY.getCode(), MenuActionsEnum.PRS_EMPS_INQUIRY_MALE_SOLDIERS.getCode());
+		    isAuthorizedForFemales = SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_SOLDIER_INQUIRY.getCode(), MenuActionsEnum.PRS_EMPS_INQUIRY_FEMALE_SOLDIERS.getCode());
+		    break;
+		case 3:
+		    setScreenTitle(getMessage("title_personsDataInquiry"));
+		    isAuthorizedForMales = SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_CIVILIAN_INQUIRY.getCode(), MenuActionsEnum.PRS_EMPS_INQUIRY_MALE_CIVILIANS.getCode());
+		    isAuthorizedForFemales = SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_CIVILIAN_INQUIRY.getCode(), MenuActionsEnum.PRS_EMPS_INQUIRY_FEMALE_CIVILIANS.getCode());
+		    break;
+		default:
+		    setServerSideErrorMessages(getMessage("error_general"));
+		}
+		resetForm();
+	    } catch (BusinessException e) {
+		e.printStackTrace();
 		setServerSideErrorMessages(getMessage("error_general"));
 	    }
-	    resetForm();
 	} else
 	    setServerSideErrorMessages(getMessage("error_general"));
 
@@ -69,7 +88,17 @@ public class EmployeesInquiry extends BaseBacking implements Serializable {
 		name = null;
 	    if (socialId != null && socialId.isEmpty())
 		socialId = null;
-	    employeesList = EmployeesService.getEmpByPhysicalOrOfficialUnit(name, getCategoriesIdsArrayByMode(mode), militaryNumber == null ? FlagsEnum.ALL.getCode() : militaryNumber, socialId, null, null, jobId == null ? FlagsEnum.ALL.getCode() : jobId, unitId == null ? FlagsEnum.ALL.getCode() : unitId, minorSpecId == null ? FlagsEnum.ALL.getCode() : minorSpecId, regionId == null ? FlagsEnum.ALL.getCode() : regionId, sequenceNumber);
+	    employeesList = new ArrayList<EmployeeData>();
+	    if (isAuthorizedForMales || isAuthorizedForFemales) {
+		String gender = "";
+		if (isAuthorizedForMales && isAuthorizedForFemales)
+		    gender = null;
+		else if (isAuthorizedForFemales)
+		    gender = GendersEnum.FEMALE.getCode();
+		else if (isAuthorizedForMales)
+		    gender = GendersEnum.MALE.getCode();
+		employeesList = EmployeesService.getEmpByPhysicalOrOfficialUnit(name, getCategoriesIdsArrayByMode(mode), militaryNumber == null ? FlagsEnum.ALL.getCode() : militaryNumber, socialId, null, null, jobId == null ? FlagsEnum.ALL.getCode() : jobId, unitId == null ? FlagsEnum.ALL.getCode() : unitId, minorSpecId == null ? FlagsEnum.ALL.getCode() : minorSpecId, regionId == null ? FlagsEnum.ALL.getCode() : regionId, sequenceNumber, gender);
+	    }
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
