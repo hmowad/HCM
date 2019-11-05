@@ -17,6 +17,8 @@ import com.code.dal.orm.hcm.organization.jobs.JobData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.dal.orm.log.EmployeeLog;
 import com.code.dal.orm.log.EmployeeLogData;
+import com.code.dal.orm.setup.AdminDecision;
+import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.FlagsEnum;
@@ -33,11 +35,13 @@ import com.code.enums.TransactionTypesEnum;
 import com.code.enums.UnitTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
 import com.code.services.BaseService;
 import com.code.services.buswfcoop.BusinessWorkflowCooperation;
 import com.code.services.buswfcoop.EmployeesJobsConflictValidator;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.cor.ETRCorrespondence;
+import com.code.services.integration.PayrollEngineService;
 import com.code.services.log.LogService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
@@ -298,6 +302,9 @@ public class MovementsService extends BaseService {
 		    // handle Internal assignments
 		    handleInternalAssignmentTransactions(movementTransactions, session);
 
+		if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode())) {
+		    doPayrollIntegration(movementTransactions, session);
+		}
 		if (!isOpenedSession)
 		    session.commitTransaction();
 	    }
@@ -308,6 +315,60 @@ public class MovementsService extends BaseService {
 	} finally {
 	    if (!isOpenedSession)
 		session.close();
+	}
+    }
+
+    private static void doPayrollIntegration(List<MovementTransactionData> movementTransactions, CustomSession session) throws BusinessException {
+	List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
+	AdminDecision adminDecision = null;
+	Boolean integrationFlag = false;
+	if (movementTransactions != null && movementTransactions.size() > 0) {
+	    if (movementTransactions.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+		if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.MOVE.getCode() && movementTransactions.get(0).getRequestTransactionFlag().intValue() == FlagsEnum.OFF.getCode()) {
+		    if (movementTransactions.get(0).getJoiningDate() != null)
+			adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_MOVE_JOINING_DATE_REQUEST.getCode());
+		    else {
+			if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
+			    adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_MOVE_DECISION_REQUEST.getCode());
+			} else {
+			    adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_MOVE_REGISTERATION.getCode());
+			}
+		    }
+		    integrationFlag = true;
+		} else if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.SUBJOIN.getCode() && movementTransactions.get(0).getRequestTransactionFlag().intValue() == FlagsEnum.OFF.getCode()
+			&& movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
+		    if (movementTransactions.get(0).getJoiningDate() != null)
+			adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_SUBJOIN_JOINING_DATE_REQUEST.getCode());
+		    else {
+			if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
+			    adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_SUBJOIN_DECISION_REQUEST.getCode());
+			} else {
+			    adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_SUBJOIN_REGISTERATION.getCode());
+			}
+		    }
+		    integrationFlag = true;
+		} else if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.ASSIGNMENT.getCode() && movementTransactions.get(0).getRequestTransactionFlag().intValue() == FlagsEnum.OFF.getCode()) {
+		    if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
+			adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_INTERNAL_ASSIGNMENT_DECISION_REQUEST.getCode());
+		    } else {
+			adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_EXTERNAL_ASSIGNMENT_REGISTERATION.getCode());
+		    }
+		    integrationFlag = true;
+		}
+	    }
+	    if (integrationFlag) {
+		for (MovementTransactionData movementTransactionData : movementTransactions) {
+		    String gregStartDateString = HijriDateService.hijriToGregDateString(movementTransactionData.getExecutionDateString());
+		    String gregEndDateString = HijriDateService.hijriToGregDateString(movementTransactionData.getEndDateString());
+		    EmployeeData employee = EmployeesService.getEmployeeData(movementTransactionData.getEmployeeId());
+		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(movementTransactionData.getEmployeeId(), employee.getName(), movementTransactionData.getId(), gregStartDateString, gregEndDateString));
+		}
+		String gregExecutionDateString = HijriDateService.hijriToGregDateString(movementTransactions.get(0).getExecutionDateString());
+		String gregDecisionDateString = HijriDateService.hijriToGregDateString(movementTransactions.get(0).getDecisionDateString());
+		if (session != null)
+		    session.flushTransaction();
+		PayrollEngineService.doPayrollIntegration(adminDecision == null ? null : adminDecision.getId(), movementTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, movementTransactions.get(0).getUnitId(), gregDecisionDateString);
+	    }
 	}
     }
 
@@ -3211,6 +3272,8 @@ public class MovementsService extends BaseService {
 	movementTransaction.getMovementTransaction().setSystemUser(loginUserId + ""); // For auditing.
 	list.add(movementTransaction);
 	updateMovementTransactions(list, useSession);
+	if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+	    doPayrollIntegration(list, isSessionOpened(useSession) ? useSession[0] : null);
     }
 
     /**

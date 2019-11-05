@@ -22,7 +22,9 @@ import com.code.dal.orm.hcm.terminations.TerminationRecordDetailData;
 import com.code.dal.orm.hcm.terminations.TerminationTransaction;
 import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
 import com.code.dal.orm.log.EmployeeLog;
+import com.code.dal.orm.setup.AdminDecision;
 import com.code.dal.orm.workflow.hcm.terminations.WFTerminationCancellationMovementData;
+import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.FlagsEnum;
@@ -44,11 +46,13 @@ import com.code.enums.TransactionTypesEnum;
 import com.code.enums.WFProcessesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
 import com.code.services.BaseService;
 import com.code.services.buswfcoop.BusinessWorkflowCooperation;
 import com.code.services.buswfcoop.EmployeesJobsConflictValidator;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.cor.ETRCorrespondence;
+import com.code.services.integration.PayrollEngineService;
 import com.code.services.log.LogService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
@@ -1954,6 +1958,41 @@ public class TerminationsService extends BaseService {
 	for (TerminationTransactionData terminationTransactionData : terminationTransactionsList) {
 	    EmployeeLog log = new EmployeeLog.Builder().setJobId(null).setPhysicalUnitId(null).setOfficialUnitId(null).setBasicJobNameId(null).constructCommonFields(terminationTransactionData.getEmpId(), FlagsEnum.OFF.getCode(), terminationTransactionData.getDecisionNumber(), terminationTransactionData.getDecisionDate(), terminationTransactionData.getServiceTerminationDate(), DataAccess.getTableName(TerminationTransaction.class)).build();
 	    LogService.logEmployeeData(log, session);
+	}
+    }
+
+    /************************************************ Payroll Integration *******************************************************/
+    public static void doPayrollIntegration(List<TerminationTransactionData> terminationTransactionsList, CustomSession session) throws BusinessException {
+	try {
+	    if (terminationTransactionsList != null && terminationTransactionsList.size() > 0) {
+		String gregDecisionDateString = null;
+		String gregTerminationDateString = null;
+		AdminDecision adminDecision = null;
+		if (terminationTransactionsList.get(0).getCategoryId().equals(CategoriesEnum.CONTRACTORS.getCode()) ||
+			terminationTransactionsList.get(0).getCategoryId().equals(CategoriesEnum.MEDICAL_STAFF.getCode()) ||
+			terminationTransactionsList.get(0).getCategoryId().equals(CategoriesEnum.PERSONS.getCode()) ||
+			terminationTransactionsList.get(0).getCategoryId().equals(CategoriesEnum.USERS.getCode()) ||
+			terminationTransactionsList.get(0).getCategoryId().equals(CategoriesEnum.WAGES.getCode()))
+		    adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.CIVILLIANS_TERMINATION_RECORD.getCode());
+		if (adminDecision != null) {
+		    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
+		    for (TerminationTransactionData terminationTransactionData : terminationTransactionsList) {
+			gregDecisionDateString = HijriDateService.hijriToGregDateString(terminationTransactionData.getDecisionDateString());
+			gregTerminationDateString = HijriDateService.hijriToGregDateString(terminationTransactionData.getServiceTerminationDateString());
+			if (terminationTransactionData.getTransEmpUnitId() == null) {
+			    throw new BusinessException("error_noUnitIdInTerminationTransaction");
+			}
+			EmployeeData employee = EmployeesService.getEmployeeData(terminationTransactionData.getEmpId());
+			adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(terminationTransactionData.getEmpId(), employee.getName(), terminationTransactionData.getId(), gregTerminationDateString, gregTerminationDateString));
+		    }
+		    gregTerminationDateString = HijriDateService.hijriToGregDateString(terminationTransactionsList.get(0).getServiceTerminationDateString());
+		    gregDecisionDateString = HijriDateService.hijriToGregDateString(terminationTransactionsList.get(0).getDecisionDateString());
+		    session.flushTransaction();
+		    PayrollEngineService.doPayrollIntegration(adminDecision == null ? null : adminDecision.getId(), terminationTransactionsList.get(0).getCategoryId(), gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionsList.get(0).getTransEmpUnitId(), gregDecisionDateString);
+		}
+	    }
+	} catch (BusinessException e) {
+	    throw e;
 	}
     }
 
