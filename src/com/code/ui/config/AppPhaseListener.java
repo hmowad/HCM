@@ -19,7 +19,6 @@ import com.code.enums.SessionAttributesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.security.SecurityService;
-import com.code.services.util.Log4jService;
 
 public class AppPhaseListener implements PhaseListener {
     private static final long serialVersionUID = 1L;
@@ -34,20 +33,14 @@ public class AppPhaseListener implements PhaseListener {
     @SuppressWarnings("unchecked")
     public void beforePhase(PhaseEvent phaseEvent) {
 	if (PhaseId.RESTORE_VIEW.compareTo(phaseEvent.getPhaseId()) == 0) {
-	    Log4jService.traceInfo(AppPhaseListener.class, "Start of beforePhase()");
 	    HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-	    Log4jService.traceInfo(AppPhaseListener.class, "URI: " + req.getRequestURL());
 	    if (req.getParameterMap().containsKey("user") && req.getParameterMap().get("user") != null && req.getParameterMap().get("user")[0].length() != 0) {
 		try {
-		    Log4jService.traceInfo(AppPhaseListener.class, "user paramater is not null");
 		    String userAccountEncrypted = req.getParameterMap().get("user")[0];
-		    Log4jService.traceInfo(AppPhaseListener.class, "userAccountEncrypted: " + userAccountEncrypted);
 		    String userAccount = SecurityService.decryptAES(userAccountEncrypted);
-		    Log4jService.traceInfo(AppPhaseListener.class, "userAccountDecrypted: " + userAccount);
 		    if (userAccount != null) {
 			EmployeeData empData = EmployeesService.getEmployeeByUserAccount(userAccount);
 			if (empData != null) {
-			    Log4jService.traceInfo(AppPhaseListener.class, "EmpSocialId: " + empData.getSocialID());
 			    HttpSession session = req.getSession();
 			    session.setAttribute(SessionAttributesEnum.EMP_DATA.getCode(), empData);
 			    if (empData.getManagerId() != null) {
@@ -69,13 +62,10 @@ public class AppPhaseListener implements PhaseListener {
 
 	    String requestURI = getRequestURI(req.getRequestURI());
 	    EmployeeData sessionUser = (EmployeeData) req.getSession().getAttribute(SessionAttributesEnum.EMP_DATA.getCode());
-	    Log4jService.traceInfo(AppPhaseListener.class, "Trying to authorize user.. ");
-
 	    if (sessionUser == null && !requestURI.endsWith("/Main/Login.jsf")) {
 		redirect("/Main/Login.jsf", false);
 	    } else if (sessionUser != null && requestURI.endsWith("/Main/Login.jsf")) {
 		// Navigation Option is for by-passing the normal navigation rules for external channels.
-		Log4jService.traceInfo(AppPhaseListener.class, "sessionUser != null && requestURI.endsWith /Main/Login.jsf ");
 		String navigationOption = req.getParameter("navigationOption");
 		if (navigationOption != null && navigationOption.equals("INBOX"))
 		    redirect("/WorkList/WFInbox.jsf?init=1", false);
@@ -88,24 +78,19 @@ public class AppPhaseListener implements PhaseListener {
 
 		// If request contains parameter "taskId" then make sure that the session user is this task owner.
 		if (taskId != null) {
-		    Log4jService.traceInfo(AppPhaseListener.class, "taskId is not null");
 		    if (!isRequestParametersValid(SecurityService.getUserWFTaskUrl(sessionUser.getEmpId(), requestURI, Long.parseLong(taskId)), req, true))
 			redirect("/Main/Welcome.jsf", true);
 		} else {
 		    // If request doesn't contain parameter "taskId" then check the privilege against the session user menus.
-		    Log4jService.traceInfo(AppPhaseListener.class, "Checking the privilege against the session user menus");
 		    boolean authorized = false;
 		    List<Menu> allMenus = new ArrayList<Menu>();
 		    allMenus.addAll((List<Menu>) req.getSession().getAttribute(SessionAttributesEnum.USER_TRANSACTIONS_MENU.getCode()));
 		    allMenus.addAll((List<Menu>) req.getSession().getAttribute(SessionAttributesEnum.USER_WORKFLOWS_MENU.getCode()));
 		    allMenus.addAll((List<Menu>) req.getSession().getAttribute(SessionAttributesEnum.USER_REPORTS_MENU.getCode()));
-		    Log4jService.traceInfo(AppPhaseListener.class, "Request URI:  " + requestURI);
 		    for (Menu menuEntry : allMenus) {
-			Log4jService.traceInfo(AppPhaseListener.class, "Menu URI:  " + menuEntry.getUrl());
 			if (menuEntry.getUrl() != null && menuEntry.getUrl().contains(requestURI)) {
 			    if (isRequestParametersValid(menuEntry.getUrl(), req, true)) {
 				authorized = true;
-				Log4jService.traceInfo(AppPhaseListener.class, "User is authorized");
 				break;
 			    }
 			}
@@ -117,14 +102,12 @@ public class AppPhaseListener implements PhaseListener {
 			for (String grantedUrl : grantedUrls) {
 			    if (isRequestParametersValid(grantedUrl, req, false)) {
 				authorized = true;
-				Log4jService.traceInfo(AppPhaseListener.class, "User is authorized");
 				break;
 			    }
 			}
 		    }
 
 		    if (!authorized) {
-			Log4jService.traceInfo(AppPhaseListener.class, "User is not authorized");
 			redirect("/Main/Welcome.jsf", true);
 		    }
 		}
@@ -146,7 +129,6 @@ public class AppPhaseListener implements PhaseListener {
 	    // FacesContext.getCurrentInstance().getViewRoot().setLocale(new Locale(curLang));
 	    // }
 	}
-	Log4jService.traceInfo(AppPhaseListener.class, "End of beforePhase()");
 
     }
 

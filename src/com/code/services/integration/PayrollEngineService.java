@@ -28,7 +28,7 @@ import com.code.integration.webservicesclients.payroll.PayrollRestClient;
 import com.code.services.BaseService;
 import com.code.services.util.Log4jService;
 
-public class PayrollEngineService {
+public class PayrollEngineService extends BaseService {
 
     private static Map<String, String> employeeIdMapping;
     private static Map<String, String> transactionIdMapping;
@@ -61,7 +61,7 @@ public class PayrollEngineService {
     }
 
     public static Integer getIntegrationWithAllowanceAndDeductionFlag() {
-	return Integer.parseInt(BaseService.getConfig("integrationWithAllowanceAndDeductionFlag"));
+	return Integer.parseInt(getConfig("integrationWithAllowanceAndDeductionFlag"));
     }
 
     private static List<AdminDecisionResponse> getAdminDecisionVariablesMap(String adminDecisionVariables) {
@@ -109,6 +109,8 @@ public class PayrollEngineService {
 			String columnName = adminDecisionVariable.getVariableMapping().substring(adminDecisionVariable.getVariableMapping().indexOf(".") + 1, adminDecisionVariable.getVariableMapping().length());
 			Log4jService.traceInfo(PayrollEngineService.class, "tableName: " + tableName);
 			Log4jService.traceInfo(PayrollEngineService.class, "columnName: " + columnName);
+			if (employeeIdMapping.get(tableName) == null)
+			    throw new BusinessException("error_tableIsNotDefined");
 			StringBuffer mappingQuery = new StringBuffer("select to_char(" + columnName
 				+ ") from " + tableName + " where "
 				+ employeeIdMapping.get(tableName) + " = " + employeeData.getEmpId());
@@ -130,7 +132,7 @@ public class PayrollEngineService {
 			    .add("id", employeeData.getEmpId() + "")
 			    .add("name", employeeData.getEmpName())
 			    .add("startDate", employeeData.getGregStartDateString())
-			    .add("endDate", employeeData.getGregEndDateString())
+			    .add("endDate", employeeData.getGregEndDateString() == null ? "" : employeeData.getGregEndDateString())
 			    .add("variablesList", employeeLisVariablesArray.build())
 			    .build();
 		    employeeArray.add(employeeObject);
@@ -163,7 +165,7 @@ public class PayrollEngineService {
 			.add("departmentId", unitId + "")
 			.add("decisionDate", decisionDateString)
 			.add("decisionStartDate", adminDecisionEmployeeDataList.get(0).getGregStartDateString())
-			.add("decisionEndDate", adminDecisionEmployeeDataList.get(0).getGregEndDateString())
+			.add("decisionEndDate", adminDecisionEmployeeDataList.get(0).getGregEndDateString() == null ? "" : adminDecisionEmployeeDataList.get(0).getGregEndDateString())
 			.add("categoryId", categoryId + "")
 			.add("adminDecisionId", adminDecisionId + "")
 			.add("adminDecisionNumber", UUID.randomUUID().toString())
@@ -173,7 +175,11 @@ public class PayrollEngineService {
 		decisionTypesList.add(decisionTypeObject);
 	    }
 	    return Json.createObjectBuilder().add("DecisionTypesList", decisionTypesList.build()).build();
-	} catch (Exception e) {
+	} catch (BusinessException e) {
+	    e.printStackTrace();
+	    Log4jService.traceInfo(PayrollEngineService.class, "Exception: " + e.getMessage());
+	    throw e;
+	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    Log4jService.traceInfo(PayrollEngineService.class, "Exception: " + e.getMessage());
 	    throw new BusinessException("error_general");

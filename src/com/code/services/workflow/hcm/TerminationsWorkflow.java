@@ -49,7 +49,9 @@ import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.JobsService;
 import com.code.services.hcm.MovementsService;
 import com.code.services.hcm.TerminationsService;
+import com.code.services.integration.PayrollEngineService;
 import com.code.services.log.LogService;
+import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
 import com.code.services.workflow.BaseWorkFlow;
 
@@ -861,6 +863,11 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 		    emp.setServiceTerminationDate(employeesTerminationRecordDetailDataMap.get(emp.getEmpId()).getServiceTerminationDate());
 
 		TerminationsService.terminateEmployeeService(tempEmployees, session);
+		if (tansactionTypeId == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.STE_TERMINATION.getCode(), TransactionClassesEnum.TERMINATIONS.getCode()).getId() &&
+			!terminationRecordData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) &&
+			!terminationRecordData.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) &&
+			PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		    TerminationsService.doPayrollIntegration(terminationTransactionList, session);
 	    }
 	    TerminationsService.logTerminatedEmployeeData(nonFutureTerminationTransaction, session);
 
