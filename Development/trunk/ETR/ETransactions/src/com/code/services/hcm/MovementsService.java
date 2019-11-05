@@ -351,7 +351,7 @@ public class MovementsService extends BaseService {
 		    if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
 			adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_INTERNAL_ASSIGNMENT_DECISION_REQUEST.getCode());
 		    } else {
-			adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_EXTERNAL_ASSIGNMENT_REGISTERATION.getCode());
+			adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_EXTERNAL_ASSIGNMENT_REGISTRATION.getCode());
 		    }
 		    integrationFlag = true;
 		}
