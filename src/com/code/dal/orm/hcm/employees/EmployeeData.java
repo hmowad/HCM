@@ -269,7 +269,20 @@ import com.code.services.util.HijriDateService;
 			" and (:P_IP_PHONE_EXT = '-1' or  e.ipPhoneExt like :P_IP_PHONE_EXT) " +
 			" and (:P_EMAIL = '-1' or  e.email like :P_EMAIL) " +
 			" and (:P_USER_ACCOUNT = '-1' or  e.userAccount like :P_USER_ACCOUNT) " +
-			" order by  e.militaryNumber, e.rankId, e.recruitmentDate, e.name ")
+			" order by  e.militaryNumber, e.rankId, e.recruitmentDate, e.name "),
+
+	@NamedQuery(name = "hcm_empData_searchTerminatedEmployeesByUnitId",
+		query = " select e from EmployeeData e, TerminationTransaction ste " +
+			" where e.id = ste.empId " +
+			" and (:P_UNIT_ID = '-1' or ste.transEmpUnitId = :P_UNIT_ID ) " +
+			" and (ste.transactionTypeId = 33 ) " +
+			" and (:P_EMP_NAME = '-1' or e.name like :P_EMP_NAME ) " +
+			" and (:P_SOCIAL_ID = '-1' or e.socialID = :P_SOCIAL_ID) " +
+			" and (:P_PHYSICAL_UNIT_FULL_NAME = '-1' or e.physicalUnitFullName like :P_PHYSICAL_UNIT_FULL_NAME ) " +
+			" and (:P_JOB_DESC = '-1' or e.jobDesc like :P_JOB_DESC ) " +
+			" and (:P_SEQUENCE_NUMBER = -1 or e.sequenceNumber = :P_SEQUENCE_NUMBER) " +
+			" and (:P_MILITARY_NUMBER = -1 or e.militaryNumber = :P_MILITARY_NUMBER) " +
+			" order by e.id ")
 })
 @Entity
 @Table(name = "HCM_VW_PRS_EMPLOYEES")
