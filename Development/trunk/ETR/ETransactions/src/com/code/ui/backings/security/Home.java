@@ -27,8 +27,10 @@ import com.code.services.hcm.TransactionsTimelineService;
 import com.code.services.hcm.VacationsService;
 import com.code.services.security.SecurityService;
 import com.code.services.workflow.BaseWorkFlow;
+import com.code.services.workflow.EServicesBaseWorkFlowService;
 import com.code.ui.backings.base.BaseBacking;
 
+@SuppressWarnings("serial")
 @ManagedBean(name = "home")
 @RequestScoped
 public class Home extends BaseBacking {
@@ -70,7 +72,11 @@ public class Home extends BaseBacking {
 
     private void calculateInboxCount() {
 	try {
-	    inboxCount = " ( " + BaseWorkFlow.countWFTasks(this.loginEmpData.getEmpId(), FlagsEnum.OFF.getCode()) + " ) ";
+		if(eservicesFlag ==  FlagsEnum.ON.getCode()) {
+		    inboxCount = " ( " + EServicesBaseWorkFlowService.countWFTasks(this.loginEmpData.getEmpId(), FlagsEnum.OFF.getCode()) + " ) ";
+		} else {
+		    inboxCount = " ( " + BaseWorkFlow.countWFTasks(this.loginEmpData.getEmpId(), FlagsEnum.OFF.getCode()) + " ) ";
+		}
 	} catch (BusinessException e) {
 	    e.printStackTrace();
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -80,7 +86,11 @@ public class Home extends BaseBacking {
 
     private void calculateNotificationsCount() {
 	try {
-	    notificationsCount = " ( " + BaseWorkFlow.countWFTasks(this.loginEmpData.getEmpId(), FlagsEnum.ON.getCode()) + " ) ";
+		if(eservicesFlag ==  FlagsEnum.ON.getCode()) {
+		    notificationsCount = " ( " + EServicesBaseWorkFlowService.countWFTasks(this.loginEmpData.getEmpId(), FlagsEnum.ON.getCode()) + " ) ";
+		} else {
+		    notificationsCount = " ( " + BaseWorkFlow.countWFTasks(this.loginEmpData.getEmpId(), FlagsEnum.ON.getCode()) + " ) ";
+		}
 	} catch (BusinessException e) {
 	    e.printStackTrace();
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -107,7 +117,12 @@ public class Home extends BaseBacking {
 
     public void calculateDelegationsCount() {
 	try {
-	    ArrayList<Object> returnedCounts = (ArrayList<Object>) BaseWorkFlow.countWFDelegations(this.loginEmpData.getEmpId());
+		ArrayList<Object> returnedCounts;
+		if(eservicesFlag ==  FlagsEnum.ON.getCode()) {
+			returnedCounts = (ArrayList<Object>) EServicesBaseWorkFlowService.countWFDelegations(this.loginEmpData.getEmpId());
+		} else {
+		    returnedCounts = (ArrayList<Object>) BaseWorkFlow.countWFDelegations(this.loginEmpData.getEmpId());
+		}
 	    delegationsCounts = (Object[]) (returnedCounts.get(0));
 	    for (int i = 0; i < delegationsCounts.length; i++) {
 		delegationsCounts[i] = " ( " + delegationsCounts[i] + " ) ";
