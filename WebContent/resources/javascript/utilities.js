@@ -312,6 +312,12 @@ function openPopUpWindow(url){
     window.open(url);
 }
 
+function openEmpsMiniSearchForTerminatedEmps(contextPath, miniSearchReturnHandler, mode,unitId,multipleSelectFlag){
+	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
+	maskOpenerScreen();
+	var childWindow = window.open(contextPath+'/MiniSearch/EmpsMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&mode=' + mode+'&unitId='+unitId+'&multipleSelectFlag='+multipleSelectFlag, null, specsStr);
+    unMaskOnPopupClose(childWindow);
+}
 
 function openEmpsMiniSearchForRecruitmentModule(contextPath, miniSearchReturnHandler, mode, categoryMode, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankIdValue, recruitmentTrainingUnitId, gender, exceptionalRecruitmentFlag, statusIds) {
 	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankIdValue, -1, -1, -1, recruitmentTrainingUnitId, -1, -1 , gender, statusIds, exceptionalRecruitmentFlag, 0,-1);
