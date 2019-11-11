@@ -13,238 +13,259 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
+import com.code.enums.EservicesProcessesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.RegionsEnum;
 import com.code.enums.ReportOutputFormatsEnum;
 import com.code.enums.SessionAttributesEnum;
 import com.code.services.BaseService;
+import com.code.services.config.ETRConfigurationService;
 import com.code.services.util.CommonService;
 
+@SuppressWarnings("serial")
 public abstract class BaseBacking implements Serializable {
-    private String screenTitle;
-    protected EmployeeData loginEmpData;
+	private String screenTitle;
+	protected EmployeeData loginEmpData;
 
-    public BaseBacking() {
-	HttpSession session = getSession();
-	if (session.getAttribute(SessionAttributesEnum.EMP_DATA.getCode()) != null) {
-	    loginEmpData = (EmployeeData) session.getAttribute(SessionAttributesEnum.EMP_DATA.getCode());
+	protected Integer eservicesFlag;
+
+	public BaseBacking() {
+		eservicesFlag = Integer.parseInt(ETRConfigurationService.getEServicesFlag());
+		HttpSession session = getSession();
+		if (session.getAttribute(SessionAttributesEnum.EMP_DATA.getCode()) != null) {
+			loginEmpData = (EmployeeData) session.getAttribute(SessionAttributesEnum.EMP_DATA.getCode());
+		}
+
+		// String curLang =
+		// (String)session.getAttribute(SessionAttributesEnum.CURRENT_LANG.getCode());
+		// if(curLang != null){
+		// this.messages =
+		// ResourceBundle.getBundle("com.code.resources.messages", new
+		// Locale(curLang));
+		// }
+		// else{
+		// Locale locale =
+		// FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
+		// this.messages =
+		// ResourceBundle.getBundle("com.code.resources.messages", locale);
+		// }
 	}
 
-	// String curLang =
-	// (String)session.getAttribute(SessionAttributesEnum.CURRENT_LANG.getCode());
-	// if(curLang != null){
-	// this.messages =
-	// ResourceBundle.getBundle("com.code.resources.messages", new
-	// Locale(curLang));
+	// public void changeLocale(String lang) {
+	// Locale locale = new Locale(lang);
+	// this.messages = ResourceBundle.getBundle("com.code.resources.messages",
+	// locale);
+	//
+	// getSession().setAttribute(SessionAttributesEnum.CURRENT_LANG.getCode(),
+	// lang);
 	// }
-	// else{
-	// Locale locale =
-	// FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
-	// this.messages =
-	// ResourceBundle.getBundle("com.code.resources.messages", locale);
-	// }
-    }
 
-    // public void changeLocale(String lang) {
-    // Locale locale = new Locale(lang);
-    // this.messages = ResourceBundle.getBundle("com.code.resources.messages",
-    // locale);
-    //
-    // getSession().setAttribute(SessionAttributesEnum.CURRENT_LANG.getCode(),
-    // lang);
-    // }
-
-    protected void init() {
-    }
-
-    // -------------------------------------------------------------------------
-
-    protected HttpServletRequest getRequest() {
-	return (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-    }
-
-    protected HttpSession getSession() {
-	return ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getSession();
-    }
-
-    protected Application getApplication() {
-	return FacesContext.getCurrentInstance().getApplication();
-    }
-
-    protected FacesContext getFacesContext() {
-	return FacesContext.getCurrentInstance();
-    }
-
-    // -------------------------------------------------------------------------
-
-    protected void print(byte[] bytes) {
-	print(bytes, ReportOutputFormatsEnum.PDF);
-    }
-
-    protected void printRTF(byte[] bytes) {
-	print(bytes, ReportOutputFormatsEnum.RTF);
-    }
-
-    protected void printXls(byte[] bytes) {
-	print(bytes, ReportOutputFormatsEnum.XLS);
-    }
-
-    private void print(byte[] bytes, ReportOutputFormatsEnum reportOutputFormat) {
-	try {
-	    FacesContext context = FacesContext.getCurrentInstance();
-	    HttpServletResponse resp = (HttpServletResponse) context.getExternalContext().getResponse();
-	    ServletOutputStream outputStream = resp.getOutputStream();
-	    String fileName = "";
-	    if (ReportOutputFormatsEnum.PDF.equals(reportOutputFormat)) {
-		fileName = "\"fileName.pdf\"";
-		resp.setContentType("application/PDF");
-	    } else if (ReportOutputFormatsEnum.DOCX.equals(reportOutputFormat)) {
-		fileName = "\"fileName.docx\"";
-		resp.setContentType("application/msword;charset=UTF-8");
-	    } else if (ReportOutputFormatsEnum.RTF.equals(reportOutputFormat)) {
-		fileName = "\"fileName.rtf\"";
-		resp.setContentType("text/rtf;charset=UTF-8");
-	    } else if (ReportOutputFormatsEnum.XLS.equals(reportOutputFormat)) {
-		fileName = "\"fileName.xls\"";
-		resp.setContentType("application/vnd.ms-excel;charset=UTF-8");
-	    }
-
-	    resp.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-	    resp.setContentLength(bytes.length);
-
-	    outputStream.write(bytes);
-	    outputStream.flush();
-	    outputStream.close();
-	    context.responseComplete();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	}
-    }
-
-    // -------------------------------------------------------------------------
-
-    public String getMessage(String key) {
-	return BaseService.getMessage(key);
-    }
-
-    public String getParameterizedMessage(String key, Object... params) {
-	return BaseService.getParameterizedMessage(key, params);
-    }
-
-    public void setServerSideSuccessMessages(String serverSideSuccessMessages) {
-	setNotifyMessage(FacesMessage.SEVERITY_INFO, "", serverSideSuccessMessages);
-    }
-
-    public void setServerSideErrorMessages(String serverSideErrorMessages) {
-	setNotifyMessage(FacesMessage.SEVERITY_ERROR, "", serverSideErrorMessages);
-    }
-
-    private void setNotifyMessage(Severity severity, String messageHeader, String messageDetail) {
-	FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, messageHeader, messageDetail));
-    }
-
-    // -------------------------------------------------------------------------
-
-    @SuppressWarnings("rawtypes")
-    protected String getCompleteURL(HttpServletRequest req, String... extraParams) {
-	String url = req.getRequestURI();
-	Enumeration paramNames = req.getParameterNames();
-	if (paramNames != null && paramNames.hasMoreElements()) {
-	    String paramSeparator = "?";
-
-	    do {
-		String paramName = (String) paramNames.nextElement();
-		if (paramName.equals("rootOpened") || paramName.equals("subParentOpened") || paramName.equals("menuType"))
-		    continue;
-		url += paramSeparator + paramName + "=" + req.getParameter(paramName);
-		paramSeparator = "&";
-	    } while (paramNames.hasMoreElements());
+	protected void init() {
 	}
 
-	url = url.substring(url.indexOf("/", 1), url.length());
-
-	if (extraParams != null && extraParams.length > 0)
-	    url += (url.contains("?") ? "&" : "?") + extraParams[0];
-
-	return url;
-    }
-
-    public Long[] getCategoriesIdsArrayByMode(int mode) {
-	switch (mode) {
-	case 1:
-	    return CommonService.getOfficerCategoriesIdsArray();
-	case 2:
-	    return CommonService.getSoldiersCategoriesIdsArray();
-	case 3:
-	    return CommonService.getCivilCategoriesIdsArray();
-	case -1:
-	    return CommonService.getAllCategoriesIdsArray();
-	default:
-	    return null;
+	protected Boolean isEservicesProcesss(Long processCode) {
+		if (processCode != null) {
+			EservicesProcessesEnum[] eservicesProcessesEnum = EservicesProcessesEnum.values();
+			for (int i = 0; i < eservicesProcessesEnum.length; i++) {
+				if (eservicesProcessesEnum[i].getCode() == processCode) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
-    }
+	// -------------------------------------------------------------------------
 
-    // Used For Beneficiary vacations types Requests Employees Mini Search
-    public Long[] getCategoriesIdsArrayByBeneficiaryMode(int mode) {
-	switch (mode) {
-	case 1:
-	    return CommonService.getOfficerCategoriesIdsArray();
-	case 2:
-	    return CommonService.getSoldiersCategoriesIdsArray();
-	case 3:
-	    return CommonService.getCivilCategoriesIdsArray();
-	case 6:
-	    return CommonService.getCivilContractorsCategoriesIdsArray();
-
-	default:
-	    return CommonService.getCivilCategoriesIdsWithOutContractorsArray();
+	protected HttpServletRequest getRequest() {
+		return (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 	}
-    }
-    // -------------------------------------------------------------------------
 
-    public long getLoginEmpPhysicalRegionFlag(boolean isAdmin) {
-	// If the physical region id of the login employee is null (exempted or external employee),
-	// then this method will return 0 as there is no region with ID = 0, so he don't get access on any other employee at any region.
-	if (this.loginEmpData.getPhysicalRegionId() == null)
-	    return FlagsEnum.OFF.getCode();
-
-	if (isAdmin && RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() == this.loginEmpData.getPhysicalRegionId().longValue())
-	    return FlagsEnum.ALL.getCode();
-	else
-	    return this.loginEmpData.getPhysicalRegionId().longValue();
-    }
-
-    // -------------------------------------------------------------------------
-
-    public String getClientIpAddress() {
-	String ipAddress = getRequest().getHeader("X-FORWARDED-FOR");
-	if (ipAddress != null) {
-	    ipAddress = ipAddress.replaceFirst(",.*", "");
-	} else {
-	    ipAddress = getRequest().getRemoteAddr();
+	protected HttpSession getSession() {
+		return ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getSession();
 	}
-	return ipAddress;
-    }
 
-    // --------------------------------------------------------------------------
-    public String getScreenTitle() {
-	return screenTitle;
-    }
+	protected Application getApplication() {
+		return FacesContext.getCurrentInstance().getApplication();
+	}
 
-    public void setScreenTitle(String screenTitle) {
-	this.screenTitle = screenTitle;
-    }
+	protected FacesContext getFacesContext() {
+		return FacesContext.getCurrentInstance();
+	}
 
-    public EmployeeData getLoginEmpData() {
-	return loginEmpData;
-    }
+	// -------------------------------------------------------------------------
 
-    public void setLoginEmpData(EmployeeData loginEmpData) {
-	this.loginEmpData = loginEmpData;
-    }
+	protected void print(byte[] bytes) {
+		print(bytes, ReportOutputFormatsEnum.PDF);
+	}
 
-    public String getLoginUsername() {
-	return loginEmpData.getName();
-    }
+	protected void printRTF(byte[] bytes) {
+		print(bytes, ReportOutputFormatsEnum.RTF);
+	}
+
+	protected void printXls(byte[] bytes) {
+		print(bytes, ReportOutputFormatsEnum.XLS);
+	}
+
+	private void print(byte[] bytes, ReportOutputFormatsEnum reportOutputFormat) {
+		try {
+			FacesContext context = FacesContext.getCurrentInstance();
+			HttpServletResponse resp = (HttpServletResponse) context.getExternalContext().getResponse();
+			ServletOutputStream outputStream = resp.getOutputStream();
+			String fileName = "";
+			if (ReportOutputFormatsEnum.PDF.equals(reportOutputFormat)) {
+				fileName = "\"fileName.pdf\"";
+				resp.setContentType("application/PDF");
+			} else if (ReportOutputFormatsEnum.DOCX.equals(reportOutputFormat)) {
+				fileName = "\"fileName.docx\"";
+				resp.setContentType("application/msword;charset=UTF-8");
+			} else if (ReportOutputFormatsEnum.RTF.equals(reportOutputFormat)) {
+				fileName = "\"fileName.rtf\"";
+				resp.setContentType("text/rtf;charset=UTF-8");
+			} else if (ReportOutputFormatsEnum.XLS.equals(reportOutputFormat)) {
+				fileName = "\"fileName.xls\"";
+				resp.setContentType("application/vnd.ms-excel;charset=UTF-8");
+			}
+
+			resp.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+			resp.setContentLength(bytes.length);
+
+			outputStream.write(bytes);
+			outputStream.flush();
+			outputStream.close();
+			context.responseComplete();
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.setServerSideErrorMessages(getMessage("error_general"));
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	public String getMessage(String key) {
+		return BaseService.getMessage(key);
+	}
+
+	public String getParameterizedMessage(String key, Object... params) {
+		return BaseService.getParameterizedMessage(key, params);
+	}
+
+	public void setServerSideSuccessMessages(String serverSideSuccessMessages) {
+		setNotifyMessage(FacesMessage.SEVERITY_INFO, "", serverSideSuccessMessages);
+	}
+
+	public void setServerSideErrorMessages(String serverSideErrorMessages) {
+		setNotifyMessage(FacesMessage.SEVERITY_ERROR, "", serverSideErrorMessages);
+	}
+
+	private void setNotifyMessage(Severity severity, String messageHeader, String messageDetail) {
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, messageHeader, messageDetail));
+	}
+
+	// -------------------------------------------------------------------------
+
+	@SuppressWarnings("rawtypes")
+	protected String getCompleteURL(HttpServletRequest req, String... extraParams) {
+		String url = req.getRequestURI();
+		Enumeration paramNames = req.getParameterNames();
+		if (paramNames != null && paramNames.hasMoreElements()) {
+			String paramSeparator = "?";
+
+			do {
+				String paramName = (String) paramNames.nextElement();
+				if (paramName.equals("rootOpened") || paramName.equals("subParentOpened")
+						|| paramName.equals("menuType"))
+					continue;
+				url += paramSeparator + paramName + "=" + req.getParameter(paramName);
+				paramSeparator = "&";
+			} while (paramNames.hasMoreElements());
+		}
+
+		url = url.substring(url.indexOf("/", 1), url.length());
+
+		if (extraParams != null && extraParams.length > 0)
+			url += (url.contains("?") ? "&" : "?") + extraParams[0];
+
+		return url;
+	}
+
+	public Long[] getCategoriesIdsArrayByMode(int mode) {
+		switch (mode) {
+		case 1:
+			return CommonService.getOfficerCategoriesIdsArray();
+		case 2:
+			return CommonService.getSoldiersCategoriesIdsArray();
+		case 3:
+			return CommonService.getCivilCategoriesIdsArray();
+		case -1:
+			return CommonService.getAllCategoriesIdsArray();
+		default:
+			return null;
+		}
+	}
+
+	// Used For Beneficiary vacations types Requests Employees Mini Search
+	public Long[] getCategoriesIdsArrayByBeneficiaryMode(int mode) {
+		switch (mode) {
+		case 1:
+			return CommonService.getOfficerCategoriesIdsArray();
+		case 2:
+			return CommonService.getSoldiersCategoriesIdsArray();
+		case 3:
+			return CommonService.getCivilCategoriesIdsArray();
+		case 6:
+			return CommonService.getCivilContractorsCategoriesIdsArray();
+
+		default:
+			return CommonService.getCivilCategoriesIdsWithOutContractorsArray();
+		}
+	}
+	// -------------------------------------------------------------------------
+
+	public long getLoginEmpPhysicalRegionFlag(boolean isAdmin) {
+		// If the physical region id of the login employee is null (exempted or
+		// external employee),
+		// then this method will return 0 as there is no region with ID = 0, so
+		// he don't get access on any other employee at any region.
+		if (this.loginEmpData.getPhysicalRegionId() == null)
+			return FlagsEnum.OFF.getCode();
+
+		if (isAdmin && RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() == this.loginEmpData
+				.getPhysicalRegionId().longValue())
+			return FlagsEnum.ALL.getCode();
+		else
+			return this.loginEmpData.getPhysicalRegionId().longValue();
+	}
+
+	// -------------------------------------------------------------------------
+
+	public String getClientIpAddress() {
+		String ipAddress = getRequest().getHeader("X-FORWARDED-FOR");
+		if (ipAddress != null) {
+			ipAddress = ipAddress.replaceFirst(",.*", "");
+		} else {
+			ipAddress = getRequest().getRemoteAddr();
+		}
+		return ipAddress;
+	}
+
+	// --------------------------------------------------------------------------
+	public String getScreenTitle() {
+		return screenTitle;
+	}
+
+	public void setScreenTitle(String screenTitle) {
+		this.screenTitle = screenTitle;
+	}
+
+	public EmployeeData getLoginEmpData() {
+		return loginEmpData;
+	}
+
+	public void setLoginEmpData(EmployeeData loginEmpData) {
+		this.loginEmpData = loginEmpData;
+	}
+
+	public String getLoginUsername() {
+		return loginEmpData.getName();
+	}
 }
