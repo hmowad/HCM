@@ -20,6 +20,7 @@ public enum QueryNamesEnum {
     HCM_GET_AFTER_EFFECTIVE_DATE_EMPLOYEES_EXTRA_TRANSACTION_DATA("hcm_empDataExtraTrnData_getAfterEffDateEmpExtraTrnData"),
     HCM_GET_BEFORE_EFFECTIVE_DATE_EMPLOYEES_EXTRA_TRANSACTION_DATA("hcm_empDataExtraTrnData_getBeforeEffDateEmpExtraTrnData"),
     HCM_SEARCH_EMPLOYEE_MEDICAL_STAFF_DATA("hcm_empData_searchEmployeeMedicalStaffData"),
+    HCM_SEARCH_TERMINATED_EMPLOYEES_BY_UNIT_ID("hcm_empData_searchTerminatedEmployeesByUnitId"),
 
     HCM_GET_EMPLOYEE_PREFERENCES_BY_ID("hcm_empPreferences_getEmployeePreferencesById"),
 
