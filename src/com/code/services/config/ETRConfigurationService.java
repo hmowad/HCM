@@ -761,6 +761,14 @@ public class ETRConfigurationService extends BaseService {
 	    throw new BusinessException("error_general");
 	return unitsIds;
     }
+    
+    public static String getEServicesURL() {
+		return configurationMap.get("ESERVICES_URL");
+	}
+	
+	public static String getEServicesFlag() {
+		return configurationMap.get("ESERVICES_FLAG");
+	}
 
     /*------------------------------------------------------End of Retirement Configurations------------------------------------------------------*/
     /*------------------------------------------------------Integration codes for external systems------------------------------------------------------*/
