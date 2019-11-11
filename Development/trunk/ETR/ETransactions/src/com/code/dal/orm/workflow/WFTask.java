@@ -14,14 +14,18 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.persistence.Version;
+import javax.xml.bind.annotation.XmlTransient;
 
 import com.code.dal.audit.UpdatableAuditEntity;
 import com.code.dal.orm.AuditEntity;
 
 /**
- * The <code>WFTask</code> class represents the WorkFlow task data for any instance <code>WFInstance</code> of any process <code>WFProcess</code>.</br>
- * The task either needs a human interaction (like Approve, Reject and etc... ) or just a notification.
+ * The <code>WFTask</code> class represents the WorkFlow task data for any
+ * instance <code>WFInstance</code> of any process <code>WFProcess</code>.</br>
+ * The task either needs a human interaction (like Approve, Reject and etc... )
+ * or just a notification.
  * 
  */
 @NamedQueries({
@@ -99,233 +103,323 @@ import com.code.dal.orm.AuditEntity;
 @Entity
 @Table(name = "WF_TASKS")
 public class WFTask extends AuditEntity implements Serializable, UpdatableAuditEntity {
-    private Long taskId;
-    private Long instanceId;
-    private Long assigneeId;
-    private Long originalId;
-    private Date assignDate;
-    private Date hijriAssignDate;
-    private String taskUrl;
-    private String assigneeWfRole;
-    private String action;
-    private Date actionDate;
-    private Date hijriActionDate;
-    private String notes;
-    private String refuseReasons;
-    private String attachments;
-    private String flexField1;
-    private String flexField2;
-    private String flexField3;
-    private String level;
-    private Long version;
+	private Long taskId;
+	private Long instanceId;
+	private Long assigneeId;
+	private Long originalId;
+	private Date assignDate;
+	private Date hijriAssignDate;
+	private String taskUrl;
+	private String assigneeWfRole;
+	private String action;
+	private Date actionDate;
+	private Date hijriActionDate;
+	private String notes;
+	private String refuseReasons;
+	private String attachments;
+	private String flexField1;
+	private String flexField2;
+	private String flexField3;
+	private String level;
+	private Long version;
 
-    public void setTaskId(Long taskId) {
-	this.taskId = taskId;
-    }
+	// For mapping to wftask table for eservices
+	private String hijriAssignDateString;
+	private String hijriActionDateString;
+	private Long externalLocationId;
+	private Boolean emailNotified;
+	private Integer priority;
+	private Long processGroupId;
+	private String arabicDetailsSummary;
+	private String englishDetailsSummary;
 
-    @SequenceGenerator(name = "WFTasksSeq",
-	    sequenceName = "WF_TASKS_SEQ")
-    @Id
-    @GeneratedValue(generator = "WFTasksSeq")
-    @Column(name = "ID")
-    public Long getTaskId() {
-	return taskId;
-    }
+	public void setTaskId(Long taskId) {
+		this.taskId = taskId;
+	}
 
-    public void setInstanceId(Long instanceId) {
-	this.instanceId = instanceId;
-    }
+	@SequenceGenerator(name = "WFTasksSeq", sequenceName = "WF_TASKS_SEQ")
+	@Id
+	@GeneratedValue(generator = "WFTasksSeq")
+	@Column(name = "ID")
+	public Long getTaskId() {
+		return taskId;
+	}
 
-    @Basic
-    @Column(name = "INSTANCE_ID")
-    public Long getInstanceId() {
-	return instanceId;
-    }
+	public void setInstanceId(Long instanceId) {
+		this.instanceId = instanceId;
+	}
 
-    public void setAssigneeId(Long assigneeId) {
-	this.assigneeId = assigneeId;
-    }
+	@Basic
+	@Column(name = "INSTANCE_ID")
+	public Long getInstanceId() {
+		return instanceId;
+	}
 
-    @Basic
-    @Column(name = "ASSIGNEE_ID")
-    public Long getAssigneeId() {
-	return assigneeId;
-    }
+	public void setAssigneeId(Long assigneeId) {
+		this.assigneeId = assigneeId;
+	}
 
-    public void setOriginalId(Long originalId) {
-	this.originalId = originalId;
-    }
+	@Basic
+	@Column(name = "ASSIGNEE_ID")
+	public Long getAssigneeId() {
+		return assigneeId;
+	}
 
-    @Basic
-    @Column(name = "ORIGINAL_ID")
-    public Long getOriginalId() {
-	return originalId;
-    }
+	public void setOriginalId(Long originalId) {
+		this.originalId = originalId;
+	}
 
-    public void setAssignDate(Date assignDate) {
-	this.assignDate = assignDate;
-    }
+	@Basic
+	@Column(name = "ORIGINAL_ID")
+	public Long getOriginalId() {
+		return originalId;
+	}
 
-    @Basic
-    @Column(name = "ASSIGN_DATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    public Date getAssignDate() {
-	return assignDate;
-    }
+	public void setAssignDate(Date assignDate) {
+		this.assignDate = assignDate;
+	}
 
-    public void setHijriAssignDate(Date hijriAssignDate) {
-	this.hijriAssignDate = hijriAssignDate;
-    }
+	@Basic
+	@Column(name = "ASSIGN_DATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getAssignDate() {
+		return assignDate;
+	}
 
-    @Basic
-    @Column(name = "HIJRI_ASSIGN_DATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    public Date getHijriAssignDate() {
-	return hijriAssignDate;
-    }
+	public void setHijriAssignDate(Date hijriAssignDate) {
+		this.hijriAssignDate = hijriAssignDate;
+	}
 
-    public void setTaskUrl(String taskUrl) {
-	this.taskUrl = taskUrl;
-    }
+	@Basic
+	@Column(name = "HIJRI_ASSIGN_DATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getHijriAssignDate() {
+		return hijriAssignDate;
+	}
 
-    @Basic
-    @Column(name = "TASK_URL")
-    public String getTaskUrl() {
-	return taskUrl;
-    }
+	public void setTaskUrl(String taskUrl) {
+		this.taskUrl = taskUrl;
+	}
 
-    public void setAssigneeWfRole(String assigneeWfRole) {
-	this.assigneeWfRole = assigneeWfRole;
-    }
+	@Basic
+	@Column(name = "TASK_URL")
+	public String getTaskUrl() {
+		return taskUrl;
+	}
 
-    @Basic
-    @Column(name = "ASSIGNEE_WF_ROLE")
-    public String getAssigneeWfRole() {
-	return assigneeWfRole;
-    }
+	public void setAssigneeWfRole(String assigneeWfRole) {
+		this.assigneeWfRole = assigneeWfRole;
+	}
 
-    public void setAction(String action) {
-	this.action = action;
-    }
+	@Basic
+	@Column(name = "ASSIGNEE_WF_ROLE")
+	public String getAssigneeWfRole() {
+		return assigneeWfRole;
+	}
 
-    @Basic
-    @Column(name = "ACTION")
-    public String getAction() {
-	return action;
-    }
+	public void setAction(String action) {
+		this.action = action;
+	}
 
-    public void setActionDate(Date actionDate) {
-	this.actionDate = actionDate;
-    }
+	@Basic
+	@Column(name = "ACTION")
+	public String getAction() {
+		return action;
+	}
 
-    @Basic
-    @Column(name = "ACTION_DATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    public Date getActionDate() {
-	return actionDate;
-    }
+	public void setActionDate(Date actionDate) {
+		this.actionDate = actionDate;
+	}
 
-    public void setHijriActionDate(Date hijriActionDate) {
-	this.hijriActionDate = hijriActionDate;
-    }
+	@Basic
+	@Column(name = "ACTION_DATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getActionDate() {
+		return actionDate;
+	}
 
-    @Basic
-    @Column(name = "HIJRI_ACTION_DATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    public Date getHijriActionDate() {
-	return hijriActionDate;
-    }
+	public void setHijriActionDate(Date hijriActionDate) {
+		this.hijriActionDate = hijriActionDate;
+	}
 
-    public void setNotes(String notes) {
-	this.notes = notes;
-    }
+	@Basic
+	@Column(name = "HIJRI_ACTION_DATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getHijriActionDate() {
+		return hijriActionDate;
+	}
 
-    @Basic
-    @Column(name = "NOTES")
-    public String getNotes() {
-	return notes;
-    }
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
 
-    public void setRefuseReasons(String refuseReasons) {
-	this.refuseReasons = refuseReasons;
-    }
+	@Basic
+	@Column(name = "NOTES")
+	public String getNotes() {
+		return notes;
+	}
 
-    @Basic
-    @Column(name = "REFUSE_REASONS")
-    public String getRefuseReasons() {
-	return refuseReasons;
-    }
+	public void setRefuseReasons(String refuseReasons) {
+		this.refuseReasons = refuseReasons;
+	}
 
-    public void setAttachments(String attachments) {
-	this.attachments = attachments;
-    }
+	@Basic
+	@Column(name = "REFUSE_REASONS")
+	public String getRefuseReasons() {
+		return refuseReasons;
+	}
 
-    @Basic
-    @Column(name = "ATTACHMENTS")
-    public String getAttachments() {
-	return attachments;
-    }
+	public void setAttachments(String attachments) {
+		this.attachments = attachments;
+	}
 
-    public void setFlexField1(String flexField1) {
-	this.flexField1 = flexField1;
-    }
+	@Basic
+	@Column(name = "ATTACHMENTS")
+	public String getAttachments() {
+		return attachments;
+	}
 
-    @Basic
-    @Column(name = "FLEX_FIELD1")
-    public String getFlexField1() {
-	return flexField1;
-    }
+	public void setFlexField1(String flexField1) {
+		this.flexField1 = flexField1;
+	}
 
-    public void setFlexField2(String flexField2) {
-	this.flexField2 = flexField2;
-    }
+	@Basic
+	@Column(name = "FLEX_FIELD1")
+	public String getFlexField1() {
+		return flexField1;
+	}
 
-    @Basic
-    @Column(name = "FLEX_FIELD2")
-    public String getFlexField2() {
-	return flexField2;
-    }
+	public void setFlexField2(String flexField2) {
+		this.flexField2 = flexField2;
+	}
 
-    public void setFlexField3(String flexField3) {
-	this.flexField3 = flexField3;
-    }
+	@Basic
+	@Column(name = "FLEX_FIELD2")
+	public String getFlexField2() {
+		return flexField2;
+	}
 
-    @Basic
-    @Column(name = "FLEX_FIELD3")
-    public String getFlexField3() {
-	return flexField3;
-    }
+	public void setFlexField3(String flexField3) {
+		this.flexField3 = flexField3;
+	}
 
-    public void setLevel(String level) {
-	this.level = level;
-    }
+	@Basic
+	@Column(name = "FLEX_FIELD3")
+	public String getFlexField3() {
+		return flexField3;
+	}
 
-    @Basic
-    @Column(name = "TASK_LEVEL")
-    public String getLevel() {
-	return level;
-    }
+	public void setLevel(String level) {
+		this.level = level;
+	}
 
-    public void setVersion(Long version) {
-	this.version = version;
-    }
+	@Basic
+	@Column(name = "TASK_LEVEL")
+	public String getLevel() {
+		return level;
+	}
 
-    @Version
-    @Column(name = "VERSION")
-    /*
-     * This attribute handles the optimistic transaction management for the task entity.
-     */
-    public Long getVersion() {
-	return version;
-    }
+	public void setVersion(Long version) {
+		this.version = version;
+	}
 
-    @Override
-    public Long calculateContentId() {
-	return taskId;
-    }
+	@Version
+	@Column(name = "VERSION")
+	/*
+	 * This attribute handles the optimistic transaction management for the task
+	 * entity.
+	 */
+	public Long getVersion() {
+		return version;
+	}
 
-    @Override
-    public String calculateContent() {
-	return "assigneeId:" + assigneeId + AUDIT_SEPARATOR;
-    }
+	@Override
+	public Long calculateContentId() {
+		return taskId;
+	}
+
+	@Override
+	public String calculateContent() {
+		return "assigneeId:" + assigneeId + AUDIT_SEPARATOR;
+	}
+
+	@Transient
+	@XmlTransient
+	public String getHijriAssignDateString() {
+		return hijriAssignDateString;
+	}
+
+	public void setHijriAssignDateString(String hijriAssignDateString) {
+		this.hijriAssignDateString = hijriAssignDateString;
+	}
+
+	@Transient
+	@XmlTransient
+	public String getHijriActionDateString() {
+		return hijriActionDateString;
+	}
+
+	public void setHijriActionDateString(String hijriActionDateString) {
+		this.hijriActionDateString = hijriActionDateString;
+	}
+
+	@Transient
+	@XmlTransient
+	public Long getExternalLocationId() {
+		return externalLocationId;
+	}
+
+	public void setExternalLocationId(Long externalLocationId) {
+		this.externalLocationId = externalLocationId;
+	}
+
+	@Transient
+	@XmlTransient
+	public Boolean getEmailNotified() {
+		return emailNotified;
+	}
+
+	public void setEmailNotified(Boolean emailNotified) {
+		this.emailNotified = emailNotified;
+	}
+
+	@Transient
+	@XmlTransient
+	public Integer getPriority() {
+		return priority;
+	}
+
+	public void setPriority(Integer priority) {
+		this.priority = priority;
+	}
+
+	@Transient
+	@XmlTransient
+	public Long getProcessGroupId() {
+		return processGroupId;
+	}
+
+	public void setProcessGroupId(Long processGroupId) {
+		this.processGroupId = processGroupId;
+	}
+
+	@Transient
+	@XmlTransient
+	public String getArabicDetailsSummary() {
+		return arabicDetailsSummary;
+	}
+
+	public void setArabicDetailsSummary(String arabicDetailsSummary) {
+		this.arabicDetailsSummary = arabicDetailsSummary;
+	}
+
+	@Transient
+	@XmlTransient
+	public String getEnglishDetailsSummary() {
+		return englishDetailsSummary;
+	}
+
+	public void setEnglishDetailsSummary(String englishDetailsSummary) {
+		this.englishDetailsSummary = englishDetailsSummary;
+	}
 }
