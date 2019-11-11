@@ -14,6 +14,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 
 import com.code.dal.orm.BaseEntity;
 
@@ -47,6 +49,11 @@ public class WFInstance extends BaseEntity implements Serializable {
     private Integer status;
     private String attachments;
 
+    private String hijriRequestDateString;
+    private Long creatorId;
+    private String summary;
+    private Long parentInstanceId;
+    
     public void setInstanceId(Long instanceId) {
 	this.instanceId = instanceId;
     }
@@ -121,4 +128,45 @@ public class WFInstance extends BaseEntity implements Serializable {
     public String getAttachments() {
 	return attachments;
     }
+    
+	@Transient
+	@XmlTransient
+    public String getHijriRequestDateString() {
+		return hijriRequestDateString;
+	}
+
+	public void setHijriRequestDateString(String hijriRequestDateString) {
+		this.hijriRequestDateString = hijriRequestDateString;
+	}
+
+	@Transient
+	@XmlTransient
+	public Long getCreatorId() {
+		return creatorId;
+	}
+
+	public void setCreatorId(Long creatorId) {
+		this.creatorId = creatorId;
+	}
+
+	@Transient
+	@XmlTransient
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+
+	@Transient
+	@XmlTransient
+	public Long getParentInstanceId() {
+		return parentInstanceId;
+	}
+
+	public void setParentInstanceId(Long parentInstanceId) {
+		this.parentInstanceId = parentInstanceId;
+	}
+
 }
