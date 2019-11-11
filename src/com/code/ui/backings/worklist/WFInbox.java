@@ -21,8 +21,10 @@ import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.UnitsService;
 import com.code.services.security.SecurityService;
 import com.code.services.workflow.BaseWorkFlow;
+import com.code.services.workflow.EServicesBaseWorkFlowService;
 import com.code.ui.backings.base.BaseBacking;
 
+@SuppressWarnings("serial")
 @ManagedBean(name = "wfInbox")
 @SessionScoped
 public class WFInbox extends BaseBacking {
@@ -109,8 +111,13 @@ public class WFInbox extends BaseBacking {
 			|| !assigneeEmployee.getPhysicalUnitHKey().startsWith(UnitsService.getHKeyPrefix(this.loginEmpData.getPhysicalUnitHKey()))) // TODO handle null?
 		    throw new BusinessException("error_notAuthorized");
 	    }
-
-	    tasks = BaseWorkFlow.searchWFTasksData(searchByAssigneeId, searchByBeneficiaryId, searchByTaskOwnerName, selectedProcessGroupId, selectedProcessId, runningFlag, selectedTaskRole, isDESC);
+	    
+	    if(eservicesFlag == FlagsEnum.ON.getCode()){
+	    	 tasks = EServicesBaseWorkFlowService.searchWFTasksData(searchByAssigneeId, searchByBeneficiaryId, searchByTaskOwnerName, selectedProcessGroupId, selectedProcessId, runningFlag, selectedTaskRole, isDESC);
+	    }else{
+	    	 tasks = BaseWorkFlow.searchWFTasksData(searchByAssigneeId, searchByBeneficiaryId, searchByTaskOwnerName, selectedProcessGroupId, selectedProcessId, runningFlag, selectedTaskRole, isDESC);
+	    }
+	   
 	    tasksListSize = tasks.size();
 	} catch (Exception e) {
 	    tasks = new ArrayList<WFTaskData>();
@@ -211,7 +218,11 @@ public class WFInbox extends BaseBacking {
 		}
 	    }
 
-	    BaseWorkFlow.closeWFInstancesByNotification(BaseWorkFlow.getWFInstancesByIds(selectedInstancesIds), BaseWorkFlow.getWFTasksByIds(selectedTasksIds));
+	    if(eservicesFlag == FlagsEnum.ON.getCode()) {
+//		    EServicesBaseWorkFlowService.closeWFInstancesByNotification(BaseWorkFlow.getWFTasksByIds(selectedTasksIds));
+	    } else {
+		    BaseWorkFlow.closeWFInstancesByNotification(BaseWorkFlow.getWFInstancesByIds(selectedInstancesIds), BaseWorkFlow.getWFTasksByIds(selectedTasksIds));
+	    }
 
 	    for (WFTaskData task : selectedTasks) {
 		tasks.remove(task);
