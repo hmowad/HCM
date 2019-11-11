@@ -17,6 +17,7 @@ import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.security.Menu;
 import com.code.enums.SessionAttributesEnum;
 import com.code.exceptions.BusinessException;
+import com.code.integration.webservicesclients.eservices.EServicesWorkFlowClient;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.security.SecurityService;
 
@@ -78,8 +79,13 @@ public class AppPhaseListener implements PhaseListener {
 
 		// If request contains parameter "taskId" then make sure that the session user is this task owner.
 		if (taskId != null) {
-		    if (!isRequestParametersValid(SecurityService.getUserWFTaskUrl(sessionUser.getEmpId(), requestURI, Long.parseLong(taskId)), req, true))
-			redirect("/Main/Welcome.jsf", true);
+			try {
+				if ((!isRequestParametersValid(SecurityService.getUserWFTaskUrl(sessionUser.getEmpId(), requestURI, Long.parseLong(taskId)), req, true))
+						&& (EServicesWorkFlowClient.getWFTaskById(Long.parseLong(taskId)).getAssigneeId().longValue() != sessionUser.getEmpId()))
+				redirect("/Main/Welcome.jsf", true);
+			} catch (BusinessException e) {
+				redirect("/Main/Welcome.jsf", true);
+			}
 		} else {
 		    // If request doesn't contain parameter "taskId" then check the privilege against the session user menus.
 		    boolean authorized = false;
