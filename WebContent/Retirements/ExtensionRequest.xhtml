@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:code="http://java.sun.com/jsf/composite/code"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:util="http://java.sun.com/jsf/composite/util">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+
+        function getEmployee(contextPath){
+        	openEmpsMiniSearchForTerminatedEmps(contextPath, 'handleEmpMiniSearchResult(ret)', 20, #{extensionRequest.loginEmpData.physicalUnitId},0);
+		}
+			
+		function handleEmpMiniSearchResult(ret){
+			if(ret!=null){
+				document.getElementById('extensionRequestForm:selectedEmpIDId').value = ret[0];
+				document.getElementById('extensionRequestForm:searchEmpBtnId').click();
+			} 
+		}
+    </script>
+
+</h:head>
+
+<h:body styleClass="screenBg">
+	<h:form id="extensionRequestForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{extensionRequest.screenTitle}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				
+				
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_applicantData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{extensionRequest.requester}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				
+				
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.title_employeeData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" style="margin-top: 0px;" class="sectionContent">
+							<tr>
+								<th  width="15%">
+									<h:outputText value="#{msgs.label_employee}" /> 
+									<h:outputText value="*" style="color:red;" rendered="#{extensionRequest.mode == 0}" />
+								</th>
+								<td>
+									<h:outputText id="selectedEmpNameId" value="#{extensionRequest.selectedEmp.name}" />
+									<h:outputText value=" " />
+									<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}'); return false;" 
+										rendered="#{extensionRequest.mode == 0}"/>
+									<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{extensionRequest.getSelectedEmployee()}">
+										<f:ajax execute="extensionRequestForm:selectedEmpIDId" 
+												render="extensionRequestForm:selectedEmpNameId extensionRequestForm:terminationReasonDescId extensionRequestForm:extentionPeriodId extensionRequestForm:notifyMessagesId" 
+												onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+									<h:inputHidden id="selectedEmpIDId" value="#{extensionRequest.selectedEmpId}" />
+								</td>
+							</tr>
+
+							<tr>
+								<th  width="15%">
+									<h:outputText value="#{msgs.label_terminationReason}" />
+								</th>
+								<td width="30%">
+									<h:inputText disabled="true" id="terminationReasonDescId"
+											value="#{extensionRequest.empTerminationTrans.reasonDesc}"
+											rendered="#{extensionRequest.mode == 0}" /> 
+									<h:inputText disabled="true"
+										value="#{extensionRequest.extensionRequestTransaction.terminationReason}"
+										rendered="#{extensionRequest.mode == 1}" />
+								</td>
+							</tr>
+
+							<tr>
+								<th  width="15%">
+									<h:outputText value="#{msgs.label_attachments}" />
+								</th>
+								
+								<td>
+									<code:attachments loginEmpId="#{extensionRequest.loginEmpData.empId}" attachmentId="#{extensionRequest.attachments}" addEnableFlag="#{extensionRequest.mode == 0}" viewEnableFlag="true"/>
+								</td>
+							</tr>
+
+							<tr>
+								<th  width="15%">
+									<h:outputText value="#{msgs.label_extensionPeriod}" />
+									<h:outputText value="*" style="color:red;" />
+								</th>
+								<td width="30%">
+									<h:panelGroup id="extentionPeriodId">
+										<h:selectOneMenu
+											value="#{extensionRequest.extensionRequestTransaction.extensionPeriodMonths}"
+											styleClass="selectMenu"
+											disabled="#{extensionRequest.mode == 1}"
+											rendered="#{(extensionRequest.selectedEmp != null) and	(extensionRequest.selectedEmp.categoryId != 1) and (extensionRequest.selectedEmp.categoryId != 2)}">
+												<f:selectItem itemLabel="#{extensionRequest.extensionPeriodOneMonth}" itemValue="1" />
+												<f:selectItem itemLabel="#{extensionRequest.extensionPeriodTwoMonths}" itemValue="2" />
+										</h:selectOneMenu>
+
+										<h:selectOneMenu
+											value="#{extensionRequest.extensionRequestTransaction.extensionPeriodMonths}"
+											styleClass="selectMenu"
+											disabled="#{extensionRequest.mode == 1}"
+											rendered="#{(extensionRequest.selectedEmp != null) and	(extensionRequest.selectedEmp.categoryId == 1) or (extensionRequest.selectedEmp.categoryId == 2)}">
+												<f:selectItem itemLabel="#{extensionRequest.extensionPeriodTwoMonths}" itemValue="2" />
+										</h:selectOneMenu>
+									</h:panelGroup>
+								</td>
+							</tr>
+
+							<tr>
+								<th  width="15%">
+									<h:outputText value="#{msgs.label_extensionReason}" />
+								</th>
+								<td width="30%">
+									<h:inputTextarea id="extensionReasonId"
+										value="#{extensionRequest.extensionRequestTransaction.extensionReason}"
+										disabled="#{extensionRequest.mode == 1}" />
+								</td>
+							</tr>
+							
+							<tr>
+								<h:panelGroup rendered="#{extensionRequest.mode == 1}">
+									<th  width="15%">
+										<h:outputText value="#{msgs.label_refuseReasons}" />
+									</th>
+									<td width="30%">
+										<h:inputTextarea id="rejectionReasonId" value="#{extensionRequest.extensionRequestTransaction.rejectionReason}" />
+									</td>
+								</h:panelGroup>
+							</tr>
+							
+							<tr>
+								<td width="100%" colspan="4">
+									<table border="0" cellpadding="0" cellspacing="0" style="margin-top: 0px;" class="sectionContent">
+										<tr>
+											<td>
+												<code:prevTasks rendered="#{ not empty extensionRequest.currentTask}" value="#{extensionRequest.prevTasks}" />
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+
+						</table>
+					</td>
+				</tr>
+				
+				
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<h:commandButton style="float: left;" styleClass="btn_normal_icon" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" action="#{extensionRequest.save()}" rendered="#{extensionRequest.mode == 0}">
+							<f:ajax execute="extensionRequestForm:extentionPeriodId extensionRequestForm:extensionReasonId" render="extensionRequestForm:notifyMessagesId"></f:ajax>
+						</h:commandButton>
+						<h:commandButton style="float: left;" styleClass="btn_normal_icon" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" action="#{extensionRequest.reject()}" rendered="#{extensionRequest.mode == 1}" >
+							<f:ajax execute="extensionRequestForm:rejectionReasonId" render="extensionRequestForm:notifyMessagesId"></f:ajax>
+						</h:commandButton>
+						<h:commandButton style="float: left;" styleClass="btn_normal_icon" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" action="#{extensionRequest.approve()}" rendered="#{extensionRequest.mode == 1}">
+							<f:ajax render="extensionRequestForm:notifyMessagesId"></f:ajax>
+						</h:commandButton>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>
+
