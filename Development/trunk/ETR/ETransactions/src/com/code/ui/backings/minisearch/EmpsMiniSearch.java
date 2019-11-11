@@ -25,6 +25,7 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
     private String searchSocialId;
     private String searchJobDesc;
     private String searchUnitFullName;
+    private Long searchUnitId;
     private String searchMilitaryNumber;
     private int categoryMode;
     private long recruitmentRegionId = -1;
@@ -68,6 +69,8 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 	    recruitmentRankId = Long.parseLong(getRequest().getParameter("recruitmentRankId"));
 	if (getRequest().getParameter("managerPhysicalUnitHKey") != null)
 	    unitHKey = getRequest().getParameter("managerPhysicalUnitHKey");
+	if (getRequest().getParameter("unitId") != null)
+	    searchUnitId = Long.parseLong(getRequest().getParameter("unitId"));
 	if (getRequest().getParameter("rankId") != null)
 	    rankId = Long.parseLong(getRequest().getParameter("rankId"));
 	if (getRequest().getParameter("promotionDueDate") != null)
@@ -82,14 +85,14 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 	    gender = getRequest().getParameter("gender");
 	if (getRequest().getParameter("exceptionalRecruitmentFlag") != null)
 	    exceptionalRecruitmentFlag = Long.parseLong(getRequest().getParameter("exceptionalRecruitmentFlag"));
-	if (!getRequest().getParameter("statusIds").equals("-1")) {
+	if (getRequest().getParameter("statusIds") != null && !getRequest().getParameter("statusIds").equals("-1")) {
 	    String statusIdsString = getRequest().getParameter("statusIds");
 	    String[] statusIdsStringArray = statusIdsString.split(",");
 	    statusIds = new Long[statusIdsStringArray.length];
 	    for (int i = 0; i < statusIdsStringArray.length; i++)
 		statusIds[i] = Long.parseLong(statusIdsStringArray[i]);
 	}
-	if (!getRequest().getParameter("employeeIds").equals("-1")) {
+	if (getRequest().getParameter("employeeIds") != null && !getRequest().getParameter("employeeIds").equals("-1")) {
 	    String employeeIdsString = getRequest().getParameter("employeeIds");
 	    String[] employeeIdsStringArray = employeeIdsString.split(",");
 	    employeeIds = new Long[employeeIdsStringArray.length];
@@ -236,6 +239,10 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 
 		searchEmployeeList = EmployeesService.searchEmployeesForBeneficiary(searchEmpName, getCategoriesIdsArrayByBeneficiaryMode(categoryMode), employeeIds, militaryNumber, searchSocialId, statusIds, searchJobDesc, searchUnitFullName, sequenceNumber);
 		break;
+	    case 20: //Get terminated employees for eservices
+			searchEmployeeList = EmployeesService.getTerminatedEmployeesByUnitId(searchUnitId, searchEmpName, searchSocialId, 
+					searchJobDesc, searchUnitFullName, militaryNumber, sequenceNumber );
+			break;
 	    }
 
 	    if (searchEmployeeList == null || searchEmployeeList.isEmpty()) {
@@ -386,5 +393,6 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
     public void setSequenceNumber(Long sequenceNumber) {
 	this.sequenceNumber = sequenceNumber;
     }
+
 
 }
