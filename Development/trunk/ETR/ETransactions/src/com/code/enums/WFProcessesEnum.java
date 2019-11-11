@@ -282,6 +282,8 @@ public enum WFProcessesEnum {
     // ------------------------Retirement-----------------------------------------
     OFFICERS_DISCLAIMER_REQUEST(1700),
     SOLDIERS_DISCLAIMER_REQUEST(1710),
+    EXTENSION_REQUEST(1720),
+    REEXTENSION_REQUEST(1730),
 
     // ------------------------Organization Jobs-------------------------------------------
     OFFICERS_JOBS_TRANSACTIONS(1510),
@@ -292,7 +294,10 @@ public enum WFProcessesEnum {
 
     // ---------------------------General Notifications------------------------------------------
     NOTIFICATION_MESSAGE(2000),
-    GENERAL_MESSAGE(2010);
+    GENERAL_MESSAGE(2010),
+    
+    // ---------------------------ESERVICES------------------------------------------
+    ESERVICES_NOTIFICATIONS(100);
 
     private long code;
 
