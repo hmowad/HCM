@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	
+	<script type="text/javascript">
+     	function getEmployee(contextPath){
+        	openEmpsMiniSearchForTerminatedEmps(contextPath, 'handleEmpMiniSearchResult(ret)', 20, #{reExtensionRequest.loginEmpData.physicalUnitId},0);
+		}
+			
+		function handleEmpMiniSearchResult(ret){
+			if(ret!=null){
+				document.getElementById('reExtensionRequestForm:selectedEmpIDId').value = ret[0];
+				document.getElementById('reExtensionRequestForm:searchEmpBtnId').click();
+			} 
+		}
+	</script>
+	    
+</h:head>
+<h:body styleClass="screenBg" style="overflow-x: hidden;">
+	<h:form id="reExtensionRequestForm" dir="#{msgs.dir}" styleClass="ui-grid ui-grid-responsive ">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>				
+				<tr>
+					<td class="screenTitle" style="padding-bottom: 3px; margin-top: 20px;" width="100%">
+						<span>
+							<h:outputText value="#{reExtensionRequest.screenTitle}" />
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>	
+
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_applicantData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<code:emp value="#{reExtensionRequest.currentEmployee != null ? currentEmployee : reExtensionRequest.loginEmpData}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>	
+				
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.title_employeeData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>	
+				<tr>
+					<td width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" style="margin-top: 0px;" class="sectionContent">
+							<tr>
+								<th  width="15%">
+									<h:outputText value="#{msgs.label_employee}" /> 
+									<h:outputText value="*" style="color:red;" rendered="#{reExtensionRequest.mode == 0}" />
+								</th>
+								<td>
+									<h:outputText id="selectedEmpNameId" value="#{reExtensionRequest.selectedEmployee.name}" />
+									<h:outputText value=" " />
+									<h:commandButton value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}'); return false;" />
+									<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{reExtensionRequest.getSelectedEmployeeData()}">
+										<f:ajax execute="reExtensionRequestForm:selectedEmpIDId" 
+												render="reExtensionRequestForm:selectedEmpNameId reExtensionRequestForm:oldTerminationReasonDescId reExtensionRequestForm:lastExtensionPeriodId reExtensionRequestForm:notifyMessagesId" 
+												onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+									</h:commandButton>
+									<h:inputHidden id="selectedEmpIDId" value="#{reExtensionRequest.selectedEmpId}" />
+								</td>
+							</tr>
+
+							<tr>
+								<th  width="15%">
+									<h:outputText value="#{msgs.label_terminationReason}" />
+								</th>
+								<td width="30%">
+									<h:inputText id="terminationReasonDescId" value="#{reExtensionRequest.extensionRequestTransaction.terminationReason}" disabled="true" rendered="#{reExtensionRequest.mode == 1}" />
+
+									<h:inputText id="oldTerminationReasonDescId" value="#{reExtensionRequest.oldExtensionRequestTransaction.terminationReason}" disabled="true" rendered="#{reExtensionRequest.mode == 0}" />
+								</td>
+							</tr>
+
+							<tr>
+								<th  width="15%">
+									<h:outputText value="#{msgs.label_attachments}" />
+								</th>
+								
+								<td>
+									<code:attachments loginEmpId="#{reExtensionRequest.loginEmpData.empId}" attachmentId="#{reExtensionRequest.attachments}" addEnableFlag="true" viewEnableFlag="true"/>
+								</td>
+							</tr>
+
+							<tr>
+								<th  width="15%">
+									<h:outputText value="#{msgs.label_lastExtensionPeriod}" />
+								</th>
+								<td>
+									<h:inputText id="lastExtensionPeriodId" value="#{reExtensionRequest.lastExtensionPeriodByMonths}" disabled="true" />
+								</td>
+							</tr>
+							
+							<tr>
+								<th  width="15%">
+									<h:outputText value="#{msgs.label_extensionPeriod}" />
+									<h:outputText value="*" style="color:red;" />
+								</th>
+								<td width="30%">
+									<h:selectOneMenu id="extentionPeriodId" value="#{reExtensionRequest.extensionPeriodMonths}" styleClass="selectMenu" disabled="#{reExtensionRequest.mode == 1}">
+										<f:selectItem itemLabel="#{reExtensionRequest.extensionPeriodOneMonth}" itemValue="1" />
+									</h:selectOneMenu>
+								</td>
+							</tr>
+
+							<tr>
+								<th  width="15%">
+									<h:outputText value="#{msgs.label_extensionReason}" />
+								</th>
+								<td width="30%">
+									<h:inputTextarea id="extensionReasonId"
+										value="#{reExtensionRequest.extensionRequestTransaction.extensionReason}"
+										disabled="#{reExtensionRequest.mode == 1}" />
+								</td>
+							</tr>
+							
+							<tr>
+								<h:panelGroup rendered="#{reExtensionRequest.mode == 1}">
+									<th  width="15%">
+										<h:outputText value="#{msgs.label_refuseReasons}" />
+									</th>
+									<td width="30%">
+										<h:inputTextarea id="rejectionReasonId" value="#{reExtensionRequest.extensionRequestTransaction.rejectionReason}" />
+									</td>
+								</h:panelGroup>
+							</tr>
+							
+							<tr>
+								<td width="100%" colspan="4">
+									<table border="0" cellpadding="0" cellspacing="0" style="margin-top: 0px;" class="sectionContent">
+										<tr>
+											<td>
+												<code:prevTasks rendered="#{ not empty reExtensionRequest.currentTask}" value="#{reExtensionRequest.prevTasks}" />
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+
+						</table>
+					</td>
+				</tr>
+					
+				
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td colspan="4">
+						<h:commandButton style="float: left;" styleClass="btn_normal btn_float" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" action="#{reExtensionRequest.send()}" rendered="#{reExtensionRequest.mode == 0}">
+							<f:ajax execute="reExtensionRequestForm:extentionPeriodId reExtensionRequestForm:extensionReasonId" render="reExtensionRequestForm:notifyMessagesId"></f:ajax>
+						</h:commandButton>
+						<h:commandButton style="float: left;" styleClass="btn btn-danger btn_float" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" action="#{reExtensionRequest.reject()}" rendered="#{reExtensionRequest.mode == 1}">
+							<f:ajax execute="reExtensionRequestForm:rejectionReasonId" render="reExtensionRequestForm:notifyMessagesId"></f:ajax>
+						</h:commandButton>
+						<h:commandButton style="float: left;" styleClass="btn btn-success btn_float" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" action="#{reExtensionRequest.approve()}" rendered="#{reExtensionRequest.mode == 1}">
+							<f:ajax render="reExtensionRequestForm:notifyMessagesId"></f:ajax>
+						</h:commandButton>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>
