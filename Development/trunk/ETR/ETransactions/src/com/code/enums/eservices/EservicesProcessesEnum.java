@@ -1,4 +1,4 @@
-package com.code.enums;
+package com.code.enums.eservices;
 
 public enum EservicesProcessesEnum {
 	EXTENSION_REQUEST(1720),
