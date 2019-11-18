@@ -18,16 +18,16 @@ xmlns:p="http://primefaces.org/ui">
 			document.getElementById('transactionsStepsCycleManagementFormId:searchBtn').click();
 		}
 		
-		function getBasicJobsName(contextPath) {
-			openBasicJobsNamesMiniSearch(contextPath, 'handleBasicJobsNamesMiniSearchResult(ret)', 1, -1, 0);
-		}
+		function getJob() {
+			 openJobsMiniSearch('#{request.contextPath}', 'handleJobsMiniSearchResult(ret)', 5, -1, -1, -1, -1, -1, 0);
+	    }
 		
-		function handleBasicJobsNamesMiniSearchResult(ret){
-			if (ret != null) {
-				document.getElementById('transactionsStepsCycleManagementFormId:selectedBasicJobNameIDHId').value = ret[0];
-				document.getElementById('transactionsStepsCycleManagementFormId:selectedBasicJobNameNameHId').value = ret[1];
+		function handleJobsMiniSearchResult(ret) {
+	     	if(ret != null){
+				document.getElementById('transactionsStepsCycleManagementFormId:jobIDHId').value = ret[0];
+				document.getElementById('transactionsStepsCycleManagementFormId:jobNameHId').value = ret[2];
 				document.getElementById('transactionsStepsCycleManagementFormId:addJobNameBtnId').click();
-			}
+	        }
 		}
 	 </h:outputScript>
 </h:head>
@@ -60,12 +60,12 @@ xmlns:p="http://primefaces.org/ui">
 													<f:ajax execute="@this" render="transactionsStepsCycleManagementFormId:detailsPanelId transactionsStepsCycleManagementFormId:saveBtn" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 												</h:commandButton>
 											</rich:column>
-											<rich:column style="width:10%">
+											<rich:column style="width:80%">
 												<f:facet name="header">#{msgs.label_processType}</f:facet>
 												<h:outputText value="#{wfProcess.arabicName}" />
 											</rich:column>
 											
-											<rich:column>
+											<rich:column style="width:10%">
 												<f:facet name="header">#{msgs.label_processEnabled}</f:facet>
 												<h:selectBooleanCheckbox value="#{wfProcess.enableFlagBoolean}" onchange="#{transactionsStepsCycleManagement.enableWfProcess(wfProcess)}" />
 											</rich:column>
@@ -105,13 +105,13 @@ xmlns:p="http://primefaces.org/ui">
 								<table border="0" cellpadding="0" cellspacing="0" style="margin-top: 3px">
 									<tr>
 										<td width="100%">
-											<h:commandButton value="#{msgs.label_addProcessCycleStep} &#xf067;"  onclick="getBasicJobsName('#{request.contextPath}');return false;"  styleClass="btn_normal btn_float" style="float: right;" />
+											<h:commandButton value="#{msgs.label_addProcessCycleStep}"  onclick="getJob('#{request.contextPath}');return false;"  styleClass="btn_normal btn_float" style="float: right;" />
 											<h:commandButton id="addJobNameBtnId" style="display: none;" action="#{transactionsStepsCycleManagement.getSelectedWFProcessData()}">
-												<f:ajax execute="transactionsStepsCycleManagementFormId:selectedBasicJobNameIDHId transactionsStepsCycleManagementFormId:selectedBasicJobNameNameHId" render="transactionsStepsCycleManagementFormId:detailsDataTableId transactionsStepsCycleManagementFormId:notifyMessagesId"
+												<f:ajax execute="transactionsStepsCycleManagementFormId:jobIDHId transactionsStepsCycleManagementFormId:jobNameHId" render="transactionsStepsCycleManagementFormId:detailsDataTableId transactionsStepsCycleManagementFormId:notifyMessagesId"
 													onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
-											<h:inputHidden id="selectedBasicJobNameIDHId" value="#{transactionsStepsCycleManagement.selectedBasicJopNameId}" />
-											<h:inputHidden id="selectedBasicJobNameNameHId" value="#{transactionsStepsCycleManagement.selectedBasicJopNameName}" />
+											<h:inputHidden id="jobIDHId" value="#{transactionsStepsCycleManagement.selectedBasicJopNameId}" />
+											<h:inputHidden id="jobNameHId" value="#{transactionsStepsCycleManagement.selectedBasicJopNameName}" />
 										</td>
 									</tr>
 								</table>
