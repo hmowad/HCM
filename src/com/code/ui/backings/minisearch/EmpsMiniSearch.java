@@ -239,10 +239,9 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 
 		searchEmployeeList = EmployeesService.searchEmployeesForBeneficiary(searchEmpName, getCategoriesIdsArrayByBeneficiaryMode(categoryMode), employeeIds, militaryNumber, searchSocialId, statusIds, searchJobDesc, searchUnitFullName, sequenceNumber);
 		break;
-	    case 20: //Get terminated employees for eservices
-			searchEmployeeList = EmployeesService.getTerminatedEmployeesByUnitId(searchUnitId, searchEmpName, searchSocialId, 
-					searchJobDesc, searchUnitFullName, militaryNumber, sequenceNumber );
-			break;
+	    case 20: // Get terminated employees for eservices
+		searchEmployeeList = EmployeesService.getTerminatedEmployeesByUnitId(searchUnitId, searchEmpName, searchSocialId, searchJobDesc, searchUnitFullName, militaryNumber, sequenceNumber);
+		break;
 	    }
 
 	    if (searchEmployeeList == null || searchEmployeeList.isEmpty()) {
@@ -393,6 +392,5 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
     public void setSequenceNumber(Long sequenceNumber) {
 	this.sequenceNumber = sequenceNumber;
     }
-
 
 }
