@@ -9,12 +9,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.code.enums.FlagsEnum;
-import com.code.enums.HTTPStatusCodeEnum;
 import com.code.enums.WFProcessesEnum;
+import com.code.enums.eservices.HTTPStatusCodeEnum;
 import com.code.exceptions.BusinessException;
-import com.code.integration.parameters.extensionrequest.WFInstance;
-import com.code.integration.parameters.extensionrequest.WFTask;
-import com.code.integration.parameters.extensionrequest.WFTaskData;
+import com.code.integration.parameters.eservices.workflow.WFInstance;
+import com.code.integration.parameters.eservices.workflow.WFTask;
+import com.code.integration.parameters.eservices.workflow.WFTaskData;
 import com.code.services.config.ETRConfigurationService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -100,7 +100,7 @@ public class EServicesWorkFlowClient extends BaseClient {
 			processId = WFProcessesEnum.ESERVICES_NOTIFICATIONS.getCode();
 		}
 		Response response = client.target(serverUrl).path("wfTask/").queryParam("assigneeId", assigneeId.toString())
-				.queryParam("onlyNotifications", taskRole)
+				.queryParam("onlyNotifications", taskRole == 0 ? false : true)
 				.queryParam("taskOwnerName", taskOwnerName).queryParam("subject", subject)
 				.queryParam("processGroupId",(processGroupId == null || processGroupId == 0) ? FlagsEnum.ALL.getCode() + "": processGroupId.toString())
 				.queryParam("processId",(processId == null || processId == 0) ? FlagsEnum.ALL.getCode() + "" : processId.toString())
