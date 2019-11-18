@@ -4,7 +4,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 
-import com.code.integration.parameters.extensionrequest.WFTask;
+import com.code.integration.parameters.eservices.workflow.WFTask;
 import com.code.services.config.ETRConfigurationService;
 
 public class WFBaseClient {
