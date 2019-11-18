@@ -13,11 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
-import com.code.enums.EservicesProcessesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.RegionsEnum;
 import com.code.enums.ReportOutputFormatsEnum;
 import com.code.enums.SessionAttributesEnum;
+import com.code.enums.eservices.EservicesProcessesEnum;
 import com.code.services.BaseService;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.util.CommonService;
