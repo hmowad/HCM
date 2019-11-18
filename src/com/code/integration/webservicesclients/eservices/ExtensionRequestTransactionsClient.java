@@ -7,9 +7,10 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.code.enums.HTTPStatusCodeEnum;
+import com.code.enums.eservices.HTTPStatusCodeEnum;
+import com.code.enums.eservices.ServiceURLEnum;
 import com.code.exceptions.BusinessException;
-import com.code.integration.parameters.extensionrequest.ExtensionRequestTransaction;
+import com.code.integration.parameters.eservices.transactions.ExtensionRequestTransaction;
 import com.code.services.config.ETRConfigurationService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -26,8 +27,7 @@ public class ExtensionRequestTransactionsClient extends BaseClient {
 
 	public static String getNextSequenceValue(String entityName) throws BusinessException {
 		init();
-		return client.target(serverUrl) //ETRConfigurationService.getExtensionRequestCommonServiceURL()
-				.path("/").queryParam("entityName", entityName).request().get(String.class);
+		return client.target(ETRConfigurationService.getEServicesURL()).path(ServiceURLEnum.NEXT_SEQUENCE_VALUE.getCode()).queryParam("entityName", entityName).request().get(String.class);
 	}
 
 	public static ExtensionRequestTransaction getExtensionRequestTransactionByInstanceId(Long instanceId) throws BusinessException {
