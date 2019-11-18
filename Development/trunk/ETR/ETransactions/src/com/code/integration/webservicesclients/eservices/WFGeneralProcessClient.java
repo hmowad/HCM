@@ -6,10 +6,10 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.code.enums.HTTPStatusCodeEnum;
 import com.code.enums.WFTaskActionsEnum;
+import com.code.enums.eservices.HTTPStatusCodeEnum;
 import com.code.exceptions.BusinessException;
-import com.code.integration.parameters.extensionrequest.WFTask;
+import com.code.integration.parameters.eservices.workflow.WFTask;
 import com.code.services.config.ETRConfigurationService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

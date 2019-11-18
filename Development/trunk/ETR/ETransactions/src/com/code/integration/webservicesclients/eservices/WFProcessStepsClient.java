@@ -9,10 +9,10 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.code.enums.HTTPStatusCodeEnum;
+import com.code.enums.eservices.HTTPStatusCodeEnum;
 import com.code.exceptions.BusinessException;
-import com.code.integration.parameters.extensionrequest.WFProcess;
-import com.code.integration.parameters.extensionrequest.WFProcessStepData;
+import com.code.integration.parameters.eservices.workflow.WFProcess;
+import com.code.integration.parameters.eservices.workflow.WFProcessStepData;
 import com.code.services.config.ETRConfigurationService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
