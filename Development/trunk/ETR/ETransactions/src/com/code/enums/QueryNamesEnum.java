@@ -532,7 +532,8 @@ public enum QueryNamesEnum {
     HCM_GET_ALL_FUTURE_TRANSACTIONS("hcm_transactionTimeline_getAllFutureTransactions"),
 
     /* ******************************************* Payroll integration ****************************************************** */
-    GET_ADMIN_DECISION_BY_NAME("hcm_adminDecision_getAdminDecisionByName");
+    HCM_GET_ADMIN_DECISION_BY_NAME("hcm_adminDecision_getAdminDecisionByName"),
+    HCM_GET_ADMIN_DECISION_VARIABLES_MAPPING_BY_VARIABLE_NAME_AND_HCM_VALUE("hcm_adminDecisionVariablesMapping_getAdminDecisionVariablesMappingByVariableNameAndHCMValue");
 
     private String code;
 

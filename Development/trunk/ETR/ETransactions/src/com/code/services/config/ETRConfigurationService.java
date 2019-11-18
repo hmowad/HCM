@@ -224,7 +224,23 @@ public class ETRConfigurationService extends BaseService {
     }
 
     public static String getPayrollRestServiceURL() {
-	return getETRConfigByCode("PAYROLL_REST_SERVICES_URL").getValue();
+	return configurationMap.get("PAYROLL_REST_SERVICES_URL");
+    }
+
+    public static String getESBRestServiceURL() {
+	return configurationMap.get("ESB_PAYROLL_WEBSERVICE_URL");
+    }
+
+    public static Integer getESBEnabledFlag() {
+	return Integer.parseInt(configurationMap.get("ESB_ENABLED_FLAG"));
+    }
+
+    public static String getESBUsername() {
+	return configurationMap.get("ESB_PAYROLL_WEBSERVICE_USERNAME");
+    }
+
+    public static String getESBPassword() {
+	return configurationMap.get("ESB_PAYROLL_WEBSERVICE_PASSWORD");
     }
     /*------------------------------------------------------General Notifications Configurations------------------------------------------------------*/
 
