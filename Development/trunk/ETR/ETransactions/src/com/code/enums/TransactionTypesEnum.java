@@ -62,8 +62,6 @@ public enum TransactionTypesEnum {
 
     /************************** RETIREMENT **********************************/
     RET_DISCLAIMER_DESCISION(75),
-    EXTENSION_REQUEST(76),
-    REEXTENSION_REQUEST(77),
 
     /************************** TRAINING **********************************/
     // For scholarship decisions
@@ -86,12 +84,11 @@ public enum TransactionTypesEnum {
     // For training course syllabus attachment
     TRN_SYLLABUS_ATTACHMENT_APPROVE_DECISION(30),
     TRN_SYLLABUS_ATTACHMENT_CANCEL_DECISION(31),
-	
 
-    /************************** Extension Request Transactions **********************************/
-    EXTENSION_TRANSACTION(1),
-    REEXTENSION_TRANSACTION(2);
-
+    /************************** Eservices transactions **********************************/
+    EXTENSION_REQUEST(1),
+    REEXTENSION_REQUEST(2);
+    
     private int code;
 
     private TransactionTypesEnum(int code) {
