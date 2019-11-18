@@ -1,4 +1,4 @@
-package com.code.integration.parameters.extensionrequest;
+package com.code.integration.parameters.eservices.workflow;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -6,22 +6,12 @@ import java.util.Date;
 import com.code.services.util.HijriDateService;
 
 @SuppressWarnings("serial")
-public class WFTaskData implements Serializable{
+public class WFTask implements Serializable{
 
     private Long id;
     private Long instanceId;
-    private Long processId;
-    private String processName;
-    private Long processGroupId;
     private Long assigneeId;
     private Long originalId;
-    private String originalName;
-    private String originalTitleDesc;
-    private String originalDeptDesc;
-    private Long delegatingId;
-    private String delegatingName;
-    private String summary;
-    private String taskOwnerName;
     private Date assignDate;
     private Date assignGregDate;
     private String assignDateString;
@@ -39,9 +29,8 @@ public class WFTaskData implements Serializable{
     private String flexField2;
     private String flexField3;
     private Integer priority;
+    private Long processGroupId;
     private Integer stepOrder;
-    private String empNo;
-    private String taskOwnerEmpNo;
     private String arabicDetailsSummary;
     private String englishDetailsSummary;
 
@@ -61,30 +50,6 @@ public class WFTaskData implements Serializable{
 	this.instanceId = instanceId;
     }
 
-    public Long getProcessId() {
-	return processId;
-    }
-
-    public void setProcessId(Long processId) {
-	this.processId = processId;
-    }
-
-    public String getProcessName() {
-	return processName;
-    }
-
-    public void setProcessName(String processName) {
-	this.processName = processName;
-    }
-
-    public Long getProcessGroupId() {
-	return processGroupId;
-    }
-
-    public void setProcessGroupId(Long processGroupId) {
-	this.processGroupId = processGroupId;
-    }
-
     public Long getAssigneeId() {
 	return assigneeId;
     }
@@ -99,62 +64,6 @@ public class WFTaskData implements Serializable{
 
     public void setOriginalId(Long originalId) {
 	this.originalId = originalId;
-    }
-
-    public String getOriginalName() {
-	return originalName;
-    }
-
-    public void setOriginalName(String originalName) {
-	this.originalName = originalName;
-    }
-
-    public String getOriginalTitleDesc() {
-	return originalTitleDesc;
-    }
-
-    public void setOriginalTitleDesc(String originalTitleDesc) {
-	this.originalTitleDesc = originalTitleDesc;
-    }
-
-    public String getOriginalDeptDesc() {
-	return originalDeptDesc;
-    }
-
-    public void setOriginalDeptDesc(String originalDeptDesc) {
-	this.originalDeptDesc = originalDeptDesc;
-    }
-
-    public Long getDelegatingId() {
-	return delegatingId;
-    }
-
-    public void setDelegatingId(Long delegatingId) {
-	this.delegatingId = delegatingId;
-    }
-
-    public String getDelegatingName() {
-	return delegatingName;
-    }
-
-    public void setDelegatingName(String delegatingName) {
-	this.delegatingName = delegatingName;
-    }
-
-    public String getSummary() {
-	return summary;
-    }
-
-    public void setSummary(String summary) {
-	this.summary = summary;
-    }
-
-    public String getTaskOwnerName() {
-	return taskOwnerName;
-    }
-
-    public void setTaskOwnerName(String taskOwnerName) {
-	this.taskOwnerName = taskOwnerName;
     }
 
     public Date getAssignDate() {
@@ -297,6 +206,14 @@ public class WFTaskData implements Serializable{
 	this.priority = priority;
     }
 
+    public Long getProcessGroupId() {
+	return processGroupId;
+    }
+
+    public void setProcessGroupId(Long processGroupId) {
+	this.processGroupId = processGroupId;
+    }
+
     public Integer getStepOrder() {
 	return stepOrder;
     }
@@ -305,20 +222,12 @@ public class WFTaskData implements Serializable{
 	this.stepOrder = stepOrder;
     }
 
-    public String getEmpNo() {
-	return empNo;
+    public String getArabicDetailsSummary() {
+	return arabicDetailsSummary;
     }
 
-    public void setEmpNo(String empNo) {
-	this.empNo = empNo;
-    }
-
-    public String getTaskOwnerEmpNo() {
-	return taskOwnerEmpNo;
-    }
-
-    public void setTaskOwnerEmpNo(String taskOwnerEmpNo) {
-	this.taskOwnerEmpNo = taskOwnerEmpNo;
+    public void setArabicDetailsSummary(String arabicDetailsSummary) {
+	this.arabicDetailsSummary = arabicDetailsSummary;
     }
 
     public String getEnglishDetailsSummary() {
@@ -327,14 +236,6 @@ public class WFTaskData implements Serializable{
 
     public void setEnglishDetailsSummary(String englishDetailsSummary) {
 	this.englishDetailsSummary = englishDetailsSummary;
-    }
-
-    public String getArabicDetailsSummary() {
-	return arabicDetailsSummary;
-    }
-
-    public void setArabicDetailsSummary(String arabicDetailsSummary) {
-	this.arabicDetailsSummary = arabicDetailsSummary;
     }
 
 }

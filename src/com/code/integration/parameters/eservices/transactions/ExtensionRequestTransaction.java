@@ -1,4 +1,4 @@
-package com.code.integration.parameters.extensionrequest;
+package com.code.integration.parameters.eservices.transactions;
 
 import java.io.Serializable;
 import java.util.Date;
