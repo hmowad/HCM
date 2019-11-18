@@ -6,17 +6,17 @@ import javax.faces.bean.ViewScoped;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
 import com.code.enums.EmployeeStatusEnum;
-import com.code.enums.EservicesProcessesEnum;
-import com.code.enums.ExtensionPeriodMonthsEnum;
 import com.code.enums.NavigationEnum;
 import com.code.enums.SequenceNamesEnum;
-import com.code.enums.TransactionStatusEnum;
 import com.code.enums.TransactionTypesEnum;
 import com.code.enums.WFProcessRolesEnum;
 import com.code.enums.WFProcessesEnum;
 import com.code.enums.WFTaskActionsEnum;
+import com.code.enums.eservices.EservicesProcessesEnum;
+import com.code.enums.eservices.ExtensionPeriodMonthsEnum;
+import com.code.enums.eservices.TransactionStatusEnum;
 import com.code.exceptions.BusinessException;
-import com.code.integration.parameters.extensionrequest.ExtensionRequestTransaction;
+import com.code.integration.parameters.eservices.transactions.ExtensionRequestTransaction;
 import com.code.integration.webservicesclients.eservices.ExtensionRequestTransactionsClient;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.TerminationsService;
@@ -28,204 +28,207 @@ import com.code.ui.backings.base.WFBaseBacking;
 @SuppressWarnings("serial")
 public class ExtensionRequest extends WFBaseBacking {
 
-	private int mode;
-	private Long selectedEmpId;
-	private EmployeeData selectedEmp;
-	private TerminationTransactionData empTerminationTrans;
-	private Long seqId;
-	private ExtensionRequestTransaction extensionRequestTransaction;
-	private String downloadFileParamId;
-	private boolean openDownloadPopupFlag;
-	private boolean openDownloadDialogueFlag;
+    private int mode;
+    private Long selectedEmpId;
+    private EmployeeData selectedEmp;
+    private TerminationTransactionData empTerminationTrans;
+    private Long seqId;
+    private ExtensionRequestTransaction extensionRequestTransaction;
+    private String downloadFileParamId;
+    private boolean openDownloadPopupFlag;
+    private boolean openDownloadDialogueFlag;
 
-	/**
-	 * Default Constructor
-	 * 
-	 * @throws BusinessException
-	 */
-	public ExtensionRequest() throws BusinessException {
-		processCode = EservicesProcessesEnum.EXTENSION_REQUEST.getCode();
-		super.init();
-		if (role.equals(WFProcessRolesEnum.REQUESTER.getCode())) {
-			setMode(0);
-			setScreenTitle(getMessage("title_extentionRequest"));
-			seqId = Long.parseLong(ExtensionRequestTransactionsClient.getNextSequenceValue(SequenceNamesEnum.EXTENSION_REQUEST_TRANS.getCode()));
-			extensionRequestTransaction = new ExtensionRequestTransaction();
-			extensionRequestTransaction.setStatus(TransactionStatusEnum.UNDER_PROCESSING.getCode());
-			processId = WFProcessesEnum.EXTENSION_REQUEST.getCode();
-		} else if (role.equals(WFProcessRolesEnum.APPROVAL.getCode())) {
-			try {
-				setMode(1);
-				setScreenTitle(getMessage("title_approveExtentionRequest"));
-				extensionRequestTransaction = ExtensionRequestTransactionsClient.getExtensionRequestTransactionByInstanceId(instance.getInstanceId());
-				selectedEmp = EmployeesService.getEmployeeData(extensionRequestTransaction.getEmpId());
-			} catch (BusinessException e) {
-				 Log4jService.traceErrorException(ExtensionRequest.class, e, "ExtensionRequest");
-				setServerSideErrorMessages(getMessage("error_loadingPage"));
-			}
-		}
-	}
-
-	/**
-	 * Reset Selected Employee and Employee Termination Objects
-	 */
-	public void reset() {
-		selectedEmp = null;
-		empTerminationTrans = null;
-	}
-
-	/**
-	 * Validate Selected Employee
-	 * 
-	 * @param event
-	 */
-	public void getSelectedEmployee() {
-		try {
-			selectedEmp = EmployeesService.getEmployeesByEmpsIds(new Long[]{selectedEmpId}).get(0);
-			if (selectedEmp.getStatusId() != EmployeeStatusEnum.SERVICE_TERMINATED.getCode()) {
-				setServerSideErrorMessages(getMessage("error_noTerminationForEmployee"));
-				reset();
-				return;
-			}
-			empTerminationTrans = TerminationsService.getEffectiveTerminationTransaction(selectedEmp.getEmpId());
-		} catch (BusinessException e) {
-			reset();
-			setServerSideErrorMessages(getMessage(e.getMessage()));
-		}
-	}
-
-	/**
-	 * Create new Extension Transaction
-	 * 
-	 * @return
-	 */
-	public String save() {
-		extensionRequestTransaction.setEmpId(selectedEmp.getEmpId());
-		extensionRequestTransaction.setTransactionTypeId(new Long(TransactionTypesEnum.EXTENSION_TRANSACTION.getCode()));
-		extensionRequestTransaction.setTerminationDate(empTerminationTrans.getServiceTerminationDate());
-		extensionRequestTransaction.setTerminationTransactionId(empTerminationTrans.getId());
-		extensionRequestTransaction.setTerminationReason(empTerminationTrans.getReasonDesc());
-		extensionRequestTransaction.setTotalExtensionPeriodMonths(extensionRequestTransaction.getExtensionPeriodMonths());
-		extensionRequestTransaction.setRequesterId(loginEmpData.getEmpId());
-		extensionRequestTransaction.setId(seqId);
-		try {
-			extensionRequestTransaction = ExtensionRequestTransactionsClient.initTransaction(new Long(processId), taskUrl, extensionRequestTransaction);
-			this.setServerSideSuccessMessages(getParameterizedMessage("notify_successOperation"));
-			return NavigationEnum.OUTBOX.toString();
-		} catch (BusinessException e) {
-			Log4jService.traceErrorException(ExtensionRequest.class, e, "ExtensionRequest");
-			setServerSideErrorMessages(getMessage(e.getMessage()));
-			return null;
-		}
-	} 
-
-	/**
-	 * Direct Manager Rejection
-	 * 
-	 * @return
-	 */
-	public String reject() {
-		if (extensionRequestTransaction.getRejectionReason() == null || extensionRequestTransaction.getRejectionReason().isEmpty()) {
-			this.setServerSideErrorMessages(getParameterizedMessage("error_mandatoryRejectionReason"));
-			return null;
-		}
-		currentTask.setAction(WFTaskActionsEnum.REJECT.getCode());
-		currentTask.setRefuseReasons(extensionRequestTransaction.getRejectionReason());
-		return rejectEserviceTransaction(extensionRequestTransaction.getId());
+    /**
+     * Default Constructor
+     * 
+     * @throws BusinessException
+     */
+    public ExtensionRequest() throws BusinessException {
+	processCode = EservicesProcessesEnum.EXTENSION_REQUEST.getCode();
+	super.init();
+	if (role.equals(WFProcessRolesEnum.REQUESTER.getCode())) {
+	    setMode(0);
+	    setScreenTitle(getMessage("title_extentionRequest"));
+	    seqId = Long.parseLong(ExtensionRequestTransactionsClient.getNextSequenceValue(SequenceNamesEnum.EXTENSION_REQUEST_TRANS.getCode()));
+	    extensionRequestTransaction = new ExtensionRequestTransaction();
+	    extensionRequestTransaction.setStatus(TransactionStatusEnum.UNDER_PROCESSING.getCode());
+	    processId = WFProcessesEnum.EXTENSION_REQUEST.getCode();
+	} else if (role.equals(WFProcessRolesEnum.APPROVAL.getCode())) {
+	    try {
+		setMode(1);
+		setScreenTitle(getMessage("title_approveExtentionRequest"));
+		extensionRequestTransaction = ExtensionRequestTransactionsClient.getExtensionRequestTransactionByInstanceId(instance.getInstanceId());
+		selectedEmp = EmployeesService.getEmployeeData(extensionRequestTransaction.getEmpId());
+	    } catch (BusinessException e) {
+		Log4jService.traceErrorException(ExtensionRequest.class, e, "ExtensionRequest");
+		setServerSideErrorMessages(getMessage("error_loadingPage"));
+	    }
 
 	}
 
-	/**
-	 * Direct Manager Approval
-	 * 
-	 * @return
-	 */
-	public String approve() {
-		currentTask.setAction(WFTaskActionsEnum.APPROVE.getCode());
-		return approveEserviceTransaction(extensionRequestTransaction.getId());
+    }
 
+    /**
+     * Reset Selected Employee and Employee Termination Objects
+     */
+    public void reset() {
+	selectedEmp = null;
+	empTerminationTrans = null;
+    }
+
+    /**
+     * Validate Selected Employee
+     * 
+     * @param event
+     */
+    public void getSelectedEmployee() {
+	try {
+	    selectedEmp = EmployeesService.getEmployeesByEmpsIds(new Long[] { selectedEmpId }).get(0);
+	    empTerminationTrans = TerminationsService.getEffectiveTerminationTransaction(selectedEmp.getEmpId());
+	    if (selectedEmp.getStatusId() != EmployeeStatusEnum.SERVICE_TERMINATED.getCode()
+		    || empTerminationTrans == null) {
+		setServerSideErrorMessages(getMessage("error_noTerminationForEmployee"));
+		reset();
+		return;
+	    }
+	} catch (BusinessException e) {
+	    reset();
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
+    }
 
-	/**************************** Setters&Getters *************************************/
-
-	public EmployeeData getSelectedEmp() {
-		return selectedEmp;
+    /**
+     * Create new Extension Transaction
+     * 
+     * @return
+     */
+    public String save() {
+	try {
+	    extensionRequestTransaction.setEmpId(selectedEmp.getEmpId());
+	    extensionRequestTransaction.setTransactionTypeId(new Long(TransactionTypesEnum.EXTENSION_REQUEST.getCode()));
+	    extensionRequestTransaction.setTerminationDate(empTerminationTrans.getServiceTerminationDate());
+	    extensionRequestTransaction.setTerminationTransactionId(empTerminationTrans.getId());
+	    extensionRequestTransaction.setTerminationReason(empTerminationTrans.getReasonDesc());
+	    extensionRequestTransaction.setTotalExtensionPeriodMonths(extensionRequestTransaction.getExtensionPeriodMonths());
+	    extensionRequestTransaction.setRequesterId(loginEmpData.getEmpId());
+	    extensionRequestTransaction.setId(seqId);
+	    extensionRequestTransaction = ExtensionRequestTransactionsClient.initTransaction(new Long(processId), taskUrl, extensionRequestTransaction);
+	    this.setServerSideSuccessMessages(getParameterizedMessage("notify_successOperation"));
+	    return NavigationEnum.OUTBOX.toString();
+	} catch (BusinessException e) {
+	    Log4jService.traceErrorException(ExtensionRequest.class, e, "ExtensionRequest");
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
+	    return null;
 	}
+    }
 
-	public void setSelectedEmp(EmployeeData selectedEmp) {
-		this.selectedEmp = selectedEmp;
+    /**
+     * Direct Manager Rejection
+     * 
+     * @return
+     */
+    public String reject() {
+	if (extensionRequestTransaction.getRejectionReason() == null || extensionRequestTransaction.getRejectionReason().isEmpty()) {
+	    this.setServerSideErrorMessages(getParameterizedMessage("error_mandatoryRejectionReason"));
+	    return null;
 	}
+	currentTask.setAction(WFTaskActionsEnum.REJECT.getCode());
+	currentTask.setRefuseReasons(extensionRequestTransaction.getRejectionReason());
+	return rejectEserviceTransaction(extensionRequestTransaction.getId());
 
-	public ExtensionRequestTransaction getExtensionRequestTransaction() {
-		return extensionRequestTransaction;
-	}
+    }
 
-	public void setExtensionRequestTransaction(ExtensionRequestTransaction extensionRequestTransaction) {
-		this.extensionRequestTransaction = extensionRequestTransaction;
-	}
+    /**
+     * Direct Manager Approval
+     * 
+     * @return
+     */
+    public String approve() {
+	currentTask.setAction(WFTaskActionsEnum.APPROVE.getCode());
+	return approveEserviceTransaction(extensionRequestTransaction.getId());
 
-	public String getExtensionPeriodOneMonth() {
-		return ExtensionPeriodMonthsEnum.ONE_MONTH.getCode();
-	}
+    }
 
-	public String getExtensionPeriodTwoMonths() {
-		return ExtensionPeriodMonthsEnum.TWO_MONTHS.getCode();
-	}
+    /**************************** Setters&Getters *************************************/
 
-	public int getMode() {
-		return mode;
-	}
+    public EmployeeData getSelectedEmp() {
+	return selectedEmp;
+    }
 
-	public void setMode(int mode) {
-		this.mode = mode;
-	}
+    public void setSelectedEmp(EmployeeData selectedEmp) {
+	this.selectedEmp = selectedEmp;
+    }
 
-	public Long getSeqId() {
-		return seqId;
-	}
+    public ExtensionRequestTransaction getExtensionRequestTransaction() {
+	return extensionRequestTransaction;
+    }
 
-	public void setSeqId(Long seqId) {
-		this.seqId = seqId;
-	}
+    public void setExtensionRequestTransaction(ExtensionRequestTransaction extensionRequestTransaction) {
+	this.extensionRequestTransaction = extensionRequestTransaction;
+    }
 
-	public String getDownloadFileParamId() {
-		return downloadFileParamId;
-	}
+    public String getExtensionPeriodOneMonth() {
+	return ExtensionPeriodMonthsEnum.ONE_MONTH.getCode();
+    }
 
-	public void setDownloadFileParamId(String downloadFileParamId) {
-		this.downloadFileParamId = downloadFileParamId;
-	}
+    public String getExtensionPeriodTwoMonths() {
+	return ExtensionPeriodMonthsEnum.TWO_MONTHS.getCode();
+    }
 
-	public boolean isOpenDownloadPopupFlag() {
-		return openDownloadPopupFlag;
-	}
+    public int getMode() {
+	return mode;
+    }
 
-	public void setOpenDownloadPopupFlag(boolean openDownloadPopupFlag) {
-		this.openDownloadPopupFlag = openDownloadPopupFlag;
-	}
+    public void setMode(int mode) {
+	this.mode = mode;
+    }
 
-	public boolean isOpenDownloadDialogueFlag() {
-		return openDownloadDialogueFlag;
-	}
+    public Long getSeqId() {
+	return seqId;
+    }
 
-	public void setOpenDownloadDialogueFlag(boolean openDownloadDialogueFlag) {
-		this.openDownloadDialogueFlag = openDownloadDialogueFlag;
-	}
+    public void setSeqId(Long seqId) {
+	this.seqId = seqId;
+    }
 
-	public TerminationTransactionData getEmpTerminationTrans() {
-		return empTerminationTrans;
-	}
+    public String getDownloadFileParamId() {
+	return downloadFileParamId;
+    }
 
-	public void setEmpTerminationTrans(TerminationTransactionData empTerminationTrans) {
-		this.empTerminationTrans = empTerminationTrans;
-	}
+    public void setDownloadFileParamId(String downloadFileParamId) {
+	this.downloadFileParamId = downloadFileParamId;
+    }
 
-	public Long getSelectedEmpId() {
-		return selectedEmpId;
-	}
+    public boolean isOpenDownloadPopupFlag() {
+	return openDownloadPopupFlag;
+    }
 
-	public void setSelectedEmpId(Long selectedEmpId) {
-		this.selectedEmpId = selectedEmpId;
-	}
+    public void setOpenDownloadPopupFlag(boolean openDownloadPopupFlag) {
+	this.openDownloadPopupFlag = openDownloadPopupFlag;
+    }
+
+    public boolean isOpenDownloadDialogueFlag() {
+	return openDownloadDialogueFlag;
+    }
+
+    public void setOpenDownloadDialogueFlag(boolean openDownloadDialogueFlag) {
+	this.openDownloadDialogueFlag = openDownloadDialogueFlag;
+    }
+
+    public TerminationTransactionData getEmpTerminationTrans() {
+	return empTerminationTrans;
+    }
+
+    public void setEmpTerminationTrans(TerminationTransactionData empTerminationTrans) {
+	this.empTerminationTrans = empTerminationTrans;
+    }
+
+    public Long getSelectedEmpId() {
+	return selectedEmpId;
+    }
+
+    public void setSelectedEmpId(Long selectedEmpId) {
+	this.selectedEmpId = selectedEmpId;
+    }
 
 }
