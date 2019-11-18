@@ -10,8 +10,8 @@ import javax.faces.bean.ViewScoped;
 import com.code.dal.orm.hcm.Category;
 import com.code.enums.WFProcessStepRolesEnum;
 import com.code.exceptions.BusinessException;
-import com.code.integration.parameters.extensionrequest.WFProcess;
-import com.code.integration.parameters.extensionrequest.WFProcessStepData;
+import com.code.integration.parameters.eservices.workflow.WFProcess;
+import com.code.integration.parameters.eservices.workflow.WFProcessStepData;
 import com.code.integration.webservicesclients.eservices.WFProcessStepsClient;
 import com.code.ui.backings.base.BaseBacking;
 
