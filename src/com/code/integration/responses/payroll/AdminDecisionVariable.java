@@ -5,6 +5,7 @@ public class AdminDecisionVariable {
     private Integer variableId;
     private String variableName;
     private String variableMapping;
+    private Integer isLov;
 
     public Integer getVariableId() {
 	return variableId;
@@ -28,6 +29,14 @@ public class AdminDecisionVariable {
 
     public void setVariableMapping(String variableMapping) {
 	this.variableMapping = variableMapping;
+    }
+
+    public Integer getIsLov() {
+	return isLov;
+    }
+
+    public void setIsLov(Integer isLov) {
+	this.isLov = isLov;
     }
 
 }

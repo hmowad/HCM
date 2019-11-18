@@ -14,6 +14,7 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 
 import com.code.dal.DataAccess;
+import com.code.dal.orm.integration.payroll.AdminDecisionVariablesMapping;
 import com.code.dal.orm.setup.AdminDecision;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
@@ -81,6 +82,7 @@ public class PayrollEngineService extends BaseService {
 		adminDecisionVariable.setVariableId(variableArray.getJsonObject(j).getInt("variableId"));
 		adminDecisionVariable.setVariableName(variableArray.getJsonObject(j).getString("variableName"));
 		adminDecisionVariable.setVariableMapping(variableArray.getJsonObject(j).getString("variableMapping"));
+		adminDecisionVariable.setIsLov(variableArray.getJsonObject(j).containsKey("isLov") ? variableArray.getJsonObject(j).getInt("isLov") : null);
 		adminDecisionVariableList.add(adminDecisionVariable);
 	    }
 	    adminDecision.setVariableArray(adminDecisionVariableList);
@@ -119,7 +121,16 @@ public class PayrollEngineService extends BaseService {
 			Log4jService.traceInfo(PayrollEngineService.class, "mappingQuery: " + mappingQuery.toString());
 			List<String> result = DataAccess.executeNativeQuery(String.class, mappingQuery, new HashMap<String, Object>());
 			String mappingValue = result == null || result.size() == 0 ? null : result.get(0);
-			Log4jService.traceInfo(PayrollEngineService.class, "mappingValue: " + mappingValue);
+			Log4jService.traceInfo(PayrollEngineService.class, "HCM value: " + mappingValue);
+			if (adminDecisionVariable.getIsLov() != null && adminDecisionVariable.getIsLov().equals(FlagsEnum.ON.getCode())) {
+			    AdminDecisionVariablesMapping adminDecisionVariablesMapping = getAdminDecisionVariablesMappingByVariableNameAndHCMValue(adminDecisionVariable.getVariableMapping(), mappingValue);
+			    if (adminDecisionVariablesMapping == null) {
+				Log4jService.traceInfo(PayrollEngineService.class, "Error: adminDecisionVariablesMapping is null");
+				throw new BusinessException("error_adminDecisionVariablesMappingNotFound");
+			    }
+			    mappingValue = adminDecisionVariablesMapping.getPrlValue();
+			    Log4jService.traceInfo(PayrollEngineService.class, "PRL Value: " + mappingValue);
+			}
 			JsonObject variable = Json.createObjectBuilder()
 				.add("id", adminDecisionVariable.getVariableId() + "")
 				.add("value", mappingValue == null ? "" : mappingValue)
@@ -150,7 +161,16 @@ public class PayrollEngineService extends BaseService {
 		    Log4jService.traceInfo(PayrollEngineService.class, "mappingQuery: " + mappingQuery.toString());
 		    List<String> result = DataAccess.executeNativeQuery(String.class, mappingQuery, new HashMap<String, Object>());
 		    String mappingValue = result == null || result.size() == 0 ? null : result.get(0);
-		    Log4jService.traceInfo(PayrollEngineService.class, "mappingValue: " + mappingValue);
+		    Log4jService.traceInfo(PayrollEngineService.class, "HCM value: " + mappingValue);
+		    if (adminDecisionVariable.getIsLov() != null && adminDecisionVariable.getIsLov().equals(FlagsEnum.ON.getCode())) {
+			AdminDecisionVariablesMapping adminDecisionVariablesMapping = getAdminDecisionVariablesMappingByVariableNameAndHCMValue(adminDecisionVariable.getVariableMapping(), mappingValue);
+			if (adminDecisionVariablesMapping == null) {
+			    Log4jService.traceInfo(PayrollEngineService.class, "Error: adminDecisionVariablesMapping is null");
+			    throw new BusinessException("error_adminDecisionVariablesMappingNotFound");
+			}
+			mappingValue = adminDecisionVariablesMapping.getPrlValue();
+			Log4jService.traceInfo(PayrollEngineService.class, "PRL value: " + mappingValue);
+		    }
 		    JsonObject variable = Json.createObjectBuilder()
 			    .add("id", adminDecisionVariable.getVariableId() + "")
 			    .add("value", mappingValue == null ? "" : mappingValue)
@@ -191,7 +211,20 @@ public class PayrollEngineService extends BaseService {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_ADMIN_DECISION_NAME", adminDecisionName == null ? FlagsEnum.ALL.getCode() + "" : adminDecisionName);
-	    List<AdminDecision> result = DataAccess.executeNamedQuery(AdminDecision.class, QueryNamesEnum.GET_ADMIN_DECISION_BY_NAME.getCode(), qParams);
+	    List<AdminDecision> result = DataAccess.executeNamedQuery(AdminDecision.class, QueryNamesEnum.HCM_GET_ADMIN_DECISION_BY_NAME.getCode(), qParams);
+	    return (result != null && result.size() > 0) ? result.get(0) : null;
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    private static AdminDecisionVariablesMapping getAdminDecisionVariablesMappingByVariableNameAndHCMValue(String variableName, String hcmValue) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_VARIABLE_NAME", variableName == null ? FlagsEnum.ALL.getCode() + "" : variableName);
+	    qParams.put("P_HCM_VALUE", hcmValue == null ? FlagsEnum.ALL.getCode() + "" : hcmValue);
+	    List<AdminDecisionVariablesMapping> result = DataAccess.executeNamedQuery(AdminDecisionVariablesMapping.class, QueryNamesEnum.HCM_GET_ADMIN_DECISION_VARIABLES_MAPPING_BY_VARIABLE_NAME_AND_HCM_VALUE.getCode(), qParams);
 	    return (result != null && result.size() > 0) ? result.get(0) : null;
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
