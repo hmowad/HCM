@@ -9,7 +9,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.code.enums.FlagsEnum;
-import com.code.enums.WFProcessesEnum;
 import com.code.enums.eservices.HTTPStatusCodeEnum;
 import com.code.exceptions.BusinessException;
 import com.code.integration.parameters.eservices.workflow.WFInstance;
@@ -98,10 +97,10 @@ public class EServicesWorkFlowClient extends BaseClient {
     public static List<WFTaskData> searchWFTasksData(Long assigneeId, Integer taskRole, String taskOwnerName, String subject, Integer processGroupId, Long processId, Boolean isRunning, Boolean desc) throws BusinessException {
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "start searchWFTasksData");
 	init();
-	if (taskRole == 2) {
-	    processGroupId = null;
-	    processId = WFProcessesEnum.ESERVICES_NOTIFICATIONS.getCode();
-	}
+//	if (taskRole == 2) {
+//	    processGroupId = null;
+//	    processId = WFProcessesEnum.ESERVICES_NOTIFICATIONS.getCode();
+//	}
 	Response response = client.target(serverUrl).path("wfTask/").queryParam("assigneeId", assigneeId.toString())
 		.queryParam("onlyNotifications", taskRole == 0 ? false : true)
 		.queryParam("taskOwnerName", taskOwnerName).queryParam("subject", subject)

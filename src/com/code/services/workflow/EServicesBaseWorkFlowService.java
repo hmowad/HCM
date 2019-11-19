@@ -192,7 +192,7 @@ public class EServicesBaseWorkFlowService {
 	if (eservicesWFTaskData.getAssigneeWfRole() == WFTaskRolesEnum.NOTIFICATION.getCode()) {
 	    hcmWFTAskData.setTaskUrl(getProcessUrl(eservicesWFTaskData.getProcessId()) +"&taskId=" + eservicesWFTaskData.getId());
 	} else {
-	    hcmWFTAskData.setTaskUrl(eservicesTaskUrl.substring(0, eservicesTaskUrl.indexOf("?taskid=")) + "&taskId=" + eservicesWFTaskData.getId());
+	    hcmWFTAskData.setTaskUrl(eservicesTaskUrl.substring(0, eservicesTaskUrl.indexOf("?taskId=")) + "&taskId=" + eservicesWFTaskData.getId());
 	}
 
 	hcmWFTAskData.setAssigneeWfRole(eservicesWFTaskData.getAssigneeWfRole());
