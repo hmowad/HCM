@@ -120,9 +120,8 @@ public class EServicesBaseWorkFlowService {
     public static String countWFTasks(Long loginEmpId, Integer notificationFlag)
 	    throws BusinessException {
 	try {
-	    List<com.code.integration.parameters.eservices.workflow.WFTaskData> wfTaskDataList = EServicesWorkFlowClient.searchWFTasksData(loginEmpId, notificationFlag , null, null, null, null, true, false);
-	    Long tasksCount = BaseWorkFlow.countWFTasks(loginEmpId, notificationFlag) + wfTaskDataList.size();
-	    return tasksCount.toString();
+	    Long count = BaseWorkFlow.countWFTasks(loginEmpId, notificationFlag) + EServicesWorkFlowClient.countWFTasks(loginEmpId, notificationFlag);
+	    return count.toString();
 	} catch (BusinessException e) {
 	    throw new BusinessException(e.getMessage());
 	}
