@@ -79,13 +79,13 @@ public class AppPhaseListener implements PhaseListener {
 
 		// If request contains parameter "taskId" then make sure that the session user is this task owner.
 		if (taskId != null) {
-			try {
-				if ((!isRequestParametersValid(SecurityService.getUserWFTaskUrl(sessionUser.getEmpId(), requestURI, Long.parseLong(taskId)), req, true))
-						&& (EServicesWorkFlowClient.getWFTaskById(Long.parseLong(taskId)).getAssigneeId().longValue() != sessionUser.getEmpId()))
-				redirect("/Main/Welcome.jsf", true);
-			} catch (BusinessException e) {
-				redirect("/Main/Welcome.jsf", true);
-			}
+		    try {
+			if ((!isRequestParametersValid(SecurityService.getUserWFTaskUrl(sessionUser.getEmpId(), requestURI, Long.parseLong(taskId)), req, true))
+				&& (EServicesWorkFlowClient.getWFTaskById(Long.parseLong(taskId)).getAssigneeId().longValue() != sessionUser.getEmpId()))
+			    redirect("/Main/Welcome.jsf", true);
+		    } catch (BusinessException e) {
+			redirect("/Main/Welcome.jsf", true);
+		    }
 		} else {
 		    // If request doesn't contain parameter "taskId" then check the privilege against the session user menus.
 		    boolean authorized = false;
