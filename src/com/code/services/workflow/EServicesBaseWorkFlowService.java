@@ -117,8 +117,7 @@ public class EServicesBaseWorkFlowService {
     }
 
     /************************************ header actions ***********************************************/
-    public static String countWFTasks(Long loginEmpId, Integer notificationFlag)
-	    throws BusinessException {
+    public static String countWFTasks(Long loginEmpId, Integer notificationFlag) throws BusinessException {
 	try {
 	    Long count = BaseWorkFlow.countWFTasks(loginEmpId, notificationFlag) + EServicesWorkFlowClient.countWFTasks(loginEmpId, notificationFlag);
 	    return count.toString();
@@ -211,7 +210,7 @@ public class EServicesBaseWorkFlowService {
 	hcmWFTAskData.setLevel(eservicesWFTaskData.getStepOrder().toString());
 	hcmWFTAskData.setTaskOwnerName(eservicesWFTaskData.getTaskOwnerName());
 	hcmWFTAskData.setTaskOwnerEmpNo(eservicesWFTaskData.getTaskOwnerEmpNo());
-	hcmWFTAskData.setRequesterReferenceName(eservicesWFTaskData.getTaskOwnerReferenceDesc());
+//	hcmWFTAskData.setRequesterReferenceName(eservicesWFTaskData.getTaskOwnerReferenceDesc());
 	hcmWFTAskData.setArabicDetailsSummary(eservicesWFTaskData.getArabicDetailsSummary());
 	hcmWFTAskData.setEnglishDetailsSummary(eservicesWFTaskData.getEnglishDetailsSummary());
 	return hcmWFTAskData;
