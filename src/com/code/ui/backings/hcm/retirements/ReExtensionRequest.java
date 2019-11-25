@@ -105,7 +105,7 @@ public class ReExtensionRequest extends WFBaseBacking {
     }
 
     public String reject() {
-	currentTask.setAction(WFTaskActionsEnum.REJECT.getCode());
+	currentTask.setAction(WFTaskActionsEnum.REJECT_ESERVICE.getCode());
 	currentTask.setRefuseReasons(extensionRequestTransaction.getRejectionReason());
 	return rejectEserviceTransaction(extensionRequestTransaction.getId());
     }
