@@ -8,7 +8,6 @@ import com.code.dal.orm.workflow.WFProcess;
 import com.code.dal.orm.workflow.WFTask;
 import com.code.dal.orm.workflow.WFTaskData;
 import com.code.enums.WFTaskActionsEnum;
-import com.code.enums.WFTaskRolesEnum;
 import com.code.enums.eservices.EservicesProcessesEnum;
 import com.code.enums.eservices.WFTaskURLsEnum;
 import com.code.exceptions.BusinessException;
@@ -61,8 +60,8 @@ public class EServicesBaseWorkFlowService {
 
     /************************************ workflow actions ***********************************************/
     public static void doApproval(Long requesterId, WFTask hcmWFTask, Long mainEmpId, Long secondEmpId,
-	    WFTaskActionsEnum action, Long transactionId) throws BusinessException {
-	com.code.integration.parameters.eservices.workflow.WFTask eservicesWFTask = toEServicesWFTask(hcmWFTask);
+	    WFTaskActionsEnum action, Long transactionId, Long processCode) throws BusinessException {
+	com.code.integration.parameters.eservices.workflow.WFTask eservicesWFTask = toEServicesWFTask(hcmWFTask, processCode);
 	WFGeneralProcessClient.doApproval(requesterId, eservicesWFTask, mainEmpId, secondEmpId, action, transactionId);
     }
 
@@ -186,14 +185,7 @@ public class EServicesBaseWorkFlowService {
 	hcmWFTAskData.setHijriAssignDate(eservicesWFTaskData.getAssignDate());
 	hcmWFTAskData.setAssignDate(eservicesWFTaskData.getAssignGregDate());
 	hcmWFTAskData.setHijriAssignDateString(eservicesWFTaskData.getAssignDateString());
-
-	String eservicesTaskUrl = eservicesWFTaskData.getTaskURL();
-	if (eservicesWFTaskData.getAssigneeWfRole() == WFTaskRolesEnum.NOTIFICATION.getCode()) {
-	    hcmWFTAskData.setTaskUrl(getProcessUrl(eservicesWFTaskData.getProcessId()) +"&taskId=" + eservicesWFTaskData.getId());
-	} else {
-	    hcmWFTAskData.setTaskUrl(eservicesTaskUrl.substring(0, eservicesTaskUrl.indexOf("?taskId=")) + "&taskId=" + eservicesWFTaskData.getId());
-	}
-
+	hcmWFTAskData.setTaskUrl(getProcessHcmUrl(eservicesWFTaskData.getProcessId()) + "?taskId=" + eservicesWFTaskData.getId());
 	hcmWFTAskData.setAssigneeWfRole(eservicesWFTaskData.getAssigneeWfRole());
 	hcmWFTAskData.setAction(eservicesWFTaskData.getAction());
 	hcmWFTAskData.setHijriActionDate(eservicesWFTaskData.getActionDate());
@@ -210,7 +202,7 @@ public class EServicesBaseWorkFlowService {
 	hcmWFTAskData.setLevel(eservicesWFTaskData.getStepOrder().toString());
 	hcmWFTAskData.setTaskOwnerName(eservicesWFTaskData.getTaskOwnerName());
 	hcmWFTAskData.setTaskOwnerEmpNo(eservicesWFTaskData.getTaskOwnerEmpNo());
-//	hcmWFTAskData.setRequesterReferenceName(eservicesWFTaskData.getTaskOwnerReferenceDesc());
+	// hcmWFTAskData.setRequesterReferenceName(eservicesWFTaskData.getTaskOwnerReferenceDesc());
 	hcmWFTAskData.setArabicDetailsSummary(eservicesWFTaskData.getArabicDetailsSummary());
 	hcmWFTAskData.setEnglishDetailsSummary(eservicesWFTaskData.getEnglishDetailsSummary());
 	return hcmWFTAskData;
@@ -231,7 +223,7 @@ public class EServicesBaseWorkFlowService {
     }
 
     /*********************************** map from hcm to eservices ***********************************************/
-    private static com.code.integration.parameters.eservices.workflow.WFTask toEServicesWFTask(WFTask hcmWFTask) {
+    private static com.code.integration.parameters.eservices.workflow.WFTask toEServicesWFTask(WFTask hcmWFTask, Long processCode) {
 	com.code.integration.parameters.eservices.workflow.WFTask eservicesWFTAsk = new com.code.integration.parameters.eservices.workflow.WFTask();
 	eservicesWFTAsk.setId(hcmWFTask.getTaskId());
 	eservicesWFTAsk.setInstanceId(hcmWFTask.getInstanceId());
@@ -239,7 +231,9 @@ public class EServicesBaseWorkFlowService {
 	eservicesWFTAsk.setOriginalId(hcmWFTask.getOriginalId());
 	eservicesWFTAsk.setAssignDate(hcmWFTask.getHijriAssignDate());
 	eservicesWFTAsk.setAssignGregDate(hcmWFTask.getAssignDate());
-	eservicesWFTAsk.setTaskURL(hcmWFTask.getTaskUrl());
+
+	eservicesWFTAsk.setTaskURL(getProcessEservicesUrl(processCode));
+
 	eservicesWFTAsk.setAssigneeWfRole(hcmWFTask.getAssigneeWfRole());
 	eservicesWFTAsk.setAction(hcmWFTask.getAction());
 	eservicesWFTAsk.setActionDate(hcmWFTask.getHijriActionDate());
@@ -261,11 +255,21 @@ public class EServicesBaseWorkFlowService {
     }
 
     /************************************ others ***********************************************/
-    private static String getProcessUrl(Long processId) {
+    public static String getProcessEservicesUrl(Long processCode) {
 	WFTaskURLsEnum[] wfTaskURLsEnum = WFTaskURLsEnum.values();
 	for (int i = 0; i < wfTaskURLsEnum.length; i++) {
-	    if (wfTaskURLsEnum[i].getCode() == processId) {
-		return wfTaskURLsEnum[i].getUrl();
+	    if (wfTaskURLsEnum[i].getCode().equals(processCode)) {
+		return wfTaskURLsEnum[i].getEservicesUrl();
+	    }
+	}
+	return "";
+    }
+
+    public static String getProcessHcmUrl(Long processCode) {
+	WFTaskURLsEnum[] wfTaskURLsEnum = WFTaskURLsEnum.values();
+	for (int i = 0; i < wfTaskURLsEnum.length; i++) {
+	    if (wfTaskURLsEnum[i].getCode().equals(processCode)) {
+		return wfTaskURLsEnum[i].getHcmUrl();
 	    }
 	}
 	return "";
