@@ -113,7 +113,7 @@ public class WFInbox extends BaseBacking {
 	    }
 	    
 	    if(eservicesFlag == FlagsEnum.ON.getCode()){
-	    	 tasks = EServicesBaseWorkFlowService.searchWFTasksData(searchByAssigneeId, searchByBeneficiaryId, searchByTaskOwnerName, selectedProcessGroupId, selectedProcessId, runningFlag, selectedTaskRole -1, isDESC);
+	    	 tasks = EServicesBaseWorkFlowService.searchWFTasksData(searchByAssigneeId, searchByBeneficiaryId, searchByTaskOwnerName, selectedProcessGroupId, selectedProcessId, runningFlag, selectedTaskRole, isDESC);
 	    }else{
 	    	 tasks = BaseWorkFlow.searchWFTasksData(searchByAssigneeId, searchByBeneficiaryId, searchByTaskOwnerName, selectedProcessGroupId, selectedProcessId, runningFlag, selectedTaskRole, isDESC);
 	    }
