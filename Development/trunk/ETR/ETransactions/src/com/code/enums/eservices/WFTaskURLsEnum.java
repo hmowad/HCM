@@ -2,24 +2,30 @@ package com.code.enums.eservices;
 
 public enum WFTaskURLsEnum {
 
-    NOTIFICATION(0L, "/EServices/WorkList/NotifyUser.jsf"),
-    EXTENSION_REQUEST(1720L, "/EServices/Transactions/ExtensionRequest.jsf"),
-    REEXTENSION_REQUEST(1730L, "/EServices/Transactions/ReExtensionRequest.jsf"),
+    NOTIFICATION(100L, "", "/WorkList/NotifyUser.jsf"),
+    EXTENSION_REQUEST(1720L, "/Retirements/ExtensionRequest.jsf", "/EServices/Transactions/ExtensionRequest.jsf"),
+    REEXTENSION_REQUEST(1730L, "/Retirements/ReExtensionRequest.jsf", "/EServices/Transactions/ReExtensionRequest.jsf"),
     ;
 
     private Long code;
-    private String url;
+    private String hcmURL;
+    private String eservicesURL;
 
-    WFTaskURLsEnum(Long code, String url) {
+    WFTaskURLsEnum(Long code, String hcmURL, String eservicesURL) {
 	this.code = code;
-	this.url = url;
+	this.hcmURL = hcmURL;
+	this.eservicesURL = eservicesURL;
     }
 
     public Long getCode() {
 	return code;
     }
 
-    public String getUrl() {
-	return url;
+    public String getHcmUrl() {
+	return hcmURL;
+    }
+    
+    public String getEservicesUrl() {
+	return eservicesURL;
     }
 }
