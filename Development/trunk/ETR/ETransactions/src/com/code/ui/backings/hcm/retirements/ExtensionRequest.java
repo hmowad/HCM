@@ -132,7 +132,7 @@ public class ExtensionRequest extends WFBaseBacking {
 	    this.setServerSideErrorMessages(getParameterizedMessage("error_mandatoryRejectionReason"));
 	    return null;
 	}
-	currentTask.setAction(WFTaskActionsEnum.REJECT.getCode());
+	currentTask.setAction(WFTaskActionsEnum.REJECT_ESERVICE.getCode());
 	currentTask.setRefuseReasons(extensionRequestTransaction.getRejectionReason());
 	return rejectEserviceTransaction(extensionRequestTransaction.getId());
 
