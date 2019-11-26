@@ -149,7 +149,7 @@ public abstract class WFBaseBacking extends BaseBacking implements Serializable 
 
     public String approveEserviceTransaction(Long transactionId) {
 	try {
-	    EServicesBaseWorkFlowService.doApproval(requester.getEmpId(), currentTask, requester.getEmpId(), null, WFTaskActionsEnum.SUPER_SIGN, transactionId, processCode);
+	    EServicesBaseWorkFlowService.doApproval(requester.getEmpId(), currentTask, requester.getEmpId(), null, WFTaskActionsEnum.APPROVE_ESERVICE, transactionId, processCode);
 	    this.setServerSideSuccessMessages(getParameterizedMessage("notify_successOperation"));
 	    return NavigationEnum.OUTBOX.toString();
 	} catch (BusinessException e) {
