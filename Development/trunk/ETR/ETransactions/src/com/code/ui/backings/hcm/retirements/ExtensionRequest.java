@@ -1,10 +1,14 @@
 package com.code.ui.backings.hcm.retirements;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
+import com.code.dal.orm.workflow.WFTask;
 import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.NavigationEnum;
 import com.code.enums.SequenceNamesEnum;
@@ -21,6 +25,7 @@ import com.code.integration.webservicesclients.eservices.ExtensionRequestTransac
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.TerminationsService;
 import com.code.services.util.Log4jService;
+import com.code.services.workflow.EServicesBaseWorkFlowService;
 import com.code.ui.backings.base.WFBaseBacking;
 
 @ManagedBean(name = "extensionRequest")
@@ -44,28 +49,31 @@ public class ExtensionRequest extends WFBaseBacking {
      * @throws BusinessException
      */
     public ExtensionRequest() throws BusinessException {
-	processCode = EservicesProcessesEnum.EXTENSION_REQUEST.getCode();
-	super.init();
-	if (role.equals(WFProcessRolesEnum.REQUESTER.getCode())) {
-	    setMode(0);
-	    setScreenTitle(getMessage("title_extentionRequest"));
-	    seqId = Long.parseLong(ExtensionRequestTransactionsClient.getNextSequenceValue(SequenceNamesEnum.EXTENSION_REQUEST_TRANS.getCode()));
-	    extensionRequestTransaction = new ExtensionRequestTransaction();
-	    extensionRequestTransaction.setStatus(TransactionStatusEnum.UNDER_PROCESSING.getCode());
-	    processId = WFProcessesEnum.EXTENSION_REQUEST.getCode();
-	} else if (role.equals(WFProcessRolesEnum.APPROVAL.getCode())) {
-	    try {
+	try {
+	    processCode = EservicesProcessesEnum.EXTENSION_REQUEST.getCode();
+	    super.init();
+	    if (role.equals(WFProcessRolesEnum.REQUESTER.getCode())) {
+		setMode(0);
+		setScreenTitle(getMessage("title_extentionRequest"));
+		seqId = Long.parseLong(ExtensionRequestTransactionsClient.getNextSequenceValue(SequenceNamesEnum.EXTENSION_REQUEST_TRANS.getCode()));
+		extensionRequestTransaction = new ExtensionRequestTransaction();
+		extensionRequestTransaction.setStatus(TransactionStatusEnum.UNDER_PROCESSING.getCode());
+		processId = WFProcessesEnum.EXTENSION_REQUEST.getCode();
+	    } else if (role.equals(WFProcessRolesEnum.APPROVAL.getCode())) {
 		setMode(1);
 		setScreenTitle(getMessage("title_approveExtentionRequest"));
 		extensionRequestTransaction = ExtensionRequestTransactionsClient.getExtensionRequestTransactionByInstanceId(instance.getInstanceId());
 		selectedEmp = EmployeesService.getEmployeeData(extensionRequestTransaction.getEmpId());
-	    } catch (BusinessException e) {
-		Log4jService.traceErrorException(ExtensionRequest.class, e, "ExtensionRequest");
-		setServerSideErrorMessages(getMessage("error_loadingPage"));
+	    } else if (role.equals(WFProcessRolesEnum.NOTIFICATION.getCode())) {
+		setMode(2);
+		setScreenTitle(getMessage("title_approveExtentionRequest"));
+		extensionRequestTransaction = ExtensionRequestTransactionsClient.getExtensionRequestTransactionByInstanceId(instance.getInstanceId());
+		selectedEmp = EmployeesService.getEmployeeData(extensionRequestTransaction.getEmpId());
 	    }
-
+	} catch (BusinessException e) {
+	    Log4jService.traceErrorException(ExtensionRequest.class, e, "ExtensionRequest");
+	    setServerSideErrorMessages(getMessage("error_loadingPage"));
 	}
-
     }
 
     /**
@@ -144,9 +152,20 @@ public class ExtensionRequest extends WFBaseBacking {
      * @return
      */
     public String approve() {
-	currentTask.setAction(WFTaskActionsEnum.APPROVE.getCode());
+	currentTask.setAction(WFTaskActionsEnum.APPROVE_ESERVICE.getCode());
 	return approveEserviceTransaction(extensionRequestTransaction.getId());
+    }
 
+    public String doNotifyTasks() {
+	try {
+	    List<WFTask> notificationTasks = new ArrayList<WFTask>();
+	    notificationTasks.add(currentTask);
+	    EServicesBaseWorkFlowService.doNotifyTasks(notificationTasks, processCode);
+	    return NavigationEnum.INBOX.toString();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
+	    return null;
+	}
     }
 
     /**************************** Setters&Getters *************************************/

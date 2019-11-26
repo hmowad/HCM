@@ -1,9 +1,13 @@
 package com.code.ui.backings.hcm.retirements;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
+import com.code.dal.orm.workflow.WFTask;
 import com.code.enums.NavigationEnum;
 import com.code.enums.SequenceNamesEnum;
 import com.code.enums.TransactionTypesEnum;
@@ -18,6 +22,7 @@ import com.code.integration.parameters.eservices.transactions.ExtensionRequestTr
 import com.code.integration.webservicesclients.eservices.ExtensionRequestTransactionsClient;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.util.Log4jService;
+import com.code.services.workflow.EServicesBaseWorkFlowService;
 import com.code.ui.backings.base.WFBaseBacking;
 
 @ViewScoped
@@ -51,6 +56,11 @@ public class ReExtensionRequest extends WFBaseBacking {
 	    } else if (role.equals(WFProcessRolesEnum.APPROVAL.getCode())) {
 		setMode(1);
 		setScreenTitle(getMessage("title_approveReExtensionRequest"));
+		extensionRequestTransaction = ExtensionRequestTransactionsClient.getExtensionRequestTransactionByInstanceId(instance.getInstanceId());
+		selectedEmployee = EmployeesService.getEmployeeData(extensionRequestTransaction.getEmpId());
+	    } else if (role.equals(WFProcessRolesEnum.NOTIFICATION.getCode())) {
+		setMode(2);
+		setScreenTitle(getMessage("title_approveExtentionRequest"));
 		extensionRequestTransaction = ExtensionRequestTransactionsClient.getExtensionRequestTransactionByInstanceId(instance.getInstanceId());
 		selectedEmployee = EmployeesService.getEmployeeData(extensionRequestTransaction.getEmpId());
 	    }
@@ -113,6 +123,18 @@ public class ReExtensionRequest extends WFBaseBacking {
     public String approve() {
 	currentTask.setAction(WFTaskActionsEnum.APPROVE.getCode());
 	return approveEserviceTransaction(extensionRequestTransaction.getId());
+    }
+
+    public String doNotifyTasks() {
+	try {
+	    List<WFTask> notificationTasks = new ArrayList<WFTask>();
+	    notificationTasks.add(currentTask);
+	    EServicesBaseWorkFlowService.doNotifyTasks(notificationTasks, processCode);
+	    return NavigationEnum.INBOX.toString();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
+	    return null;
+	}
     }
 
     /**************************** Setters&Getters *************************************/

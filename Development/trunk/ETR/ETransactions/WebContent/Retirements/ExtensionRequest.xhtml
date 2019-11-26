@@ -82,7 +82,7 @@
 						<table border="0" cellpadding="0" cellspacing="0" style="margin-top: 0px;" class="sectionContent">
 							<tr>
 								<th  width="15%">
-									<h:outputText value="#{msgs.label_employee}" /> 
+									<h:outputText value="#{msgs.label_emp}" /> 
 									<h:outputText value="*" style="color:red;" rendered="#{extensionRequest.mode == 0}" />
 								</th>
 								<td>
@@ -109,7 +109,7 @@
 											rendered="#{extensionRequest.mode == 0}" /> 
 									<h:inputText disabled="true"
 										value="#{extensionRequest.extensionRequestTransaction.terminationReason}"
-										rendered="#{extensionRequest.mode == 1}" />
+										rendered="#{extensionRequest.mode != 0}" />
 								</td>
 							</tr>
 
@@ -133,7 +133,7 @@
 										<h:selectOneMenu
 											value="#{extensionRequest.extensionRequestTransaction.extensionPeriodMonths}"
 											styleClass="selectMenu"
-											disabled="#{extensionRequest.mode == 1}"
+											disabled="#{extensionRequest.mode != 0}"
 											rendered="#{(extensionRequest.selectedEmp != null) and	(extensionRequest.selectedEmp.categoryId != 1) and (extensionRequest.selectedEmp.categoryId != 2)}">
 												<f:selectItem itemLabel="#{extensionRequest.extensionPeriodOneMonth}" itemValue="1" />
 												<f:selectItem itemLabel="#{extensionRequest.extensionPeriodTwoMonths}" itemValue="2" />
@@ -142,7 +142,7 @@
 										<h:selectOneMenu
 											value="#{extensionRequest.extensionRequestTransaction.extensionPeriodMonths}"
 											styleClass="selectMenu"
-											disabled="#{extensionRequest.mode == 1}"
+											disabled="#{extensionRequest.mode != 0}"
 											rendered="#{(extensionRequest.selectedEmp != null) and	(extensionRequest.selectedEmp.categoryId == 1) or (extensionRequest.selectedEmp.categoryId == 2)}">
 												<f:selectItem itemLabel="#{extensionRequest.extensionPeriodTwoMonths}" itemValue="2" />
 										</h:selectOneMenu>
@@ -157,17 +157,17 @@
 								<td width="30%">
 									<h:inputTextarea id="extensionReasonId"
 										value="#{extensionRequest.extensionRequestTransaction.extensionReason}"
-										disabled="#{extensionRequest.mode == 1}" />
+										disabled="#{extensionRequest.mode != 0}" />
 								</td>
 							</tr>
 							
 							<tr>
-								<h:panelGroup rendered="#{extensionRequest.mode == 1}">
+								<h:panelGroup rendered="#{extensionRequest.mode != 0}">
 									<th  width="15%">
 										<h:outputText value="#{msgs.label_refuseReasons}" />
 									</th>
 									<td width="30%">
-										<h:inputTextarea id="rejectionReasonId" value="#{extensionRequest.extensionRequestTransaction.rejectionReason}" />
+										<h:inputTextarea id="rejectionReasonId" value="#{extensionRequest.extensionRequestTransaction.rejectionReason}" disabled="#{extensionRequest.mode == 2}"/>
 									</td>
 								</h:panelGroup>
 							</tr>
@@ -201,6 +201,9 @@
 							<f:ajax execute="extensionRequestForm:rejectionReasonId" render="extensionRequestForm:notifyMessagesId"></f:ajax>
 						</h:commandButton>
 						<h:commandButton style="float: left;" styleClass="btn_normal_icon" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" action="#{extensionRequest.approve()}" rendered="#{extensionRequest.mode == 1}">
+							<f:ajax render="extensionRequestForm:notifyMessagesId"></f:ajax>
+						</h:commandButton>
+						<h:commandButton style="float: left;" styleClass="btn_normal_icon" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" action="#{extensionRequest.doNotifyTasks()}" rendered="#{extensionRequest.mode == 2}">
 							<f:ajax render="extensionRequestForm:notifyMessagesId"></f:ajax>
 						</h:commandButton>
 					</td>
