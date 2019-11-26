@@ -44,8 +44,7 @@ public class EServicesBaseWorkFlowService {
 	}
     }
 
-    public static List<WFTaskData> getWFInstanceCompletedTasksData(Long instanceId, Long taskId)
-	    throws BusinessException {
+    public static List<WFTaskData> getWFInstanceCompletedTasksData(Long instanceId, Long taskId) throws BusinessException {
 	try {
 	    List<com.code.integration.parameters.eservices.workflow.WFTaskData> wfTaskDataList = EServicesWorkFlowClient.getWFInstanceCompletedTasksData(instanceId, taskId);
 	    List<WFTaskData> hcmWFTaskDataList = new ArrayList<WFTaskData>();
@@ -65,14 +64,14 @@ public class EServicesBaseWorkFlowService {
 	WFGeneralProcessClient.doApproval(requesterId, eservicesWFTask, mainEmpId, secondEmpId, action, transactionId);
     }
 
-//    public static void doNotifyTasks(List<WFTask> hcmNotificationTasks, Long processCode) throws BusinessException {
-//	List<com.code.integration.parameters.eservices.workflow.WFTask> eservicesNotificationTasks = new ArrayList<com.code.integration.parameters.eservices.workflow.WFTask>();
-//	for (WFTask notificationTask : hcmNotificationTasks) {
-//	    notificationTask.setSelected(true);
-//	    eservicesNotificationTasks.add(toEServicesWFTask(notificationTask, processCode));
-//	}
-//	EServicesWorkFlowClient.doNotifyTasks(eservicesNotificationTasks);
-//    }
+    public static void doNotifyTasks(List<WFTask> hcmNotificationTasks, Long processCode) throws BusinessException {
+	List<com.code.integration.parameters.eservices.workflow.WFTask> eservicesNotificationTasks = new ArrayList<com.code.integration.parameters.eservices.workflow.WFTask>();
+	for (WFTask notificationTask : hcmNotificationTasks) {
+	    notificationTask.setSelected(true);
+	    eservicesNotificationTasks.add(toEServicesWFTask(notificationTask, processCode));
+	}
+	EServicesWorkFlowClient.doNotifyTasks(eservicesNotificationTasks);
+    }
 
     /************************************ inbox actions ***********************************************/
     private static Boolean isEservicesProcess(Long processCode) {
@@ -104,12 +103,12 @@ public class EServicesBaseWorkFlowService {
 	try {
 	    List<WFTaskData> hcmWFTaskDataList = new ArrayList<WFTaskData>();
 	    if (processGroupId == 0 && (processId == 0 || (processId != 0 && isEservicesProcess(processId)))) {
-		hcmWFTaskDataList.addAll(searchEservicesWFTasksData(assigneeId, beneficiaryId, taskOwnerName, processGroupId, processId, isRunning, taskRole -1, isDESC));
+		hcmWFTaskDataList.addAll(searchEservicesWFTasksData(assigneeId, beneficiaryId, taskOwnerName, processGroupId, processId, isRunning, taskRole - 1, isDESC));
 	    } else if (processGroupId != 0) {
 		List<WFProcess> processes = BaseWorkFlow.getWFGroupProcesses(processGroupId);
 		for (WFProcess process : processes) {
 		    if (isEservicesProcess(process.getProcessId()) && (processId == 0 || isEservicesProcess(processId))) {
-			hcmWFTaskDataList.addAll(searchEservicesWFTasksData(assigneeId, beneficiaryId, taskOwnerName, processGroupId, processId, isRunning, taskRole -1, isDESC));
+			hcmWFTaskDataList.addAll(searchEservicesWFTasksData(assigneeId, beneficiaryId, taskOwnerName, processGroupId, processId, isRunning, taskRole - 1, isDESC));
 			break;
 		    }
 		}
@@ -211,7 +210,6 @@ public class EServicesBaseWorkFlowService {
 	hcmWFTAskData.setLevel(eservicesWFTaskData.getStepOrder().toString());
 	hcmWFTAskData.setTaskOwnerName(eservicesWFTaskData.getTaskOwnerName());
 	hcmWFTAskData.setTaskOwnerEmpNo(eservicesWFTaskData.getTaskOwnerEmpNo());
-	// hcmWFTAskData.setRequesterReferenceName(eservicesWFTaskData.getTaskOwnerReferenceDesc());
 	hcmWFTAskData.setArabicDetailsSummary(eservicesWFTaskData.getArabicDetailsSummary());
 	hcmWFTAskData.setEnglishDetailsSummary(eservicesWFTaskData.getEnglishDetailsSummary());
 	return hcmWFTAskData;
@@ -260,6 +258,7 @@ public class EServicesBaseWorkFlowService {
 	eservicesWFTAsk.setStepOrder(Integer.parseInt(hcmWFTask.getLevel()));
 	eservicesWFTAsk.setArabicDetailsSummary(hcmWFTask.getArabicDetailsSummary());
 	eservicesWFTAsk.setEnglishDetailsSummary(hcmWFTask.getEnglishDetailsSummary());
+	eservicesWFTAsk.setSelected(hcmWFTask.getSelected());
 	return eservicesWFTAsk;
     }
 
