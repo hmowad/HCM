@@ -33,6 +33,7 @@ public class WFTask implements Serializable{
     private Integer stepOrder;
     private String arabicDetailsSummary;
     private String englishDetailsSummary;
+    private Boolean selected;
 
     public Long getId() {
 	return id;
@@ -236,6 +237,14 @@ public class WFTask implements Serializable{
 
     public void setEnglishDetailsSummary(String englishDetailsSummary) {
 	this.englishDetailsSummary = englishDetailsSummary;
+    }
+
+    public Boolean getSelected() {
+	return selected;
+    }
+
+    public void setSelected(Boolean selected) {
+	this.selected = selected;
     }
 
 }
