@@ -52,7 +52,7 @@
 				</tr>
 				<tr>
 					<td width="100%">
-						<code:emp value="#{reExtensionRequest.currentEmployee != null ? currentEmployee : reExtensionRequest.loginEmpData}" />
+						<code:emp value="#{reExtensionRequest.requester}" />
 					</td>
 				</tr>
 				<tr>
@@ -186,6 +186,9 @@
 							<f:ajax execute="reExtensionRequestForm:rejectionReasonId" render="reExtensionRequestForm:notifyMessagesId"></f:ajax>
 						</h:commandButton>
 						<h:commandButton style="float: left;" styleClass="btn btn-success btn_float" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" action="#{reExtensionRequest.approve()}" rendered="#{reExtensionRequest.mode == 1}">
+							<f:ajax render="reExtensionRequestForm:notifyMessagesId"></f:ajax>
+						</h:commandButton>
+						<h:commandButton style="float: left;" styleClass="btn_normal_icon" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" action="#{reExtensionRequest.doNotifyTasks()}" rendered="#{reExtensionRequest.mode == 2}">
 							<f:ajax render="reExtensionRequestForm:notifyMessagesId"></f:ajax>
 						</h:commandButton>
 					</td>
