@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -86,7 +87,7 @@ public class EServicesWorkFlowClient extends BaseClient {
 
 	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
 	    throw new BusinessException(response.readEntity(String.class));
-	}else {
+	} else {
 	    return response.readEntity(WFTask.class);
 	}
     }
@@ -96,7 +97,8 @@ public class EServicesWorkFlowClient extends BaseClient {
 
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "start of calling: service wfBase/wfTaskData");
 
-	Response response = client.target(serverUrl).path("wfTaskData/" + taskId.toString()).request().get();
+	Response response = client.target(serverUrl).path("wfTaskData/" + taskId.toString()).request()
+		.accept(MediaType.APPLICATION_JSON + ";charset=utf-8").get();
 
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling: service wfBase/wfTaskData");
@@ -120,7 +122,10 @@ public class EServicesWorkFlowClient extends BaseClient {
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling: service wfBase/wfTasks/completedTasks/{instanceId}");
 
 	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
-	    throw new BusinessException(response.readEntity(String.class));
+	    if (response.readEntity(String.class).equals("error_noDataFound"))
+		return new ArrayList<WFTaskData>();
+	    else
+		throw new BusinessException(response.readEntity(String.class));
 	} else {
 	    return getEntityList(WFTaskData.class, response.readEntity(String.class));
 	}
@@ -173,4 +178,22 @@ public class EServicesWorkFlowClient extends BaseClient {
 	}
     }
 
+    public static void doNotifyTasks(List<WFTask> notificationTasks) throws BusinessException {
+	init();
+	Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	String notificationTasksString = gson.toJson(notificationTasks);
+
+	Log4jService.traceInfo(EServicesWorkFlowClient.class, "start of calling: service wfBase/wfInbox/doNotifyTasks");
+
+	Response response = client.target(serverUrl).path("wfInbox/doNotifyTasks").request()
+		.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+		.post(Entity.entity(notificationTasksString, MediaType.APPLICATION_JSON + ";"));
+
+	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
+	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling: service wfBase/wfInbox/doNotifyTasks");
+
+	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
+	    throw new BusinessException(response.readEntity(String.class));
+	}
+    }
 }
