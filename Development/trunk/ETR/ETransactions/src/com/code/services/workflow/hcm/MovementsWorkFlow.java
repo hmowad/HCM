@@ -2281,7 +2281,8 @@ public class MovementsWorkFlow extends BaseWorkFlow {
     }
 
     public static WFTask getSecurityEmpTaskByInstanceId(Long instanceId) throws BusinessException {
-	return getWFInstanceTasksByRole(instanceId, WFTaskRolesEnum.SECURITY_EMP.getCode()).get(0);
+	List<WFTask> result = getWFInstanceTasksByRole(instanceId, WFTaskRolesEnum.SECURITY_EMP.getCode());
+	return result == null || result.size() == 0 ? null : result.get(0);
     }
 
     /**
