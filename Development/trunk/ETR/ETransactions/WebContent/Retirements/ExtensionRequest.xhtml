@@ -162,7 +162,7 @@
 							</tr>
 							
 							<tr>
-								<h:panelGroup rendered="#{extensionRequest.mode != 0}">
+								<h:panelGroup rendered="#{(extensionRequest.mode == 1) or ((extensionRequest.mode == 2) and (extensionRequest.extensionRequestTransaction.status == 3))}">
 									<th  width="15%">
 										<h:outputText value="#{msgs.label_refuseReasons}" />
 									</th>

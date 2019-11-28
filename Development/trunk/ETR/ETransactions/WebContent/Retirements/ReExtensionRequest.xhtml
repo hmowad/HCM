@@ -147,7 +147,7 @@
 							</tr>
 							
 							<tr>
-								<h:panelGroup rendered="#{reExtensionRequest.mode == 1}">
+								<h:panelGroup rendered="#{(reExtensionRequest.mode == 1) or ((reExtensionRequest.mode == 2) and (reExtensionRequest.oldExtensionRequestTransaction.status == 3))}">
 									<th  width="15%">
 										<h:outputText value="#{msgs.label_refuseReasons}" />
 									</th>
