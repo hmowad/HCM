@@ -6,11 +6,14 @@ import java.util.List;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.movements.MovementTransactionData;
+import com.code.dal.orm.workflow.WFTask;
 import com.code.dal.orm.workflow.hcm.movements.WFMovementData;
 import com.code.enums.MovementTypesEnum;
 import com.code.enums.NavigationEnum;
 import com.code.enums.TransactionTypesEnum;
 import com.code.enums.WFActionFlagsEnum;
+import com.code.enums.WFTaskActionsEnum;
+import com.code.enums.WFTaskRolesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.MovementsService;
 import com.code.services.util.HijriDateService;
@@ -25,6 +28,8 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
     protected String externalCopies;
     protected int warningsCount = 0;
     protected int pageSize = 10;
+
+    protected Boolean passSecurityScan;
 
     protected WFMovementData wfMovement;
 
@@ -640,6 +645,16 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
 	return period.toString();
     }
 
+    public void getSecurityPassScanValue() throws BusinessException {
+	if (this.role.equals(WFTaskRolesEnum.MANAGER_REDIRECT.getCode())) {
+	    WFTask securityEmpTask = MovementsWorkFlow.getSecurityEmpTaskByInstanceId(instance.getInstanceId());
+	    if (securityEmpTask == null || securityEmpTask.getAction().equals(WFTaskActionsEnum.PASS_SECURITY_SCAN.getCode()))
+		passSecurityScan = true;
+	    else
+		passSecurityScan = false;
+	}
+    }
+
     public void print() {
 	try {
 	    WFMovementData m = wfMovement == null ? wfMovementsList.get(0) : wfMovement;
@@ -708,6 +723,14 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
 
     public void setPageSize(int pageSize) {
 	this.pageSize = pageSize;
+    }
+
+    public Boolean getPassSecurityScan() {
+	return passSecurityScan;
+    }
+
+    public void setPassSecurityScan(Boolean passSecurityScan) {
+	this.passSecurityScan = passSecurityScan;
     }
 
     public WFMovementData getWfMovement() {

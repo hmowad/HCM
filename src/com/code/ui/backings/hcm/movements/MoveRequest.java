@@ -7,14 +7,12 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
-import com.code.dal.orm.workflow.WFTask;
 import com.code.enums.FlagsEnum;
 import com.code.enums.LocationFlagsEnum;
 import com.code.enums.MovementTypesEnum;
 import com.code.enums.MovementsReasonTypesEnum;
 import com.code.enums.TransactionTypesEnum;
 import com.code.enums.WFProcessesEnum;
-import com.code.enums.WFTaskActionsEnum;
 import com.code.enums.WFTaskRolesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
@@ -26,7 +24,6 @@ import com.code.services.workflow.hcm.MovementsWorkFlow;
 @ViewScoped
 public class MoveRequest extends MovementsBase implements Serializable {
     private String movedToUnitFullName;
-    private Boolean passSecurityScan;
 
     public MoveRequest() {
 
@@ -72,13 +69,7 @@ public class MoveRequest extends MovementsBase implements Serializable {
 		}
 
 		if (this.role.equals(WFTaskRolesEnum.MANAGER_REDIRECT.getCode()) || this.role.equals(WFTaskRolesEnum.SECONDARY_MANAGER_REDIRECT.getCode())) {
-		    if (this.role.equals(WFTaskRolesEnum.MANAGER_REDIRECT.getCode())) {
-			WFTask securityEmpTask = MovementsWorkFlow.getSecurityEmpTaskByInstanceId(instance.getInstanceId());
-			if (securityEmpTask.getAction().equals(WFTaskActionsEnum.PASS_SECURITY_SCAN.getCode()))
-			    passSecurityScan = true;
-			else
-			    passSecurityScan = false;
-		    }
+		    getSecurityPassScanValue();
 		    selectedReviewerEmpId = 0L;
 		    reviewerEmps = EmployeesService.getManagerEmployees(currentEmployee.getEmpId());
 		    if (mode == 1)
@@ -150,13 +141,5 @@ public class MoveRequest extends MovementsBase implements Serializable {
 
     public void setMovedToUnitFullName(String movedToUnitFullName) {
 	this.movedToUnitFullName = movedToUnitFullName;
-    }
-
-    public Boolean getPassSecurityScan() {
-	return passSecurityScan;
-    }
-
-    public void setPassSecurityScan(Boolean passSecurityScan) {
-	this.passSecurityScan = passSecurityScan;
     }
 }
