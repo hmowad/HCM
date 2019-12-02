@@ -38,10 +38,10 @@ public class WFProcessStepsClient extends BaseClient {
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling service: wfProcessSteps/getAllWfProcess");
 
-	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
-	    throw new BusinessException(response.readEntity(String.class));
-	} else {
+	if (response.getStatus() == HTTPStatusCodeEnum.OK.getCode()) {
 	    return getEntityList(WFProcess.class, response.readEntity(String.class));
+	} else {
+	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
 	}
     }
 
@@ -55,10 +55,10 @@ public class WFProcessStepsClient extends BaseClient {
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling service: wfProcessSteps/getWfProcess");
 
-	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
-	    throw new BusinessException(response.readEntity(String.class));
-	} else {
+	if (response.getStatus() == HTTPStatusCodeEnum.OK.getCode()) {
 	    return getEntityList(WFProcess.class, response.readEntity(String.class));
+	} else {
+	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
 	}
     }
 
@@ -72,10 +72,10 @@ public class WFProcessStepsClient extends BaseClient {
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling service: wfProcessSteps/getWfProcessDetails");
 
-	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
-	    throw new BusinessException(response.readEntity(String.class));
-	} else {
+	if (response.getStatus() == HTTPStatusCodeEnum.OK.getCode()) {
 	    return getEntityList(WFProcessStepData.class, response.readEntity(String.class));
+	} else {
+	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
 	}
     }
 
@@ -92,11 +92,12 @@ public class WFProcessStepsClient extends BaseClient {
 
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling service: wfProcessSteps/saveWfProcess");
-	
-	if (response.getStatus() == HTTPStatusCodeEnum.CONFLICT.getCode()) {
-	    throw new BusinessException(response.getEntity().toString());
+
+	if (response.getStatus() == HTTPStatusCodeEnum.OK.getCode()) {
+		return (WFProcess) response.getEntity();
+	} else {
+	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
 	}
-	return (WFProcess) response.getEntity();
     }
 
     public static void enableWfProcess(WFProcess wfProcess) throws BusinessException {
@@ -114,7 +115,7 @@ public class WFProcessStepsClient extends BaseClient {
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling service: wfProcessSteps/enableWfProcess");
 	
 	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
-	    throw new BusinessException(response.getEntity().toString());
+	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
 	}
     }
 
@@ -135,7 +136,7 @@ public class WFProcessStepsClient extends BaseClient {
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling service: wfProcessSteps/saveOrUpdate");
 	
 	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
-	    throw new BusinessException(response.getEntity().toString());
+	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
 	}
     }
 }
