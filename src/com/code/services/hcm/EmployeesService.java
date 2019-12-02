@@ -76,6 +76,10 @@ public class EmployeesService extends BaseService {
 
 	    addEmployeeQualifications(employeeQualificationsData, empData, session);
 
+	    EmployeeLog log = new EmployeeLog.Builder().setRankId(empData.getRankId()).setSocialStatus(empData.getSocialStatus()).setGeneralSpecialization(empData.getGeneralSpecialization())
+		    .constructCommonFields(empData.getEmpId(), FlagsEnum.OFF.getCode(), null, null, HijriDateService.getHijriSysDate(), DataAccess.getTableName(Employee.class)).build();
+	    LogService.logEmployeeData(log, session);
+
 	    if (!isOpenedSession)
 		session.commitTransaction();
 	} catch (Exception e) {
@@ -1034,24 +1038,24 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    public static List<EmployeeData> getTerminatedEmployeesByUnitId(Long unitId, String searchEmpName, String searchSocialId, 
-			String searchJobDesc, String searchUnitFullName, Integer searchMilitaryNumber, Long sequenceNumber ) throws BusinessException{
-    	try {
-	    	Map<String, Object> qParams = new HashMap<String, Object>();
-		    qParams.put("P_UNIT_ID", unitId == null ? FlagsEnum.ALL.getCode() : unitId);
-		    qParams.put("P_EMP_NAME", searchEmpName == null || searchEmpName.isEmpty() ? FlagsEnum.ALL.getCode() : "%" + searchEmpName + "%");
-		    qParams.put("P_SOCIAL_ID", searchSocialId == null || searchSocialId.isEmpty() ? FlagsEnum.ALL.getCode() : searchSocialId);
-		    qParams.put("P_PHYSICAL_UNIT_FULL_NAME", searchUnitFullName == null || searchUnitFullName.isEmpty() ? FlagsEnum.ALL.getCode() : "%" + searchUnitFullName + "%");
-		    qParams.put("P_JOB_DESC", searchJobDesc == null || searchJobDesc.isEmpty() ? FlagsEnum.ALL.getCode() : "%" + searchJobDesc + "%");
-		    qParams.put("P_SEQUENCE_NUMBER", sequenceNumber == null ? FlagsEnum.ALL.getCode() : sequenceNumber);
-		    qParams.put("P_MILITARY_NUMBER", searchMilitaryNumber == null ? FlagsEnum.ALL.getCode() : searchMilitaryNumber);
-		    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_SEARCH_TERMINATED_EMPLOYEES_BY_UNIT_ID.getCode(), qParams);
-		} catch (DatabaseException e) {
-			 e.printStackTrace();
-			 throw new BusinessException("error_general");
-		}
+    public static List<EmployeeData> getTerminatedEmployeesByUnitId(Long unitId, String searchEmpName, String searchSocialId,
+	    String searchJobDesc, String searchUnitFullName, Integer searchMilitaryNumber, Long sequenceNumber) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_UNIT_ID", unitId == null ? FlagsEnum.ALL.getCode() : unitId);
+	    qParams.put("P_EMP_NAME", searchEmpName == null || searchEmpName.isEmpty() ? FlagsEnum.ALL.getCode() : "%" + searchEmpName + "%");
+	    qParams.put("P_SOCIAL_ID", searchSocialId == null || searchSocialId.isEmpty() ? FlagsEnum.ALL.getCode() : searchSocialId);
+	    qParams.put("P_PHYSICAL_UNIT_FULL_NAME", searchUnitFullName == null || searchUnitFullName.isEmpty() ? FlagsEnum.ALL.getCode() : "%" + searchUnitFullName + "%");
+	    qParams.put("P_JOB_DESC", searchJobDesc == null || searchJobDesc.isEmpty() ? FlagsEnum.ALL.getCode() : "%" + searchJobDesc + "%");
+	    qParams.put("P_SEQUENCE_NUMBER", sequenceNumber == null ? FlagsEnum.ALL.getCode() : sequenceNumber);
+	    qParams.put("P_MILITARY_NUMBER", searchMilitaryNumber == null ? FlagsEnum.ALL.getCode() : searchMilitaryNumber);
+	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_SEARCH_TERMINATED_EMPLOYEES_BY_UNIT_ID.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
     }
-    
+
     public static long countEmployeesByUnitsIds(Long[] unitsIds) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
