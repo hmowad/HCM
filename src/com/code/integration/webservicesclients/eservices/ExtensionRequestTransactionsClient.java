@@ -28,20 +28,20 @@ public class ExtensionRequestTransactionsClient extends BaseClient {
 
     public static String getNextSequenceValue(String entityName) throws BusinessException {
 	init();
-	
+
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "start of calling service: /common/getNextSequenceValue");
 
 	Response response = client.target(ETRConfigurationService.getEServicesURL())
 		.path(ServiceURLEnum.NEXT_SEQUENCE_VALUE.getCode())
 		.queryParam("entityName", entityName).request().get();
-	
+
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling service: /common/getNextSequenceValue");
-	
-	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
-	    throw new BusinessException(response.readEntity(String.class));
-	} else {
+
+	if (response.getStatus() == HTTPStatusCodeEnum.OK.getCode()) {
 	    return response.readEntity(String.class);
+	} else {
+	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
 	}
     }
 
@@ -58,12 +58,11 @@ public class ExtensionRequestTransactionsClient extends BaseClient {
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling service: extension-request/extension");
 
-	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
-	    throw new BusinessException(response.readEntity(String.class));
-	} else {
+	if (response.getStatus() == HTTPStatusCodeEnum.OK.getCode()) {
 	    return response.readEntity(ExtensionRequestTransaction.class);
+	} else {
+	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
 	}
-
     }
 
     public static ExtensionRequestTransaction initTransaction(Long processId, String taskUrl, ExtensionRequestTransaction extensionRequestTransaction) throws BusinessException {
@@ -83,10 +82,11 @@ public class ExtensionRequestTransactionsClient extends BaseClient {
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling service: extension-request/initTransaction");
 
-	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
-	    throw new BusinessException(response.readEntity(String.class));
+	if (response.getStatus() == HTTPStatusCodeEnum.OK.getCode()) {
+	    return response.readEntity(ExtensionRequestTransaction.class);
+	} else {
+	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
 	}
-	return response.readEntity(ExtensionRequestTransaction.class);
     }
 
     public static ExtensionRequestTransaction validateReExtensionTransaction(Long empId) throws BusinessException {
@@ -99,10 +99,10 @@ public class ExtensionRequestTransactionsClient extends BaseClient {
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling service: extension-request/validateReExtension");
 
-	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
-	    throw new BusinessException(response.readEntity(String.class));
-	} else {
+	if (response.getStatus() == HTTPStatusCodeEnum.OK.getCode()) {
 	    return response.readEntity(ExtensionRequestTransaction.class);
+	} else {
+	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
 	}
     }
 }
