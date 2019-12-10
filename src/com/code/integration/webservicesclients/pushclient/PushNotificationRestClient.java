@@ -26,7 +26,7 @@ public class PushNotificationRestClient {
 
     public static void init() {
 	try {
-	    client = ClientBuilder.newBuilder().sslContext(getSSLContext()).build();
+	    client = ClientBuilder.newBuilder().register(new PushNotificationLogger()).sslContext(getSSLContext()).build();
 
 	    String pushNotificationServerConfigurations = ETRConfigurationService.getPushNotificationServerConfigurations();
 	    String[] pushNotificationServerConfigurationsArray = pushNotificationServerConfigurations.split(",");
