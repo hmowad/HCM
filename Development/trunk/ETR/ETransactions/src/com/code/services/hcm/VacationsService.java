@@ -109,13 +109,13 @@ public class VacationsService extends BaseService {
 	    if (request.getTransactionEmpCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 		if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
 		    AdminDecision adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_REGULAR_VACATION_REQUEST.getCode());
-		    PayrollEngineService.doPayrollIntegration(adminDecision == null ? null : adminDecision.getId(), CategoriesEnum.OFFICERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString);
+		    PayrollEngineService.doPayrollIntegration(adminDecision == null ? null : adminDecision.getId(), CategoriesEnum.OFFICERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
 		} else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
 		    AdminDecision adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_COMPELLING_VACATION_REQUEST.getCode());
-		    PayrollEngineService.doPayrollIntegration(adminDecision == null ? null : adminDecision.getId(), CategoriesEnum.OFFICERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString);
+		    PayrollEngineService.doPayrollIntegration(adminDecision == null ? null : adminDecision.getId(), CategoriesEnum.OFFICERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
 		} else if (request.getVacationTypeId().equals(VacationTypesEnum.SICK.getCode())) {
 		    AdminDecision adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_SICK_VACATION_REQUEST.getCode());
-		    PayrollEngineService.doPayrollIntegration(adminDecision == null ? null : adminDecision.getId(), CategoriesEnum.OFFICERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString);
+		    PayrollEngineService.doPayrollIntegration(adminDecision == null ? null : adminDecision.getId(), CategoriesEnum.OFFICERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
 		}
 	    }
 	}

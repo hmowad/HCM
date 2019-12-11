@@ -143,7 +143,7 @@ public class RetirementsService extends BaseService {
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(disclaimerTransactionData.getEmpId(), terminationTransactionData.getEmpName(), disclaimerTransactionData.getId(), gregTerminationDateString, gregTerminationDateString)));
 	    AdminDecision adminDecision = PayrollEngineService.getAdminDecisionByName(disclaimerAdminDecisionName);
 	    session.flushTransaction();
-	    PayrollEngineService.doPayrollIntegration(adminDecision == null ? null : adminDecision.getId(), disclaimerTransactionData.getTransEmpCategoryId(), gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionData.getTransEmpUnitId(), gregDecisionDateString);
+	    PayrollEngineService.doPayrollIntegration(adminDecision == null ? null : adminDecision.getId(), disclaimerTransactionData.getTransEmpCategoryId(), gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionData.getTransEmpUnitId(), gregDecisionDateString, session);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(e.getMessage());

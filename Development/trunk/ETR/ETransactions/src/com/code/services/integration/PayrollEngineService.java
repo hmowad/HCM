@@ -13,6 +13,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
+import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.integration.payroll.AdminDecisionVariablesMapping;
 import com.code.dal.orm.setup.AdminDecision;
@@ -45,7 +46,7 @@ public class PayrollEngineService extends BaseService {
 	}
     }
 
-    public static void doPayrollIntegration(Long adminDecisionId, Long categoryId, String executionDateString, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString) throws BusinessException {
+    public static void doPayrollIntegration(Long adminDecisionId, Long categoryId, String executionDateString, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, CustomSession useSession) throws BusinessException {
 	Log4jService.traceInfo(PayrollEngineService.class, "Start of doPayrollIntegration() method");
 	PayrollRestClient.init();
 	if (adminDecisionId == null)
@@ -54,7 +55,7 @@ public class PayrollEngineService extends BaseService {
 	Log4jService.traceInfo(PayrollEngineService.class, "adminDecisionVariables: " + adminDecisionVariables);
 	List<AdminDecisionResponse> adminDecisionList = getAdminDecisionVariablesMap(adminDecisionVariables);
 	Log4jService.traceInfo(PayrollEngineService.class, "adminDecisionList successfully created");
-	JsonObject applyAdminDecisionBody = getApplyAdminDecisionBody(adminDecisionList, adminDecisionEmployeeDataList, unitId, decisionDateString, adminDecisionId, categoryId);
+	JsonObject applyAdminDecisionBody = getApplyAdminDecisionBody(adminDecisionList, adminDecisionEmployeeDataList, unitId, decisionDateString, adminDecisionId, categoryId, useSession);
 	Log4jService.traceInfo(PayrollEngineService.class, "applyAdminDecisionBody: " + applyAdminDecisionBody.toString());
 	PayrollRestClient.applyAdminDecision(applyAdminDecisionBody);
 	PayrollRestClient.destroy();
@@ -92,7 +93,7 @@ public class PayrollEngineService extends BaseService {
 	return adminDecisionsList;
     }
 
-    private static JsonObject getApplyAdminDecisionBody(List<AdminDecisionResponse> adminDecisionList, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, Long adminDecisionId, Long categoryId) throws BusinessException {
+    private static JsonObject getApplyAdminDecisionBody(List<AdminDecisionResponse> adminDecisionList, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, Long adminDecisionId, Long categoryId, CustomSession useSession) throws BusinessException {
 	try {
 	    Log4jService.traceInfo(PayrollEngineService.class, "start of getApplyAdminDecisionBody() method");
 	    if (adminDecisionEmployeeDataList == null || adminDecisionEmployeeDataList.size() == 0) {
@@ -119,7 +120,7 @@ public class PayrollEngineService extends BaseService {
 			mappingQuery.append(employeeData.getTransactionId() != null && transactionIdMapping.get(tableName) != null ? " and "
 				+ transactionIdMapping.get(tableName) + " = " + employeeData.getTransactionId() : "");
 			Log4jService.traceInfo(PayrollEngineService.class, "mappingQuery: " + mappingQuery.toString());
-			List<String> result = DataAccess.executeNativeQuery(String.class, mappingQuery, new HashMap<String, Object>());
+			List<String> result = DataAccess.executeNativeQuery(String.class, mappingQuery, new HashMap<String, Object>(), useSession);
 			String mappingValue = result == null || result.size() == 0 ? null : result.get(0);
 			Log4jService.traceInfo(PayrollEngineService.class, "HCM value: " + mappingValue);
 			if (adminDecisionVariable.getIsLov() != null && adminDecisionVariable.getIsLov().equals(FlagsEnum.ON.getCode())) {
@@ -159,7 +160,7 @@ public class PayrollEngineService extends BaseService {
 			    + ") from " + tableName + " where " + employeeIdMapping.get(tableName) + " = " + adminDecisionEmployeeDataList.get(0).getEmpId());
 		    mappingQuery.append(adminDecisionEmployeeDataList.get(0).getTransactionId() != null && transactionIdMapping.get(tableName) != null ? " and " + transactionIdMapping.get(tableName) + " = " + adminDecisionEmployeeDataList.get(0).getTransactionId() : "");
 		    Log4jService.traceInfo(PayrollEngineService.class, "mappingQuery: " + mappingQuery.toString());
-		    List<String> result = DataAccess.executeNativeQuery(String.class, mappingQuery, new HashMap<String, Object>());
+		    List<String> result = DataAccess.executeNativeQuery(String.class, mappingQuery, new HashMap<String, Object>(), useSession);
 		    String mappingValue = result == null || result.size() == 0 ? null : result.get(0);
 		    Log4jService.traceInfo(PayrollEngineService.class, "HCM value: " + mappingValue);
 		    if (adminDecisionVariable.getIsLov() != null && adminDecisionVariable.getIsLov().equals(FlagsEnum.ON.getCode())) {
