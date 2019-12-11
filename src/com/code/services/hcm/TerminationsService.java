@@ -1988,7 +1988,7 @@ public class TerminationsService extends BaseService {
 		    gregTerminationDateString = HijriDateService.hijriToGregDateString(terminationTransactionsList.get(0).getServiceTerminationDateString());
 		    gregDecisionDateString = HijriDateService.hijriToGregDateString(terminationTransactionsList.get(0).getDecisionDateString());
 		    session.flushTransaction();
-		    PayrollEngineService.doPayrollIntegration(adminDecision == null ? null : adminDecision.getId(), terminationTransactionsList.get(0).getCategoryId(), gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionsList.get(0).getTransEmpUnitId(), gregDecisionDateString);
+		    PayrollEngineService.doPayrollIntegration(adminDecision == null ? null : adminDecision.getId(), terminationTransactionsList.get(0).getCategoryId(), gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionsList.get(0).getTransEmpUnitId(), gregDecisionDateString, session);
 		}
 	    }
 	} catch (BusinessException e) {

@@ -214,13 +214,20 @@ public class DataAccess {
 	return executeQuery(dataClass, null, dynamicQueryBuffer, null, parameters);
     }
 
-    public static <T> List<T> executeNativeQuery(Class<T> dataClass, StringBuffer nativeQueryBuffer, Map<String, Object> parameters) throws DatabaseException {
-	return executeQuery(dataClass, null, null, nativeQueryBuffer, parameters);
+    /**
+     * useSession parameter added for a case when selecting a column from a transaction that is not committed yet , Use it with caution
+     **/
+    public static <T> List<T> executeNativeQuery(Class<T> dataClass, StringBuffer nativeQueryBuffer, Map<String, Object> parameters, CustomSession... useSession) throws DatabaseException {
+	return executeQuery(dataClass, null, null, nativeQueryBuffer, parameters, useSession);
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> List<T> executeQuery(Class<T> dataClass, String queryName, StringBuffer dynamicQueryBuffer, StringBuffer nativeQueryBuffer, Map<String, Object> parameters) throws DatabaseException {
-	Session session = sessionFactory.openSession();
+    private static <T> List<T> executeQuery(Class<T> dataClass, String queryName, StringBuffer dynamicQueryBuffer, StringBuffer nativeQueryBuffer, Map<String, Object> parameters, CustomSession... useSession) throws DatabaseException {
+	boolean isOpenedSession = false;
+	if (useSession != null && useSession.length > 0)
+	    isOpenedSession = true;
+
+	Session session = isOpenedSession ? useSession[0].getSession() : sessionFactory.openSession();
 
 	try {
 	    Query q = null;
@@ -261,7 +268,8 @@ public class DataAccess {
 	} catch (Exception e) {
 	    throw new DatabaseException(e.getMessage());
 	} finally {
-	    session.close();
+	    if (!isOpenedSession)
+		session.close();
 	}
     }
 
