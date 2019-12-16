@@ -50,6 +50,7 @@ import com.code.enums.ReportNamesEnum;
 import com.code.enums.ReportOutputFormatsEnum;
 import com.code.enums.TerminationReasonsEnum;
 import com.code.enums.TransactionClassesEnum;
+import com.code.enums.TransactionTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.integration.webservicesclients.infosys.HCMWebService;
@@ -1882,8 +1883,15 @@ public class PromotionsService extends BaseService {
 	    throw new BusinessException("error_promotionCancellationNotValid");
 
 	List<TerminationTransactionData> terminationTransactionData = TerminationsService.getTerminationTransactionsAfterDecisionDate(empId, decisiondate);
-	if (terminationTransactionData != null && terminationTransactionData.size() != 0)
-	    throw new BusinessException("error_promotionCancellationNotValid");
+	if (terminationTransactionData != null && terminationTransactionData.size() != 0) {
+	    if (terminationTransactionData.size() != 2)
+		throw new BusinessException("error_promotionCancellationNotValid");
+	    else if (terminationTransactionData.get(0).getTransactionTypeCode() != TransactionTypesEnum.STE_TERMINATION.getCode() ||
+		    terminationTransactionData.get(1).getTransactionTypeCode() != TransactionTypesEnum.STE_TERMINATION_CANCELLATION.getCode()) {
+		throw new BusinessException("error_promotionCancellationNotValid");
+	    }
+
+	}
 
 	List<TrainingTransactionData> trainingTransactionData = TrainingEmployeesService.getJoinedOrNominatedTransactionsCoursesForEmployee(empId);
 	if (trainingTransactionData != null && trainingTransactionData.size() != 0
