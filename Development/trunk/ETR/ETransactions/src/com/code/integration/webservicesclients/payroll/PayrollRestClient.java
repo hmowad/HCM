@@ -1,5 +1,7 @@
 package com.code.integration.webservicesclients.payroll;
 
+import java.util.Base64;
+
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -22,6 +24,7 @@ public class PayrollRestClient {
     private static String esbRestServicesUrl;
     private static String ESBUsername;
     private static String ESBPassword;
+    private static String ESBAuthorizationHeaderValue;
 
     public static void init() {
 	try {
@@ -32,6 +35,7 @@ public class PayrollRestClient {
 	    ESBUsername = ETRConfigurationService.getESBUsername();
 	    ESBPassword = ETRConfigurationService.getESBPassword();
 	    esbEnabledFlag = ETRConfigurationService.getESBEnabledFlag();
+	    ESBAuthorizationHeaderValue = "Basic " + Base64.getEncoder().encodeToString((ESBUsername + ":" + ESBPassword).getBytes());
 	    Log4jService.traceInfo(PayrollRestClient.class, "Client successfully created");
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -49,8 +53,8 @@ public class PayrollRestClient {
 			.queryParam("adminDecisionId", adminDecisionId)
 			.queryParam("categoryId", categoryId)
 			.queryParam("executionDate", executionDateString).request()
-			.header("username", ESBUsername)
-			.header("password", ESBPassword).get(String.class);
+			.header(HttpHeaders.AUTHORIZATION, ESBAuthorizationHeaderValue)
+			.get(String.class);
 	    else
 		return client.target(payrollRestServicesUrl).path("DecisionTypeWebService/getAdminDecisionVariables")
 			.queryParam("adminDecisionId", adminDecisionId)
@@ -70,8 +74,7 @@ public class PayrollRestClient {
 		response = client.target(esbRestServicesUrl).path("payroll-decision/admin-decision-variables")
 			.request()
 			.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-			.header("username", ESBUsername)
-			.header("password", ESBPassword)
+			.header(HttpHeaders.AUTHORIZATION, ESBAuthorizationHeaderValue)
 			.post(Entity.entity(body, MediaType.APPLICATION_JSON + "; charset=utf-8"));
 	    else
 		response = client.target(payrollRestServicesUrl).path("DecisionWebService/ApplyAdminDecision")

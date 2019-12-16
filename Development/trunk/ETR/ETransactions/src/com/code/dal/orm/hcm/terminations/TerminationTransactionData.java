@@ -53,7 +53,7 @@ import com.code.services.util.HijriDateService;
 		query = (" select tt from TerminationTransactionData tt "
 			+ " where (:P_EMP_ID = -1 or tt.empId = :P_EMP_ID) "
 			+ " and (:P_DECISION_DATE_FLAG = -1 or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') <= tt.decisionDate) "
-			+ " order by tt.decisionDate "))
+			+ " order by tt.decisionDate,tt.decisionNumber "))
 })
 @Entity
 @Table(name = "HCM_VW_STE_TRANSACTIONS")
