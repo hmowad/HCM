@@ -134,7 +134,7 @@ public class RaisesManagement extends BaseBacking {
 	    raise.setSystemUser(loginEmpData.getEmpId() + "");
 	    RaisesService.deleteRaise(raise);
 	    raises.remove(raise);
-	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	    setServerSideSuccessMessages(getMessage("notify_recordSuccessfullyDeleted"));
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
