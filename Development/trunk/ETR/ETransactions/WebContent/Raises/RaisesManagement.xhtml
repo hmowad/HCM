@@ -180,7 +180,7 @@
 											<rich:column style="width:5%">
 												<f:facet name="header">#{msgs.label_delete}</f:facet>
 
-												<h:commandButton action="#{raisesManagement.deleteRaise(raise)}" value="#{msgs.fa_times}" onclick="return confirm('#{msgs.q_delete}');" title="#{msgs.label_delete}" styleClass="btn_icon" rendered = "#{raise.status == 1}">
+												<h:commandButton action="#{raisesManagement.deleteRaise(raise)}" value="#{msgs.fa_times}" onclick="return confirm('#{msgs.q_deleteRaiseRecord}');" title="#{msgs.label_delete}" styleClass="btn_icon" rendered = "#{raise.status == 1}">
 													<f:ajax execute="raisesManagementFormId:raisesPanelId" render="raisesManagementFormId:raisesPanelId raisesManagementFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 												</h:commandButton>
 
