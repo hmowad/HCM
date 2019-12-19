@@ -1,73 +1,237 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" 
-xmlns:h="http://java.sun.com/jsf/html" 
-xmlns:ui="http://java.sun.com/jsf/facelets" 
-xmlns:f="http://java.sun.com/jsf/core" 
-xmlns:rich="http://richfaces.org/rich"  
-xmlns:util="http://java.sun.com/jsf/composite/util" 
-xmlns:p="http://primefaces.org/ui">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util">
 <h:head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<h:outputStylesheet library="css" name="styles.css" />
 	<h:outputStylesheet library="css" name="grid.css" />
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
-	<h:outputScript target="head">
-		function applySearch()
-		{
-			document.getElementById('transactionsStepsCycleManagementFormId:searchBtn').click();
+	<script type="text/javascript">
+		function getRank(contextPath, category, index) {
+			openRanksMiniSearch(contextPath, 'handleRankMiniSearchResult(ret,'+index+')', category , 2, 1);
 		}
 		
-		function getJob() {
-			 openJobsMiniSearch('#{request.contextPath}', 'handleJobsMiniSearchResult(ret)', 5, -1, -1, -1, -1, -1, 0);
-	    }
-		
-		function handleJobsMiniSearchResult(ret) {
-	     	if(ret != null){
-				document.getElementById('transactionsStepsCycleManagementFormId:jobIDHId').value = ret[0];
-				document.getElementById('transactionsStepsCycleManagementFormId:jobNameHId').value = ret[2];
-				document.getElementById('transactionsStepsCycleManagementFormId:addJobNameBtnId').click();
-	        }
+		function handleRankMiniSearchResult(ret,index){
+			if (ret != null) {
+				document.getElementById('transactionsStepsCycleForm:detailsDataTableId:'+index+':ranksIDsHId').value = ret[0];
+				document.getElementById('transactionsStepsCycleForm:detailsDataTableId:'+index+':ranksNamesHId').value = ret[1];
+				document.getElementById('transactionsStepsCycleForm:detailsDataTableId:'+index+':ranksNamesId').innerHTML = ret[1];
+			}
 		}
-	 </h:outputScript>
+		
+		function getProcesses(contextPath){
+             openSelectProcesses(2, contextPath,'handleProcessMiniSearchResult(ret)');
+        }
+        
+        function handleProcessMiniSearchResult(ret){
+      	  if(ret != null) {
+                document.getElementById('transactionsStepsCycleForm:processIDId').value = ret[0];
+                document.getElementById('transactionsStepsCycleForm:processNameId').value = ret[1];
+                document.getElementById('transactionsStepsCycleForm:addProcessCycleBtn').click();
+            }
+        }
+    </script>
 </h:head>
 <h:body styleClass="screenBg">
-	<h:form id="transactionsStepsCycleManagementFormId" dir="#{msgs.dir}">
+	<h:form id="transactionsStepsCycleForm" dir="#{msgs.dir}">
 		<ui:decorate template="/Main/Template.xhtml">
-			<table border="0" cellpadding="0" cellspacing="3" width="100%">
+			<table class="tableShowScroll" border="0" cellpadding="0" cellspacing="0" width="100%">
+
 				<tr>
-					<td class="screenTitle" style="padding-bottom: 3px; margin-top: 20px;" width="100%">
-						<span>
-							<h:outputText value="#{msgs.title_transactionsStepsCycleManagement}" />
-						</span>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td class="screenTitle">#{msgs.title_TransactionsStepsCycleManagement}</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_searchCriteria}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>						
+						<h:panelGroup>
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th>
+										<h:outputText value="#{msgs.label_requestName}" />
+									</th>
+									<td>
+										<h:inputText id="requestNameId" value="#{transactionsStepsCycleManagement.processName}" />
+									</td>
+									<th>
+										<h:outputText value="#{msgs.label_category}" />
+									</th>
+									<td>
+										<h:selectOneMenu id="jobCategoryId" value="#{transactionsStepsCycleManagement.jobCategory}" styleClass="selectMenu" process="@this">
+											<f:selectItems value="#{transactionsStepsCycleManagement.categoryEnum}" var="enum" itemValue="#{enum.code}" itemLabel="#{enum.codeDescription}" />
+											<f:ajax event="change" listener="#{transactionsStepsCycleManagement.jobCategoryListener(transactionsStepsCycleManagement.jobCategory, true)}" execute="jobCategoryId" render="rankId"></f:ajax>
+										</h:selectOneMenu>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<h:outputText value="#{msgs.label_employeeDepartment}" />
+									</th>
+									<td>
+										<h:selectOneMenu id="employeeDepartmentId" value="#{transactionsStepsCycleManagement.employeeRegion}" styleClass="selectMenu">
+											<f:selectItems value="#{transactionsStepsCycleManagement.employeeRegionEnum}" var="enum" itemValue="#{enum.code}" itemLabel="#{enum.codeDescription}" />
+										</h:selectOneMenu>
+									</td>
+									<th>
+										<h:outputText value="#{msgs.label_rank}" />
+									</th>
+									<td>
+										<h:panelGroup id="rankId">
+											<h:selectOneMenu value="#{transactionsStepsCycleManagement.rankId}" styleClass="selectMenu" rendered="#{transactionsStepsCycleManagement.jobCategory == null or transactionsStepsCycleManagement.jobCategory.equals(-1)}" disabled="true">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+											</h:selectOneMenu>
+											
+											<h:selectOneMenu  value="#{transactionsStepsCycleManagement.rankId}" styleClass="selectMenu" rendered="#{transactionsStepsCycleManagement.jobCategory != null and !transactionsStepsCycleManagement.jobCategory.equals(-1)}">
+												<f:selectItem itemLabel="#{msgs.label_all}" itemValue="-1" />
+												<f:selectItems value="#{transactionsStepsCycleManagement.searchRanks}" var="rank" itemValue="#{rank.id}" itemLabel="#{rank.description}" />
+											</h:selectOneMenu>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<h:outputText value="#{msgs.label_approvalsStop}" />
+									</th>
+									<td>
+										<h:selectOneMenu id="approvalsStopId" value="#{transactionsStepsCycleManagement.approvalStopPoint}" styleClass="selectMenu">
+											<f:selectItem itemLabel="" itemValue="-1" />
+											<f:selectItems value="#{transactionsStepsCycleManagement.departmentTypeEnum}" var="enum" itemValue="#{enum.code}" itemLabel="#{enum.codeDescription}" />
+										</h:selectOneMenu>
+									</td>
+									<td colspan="4">
+										<h:commandButton action="#{transactionsStepsCycleManagement.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" style="float: left;" styleClass="btn_normal_icon">
+											<f:ajax render="requestNameId jobCategoryId employeeDepartmentId rankId approvalsStopId transactionsStepsCycleForm:detailsDataTableId"></f:ajax>
+										</h:commandButton>
+										<h:commandButton action="#{transactionsStepsCycleManagement.search()}" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" style="float: left;" styleClass="btn_normal_icon">
+											<f:ajax execute="transactionsStepsCycleForm:detailsDataTableId requestNameId jobCategoryId employeeDepartmentId rankId approvalsStopId" render="transactionsStepsCycleForm:detailsDataTableId"></f:ajax>
+										</h:commandButton>
+									</td>
+	
+								</tr>
+							</table>
+						</h:panelGroup>
 					</td>
 				</tr>
 				
 				
 				<tr>
-					<td height="15" />
+					<td width="100%" height="5" />
 				</tr>
-				
 				<tr>
 					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<h:outputText value="#{msgs.label_searchResults}" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<h:panelGroup id="processCyclesPanelGroupId">
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
-									<td width="100%">
-										<rich:dataTable rowKeyVar="index" id="wfTransactionDataTableId" value="#{transactionsStepsCycleManagement.wfProcessDataList}" var="wfProcess" rows="#{transactionsStepsCycleManagement.rowsCount}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+									<td style="margin-right: 20px">
+										<h:commandButton value="#{msgs.label_addRequest}" onclick="getProcesses('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+										<h:inputHidden id="processIDId" value="#{transactionsStepsCycleManagement.selectedProcessesIds}" />
+										<h:inputHidden id="processNameId" value="#{transactionsStepsCycleManagement.selectedProcessesNames}" />
+										<h:commandButton id="addProcessCycleBtn" action="#{transactionsStepsCycleManagement.getProcess}" style="display: none">
+											<f:ajax execute="transactionsStepsCycleForm:processIDId transactionsStepsCycleForm:processNameId" render="transactionsStepsCycleForm:detailsDataTableId transactionsStepsCycleForm:notifyMessagesId"/>
+										</h:commandButton>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<rich:dataTable id="detailsDataTableId" value="#{transactionsStepsCycleManagement.wFProcessCycleToBeDisplayed}" var="processCycle" rows="#{transactionsStepsCycleManagement.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+											<rich:column style="width:5%">
+												<f:facet name="header">#</f:facet>
+												<h:outputText value="#{index}" />
+											</rich:column>
+											<rich:column style="width:20%">
+												<f:facet name="header">#{msgs.label_request}</f:facet>
+												<h:outputText value="#{processCycle.processArabicName}" />
+											</rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_category}</f:facet>
+												<h:outputText value="#{processCycle.jobId}" rendered="#{processCycle.newRow == false}"/>
+												<h:selectOneMenu id="jobCategoryMenuId" value="#{processCycle.jobId}" styleClass="selectMenu" process="@this" rendered="#{processCycle.newRow == true}">
+													<f:selectItem itemLabel="      " itemValue="0" />
+													<f:selectItems value="#{transactionsStepsCycleManagement.categoryEnum}" var="enum" itemValue="#{enum.code}" itemLabel="#{enum.codeDescription}" />
+													<f:ajax event="change" listener="#{transactionsStepsCycleManagement.jobCategoryListener(processCycle.jobId, false)}" execute="jobCategoryMenuId" render="rankMenuId"></f:ajax>
+												</h:selectOneMenu>
+											</rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_employeeDepartment}</f:facet>
+												<h:selectOneMenu id="employeeRegionMenuId" value="#{processCycle.regionId}" styleClass="selectMenu" disabled="#{processCycle.newRow == false}">
+												<f:selectItem itemLabel="      " itemValue="0" />
+												<f:selectItems value="#{transactionsStepsCycleManagement.employeeRegionEnum}" var="item" itemLabel="#{item.codeDescription}" itemValue="#{item.code}" />
+												<f:ajax event="change" listener="#{transactionsStepsCycleManagement.employeeRegionListener(processCycle.regionId)}" execute="employeeRegionMenuId" render="stoppingPointMenuId"></f:ajax>
+											</h:selectOneMenu>
+											</rich:column>
+											<rich:column style="width:20%">
+												<f:facet name="header">#{msgs.label_rank}</f:facet>
+												<h:selectOneMenu rendered="#{!processCycle.newRow}" >
+													<f:selectItems value="#{processCycle.selectedRanksIds}" var="item" itemLabel="#{transactionsStepsCycleManagement.getRankDescription(item)}" itemValue="#{item}" />
+												</h:selectOneMenu>
+												
+												<h:panelGroup id="rankMenuId">
+													<h:panelGroup rendered="#{processCycle.newRow}">
+														<h:outputText id="ranksNamesId" value="#{transactionsStepsCycleManagement.ranksNamesString}" />
+														<h:inputHidden id="ranksIDsHId" value="#{transactionsStepsCycleManagement.ranksIdsString}" />
+														<h:inputHidden id="ranksNamesHId" value="#{transactionsStepsCycleManagement.ranksNamesString}" />
+														<h:commandButton value="#{msgs.fa_external_link}" onclick="getRank('#{request.contextPath}', '#{processCycle.jobId}','#{index}'); return false;" title="#{msgs.label_select}" styleClass="btn_icon" disabled="#{processCycle.jobId == null}">
+															<f:ajax execute="transactionsStepsCycleForm:processCyclesPanelGroupId" render="transactionsStepsCycleForm:processCyclesPanelGroupId"></f:ajax>
+														</h:commandButton>
+													</h:panelGroup>
+												</h:panelGroup>
+											</rich:column>
 											<rich:column style="width:10%">
-												<f:facet name="header">#{msgs.label_select}</f:facet>
-												<h:commandButton value="#{msgs.fa_check_square}" action="#{transactionsStepsCycleManagement.showWfTransactionDetails(wfProcess)}" styleClass="btn_icon" title="#{label_select}">
-													<f:ajax execute="@this" render="transactionsStepsCycleManagementFormId:detailsPanelId transactionsStepsCycleManagementFormId:saveBtn" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												<f:facet name="header">#{msgs.label_approvalsStopsAt}</f:facet>
+												<h:selectOneMenu id="stoppingPointMenuId" value="#{processCycle.stoppingPoint}" styleClass="selectMenu" rendered="#{processCycle.newRow}">
+													<f:selectItems value="#{transactionsStepsCycleManagement.departmentTypeList}" var="enum" itemValue="#{enum.code}" itemLabel="#{enum.codeDescription}" />
+												</h:selectOneMenu>
+	
+												<h:selectOneMenu value="#{processCycle.stoppingPoint}" styleClass="selectMenu" rendered="#{!processCycle.newRow}" disabled="true">
+													<f:selectItems value="#{transactionsStepsCycleManagement.departmentTypeEnum}" var="enum" itemValue="#{enum.code}" itemLabel="#{enum.codeDescription}" />
+												</h:selectOneMenu>
+											</rich:column>
+											<rich:column style="width:10%">
+												<f:facet name="header">#{msgs.label_requestEnabled}</f:facet>
+												<h:selectBooleanCheckbox id="enabledCheckId" value="#{processCycle.enabled}">
+												</h:selectBooleanCheckbox>											
+											</rich:column>
+											<rich:column style="width:15%">
+												<f:facet name="header">#{msgs.label_saveOrUpdate}</f:facet>
+												<h:commandButton id="saveBtn" value="#{msgs.fa_floppy_o}" action="#{transactionsStepsCycleManagement.save(processCycle)}" styleClass="btn_icon" rendered="#{processCycle.id == null}">
+													<f:ajax execute="transactionsStepsCycleForm:detailsDataTableId" render="transactionsStepsCycleForm:detailsDataTableId transactionsStepsCycleForm:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"></f:ajax>
 												</h:commandButton>
-											</rich:column>
-											<rich:column style="width:80%">
-												<f:facet name="header">#{msgs.label_processType}</f:facet>
-												<h:outputText value="#{wfProcess.arabicName}" />
-											</rich:column>
-											
-											<rich:column style="width:10%">
-												<f:facet name="header">#{msgs.label_processEnabled}</f:facet>
-												<h:selectBooleanCheckbox value="#{wfProcess.enableFlagBoolean}" onchange="#{transactionsStepsCycleManagement.enableWfProcess(wfProcess)}" />
+												<h:commandButton id="editBtn" value="#{msgs.fa_floppy_o}" action="#{transactionsStepsCycleManagement.save(processCycle)}" styleClass="btn_icon" rendered="#{processCycle.id != null}" >
+													<f:ajax execute="transactionsStepsCycleForm:detailsDataTableId" render="transactionsStepsCycleForm:detailsDataTableId transactionsStepsCycleForm:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"></f:ajax>
+												</h:commandButton>
 											</rich:column>
 											
 											<f:facet name="footer">
@@ -76,8 +240,8 @@ xmlns:p="http://primefaces.org/ui">
 														#{msgs.label_first}
 	                                            	</f:facet>
 													<f:facet name="last">
-                                                		#{msgs.label_last}
-                                            		</f:facet>
+	                                               		#{msgs.label_last}
+	                                           		</f:facet>
 													<f:facet name="next">
 	                                              		#{msgs.label_next}
 	                                        	    </f:facet>
@@ -90,85 +254,6 @@ xmlns:p="http://primefaces.org/ui">
 									</td>
 								</tr>
 							</table>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<h:panelGroup id="detailsPanelId">
-							<h:panelGroup rendered="#{transactionsStepsCycleManagement.showWfProcessDetails}">
-								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0" style="margin-top: 3px">
-									<tr>
-										<td width="100%">#{msgs.label_processSteps}</td>
-									</tr>
-								</table>
-								
-								<table border="0" cellpadding="0" cellspacing="0" style="margin-top: 3px">
-									<tr>
-										<td width="100%">
-											<h:commandButton value="#{msgs.label_addProcessCycleStep}"  onclick="getJob('#{request.contextPath}');return false;"  styleClass="btn_normal btn_float" style="float: right;" />
-											<h:commandButton id="addJobNameBtnId" style="display: none;" action="#{transactionsStepsCycleManagement.getSelectedWFProcessData()}">
-												<f:ajax execute="transactionsStepsCycleManagementFormId:jobIDHId transactionsStepsCycleManagementFormId:jobNameHId" render="transactionsStepsCycleManagementFormId:detailsDataTableId transactionsStepsCycleManagementFormId:notifyMessagesId"
-													onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
-											</h:commandButton>
-											<h:inputHidden id="jobIDHId" value="#{transactionsStepsCycleManagement.selectedBasicJopNameId}" />
-											<h:inputHidden id="jobNameHId" value="#{transactionsStepsCycleManagement.selectedBasicJopNameName}" />
-										</td>
-									</tr>
-								</table>
-								
-								<rich:dataTable rowKeyVar="index" id="detailsDataTableId" value="#{transactionsStepsCycleManagement.wfProcessStepDataListToBeDisplayed}" var="wfProcessStep" rows="#{transactionsStepsCycleManagement.rowsCount}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
-									<rich:column style="width:15%">
-										<f:facet name="header">#</f:facet>
-										<h:outputText value="#{index + 1}" />
-									</rich:column>
-									
-									<rich:column style="width:40%">
-										<f:facet name="header">#{msgs.label_basicJobName}</f:facet>
-										<h:outputText value="#{wfProcessStep.participantsNames}" />
-									</rich:column>
-									
-									<rich:column style="width:15%">
-										<f:facet name="header">#{msgs.label_approve}</f:facet>
-										<h:selectBooleanCheckbox value="#{wfProcessStep.approve}" disabled="true"></h:selectBooleanCheckbox>
-									</rich:column>
-									
-									<rich:column style="width:15%">
-										<f:facet name="header">#{msgs.label_reject}</f:facet>
-										<h:selectBooleanCheckbox value="#{wfProcessStep.reject}" disabled="true"></h:selectBooleanCheckbox>
-									</rich:column>
-									
-									<rich:column style="width : 15%;" >
-										<f:facet name="header">#{msgs.label_delete}</f:facet>
-										<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" onclick="return confirm('#{msgs.q_delete}');" action="#{transactionsStepsCycleManagement.deleteWfProcessStep(wfProcessStep)}">
-											<f:ajax render="transactionsStepsCycleManagementFormId:detailsDataTableId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
-										</h:commandButton>
-									</rich:column>
-								
-									<f:facet name="footer">
-										<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
-											<f:facet name="first">
-												#{msgs.label_first}
-                                           	</f:facet>
-											<f:facet name="last">
-                                              		#{msgs.label_last}
-                                          		</f:facet>
-											<f:facet name="next">
-                                             		#{msgs.label_next}
-                                       	    </f:facet>
-											<f:facet name="previous">
-                                               	#{msgs.label_previous}
-                                           	</f:facet>
-										</rich:dataScroller>
-									</f:facet>
-								</rich:dataTable>
-								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0" style="margin-top: 3px">
-									<tr>
-										<td>
-											<h:commandButton value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" action="#{transactionsStepsCycleManagement.save()}" id="saveBtn" styleClass="btn_normal_icon" />
-										</td>
-									</tr>
-								</table>
-							</h:panelGroup>
 						</h:panelGroup>
 					</td>
 				</tr>
