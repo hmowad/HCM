@@ -23,6 +23,10 @@ import com.code.dal.orm.BaseEntity;
 	@NamedQuery(name = "wf_group_getProcessesGroups",
 		query = " select g from WFProcessGroup g " +
 			" order by g.processGroupId "),
+	@NamedQuery(name = "wf_group_getProcessesGroupById",
+	query = " select g from WFProcessGroup g "
+		+ " where g.processGroupId = :P_ID " 
+		+ " order by g.processGroupId "),
 	@NamedQuery(name = "wf_group_getProcessesGroupsApprovalCounts",
 		query = " select pg.processGroupId, pg.processGroupName, count(t.taskId) " +
 			" from WFTask t,WFInstance inst,WFProcess proc,WFProcessGroup pg " +

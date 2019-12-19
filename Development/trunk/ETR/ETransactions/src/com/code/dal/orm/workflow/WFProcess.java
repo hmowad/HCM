@@ -24,6 +24,13 @@ import com.code.dal.orm.BaseEntity;
 			" and (:P_PROCESSES_IDS_FLAG = -1 or p.processId not in ( :P_PROCESSES_IDS )) " +
 			" order by p.processId "
 	),
+	@NamedQuery(name = "wf_process_getProcessesByGroupAndName",
+		query = " select p from WFProcess p " +
+		" where (:P_GROUPS_IDS_FLAG = -1 or p.processGroupId in ( :P_GROUPS_IDS )) " +
+		" and (p.processId in ( :P_PROCESSES_IDS )) " +
+		" and (:P_PROCESS_NAME = '-1' or p.processName like :P_PROCESS_NAME) " +
+		" order by p.processId "
+	),
 	@NamedQuery(name = "wf_process_getWFProcess",
 		query = " select p from WFProcess p where p.processId = :P_PROCESS_ID "
 	)
