@@ -2,17 +2,22 @@ package com.code.ui.backings.setup;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import com.code.dal.orm.hcm.Category;
-import com.code.enums.WFProcessStepRolesEnum;
+import com.code.dal.orm.hcm.Rank;
+import com.code.enums.eservices.EServicesCategoryEnum;
+import com.code.enums.eservices.EServicesRanksEnum;
+import com.code.enums.eservices.EmployeeRegionEnum;
+import com.code.enums.eservices.StoppingCriteriaEnum;
 import com.code.exceptions.BusinessException;
-import com.code.integration.parameters.eservices.workflow.WFProcess;
-import com.code.integration.parameters.eservices.workflow.WFProcessStepData;
-import com.code.integration.webservicesclients.eservices.WFProcessStepsClient;
+import com.code.integration.parameters.eservices.workflow.WFProcessCycle;
+import com.code.integration.webservicesclients.eservices.EServicesWorkFlowClient;
+import com.code.services.util.CommonService;
+import com.code.services.util.Log4jService;
 import com.code.ui.backings.base.BaseBacking;
 
 @SuppressWarnings("serial")
@@ -20,184 +25,308 @@ import com.code.ui.backings.base.BaseBacking;
 @ManagedBean(name = "transactionsStepsCycleManagement")
 public class TransactionsStepsCycleManagement extends BaseBacking implements Serializable {
 
-	private int rowsCount = 10;
-	private List<Category> employeeCategoryList;
-	private String name;
-	private Long selectedBasicJopNameId;
-	private String selectedBasicJopNameName;
-	private WFProcess selectedwfProcessData;
-	private List<WFProcess> wfProcessDataList;
-	private List<WFProcessStepData> wfProcessStepDataListToBeDisplayed;
-	private List<WFProcessStepData> wfProcessStepDataListToBeDeleted;
+    private int pageSize = 5;
 
-	private Boolean showWfProcessDetails;
+    private String processName;
+    private Long jobCategory;
+    private Long employeeRegion;
+    private Long rankId;
+    private Long approvalStopPoint;
+    private List<WFProcessCycle> searchResult;
+    private List<WFProcessCycle> wFProcessCycleToBeDisplayed;
+    private List<Rank> searchRanks;
+    private List<Rank> tableRanks;
+    private List<StoppingCriteriaEnum> departmentTypeList;
 
-	public TransactionsStepsCycleManagement() throws Exception {
-		wfProcessStepDataListToBeDisplayed = new ArrayList<>();
-		wfProcessStepDataListToBeDeleted = new ArrayList<>();
-		wfProcessDataList = WFProcessStepsClient.getAllWfProcess();
-		selectedwfProcessData = new WFProcess();
-		showWfProcessDetails = false;
+    private String selectedProcessesIds;
+    private String selectedProcessesNames;
+    
+    private String ranksNamesString;
+    private String ranksIdsString;
+
+
+    public TransactionsStepsCycleManagement() {
+	reset();
+	searchResult = new ArrayList<WFProcessCycle>();
+	wFProcessCycleToBeDisplayed = new ArrayList<WFProcessCycle>();
+	departmentTypeList = new ArrayList<StoppingCriteriaEnum>();
+    }
+
+    public void getProcess() {
+	String[] processesIDs = selectedProcessesIds.split(",");
+	String[] processesNames = selectedProcessesNames.split(",");
+	if (processesIDs != null && processesIDs.length > 0) {
+	    WFProcessCycle wfprocessCycle = new WFProcessCycle();
+	    wfprocessCycle.setProcessId(Long.parseLong(processesIDs[0]));
+	    wfprocessCycle.setProcessArabicName(processesNames[0]);
+//	    wfprocessCycle.setProcessCode(wfProcess.getCode());
+	    wfprocessCycle.setNewRow(true);
+	    wFProcessCycleToBeDisplayed.add(0,wfprocessCycle);
+	}
+    }
+
+    public void employeeRegionListener(Long employeeRegionId) {
+	if (employeeRegionId == EmployeeRegionEnum.ALL.getCode()) {
+	    departmentTypeList = new ArrayList<>();
+	    departmentTypeList.add(StoppingCriteriaEnum.PRESIDENCY);
+	} else if (employeeRegionId == EmployeeRegionEnum.DIRECTORATE_EMPLOYEE.getCode()) {
+	    departmentTypeList = new ArrayList<>();
+	    departmentTypeList.add(StoppingCriteriaEnum.PRESIDENCY);
+	    departmentTypeList.add(StoppingCriteriaEnum.ASSISTANT_PRESIDENCY);
+
+	} else if (employeeRegionId == EmployeeRegionEnum.REGION_EMPLOYEE.getCode()) {
+	    departmentTypeList = new ArrayList<>();
+	    departmentTypeList.add(StoppingCriteriaEnum.PRESIDENCY);
+	    departmentTypeList.add(StoppingCriteriaEnum.REGION_COMMANDER);
+	    departmentTypeList.add(StoppingCriteriaEnum.ASSISTANT_REGION_COMMANDER);
+	}
+    }
+
+    public void jobCategoryListener(Long jobCategoryId, Boolean search) {
+	try {
+	    if (search) {
+		searchRanks = CommonService.getRanks(null, new Long[] { jobCategoryId });
+	    } else {
+		tableRanks = CommonService.getRanks(null, new Long[] { jobCategoryId });
+	    }
+	} catch (BusinessException e) {
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
+	    Log4jService.traceErrorException(TransactionsStepsCycleManagement.class, e, "TransactionsStepsCycleManagement");
 	}
 
-	public void showWfTransactionDetails(WFProcess wfProcess) {
-		try {
-			showWfProcessDetails = true;
-			selectedwfProcessData = wfProcess;
-			wfProcessStepDataListToBeDisplayed = WFProcessStepsClient.getWfProcessDetails(wfProcess.getId());
-			wfProcessStepDataListToBeDeleted.clear();
-		} catch (BusinessException e) {
-			setServerSideErrorMessages(getMessage(e.getMessage()));
+    }
+
+    /********************************* ActionButtons ******************************************/
+
+    public void search() {
+	searchResult.clear();
+	wFProcessCycleToBeDisplayed.clear();
+	try {
+	    searchResult = EServicesWorkFlowClient.getAllWFProcessesCycle(null, processName, jobCategory, employeeRegion, rankId, approvalStopPoint, null);
+	} catch (BusinessException e) {
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
+	    Log4jService.traceErrorException(TransactionsStepsCycleManagement.class, e, "TransactionsStepsCycleManagement");
+	}
+	if (searchResult != null) {
+	    wFProcessCycleToBeDisplayed = new ArrayList<WFProcessCycle>(searchResult);
+	    for (WFProcessCycle processCycle : wFProcessCycleToBeDisplayed) {
+		if (processCycle.getJobId() == null) {
+		    processCycle.setJobId(EServicesCategoryEnum.ALL.getCode());
 		}
+		if (processCycle.getRegionId() == null) {
+		    processCycle.setRegionId((long) EmployeeRegionEnum.ALL.getCode());
+		}
+	    }
 	}
+    }
 
-	public void getSelectedWFProcessData() {
-		for (WFProcessStepData wfProcessStepData : wfProcessStepDataListToBeDisplayed) {
-		    if (wfProcessStepData.getParticipants().equals(selectedBasicJopNameId.toString())) {
-			    setServerSideErrorMessages(getMessage("error_repeatedValue"));
-			    return;
-		    }
+    public void reset() {
+	processName = "";
+	jobCategory = -1L;
+	employeeRegion = -1L;
+	rankId = -1L;
+	approvalStopPoint = -1L;
+	searchRanks = new ArrayList<Rank>();
+
+    }
+
+    public void save(WFProcessCycle cycle) {
+	try {
+	    Boolean Enabled;
+	    if (cycle.getId() == null) {
+		if (cycle.getJobId() == 0) {
+		    setServerSideErrorMessages(getMessage("error_jobIdMandatory"));
+		    return;
+		}
+		if (cycle.getRegionId() == 0) {
+		    setServerSideErrorMessages(getMessage("error_regionIdMandatory"));
+		    return;
+		}
+		if (ranksIdsString == null || ranksIdsString.isEmpty()) {
+		    setServerSideErrorMessages(getMessage("error_rankMandatory"));
+		    return;
+		}
+
+		List<Long> selectedRanksIds = new ArrayList<Long>();
+		String[] ranksIDsArray = ranksIdsString.split(",");
+		for(String rankString: ranksIDsArray){
+		    selectedRanksIds.add(Long.parseLong(rankString));
 		}
 		
-		WFProcessStepData wfProcessStep = new WFProcessStepData();
-		wfProcessStep.setParticipants(selectedBasicJopNameId.toString());
-		wfProcessStep.setParticipantsNames(selectedBasicJopNameName);
-		wfProcessStep.setApprove(true);
-		wfProcessStep.setReject(true);
-		if (wfProcessStepDataListToBeDisplayed == null || wfProcessStepDataListToBeDisplayed.size() == 0)
-			wfProcessStep.setStepOrder(1);
-		else {
-			wfProcessStep.setStepOrder( wfProcessStepDataListToBeDisplayed.get(wfProcessStepDataListToBeDisplayed.size() - 1).getStepOrder() + 1);
+		List<String> selectedRanksDescriptions = new ArrayList<String>();
+		String[] ranksDescriptionsArray = ranksNamesString.split(",");
+		for(String rankDescription: ranksDescriptionsArray){
+		    selectedRanksDescriptions.add(rankDescription);
 		}
-		wfProcessStep.setProcessId(selectedwfProcessData.getId());
-		wfProcessStep.setStepRole(WFProcessStepRolesEnum.APPROVAL.getCode());
-		wfProcessStepDataListToBeDisplayed.add(wfProcessStep);
-	}
+		
+		cycle.setSelectedRanksIds(selectedRanksIds);
+		cycle.setSelectedRanksDescriptions(selectedRanksDescriptions);
+		cycle.setRankId("," + ranksIdsString + ",");
+		cycle.setRankDescription("," + ranksNamesString + ",");
+		cycle.setId(EServicesWorkFlowClient.saveOrUpdateWFProcessCycles(cycle));
+		cycle.setNewRow(false);
+		setServerSideSuccessMessages(getParameterizedMessage("label_processCycleSaved"));
 
-	public void deleteWfProcessStep(WFProcessStepData wfProcessStep) {
-
-		int stepIndex = wfProcessStepDataListToBeDisplayed.indexOf(wfProcessStep);
-		int stepOrder = wfProcessStep.getStepOrder();
-		for (int i = stepIndex + 1; i < wfProcessStepDataListToBeDisplayed.size(); i++) {
-			wfProcessStepDataListToBeDisplayed.get(i).setStepOrder(stepOrder);
-			stepOrder++;
+	    } else {
+		Enabled = cycle.getEnabled();
+		EServicesWorkFlowClient.saveOrUpdateWFProcessCycles(cycle);
+		if (Enabled) {
+		    setServerSideSuccessMessages(getParameterizedMessage("notify_processCycleEnabled"));
+		} else {
+		    setServerSideSuccessMessages(getParameterizedMessage("notify_processCycleDisabled"));
 		}
-		wfProcessStepDataListToBeDisplayed.remove(wfProcessStep);
+	    }
 
-		if (wfProcessStep.getId() != null) {
-			wfProcessStep.setToBeDeleted(true);
-			wfProcessStepDataListToBeDeleted.add(wfProcessStep);
-		}
-
-		setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	} catch (BusinessException e) {
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
+	    Log4jService.traceErrorException(TransactionsStepsCycleManagement.class, e, "TransactionsStepsCycleManagement");
+	    return;
 	}
 
-	public void enableWfProcess(WFProcess wfProcess) {
-		try {
-			if (wfProcess.getEnableFlagBoolean()) {
-				WFProcessStepsClient.enableWfProcess(wfProcess);
-			}
-		} catch (BusinessException e) {
-			setServerSideErrorMessages(getMessage(e.getMessage()));
-		}
-	}
+    }
 
-	public void save() {
-		try {
-			List<WFProcessStepData> wfProcessStepToBeSaved = new ArrayList<>();
-			wfProcessStepToBeSaved.addAll(wfProcessStepDataListToBeDeleted);
-			wfProcessStepToBeSaved.addAll(wfProcessStepDataListToBeDisplayed);
+    /********************************* EnumsGetters ******************************************/
 
-			WFProcessStepsClient.saveOrUpdateWfProcessStep(wfProcessStepToBeSaved);
-			wfProcessStepDataListToBeDeleted = new ArrayList<>();
-			setServerSideSuccessMessages(getMessage("notify_successOperation"));
-		} catch (BusinessException e) {
-			setServerSideErrorMessages(getMessage(e.getMessage()));
-		}
-	}
+    public List<EServicesCategoryEnum> getCategoryEnum() {
+	return Arrays.asList(EServicesCategoryEnum.values());
+    }
 
-	/*****************************************************
-	 * Getters and Setters
-	 ********************************************************/
+    public List<EmployeeRegionEnum> getEmployeeRegionEnum() {
+	return Arrays.asList(EmployeeRegionEnum.values());
+    }
 
-	public List<Category> getEmployeeCategoryList() {
-		return employeeCategoryList;
-	}
+    public List<StoppingCriteriaEnum> getDepartmentTypeEnum() {
+	return Arrays.asList(StoppingCriteriaEnum.values());
+    }
 
-	public void setEmployeeCategoryList(List<Category> employeeCategoryList) {
-		this.employeeCategoryList = employeeCategoryList;
-	}
+    public List<EServicesRanksEnum> getRanksEnum() {
+	return Arrays.asList(EServicesRanksEnum.values());
+    }
 
-	public Boolean getShowWfProcessDetails() {
-		return showWfProcessDetails;
-	}
+    public String getRankDescription(Long rankId) {
+	return EServicesRanksEnum.valueOfNumber(rankId);
+    }
 
-	public void setShowWfProcessDetails(Boolean showWfProcessDetails) {
-		this.showWfProcessDetails = showWfProcessDetails;
-	}
+    /********************************* Setters&Getters ***************************************/
 
-	public String getName() {
-		return name;
-	}
+    public String getProcessName() {
+	return processName;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setProcessName(String processName) {
+	this.processName = processName;
+    }
 
-	public List<WFProcess> getWfProcessDataList() {
-		return wfProcessDataList;
-	}
+    public Long getJobCategory() {
+	return jobCategory;
+    }
 
-	public void setWfProcessDataList(List<WFProcess> wfProcessDataList) {
-		this.wfProcessDataList = wfProcessDataList;
-	}
+    public void setJobCategory(Long jobCategory) {
+	this.jobCategory = jobCategory;
+    }
 
-	public List<WFProcessStepData> getWfProcessStepDataListToBeDisplayed() {
-		return wfProcessStepDataListToBeDisplayed;
-	}
+    public Long getEmployeeRegion() {
+	return employeeRegion;
+    }
 
-	public void setWfProcessStepDataListToBeDisplayed(List<WFProcessStepData> wfProcessStepDataListToBeDisplayed) {
-		this.wfProcessStepDataListToBeDisplayed = wfProcessStepDataListToBeDisplayed;
-	}
+    public void setEmployeeRegion(Long employeeRegion) {
+	this.employeeRegion = employeeRegion;
+    }
 
-	public List<WFProcessStepData> getWfProcessStepDataListToBeDeleted() {
-		return wfProcessStepDataListToBeDeleted;
-	}
+    public Long getRankId() {
+	return rankId;
+    }
 
-	public void setWfProcessStepDataListToBeDeleted(List<WFProcessStepData> wfProcessStepDataListToBeDeleted) {
-		this.wfProcessStepDataListToBeDeleted = wfProcessStepDataListToBeDeleted;
-	}
+    public void setRankId(Long rankId) {
+	this.rankId = rankId;
+    }
 
-	public WFProcess getSelectedwfProcessData() {
-		return selectedwfProcessData;
-	}
+    public Long getApprovalStopPoint() {
+	return approvalStopPoint;
+    }
 
-	public void setSelectedwfProcessData(WFProcess selectedwfProcessData) {
-		this.selectedwfProcessData = selectedwfProcessData;
-	}
+    public void setApprovalStopPoint(Long approvalStopPoint) {
+	this.approvalStopPoint = approvalStopPoint;
+    }
 
-	public int getRowsCount() {
-		return rowsCount;
-	}
+    public List<WFProcessCycle> getSearchResult() {
+	return searchResult;
+    }
 
-	public void setRowsCount(int rowsCount) {
-		this.rowsCount = rowsCount;
-	}
+    public void setSearchResult(List<WFProcessCycle> searchResult) {
+	this.searchResult = searchResult;
+    }
 
-	public Long getSelectedBasicJopNameId() {
-		return selectedBasicJopNameId;
-	}
+    public List<WFProcessCycle> getwFProcessCycleToBeDisplayed() {
+	return wFProcessCycleToBeDisplayed;
+    }
 
-	public void setSelectedBasicJopNameId(Long selectedBasicJopNameId) {
-		this.selectedBasicJopNameId = selectedBasicJopNameId;
-	}
+    public void setwFProcessCycleToBeDisplayed(List<WFProcessCycle> wFProcessCycleToBeDisplayed) {
+	this.wFProcessCycleToBeDisplayed = wFProcessCycleToBeDisplayed;
+    }
 
-	public String getSelectedBasicJopNameName() {
-		return selectedBasicJopNameName;
-	}
+    public List<Rank> getSearchRanks() {
+	return searchRanks;
+    }
 
-	public void setSelectedBasicJopNameName(String selectedBasicJopNameName) {
-		this.selectedBasicJopNameName = selectedBasicJopNameName;
-	}
+    public void setSearchRanks(List<Rank> searchRanks) {
+	this.searchRanks = searchRanks;
+    }
+
+    public List<Rank> getTableRanks() {
+	return tableRanks;
+    }
+
+    public void setTableRanks(List<Rank> tableRanks) {
+	this.tableRanks = tableRanks;
+    }
+
+    public List<StoppingCriteriaEnum> getDepartmentTypeList() {
+	return departmentTypeList;
+    }
+
+    public void setDepartmentTypeList(List<StoppingCriteriaEnum> departmentTypeList) {
+	this.departmentTypeList = departmentTypeList;
+    }
+
+    public String getSelectedProcessesIds() {
+	return selectedProcessesIds;
+    }
+
+    public void setSelectedProcessesIds(String selectedProcessesIds) {
+	this.selectedProcessesIds = selectedProcessesIds;
+    }
+
+    public String getSelectedProcessesNames() {
+	return selectedProcessesNames;
+    }
+
+    public void setSelectedProcessesNames(String selectedProcessesNames) {
+	this.selectedProcessesNames = selectedProcessesNames;
+    }
+
+    public int getPageSize() {
+	return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+	this.pageSize = pageSize;
+    }
+
+    public String getRanksNamesString() {
+	return ranksNamesString;
+    }
+
+    public void setRanksNamesString(String ranksNamesString) {
+	this.ranksNamesString = ranksNamesString;
+    }
+
+    public String getRanksIdsString() {
+	return ranksIdsString;
+    }
+
+    public void setRanksIdsString(String ranksIdsString) {
+	this.ranksIdsString = ranksIdsString;
+    }
 
 }
