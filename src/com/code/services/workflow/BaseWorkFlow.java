@@ -845,6 +845,16 @@ public abstract class BaseWorkFlow extends BaseService {
 	    throw new BusinessException("error_general");
 	}
     }
+    
+    public static WFProcessGroup getWFProcessesGroupById(Long id) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_ID", id);
+	    return DataAccess.executeNamedQuery(WFProcessGroup.class, QueryNamesEnum.WF_GET_PROCESSES_GROUP_BY_ID.getCode(), qParams).get(0);
+	} catch (DatabaseException e) {
+	    throw new BusinessException("error_general");
+	}
+    }
 
     public static List<WFProcess> getWFGroupProcesses(long processGroupId) throws BusinessException {
 	return searchWFProcesses(processGroupId, null, null);
@@ -878,6 +888,24 @@ public abstract class BaseWorkFlow extends BaseService {
 	    qParams.put("P_PROCESS_ID", processId);
 	    return DataAccess.executeNamedQuery(WFProcess.class, QueryNamesEnum.WF_GET_PROCESS.getCode(), qParams).get(0);
 	} catch (Exception e) {
+	    throw new BusinessException("error_general");
+	}
+    }
+    
+    public static List<WFProcess> getWFProcessesByGroupIdAndName(String processName, Long[] processGroupsIds, Long[] processesIds) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_PROCESS_NAME", (processName == null || processName.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + processName + "%");
+	    qParams.put("P_PROCESSES_IDS", processesIds);
+	    if (processGroupsIds != null && processGroupsIds.length > 0) {
+		qParams.put("P_GROUPS_IDS_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_GROUPS_IDS", processGroupsIds);
+	    } else {
+		qParams.put("P_GROUPS_IDS_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_GROUPS_IDS", new Long[] { (long) FlagsEnum.ALL.getCode() });
+	    }
+	    return DataAccess.executeNamedQuery(WFProcess.class, QueryNamesEnum.WF_GET_PROCESSES_BY_GROUP_AND_NAME.getCode(), qParams);
+	} catch (DatabaseException e) {
 	    throw new BusinessException("error_general");
 	}
     }

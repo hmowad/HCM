@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.code.dal.orm.workflow.WFInstance;
 import com.code.dal.orm.workflow.WFProcess;
+import com.code.dal.orm.workflow.WFProcessGroup;
 import com.code.dal.orm.workflow.WFTask;
 import com.code.dal.orm.workflow.WFTaskData;
 import com.code.enums.WFTaskActionsEnum;
@@ -74,18 +75,6 @@ public class EServicesBaseWorkFlowService {
     }
 
     /************************************ inbox actions ***********************************************/
-    private static Boolean isEservicesProcess(Long processCode) {
-	if (processCode != null) {
-	    EservicesProcessesEnum[] eservicesProcessesEnum = EservicesProcessesEnum.values();
-	    for (int i = 0; i < eservicesProcessesEnum.length; i++) {
-		if (eservicesProcessesEnum[i].getCode() == processCode) {
-		    return true;
-		}
-	    }
-	}
-	return false;
-    }
-
     private static List<WFTaskData> searchEservicesWFTasksData(Long assigneeId, Long beneficiaryId, String taskOwnerName, Long processGroupId, Long processId, Boolean isRunning, Integer taskRole, Boolean isDESC) throws BusinessException {
 	try {
 	    List<WFTaskData> hcmWFTaskDataList = new ArrayList<WFTaskData>();
@@ -141,6 +130,34 @@ public class EServicesBaseWorkFlowService {
 	}
     }
 
+    /************************************ ProcessesMiniSearch actions ***********************************************/
+    public static List<WFProcess> getEservicesProcesses(Long processGroupId, String processName) throws BusinessException {
+	if (processGroupId == 0) {
+	    return BaseWorkFlow.getWFProcessesByGroupIdAndName(processName, getEservicesProcessGroupsIDs(), getEservicesProcessesIDs());
+	} else {
+	    return BaseWorkFlow.getWFProcessesByGroupIdAndName(processName, new Long[] { processGroupId }, getEservicesProcessesIDs());
+	}
+    }
+
+    public static List<WFProcessGroup> getEservicesProcessGroups() throws BusinessException {
+	List<WFProcessGroup> eservicesProcessGroup = new ArrayList<WFProcessGroup>();
+	EservicesProcessesEnum[] eservicesProcessesEnum = EservicesProcessesEnum.values();
+	for (int i = 0; i < eservicesProcessesEnum.length; i++) {
+	    WFProcessGroup wfProcessGroup = BaseWorkFlow.getWFProcessesGroupById(eservicesProcessesEnum[i].getGroup());
+	    if (i == 0) {
+		eservicesProcessGroup.add(wfProcessGroup);
+		continue;
+	    }
+	    for (WFProcessGroup processGroup : eservicesProcessGroup) {
+		if (processGroup.getProcessGroupId() == wfProcessGroup.getProcessGroupId())
+		    continue;
+		else
+		    eservicesProcessGroup.add(wfProcessGroup);
+	    }
+	}
+	return eservicesProcessGroup;
+    }
+
     /************************************ map from eservices to hcm ***********************************************/
     private static WFTask toHCMWFTask(com.code.integration.parameters.eservices.workflow.WFTask eservicesWFTask) {
 	WFTask hcmWFTask = new WFTask();
@@ -169,6 +186,7 @@ public class EServicesBaseWorkFlowService {
 	hcmWFTask.setLevel(eservicesWFTask.getStepOrder().toString());
 	hcmWFTask.setArabicDetailsSummary(eservicesWFTask.getArabicDetailsSummary());
 	hcmWFTask.setEnglishDetailsSummary(eservicesWFTask.getEnglishDetailsSummary());
+	hcmWFTask.setStoppingPoint(eservicesWFTask.getStoppingPoint());
 	return hcmWFTask;
     }
 
@@ -212,6 +230,7 @@ public class EServicesBaseWorkFlowService {
 	hcmWFTAskData.setTaskOwnerEmpNo(eservicesWFTaskData.getTaskOwnerEmpNo());
 	hcmWFTAskData.setArabicDetailsSummary(eservicesWFTaskData.getArabicDetailsSummary());
 	hcmWFTAskData.setEnglishDetailsSummary(eservicesWFTaskData.getEnglishDetailsSummary());
+	hcmWFTAskData.setStoppingPoint(eservicesWFTaskData.getStoppingPoint());
 	return hcmWFTAskData;
     }
 
@@ -281,5 +300,35 @@ public class EServicesBaseWorkFlowService {
 	    }
 	}
 	return "";
+    }
+
+    private static Boolean isEservicesProcess(Long processCode) {
+	if (processCode != null) {
+	    EservicesProcessesEnum[] eservicesProcessesEnum = EservicesProcessesEnum.values();
+	    for (int i = 0; i < eservicesProcessesEnum.length; i++) {
+		if (eservicesProcessesEnum[i].getCode() == processCode) {
+		    return true;
+		}
+	    }
+	}
+	return false;
+    }
+
+    private static Long[] getEservicesProcessGroupsIDs() {
+	EservicesProcessesEnum[] eservicesProcessesEnum = EservicesProcessesEnum.values();
+	Long[] groupsIds = new Long[eservicesProcessesEnum.length];
+	for (int i = 0; i < eservicesProcessesEnum.length; i++) {
+	    groupsIds[i] = eservicesProcessesEnum[i].getGroup();
+	}
+	return groupsIds;
+    }
+    
+    private static Long[] getEservicesProcessesIDs() {
+	EservicesProcessesEnum[] eservicesProcessesEnum = EservicesProcessesEnum.values();
+	Long[] ids = new Long[eservicesProcessesEnum.length];
+	for (int i = 0; i < eservicesProcessesEnum.length; i++) {
+	    ids[i] = eservicesProcessesEnum[i].getCode();
+	}
+	return ids;
     }
 }
