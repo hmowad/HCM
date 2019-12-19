@@ -9,8 +9,10 @@ import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.workflow.WFProcess;
 import com.code.dal.orm.workflow.WFProcessGroup;
+import com.code.enums.FlagsEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.workflow.BaseWorkFlow;
+import com.code.services.workflow.EServicesBaseWorkFlowService;
 import com.code.ui.backings.base.BaseBacking;
 
 @SuppressWarnings("serial")
@@ -33,7 +35,11 @@ public class ProcessesMiniSearch extends BaseBacking implements Serializable {
 	searchProcessName = "";
 	mode = Integer.parseInt(getRequest().getParameter("mode"));
 	try {
-	    processesGroups = BaseWorkFlow.getWFProcessesGroups();
+	    if (eservicesFlag == FlagsEnum.OFF.getCode()) {
+		processesGroups = BaseWorkFlow.getWFProcessesGroups();
+	    } else if (eservicesFlag == FlagsEnum.ON.getCode()){
+		processesGroups = EServicesBaseWorkFlowService.getEservicesProcessGroups();
+	    }
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -42,16 +48,21 @@ public class ProcessesMiniSearch extends BaseBacking implements Serializable {
 
     public void searchProcess() {
 	try {
-	    super.init();	    
-	    searchProcessList = null;
-	    if (selectedProcessList.size() > 0) {
-		Long[] processesIds = new Long[selectedProcessList.size()];
-		for (int i = 0; i < selectedProcessList.size(); i++) {
-		    processesIds[i] = selectedProcessList.get(i).getProcessId();
-		}
-		searchProcessList = BaseWorkFlow.getWFGroupProcesses(searchProcessGroupId, searchProcessName, processesIds);
-	    } else 
-		searchProcessList = BaseWorkFlow.getWFGroupProcesses(searchProcessGroupId, searchProcessName, null);
+	    super.init();
+	    if (eservicesFlag == FlagsEnum.OFF.getCode()) {
+		searchProcessList = null;
+		if (selectedProcessList.size() > 0) {
+		    Long[] processesIds = new Long[selectedProcessList.size()];
+		    for (int i = 0; i < selectedProcessList.size(); i++) {
+			processesIds[i] = selectedProcessList.get(i).getProcessId();
+		    }
+		    searchProcessList = BaseWorkFlow.getWFGroupProcesses(searchProcessGroupId, searchProcessName, processesIds);
+		} else
+		    searchProcessList = BaseWorkFlow.getWFGroupProcesses(searchProcessGroupId, searchProcessName, null);
+	    } else if (eservicesFlag == FlagsEnum.ON.getCode()) {
+		searchProcessList = EServicesBaseWorkFlowService.getEservicesProcesses(searchProcessGroupId, searchProcessName);
+	    }
+
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -102,19 +113,19 @@ public class ProcessesMiniSearch extends BaseBacking implements Serializable {
     }
 
     public List<WFProcessGroup> getProcessesGroups() {
-        return processesGroups;
+	return processesGroups;
     }
 
     public void setProcessesGroups(List<WFProcessGroup> processesGroups) {
-        this.processesGroups = processesGroups;
+	this.processesGroups = processesGroups;
     }
 
     public long getSearchProcessGroupId() {
-        return searchProcessGroupId;
+	return searchProcessGroupId;
     }
 
     public void setSearchProcessGroupId(long searchProcessGroupId) {
-        this.searchProcessGroupId = searchProcessGroupId;
+	this.searchProcessGroupId = searchProcessGroupId;
     }
 
     public List<WFProcess> getSearchProcessList() {
@@ -134,11 +145,11 @@ public class ProcessesMiniSearch extends BaseBacking implements Serializable {
     }
 
     public String getTotalProcessesIDs() {
-        return totalProcessesIDs;
+	return totalProcessesIDs;
     }
 
     public void setTotalProcessesIDs(String totalProcessesIDs) {
-        this.totalProcessesIDs = totalProcessesIDs;
+	this.totalProcessesIDs = totalProcessesIDs;
     }
 
     public String getTotalProcessesNames() {
@@ -150,10 +161,10 @@ public class ProcessesMiniSearch extends BaseBacking implements Serializable {
     }
 
     public int getMode() {
-        return mode;
+	return mode;
     }
 
     public void setMode(int mode) {
-        this.mode = mode;
+	this.mode = mode;
     }
 }
