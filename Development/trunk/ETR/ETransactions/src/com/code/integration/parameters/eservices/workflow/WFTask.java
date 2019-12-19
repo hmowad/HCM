@@ -34,6 +34,7 @@ public class WFTask implements Serializable{
     private String arabicDetailsSummary;
     private String englishDetailsSummary;
     private Boolean selected;
+    private Long stoppingPoint;
 
     public Long getId() {
 	return id;
@@ -245,6 +246,14 @@ public class WFTask implements Serializable{
 
     public void setSelected(Boolean selected) {
 	this.selected = selected;
+    }
+
+    public Long getStoppingPoint() {
+	return stoppingPoint;
+    }
+
+    public void setStoppingPoint(Long stoppingPoint) {
+	this.stoppingPoint = stoppingPoint;
     }
 
 }
