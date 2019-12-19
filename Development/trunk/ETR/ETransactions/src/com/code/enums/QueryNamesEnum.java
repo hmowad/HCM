@@ -297,10 +297,12 @@ public enum QueryNamesEnum {
     WF_GET_WFINSTANCE_COMPLETED_TASKS_DATA_ORDERED_BY_LEVEL_LENGTH("wf_taskData_getWFInstanceCompletedTasksDataOrderedByLevelLength"),
 
     WF_GET_PROCESSES_GROUPS("wf_group_getProcessesGroups"),
+    WF_GET_PROCESSES_GROUP_BY_ID("wf_group_getProcessesGroupById"),
     WF_GET_PROCESSES_GROUPS_APRRROVAL_COUNTS("wf_group_getProcessesGroupsApprovalCounts"),
 
     WF_GET_GROUP_PROCESSES("wf_process_getGroupProcesses"),
     WF_GET_PROCESS("wf_process_getWFProcess"),
+    WF_GET_PROCESSES_BY_GROUP_AND_NAME("wf_process_getProcessesByGroupAndName"),
 
     WF_GET_DELEGATE_ID_ALL_HIERARCHY("wf_delegation_getDelegateIdAllHierarchy"),
     WF_GET_DELEGATIONS_COUNT("wf_delegation_getWFDelegationsCount"),
