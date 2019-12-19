@@ -13,6 +13,7 @@ import com.code.enums.FlagsEnum;
 import com.code.enums.eservices.HTTPStatusCodeEnum;
 import com.code.exceptions.BusinessException;
 import com.code.integration.parameters.eservices.workflow.WFInstance;
+import com.code.integration.parameters.eservices.workflow.WFProcessCycle;
 import com.code.integration.parameters.eservices.workflow.WFTask;
 import com.code.integration.parameters.eservices.workflow.WFTaskData;
 import com.code.services.config.ETRConfigurationService;
@@ -138,7 +139,8 @@ public class EServicesWorkFlowClient extends BaseClient {
 		.queryParam("processGroupId", (processGroupId == null || processGroupId == 0) ? FlagsEnum.ALL.getCode() + "" : processGroupId.toString())
 		.queryParam("processId", (processId == null || processId == 0) ? FlagsEnum.ALL.getCode() + "" : processId.toString())
 		.queryParam("isRunning", isRunning == null ? null : Boolean.toString(isRunning))
-		.queryParam("isDESC", desc == null ? null : Boolean.toString(desc)).request().get();
+		.queryParam("isDESC", desc == null ? null : Boolean.toString(desc))
+		.request().get();
 
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling: service wfBase/wfTask");
@@ -189,4 +191,53 @@ public class EServicesWorkFlowClient extends BaseClient {
 	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
 	}
     }
+
+    /***************************************************
+     * Process Cycles
+     **********************************************************/
+    public static List<WFProcessCycle> getAllWFProcessesCycle(Long processId, String processName, Long jobCategory,
+	    Long employeeRegion, Long rankId, Long approvalStoppingPt, Boolean enabled) throws BusinessException {
+	init();
+	
+	Log4jService.traceInfo(EServicesWorkFlowClient.class, "start of calling: service wfBase/wfProcessCycles");
+
+	Response response = client.target(serverUrl).path("wfProcessCycles/")
+		.queryParam("processId", processId == null ? null : processId.toString())
+		.queryParam("processName", processName)
+		.queryParam("jobCategory", jobCategory == null ? null : jobCategory.toString())
+		.queryParam("employeeRegion", employeeRegion == null ? null : employeeRegion.toString())
+		.queryParam("rankId", rankId == null ? null : rankId.toString())
+		.queryParam("approvalStoppingPt", approvalStoppingPt == null ? null : approvalStoppingPt.toString())
+		.queryParam("enabled", enabled == null ? null : enabled.toString())
+		.request().accept(MediaType.APPLICATION_JSON + ";charset=utf-8").get();
+
+	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
+	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling: service wfBase/wfProcessCycles");
+	
+	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
+	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
+	}
+	return getEntityList(WFProcessCycle.class, response.readEntity(String.class));
+    }
+
+    public static Long saveOrUpdateWFProcessCycles(WFProcessCycle wfProcessCycle) throws BusinessException {
+	init();
+	Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+	Log4jService.traceInfo(EServicesWorkFlowClient.class, "start of calling: service wfBase/updateWFProcessCycles");
+
+	Response response = client.target(serverUrl).path("updateWFProcessCycles/")
+		.request()
+		.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+		.post(Entity.entity(gson.toJson(wfProcessCycle), MediaType.APPLICATION_JSON + ";charset=utf-8"));
+
+	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
+	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling: service wfBase/updateWFProcessCycles");
+	
+	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
+	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
+	}
+	return Long.parseLong(response.readEntity(String.class));
+    }
+
 }
