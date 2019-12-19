@@ -47,7 +47,10 @@ public class WFTaskData implements Serializable{
     private Integer priority;
     private Integer stepOrder;
     private String arabicDetailsSummary;
-	private String englishDetailsSummary;
+    private String englishDetailsSummary;
+    private String processCode;
+    private String processGroupCode;
+    private Long stoppingPoint;
 
     public Long getId() {
 	return id;
@@ -371,6 +374,30 @@ public class WFTaskData implements Serializable{
 
 	public void setTaskOwnerReferenceDesc(String taskOwnerReferenceDesc) {
 		this.taskOwnerReferenceDesc = taskOwnerReferenceDesc;
+	}
+
+	public String getProcessCode() {
+	    return processCode;
+	}
+
+	public void setProcessCode(String processCode) {
+	    this.processCode = processCode;
+	}
+
+	public String getProcessGroupCode() {
+	    return processGroupCode;
+	}
+
+	public void setProcessGroupCode(String processGroupCode) {
+	    this.processGroupCode = processGroupCode;
+	}
+
+	public Long getStoppingPoint() {
+	    return stoppingPoint;
+	}
+
+	public void setStoppingPoint(Long stoppingPoint) {
+	    this.stoppingPoint = stoppingPoint;
 	}
 
     
