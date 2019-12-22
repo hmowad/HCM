@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.code.enums.FlagsEnum;
+import com.code.enums.IntegrationTypeFlagEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.util.Log4jService;
@@ -19,9 +20,15 @@ import com.code.services.util.Log4jService;
 public class PayrollRestClient {
 
     private static Client client;
-    private static String payrollRestServicesUrl;
+    private static String payrollRestServicesGetAdminDecisionUrl;
+    private static String allowanceRestServicesGetAdminDecisionUrl;
+    private static String esbPayrollRestServicesGetAdminDecisionUrl;
+    private static String esbAllowanceRestServicesGetAdminDecisionUrl;
+    private static String payrollRestServicesApplyAdminDecisionUrl;
+    private static String allowanceRestServicesApplyAdminDecisionUrl;
+    private static String esbPayrollRestServicesApplyAdminDecisionUrl;
+    private static String esbAllowanceRestServicesApplyAdminDecisionUrl;
     private static Integer esbEnabledFlag;
-    private static String esbRestServicesUrl;
     private static String ESBUsername;
     private static String ESBPassword;
     private static String ESBAuthorizationHeaderValue;
@@ -29,13 +36,21 @@ public class PayrollRestClient {
     public static void init() {
 	try {
 	    Log4jService.traceInfo(PayrollRestClient.class, "Start of init() method");
-	    client = ClientBuilder.newBuilder().build();
-	    payrollRestServicesUrl = ETRConfigurationService.getPayrollRestServiceURL();
-	    esbRestServicesUrl = ETRConfigurationService.getESBRestServiceURL();
+	    payrollRestServicesGetAdminDecisionUrl = ETRConfigurationService.getPayrollRestServiceGetAdminDecisionURL();
+	    allowanceRestServicesGetAdminDecisionUrl = ETRConfigurationService.getAllowanceRestServiceGetAdminDecisionURL();
+	    esbPayrollRestServicesGetAdminDecisionUrl = ETRConfigurationService.getESBPayrollRestServiceGetAdminDecisionURL();
+	    esbAllowanceRestServicesGetAdminDecisionUrl = ETRConfigurationService.getESBAllowanceRestServiceGetAdminDecisionURL();
+
+	    payrollRestServicesApplyAdminDecisionUrl = ETRConfigurationService.getPayrollRestServiceApplyAdminDecisionURL();
+	    allowanceRestServicesApplyAdminDecisionUrl = ETRConfigurationService.getAllowanceRestServiceApplyAdminDecisionURL();
+	    esbPayrollRestServicesApplyAdminDecisionUrl = ETRConfigurationService.getESBPayrollRestServiceApplyAdminDecisionURL();
+	    esbAllowanceRestServicesApplyAdminDecisionUrl = ETRConfigurationService.getESBAllowanceRestServiceApplyAdminDecisionURL();
+
 	    ESBUsername = ETRConfigurationService.getESBUsername();
 	    ESBPassword = ETRConfigurationService.getESBPassword();
 	    esbEnabledFlag = ETRConfigurationService.getESBEnabledFlag();
 	    ESBAuthorizationHeaderValue = "Basic " + Base64.getEncoder().encodeToString((ESBUsername + ":" + ESBPassword).getBytes());
+	    client = ClientBuilder.newBuilder().build();
 	    Log4jService.traceInfo(PayrollRestClient.class, "Client successfully created");
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -44,19 +59,18 @@ public class PayrollRestClient {
 	}
     }
 
-    public static String getAdminDecisionVariables(Long adminDecisionId, Long categoryId, String executionDateString) throws BusinessException {
+    public static String getAdminDecisionVariables(Integer integrationTypeFlag, Long adminDecisionId, Long categoryId, String executionDateString) throws BusinessException {
 	try {
 	    Log4jService.traceInfo(PayrollRestClient.class, "Start of getAdminDecisionVariables() method");
-
 	    if (esbEnabledFlag != null && esbEnabledFlag.equals(FlagsEnum.ON.getCode()))
-		return client.target(esbRestServicesUrl).path("payroll-decision/admin-decision-variables")
+		return client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? esbAllowanceRestServicesGetAdminDecisionUrl : esbPayrollRestServicesGetAdminDecisionUrl)
 			.queryParam("adminDecisionId", adminDecisionId)
 			.queryParam("categoryId", categoryId)
 			.queryParam("executionDate", executionDateString).request()
 			.header(HttpHeaders.AUTHORIZATION, ESBAuthorizationHeaderValue)
 			.get(String.class);
 	    else
-		return client.target(payrollRestServicesUrl).path("DecisionTypeWebService/getAdminDecisionVariables")
+		return client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? allowanceRestServicesGetAdminDecisionUrl : payrollRestServicesGetAdminDecisionUrl)
 			.queryParam("adminDecisionId", adminDecisionId)
 			.queryParam("categoryId", categoryId)
 			.queryParam("executionDate", executionDateString).request().get(String.class);
@@ -67,17 +81,18 @@ public class PayrollRestClient {
 	}
     }
 
-    public static void applyAdminDecision(JsonObject body) throws BusinessException {
+    public static void applyAdminDecision(Integer integrationTypeFlag, JsonObject body) throws BusinessException {
 	try {
 	    Response response;
+
 	    if (esbEnabledFlag != null && esbEnabledFlag.equals(FlagsEnum.ON.getCode()))
-		response = client.target(esbRestServicesUrl).path("payroll-decision/admin-decision-variables")
+		response = client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? esbAllowanceRestServicesApplyAdminDecisionUrl : esbPayrollRestServicesApplyAdminDecisionUrl)
 			.request()
 			.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
 			.header(HttpHeaders.AUTHORIZATION, ESBAuthorizationHeaderValue)
 			.post(Entity.entity(body, MediaType.APPLICATION_JSON + "; charset=utf-8"));
 	    else
-		response = client.target(payrollRestServicesUrl).path("DecisionWebService/ApplyAdminDecision")
+		response = client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? allowanceRestServicesApplyAdminDecisionUrl : payrollRestServicesApplyAdminDecisionUrl)
 			.request()
 			.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
 			.post(Entity.entity(body, MediaType.APPLICATION_JSON + "; charset=utf-8"));

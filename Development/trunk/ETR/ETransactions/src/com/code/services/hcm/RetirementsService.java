@@ -12,7 +12,6 @@ import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransactionData;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransactionDetail;
 import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
-import com.code.dal.orm.setup.AdminDecision;
 import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
@@ -128,11 +127,11 @@ public class RetirementsService extends BaseService {
     private static void doPayrollIntegration(DisclaimerTransactionData disclaimerTransactionData, CustomSession session) throws BusinessException {
 
 	try {
-	    String disclaimerAdminDecisionName = null;
+	    Long disclaimerAdminDecisionId = null;
 	    if (disclaimerTransactionData.getTransEmpCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
-		disclaimerAdminDecisionName = AdminDecisionsEnum.OFFICERS_DISCLAIMER.getCode();
+		disclaimerAdminDecisionId = AdminDecisionsEnum.OFFICERS_DISCLAIMER.getCode();
 	    } else if (disclaimerTransactionData.getTransEmpCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
-		disclaimerAdminDecisionName = AdminDecisionsEnum.SOLDIERS_DISCLAIMER.getCode();
+		disclaimerAdminDecisionId = AdminDecisionsEnum.SOLDIERS_DISCLAIMER.getCode();
 	    }
 	    String gregDecisionDateString = HijriDateService.hijriToGregDateString(disclaimerTransactionData.getDecisionDateString());
 	    String gregTerminationDateString = HijriDateService.hijriToGregDateString(disclaimerTransactionData.getTransServiceTerminationDateString());
@@ -140,10 +139,9 @@ public class RetirementsService extends BaseService {
 	    if (terminationTransactionData.getTransEmpUnitId() == null) {
 		throw new BusinessException("error_noUnitIdInTerminationTransaction");
 	    }
-	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(disclaimerTransactionData.getEmpId(), terminationTransactionData.getEmpName(), disclaimerTransactionData.getId(), gregTerminationDateString, gregTerminationDateString)));
-	    AdminDecision adminDecision = PayrollEngineService.getAdminDecisionByName(disclaimerAdminDecisionName);
+	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(disclaimerTransactionData.getEmpId(), terminationTransactionData.getEmpName(), disclaimerTransactionData.getId(), gregTerminationDateString, gregTerminationDateString, disclaimerTransactionData.getDecisionNumber())));
 	    session.flushTransaction();
-	    PayrollEngineService.doPayrollIntegration(adminDecision == null ? null : adminDecision.getId(), disclaimerTransactionData.getTransEmpCategoryId(), gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionData.getTransEmpUnitId(), gregDecisionDateString, session);
+	    PayrollEngineService.doPayrollIntegration(disclaimerAdminDecisionId, disclaimerTransactionData.getTransEmpCategoryId(), gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionData.getTransEmpUnitId(), gregDecisionDateString, session);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(e.getMessage());

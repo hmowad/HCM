@@ -4,6 +4,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import com.code.dal.DataAccess;
+import com.code.integration.webservicesclients.payroll.PayrollRestClient;
 import com.code.integration.webservicesclients.pushclient.PushNotificationRestClient;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.integration.PayrollEngineService;
@@ -21,10 +22,12 @@ public class AppContextListener implements ServletContextListener {
 	PushNotificationRestClient.init();
 	Log4jService.init();
 	PayrollEngineService.init();
+	PayrollRestClient.init();
     }
 
     public void contextDestroyed(ServletContextEvent event) {
 	DataAccess.destroy();
 	PushNotificationRestClient.destroy();
+	PayrollRestClient.destroy();
     }
 }

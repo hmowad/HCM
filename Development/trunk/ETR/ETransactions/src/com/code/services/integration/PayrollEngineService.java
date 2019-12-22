@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -18,6 +17,7 @@ import com.code.dal.DataAccess;
 import com.code.dal.orm.integration.payroll.AdminDecisionVariablesMapping;
 import com.code.dal.orm.setup.AdminDecision;
 import com.code.enums.FlagsEnum;
+import com.code.enums.IntegrationTypeFlagEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.databasecolumnamemappings.EmployeeIdMappingEnum;
 import com.code.enums.databasecolumnamemappings.TransactionIdMappingEnum;
@@ -48,17 +48,24 @@ public class PayrollEngineService extends BaseService {
 
     public static void doPayrollIntegration(Long adminDecisionId, Long categoryId, String executionDateString, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, CustomSession useSession) throws BusinessException {
 	Log4jService.traceInfo(PayrollEngineService.class, "Start of doPayrollIntegration() method");
-	PayrollRestClient.init();
+
 	if (adminDecisionId == null)
 	    throw new BusinessException("error_adminDecisionRecordDosntExist");
-	String adminDecisionVariables = PayrollRestClient.getAdminDecisionVariables(adminDecisionId, categoryId, executionDateString);
+
+	AdminDecision adminDecision = getAdminDecisionById(adminDecisionId);
+	if (adminDecision == null)
+	    throw new BusinessException("error_adminDecisionRecordDosntExist");
+
+	if (adminDecision.getIntegrationTypeFlag() == IntegrationTypeFlagEnum.NO_INTEGRATON.getCode())
+	    return;
+
+	String adminDecisionVariables = PayrollRestClient.getAdminDecisionVariables(adminDecision.getIntegrationTypeFlag(), adminDecision.getId(), categoryId, executionDateString);
 	Log4jService.traceInfo(PayrollEngineService.class, "adminDecisionVariables: " + adminDecisionVariables);
 	List<AdminDecisionResponse> adminDecisionList = getAdminDecisionVariablesMap(adminDecisionVariables);
 	Log4jService.traceInfo(PayrollEngineService.class, "adminDecisionList successfully created");
-	JsonObject applyAdminDecisionBody = getApplyAdminDecisionBody(adminDecisionList, adminDecisionEmployeeDataList, unitId, decisionDateString, adminDecisionId, categoryId, useSession);
+	JsonObject applyAdminDecisionBody = getApplyAdminDecisionBody(adminDecisionList, adminDecisionEmployeeDataList, unitId, decisionDateString, adminDecision.getId(), categoryId, useSession);
 	Log4jService.traceInfo(PayrollEngineService.class, "applyAdminDecisionBody: " + applyAdminDecisionBody.toString());
-	PayrollRestClient.applyAdminDecision(applyAdminDecisionBody);
-	PayrollRestClient.destroy();
+	PayrollRestClient.applyAdminDecision(adminDecision.getIntegrationTypeFlag(), applyAdminDecisionBody);
 	Log4jService.traceInfo(PayrollEngineService.class, "End of doPayrollIntegration() method");
     }
 
@@ -189,7 +196,7 @@ public class PayrollEngineService extends BaseService {
 			.add("decisionEndDate", adminDecisionEmployeeDataList.get(0).getGregEndDateString() == null ? "" : adminDecisionEmployeeDataList.get(0).getGregEndDateString())
 			.add("categoryId", categoryId + "")
 			.add("adminDecisionId", adminDecisionId + "")
-			.add("adminDecisionNumber", UUID.randomUUID().toString())
+			.add("adminDecisionNumber", adminDecisionEmployeeDataList.get(0).getDecisionNumber())
 			.add("employeesList", employeeArray.build())
 			.add("variablesList", variableArray.build())
 			.build();
@@ -208,11 +215,11 @@ public class PayrollEngineService extends BaseService {
 
     }
 
-    public static AdminDecision getAdminDecisionByName(String adminDecisionName) throws BusinessException {
+    public static AdminDecision getAdminDecisionById(long adminDecisionId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put("P_ADMIN_DECISION_NAME", adminDecisionName == null ? FlagsEnum.ALL.getCode() + "" : adminDecisionName);
-	    List<AdminDecision> result = DataAccess.executeNamedQuery(AdminDecision.class, QueryNamesEnum.HCM_GET_ADMIN_DECISION_BY_NAME.getCode(), qParams);
+	    qParams.put("P_ADMIN_DECISION_ID", adminDecisionId);
+	    List<AdminDecision> result = DataAccess.executeNamedQuery(AdminDecision.class, QueryNamesEnum.HCM_GET_ADMIN_DECISION_BY_ID.getCode(), qParams);
 	    return (result != null && result.size() > 0) ? result.get(0) : null;
 	} catch (DatabaseException e) {
 	    e.printStackTrace();

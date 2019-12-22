@@ -6,13 +6,15 @@ public class AdminDecisionEmployeeData {
     private Long transactionId;
     private String gregStartDateString;
     private String gregEndDateString;
+    private String decisionNumber;
 
-    public AdminDecisionEmployeeData(Long empId, String empName, Long transactionId, String gregStartDateString, String gregEndDateString) {
+    public AdminDecisionEmployeeData(Long empId, String empName, Long transactionId, String gregStartDateString, String gregEndDateString, String decisionNumber) {
 	this.empId = empId;
 	this.empName = empName;
 	this.transactionId = transactionId;
 	this.gregStartDateString = gregStartDateString;
 	this.gregEndDateString = gregEndDateString;
+	this.decisionNumber = decisionNumber;
     }
 
     public Long getEmpId() {
@@ -53,6 +55,14 @@ public class AdminDecisionEmployeeData {
 
     public void setGregEndDateString(String gregEndDateString) {
 	this.gregEndDateString = gregEndDateString;
+    }
+
+    public String getDecisionNumber() {
+	return decisionNumber;
+    }
+
+    public void setDecisionNumber(String decisionNumber) {
+	this.decisionNumber = decisionNumber;
     }
 
 }

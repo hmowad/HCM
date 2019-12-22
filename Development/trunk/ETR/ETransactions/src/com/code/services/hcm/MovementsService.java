@@ -17,7 +17,6 @@ import com.code.dal.orm.hcm.organization.jobs.JobData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.dal.orm.log.EmployeeLog;
 import com.code.dal.orm.log.EmployeeLogData;
-import com.code.dal.orm.setup.AdminDecision;
 import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.EmployeeStatusEnum;
@@ -320,38 +319,38 @@ public class MovementsService extends BaseService {
 
     private static void doPayrollIntegration(List<MovementTransactionData> movementTransactions, CustomSession session) throws BusinessException {
 	List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
-	AdminDecision adminDecision = null;
+	Long adminDecision = null;
 	Boolean integrationFlag = false;
 	if (movementTransactions != null && movementTransactions.size() > 0) {
 	    if (movementTransactions.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 		if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.MOVE.getCode() && movementTransactions.get(0).getRequestTransactionFlag().intValue() == FlagsEnum.OFF.getCode()) {
 		    if (movementTransactions.get(0).getJoiningDate() != null)
-			adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_MOVE_JOINING_DATE_REQUEST.getCode());
+			adminDecision = AdminDecisionsEnum.OFFICERS_MOVE_JOINING_DATE_REQUEST.getCode();
 		    else {
 			if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
-			    adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_MOVE_DECISION_REQUEST.getCode());
+			    adminDecision = AdminDecisionsEnum.OFFICERS_MOVE_DECISION_REQUEST.getCode();
 			} else {
-			    adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_MOVE_REGISTERATION.getCode());
+			    adminDecision = AdminDecisionsEnum.OFFICERS_MOVE_REGISTERATION.getCode();
 			}
 		    }
 		    integrationFlag = true;
 		} else if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.SUBJOIN.getCode() && movementTransactions.get(0).getRequestTransactionFlag().intValue() == FlagsEnum.OFF.getCode()
 			&& movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
 		    if (movementTransactions.get(0).getJoiningDate() != null)
-			adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_SUBJOIN_JOINING_DATE_REQUEST.getCode());
+			adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_JOINING_DATE_REQUEST.getCode();
 		    else {
 			if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
-			    adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_SUBJOIN_DECISION_REQUEST.getCode());
+			    adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_DECISION_REQUEST.getCode();
 			} else {
-			    adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_SUBJOIN_REGISTERATION.getCode());
+			    adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_REGISTERATION.getCode();
 			}
 		    }
 		    integrationFlag = true;
 		} else if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.ASSIGNMENT.getCode() && movementTransactions.get(0).getRequestTransactionFlag().intValue() == FlagsEnum.OFF.getCode()) {
 		    if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
-			adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_INTERNAL_ASSIGNMENT_DECISION_REQUEST.getCode());
+			adminDecision = AdminDecisionsEnum.OFFICERS_INTERNAL_ASSIGNMENT_DECISION_REQUEST.getCode();
 		    } else {
-			adminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_EXTERNAL_ASSIGNMENT_REGISTRATION.getCode());
+			adminDecision = AdminDecisionsEnum.OFFICERS_EXTERNAL_ASSIGNMENT_REGISTRATION.getCode();
 		    }
 		    integrationFlag = true;
 		}
@@ -361,13 +360,13 @@ public class MovementsService extends BaseService {
 		    String gregStartDateString = HijriDateService.hijriToGregDateString(movementTransactionData.getExecutionDateString());
 		    String gregEndDateString = HijriDateService.hijriToGregDateString(movementTransactionData.getEndDateString());
 		    EmployeeData employee = EmployeesService.getEmployeeData(movementTransactionData.getEmployeeId());
-		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(movementTransactionData.getEmployeeId(), employee.getName(), movementTransactionData.getId(), gregStartDateString, gregEndDateString));
+		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(movementTransactionData.getEmployeeId(), employee.getName(), movementTransactionData.getId(), gregStartDateString, gregEndDateString, movementTransactionData.getDecisionNumber()));
 		}
 		String gregExecutionDateString = HijriDateService.hijriToGregDateString(movementTransactions.get(0).getExecutionDateString());
 		String gregDecisionDateString = HijriDateService.hijriToGregDateString(movementTransactions.get(0).getDecisionDateString());
 		if (session != null)
 		    session.flushTransaction();
-		PayrollEngineService.doPayrollIntegration(adminDecision == null ? null : adminDecision.getId(), movementTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, movementTransactions.get(0).getUnitId(), gregDecisionDateString, session);
+		PayrollEngineService.doPayrollIntegration(adminDecision, movementTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, (movementTransactions.get(0).getUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : movementTransactions.get(0).getUnitId()), gregDecisionDateString, session);
 	    }
 	}
     }
