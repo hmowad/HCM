@@ -223,12 +223,36 @@ public class ETRConfigurationService extends BaseService {
 	return Integer.parseInt(configurationMap.get("SOCIAL_ID_RENEWAL_PERIOD_WARNING"));
     }
 
-    public static String getPayrollRestServiceURL() {
-	return configurationMap.get("PAYROLL_REST_SERVICES_URL");
+    public static String getPayrollRestServiceGetAdminDecisionURL() {
+	return configurationMap.get("PAYROLL_REST_SERVICES_GET_ADMIN_DECISION_URL");
     }
 
-    public static String getESBRestServiceURL() {
-	return configurationMap.get("ESB_PAYROLL_WEBSERVICE_URL");
+    public static String getESBPayrollRestServiceGetAdminDecisionURL() {
+	return configurationMap.get("ESB_PAYROLL_WEBSERVICE_GET_ADMIN_DECISION_URL");
+    }
+
+    public static String getAllowanceRestServiceGetAdminDecisionURL() {
+	return configurationMap.get("ALLOWANCE_REST_SERVICES_GET_ADMIN_DECISION_URL");
+    }
+
+    public static String getESBAllowanceRestServiceGetAdminDecisionURL() {
+	return configurationMap.get("ESB_ALLOWANCE_WEBSERVICE_GET_ADMIN_DECISION_URL");
+    }
+
+    public static String getPayrollRestServiceApplyAdminDecisionURL() {
+	return configurationMap.get("PAYROLL_REST_SERVICES_APPLY_ADMIN_DECISION_URL");
+    }
+
+    public static String getESBPayrollRestServiceApplyAdminDecisionURL() {
+	return configurationMap.get("ESB_PAYROLL_WEBSERVICE_APPLY_ADMIN_DECISION_URL");
+    }
+
+    public static String getAllowanceRestServiceApplyAdminDecisionURL() {
+	return configurationMap.get("ALLOWANCE_REST_SERVICES_APPLY_ADMIN_DECISION_URL");
+    }
+
+    public static String getESBAllowanceRestServiceApplyAdminDecisionURL() {
+	return configurationMap.get("ESB_ALLOWANCE_WEBSERVICE_APPLY_ADMIN_DECISION_URL");
     }
 
     public static Integer getESBEnabledFlag() {

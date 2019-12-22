@@ -18,7 +18,6 @@ import com.code.dal.orm.hcm.recruitments.RecruitmentTransaction;
 import com.code.dal.orm.hcm.recruitments.RecruitmentTransactionData;
 import com.code.dal.orm.hcm.recruitments.RecruitmentWishData;
 import com.code.dal.orm.log.EmployeeLog;
-import com.code.dal.orm.setup.AdminDecision;
 import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.EmployeeStatusEnum;
@@ -922,17 +921,16 @@ public class RecruitmentsService extends BaseService {
 
     private static void doPayrollIntegration(List<RecruitmentTransactionData> recruitmentTransactions, CustomSession session) throws BusinessException {
 	if (recruitmentTransactions.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
-	    AdminDecision officersRecAdminDecision = PayrollEngineService.getAdminDecisionByName(AdminDecisionsEnum.OFFICERS_RECRUITMENT.getCode());
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
 	    for (RecruitmentTransactionData recruitmentTransactionData : recruitmentTransactions) {
 		String gregRecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactionData.getRecruitmentDateString());
-		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(recruitmentTransactionData.getEmployeeId(), recruitmentTransactionData.getEmployeeName(), recruitmentTransactionData.getId(), gregRecDateString, gregRecDateString));
+		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(recruitmentTransactionData.getEmployeeId(), recruitmentTransactionData.getEmployeeName(), recruitmentTransactionData.getId(), gregRecDateString, gregRecDateString, recruitmentTransactionData.getDecisionNumber()));
 	    }
 	    String gregRecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getRecruitmentDateString());
 	    String gregDecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getDecisionDateString());
 	    session.flushTransaction();
 	    EmployeeData emp = EmployeesService.getEmployeeData(recruitmentTransactions.get(0).getEmployeeId());
-	    PayrollEngineService.doPayrollIntegration(officersRecAdminDecision == null ? null : officersRecAdminDecision.getId(), CategoriesEnum.OFFICERS.getCode(), gregRecDateString, adminDecisionEmployeeDataList, emp.getPhysicalUnitId(), gregDecDateString, session);
+	    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_RECRUITMENT.getCode(), CategoriesEnum.OFFICERS.getCode(), gregRecDateString, adminDecisionEmployeeDataList, emp.getPhysicalUnitId(), gregDecDateString, session);
 	}
     }
 
