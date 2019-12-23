@@ -31,7 +31,7 @@ public class BaseClient {
 
     protected static String getExceptionMessage(Integer status, String errorMsg) {
 	if (status.equals(HTTPStatusCodeEnum.NOT_FOUND.getCode())) {
-	    if (errorMsg.equals("error_noData"))
+	    if (errorMsg.contains("error_noData"))
 		return "error_noData";
 	    else
 		return "error_eservicesConnectionError";

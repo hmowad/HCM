@@ -1,5 +1,6 @@
 package com.code.integration.webservicesclients.eservices;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.client.Client;
@@ -148,7 +149,10 @@ public class EServicesWorkFlowClient extends BaseClient {
 	if (response.getStatus() == HTTPStatusCodeEnum.OK.getCode()) {
 	    return getEntityList(WFTaskData.class, response.readEntity(String.class));
 	} else {
-	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
+	    String errorMsg = getExceptionMessage(response.getStatus(), response.readEntity(String.class));
+	    if(errorMsg.equals("error_noData"))
+		return new ArrayList<WFTaskData>();
+	    throw new BusinessException(errorMsg);
 	}
     }
 
