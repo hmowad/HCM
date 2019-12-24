@@ -177,8 +177,7 @@
 											</rich:column>
 											<rich:column style="width:15%">
 												<f:facet name="header">#{msgs.label_category}</f:facet>
-												<h:outputText value="#{processCycle.jobId}" rendered="#{processCycle.newRow == false}"/>
-												<h:selectOneMenu id="jobCategoryMenuId" value="#{processCycle.jobId}" styleClass="selectMenu" process="@this" rendered="#{processCycle.newRow == true}">
+												<h:selectOneMenu id="jobCategoryMenuId" value="#{processCycle.jobId}" styleClass="selectMenu" process="@this" disabled="#{!processCycle.newRow}">
 													<f:selectItem itemLabel="      " itemValue="0" />
 													<f:selectItems value="#{transactionsStepsCycleManagement.categoryEnum}" var="enum" itemValue="#{enum.code}" itemLabel="#{enum.codeDescription}" />
 													<f:ajax event="change" listener="#{transactionsStepsCycleManagement.jobCategoryListener(processCycle.jobId, false)}" execute="jobCategoryMenuId" render="rankMenuId"></f:ajax>
