@@ -169,7 +169,7 @@
 										<rich:dataTable id="detailsDataTableId" value="#{transactionsStepsCycleManagement.wFProcessCycleToBeDisplayed}" var="processCycle" rows="#{transactionsStepsCycleManagement.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
 											<rich:column style="width:5%">
 												<f:facet name="header">#</f:facet>
-												<h:outputText value="#{index}" />
+												<h:outputText value="#{index + 1}" />
 											</rich:column>
 											<rich:column style="width:20%">
 												<f:facet name="header">#{msgs.label_request}</f:facet>
@@ -193,7 +193,7 @@
 											</rich:column>
 											<rich:column style="width:20%">
 												<f:facet name="header">#{msgs.label_rank}</f:facet>
-												<h:selectOneMenu rendered="#{!processCycle.newRow}" >
+												<h:selectOneMenu rendered="#{!processCycle.newRow}" styleClass="selectMenu" style="width:90%;">
 													<f:selectItems value="#{processCycle.selectedRanksIds}" var="item" itemLabel="#{transactionsStepsCycleManagement.getRankDescription(item)}" itemValue="#{item}" />
 												</h:selectOneMenu>
 												
