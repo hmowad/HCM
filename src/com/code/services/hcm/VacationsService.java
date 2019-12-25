@@ -386,14 +386,6 @@ public class VacationsService extends BaseService {
 	return getVacationsData(empId, vacationTypeId, FlagsEnum.ALL.getCode());
     }
 
-    /************************************** get President and VicePresident For BeneficiaryVacationsTypes Method ********************************/
-    public static String getPresidencyManagers() throws BusinessException {
-	WFPosition vicePresidentPosition = BaseWorkFlow.getWFPosition(WFPositionsEnum.VICE_PRESIDENT.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
-	EmployeeData vicePresident = EmployeesService.getEmployeeByPosition(vicePresidentPosition.getUnitId(), vicePresidentPosition.getEmpId());
-	StringBuilder emp = new StringBuilder();
-	return emp.append(vicePresident.getEmpId() + "," + vicePresident.getManagerId()).toString();
-    }
-
     /**
      * Gets the last vacation for an employee.
      * 
@@ -420,6 +412,14 @@ public class VacationsService extends BaseService {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
+    }
+
+    /************************************** get President and VicePresident For BeneficiaryVacationsTypes Method ********************************/
+    public static String getPresidencyManagers() throws BusinessException {
+	WFPosition vicePresidentPosition = BaseWorkFlow.getWFPosition(WFPositionsEnum.VICE_PRESIDENT.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+	EmployeeData vicePresident = EmployeesService.getEmployeeByPosition(vicePresidentPosition.getUnitId(), vicePresidentPosition.getEmpId());
+	StringBuilder emp = new StringBuilder();
+	return emp.append(vicePresident.getEmpId() + "," + vicePresident.getManagerId()).toString();
     }
 
     /**
