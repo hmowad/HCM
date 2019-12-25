@@ -36,20 +36,14 @@ public class TransactionsStepsCycleManagement extends BaseBacking implements Ser
     private List<WFProcessCycle> wFProcessCycleToBeDisplayed;
     private List<Rank> searchRanks;
     private List<Rank> tableRanks;
-    private List<StoppingCriteriaEnum> departmentTypeList;
 
     private String selectedProcessesIds;
     private String selectedProcessesNames;
-    
-    private String ranksNamesString;
-    private String ranksIdsString;
-
 
     public TransactionsStepsCycleManagement() {
 	reset();
 	searchResult = new ArrayList<WFProcessCycle>();
 	wFProcessCycleToBeDisplayed = new ArrayList<WFProcessCycle>();
-	departmentTypeList = new ArrayList<StoppingCriteriaEnum>();
     }
 
     public void getProcess() {
@@ -64,22 +58,25 @@ public class TransactionsStepsCycleManagement extends BaseBacking implements Ser
 	    wFProcessCycleToBeDisplayed.add(0,wfprocessCycle);
 	}
     }
+    
+    public void getRanks( WFProcessCycle wfprocessCycle) {
+	wfprocessCycle.setRankDescription(wfprocessCycle.getRankDescription());
+	wfprocessCycle.setRankId(wfprocessCycle.getRankId());
+    }
 
-    public void employeeRegionListener(Long employeeRegionId) {
+    public void employeeRegionListener(WFProcessCycle cycle, Long employeeRegionId) {
+	List<StoppingCriteriaEnum> departmentTypeList = new ArrayList<>();
 	if (employeeRegionId == EmployeeRegionEnum.ALL.getCode()) {
-	    departmentTypeList = new ArrayList<>();
 	    departmentTypeList.add(StoppingCriteriaEnum.PRESIDENCY);
 	} else if (employeeRegionId == EmployeeRegionEnum.DIRECTORATE_EMPLOYEE.getCode()) {
-	    departmentTypeList = new ArrayList<>();
 	    departmentTypeList.add(StoppingCriteriaEnum.PRESIDENCY);
 	    departmentTypeList.add(StoppingCriteriaEnum.ASSISTANT_PRESIDENCY);
-
 	} else if (employeeRegionId == EmployeeRegionEnum.REGION_EMPLOYEE.getCode()) {
-	    departmentTypeList = new ArrayList<>();
 	    departmentTypeList.add(StoppingCriteriaEnum.PRESIDENCY);
 	    departmentTypeList.add(StoppingCriteriaEnum.REGION_COMMANDER);
 	    departmentTypeList.add(StoppingCriteriaEnum.ASSISTANT_REGION_COMMANDER);
 	}
+	cycle.setDepartmentTypeList(departmentTypeList);
     }
 
     public void jobCategoryListener(Long jobCategoryId, Boolean search) {
@@ -142,27 +139,27 @@ public class TransactionsStepsCycleManagement extends BaseBacking implements Ser
 		    setServerSideErrorMessages(getMessage("error_regionIdMandatory"));
 		    return;
 		}
-		if (ranksIdsString == null || ranksIdsString.isEmpty()) {
+		if (cycle.getRankId() == null || cycle.getRankId().isEmpty()) {
 		    setServerSideErrorMessages(getMessage("error_rankMandatory"));
 		    return;
 		}
 
 		List<Long> selectedRanksIds = new ArrayList<Long>();
-		String[] ranksIDsArray = ranksIdsString.split(",");
+		String[] ranksIDsArray = cycle.getRankId().split(",");
 		for(String rankString: ranksIDsArray){
 		    selectedRanksIds.add(Long.parseLong(rankString));
 		}
 		
 		List<String> selectedRanksDescriptions = new ArrayList<String>();
-		String[] ranksDescriptionsArray = ranksNamesString.split(",");
+		String[] ranksDescriptionsArray = cycle.getRankDescription().split(",");
 		for(String rankDescription: ranksDescriptionsArray){
 		    selectedRanksDescriptions.add(rankDescription);
 		}
 		
 		cycle.setSelectedRanksIds(selectedRanksIds);
 		cycle.setSelectedRanksDescriptions(selectedRanksDescriptions);
-		cycle.setRankId("," + ranksIdsString + ",");
-		cycle.setRankDescription("," + ranksNamesString + ",");
+		cycle.setRankId("," + cycle.getRankId() + ",");
+		cycle.setRankDescription("," + cycle.getRankDescription() + ",");
 		cycle.setId(EServicesWorkFlowClient.saveOrUpdateWFProcessCycles(cycle));
 		cycle.setNewRow(false);
 		setServerSideSuccessMessages(getParameterizedMessage("label_processCycleSaved"));
@@ -281,14 +278,6 @@ public class TransactionsStepsCycleManagement extends BaseBacking implements Ser
 	this.tableRanks = tableRanks;
     }
 
-    public List<StoppingCriteriaEnum> getDepartmentTypeList() {
-	return departmentTypeList;
-    }
-
-    public void setDepartmentTypeList(List<StoppingCriteriaEnum> departmentTypeList) {
-	this.departmentTypeList = departmentTypeList;
-    }
-
     public String getSelectedProcessesIds() {
 	return selectedProcessesIds;
     }
@@ -311,22 +300,6 @@ public class TransactionsStepsCycleManagement extends BaseBacking implements Ser
 
     public void setPageSize(int pageSize) {
 	this.pageSize = pageSize;
-    }
-
-    public String getRanksNamesString() {
-	return ranksNamesString;
-    }
-
-    public void setRanksNamesString(String ranksNamesString) {
-	this.ranksNamesString = ranksNamesString;
-    }
-
-    public String getRanksIdsString() {
-	return ranksIdsString;
-    }
-
-    public void setRanksIdsString(String ranksIdsString) {
-	this.ranksIdsString = ranksIdsString;
     }
 
 }
