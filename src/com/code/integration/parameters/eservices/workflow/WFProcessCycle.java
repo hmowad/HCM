@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.code.enums.eservices.StoppingCriteriaEnum;
+
 @SuppressWarnings("serial")
 public class WFProcessCycle implements Serializable {
 
@@ -24,6 +26,8 @@ public class WFProcessCycle implements Serializable {
     private List<Long> selectedRanksIds;
     private List<String> selectedRanksDescriptions;
     private boolean newRow;
+
+    private List<StoppingCriteriaEnum> departmentTypeList;
 
     public Long getId() {
 	return id;
@@ -154,12 +158,19 @@ public class WFProcessCycle implements Serializable {
     }
 
     public boolean isNewRow() {
-        return newRow;
+	return newRow;
     }
 
     public void setNewRow(boolean newRow) {
-        this.newRow = newRow;
+	this.newRow = newRow;
     }
 
-    
+    public List<StoppingCriteriaEnum> getDepartmentTypeList() {
+	return departmentTypeList;
+    }
+
+    public void setDepartmentTypeList(List<StoppingCriteriaEnum> departmentTypeList) {
+	this.departmentTypeList = departmentTypeList;
+    }
+
 }

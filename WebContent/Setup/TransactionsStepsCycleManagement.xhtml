@@ -15,7 +15,8 @@
 			if (ret != null) {
 				document.getElementById('transactionsStepsCycleForm:detailsDataTableId:'+index+':ranksIDsHId').value = ret[0];
 				document.getElementById('transactionsStepsCycleForm:detailsDataTableId:'+index+':ranksNamesHId').value = ret[1];
-				document.getElementById('transactionsStepsCycleForm:detailsDataTableId:'+index+':ranksNamesId').innerHTML = ret[1];
+				document.getElementById('transactionsStepsCycleForm:detailsDataTableId:'+index+':ranksNamesId').innerHTML = ret[1]; 
+				document.getElementById('transactionsStepsCycleForm:detailsDataTableId:'+index+':ranksBtnId').click(); 
 			}
 		}
 		
@@ -188,7 +189,7 @@
 												<h:selectOneMenu id="employeeRegionMenuId" value="#{processCycle.regionId}" styleClass="selectMenu" disabled="#{processCycle.newRow == false}">
 												<f:selectItem itemLabel="      " itemValue="0" />
 												<f:selectItems value="#{transactionsStepsCycleManagement.employeeRegionEnum}" var="item" itemLabel="#{item.codeDescription}" itemValue="#{item.code}" />
-												<f:ajax event="change" listener="#{transactionsStepsCycleManagement.employeeRegionListener(processCycle.regionId)}" execute="employeeRegionMenuId" render="stoppingPointMenuId"></f:ajax>
+												<f:ajax event="change" listener="#{transactionsStepsCycleManagement.employeeRegionListener(processCycle, processCycle.regionId)}" execute="employeeRegionMenuId" render="stoppingPointMenuId"></f:ajax>
 											</h:selectOneMenu>
 											</rich:column>
 											<rich:column style="width:20%">
@@ -199,19 +200,22 @@
 												
 												<h:panelGroup id="rankMenuId">
 													<h:panelGroup rendered="#{processCycle.newRow}">
-														<h:outputText id="ranksNamesId" value="#{transactionsStepsCycleManagement.ranksNamesString}" />
-														<h:inputHidden id="ranksIDsHId" value="#{transactionsStepsCycleManagement.ranksIdsString}" />
-														<h:inputHidden id="ranksNamesHId" value="#{transactionsStepsCycleManagement.ranksNamesString}" />
-														<h:commandButton value="#{msgs.fa_external_link}" onclick="getRank('#{request.contextPath}', '#{processCycle.jobId}','#{index}'); return false;" title="#{msgs.label_select}" styleClass="btn_icon" disabled="#{processCycle.jobId == null}">
-															<f:ajax execute="transactionsStepsCycleForm:processCyclesPanelGroupId" render="transactionsStepsCycleForm:processCyclesPanelGroupId"></f:ajax>
-														</h:commandButton>
+														<h:outputText id="ranksNamesId" value="#{processCycle.rankDescription}" />	
+														<h:inputHidden id="ranksIDsHId" value="#{processCycle.rankId}" />
+														<h:inputHidden id="ranksNamesHId" value="#{processCycle.rankDescription}" />
+														<h:commandButton value="#{msgs.fa_external_link}" onclick="getRank('#{request.contextPath}', '#{processCycle.jobId}','#{index}'); return false;" styleClass="btn_icon" disabled="#{processCycle.jobId == null}" />
+														<h:commandButton id="ranksBtnId" style="display:none;" action="#{transactionsStepsCycleManagement.getRanks(processCycle)}">
+															<f:ajax execute="transactionsStepsCycleForm:processCyclesPanelGroupId" render="transactionsStepsCycleForm:processCyclesPanelGroupId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"></f:ajax>
+														</h:commandButton>													
 													</h:panelGroup>
 												</h:panelGroup>
+												
 											</rich:column>
 											<rich:column style="width:10%">
 												<f:facet name="header">#{msgs.label_approvalsStopsAt}</f:facet>
 												<h:selectOneMenu id="stoppingPointMenuId" value="#{processCycle.stoppingPoint}" styleClass="selectMenu" rendered="#{processCycle.newRow}">
-													<f:selectItems value="#{transactionsStepsCycleManagement.departmentTypeList}" var="enum" itemValue="#{enum.code}" itemLabel="#{enum.codeDescription}" />
+													<f:selectItems value="#{processCycle.departmentTypeList}" var="enum" itemValue="#{enum.code}" itemLabel="#{enum.codeDescription}" />
+													<f:ajax event="change" execute="@this" ></f:ajax>
 												</h:selectOneMenu>
 	
 												<h:selectOneMenu value="#{processCycle.stoppingPoint}" styleClass="selectMenu" rendered="#{!processCycle.newRow}" disabled="true">
