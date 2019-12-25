@@ -203,7 +203,7 @@ public abstract class VacationBase extends WFBaseBacking {
 
     public void getLastTwoVacations() throws BusinessException {
 
-	List<VacationData> lastVacations = VacationsService.getVacationsData(this.beneficiary.getEmpId(), this.vacRequest.getVacationTypeId());
+	List<VacationData> lastVacations = VacationsService.getVacationsData(this.beneficiary.getEmpId(), this.vacRequest.getVacationTypeId(), this.vacRequest.getSubVacationType());
 	if (lastVacations != null && !lastVacations.isEmpty()) {
 	    this.lastVacation = lastVacations.get(0);
 	    if (lastVacations.size() > 1)
