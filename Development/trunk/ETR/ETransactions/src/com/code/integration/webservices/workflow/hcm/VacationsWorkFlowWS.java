@@ -17,6 +17,7 @@ import com.code.dal.orm.workflow.hcm.vacations.WFVacation;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.LocationFlagsEnum;
 import com.code.enums.RequestTypesEnum;
+import com.code.enums.SubVacationTypesEnum;
 import com.code.enums.VacationTypesEnum;
 import com.code.enums.WFActionFlagsEnum;
 import com.code.enums.WFProcessesEnum;
@@ -43,6 +44,68 @@ public class VacationsWorkFlowWS {
     /************************************************* Initialize Requests *****************************************************/
 
     /*------------------------------------------------ Actions ------------------------------------------------------*/
+
+    @WebMethod(operationName = "initSickVacationRequestForHIS")
+    @WebResult(name = "initSickVacationRequestForHISResponse")
+    public WSResponseBase initSickVacationRequestForHIS(@WebParam(name = "beneficiarySocialId") String beneficiarySocialId,
+	    @WebParam(name = "subVacationType") int subVacationType,
+	    @WebParam(name = "period") int period, @WebParam(name = "startDateString") String startDateString,
+	    @WebParam(name = "locationFlag") int locationFlag, @WebParam(name = "location") String location,
+	    @WebParam(name = "contactNumber") String contactNumber, @WebParam(name = "contactAddress") String contactAddress) {
+
+	WSResponseBase response = new WSResponseBase();
+	try {
+	    if (beneficiarySocialId == null || beneficiarySocialId.isEmpty())
+		throw new BusinessException("error_employeeIsMandatory");
+
+	    EmployeeData beneficiary = EmployeesService.getEmployeeBySocialID(beneficiarySocialId);
+	    if (beneficiary == null)
+		throw new BusinessException("error_employeeNotExist");
+
+	    validateSickVacationRequestData(subVacationType, period, startDateString, locationFlag, location, contactNumber, contactAddress);
+
+	    WFVacation vacRequest = new WFVacation();
+	    vacRequest.setRequestType(RequestTypesEnum.NEW.getCode());
+	    vacRequest.setVacationTypeId(VacationTypesEnum.SICK.getCode());
+	    vacRequest.setSubVacationType(subVacationType);
+
+	    // Order of the next two lines is CRITICAL to set the endDate correctly.
+	    vacRequest.setStartDateString(startDateString);
+	    vacRequest.setPeriod(period);
+
+	    vacRequest.setLocationFlag(locationFlag);
+	    vacRequest.setLocation(location);
+	    vacRequest.setContactNumber(contactNumber);
+	    vacRequest.setContactAddress(contactAddress);
+
+	    List<VacationData> lastVacations = VacationsService.getVacationsData(beneficiary.getEmpId(), VacationTypesEnum.SICK.getCode(), subVacationType);
+	    if (lastVacations != null && !lastVacations.isEmpty()) {
+		vacRequest.setOldVacationId(lastVacations.get(0).getId());
+		if (lastVacations.size() > 1)
+		    vacRequest.setSecondOldVacationId(lastVacations.get(1).getId());
+		else
+		    vacRequest.setSecondOldVacationId(null);
+	    } else {
+		vacRequest.setOldVacationId(null);
+	    }
+
+	    String[] proceeeIdAndTaskURL = getProcessIdAndTaskURL(beneficiary.getCategoryId(), RequestTypesEnum.NEW.getCode(), VacationTypesEnum.SICK.getCode(), subVacationType).split(",");
+
+	    VacationsWorkFlow.initVacation(beneficiary, beneficiary, vacRequest, Long.parseLong(proceeeIdAndTaskURL[0]), null, proceeeIdAndTaskURL[1]);
+
+	    response.setMessage(BaseService.getMessage("notify_successOperation"));
+	} catch (Exception e) {
+	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
+
+	    if (e instanceof BusinessException)
+		response.setMessage(BaseService.getParameterizedMessage(e.getMessage(), ((BusinessException) e).getParams()));
+	    else {
+		response.setMessage(BaseService.getMessage("error_general"));
+		e.printStackTrace();
+	    }
+	}
+	return response;
+    }
 
     @WebMethod(operationName = "initVacationRequest")
     @WebResult(name = "initVacationRequestResponse")
@@ -130,7 +193,7 @@ public class VacationsWorkFlowWS {
 		vacRequest.setReasons(reasons);
 	    }
 
-	    String[] proceeeIdAndTaskURL = getProcessIdAndTaskURL(requester.getCategoryId(), requestType, vacationTypeId).split(",");
+	    String[] proceeeIdAndTaskURL = getProcessIdAndTaskURL(requester.getCategoryId(), requestType, vacationTypeId, null).split(",");
 
 	    VacationsWorkFlow.initVacation(requester, requester, vacRequest, Long.parseLong(proceeeIdAndTaskURL[0]), null, proceeeIdAndTaskURL[1]);
 
@@ -149,6 +212,30 @@ public class VacationsWorkFlowWS {
     }
 
     /*------------------------------------------------ Validations --------------------------------------------------*/
+
+    private static void validateSickVacationRequestData(int subVacationType, int period, String startDateString, int locationFlag, String location, String contactNumber, String contactAddress) throws BusinessException {
+
+	if (subVacationType != SubVacationTypesEnum.SUB_TYPE_ONE.getCode() && subVacationType != SubVacationTypesEnum.SUB_TYPE_TWO.getCode())
+	    throw new BusinessException("error_unsupportedSickVacationSubType");
+
+	if (period <= 0)
+	    throw new BusinessException("error_periodNotNegative");
+
+	if (HijriDateService.getHijriDate(startDateString) == null)
+	    throw new BusinessException("error_invalidHijriDate");
+
+	if (locationFlag != LocationFlagsEnum.INTERNAL.getCode() && locationFlag != LocationFlagsEnum.EXTERNAL.getCode())
+	    throw new BusinessException("error_unsupportedLocationFlag");
+
+	if (location == null || location.isEmpty())
+	    throw new BusinessException("error_locationMandatory");
+
+	if (contactNumber == null || contactNumber.isEmpty())
+	    throw new BusinessException("error_contactNumberMandatory");
+
+	if (contactAddress == null || contactAddress.isEmpty())
+	    throw new BusinessException("error_contactAddressMandatory");
+    }
 
     private static void validateVacationRequestData(long vacationTypeId, int period, String startDateString, int locationFlag, String location, String contactNumber, String contactAddress) throws BusinessException {
 
@@ -197,7 +284,7 @@ public class VacationsWorkFlowWS {
 
     /*------------------------------------------------ Utilities ----------------------------------------------------*/
 
-    private static String getProcessIdAndTaskURL(long categoryId, int requestType, long vacationTypeId) {
+    private static String getProcessIdAndTaskURL(long categoryId, int requestType, long vacationTypeId, Integer subVacationType) {
 	long processId = 0;
 	int mode;
 	String screenName = "";
@@ -231,6 +318,11 @@ public class VacationsWorkFlowWS {
 		    processId = WFProcessesEnum.CANCEL_OFFICERS_FIELD_VACATION.getCode();
 		    screenName = "CancelFieldVacation";
 		}
+	    } else if (vacationTypeId == VacationTypesEnum.SICK.getCode()) {
+		if (requestType == RequestTypesEnum.NEW.getCode()) {
+		    processId = WFProcessesEnum.OFFICERS_SICK_VACATION.getCode();
+		    screenName = "SickVacation";
+		}
 	    }
 	} else if (categoryId == CategoriesEnum.SOLDIERS.getCode()) {
 	    mode = 2;
@@ -262,6 +354,13 @@ public class VacationsWorkFlowWS {
 		    processId = WFProcessesEnum.CANCEL_SOLDIERS_FIELD_VACATION.getCode();
 		    screenName = "CancelFieldVacation";
 		}
+	    } else if (vacationTypeId == VacationTypesEnum.SICK.getCode()) {
+		if (requestType == RequestTypesEnum.NEW.getCode()) {
+		    processId = WFProcessesEnum.SOLDIERS_SICK_VACATION.getCode();
+		    screenName = "SickVacation";
+		}
+		if (subVacationType != null && subVacationType.equals(SubVacationTypesEnum.SUB_TYPE_TWO))
+		    mode = 22;
 	    }
 	} else {
 	    mode = 3;
@@ -276,6 +375,11 @@ public class VacationsWorkFlowWS {
 		} else if (requestType == RequestTypesEnum.CANCEL.getCode()) {
 		    processId = WFProcessesEnum.CANCEL_EMPLOYEES_REGULAR_VACATION.getCode();
 		    screenName = "CancelRegularVacation";
+		}
+	    } else if (vacationTypeId == VacationTypesEnum.SICK.getCode()) {
+		if (requestType == RequestTypesEnum.NEW.getCode()) {
+		    processId = WFProcessesEnum.EMPLOYEES_SICK_VACATION.getCode();
+		    screenName = "SickVacation";
 		}
 	    }
 	}

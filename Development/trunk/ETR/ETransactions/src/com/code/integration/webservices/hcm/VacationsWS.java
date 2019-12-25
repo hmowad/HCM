@@ -83,6 +83,32 @@ public class VacationsWS {
 	return response;
     }
 
+    @WebMethod(operationName = "inquireSickVacationBalanceForHIS")
+    @WebResult(name = "inquireSickVacationBalanceForHISResponse")
+    public WSVacationBalanceInquiryResponse inquireSickVacationBalanceForHIS(@WebParam(name = "employeeSocialId") String employeeSocialId, @WebParam(name = "balanceInquiryDateString") String balanceInquiryDateString) {
+
+	WSVacationBalanceInquiryResponse response = new WSVacationBalanceInquiryResponse();
+	try {
+	    if (employeeSocialId == null || employeeSocialId.isEmpty())
+		throw new BusinessException("error_employeeIsMandatory");
+
+	    EmployeeData employee = EmployeesService.getEmployeeBySocialID(employeeSocialId);
+	    if (employee == null)
+		throw new BusinessException("error_employeeNotExist");
+
+	    String vacationBalance = VacationsService.inquireVacationBalance(employee, VacationTypesEnum.SICK.getCode(), HijriDateService.getHijriDate(balanceInquiryDateString));
+
+	    response.setVacationBalance(vacationBalance);
+	    response.setMessage(BaseService.getMessage("notify_successOperation"));
+	} catch (Exception e) {
+	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    if (!(e instanceof BusinessException))
+		e.printStackTrace();
+	}
+	return response;
+    }
+
     @WebMethod(operationName = "inquireVacationBalance")
     @WebResult(name = "inquireVacationBalanceResponse")
     public WSVacationBalanceInquiryResponse inquireVacationBalance(@WebParam(name = "sessionId") String sessionId, @WebParam(name = "employeeId") long employeeId,
