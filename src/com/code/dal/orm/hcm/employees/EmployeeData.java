@@ -276,6 +276,8 @@ import com.code.services.util.HijriDateService;
 			" where e.id = ste.empId " +
 			" and (:P_UNIT_ID = '-1' or ste.transEmpUnitId = :P_UNIT_ID ) " +
 			" and (ste.transactionTypeId = 33 ) " +
+			" and (e.serviceTerminationDate is not null ) " +
+			" and (e.statusId = 70 ) " +
 			" and (:P_EMP_NAME = '-1' or e.name like :P_EMP_NAME ) " +
 			" and (:P_SOCIAL_ID = '-1' or e.socialID = :P_SOCIAL_ID) " +
 			" and (:P_PHYSICAL_UNIT_FULL_NAME = '-1' or e.physicalUnitFullName like :P_PHYSICAL_UNIT_FULL_NAME ) " +
