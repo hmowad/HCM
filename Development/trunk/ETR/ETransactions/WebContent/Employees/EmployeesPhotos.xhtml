@@ -43,19 +43,21 @@
 					<td width="100%" height="5" />
 				</tr>
 				<tr>
-					<td width="100%">
-						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-							<tr>
-								<td width="50%">
-									<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
-									<h:inputHidden id="selectedEmpId" value="#{employeesPhotos.selectedEmpId}" />
-									<h:commandButton id="getEmployeeBtnId" style="display: none;" action="#{employeesPhotos.getEmployee()}">
-										<f:ajax execute="employeesPhotosFormId:selectedEmpId" render="employeesPhotosFormId:selectedEmpComponentId:data employeesPhotosFormId:photoPanelId  employeesPhotosFormId:notifyMessagesId" />
-									</h:commandButton>
-								</td>
-							</tr>
-						</table>
-					</td>
+					<h:panelGroup rendered="#{employeesPhotos.modifyAdmin}">
+						<td width="100%">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="50%">
+										<h:commandButton value="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_normal" />
+										<h:inputHidden id="selectedEmpId" value="#{employeesPhotos.selectedEmpId}" />
+										<h:commandButton id="getEmployeeBtnId" style="display: none;" action="#{employeesPhotos.getEmployee()}">
+											<f:ajax execute="employeesPhotosFormId:selectedEmpId" render="employeesPhotosFormId:selectedEmpComponentId:data employeesPhotosFormId:photoPanelId  employeesPhotosFormId:notifyMessagesId" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</h:panelGroup>
 				</tr>
 				<tr>
 					<td width="100%">
@@ -67,18 +69,19 @@
 								<td width="1%"></td>
 								<td width="14%">
 									<h:panelGroup id="photoPanelId">
-											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-												<tr>
-													<td width="100%" style="text-align: center;">
-														<h:commandButton action="#{employeesPhotos.updatePhoto()}" id="imageBtnId" style="display:none;">
-															<f:ajax render="employeesPhotosFormId:photoPanelId employeesPhotosFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
-														</h:commandButton>
-														<h:panelGroup>
-															<h:graphicImage title="#{msgs.label_changeImage}" width="100px" height="138px" value="#{employeesPhotos.employeeData != null and employeesPhotos.hasPhoto ? '/image?mode=1&amp;objectId='.concat(employeesPhotos.employeeData.empId).concat('&amp;nonce=').concat(session.lastAccessedTime):'/resources/images/profile_no_pic.png' }" onclick="#{employeesPhotos.employeeData != null ? 'getImage('.concat(employeesPhotos.employeeData.empId).concat(',').concat(employeesPhotos.hasPhoto ? 0:1).concat(');') : 'return false;'}" styleClass="empProfileImage" />
-														</h:panelGroup>
-													</td>
-												</tr>
-											</table>
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%" style="text-align: center;">
+													<h:commandButton action="#{employeesPhotos.updatePhoto()}" id="imageBtnId" style="display:none;">
+														<f:ajax render="employeesPhotosFormId:photoPanelId employeesPhotosFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+													</h:commandButton>
+													<h:panelGroup>
+														<h:graphicImage title="#{msgs.label_changeImage}" width="100px" height="138px" value="#{employeesPhotos.employeeData != null and employeesPhotos.hasPhoto ? '/image?mode=1&amp;objectId='.concat(employeesPhotos.employeeData.empId).concat('&amp;nonce=').concat(session.lastAccessedTime):'/resources/images/profile_no_pic.png' }"
+															onclick="#{employeesPhotos.employeeData != null ? 'getImage('.concat(employeesPhotos.employeeData.empId).concat(',').concat(employeesPhotos.hasPhoto ? 0:1).concat(');') : 'return false;'}" styleClass="empProfileImage" />
+													</h:panelGroup>
+												</td>
+											</tr>
+										</table>
 									</h:panelGroup>
 								</td>
 							</tr>
