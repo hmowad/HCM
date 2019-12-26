@@ -14,6 +14,7 @@ import com.code.dal.orm.workflow.WFTask;
 import com.code.dal.orm.workflow.hcm.movements.WFMovementData;
 import com.code.dal.orm.workflow.hcm.movements.WFMovementWish;
 import com.code.enums.WFActionFlagsEnum;
+import com.code.enums.WFProcessesEnum;
 import com.code.enums.WFTaskRolesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.workflow.hcm.MovementsWishesWorkFlow;
@@ -35,10 +36,19 @@ public class MovementsCollectiveApproval extends BaseBacking implements Serializ
 
     private final static String taskUrlParam = "&taskId=";
     private final static int pageSize = 10;
+    private int mode = -1; // 1 means acceptance and 2 means approval
 
     public MovementsCollectiveApproval() {
 	super();
-	this.setScreenTitle(getMessage("title_MovementsCollectiveApproval"));
+	if (getRequest().getAttribute("mode") != null)
+	    this.mode = Integer.parseInt(getRequest().getAttribute("mode").toString());
+
+	if (mode == 1)
+	    this.setScreenTitle(getMessage("title_MovementsCollectiveAcceptance"));
+	else if (mode == 2)
+	    this.setScreenTitle(getMessage("title_MovementsCollectiveApproval"));
+	else
+	    setServerSideErrorMessages(getMessage("error_general"));
 	try {
 	    searchMovementTasks(); // Load the movements tasks data
 	} catch (Exception e) {
@@ -50,7 +60,9 @@ public class MovementsCollectiveApproval extends BaseBacking implements Serializ
     private void searchMovementTasks() {
 	try {
 	    selectAll = false;
-	    movementsTasks = (ArrayList<Object>) MovementsWorkFlow.getWFMovementsTasks(this.loginEmpData.getEmpId(), new String[] { WFTaskRolesEnum.SIGN_MANAGER.getCode(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode() });
+	    Long[] acceptanceIncludedProcessIds = new Long[] { WFProcessesEnum.OFFICERS_MOVE_JOINING_DATE_REQUEST.getCode(), WFProcessesEnum.SOLDIERS_MOVE_JOINING_DATE_REQUEST.getCode(), WFProcessesEnum.OFFICERS_SUBJOIN_JOINING_DATE_REQUEST.getCode(), WFProcessesEnum.SOLDIERS_SUBJOIN_JOINING_DATE_REQUEST.getCode() };
+	    movementsTasks = (ArrayList<Object>) MovementsWorkFlow.getWFMovementsTasks(this.loginEmpData.getEmpId(), mode == 1 ? new String[] { WFTaskRolesEnum.DIRECT_MANAGER.getCode() } : new String[] { WFTaskRolesEnum.SIGN_MANAGER.getCode(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode() },
+		    mode == 1 ? acceptanceIncludedProcessIds : null);
 	    movementsTasksListSize = movementsTasks.size();
 	} catch (BusinessException e) {
 	    movementsTasks = new ArrayList<Object>();

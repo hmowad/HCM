@@ -26,7 +26,8 @@ public class DashBoardWorkFlow extends BaseWorkFlow {
     private final static Long[] ACCEPTANCE_PROCESS_GROUPS = new Long[] {
 	    (long) WFProcessesGroupsEnum.VACATIONS.getCode(),
 	    (long) WFProcessesGroupsEnum.MISSIONS.getCode(),
-	    (long) WFProcessesGroupsEnum.TRAINING_AND_SCHOLARSHIP.getCode()
+	    (long) WFProcessesGroupsEnum.TRAINING_AND_SCHOLARSHIP.getCode(),
+	    (long) WFProcessesGroupsEnum.MOVEMENTS.getCode()
     };
 
     private final static Long[] APPROVAL_PROCESS_GROUPS = new Long[] {
@@ -40,7 +41,7 @@ public class DashBoardWorkFlow extends BaseWorkFlow {
 	    (long) WFProcessesGroupsEnum.RETIREMENTS.getCode()
     };
 
-    private final static Long[] EXCLUDED_PROCESS_IDS = new Long[] {
+    private final static Long[] APPROVAL_EXCLUDED_PROCESS_IDS = new Long[] {
 	    // Service Termination
 	    WFProcessesEnum.SOLDIERS_TERMINATION_CANCELLATION.getCode(),
 	    WFProcessesEnum.CIVILIANS_TERMINATION_CANCELLATION.getCode(),
@@ -57,7 +58,69 @@ public class DashBoardWorkFlow extends BaseWorkFlow {
 	    WFProcessesEnum.MILITARY_INTERNAL_COURSE_EVENT_CANCEL_REQUEST.getCode(),
 	    WFProcessesEnum.MILITARY_INTERNAL_COURSE_EVENT_RESULTS.getCode(),
 	    WFProcessesEnum.ADD_MILITARY_TRAINING_COURSE_NAME_REQUEST.getCode(),
-	    WFProcessesEnum.ADD_CIVILLAIN_TRAINING_COURSE_NAME_REQUEST.getCode()
+	    WFProcessesEnum.ADD_CIVILLAIN_TRAINING_COURSE_NAME_REQUEST.getCode(),
+
+    };
+
+    private final static Long[] ACCEPTANCE_EXCLUDED_PROCESS_IDS = new Long[] {
+	    // Service Termination
+	    WFProcessesEnum.SOLDIERS_TERMINATION_CANCELLATION.getCode(),
+	    WFProcessesEnum.CIVILIANS_TERMINATION_CANCELLATION.getCode(),
+	    WFProcessesEnum.CIVILIANS_TERMINATION_MOVEMENT.getCode(),
+
+	    // Training
+	    WFProcessesEnum.TRAINING_PLAN_INITIATION.getCode(),
+	    WFProcessesEnum.TRAINING_PLAN_FINALIZATION.getCode(),
+	    WFProcessesEnum.TRAINING_PLAN_APPROVAL.getCode(),
+	    WFProcessesEnum.TRAINING_PLAN_NEEDS_REQUEST.getCode(),
+	    WFProcessesEnum.MILITARY_INTERNAL_COURSE_EVENT_REQUEST.getCode(),
+	    WFProcessesEnum.MILITARY_INTERNAL_COURSE_EVENT_MODIFY_REQUEST.getCode(),
+	    WFProcessesEnum.MILITARY_INTERNAL_COURSE_EVENT_POSTPONE_REQUEST.getCode(),
+	    WFProcessesEnum.MILITARY_INTERNAL_COURSE_EVENT_CANCEL_REQUEST.getCode(),
+	    WFProcessesEnum.MILITARY_INTERNAL_COURSE_EVENT_RESULTS.getCode(),
+	    WFProcessesEnum.ADD_MILITARY_TRAINING_COURSE_NAME_REQUEST.getCode(),
+	    WFProcessesEnum.ADD_CIVILLAIN_TRAINING_COURSE_NAME_REQUEST.getCode(),
+
+	    // Movement
+	    WFProcessesEnum.SOLDIERS_MOVE.getCode(),
+	    WFProcessesEnum.SOLDIERS_SUBJOIN.getCode(),
+	    WFProcessesEnum.SOLDIERS_SUBJOIN_EXTENSION.getCode(),
+	    WFProcessesEnum.SOLDIERS_SUBJOIN_TERMINATION.getCode(),
+	    WFProcessesEnum.SOLDIERS_SUBJOIN_CANCELLATION.getCode(),
+	    WFProcessesEnum.SOLDIERS_MANDATE.getCode(),
+	    WFProcessesEnum.SOLDIERS_MANDATE_EXTENSION.getCode(),
+	    WFProcessesEnum.SOLDIERS_MANDATE_TERMINATION.getCode(),
+	    WFProcessesEnum.SOLDIERS_MANDATE_CANCELLATION.getCode(),
+	    WFProcessesEnum.SOLDIERS_SECONDMENT.getCode(),
+	    WFProcessesEnum.SOLDIERS_SECONDMENT_EXTENSION.getCode(),
+	    WFProcessesEnum.SOLDIERS_SECONDMENT_TERMINATION.getCode(),
+	    WFProcessesEnum.SOLDIERS_SECONDMENT_CANCELLATION.getCode(),
+	    WFProcessesEnum.PERSONS_MOVE.getCode(),
+	    WFProcessesEnum.PERSONS_ASSIGNMENT.getCode(),
+	    WFProcessesEnum.PERSONS_ASSIGNMENT_EXTENSION.getCode(),
+	    WFProcessesEnum.PERSONS_ASSIGNMENT_TERMINATION.getCode(),
+	    WFProcessesEnum.PERSONS_ASSIGNMENT_CANCELLATION.getCode(),
+	    WFProcessesEnum.OFFICERS_MOVE_REQUEST.getCode(),
+	    WFProcessesEnum.OFFICERS_SUBJOIN_REQUEST.getCode(),
+	    WFProcessesEnum.OFFICERS_SUBJOIN_EXTENSION_REQUEST.getCode(),
+	    WFProcessesEnum.OFFICERS_SUBJOIN_TERMINATION_REQUEST.getCode(),
+	    WFProcessesEnum.OFFICERS_SUBJOIN_CANCELLATION_REQUEST.getCode(),
+	    WFProcessesEnum.SOLDIERS_MOVE_REQUEST.getCode(),
+	    WFProcessesEnum.SOLDIERS_SUBJOIN_REQUEST.getCode(),
+	    WFProcessesEnum.SOLDIERS_SUBJOIN_EXTENSION_REQUEST.getCode(),
+	    WFProcessesEnum.SOLDIERS_SUBJOIN_TERMINATION_REQUEST.getCode(),
+	    WFProcessesEnum.SOLDIERS_SUBJOIN_CANCELLATION_REQUEST.getCode(),
+	    WFProcessesEnum.PERSONS_MOVE_REQUEST.getCode(),
+	    WFProcessesEnum.PERSONS_ASSIGNMENT_REQUEST.getCode(),
+	    WFProcessesEnum.PERSONS_ASSIGNMENT_EXTENSION_REQUEST.getCode(),
+	    WFProcessesEnum.PERSONS_ASSIGNMENT_TERMINATION_REQUEST.getCode(),
+	    WFProcessesEnum.PERSONS_ASSIGNMENT_CANCELLATION_REQUEST.getCode(),
+	    WFProcessesEnum.SOLDIERS_MOVE_WISH_REQUEST.getCode(),
+	    WFProcessesEnum.SOLDIERS_MOVE_WISH_MODIFY_REQUEST.getCode(),
+	    WFProcessesEnum.SOLDIERS_MOVE_WISH_CANCEL_REQUEST.getCode(),
+	    WFProcessesEnum.SOLDIERS_MOVE_WISH.getCode(),
+	    WFProcessesEnum.SOLDIERS_MOVE_WISH_MODIFY.getCode(),
+	    WFProcessesEnum.SOLDIERS_MOVE_WISH_CANCEL.getCode()
     };
 
     /**
@@ -90,7 +153,7 @@ public class DashBoardWorkFlow extends BaseWorkFlow {
 		throw new BusinessException("error_general");
 	    }
 
-	    dashBoardData = getWFProcessesGroupsApprovalCounts(employeeId, assigneeWfRoles, actionProcessesGroups, EXCLUDED_PROCESS_IDS);
+	    dashBoardData = getWFProcessesGroupsApprovalCounts(employeeId, assigneeWfRoles, actionProcessesGroups, actionTypeFlag == 1 ? ACCEPTANCE_EXCLUDED_PROCESS_IDS : APPROVAL_EXCLUDED_PROCESS_IDS);
 
 	    List<Long> actionProcessesGroupsList = Arrays.asList(actionProcessesGroups);
 	    List<WFProcessGroup> processGroups = getWFProcessesGroups();

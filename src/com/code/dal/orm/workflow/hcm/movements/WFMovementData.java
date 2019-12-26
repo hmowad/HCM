@@ -39,6 +39,7 @@ import com.code.services.util.HijriDateService;
 			"   and p.processGroupId   = :P_PROCESS_GROUP_ID " +
 			"   and t.assigneeId       = :P_ASSIGNEE_ID " +
 			"   and t.assigneeWfRole   in (:P_ASSIGNEE_WF_ROLES) " +
+			"   and (:P_PROCESS_IDS_FLAG = '-1' or p.id in (:P_PROCESS_IDS)) " +
 			"   order by t.taskId ")
 })
 @SuppressWarnings("serial")
