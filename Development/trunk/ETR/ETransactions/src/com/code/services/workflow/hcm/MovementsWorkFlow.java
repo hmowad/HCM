@@ -1951,12 +1951,19 @@ public class MovementsWorkFlow extends BaseWorkFlow {
      * @throws BusinessException
      *             if any error occurs
      */
-    public static List<Object> getWFMovementsTasks(Long assigneeId, String[] assigneeWfRoles) throws BusinessException {
+    public static List<Object> getWFMovementsTasks(Long assigneeId, String[] assigneeWfRoles, Long[] processIds) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_ASSIGNEE_ID", assigneeId);
 	    qParams.put("P_ASSIGNEE_WF_ROLES", assigneeWfRoles);
 	    qParams.put("P_PROCESS_GROUP_ID", WFProcessesGroupsEnum.MOVEMENTS.getCode());
+	    if (processIds == null || processIds.length == 0) {
+		qParams.put("P_PROCESS_IDS_FLAG", FlagsEnum.ALL.getCode() + "");
+		qParams.put("P_PROCESS_IDS", FlagsEnum.ALL.getCode() + "");
+	    } else {
+		qParams.put("P_PROCESS_IDS_FLAG", FlagsEnum.ON.getCode() + "");
+		qParams.put("P_PROCESS_IDS", processIds);
+	    }
 	    return DataAccess.executeNamedQuery(Object.class, QueryNamesEnum.WF_GET_WFMOVMENT_TASKS.getCode(), qParams);
 	} catch (Exception e) {
 	    throw new BusinessException("error_general");
