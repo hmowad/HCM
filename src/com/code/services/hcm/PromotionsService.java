@@ -826,9 +826,8 @@ public class PromotionsService extends BaseService {
 
 	    qParams.put("P_CATEGORY_ID", categoryId);
 	    qParams.put("P_RANK_ID", rankId);
-	    qParams.put("P_OFFICIAL_REGION_ID", regionId);
 	    qParams.put("P_PRINT_DATE", HijriDateService.getHijriSysDateString());
-	    if (reportType == 10 || reportType == 40) {
+	    if (reportType == 10 || reportType == 40 || reportType == 50) {
 		if (promotionDueDateFrom != null) {
 		    qParams.put("P_FROM_DATE_FLAG", FlagsEnum.ON.getCode());
 		    qParams.put("P_FROM_DATE", HijriDateService.getHijriDateString(promotionDueDateFrom));
@@ -837,14 +836,18 @@ public class PromotionsService extends BaseService {
 		    qParams.put("P_FROM_DATE", null);
 		}
 		qParams.put("P_TO_DATE", HijriDateService.getHijriDateString(promotionDueDateTo));
-		if (reportType == 10)
+		if (reportType == 10 || reportType == 50) {
 		    reportName = ReportNamesEnum.PROMOTIONS_ELIGIBLE_INQUIRY.getCode();
-		else if (reportType == 40) {
+		    qParams.put("P_REGION_ID", regionId);
+		    qParams.put("P_OFFICIAL_UNIT_FLAG", reportType == 10 ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode());
+		} else if (reportType == 40) {
 		    reportName = ReportNamesEnum.PROMOTIONS_SOLDIERS_ELIGIBLE_STATISTICAL_INQUIRY.getCode();
 		    qParams.put("P_OFFICIAL_REGION_SHORT_DESC", regionId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : CommonService.getRegionById(regionId).getShortDescription());
 		    qParams.put("P_RANK_DESC", rankId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : CommonService.getRankById(rankId).getDescription());
+		    qParams.put("P_OFFICIAL_REGION_ID", regionId);
 		}
 	    } else if (reportType == 20 || reportType == 30) {
+		qParams.put("P_OFFICIAL_REGION_ID", regionId);
 		if (decisionDateFrom != null) {
 		    qParams.put("P_DECISION_DATE_FROM_FLAG", FlagsEnum.ON.getCode());
 		    qParams.put("P_DECISION_DATE_FROM", HijriDateService.getHijriDateString(decisionDateFrom));
