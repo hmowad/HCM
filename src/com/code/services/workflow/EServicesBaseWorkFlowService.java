@@ -278,6 +278,7 @@ public class EServicesBaseWorkFlowService {
 	eservicesWFTAsk.setArabicDetailsSummary(hcmWFTask.getArabicDetailsSummary());
 	eservicesWFTAsk.setEnglishDetailsSummary(hcmWFTask.getEnglishDetailsSummary());
 	eservicesWFTAsk.setSelected(hcmWFTask.getSelected());
+	eservicesWFTAsk.setStoppingPoint(hcmWFTask.getStoppingPoint());
 	return eservicesWFTAsk;
     }
 
@@ -322,7 +323,7 @@ public class EServicesBaseWorkFlowService {
 	}
 	return groupsIds;
     }
-    
+
     private static Long[] getEservicesProcessesIDs() {
 	EservicesProcessesEnum[] eservicesProcessesEnum = EservicesProcessesEnum.values();
 	Long[] ids = new Long[eservicesProcessesEnum.length];
