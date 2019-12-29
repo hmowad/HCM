@@ -250,7 +250,7 @@
 																<h:outputText value="#{militaryIntCourseEventResults.selectedTrainingTransaction.employeeName}" />
 															</td>
 														</tr>
-														<code:courseResults trainingObject="#{militaryIntCourseEventResults.selectedTrainingTransaction}" loginEmpId="#{militaryIntCourseEventResults.loginEmpData.empId}" viewOnly="#{militaryIntCourseEventResults.role != 'Requester' and militaryIntCourseEventResults.role  != 'ReviewerEmp'}" military="true" claim="false" successFlagChangeListener="#{militaryIntCourseEventResults.successFlagChangeListener()}" successRankingDesc ="#{militaryIntCourseEventResults.calculateRankingDesc()}"></code:courseResults>
+														<code:courseResults trainingObject="#{militaryIntCourseEventResults.selectedTrainingTransaction}" loginEmpId="#{militaryIntCourseEventResults.loginEmpData.empId}" viewOnly="#{militaryIntCourseEventResults.role != 'Requester' and militaryIntCourseEventResults.role  != 'ReviewerEmp'}" military="true" claim="false" successFlagChangeListener="#{militaryIntCourseEventResults.successFlagChangeListener()}" successRankingDesc ="#{militaryIntCourseEventResults.calculateRankingDesc()}" successRankingMandatoryFlag="#{militaryIntCourseEventResults.selectedCourseEvent.rankingFlagBoolean}"></code:courseResults>
 
 														<tr>
 															<td width="100%" colspan="4">

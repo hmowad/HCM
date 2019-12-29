@@ -340,9 +340,6 @@ public class TrainingEmployeesService extends BaseService {
 		if (!TrainingEmployeesService.getTrainingTransactionsData(new Long[] { TrainingTypesEnum.EXTERNAL_MILITARY_COURSE.getCode() }, new Integer[] { TraineeStatusEnum.NOMINATION_ACCEPTED_FROM_FRONTIER_GAURDS.getCode(), TraineeStatusEnum.NOMINATION_ACCEPTED.getCode() }, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), courseEventId).isEmpty())
 		    throw new BusinessException("error_cannotRegisterResults");
 
-		if (trainingTransaction.getSuccessRanking() != null && trainingTransaction.getSuccessRanking().intValue() > TrainingEmployeesService.getJoinedAndFininshedEmployeesInCourseEventTransactionsList(courseEventId).size())
-		    throw new BusinessException("error_invalidSuccessRanking");
-
 	    } else if (trainingTransaction.getTrainingTypeId().longValue() == TrainingTypesEnum.STUDY_ENROLLMENT.getCode() || trainingTransaction.getTrainingTypeId().longValue() == TrainingTypesEnum.SCHOLARSHIP.getCode()) {
 
 		if (trainingTransaction.getSuccessFlagBoolean() && !trainingTransaction.getStudyGraduationDate().before(HijriDateService.getHijriSysDate()))
@@ -1027,10 +1024,8 @@ public class TrainingEmployeesService extends BaseService {
 		    && !trainingTransactionDetail.getStudyStartDate().after(trainingTransactionDetail.getMinistryDecisionDate()))
 		throw new BusinessException("error_studyStartDateMustBeAfterMinistryDecisionDate");
 
-	    
-	     if (transactionTypeExtensionDecisionId == trainingTransactionDetail.getTransactionTypeId() && !trainingTransactionDetail.getStudyStartDate().after(trainingTransactionDetail.getMinistryReportDate())) 
-		 throw new BusinessException("error_studyStartDateMustBeAfterReportDate");
-	     
+	    if (transactionTypeExtensionDecisionId == trainingTransactionDetail.getTransactionTypeId() && !trainingTransactionDetail.getStudyStartDate().after(trainingTransactionDetail.getMinistryReportDate()))
+		throw new BusinessException("error_studyStartDateMustBeAfterReportDate");
 
 	    if (trainingTransactionDetail.getMinistryDecisionDate().after(trainingTransactionDetail.getMinistryReportDate()))
 		throw new BusinessException("error_decisionDateMustBeBeforeOrEqualReportDate");

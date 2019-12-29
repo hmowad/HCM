@@ -301,7 +301,7 @@
 									</tr>
 									<tr>
 										<th width="15%">#{msgs.label_minorSpecialization}</th>
-										<td width="35%" colspan="2">
+										<td width="35%">
 											<h:outputText id="minorSpecializationDescId" value="#{(militaryCoursesRegistration.trainingCourseData.minorSpecializationIds == null or militaryCoursesRegistration.trainingCourseData.minorSpecializationIds == '') ? msgs.label_all : militaryCoursesRegistration.minorSpecializationDesc}" rendered="#{militaryCoursesRegistration.viewAdmin or militaryCoursesRegistration.modifyAndInsertAdmin}" />
 											<h:inputHidden id="minorSpecializationIdHId" value="#{militaryCoursesRegistration.trainingCourseData.minorSpecializationIds}" />
 											<h:inputHidden id="minorSpecializationDescHId" value="#{militaryCoursesRegistration.minorSpecializationDesc}" />
@@ -309,6 +309,10 @@
 											<h:commandButton id="clearMinorSpecializationDescBtnId" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" action="#{militaryCoursesRegistration.clearMinorSpec()}" value="#{msgs.fa_times}" styleClass="btn_icon">
 												<f:ajax execute="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId" render="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
+										</td>
+										<td width="50%">
+											<h:selectBooleanCheckbox value="#{militaryCoursesRegistration.trainingCourseData.rankingFlagBoolean}" />
+											<h:outputText value=" #{msgs.label_courseWithRanking}" />
 										</td>
 									</tr>
 									<tr>

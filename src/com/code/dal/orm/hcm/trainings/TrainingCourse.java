@@ -35,6 +35,7 @@ public class TrainingCourse extends AuditEntity implements InsertableAuditEntity
     private Integer promotionWitninMonths;
     private String syllabusAttachments;
     private String syllabusAttachmentsHistory;
+    private Integer rankingFlag;
 
     @SequenceGenerator(name = "HCMTrainingQualSeq",
 	    sequenceName = "HCM_TRN_QUAL_SEQ")
@@ -218,7 +219,7 @@ public class TrainingCourse extends AuditEntity implements InsertableAuditEntity
     public void setSyllabusAttachments(String syllabusAttachments) {
 	this.syllabusAttachments = syllabusAttachments;
     }
-   
+
     @Basic
     @Column(name = "SYLLABUS_ATTACHMENTS_HISTORY")
     public String getSyllabusAttachmentsHistory() {
@@ -227,6 +228,16 @@ public class TrainingCourse extends AuditEntity implements InsertableAuditEntity
 
     public void setSyllabusAttachmentsHistory(String syllabusAttachmentsHistory) {
 	this.syllabusAttachmentsHistory = syllabusAttachmentsHistory;
+    }
+
+    @Basic
+    @Column(name = "RANKING_FLAG")
+    public Integer getRankingFlag() {
+	return rankingFlag;
+    }
+
+    public void setRankingFlag(Integer rankingFlag) {
+	this.rankingFlag = rankingFlag;
     }
 
     @Override
@@ -253,6 +264,7 @@ public class TrainingCourse extends AuditEntity implements InsertableAuditEntity
 		"qualificationLevelIds:" + qualificationLevelIds + AUDIT_SEPARATOR +
 		"promotionWitninMonths:" + promotionWitninMonths + AUDIT_SEPARATOR +
 		"syllabusAttachments:" + syllabusAttachments + AUDIT_SEPARATOR +
-		"syllabusAttachmentsHistory" + syllabusAttachmentsHistory + AUDIT_SEPARATOR;
+		"syllabusAttachmentsHistory" + syllabusAttachmentsHistory + AUDIT_SEPARATOR +
+		"rankingFlag" + rankingFlag + AUDIT_SEPARATOR;
     }
 }
