@@ -73,31 +73,37 @@ public class PayrollEngineService extends BaseService {
 	return Integer.parseInt(getConfig("integrationWithAllowanceAndDeductionFlag"));
     }
 
-    private static List<AdminDecisionResponse> getAdminDecisionVariablesMap(String adminDecisionVariables) {
-	List<AdminDecisionResponse> adminDecisionsList = new ArrayList<AdminDecisionResponse>();
-	JsonReader jsonReader = Json.createReader(new StringReader(adminDecisionVariables));
-	JsonObject adminDecisionVariablesJson = jsonReader.readObject();
-	adminDecisionVariablesJson = adminDecisionVariablesJson.getJsonObject("Response");
-	JsonArray decisionTypesArray = adminDecisionVariablesJson.getJsonArray("DecisionTypesList");
-	for (int i = 0; i < decisionTypesArray.size(); i++) {
-	    AdminDecisionResponse adminDecision = new AdminDecisionResponse();
-	    adminDecision.setId(decisionTypesArray.getJsonObject(i).getInt("id"));
-	    adminDecision.setName(decisionTypesArray.getJsonObject(i).getString("name"));
-	    JsonArray variableArray = decisionTypesArray.getJsonObject(i).getJsonArray("variableArray");
-	    List<AdminDecisionVariable> adminDecisionVariableList = new ArrayList<AdminDecisionVariable>();
-	    for (int j = 0; j < variableArray.size(); j++) {
-		AdminDecisionVariable adminDecisionVariable = new AdminDecisionVariable();
-		adminDecisionVariable.setVariableId(variableArray.getJsonObject(j).getInt("variableId"));
-		adminDecisionVariable.setVariableName(variableArray.getJsonObject(j).getString("variableName"));
-		adminDecisionVariable.setVariableMapping(variableArray.getJsonObject(j).getString("variableMapping"));
-		adminDecisionVariable.setIsLov(variableArray.getJsonObject(j).containsKey("isLov") ? variableArray.getJsonObject(j).getInt("isLov") : null);
-		adminDecisionVariableList.add(adminDecisionVariable);
+    private static List<AdminDecisionResponse> getAdminDecisionVariablesMap(String adminDecisionVariables) throws BusinessException {
+	try {
+	    List<AdminDecisionResponse> adminDecisionsList = new ArrayList<AdminDecisionResponse>();
+	    JsonReader jsonReader = Json.createReader(new StringReader(adminDecisionVariables));
+	    JsonObject adminDecisionVariablesJson = jsonReader.readObject();
+	    adminDecisionVariablesJson = adminDecisionVariablesJson.getJsonObject("Response");
+	    JsonArray decisionTypesArray = adminDecisionVariablesJson.getJsonArray("DecisionTypesList");
+	    for (int i = 0; i < decisionTypesArray.size(); i++) {
+		AdminDecisionResponse adminDecision = new AdminDecisionResponse();
+		adminDecision.setId(decisionTypesArray.getJsonObject(i).getInt("id"));
+		adminDecision.setName(decisionTypesArray.getJsonObject(i).getString("name"));
+		JsonArray variableArray = decisionTypesArray.getJsonObject(i).getJsonArray("variableArray");
+		List<AdminDecisionVariable> adminDecisionVariableList = new ArrayList<AdminDecisionVariable>();
+		for (int j = 0; j < variableArray.size(); j++) {
+		    AdminDecisionVariable adminDecisionVariable = new AdminDecisionVariable();
+		    adminDecisionVariable.setVariableId(variableArray.getJsonObject(j).getInt("variableId"));
+		    adminDecisionVariable.setVariableName(variableArray.getJsonObject(j).getString("variableName"));
+		    adminDecisionVariable.setVariableMapping(variableArray.getJsonObject(j).getString("variableMapping"));
+		    adminDecisionVariable.setIsLov(variableArray.getJsonObject(j).containsKey("isLov") ? variableArray.getJsonObject(j).getInt("isLov") : null);
+		    adminDecisionVariableList.add(adminDecisionVariable);
+		}
+		adminDecision.setVariableArray(adminDecisionVariableList);
+		adminDecisionsList.add(adminDecision);
 	    }
-	    adminDecision.setVariableArray(adminDecisionVariableList);
-	    adminDecisionsList.add(adminDecision);
+	    jsonReader.close();
+	    return adminDecisionsList;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    Log4jService.traceInfo(PayrollEngineService.class, "Exception: " + e.getMessage());
+	    throw new BusinessException("error_general");
 	}
-	jsonReader.close();
-	return adminDecisionsList;
     }
 
     private static JsonObject getApplyAdminDecisionBody(List<AdminDecisionResponse> adminDecisionList, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, Long adminDecisionId, Long categoryId, CustomSession useSession) throws BusinessException {
@@ -208,6 +214,10 @@ public class PayrollEngineService extends BaseService {
 	    Log4jService.traceInfo(PayrollEngineService.class, "Exception: " + e.getMessage());
 	    throw e;
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    Log4jService.traceInfo(PayrollEngineService.class, "Exception: " + e.getMessage());
+	    throw new BusinessException("error_general");
+	} catch (Exception e) {
 	    e.printStackTrace();
 	    Log4jService.traceInfo(PayrollEngineService.class, "Exception: " + e.getMessage());
 	    throw new BusinessException("error_general");
