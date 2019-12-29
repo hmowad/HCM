@@ -12,6 +12,7 @@ import com.code.dal.orm.hcm.Category;
 import com.code.dal.orm.hcm.Rank;
 import com.code.dal.orm.hcm.trainings.TrainingCourseData;
 import com.code.enums.CategoriesEnum;
+import com.code.enums.FlagsEnum;
 import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
 import com.code.enums.MilitaryCivillianEnum;
@@ -124,6 +125,7 @@ public class MilitaryCoursesRegistration extends BaseBacking implements Serializ
     public void resetForm() throws BusinessException {
 	trainingCourseData = new TrainingCourseData();
 	trainingCourseData.setType(MilitaryCivillianEnum.Military.getCode());
+	trainingCourseData.setRankingFlag(FlagsEnum.OFF.getCode());
 	qualificationLevelsDesc = null;
 	minorSpecializationDesc = null;
 	ranks = new ArrayList<>();

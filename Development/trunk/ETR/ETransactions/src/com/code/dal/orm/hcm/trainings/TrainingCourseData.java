@@ -55,6 +55,8 @@ public class TrainingCourseData extends BaseEntity {
     private Integer promotionWitninMonths;
     private String syllabusAttachments;
     private String syllabusAttachmentsHistory;
+    private Integer rankingFlag;
+    private Boolean rankingFlagBoolean;
     private TrainingCourse trainingCourse;
 
     public TrainingCourseData() {
@@ -362,6 +364,42 @@ public class TrainingCourseData extends BaseEntity {
     public void setSyllabusAttachmentsHistory(String syllabusAttachmentsHistory) {
 	this.trainingCourse.setSyllabusAttachmentsHistory(syllabusAttachmentsHistory);
 	this.syllabusAttachmentsHistory = syllabusAttachmentsHistory;
+    }
+
+    @Basic
+    @XmlTransient
+    @Column(name = "RANKING_FLAG")
+    public Integer getRankingFlag() {
+	return rankingFlag;
+    }
+
+    public void setRankingFlag(Integer rankingFlag) {
+	this.rankingFlag = rankingFlag;
+
+	if (this.rankingFlag == null || this.rankingFlag == FlagsEnum.OFF.getCode())
+	    this.rankingFlagBoolean = false;
+	else
+	    this.rankingFlagBoolean = true;
+
+	this.trainingCourse.setRankingFlag(rankingFlag);
+    }
+
+    @Transient
+    @XmlTransient
+    public boolean isRankingFlagBoolean() {
+	return rankingFlagBoolean;
+    }
+
+    public void setRankingFlagBoolean(boolean rankingFlagBoolean) {
+	this.rankingFlagBoolean = rankingFlagBoolean;
+
+	if (this.rankingFlagBoolean == null || !this.rankingFlagBoolean) {
+	    this.rankingFlag = FlagsEnum.OFF.getCode();
+	} else {
+	    this.rankingFlag = FlagsEnum.ON.getCode();
+	}
+
+	this.trainingCourse.setRankingFlag(rankingFlag);
     }
 
     @Transient

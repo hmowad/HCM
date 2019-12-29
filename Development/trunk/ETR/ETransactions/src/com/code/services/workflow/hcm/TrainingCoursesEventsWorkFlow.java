@@ -1051,6 +1051,7 @@ public class TrainingCoursesEventsWorkFlow extends BaseWorkFlow {
 	courseEvent.setCandidatesMin(course.getCandidatesMin());
 	courseEvent.setCandidatesMax(course.getCandidatesMax());
 	courseEvent.setPrerquisites(course.getPrerquisites());
+	courseEvent.setRankingFlag(course.getRankingFlag());
 
 	return courseEvent;
     }

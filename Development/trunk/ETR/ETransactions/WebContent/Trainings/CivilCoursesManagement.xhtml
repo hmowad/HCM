@@ -149,19 +149,22 @@
 								<f:facet name="header">#</f:facet>
 	                                #{index + 1}
 	                        </rich:column>
-							<rich:column style="width : 25%">
+							<rich:column style="width : 22%">
 								<f:facet name="header">#{msgs.label_trainingQualificationMajorSpec}</f:facet>
 								<h:outputText value="#{civilCourse.qualificationMajorSpecDesc}" />
 							</rich:column>
-							<rich:column style="width : 25%">
+							<rich:column style="width : 22%">
 								<f:facet name="header">#{msgs.label_trainingQualificationMinorSpec}</f:facet>
 								<h:outputText value="#{civilCourse.qualificationMinorSpecDesc}" />
 							</rich:column>
-							<rich:column style="width : 40%">
+							<rich:column style="width : 30%">
 								<f:facet name="header">#{msgs.label_trainingCourseName}</f:facet>
 								<h:inputText id="courseNameId" value="#{civilCourse.name}" styleClass="inputDataLarge" />
 							</rich:column>
-
+							<rich:column style="width : 16%">
+								<f:facet name="header">#{msgs.label_courseWithRanking}</f:facet>
+								<h:selectBooleanCheckbox value="#{civilCourse.rankingFlagBoolean}" />
+							</rich:column>
 							<rich:column style="width : 5%">
 								<f:facet name="header">#{msgs.label_save}</f:facet>
 								<h:commandButton action="#{civilCoursesManagement.saveCivilCourse(civilCourse)}" value="#{msgs.fa_floppy_o}" title="#{msgs.label_save}" onclick="return confirmAddingCivilCourse(this.id);" styleClass="btn_icon">

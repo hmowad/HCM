@@ -11,7 +11,7 @@
 	<composite:attribute name="claim" required="true" />
 	<composite:attribute name="successFlagChangeListener" required="false" />
 	<composite:attribute name="successRankingDesc" required="false" />
-	<composite:attribute name="successRankingMandatoryFlag" required="false" default="true"/>
+	<composite:attribute name="successRankingMandatoryFlag" required="false" default="true" />
 </composite:interface>
 
 <composite:implementation>
@@ -96,8 +96,8 @@
 		} 
 		
 		if(passedIndicatorChecked) {
-			var successRanking = document.getElementById('#{cc.clientId}' +':successRankingId').value;
 			if(#{cc.attrs.successRankingMandatoryFlag}){
+				var successRanking = document.getElementById('#{cc.clientId}' +':successRankingId').value;
 				if(successRanking == null || successRanking == ''){
 					alert('#{msgs.error_successRankMandatory}');
 				    return false;
@@ -111,18 +111,6 @@
 					return false;
 				}
 			}	
-			else{
-				if(successRanking != null && successRanking != ''){
-					if(successRanking <= 0 ) {
-						alert('#{msgs.error_successRankingCannotBeZeroOrLess}');
-						return false;
-					}
-					if(successRanking > 1000){
-						alert('#{msgs.error_successRankingCannotBeHigherThanThousand}');
-						return false;
-					}
-				}
-			}
 				
 		    // qualification grade
 		    var excellentMilitaryQualificationGradeChecked = document.getElementById('#{cc.clientId}' +':militaryQualificationGradeId:0').checked;
@@ -185,7 +173,7 @@
 				<h:outputText value=" " />
 				<font style="color: red;">*</font>
 			</th>
-			<td width="20%">
+			<td width="#{cc.attrs.successRankingMandatoryFlag ? 20 : 80}%" colspan="#{cc.attrs.successRankingMandatoryFlag ? 1 : 3}">
 				<h:outputText value="#{cc.attrs.trainingObject.successFlag == 1 ? msgs.label_successful : msgs.label_residual}" rendered="#{cc.attrs.viewOnly}" />
 				<h:selectOneRadio id="successIndicatorId" value="#{cc.attrs.trainingObject.successFlag}" rendered="#{!cc.attrs.viewOnly}">
 					<f:selectItem itemValue="1" itemLabel="#{msgs.label_successful}" />
@@ -196,25 +184,24 @@
 
 			<td width="65%" colspan="2">
 				<h:panelGroup id="successRankingPanelId">
-					<h:panelGroup rendered="#{cc.attrs.trainingObject.successFlag == null or cc.attrs.trainingObject.successFlag == 1}">
+					<h:panelGroup rendered="#{(cc.attrs.trainingObject.successFlag == null or cc.attrs.trainingObject.successFlag == 1)  and cc.attrs.successRankingMandatoryFlag}">
 						<table border="0" cellpadding="0" cellspacing="0" width="100%">
 							<tr>
 								<th width="15%">
 									#{msgs.label_theRanking}
-									<h:panelGroup rendered="#{cc.attrs.successRankingMandatoryFlag}">
-										<h:outputText value=" " />
-										<font style="color: red;">*</font>
-									</h:panelGroup>
+									<h:outputText value=" " />
+									<font style="color: red;">*</font>
 								</th>
 								<td width="50%">
-									<h:inputText id="successRankingId" value="#{cc.attrs.trainingObject.successRanking}" rendered="#{!cc.attrs.viewOnly}" styleClass="inputDataNormal" maxlength="5" onkeypress="return isDigit(event);" >
-										<f:ajax event="blur" listener="#{cc.attrs.successRankingDesc}" render="#{cc.clientId}:successRankingPanelId  #{cc.clientId.split(':')[0].concat(':notifyMessagesId')}" execute="#{cc.clientId}:successRankingPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+									<h:inputText id="successRankingId" value="#{cc.attrs.trainingObject.successRanking}" rendered="#{!cc.attrs.viewOnly}" styleClass="inputDataNormal" maxlength="5" onkeypress="return isDigit(event);">
+										<f:ajax event="blur" listener="#{cc.attrs.successRankingDesc}" render="#{cc.clientId}:successRankingPanelId  #{cc.clientId.split(':')[0].concat(':notifyMessagesId')}" execute="#{cc.clientId}:successRankingPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 									</h:inputText>
 									<h:outputText value="  " rendered="#{!cc.attrs.viewOnly}" />
-									<h:outputText id ="successRankingDescId" value="#{cc.attrs.successRankingDesc}" />
+									<h:outputText id="successRankingDescId" value="#{cc.attrs.successRankingDesc}" />
 								</td>
 							</tr>
 						</table>
+
 					</h:panelGroup>
 				</h:panelGroup>
 			</td>
@@ -343,7 +330,7 @@
 				<td width="85%" colspan="3">
 					<h:panelGroup id="graduationDatePanelId">
 						<h:panelGroup rendered="#{cc.attrs.trainingObject.successFlag != 0}">
-							<util:hijri id="graduationDateId" nullable="true" value="#{cc.attrs.trainingObject.studyGraduationDate}" rendered="#{!cc.attrs.viewOnly}" viewOldRange="true"/>
+							<util:hijri id="graduationDateId" nullable="true" value="#{cc.attrs.trainingObject.studyGraduationDate}" rendered="#{!cc.attrs.viewOnly}" viewOldRange="true" />
 							<h:outputText value="#{cc.attrs.trainingObject.studyGraduationDateString}" rendered="#{cc.attrs.viewOnly}" />
 						</h:panelGroup>
 					</h:panelGroup>
