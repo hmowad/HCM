@@ -1,6 +1,7 @@
 package com.code.services.hcm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.ws.WebServiceException;
 
@@ -28,6 +30,7 @@ import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.dal.orm.hcm.organization.units.UnitTransaction;
 import com.code.dal.orm.log.EmployeeLog;
 import com.code.dal.orm.setup.Country;
+import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.CountriesEnum;
 import com.code.enums.EmployeeStatusEnum;
@@ -42,6 +45,7 @@ import com.code.enums.UnitTypesEnum;
 import com.code.enums.WFProcessesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
 import com.code.integration.webservicesclients.yaqeenclient.yaqeen.ejada.com.BusinessException_Exception;
 import com.code.integration.webservicesclients.yaqeenclient.yaqeen.ejada.com.DataValidationException;
 import com.code.integration.webservicesclients.yaqeenclient.yaqeen.ejada.com.IdType;
@@ -53,6 +57,7 @@ import com.code.integration.webservicesclients.yaqeenclient.yaqeen.ejada.com.Yaq
 import com.code.services.BaseService;
 import com.code.services.buswfcoop.BusinessWorkflowCooperation;
 import com.code.services.config.ETRConfigurationService;
+import com.code.services.integration.PayrollEngineService;
 import com.code.services.log.LogService;
 import com.code.services.util.CommonService;
 import com.code.services.util.CountryService;
@@ -75,6 +80,10 @@ public class EmployeesService extends BaseService {
 	    employeeQualificationsData.setEmployeeId(empData.getEmpId());
 
 	    addEmployeeQualifications(employeeQualificationsData, empData, session);
+
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()) && empData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+		doPayrollIntegration(empData.getEmpId(), session);
+	    }
 
 	    EmployeeLog log = new EmployeeLog.Builder().setRankId(empData.getRankId()).setSocialStatus(empData.getSocialStatus()).setGeneralSpecialization(empData.getGeneralSpecialization())
 		    .constructCommonFields(empData.getEmpId(), FlagsEnum.OFF.getCode(), null, null, HijriDateService.getHijriSysDate(), DataAccess.getTableName(Employee.class)).build();
@@ -507,6 +516,15 @@ public class EmployeesService extends BaseService {
     private static void personsValidate(EmployeeData empData) throws BusinessException {
 	if (empData.getCategoryId().longValue() == CategoriesEnum.CONTRACTORS.getCode() && empData.getCountryId() == null)
 	    throw new BusinessException("error_countryMandatory");
+    }
+
+    private static void doPayrollIntegration(Long employeeId, CustomSession session) throws BusinessException {
+	session.flushTransaction();
+	String gregSysDateString = HijriDateService.hijriToGregDateString(HijriDateService.getHijriSysDateString());
+	EmployeeData employee = EmployeesService.getEmployeeData(employeeId);
+	List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), null, gregSysDateString, gregSysDateString, UUID.randomUUID().toString())));
+	if (employee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()))
+	    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_REGISTRATION.getCode(), CategoriesEnum.OFFICERS.getCode(), gregSysDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : employee.getPhysicalUnitId(), gregSysDateString, session);
     }
 
     public static EmployeeData getEmployeeDirectManager(long employeeId) throws BusinessException {
