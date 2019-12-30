@@ -58,8 +58,6 @@
 		var externalPartyId = document.getElementById('eveningTrainingClaimRequestFormId:externalPartyIdHId').value;
 		var startDateValue =  document.getElementById('eveningTrainingClaimRequestFormId:startDateId:day').value;
 		var endDateValue =  document.getElementById('eveningTrainingClaimRequestFormId:endDateId:day').value;
-		var financeSourceOnHisOwn = document.getElementById('eveningTrainingClaimRequestFormId:courseFundSource:0').checked;
-		var financeSourceOnBorderGuard = document.getElementById('eveningTrainingClaimRequestFormId:courseFundSource:1').checked;
 
 		if(trainingCourseId==null || trainingCourseId=='' ) {
 			alert('#{msgs.error_courseNameMandatory}');
@@ -73,9 +71,6 @@
 		} else if(endDateValue == 0) {
 				alert('#{msgs.error_courseEndDateMandatory}');
 				return false;
-		} else if(!financeSourceOnHisOwn && !financeSourceOnBorderGuard){
-		    alert('#{msgs.error_financeSourceMandatory}');
-			return false;		
 		} else if(!validResultsComponent()) {
 			return false
 		}
@@ -231,18 +226,6 @@
 									<td width="50%">
 										<util:hijri id="endDateId" value="#{eveningTrainingClaimRequest.wfTraining.endDate}" nullable="true" rendered="#{eveningTrainingClaimRequest.canChangeRequestData()}" viewOldRange="true"/>
 										<h:outputText value="#{eveningTrainingClaimRequest.wfTraining.endDateString}" rendered="#{!eveningTrainingClaimRequest.canChangeRequestData()}" />
-									</td>
-								</tr>
-								<tr>
-									<th width="15%">
-										<h:outputText value="#{msgs.label_courseFinanceSource}" />
-									</th>
-									<td width="85%" colspan="3">
-										<h:selectOneRadio id="courseFundSource" value="#{eveningTrainingClaimRequest.wfTraining.fundSource}" rendered="#{eveningTrainingClaimRequest.canChangeRequestData()}">
-											<f:selectItem itemValue="1" itemLabel="#{msgs.label_costOnEmployee}" />
-											<f:selectItem itemValue="2" itemLabel="#{msgs.label_costOnBorderGuard}" />
-										</h:selectOneRadio>
-										<h:outputText value="#{eveningTrainingClaimRequest.wfTraining.fundSource == 1 ? msgs.label_costOnEmployee : msgs.label_costOnBorderGuard}" rendered="#{!eveningTrainingClaimRequest.canChangeRequestData()}" />
 									</td>
 								</tr>
 								<code:courseResults id="resultsId" trainingObject="#{eveningTrainingClaimRequest.wfTraining}" loginEmpId="#{eveningTrainingClaimRequest.loginEmpData.empId}" viewOnly="#{!eveningTrainingClaimRequest.canChangeRequestData()}" military="false" showGraduationDate="false" claim="true"></code:courseResults>

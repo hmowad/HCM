@@ -41,6 +41,8 @@ public class TrainingEmployeesService extends BaseService {
     private static final int MAX_MONTHS_PERIOD = 99;
     private static final int MAX_OTHER_PURPOSES_LENGTH = 250;
     private static final int MAX_SCHOLARSHIP_DAYS_COUNT = 29;
+    private static final int MAX_EVENING_COURSE_NOMINATION_PERIOD_DAYS = 90;
+    private static final int MAX_EVENING_COURSE_NOMINATION_BETWEEN_REQUEST_AND_START_DAYS = 30;
 
     /**
      * private constructor to prevent instantiation
@@ -414,7 +416,7 @@ public class TrainingEmployeesService extends BaseService {
 		    throw new BusinessException("error_cancelReasonMandatory");
 	    }
 	} else {
-	    if (trainingTransaction.getFundSource() == null && (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.STUDY_ENROLLMENT.getCode() || trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.EVENING_COURSE.getCode()))
+	    if (trainingTransaction.getFundSource() == null && (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.STUDY_ENROLLMENT.getCode()))
 		throw new BusinessException("error_financeSourceMandatory");
 
 	    if (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.STUDY_ENROLLMENT.getCode() || trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.SCHOLARSHIP.getCode()) {
@@ -552,6 +554,16 @@ public class TrainingEmployeesService extends BaseService {
 	    if (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.MORNING_COURSE.getCode() && trainingTransactionCategory == TrainingTransactionCategoryEnum.NOMINATION.getCode()) {
 		if (HijriDateService.hijriDateDiff(HijriDateService.getHijriSysDate(), courseEventData.getActualEndDate()) < 0)
 		    throw new BusinessException("error_noNominationCourseEventEndDateBeforToday");
+	    }
+
+	    if (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.EVENING_COURSE.getCode() && trainingTransactionCategory == TrainingTransactionCategoryEnum.NOMINATION.getCode()) {
+		if (HijriDateService.hijriDateDiff(courseEventData.getActualStartDate(), courseEventData.getActualEndDate()) > MAX_EVENING_COURSE_NOMINATION_PERIOD_DAYS) {
+		    throw new BusinessException("error_eveningCourseNominationMaxPeriod");
+		}
+
+		if (HijriDateService.hijriDateDiff(HijriDateService.getHijriSysDate(), courseEventData.getActualStartDate()) > MAX_EVENING_COURSE_NOMINATION_BETWEEN_REQUEST_AND_START_DAYS) {
+		    throw new BusinessException("error_eveningCourseStartdateAndRequestDateMaxPeriod");
+		}
 	    }
 	} else if (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.STUDY_ENROLLMENT.getCode() || trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.SCHOLARSHIP.getCode()) {
 	    if (trainingTransactionCategory != TrainingTransactionCategoryEnum.CLAIM.getCode() &&
