@@ -859,6 +859,7 @@ public class PromotionTransactionData extends BaseEntity {
 
     public void setBasedOnTransactionId(Long basedOnTransactionId) {
 	this.basedOnTransactionId = basedOnTransactionId;
+	this.promotionTransaction.setBasedOnTransactionId(basedOnTransactionId);
     }
 
     @Transient
