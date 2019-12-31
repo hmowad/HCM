@@ -1,5 +1,6 @@
 package com.code.services.workflow;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import com.code.exceptions.BusinessException;
 import com.code.integration.webservicesclients.eservices.EServicesWorkFlowClient;
 import com.code.integration.webservicesclients.eservices.WFGeneralProcessClient;
 import com.code.services.hcm.EmployeesService;
+import com.code.services.util.HijriDateService;
 
 public class EServicesBaseWorkFlowService {
 
@@ -215,13 +217,21 @@ public class EServicesBaseWorkFlowService {
 	    hcmWFTAskData.setOriginalUnitFullName(originalEmp.getPhysicalUnitFullName());
 	    hcmWFTAskData.setHijriAssignDate(eservicesWFTaskData.getAssignDate());
 	    hcmWFTAskData.setAssignDate(eservicesWFTaskData.getAssignGregDate());
-	    hcmWFTAskData.setHijriAssignDateString(eservicesWFTaskData.getAssignDateString());
+	    if (eservicesWFTaskData.getAssignGregDate() != null && eservicesWFTaskData.getAssignDate() != null) {
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+		hcmWFTAskData.setHijriAssignDateString(HijriDateService.getHijriDateString(eservicesWFTaskData.getAssignDate()) + " "
+			+ sdf.format(eservicesWFTaskData.getAssignGregDate()));
+	    }
 	    hcmWFTAskData.setTaskUrl(getProcessHcmUrl(eservicesWFTaskData.getProcessId()) + "?taskId=" + eservicesWFTaskData.getId());
 	    hcmWFTAskData.setAssigneeWfRole(eservicesWFTaskData.getAssigneeWfRole());
 	    hcmWFTAskData.setAction(eservicesWFTaskData.getAction());
 	    hcmWFTAskData.setHijriActionDate(eservicesWFTaskData.getActionDate());
 	    hcmWFTAskData.setActionDate(eservicesWFTaskData.getActionGregDate());
-	    hcmWFTAskData.setHijriActionDateString(eservicesWFTaskData.getActionDateString());
+	    if (eservicesWFTaskData.getActionGregDate() != null && eservicesWFTaskData.getActionDate() != null) {
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+		hcmWFTAskData.setHijriActionDateString(HijriDateService.getHijriDateString(eservicesWFTaskData.getActionDate()) + " "
+			+ sdf.format(eservicesWFTaskData.getActionGregDate()));
+	    }
 	    hcmWFTAskData.setNotes(eservicesWFTaskData.getNotes());
 	    hcmWFTAskData.setRefuseReasons(eservicesWFTaskData.getRefuseReasons());
 	    hcmWFTAskData.setExternalLocationId(eservicesWFTaskData.getExternalLocationId());
