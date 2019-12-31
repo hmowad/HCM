@@ -3,17 +3,20 @@ package com.code.services.workflow;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.workflow.WFInstance;
 import com.code.dal.orm.workflow.WFProcess;
 import com.code.dal.orm.workflow.WFProcessGroup;
 import com.code.dal.orm.workflow.WFTask;
 import com.code.dal.orm.workflow.WFTaskData;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.WFTaskActionsEnum;
 import com.code.enums.eservices.EservicesProcessesEnum;
 import com.code.enums.eservices.WFTaskURLsEnum;
 import com.code.exceptions.BusinessException;
 import com.code.integration.webservicesclients.eservices.EServicesWorkFlowClient;
 import com.code.integration.webservicesclients.eservices.WFGeneralProcessClient;
+import com.code.services.hcm.EmployeesService;
 
 public class EServicesBaseWorkFlowService {
 
@@ -190,48 +193,53 @@ public class EServicesBaseWorkFlowService {
 	return hcmWFTask;
     }
 
-    private static WFTaskData toHCMWFTaskData(com.code.integration.parameters.eservices.workflow.WFTaskData eservicesWFTaskData) {
-	WFTaskData hcmWFTAskData = new WFTaskData();
-	hcmWFTAskData.setTaskId(eservicesWFTaskData.getId());
-	hcmWFTAskData.setInstanceId(eservicesWFTaskData.getInstanceId());
-	hcmWFTAskData.setProcessId(eservicesWFTaskData.getProcessId());
-	hcmWFTAskData.setProcessName(eservicesWFTaskData.getProcessName());
-	hcmWFTAskData.setProcessGroupId(eservicesWFTaskData.getProcessGroupId());
-	hcmWFTAskData.setAssigneeId(eservicesWFTaskData.getAssigneeId());
-	hcmWFTAskData.setOriginalId(eservicesWFTaskData.getOriginalId());
-	hcmWFTAskData.setOriginalCategoryId(eservicesWFTaskData.getOriginalCategoryId());
-	hcmWFTAskData.setOriginalRankDesc(eservicesWFTaskData.getOriginalRankDesc());
-	hcmWFTAskData.setOriginalJobDesc(eservicesWFTaskData.getOriginalJobDesc());
-	hcmWFTAskData.setOriginalUnitFullName(eservicesWFTaskData.getOriginalDeptDesc());
-	hcmWFTAskData.setDelegatingId(eservicesWFTaskData.getDelegatingId());
-	hcmWFTAskData.setDelegatingName(eservicesWFTaskData.getDelegatingName());
-	hcmWFTAskData.setSummary(eservicesWFTaskData.getSummary());
-	hcmWFTAskData.setOriginalNumber(eservicesWFTaskData.getEmpNo());
-	hcmWFTAskData.setOriginalName(eservicesWFTaskData.getOriginalName());
-	hcmWFTAskData.setHijriAssignDate(eservicesWFTaskData.getAssignDate());
-	hcmWFTAskData.setAssignDate(eservicesWFTaskData.getAssignGregDate());
-	hcmWFTAskData.setHijriAssignDateString(eservicesWFTaskData.getAssignDateString());
-	hcmWFTAskData.setTaskUrl(getProcessHcmUrl(eservicesWFTaskData.getProcessId()) + "?taskId=" + eservicesWFTaskData.getId());
-	hcmWFTAskData.setAssigneeWfRole(eservicesWFTaskData.getAssigneeWfRole());
-	hcmWFTAskData.setAction(eservicesWFTaskData.getAction());
-	hcmWFTAskData.setHijriActionDate(eservicesWFTaskData.getActionDate());
-	hcmWFTAskData.setActionDate(eservicesWFTaskData.getActionGregDate());
-	hcmWFTAskData.setHijriActionDateString(eservicesWFTaskData.getActionDateString());
-	hcmWFTAskData.setNotes(eservicesWFTaskData.getNotes());
-	hcmWFTAskData.setRefuseReasons(eservicesWFTaskData.getRefuseReasons());
-	hcmWFTAskData.setExternalLocationId(eservicesWFTaskData.getExternalLocationId());
-	hcmWFTAskData.setEmailNotified(eservicesWFTaskData.getEmailNotified());
-	hcmWFTAskData.setFlexField1(eservicesWFTaskData.getFlexField1());
-	hcmWFTAskData.setFlexField2(eservicesWFTaskData.getFlexField2());
-	hcmWFTAskData.setFlexField3(eservicesWFTaskData.getFlexField3());
-	hcmWFTAskData.setPriority(eservicesWFTaskData.getPriority());
-	hcmWFTAskData.setLevel(eservicesWFTaskData.getStepOrder().toString());
-	hcmWFTAskData.setTaskOwnerName(eservicesWFTaskData.getTaskOwnerName());
-	hcmWFTAskData.setTaskOwnerEmpNo(eservicesWFTaskData.getTaskOwnerEmpNo());
-	hcmWFTAskData.setArabicDetailsSummary(eservicesWFTaskData.getArabicDetailsSummary());
-	hcmWFTAskData.setEnglishDetailsSummary(eservicesWFTaskData.getEnglishDetailsSummary());
-	hcmWFTAskData.setStoppingPoint(eservicesWFTaskData.getStoppingPoint());
-	return hcmWFTAskData;
+    private static WFTaskData toHCMWFTaskData(com.code.integration.parameters.eservices.workflow.WFTaskData eservicesWFTaskData) throws BusinessException {
+	try {
+	    WFTaskData hcmWFTAskData = new WFTaskData();
+	    hcmWFTAskData.setTaskId(eservicesWFTaskData.getId());
+	    hcmWFTAskData.setInstanceId(eservicesWFTaskData.getInstanceId());
+	    hcmWFTAskData.setProcessId(eservicesWFTaskData.getProcessId());
+	    hcmWFTAskData.setProcessName(eservicesWFTaskData.getProcessName());
+	    hcmWFTAskData.setProcessGroupId(eservicesWFTaskData.getProcessGroupId());
+	    hcmWFTAskData.setAssigneeId(eservicesWFTaskData.getAssigneeId());
+	    hcmWFTAskData.setOriginalId(eservicesWFTaskData.getOriginalId());
+	    hcmWFTAskData.setDelegatingId(eservicesWFTaskData.getDelegatingId());
+	    hcmWFTAskData.setDelegatingName(eservicesWFTaskData.getDelegatingName());
+	    hcmWFTAskData.setSummary(eservicesWFTaskData.getSummary());
+	    EmployeeData originalEmp = EmployeesService.getEmployeeData(eservicesWFTaskData.getOriginalId());
+	    hcmWFTAskData.setOriginalNumber(originalEmp.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) ? originalEmp.getMilitaryNumber() + "" : originalEmp.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) ? originalEmp.getSequenceNumber() + "" : originalEmp.getJobCode());
+	    hcmWFTAskData.setOriginalRankDesc(originalEmp.getRankDesc());
+	    hcmWFTAskData.setOriginalJobDesc(originalEmp.getJobDesc());
+	    hcmWFTAskData.setOriginalName(originalEmp.getName());
+	    hcmWFTAskData.setOriginalCategoryId(originalEmp.getCategoryId());
+	    hcmWFTAskData.setOriginalUnitFullName(originalEmp.getPhysicalUnitFullName());
+	    hcmWFTAskData.setHijriAssignDate(eservicesWFTaskData.getAssignDate());
+	    hcmWFTAskData.setAssignDate(eservicesWFTaskData.getAssignGregDate());
+	    hcmWFTAskData.setHijriAssignDateString(eservicesWFTaskData.getAssignDateString());
+	    hcmWFTAskData.setTaskUrl(getProcessHcmUrl(eservicesWFTaskData.getProcessId()) + "?taskId=" + eservicesWFTaskData.getId());
+	    hcmWFTAskData.setAssigneeWfRole(eservicesWFTaskData.getAssigneeWfRole());
+	    hcmWFTAskData.setAction(eservicesWFTaskData.getAction());
+	    hcmWFTAskData.setHijriActionDate(eservicesWFTaskData.getActionDate());
+	    hcmWFTAskData.setActionDate(eservicesWFTaskData.getActionGregDate());
+	    hcmWFTAskData.setHijriActionDateString(eservicesWFTaskData.getActionDateString());
+	    hcmWFTAskData.setNotes(eservicesWFTaskData.getNotes());
+	    hcmWFTAskData.setRefuseReasons(eservicesWFTaskData.getRefuseReasons());
+	    hcmWFTAskData.setExternalLocationId(eservicesWFTaskData.getExternalLocationId());
+	    hcmWFTAskData.setEmailNotified(eservicesWFTaskData.getEmailNotified());
+	    hcmWFTAskData.setFlexField1(eservicesWFTaskData.getFlexField1());
+	    hcmWFTAskData.setFlexField2(eservicesWFTaskData.getFlexField2());
+	    hcmWFTAskData.setFlexField3(eservicesWFTaskData.getFlexField3());
+	    hcmWFTAskData.setPriority(eservicesWFTaskData.getPriority());
+	    hcmWFTAskData.setLevel(eservicesWFTaskData.getStepOrder().toString());
+	    hcmWFTAskData.setTaskOwnerName(eservicesWFTaskData.getTaskOwnerName());
+	    hcmWFTAskData.setTaskOwnerEmpNo(eservicesWFTaskData.getTaskOwnerEmpNo());
+	    hcmWFTAskData.setArabicDetailsSummary(eservicesWFTaskData.getArabicDetailsSummary());
+	    hcmWFTAskData.setEnglishDetailsSummary(eservicesWFTaskData.getEnglishDetailsSummary());
+	    hcmWFTAskData.setStoppingPoint(eservicesWFTaskData.getStoppingPoint());
+	    return hcmWFTAskData;
+	} catch (BusinessException e) {
+	    throw e;
+	}
     }
 
     private static WFInstance toHCMWFInstance(com.code.integration.parameters.eservices.workflow.WFInstance eservicesWFInstance) {
