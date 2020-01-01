@@ -151,7 +151,7 @@ public abstract class WFBaseBacking extends BaseBacking implements Serializable 
 	try {
 	    EServicesBaseWorkFlowService.doApproval(requester.getEmpId(), currentTask, requester.getEmpId(), null, WFTaskActionsEnum.APPROVE_ESERVICE, transactionId, processCode);
 	    this.setServerSideSuccessMessages(getParameterizedMessage("notify_successOperation"));
-	    return NavigationEnum.OUTBOX.toString();
+	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	    Log4jService.traceErrorException(WFBaseBacking.class, e, "WFBaseBacking");
@@ -163,7 +163,7 @@ public abstract class WFBaseBacking extends BaseBacking implements Serializable 
 	try {
 	    EServicesBaseWorkFlowService.doApproval(requester.getEmpId(), currentTask, requester.getEmpId(), null, WFTaskActionsEnum.REJECT_ESERVICE, transactionId, processCode);
 	    this.setServerSideSuccessMessages(getParameterizedMessage("notify_successOperation"));
-	    return NavigationEnum.OUTBOX.toString();
+	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	    Log4jService.traceErrorException(WFBaseBacking.class, e, "WFBaseBacking");
