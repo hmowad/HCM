@@ -144,7 +144,7 @@
 							<tr>
 								<td width="100%">
 									<h:inputHidden id="movementsTasksListSizeId" value="#{movementsCollectiveApproval.movementsTasksListSize}" />
-									<h:commandButton onclick="return handleOnAction('#{msgs.q_superSignToNOfTasks}'.format(selectedTasksCount), 'validateApproval()');" action="#{movementsCollectiveApproval.doMovementsCollectiveApprovalSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_superSignToNOfTasks}'.format(selectedTasksCount), 'validateApproval()');" action="#{movementsCollectiveApproval.doMovementsCollectiveApproval()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 										<f:ajax render="movementsCollectiveApprovalFormId:notifyMessagesId movementsCollectiveApprovalFormId:headerInboxProceduresCountId movementsCollectiveApprovalFormId:tasksId movementsCollectiveApprovalFormId:movementsTasksListSizeId" execute="movementsCollectiveApprovalFormId:tasksId" />
 									</h:commandButton>
 								</td>

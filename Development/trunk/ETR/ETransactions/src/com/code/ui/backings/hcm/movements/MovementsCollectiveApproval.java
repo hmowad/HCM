@@ -80,7 +80,7 @@ public class MovementsCollectiveApproval extends BaseBacking implements Serializ
 
     // Loop over the selected tasks for approval
     // called from the xhtml when "Approve" button clicked
-    public void doMovementsCollectiveApprovalSM() {
+    public void doMovementsCollectiveApproval() {
 	try {
 	    String unsuccessfulTaskIdsIfAny = "";
 	    String comma = "";
@@ -119,6 +119,8 @@ public class MovementsCollectiveApproval extends BaseBacking implements Serializ
 			    MovementsWorkFlow.doMovementSM(requester, instance, wfMovementDataList, task, WFActionFlagsEnum.APPROVE.getCode());
 			else if (task.getAssigneeWfRole().equals(WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode()))
 			    MovementsWorkFlow.doMovementSSM(requester, instance, wfMovementDataList, task, WFActionFlagsEnum.APPROVE.getCode());
+			else if (task.getAssigneeWfRole().equals(WFTaskRolesEnum.DIRECT_MANAGER.getCode()))
+			    MovementsWorkFlow.doMovementJoiningDateDM(requester, wfMovementDataList.get(0), instance, task, true);
 		    } else {
 			WFMovementWish wfMovementWish = wfMovementWishes.get(task.getInstanceId());
 			MovementsWishesWorkFlow.doWFMovementWishSM(requester, instance, wfMovementWish, task, WFActionFlagsEnum.APPROVE.getCode());
