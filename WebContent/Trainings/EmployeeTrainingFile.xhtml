@@ -143,12 +143,12 @@
 											</rich:column>
 											<rich:column style="width:#{(employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin) ? 11 : 16 }%">
 												<f:facet name="header">#{msgs.label_joiningDateAtWorkingUnit}</f:facet>
-												<util:hijri id="internalMilitaryCourseJoiningDateId" value="#{transaction.joiningDate}" rendered="#{employeeTrainingFile.modifyAdmin and transaction.trainingJoiningDate != null and (transaction.status == 7 or transaction.status == 8 )}" nullable="true" />
-												<h:outputText value="#{transaction.joiningDateString}" rendered="#{!employeeTrainingFile.modifyAdmin}" />
+												<util:hijri id="internalMilitaryCourseJoiningDateId" value="#{transaction.joiningDate}" rendered="#{employeeTrainingFile.modifyAdmin and transaction.trainingJoiningDate != null and transaction.eflag == 1 and (transaction.status == 7 or transaction.status == 8 )}" nullable="true" />
+												<h:outputText value="#{transaction.joiningDateString}" rendered="#{!employeeTrainingFile.modifyAdmin or transaction.trainingJoiningDate == null or transaction.eflag != 1 or (transaction.status != 7 and transaction.status != 8 )}" />
 											</rich:column>
 											<rich:column style="width:5%" rendered="#{employeeTrainingFile.modifyAdmin}">
 												<f:facet name="header">#{msgs.label_save}</f:facet>
-												<h:commandButton rendered="#{employeeTrainingFile.modifyAdmin and transaction.eflag == 1 and (transaction.status == 7 or transaction.status == 8 )}" value="#{msgs.fa_floppy_o}" action="#{employeeTrainingFile.updateTrainingTransaction(transaction)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
+												<h:commandButton rendered="#{transaction.trainingJoiningDate != null and transaction.eflag == 1 and (transaction.status == 7 or transaction.status == 8 )}" value="#{msgs.fa_floppy_o}" action="#{employeeTrainingFile.updateTrainingTransaction(transaction)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
 													<f:ajax execute="internalMilitaryCourseJoiningDateId" render="employeeTrainingFileFormId:internalMilitaryCoursesTableId employeeTrainingFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 												</h:commandButton>
 											</rich:column>
@@ -260,12 +260,12 @@
 
 											<rich:column style="width:#{(employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin) ? 15:20}%">
 												<f:facet name="header">#{msgs.label_joiningDateAtWorkingUnit}</f:facet>
-												<util:hijri id="externalMilitaryCourseJoiningDateId" value="#{transaction.joiningDate}" rendered="#{employeeTrainingFile.modifyAdmin and transaction.trainingJoiningDate != null and (transaction.status == 7 or transaction.status == 8 )}" nullable="true" />
-												<h:outputText value="#{transaction.joiningDateString}" rendered="#{!employeeTrainingFile.modifyAdmin}" />
+												<util:hijri id="externalMilitaryCourseJoiningDateId" value="#{transaction.joiningDate}" rendered="#{employeeTrainingFile.modifyAdmin and transaction.eflag == 1 and transaction.trainingJoiningDate != null and (transaction.status == 7 or transaction.status == 8 )}" nullable="true" />
+												<h:outputText value="#{transaction.joiningDateString}" rendered="#{!employeeTrainingFile.modifyAdmin or transaction.eflag != 1 or transaction.trainingJoiningDate == null or (transaction.status != 7 and transaction.status != 8 )}" />
 											</rich:column>
 											<rich:column style="width:5%" rendered="#{employeeTrainingFile.modifyAdmin}">
 												<f:facet name="header">#{msgs.label_save}</f:facet>
-												<h:commandButton rendered="#{employeeTrainingFile.modifyAdmin and transaction.eflag == 1 and transaction.trainingJoiningDate != null and (transaction.status == 7 or transaction.status == 8 )}" value="#{msgs.fa_floppy_o}" action="#{employeeTrainingFile.updateTrainingTransaction(transaction)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
+												<h:commandButton rendered="#{transaction.eflag == 1 and transaction.trainingJoiningDate != null and (transaction.status == 7 or transaction.status == 8 )}" value="#{msgs.fa_floppy_o}" action="#{employeeTrainingFile.updateTrainingTransaction(transaction)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
 													<f:ajax execute="externalMilitaryCourseJoiningDateId" render="employeeTrainingFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 												</h:commandButton>
 											</rich:column>
@@ -357,12 +357,12 @@
 											</rich:column>
 											<rich:column style="width:#{(employeeTrainingFile.modifyAdmin and employeeTrainingFile.deleteClaimAdmin) ? 15:20}%">
 												<f:facet name="header">#{msgs.label_joiningDateAtWorkingUnit}</f:facet>
-												<util:hijri id="scholarshipJoiningDateId" value="#{transaction.joiningDate}" rendered="#{employeeTrainingFile.modifyAdmin and (transaction.successFlag != null or transaction.status == 13)}" nullable="true" />
-												<h:outputText value="#{transaction.joiningDateString}" rendered="#{!employeeTrainingFile.modifyAdmin}" />
+												<util:hijri id="scholarshipJoiningDateId" value="#{transaction.joiningDate}" rendered="#{employeeTrainingFile.modifyAdmin and transaction.eflag == 1 and (transaction.successFlag != null or transaction.status == 13)}" nullable="true" />
+												<h:outputText value="#{transaction.joiningDateString}" rendered="#{!employeeTrainingFile.modifyAdmin or transaction.eflag != 1 or (transaction.successFlag == null and transaction.status != 13)}" />
 											</rich:column>
 											<rich:column style="width:5%" rendered="#{employeeTrainingFile.modifyAdmin}">
 												<f:facet name="header">#{msgs.label_save}</f:facet>
-												<h:commandButton rendered="#{employeeTrainingFile.modifyAdmin and transaction.eflag == 1 and (transaction.successFlag != null or transaction.status == 13) }" value="#{msgs.fa_floppy_o}" action="#{employeeTrainingFile.updateTrainingTransaction(transaction)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
+												<h:commandButton rendered="#{transaction.eflag == 1 and (transaction.successFlag != null or transaction.status == 13) }" value="#{msgs.fa_floppy_o}" action="#{employeeTrainingFile.updateTrainingTransaction(transaction)}" styleClass="btn_icon" title="#{msgs.label_updateJoiningDate}">
 													<f:ajax execute="scholarshipJoiningDateId" render="employeeTrainingFileFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 												</h:commandButton>
 											</rich:column>
