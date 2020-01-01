@@ -135,7 +135,7 @@ public class EServicesWorkFlowClient extends BaseClient {
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "start of calling: service wfBase/wfTask");
 
 	Response response = client.target(serverUrl).path("wfTask/").queryParam("assigneeId", assigneeId.toString())
-		.queryParam("onlyNotifications", taskRole == 0 ? false : true)
+		.queryParam("onlyNotifications", taskRole == FlagsEnum.ON.getCode() ? true : false)
 		.queryParam("taskOwnerName", taskOwnerName).queryParam("subject", subject)
 		.queryParam("processGroupId", (processGroupId == null || processGroupId == 0) ? FlagsEnum.ALL.getCode() + "" : processGroupId.toString())
 		.queryParam("processId", (processId == null || processId == 0) ? FlagsEnum.ALL.getCode() + "" : processId.toString())
@@ -150,7 +150,7 @@ public class EServicesWorkFlowClient extends BaseClient {
 	    return getEntityList(WFTaskData.class, response.readEntity(String.class));
 	} else {
 	    String errorMsg = getExceptionMessage(response.getStatus(), response.readEntity(String.class));
-	    if(errorMsg.equals("error_noData"))
+	    if (errorMsg.equals("error_noData"))
 		return new ArrayList<WFTaskData>();
 	    throw new BusinessException(errorMsg);
 	}
@@ -202,7 +202,7 @@ public class EServicesWorkFlowClient extends BaseClient {
     public static List<WFProcessCycle> getAllWFProcessesCycle(Long processId, String processName, Long jobCategory,
 	    Long employeeRegion, Long rankId, Long approvalStoppingPt, Boolean enabled) throws BusinessException {
 	init();
-	
+
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "start of calling: service wfBase/wfProcessCycles");
 
 	Response response = client.target(serverUrl).path("wfProcessCycles/")
@@ -217,7 +217,7 @@ public class EServicesWorkFlowClient extends BaseClient {
 
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling: service wfBase/wfProcessCycles");
-	
+
 	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
 	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
 	}
@@ -237,7 +237,7 @@ public class EServicesWorkFlowClient extends BaseClient {
 
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
 	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling: service wfBase/updateWFProcessCycles");
-	
+
 	if (response.getStatus() != HTTPStatusCodeEnum.OK.getCode()) {
 	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
 	}
