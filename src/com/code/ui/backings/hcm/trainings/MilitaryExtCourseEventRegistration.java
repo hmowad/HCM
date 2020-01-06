@@ -47,6 +47,7 @@ public class MilitaryExtCourseEventRegistration extends BaseBacking implements S
 	    courseEventData.setCandidatesMax(courseData.getCandidatesMax());
 	    courseEventData.setPrerquisites(courseData.getPrerquisites());
 	    courseEventData.setWeeksCount(courseData.getWeeksCount());
+	    courseEventData.setRankingFlag(courseData.getRankingFlag());
 	} catch (BusinessException e) {
 	    e.printStackTrace();
 	}
