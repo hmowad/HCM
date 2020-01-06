@@ -180,7 +180,7 @@
 											<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</td>
-									
+
 									<h:panelGroup rendered="#{employeeFileReport.selectedEmployee.categoryId != 2}">
 										<th width="12%">#{msgs.label_seniorityAndRankPostponement}</th>
 										<td width="24%">
@@ -190,12 +190,12 @@
 										</td>
 									</h:panelGroup>
 									<h:panelGroup rendered="#{employeeFileReport.selectedEmployee.categoryId == 2}">
-											<th width="12%">#{msgs.label_exercises}</th>
-											<td width="24%">
-												<h:commandButton value="#{employeeFileReport.printExercises? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printExercisesListener()}" styleClass="#{employeeFileReport.printExercises ? 'btn_toggleOn' :  'btn_toggleOff'}">
-													<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
-												</h:commandButton>
-											</td>
+										<th width="12%">#{msgs.label_exercises}</th>
+										<td width="24%">
+											<h:commandButton value="#{employeeFileReport.printExercises? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printExercisesListener()}" styleClass="#{employeeFileReport.printExercises ? 'btn_toggleOn' :  'btn_toggleOff'}">
+												<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
 									</h:panelGroup>
 								</tr>
 								<tr>
@@ -213,6 +213,14 @@
 											<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</td>
+									<h:panelGroup rendered="#{employeeFileReport.statusAdminFlag}">
+										<th width="12%">#{msgs.label_status}</th>
+										<td width="24%">
+											<h:commandButton value="#{employeeFileReport.printStatus? msgs.fa_toggle_on : msgs.fa_toggle_off}" action="#{employeeFileReport.printStatusListener()}" styleClass="#{employeeFileReport.printStatus ? 'btn_toggleOn' :  'btn_toggleOff'}">
+												<f:ajax render="employeeFileReportFormId:printOptionsPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</h:panelGroup>
 								</tr>
 							</table>
 						</h:panelGroup>
