@@ -42,13 +42,15 @@ public class EmployeeFileReport extends BaseBacking implements Serializable {
     private boolean printServiceExtension;
     private boolean printExercises;
     private boolean printRaises;
+    private boolean printStatus;
+    private boolean statusAdminFlag;
 
     public EmployeeFileReport() {
 	try {
 	    setScreenTitle(getMessage("title_employeeFileReport"));
 	    reset();
 	    employeeMenuActions = SecurityService.getEmployeeMenuActions(this.loginEmpData.getEmpId(), MenuCodesEnum.EMPS_FILE_REPORT.getCode());
-
+	    statusAdminFlag = SecurityService.isEmployeeMenuActionGranted(this.loginEmpData.getEmpId(), MenuCodesEnum.EMPS_FILE_REPORT.getCode(), MenuActionsEnum.PRS_EMPS_FILE_REPORT_SHOW_EMPLOYEE_STATUS.getCode());
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -151,6 +153,7 @@ public class EmployeeFileReport extends BaseBacking implements Serializable {
 	    printServiceExtension = true;
 	    printExercises = true;
 	    printRaises = true;
+	    printStatus = false;
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -158,7 +161,7 @@ public class EmployeeFileReport extends BaseBacking implements Serializable {
 
     public void printEmployeeFileReport() {
 	try {
-	    byte[] bytes = EmployeesService.getEmployeesFileReportDataBytes(selectedEmployee.getEmpId(), selectedEmployee.getCategoryId(), printRecruitments, printSeniortiy, printPromotions, printVacations, printMovements, printPenalities, printBonuses, printServiceTermination, printTraining, printEducations, printAllowances, printServiceExtension, printExercises, printRaises);
+	    byte[] bytes = EmployeesService.getEmployeesFileReportDataBytes(selectedEmployee.getEmpId(), selectedEmployee.getCategoryId(), printRecruitments, printSeniortiy, printPromotions, printVacations, printMovements, printPenalities, printBonuses, printServiceTermination, printTraining, printEducations, printAllowances, printServiceExtension, printExercises, printRaises, printStatus);
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -219,6 +222,10 @@ public class EmployeeFileReport extends BaseBacking implements Serializable {
 
     public void printRaisesListener() {
 	printRaises = !printRaises;
+    }
+
+    public void printStatusListener() {
+	printStatus = !printStatus;
     }
 
     public Long getEmployeeId() {
@@ -347,6 +354,22 @@ public class EmployeeFileReport extends BaseBacking implements Serializable {
 
     public void setPrintRaises(boolean printRaises) {
 	this.printRaises = printRaises;
+    }
+
+    public boolean isPrintStatus() {
+	return printStatus;
+    }
+
+    public void setPrintStatus(boolean printStatus) {
+	this.printStatus = printStatus;
+    }
+
+    public boolean isStatusAdminFlag() {
+	return statusAdminFlag;
+    }
+
+    public void setStatusAdminFlag(boolean statusAdminFlag) {
+	this.statusAdminFlag = statusAdminFlag;
     }
 
 }

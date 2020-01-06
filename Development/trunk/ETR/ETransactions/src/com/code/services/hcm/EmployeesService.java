@@ -1217,7 +1217,7 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    public static byte[] getEmployeesFileReportDataBytes(long empId, long categoryId, boolean printRecruitments, boolean printSeniortiy, boolean printPromotions, boolean printVacations, boolean printMovements, boolean printPenalities, boolean printBonuses, boolean printServiceTermination, boolean printTraining, boolean printEducations, boolean printAllowances, boolean printServiceExtension, boolean printExercises, boolean printRaises) throws BusinessException {
+    public static byte[] getEmployeesFileReportDataBytes(long empId, long categoryId, boolean printRecruitments, boolean printSeniortiy, boolean printPromotions, boolean printVacations, boolean printMovements, boolean printPenalities, boolean printBonuses, boolean printServiceTermination, boolean printTraining, boolean printEducations, boolean printAllowances, boolean printServiceExtension, boolean printExercises, boolean printRaises, boolean printStatus) throws BusinessException {
 	try {
 	    String reportName;
 	    if (categoryId == CategoriesEnum.OFFICERS.getCode())
@@ -1244,6 +1244,7 @@ public class EmployeesService extends BaseService {
 	    parameters.put("P_PRINT_SERVICE_TERMINATION", printServiceTermination == true ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode());
 	    parameters.put("P_PRINT_SERVICE_EXTENSION", printServiceExtension == true ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode());
 	    parameters.put("P_PRINT_RAISES", printRaises == true ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode());
+	    parameters.put("P_PRINT_STATUS", printStatus == true ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode());
 
 	    if (categoryId != CategoriesEnum.SOLDIERS.getCode())
 		parameters.put("P_PRINT_SENIORTY", printSeniortiy == true ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode());
