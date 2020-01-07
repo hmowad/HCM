@@ -176,4 +176,12 @@ public class MovementsCollectiveApproval extends BaseBacking implements Serializ
 	this.movementsTasksListSize = movementsTasksListSize;
     }
 
+    public int getMode() {
+	return mode;
+    }
+
+    public void setMode(int mode) {
+	this.mode = mode;
+    }
+
 }
