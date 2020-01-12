@@ -51,22 +51,20 @@ public class ExtensionRequest extends WFBaseBacking {
     public ExtensionRequest() throws BusinessException {
 	try {
 	    processCode = EservicesProcessesEnum.EXTENSION_REQUEST.getCode();
+	    setScreenTitle(getMessage("title_extentionRequest"));
 	    super.init();
 	    if (role.equals(WFProcessRolesEnum.REQUESTER.getCode())) {
 		setMode(0);
-		setScreenTitle(getMessage("title_extentionRequest"));
 		seqId = Long.parseLong(ExtensionRequestTransactionsClient.getNextSequenceValue(SequenceNamesEnum.EXTENSION_REQUEST_TRANS.getCode()));
 		extensionRequestTransaction = new ExtensionRequestTransaction();
 		extensionRequestTransaction.setStatus(TransactionStatusEnum.UNDER_PROCESSING.getCode());
 		processId = WFProcessesEnum.EXTENSION_REQUEST.getCode();
 	    } else if (role.equals(WFProcessRolesEnum.APPROVAL.getCode())) {
 		setMode(1);
-		setScreenTitle(getMessage("title_approveExtentionRequest"));
 		extensionRequestTransaction = ExtensionRequestTransactionsClient.getExtensionRequestTransactionByInstanceId(instance.getInstanceId());
 		selectedEmp = EmployeesService.getEmployeeData(extensionRequestTransaction.getEmpId());
 	    } else if (role.equals(WFProcessRolesEnum.NOTIFICATION.getCode())) {
 		setMode(2);
-		setScreenTitle(getMessage("title_approveExtentionRequest"));
 		extensionRequestTransaction = ExtensionRequestTransactionsClient.getExtensionRequestTransactionByInstanceId(instance.getInstanceId());
 		selectedEmp = EmployeesService.getEmployeeData(extensionRequestTransaction.getEmpId());
 	    }
