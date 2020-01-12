@@ -922,15 +922,16 @@ public class RecruitmentsService extends BaseService {
     private static void doPayrollIntegration(List<RecruitmentTransactionData> recruitmentTransactions, CustomSession session) throws BusinessException {
 	if (recruitmentTransactions.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
+	    EmployeeData emp = null;
 	    for (RecruitmentTransactionData recruitmentTransactionData : recruitmentTransactions) {
 		String gregRecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactionData.getRecruitmentDateString());
-		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(recruitmentTransactionData.getEmployeeId(), recruitmentTransactionData.getEmployeeName(), recruitmentTransactionData.getId(), gregRecDateString, gregRecDateString, recruitmentTransactionData.getDecisionNumber()));
+		emp = EmployeesService.getEmployeeData(recruitmentTransactionData.getEmployeeId());
+		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(recruitmentTransactionData.getEmployeeId(), emp.getName(), recruitmentTransactionData.getId(), gregRecDateString, gregRecDateString, recruitmentTransactionData.getDecisionNumber()));
 	    }
 	    String gregRecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getRecruitmentDateString());
 	    String gregDecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getDecisionDateString());
 	    session.flushTransaction();
-	    EmployeeData emp = EmployeesService.getEmployeeData(recruitmentTransactions.get(0).getEmployeeId());
-	    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_RECRUITMENT.getCode(), CategoriesEnum.OFFICERS.getCode(), gregRecDateString, adminDecisionEmployeeDataList, emp.getPhysicalUnitId(), gregDecDateString, session);
+	    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_RECRUITMENT.getCode(), CategoriesEnum.OFFICERS.getCode(), gregRecDateString, adminDecisionEmployeeDataList, emp == null ? null : emp.getPhysicalUnitId(), gregDecDateString, session);
 	}
     }
 

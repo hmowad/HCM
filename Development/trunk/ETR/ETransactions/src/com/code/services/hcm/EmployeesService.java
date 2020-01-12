@@ -81,10 +81,6 @@ public class EmployeesService extends BaseService {
 
 	    addEmployeeQualifications(employeeQualificationsData, empData, session);
 
-	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()) && empData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
-		doPayrollIntegration(empData.getEmpId(), session);
-	    }
-
 	    EmployeeLog log = new EmployeeLog.Builder().setRankId(empData.getRankId()).setSocialStatus(empData.getSocialStatus()).setGeneralSpecialization(empData.getGeneralSpecialization())
 		    .constructCommonFields(empData.getEmpId(), FlagsEnum.OFF.getCode(), null, null, HijriDateService.getHijriSysDate(), DataAccess.getTableName(Employee.class)).build();
 	    LogService.logEmployeeData(log, session);
@@ -101,8 +97,12 @@ public class EmployeesService extends BaseService {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
-	    if (!isOpenedSession)
+	    if (!isOpenedSession) {
 		session.close();
+		if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()) && empData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+		    doPayrollIntegration(empData.getEmpId());
+		}
+	    }
 	}
     }
 
@@ -518,13 +518,12 @@ public class EmployeesService extends BaseService {
 	    throw new BusinessException("error_countryMandatory");
     }
 
-    private static void doPayrollIntegration(Long employeeId, CustomSession session) throws BusinessException {
-	session.flushTransaction();
+    private static void doPayrollIntegration(Long employeeId) throws BusinessException {
 	String gregSysDateString = HijriDateService.hijriToGregDateString(HijriDateService.getHijriSysDateString());
 	EmployeeData employee = EmployeesService.getEmployeeData(employeeId);
 	List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), null, gregSysDateString, gregSysDateString, UUID.randomUUID().toString())));
 	if (employee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()))
-	    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_REGISTRATION.getCode(), CategoriesEnum.OFFICERS.getCode(), gregSysDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : employee.getPhysicalUnitId(), gregSysDateString, session);
+	    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_REGISTRATION.getCode(), CategoriesEnum.OFFICERS.getCode(), gregSysDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : employee.getPhysicalUnitId(), gregSysDateString);
     }
 
     public static EmployeeData getEmployeeDirectManager(long employeeId) throws BusinessException {

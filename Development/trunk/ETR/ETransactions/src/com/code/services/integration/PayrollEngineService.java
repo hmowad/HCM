@@ -46,7 +46,7 @@ public class PayrollEngineService extends BaseService {
 	}
     }
 
-    public static void doPayrollIntegration(Long adminDecisionId, Long categoryId, String executionDateString, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, CustomSession useSession) throws BusinessException {
+    public static void doPayrollIntegration(Long adminDecisionId, Long categoryId, String executionDateString, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, CustomSession... useSession) throws BusinessException {
 	Log4jService.traceInfo(PayrollEngineService.class, "Start of doPayrollIntegration() method");
 
 	if (adminDecisionId == null)
@@ -106,7 +106,7 @@ public class PayrollEngineService extends BaseService {
 	}
     }
 
-    private static JsonObject getApplyAdminDecisionBody(List<AdminDecisionResponse> adminDecisionList, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, Long adminDecisionId, Long categoryId, CustomSession useSession) throws BusinessException {
+    private static JsonObject getApplyAdminDecisionBody(List<AdminDecisionResponse> adminDecisionList, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, Long adminDecisionId, Long categoryId, CustomSession... useSession) throws BusinessException {
 	try {
 	    Log4jService.traceInfo(PayrollEngineService.class, "start of getApplyAdminDecisionBody() method");
 	    if (adminDecisionEmployeeDataList == null || adminDecisionEmployeeDataList.size() == 0) {
