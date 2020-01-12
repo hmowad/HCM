@@ -46,21 +46,19 @@ public class ReExtensionRequest extends WFBaseBacking {
 	try {
 	    processCode = EservicesProcessesEnum.REEXTENSION_REQUEST.getCode();
 	    super.init();
+	    setScreenTitle(getMessage("title_reExtensionRequest"));
 	    if (role.equals(WFProcessRolesEnum.REQUESTER.getCode())) {
 		setMode(0);
-		setScreenTitle(getMessage("title_reExtensionRequest"));
 		seqId = Long.parseLong(ExtensionRequestTransactionsClient.getNextSequenceValue(SequenceNamesEnum.EXTENSION_REQUEST_TRANS.getCode()));
 		extensionRequestTransaction = new ExtensionRequestTransaction();
 		extensionRequestTransaction.setStatus(TransactionStatusEnum.UNDER_PROCESSING.getCode());
 		processId = WFProcessesEnum.REEXTENSION_REQUEST.getCode();
 	    } else if (role.equals(WFProcessRolesEnum.APPROVAL.getCode())) {
 		setMode(1);
-		setScreenTitle(getMessage("title_approveReExtensionRequest"));
 		extensionRequestTransaction = ExtensionRequestTransactionsClient.getExtensionRequestTransactionByInstanceId(instance.getInstanceId());
 		selectedEmployee = EmployeesService.getEmployeeData(extensionRequestTransaction.getEmpId());
 	    } else if (role.equals(WFProcessRolesEnum.NOTIFICATION.getCode())) {
 		setMode(2);
-		setScreenTitle(getMessage("title_approveExtentionRequest"));
 		extensionRequestTransaction = ExtensionRequestTransactionsClient.getExtensionRequestTransactionByInstanceId(instance.getInstanceId());
 		selectedEmployee = EmployeesService.getEmployeeData(extensionRequestTransaction.getEmpId());
 	    }
