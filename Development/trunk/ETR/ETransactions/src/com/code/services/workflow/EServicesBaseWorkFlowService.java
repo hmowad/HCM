@@ -113,10 +113,14 @@ public class EServicesBaseWorkFlowService {
 
 	    Collections.sort(hcmWFTaskDataList, new Comparator<WFTaskData>() {
 		public int compare(WFTaskData task1, WFTaskData task2) {
-		    return task1.getAssignDate().compareTo(task2.getAssignDate());
+		    if (isDESC) {
+			return task2.getAssignDate().compareTo(task1.getAssignDate());
+		    } else {
+			return task1.getAssignDate().compareTo(task2.getAssignDate());
+		    }
 		}
 	    });
-	    
+
 	    return hcmWFTaskDataList;
 	} catch (BusinessException e) {
 	    throw new BusinessException(e.getMessage());
