@@ -2,6 +2,8 @@ package com.code.services.workflow;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
@@ -108,6 +110,13 @@ public class EServicesBaseWorkFlowService {
 		}
 	    }
 	    hcmWFTaskDataList.addAll(BaseWorkFlow.searchWFTasksData(assigneeId, beneficiaryId, taskOwnerName, processGroupId, processId, isRunning, taskRole, isDESC));
+
+	    Collections.sort(hcmWFTaskDataList, new Comparator<WFTaskData>() {
+		public int compare(WFTaskData task1, WFTaskData task2) {
+		    return task1.getAssignDate().compareTo(task2.getAssignDate());
+		}
+	    });
+	    
 	    return hcmWFTaskDataList;
 	} catch (BusinessException e) {
 	    throw new BusinessException(e.getMessage());
