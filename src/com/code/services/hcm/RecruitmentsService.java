@@ -29,6 +29,7 @@ import com.code.enums.RecruitmentTypeEnum;
 import com.code.enums.ReportNamesEnum;
 import com.code.enums.SequenceNamesEnum;
 import com.code.enums.TransactionClassesEnum;
+import com.code.enums.UnitTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
@@ -926,12 +927,13 @@ public class RecruitmentsService extends BaseService {
 	    for (RecruitmentTransactionData recruitmentTransactionData : recruitmentTransactions) {
 		String gregRecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactionData.getRecruitmentDateString());
 		emp = EmployeesService.getEmployeeData(recruitmentTransactionData.getEmployeeId());
-		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(recruitmentTransactionData.getEmployeeId(), emp.getName(), recruitmentTransactionData.getId(), gregRecDateString, gregRecDateString, recruitmentTransactionData.getDecisionNumber()));
+		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(recruitmentTransactionData.getEmployeeId(), emp.getName(), recruitmentTransactionData.getId(), gregRecDateString, null, recruitmentTransactionData.getDecisionNumber()));
 	    }
 	    String gregRecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getRecruitmentDateString());
 	    String gregDecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getDecisionDateString());
 	    session.flushTransaction();
-	    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_RECRUITMENT.getCode(), CategoriesEnum.OFFICERS.getCode(), gregRecDateString, adminDecisionEmployeeDataList, emp == null ? null : emp.getPhysicalUnitId(), gregDecDateString, session);
+	    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_RECRUITMENT.getCode(), CategoriesEnum.OFFICERS.getCode(), gregRecDateString, adminDecisionEmployeeDataList,
+		    recruitmentTransactions != null && recruitmentTransactions.size() > 0 && recruitmentTransactions.get(0).getTransUnitFullName() != null ? UnitsService.getUnitByExactFullName(recruitmentTransactions.get(0).getTransUnitFullName()).getId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId(), gregDecDateString, session);
 	}
     }
 
