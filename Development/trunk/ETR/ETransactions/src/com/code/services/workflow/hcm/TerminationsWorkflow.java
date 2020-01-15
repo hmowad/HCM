@@ -1290,6 +1290,8 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 		    EmployeeLog log = new EmployeeLog.Builder().setJobId(empJob.getId()).setOfficialUnitId(empJob.getUnitId()).setPhysicalUnitId(empJob.getUnitId()).setBasicJobNameId(empJob.getBasicJobNameId()).constructCommonFields(employee.getEmpId(), FlagsEnum.ON.getCode(), terminationTransaction.getDecisionNumber(), terminationTransaction.getDecisionDate(), empServiceTerminationDate, DataAccess.getTableName(TerminationTransaction.class)).build();
 		    LogService.logEmployeeData(log, session);
 		}
+		if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		    TerminationsService.doPayrollIntegration(tmpList, session);
 	    }
 
 	} catch (BusinessException e) {
