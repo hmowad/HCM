@@ -54,7 +54,7 @@ public class VacationsDataHandlingService extends BaseService {
      * @see VacationTypesEnum
      * @see CategoriesEnum
      */
-    protected static void insertVacData(Vacation vacation, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
+    protected static Vacation insertVacData(Vacation vacation, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -94,6 +94,8 @@ public class VacationsDataHandlingService extends BaseService {
 	    if (!isOpenedSession)
 		session.commitTransaction();
 
+	    return vacation;
+
 	} catch (BusinessException e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
@@ -123,7 +125,7 @@ public class VacationsDataHandlingService extends BaseService {
      * @throws BusinessException
      *             if any error occurs like a database error
      */
-    protected static void modifyVacData(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
+    protected static Vacation modifyVacData(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
 
 	Vacation originalVacation = VacationsService.getVacationById(request.getVacationId());
 
@@ -194,6 +196,7 @@ public class VacationsDataHandlingService extends BaseService {
 	    if (!isOpenedSession)
 		session.commitTransaction();
 
+	    return originalVacation;
 	} catch (BusinessException e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
@@ -223,7 +226,7 @@ public class VacationsDataHandlingService extends BaseService {
      * @throws BusinessException
      *             if any error occurs like a database error
      */
-    protected static void cancelVacData(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
+    protected static Vacation cancelVacData(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
 
 	Vacation originalVacation = VacationsService.getVacationById(request.getVacationId());
 
@@ -277,6 +280,7 @@ public class VacationsDataHandlingService extends BaseService {
 	    if (!isOpenedSession)
 		session.commitTransaction();
 
+	    return originalVacation;
 	} catch (BusinessException e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();

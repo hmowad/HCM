@@ -334,15 +334,32 @@ public class MovementsService extends BaseService {
 			}
 		    }
 		    integrationFlag = true;
-		} else if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.SUBJOIN.getCode() && movementTransactions.get(0).getRequestTransactionFlag().intValue() == FlagsEnum.OFF.getCode()
-			&& movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
-		    if (movementTransactions.get(0).getJoiningDate() != null)
-			adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_JOINING_DATE_REQUEST.getCode();
-		    else {
+		} else if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.SUBJOIN.getCode() && movementTransactions.get(0).getRequestTransactionFlag().intValue() == FlagsEnum.OFF.getCode()) {
+		    if (movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
+			if (movementTransactions.get(0).getJoiningDate() != null)
+			    adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_JOINING_DATE_REQUEST.getCode();
+			else {
+			    if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
+				adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_DECISION_REQUEST.getCode();
+			    } else {
+				adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_REGISTERATION.getCode();
+			    }
+			}
+		    } else if (movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
 			if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
-			    adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_DECISION_REQUEST.getCode();
-			} else {
-			    adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_REGISTERATION.getCode();
+			    if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
+				adminDecision = AdminDecisionsEnum.OFFICERS_EXTEND_SUBJOIN_DECISION_REQUEST.getCode();
+			    } else {
+				adminDecision = AdminDecisionsEnum.OFFICERS_EXTEND_SUBJOIN_REGISTERATION.getCode();
+			    }
+			}
+		    } else if (movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_CANCEL_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
+			if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
+			    if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
+				adminDecision = AdminDecisionsEnum.OFFICERS_CANCEL_SUBJOIN_DECISION_REQUEST.getCode();
+			    } else {
+				adminDecision = AdminDecisionsEnum.OFFICERS_CANCEL_SUBJOIN_REGISTERATION.getCode();
+			    }
 			}
 		    }
 		    integrationFlag = true;
