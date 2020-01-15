@@ -90,55 +90,68 @@ public class VacationsService extends BaseService {
 	} else if (request.getStatus() == RequestTypesEnum.CANCEL.getCode()) {
 	    origninalVacation = VacationsDataHandlingService.cancelVacData(request, vacationBeneficiary, skipWFFlag, subject, useSession);
 	}
-	if ((vacationBeneficiary.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) || vacationBeneficiary.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) && PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+	if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
 	    doPayrollIntegration(request.getStatus() == RequestTypesEnum.NEW.getCode() ? request : origninalVacation, vacationBeneficiary, useSession);
     }
 
     private static void doPayrollIntegration(Vacation request, EmployeeData vacationBeneficiary, CustomSession... useSession) throws BusinessException {
-	boolean isOpenedSession = isSessionOpened(useSession);
-	CustomSession session = isOpenedSession ? useSession[0] : null;
-	if (session == null)
-	    throw new BusinessException("error_general");
-	String gregDecisionDateString = HijriDateService.hijriToGregDateString(request.getDecisionDateString());
-	String gregVacationStartDateString = HijriDateService.hijriToGregDateString(request.getStartDateString());
-	String gregVacationEndDateString = HijriDateService.hijriToGregDateString(request.getEndDateString());
-	EmployeeData employee = EmployeesService.getEmployeeData(request.getEmpId());
-	List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), request.getVacationId(), gregVacationStartDateString, gregVacationEndDateString, request.getDecisionNumber())));
-	session.flushTransaction();
-	if (request.getStatus() == RequestTypesEnum.NEW.getCode()) {
-	    if (vacationBeneficiary.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+	Long adminDecisionId = null;
+
+	if (vacationBeneficiary.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+	    if (request.getStatus() == RequestTypesEnum.NEW.getCode()) {
 		if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
-		    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_REGULAR_VACATION_REQUEST.getCode(), CategoriesEnum.OFFICERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
+		    adminDecisionId = AdminDecisionsEnum.OFFICERS_REGULAR_VACATION_REQUEST.getCode();
 		} else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
-		    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_COMPELLING_VACATION_REQUEST.getCode(), CategoriesEnum.OFFICERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
+		    adminDecisionId = AdminDecisionsEnum.OFFICERS_COMPELLING_VACATION_REQUEST.getCode();
 		} else if (request.getVacationTypeId().equals(VacationTypesEnum.SICK.getCode())) {
-		    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_SICK_VACATION_REQUEST.getCode(), CategoriesEnum.OFFICERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
+		    if (request.getPaidVacationType().equals(PaidVacationTypesEnum.FULL_PAID.getCode())) {
+			adminDecisionId = AdminDecisionsEnum.OFFICERS_FULL_PAID_SICK_VACATION_REQUEST.getCode();
+		    } else if (request.getPaidVacationType().equals(PaidVacationTypesEnum.HALF_PAID.getCode())) {
+			adminDecisionId = AdminDecisionsEnum.OFFICERS_HALF_PAID_SICK_VACATION_REQUEST.getCode();
+		    }
 		}
-	    } else if (vacationBeneficiary.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
+	    } else if (request.getStatus() == RequestTypesEnum.MODIFY.getCode()) {
 		if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
-		    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.SOLDIERS_REGULAR_VACATION_REQUEST.getCode(), CategoriesEnum.SOLDIERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
+		    adminDecisionId = AdminDecisionsEnum.OFFICERS_MODIFY_REGULAR_VACATION_REQUEST.getCode();
+		} else if (request.getVacationTypeId().equals(VacationTypesEnum.SICK.getCode())) {
+		    if (request.getPaidVacationType().equals(PaidVacationTypesEnum.FULL_PAID.getCode())) {
+			adminDecisionId = AdminDecisionsEnum.OFFICERS_MODIFY_FULL_PAID_SICK_VACATION_REQUEST.getCode();
+		    } else if (request.getPaidVacationType().equals(PaidVacationTypesEnum.HALF_PAID.getCode())) {
+			adminDecisionId = AdminDecisionsEnum.OFFICERS_MODIFY_HALF_PAID_SICK_VACATION_REQUEST.getCode();
+		    }
+		}
+	    } else if (request.getStatus() == RequestTypesEnum.CANCEL.getCode()) {
+		if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
+		    adminDecisionId = AdminDecisionsEnum.OFFICERS_CANCEL_REGULAR_VACATION_REQUEST.getCode();
 		} else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
-		    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.SOLDIERS_COMPELLING_VACATION_REQUEST.getCode(), CategoriesEnum.SOLDIERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
+		    adminDecisionId = AdminDecisionsEnum.OFFICERS_CANCEL_COMPELLING_VACATION_REQUEST.getCode();
+		} else if (request.getVacationTypeId().equals(VacationTypesEnum.SICK.getCode())) {
+		    if (request.getPaidVacationType().equals(PaidVacationTypesEnum.FULL_PAID.getCode())) {
+			adminDecisionId = AdminDecisionsEnum.OFFICERS_CANCEL_FULL_PAID_SICK_VACATION_REQUEST.getCode();
+		    } else if (request.getPaidVacationType().equals(PaidVacationTypesEnum.HALF_PAID.getCode())) {
+			adminDecisionId = AdminDecisionsEnum.OFFICERS_CANCEL_HALF_PAID_SICK_VACATION_REQUEST.getCode();
+		    }
 		}
 	    }
-	} else if (request.getStatus() == RequestTypesEnum.MODIFY.getCode()) {
-	    if (vacationBeneficiary.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
-		if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
-		    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_MODIFY_REGULAR_VACATION_REQUEST.getCode(), CategoriesEnum.OFFICERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
-		} else if (request.getVacationTypeId().equals(VacationTypesEnum.SICK.getCode())) {
-		    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_MODIFY_SICK_VACATION_REQUEST.getCode(), CategoriesEnum.OFFICERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
-		}
+	} else if (vacationBeneficiary.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
+	    if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
+		adminDecisionId = AdminDecisionsEnum.SOLDIERS_REGULAR_VACATION_REQUEST.getCode();
+	    } else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
+		adminDecisionId = AdminDecisionsEnum.SOLDIERS_COMPELLING_VACATION_REQUEST.getCode();
 	    }
-	} else if (request.getStatus() == RequestTypesEnum.CANCEL.getCode()) {
-	    if (vacationBeneficiary.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
-		if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
-		    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_CANCEL_REGULAR_VACATION_REQUEST.getCode(), CategoriesEnum.OFFICERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
-		} else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
-		    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_CANCEL_COMPELLING_VACATION_REQUEST.getCode(), CategoriesEnum.OFFICERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
-		} else if (request.getVacationTypeId().equals(VacationTypesEnum.SICK.getCode())) {
-		    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_CANCEL_SICK_VACATION_REQUEST.getCode(), CategoriesEnum.OFFICERS.getCode(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
-		}
-	    }
+	}
+	if (adminDecisionId != null) {
+	    boolean isOpenedSession = isSessionOpened(useSession);
+	    CustomSession session = isOpenedSession ? useSession[0] : null;
+	    if (session == null)
+		throw new BusinessException("error_general");
+	    session.flushTransaction();
+	    String gregDecisionDateString = HijriDateService.hijriToGregDateString(request.getDecisionDateString());
+	    String gregVacationStartDateString = HijriDateService.hijriToGregDateString(request.getStartDateString());
+	    String gregVacationEndDateString = HijriDateService.hijriToGregDateString(request.getEndDateString());
+	    EmployeeData employee = EmployeesService.getEmployeeData(request.getEmpId());
+	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), request.getVacationId(), gregVacationStartDateString, gregVacationEndDateString, request.getDecisionNumber())));
+	    PayrollEngineService.doPayrollIntegration(adminDecisionId, vacationBeneficiary.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
 	}
     }
 

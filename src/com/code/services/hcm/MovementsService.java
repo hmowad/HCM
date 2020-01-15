@@ -347,19 +347,15 @@ public class MovementsService extends BaseService {
 			}
 		    } else if (movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
 			if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
-			    if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
-				adminDecision = AdminDecisionsEnum.OFFICERS_EXTEND_SUBJOIN_DECISION_REQUEST.getCode();
-			    } else {
-				adminDecision = AdminDecisionsEnum.OFFICERS_EXTEND_SUBJOIN_REGISTERATION.getCode();
-			    }
+			    adminDecision = AdminDecisionsEnum.OFFICERS_EXTEND_SUBJOIN_DECISION_REQUEST.getCode();
+			} else {
+			    adminDecision = AdminDecisionsEnum.OFFICERS_EXTEND_SUBJOIN_REGISTERATION.getCode();
 			}
 		    } else if (movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_CANCEL_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
 			if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
-			    if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
-				adminDecision = AdminDecisionsEnum.OFFICERS_CANCEL_SUBJOIN_DECISION_REQUEST.getCode();
-			    } else {
-				adminDecision = AdminDecisionsEnum.OFFICERS_CANCEL_SUBJOIN_REGISTERATION.getCode();
-			    }
+			    adminDecision = AdminDecisionsEnum.OFFICERS_CANCEL_SUBJOIN_DECISION_REQUEST.getCode();
+			} else {
+			    adminDecision = AdminDecisionsEnum.OFFICERS_CANCEL_SUBJOIN_REGISTERATION.getCode();
 			}
 		    }
 		    integrationFlag = true;
