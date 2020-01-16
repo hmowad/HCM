@@ -4,7 +4,8 @@ public enum WFPositionsEnum {
     // Presidency.
     VICE_PRESIDENT(2),
     MILITARY_AFFAIRS_ASSISTANT(840),
-
+    SOLDIERS_HUMAN_RESOURCES_MANAGER(1035),
+    
     // Officers Affairs.
     OFFICERS_ARCHIVES_UNIT_MANAGER(10),
     OFFICERS_MOVEMENTS_UNIT_MANAGER(510),
@@ -60,8 +61,12 @@ public enum WFPositionsEnum {
 
     REGION_PLANNING_ORGANIZATION_UNIT_MANAGER(93),
 
-    REGION_TRAINING_UNIT_MANAGER(1000);
-
+    REGION_TRAINING_UNIT_MANAGER(1000),
+    
+    REGION_ADMINISTRATION_AND_FINANCIAL_MANAGER(1034),
+    
+    // Mission
+    REGION_MISSION_DIRECTED_TO(1100);
     private int code;
 
     private WFPositionsEnum(int code) {
