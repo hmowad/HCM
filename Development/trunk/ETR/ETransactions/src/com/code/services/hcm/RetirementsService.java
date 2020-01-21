@@ -139,7 +139,7 @@ public class RetirementsService extends BaseService {
 	    if (terminationTransactionData.getTransEmpUnitId() == null) {
 		throw new BusinessException("error_noUnitIdInTerminationTransaction");
 	    }
-	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(disclaimerTransactionData.getEmpId(), terminationTransactionData.getEmpName(), disclaimerTransactionData.getId(), gregTerminationDateString, gregTerminationDateString, disclaimerTransactionData.getDecisionNumber())));
+	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(disclaimerTransactionData.getEmpId(), terminationTransactionData.getEmpName(), disclaimerTransactionData.getId(), null, gregTerminationDateString, gregTerminationDateString, disclaimerTransactionData.getDecisionNumber(), null)));
 	    session.flushTransaction();
 	    PayrollEngineService.doPayrollIntegration(disclaimerAdminDecisionId, disclaimerTransactionData.getTransEmpCategoryId(), gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionData.getTransEmpUnitId(), gregDecisionDateString, session);
 	} catch (Exception e) {

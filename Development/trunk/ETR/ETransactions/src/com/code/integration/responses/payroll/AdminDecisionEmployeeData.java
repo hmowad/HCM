@@ -4,17 +4,21 @@ public class AdminDecisionEmployeeData {
     private Long empId;
     private String empName;
     private Long transactionId;
+    private Long originalTransactionId;
     private String gregStartDateString;
     private String gregEndDateString;
     private String decisionNumber;
+    private String originalAdminDecisionNumber;
 
-    public AdminDecisionEmployeeData(Long empId, String empName, Long transactionId, String gregStartDateString, String gregEndDateString, String decisionNumber) {
+    public AdminDecisionEmployeeData(Long empId, String empName, Long transactionId, Long originalTransactionId, String gregStartDateString, String gregEndDateString, String decisionNumber, String originalAdminDecisionNumber) {
 	this.empId = empId;
 	this.empName = empName;
 	this.transactionId = transactionId;
+	this.originalTransactionId = originalTransactionId;
 	this.gregStartDateString = gregStartDateString;
 	this.gregEndDateString = gregEndDateString;
 	this.decisionNumber = decisionNumber;
+	this.originalAdminDecisionNumber = originalAdminDecisionNumber;
     }
 
     public Long getEmpId() {
@@ -41,6 +45,14 @@ public class AdminDecisionEmployeeData {
 	this.transactionId = transactionId;
     }
 
+    public Long getOriginalTransactionId() {
+	return originalTransactionId;
+    }
+
+    public void setOriginalTransactionId(Long originalTransactionId) {
+	this.originalTransactionId = originalTransactionId;
+    }
+
     public String getGregStartDateString() {
 	return gregStartDateString;
     }
@@ -63,6 +75,14 @@ public class AdminDecisionEmployeeData {
 
     public void setDecisionNumber(String decisionNumber) {
 	this.decisionNumber = decisionNumber;
+    }
+
+    public String getOriginalAdminDecisionNumber() {
+	return originalAdminDecisionNumber;
+    }
+
+    public void setOriginalAdminDecisionNumber(String originalAdminDecisionNumber) {
+	this.originalAdminDecisionNumber = originalAdminDecisionNumber;
     }
 
 }

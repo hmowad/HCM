@@ -121,8 +121,21 @@ public class PayrollEngineService extends BaseService {
 		for (AdminDecisionEmployeeData employeeData : adminDecisionEmployeeDataList) {
 		    JsonArrayBuilder employeeLisVariablesArray = Json.createArrayBuilder();
 		    for (AdminDecisionVariable adminDecisionVariable : adminDecisionVariableArray) {
-			String tableName = adminDecisionVariable.getVariableMapping().substring(0, adminDecisionVariable.getVariableMapping().indexOf("."));
-			String columnName = adminDecisionVariable.getVariableMapping().substring(adminDecisionVariable.getVariableMapping().indexOf(".") + 1, adminDecisionVariable.getVariableMapping().length());
+			String tableName, columnName, queryTransactionId;
+			String[] variablesMappingData = adminDecisionVariable.getVariableMapping().split(",");
+			if (variablesMappingData.length > 1) {
+			    if (employeeData.getOriginalTransactionId() == null) {
+				Log4jService.traceInfo(PayrollEngineService.class, "Exception: originalTransactionId is null!!");
+				throw new BusinessException("error_general");
+			    }
+			    queryTransactionId = employeeData.getOriginalTransactionId() + "";
+			    tableName = variablesMappingData[1].substring(0, variablesMappingData[1].indexOf("."));
+			    columnName = variablesMappingData[1].substring(variablesMappingData[1].indexOf(".") + 1, variablesMappingData[1].length());
+			} else {
+			    queryTransactionId = employeeData.getTransactionId() + "";
+			    tableName = variablesMappingData[0].substring(0, variablesMappingData[0].indexOf("."));
+			    columnName = variablesMappingData[0].substring(variablesMappingData[0].indexOf(".") + 1, variablesMappingData[0].length());
+			}
 			Log4jService.traceInfo(PayrollEngineService.class, "tableName: " + tableName);
 			Log4jService.traceInfo(PayrollEngineService.class, "columnName: " + columnName);
 			if (employeeIdMapping.get(tableName) == null)
@@ -131,7 +144,7 @@ public class PayrollEngineService extends BaseService {
 				+ ") from " + tableName + " where "
 				+ employeeIdMapping.get(tableName) + " = " + employeeData.getEmpId());
 			mappingQuery.append(employeeData.getTransactionId() != null && transactionIdMapping.get(tableName) != null ? " and "
-				+ transactionIdMapping.get(tableName) + " = " + employeeData.getTransactionId() : "");
+				+ transactionIdMapping.get(tableName) + " = " + queryTransactionId : "");
 			Log4jService.traceInfo(PayrollEngineService.class, "mappingQuery: " + mappingQuery.toString());
 			List<String> result = DataAccess.executeNativeQuery(String.class, mappingQuery, new HashMap<String, Object>(), useSession);
 			String mappingValue = result == null || result.size() == 0 ? null : result.get(0);
@@ -164,14 +177,26 @@ public class PayrollEngineService extends BaseService {
 		}
 
 		for (AdminDecisionVariable adminDecisionVariable : adminDecisionVariableArray) {
-
-		    String tableName = adminDecisionVariable.getVariableMapping().substring(0, adminDecisionVariable.getVariableMapping().indexOf("."));
-		    String columnName = adminDecisionVariable.getVariableMapping().substring(adminDecisionVariable.getVariableMapping().indexOf(".") + 1, adminDecisionVariable.getVariableMapping().length());
+		    String tableName, columnName, queryTransactionId;
+		    String[] variablesMappingData = adminDecisionVariable.getVariableMapping().split(",");
+		    if (variablesMappingData.length > 1) {
+			if (adminDecisionEmployeeDataList.get(0).getOriginalTransactionId() == null) {
+			    Log4jService.traceInfo(PayrollEngineService.class, "Exception: originalTransactionId is null!!");
+			    throw new BusinessException("error_general");
+			}
+			queryTransactionId = adminDecisionEmployeeDataList.get(0).getOriginalTransactionId() + "";
+			tableName = variablesMappingData[1].substring(0, variablesMappingData[1].indexOf("."));
+			columnName = variablesMappingData[1].substring(variablesMappingData[1].indexOf(".") + 1, variablesMappingData[1].length());
+		    } else {
+			queryTransactionId = adminDecisionEmployeeDataList.get(0).getTransactionId() + "";
+			tableName = variablesMappingData[0].substring(0, variablesMappingData[0].indexOf("."));
+			columnName = variablesMappingData[0].substring(variablesMappingData[0].indexOf(".") + 1, variablesMappingData[0].length());
+		    }
 		    Log4jService.traceInfo(PayrollEngineService.class, "tableName: " + tableName);
 		    Log4jService.traceInfo(PayrollEngineService.class, "columnName: " + columnName);
 		    StringBuffer mappingQuery = new StringBuffer("select to_char(" + columnName
 			    + ") from " + tableName + " where " + employeeIdMapping.get(tableName) + " = " + adminDecisionEmployeeDataList.get(0).getEmpId());
-		    mappingQuery.append(adminDecisionEmployeeDataList.get(0).getTransactionId() != null && transactionIdMapping.get(tableName) != null ? " and " + transactionIdMapping.get(tableName) + " = " + adminDecisionEmployeeDataList.get(0).getTransactionId() : "");
+		    mappingQuery.append(adminDecisionEmployeeDataList.get(0).getTransactionId() != null && transactionIdMapping.get(tableName) != null ? " and " + transactionIdMapping.get(tableName) + " = " + queryTransactionId : "");
 		    Log4jService.traceInfo(PayrollEngineService.class, "mappingQuery: " + mappingQuery.toString());
 		    List<String> result = DataAccess.executeNativeQuery(String.class, mappingQuery, new HashMap<String, Object>(), useSession);
 		    String mappingValue = result == null || result.size() == 0 ? null : result.get(0);
@@ -203,6 +228,7 @@ public class PayrollEngineService extends BaseService {
 			.add("categoryId", categoryId + "")
 			.add("adminDecisionId", adminDecisionId + "")
 			.add("adminDecisionNumber", adminDecisionEmployeeDataList.get(0).getDecisionNumber())
+			.add("originalAdminDecisionNumber", adminDecisionEmployeeDataList.get(0).getOriginalAdminDecisionNumber() == null ? "" : adminDecisionEmployeeDataList.get(0).getOriginalAdminDecisionNumber())
 			.add("employeesList", employeeArray.build())
 			.add("variablesList", variableArray.build())
 			.build();
