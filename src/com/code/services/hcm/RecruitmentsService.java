@@ -927,7 +927,7 @@ public class RecruitmentsService extends BaseService {
 	    for (RecruitmentTransactionData recruitmentTransactionData : recruitmentTransactions) {
 		String gregRecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactionData.getRecruitmentDateString());
 		emp = EmployeesService.getEmployeeData(recruitmentTransactionData.getEmployeeId());
-		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(recruitmentTransactionData.getEmployeeId(), emp.getName(), recruitmentTransactionData.getId(), gregRecDateString, null, recruitmentTransactionData.getDecisionNumber()));
+		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(recruitmentTransactionData.getEmployeeId(), emp.getName(), recruitmentTransactionData.getId(), null, gregRecDateString, null, recruitmentTransactionData.getDecisionNumber(), null));
 	    }
 	    String gregRecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getRecruitmentDateString());
 	    String gregDecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getDecisionDateString());

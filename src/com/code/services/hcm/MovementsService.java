@@ -320,7 +320,6 @@ public class MovementsService extends BaseService {
     private static void doPayrollIntegration(List<MovementTransactionData> movementTransactions, CustomSession session) throws BusinessException {
 	List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
 	Long adminDecision = null;
-	Boolean integrationFlag = false;
 	if (movementTransactions != null && movementTransactions.size() > 0) {
 	    if (movementTransactions.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 		if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.MOVE.getCode() && movementTransactions.get(0).getRequestTransactionFlag().intValue() == FlagsEnum.OFF.getCode()) {
@@ -333,7 +332,6 @@ public class MovementsService extends BaseService {
 			    adminDecision = AdminDecisionsEnum.OFFICERS_MOVE_REGISTERATION.getCode();
 			}
 		    }
-		    integrationFlag = true;
 		} else if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.SUBJOIN.getCode() && movementTransactions.get(0).getRequestTransactionFlag().intValue() == FlagsEnum.OFF.getCode()) {
 		    if (movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
 			if (movementTransactions.get(0).getJoiningDate() != null)
@@ -357,23 +355,27 @@ public class MovementsService extends BaseService {
 			} else {
 			    adminDecision = AdminDecisionsEnum.OFFICERS_CANCEL_SUBJOIN_REGISTERATION.getCode();
 			}
+		    } else if (movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_TERMINATION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
+			if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
+			    adminDecision = AdminDecisionsEnum.OFFICERS_TERMINATE_SUBJOIN_DECISION_REQUEST.getCode();
+			} else {
+			    adminDecision = AdminDecisionsEnum.OFFICERS_TERMINATE_SUBJOIN_REGISTERATION.getCode();
+			}
 		    }
-		    integrationFlag = true;
 		} else if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.ASSIGNMENT.getCode() && movementTransactions.get(0).getRequestTransactionFlag().intValue() == FlagsEnum.OFF.getCode()) {
 		    if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
 			adminDecision = AdminDecisionsEnum.OFFICERS_INTERNAL_ASSIGNMENT_DECISION_REQUEST.getCode();
 		    } else {
 			adminDecision = AdminDecisionsEnum.OFFICERS_EXTERNAL_ASSIGNMENT_REGISTRATION.getCode();
 		    }
-		    integrationFlag = true;
 		}
 	    }
-	    if (integrationFlag) {
+	    if (adminDecision != null) {
 		for (MovementTransactionData movementTransactionData : movementTransactions) {
 		    String gregStartDateString = HijriDateService.hijriToGregDateString(movementTransactionData.getExecutionDateString());
 		    String gregEndDateString = HijriDateService.hijriToGregDateString(movementTransactionData.getEndDateString());
 		    EmployeeData employee = EmployeesService.getEmployeeData(movementTransactionData.getEmployeeId());
-		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(movementTransactionData.getEmployeeId(), employee.getName(), movementTransactionData.getId(), gregStartDateString, gregEndDateString, movementTransactionData.getDecisionNumber()));
+		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(movementTransactionData.getEmployeeId(), employee.getName(), movementTransactionData.getId(), null, gregStartDateString, gregEndDateString, movementTransactionData.getDecisionNumber(), movementTransactionData.getBasedOnDecisionNumber()));
 		}
 		String gregExecutionDateString = HijriDateService.hijriToGregDateString(movementTransactions.get(0).getExecutionDateString());
 		String gregDecisionDateString = HijriDateService.hijriToGregDateString(movementTransactions.get(0).getDecisionDateString());
