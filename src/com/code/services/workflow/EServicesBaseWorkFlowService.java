@@ -66,10 +66,10 @@ public class EServicesBaseWorkFlowService {
     }
 
     /************************************ workflow actions ***********************************************/
-    public static void doApproval(Long requesterId, WFTask hcmWFTask, Long mainEmpId, Long secondEmpId,
-	    WFTaskActionsEnum action, Long transactionId, Long processCode) throws BusinessException {
+    public static void doApproval(WFTask hcmWFTask, Long mainEmpId, Long secondEmpId,
+	    WFTaskActionsEnum action, Long processCode) throws BusinessException {
 	com.code.integration.parameters.eservices.workflow.WFTask eservicesWFTask = toEServicesWFTask(hcmWFTask, processCode);
-	WFGeneralProcessClient.doApproval(requesterId, eservicesWFTask, mainEmpId, secondEmpId, action, transactionId);
+	WFGeneralProcessClient.doApproval(eservicesWFTask, mainEmpId, secondEmpId, action);
     }
 
     public static void doNotifyTasks(List<WFTask> hcmNotificationTasks, Long processCode) throws BusinessException {
