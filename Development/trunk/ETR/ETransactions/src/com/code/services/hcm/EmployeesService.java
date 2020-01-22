@@ -1826,6 +1826,7 @@ public class EmployeesService extends BaseService {
 		    addModifyEmployeeMedicalStaffData(employeeExtraTransactionData, employeeMedicalStaffData, session);
 		}
 		EmployeeLog log = new EmployeeLog.Builder().setSocialStatus(employeeExtraTransactionData.getSocialStatus()).setGeneralSpecialization(employeeExtraTransactionData.getGeneralSpecialization()).setRankTitleId(employeeExtraTransactionData.getRankTitleId()).setSalaryRankId(employeeExtraTransactionData.getSalaryRankId()).setSalaryDegreeId(employeeExtraTransactionData.getSalaryDegreeId())
+			.setMedStaffDegreeId(employeeExtraTransactionData.getMedStaffDegreeId()).setMedStaffLevelId(employeeExtraTransactionData.getMedStaffLevelId()).setMedStaffRankId(employeeExtraTransactionData.getMedStaffRankId())
 			.constructCommonFields(employee.getEmpId(), FlagsEnum.ON.getCode(), employeeExtraTransactionData.getDecisionNumber(), employeeExtraTransactionData.getDecisionDate(), employeeExtraTransactionData.getEffectiveDate(), DataAccess.getTableName(EmployeeExtraTransaction.class)).build();
 		LogService.logEmployeeData(log, session);
 	    }
