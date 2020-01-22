@@ -322,7 +322,7 @@ public class MovementsService extends BaseService {
 	Long adminDecision = null;
 	if (movementTransactions != null && movementTransactions.size() > 0) {
 	    if (movementTransactions.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
-		if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.MOVE.getCode() && movementTransactions.get(0).getRequestTransactionFlag().intValue() == FlagsEnum.OFF.getCode()) {
+		if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.MOVE.getCode()) {
 		    if (movementTransactions.get(0).getJoiningDate() != null)
 			adminDecision = AdminDecisionsEnum.OFFICERS_MOVE_JOINING_DATE_REQUEST.getCode();
 		    else {
@@ -332,7 +332,7 @@ public class MovementsService extends BaseService {
 			    adminDecision = AdminDecisionsEnum.OFFICERS_MOVE_REGISTERATION.getCode();
 			}
 		    }
-		} else if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.SUBJOIN.getCode() && movementTransactions.get(0).getRequestTransactionFlag().intValue() == FlagsEnum.OFF.getCode()) {
+		} else if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.SUBJOIN.getCode()) {
 		    if (movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
 			if (movementTransactions.get(0).getJoiningDate() != null)
 			    adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_JOINING_DATE_REQUEST.getCode();
@@ -362,7 +362,7 @@ public class MovementsService extends BaseService {
 			    adminDecision = AdminDecisionsEnum.OFFICERS_TERMINATE_SUBJOIN_REGISTERATION.getCode();
 			}
 		    }
-		} else if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.ASSIGNMENT.getCode() && movementTransactions.get(0).getRequestTransactionFlag().intValue() == FlagsEnum.OFF.getCode()) {
+		} else if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.ASSIGNMENT.getCode()) {
 		    if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
 			adminDecision = AdminDecisionsEnum.OFFICERS_INTERNAL_ASSIGNMENT_DECISION_REQUEST.getCode();
 		    } else {
