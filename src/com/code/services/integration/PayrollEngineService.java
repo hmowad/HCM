@@ -28,12 +28,14 @@ import com.code.integration.responses.payroll.AdminDecisionResponse;
 import com.code.integration.responses.payroll.AdminDecisionVariable;
 import com.code.integration.webservicesclients.payroll.PayrollRestClient;
 import com.code.services.BaseService;
+import com.code.services.config.ETRConfigurationService;
 import com.code.services.util.Log4jService;
 
 public class PayrollEngineService extends BaseService {
 
     private static Map<String, String> employeeIdMapping;
     private static Map<String, String> transactionIdMapping;
+    private static Integer integrationFlag;
 
     public static void init() {
 	employeeIdMapping = new HashMap<String, String>();
@@ -44,6 +46,7 @@ public class PayrollEngineService extends BaseService {
 	for (TransactionIdMappingEnum transactionId : TransactionIdMappingEnum.values()) {
 	    transactionIdMapping.put(transactionId.getTableName(), transactionId.getTransactionIdColumnName());
 	}
+	integrationFlag = ETRConfigurationService.getIntegrationWithAllowanceAndDeductionFlag();
     }
 
     public static void doPayrollIntegration(Long adminDecisionId, Long categoryId, String executionDateString, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, CustomSession... useSession) throws BusinessException {
@@ -70,7 +73,7 @@ public class PayrollEngineService extends BaseService {
     }
 
     public static Integer getIntegrationWithAllowanceAndDeductionFlag() {
-	return Integer.parseInt(getConfig("integrationWithAllowanceAndDeductionFlag"));
+	return integrationFlag;
     }
 
     private static List<AdminDecisionResponse> getAdminDecisionVariablesMap(String adminDecisionVariables) throws BusinessException {
