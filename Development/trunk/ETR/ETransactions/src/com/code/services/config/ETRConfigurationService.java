@@ -801,14 +801,14 @@ public class ETRConfigurationService extends BaseService {
 	    throw new BusinessException("error_general");
 	return unitsIds;
     }
-    
+
     public static String getEServicesURL() {
-		return configurationMap.get("ESERVICES_URL");
-	}
-	
-	public static String getEServicesFlag() {
-		return configurationMap.get("ESERVICES_FLAG");
-	}
+	return configurationMap.get("ESERVICES_URL");
+    }
+
+    public static String getEServicesFlag() {
+	return configurationMap.get("ESERVICES_FLAG");
+    }
 
     /*------------------------------------------------------End of Retirement Configurations------------------------------------------------------*/
     /*------------------------------------------------------Integration codes for external systems------------------------------------------------------*/
@@ -830,5 +830,9 @@ public class ETRConfigurationService extends BaseService {
 
     public static String getYaqeenWsdlLocation() {
 	return getETRConfigByCode("YAKEEN_FOR_BORDER_GUARD_WSDL_LOCATION").getValue();
+    }
+
+    public static Integer getIntegrationWithAllowanceAndDeductionFlag() {
+	return Integer.parseInt(configurationMap.get("INTEGRATION_WITH_ALLOWANCE_AND_DEDUCTION_FLAG"));
     }
 }
