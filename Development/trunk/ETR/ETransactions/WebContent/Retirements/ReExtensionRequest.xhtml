@@ -187,7 +187,7 @@
 						<h:commandButton style="float: left;" styleClass="btn_normal_icon" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" action="#{reExtensionRequest.reject()}" rendered="#{reExtensionRequest.mode == 1}">
 							<f:ajax execute="reExtensionRequestForm:rejectionReasonId" render="reExtensionRequestForm:notifyMessagesId"></f:ajax>
 						</h:commandButton>
-						<h:commandButton style="float: left;" styleClass="btn_normal_icon" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" action="#{reExtensionRequest.approve()}" rendered="#{reExtensionRequest.mode == 1}">
+						<h:commandButton style="float: left;" styleClass="btn_normal_icon" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" action="#{reExtensionRequest.approve()}" rendered="#{reExtensionRequest.mode == 1}">
 							<f:ajax render="reExtensionRequestForm:notifyMessagesId"></f:ajax>
 						</h:commandButton>
 						<h:commandButton style="float: left;" styleClass="btn_normal_icon" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" action="#{reExtensionRequest.doNotifyTasks()}" rendered="#{reExtensionRequest.mode == 2}">
