@@ -181,13 +181,13 @@
 				</tr>
 				<tr>
 					<td colspan="4">
-						<h:commandButton style="float: left;" styleClass="btn_normal btn_float" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" action="#{reExtensionRequest.send()}" rendered="#{reExtensionRequest.mode == 0}">
+						<h:commandButton style="float: left;" styleClass="btn_normal_icon" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" action="#{reExtensionRequest.send()}" rendered="#{reExtensionRequest.mode == 0}">
 							<f:ajax execute="reExtensionRequestForm:extentionPeriodId reExtensionRequestForm:extensionReasonId" render="reExtensionRequestForm:notifyMessagesId"></f:ajax>
 						</h:commandButton>
-						<h:commandButton style="float: left;" styleClass="btn btn-danger btn_float" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" action="#{reExtensionRequest.reject()}" rendered="#{reExtensionRequest.mode == 1}">
+						<h:commandButton style="float: left;" styleClass="btn_normal_icon" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" action="#{reExtensionRequest.reject()}" rendered="#{reExtensionRequest.mode == 1}">
 							<f:ajax execute="reExtensionRequestForm:rejectionReasonId" render="reExtensionRequestForm:notifyMessagesId"></f:ajax>
 						</h:commandButton>
-						<h:commandButton style="float: left;" styleClass="btn btn-success btn_float" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" action="#{reExtensionRequest.approve()}" rendered="#{reExtensionRequest.mode == 1}">
+						<h:commandButton style="float: left;" styleClass="btn_normal_icon" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" action="#{reExtensionRequest.approve()}" rendered="#{reExtensionRequest.mode == 1}">
 							<f:ajax render="reExtensionRequestForm:notifyMessagesId"></f:ajax>
 						</h:commandButton>
 						<h:commandButton style="float: left;" styleClass="btn_normal_icon" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" action="#{reExtensionRequest.doNotifyTasks()}" rendered="#{reExtensionRequest.mode == 2}">
