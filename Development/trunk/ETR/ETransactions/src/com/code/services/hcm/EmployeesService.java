@@ -82,7 +82,7 @@ public class EmployeesService extends BaseService {
 	    addEmployeeQualifications(employeeQualificationsData, empData, session);
 
 	    EmployeeLog log = new EmployeeLog.Builder().setRankId(empData.getRankId()).setSocialStatus(empData.getSocialStatus()).setGeneralSpecialization(empData.getGeneralSpecialization())
-		    .constructCommonFields(empData.getEmpId(), FlagsEnum.OFF.getCode(), null, null, HijriDateService.getHijriSysDate(), DataAccess.getTableName(Employee.class)).build();
+		    .constructCommonFields(empData.getEmpId(), FlagsEnum.ON.getCode(), null, null, HijriDateService.getHijriSysDate(), DataAccess.getTableName(Employee.class)).build();
 	    LogService.logEmployeeData(log, session);
 
 	    if (!isOpenedSession)
