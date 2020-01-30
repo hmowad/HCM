@@ -159,15 +159,10 @@ public class EServicesWorkFlowClient extends BaseClient {
     public static Long countWFTasks(Long assigneeId, Integer notificationFlag) throws BusinessException {
 	init();
 
-	Log4jService.traceInfo(EServicesWorkFlowClient.class, "start of calling: service wfBase/countTasks");
-
 	Response response = client.target(serverUrl).path("countTasks/")
 		.queryParam("assigneeId", assigneeId.toString())
 		.queryParam("notificationFlag", notificationFlag.toString())
 		.request().get();
-
-	Log4jService.traceInfo(EServicesWorkFlowClient.class, "Response:   " + response);
-	Log4jService.traceInfo(EServicesWorkFlowClient.class, "end of calling: service wfBase/countTasks");
 
 	if (response.getStatus() == HTTPStatusCodeEnum.OK.getCode()) {
 	    String countString = response.readEntity(String.class);
