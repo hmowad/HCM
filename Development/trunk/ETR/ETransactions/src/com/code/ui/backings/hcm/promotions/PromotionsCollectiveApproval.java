@@ -35,10 +35,19 @@ public class PromotionsCollectiveApproval extends BaseBacking {
 
     private final static String taskUrlParam = "&taskId=";
     private final static int pageSize = 10;
+    private int mode = -1; // 1 means acceptance and 2 means approval
 
     public PromotionsCollectiveApproval() {
 	super();
-	this.setScreenTitle(getMessage("title_promotionsCollectiveApproval"));
+	if (getRequest().getAttribute("mode") != null)
+	    this.mode = Integer.parseInt(getRequest().getAttribute("mode").toString());
+
+	if (mode == 1)
+	    this.setScreenTitle(getMessage("title_promotionsCollectiveAcceptance"));
+	else if (mode == 2)
+	    this.setScreenTitle(getMessage("title_promotionsCollectiveApproval"));
+	else
+	    setServerSideErrorMessages(getMessage("error_general"));
 	try {
 	    // Load the promotions tasks data
 	    searchPromotionTasks();
@@ -51,7 +60,7 @@ public class PromotionsCollectiveApproval extends BaseBacking {
     private void searchPromotionTasks() {
 	try {
 	    selectAll = false;
-	    promotionsTasks = (ArrayList<Object>) PromotionsWorkFlow.getWFpromotionsTasks(this.loginEmpData.getEmpId(), WFTaskRolesEnum.SIGN_MANAGER.getCode());
+	    promotionsTasks = (ArrayList<Object>) PromotionsWorkFlow.getWFpromotionsTasks(this.loginEmpData.getEmpId(), mode == 1 ? WFTaskRolesEnum.ADMINISTRATIVE_ORGANIZATION_MANAGER.getCode() : WFTaskRolesEnum.SIGN_MANAGER.getCode());
 	    promotionsTasksListSize = promotionsTasks.size();
 	} catch (BusinessException e) {
 	    promotionsTasks = new ArrayList<Object>();
@@ -69,8 +78,9 @@ public class PromotionsCollectiveApproval extends BaseBacking {
 
     // Loop over the selected tasks for approval
     // called from the xhtml when "Approve" button clicked
-    public void doPromotionsCollectiveApprovalSM() {
+    public void doPromotionsCollective() {
 	try {
+
 	    String unsuccessfulTaskIdsIfAny = "";
 	    String comma = "";
 	    int unsuccessfulTasksCount = 0;
@@ -86,7 +96,10 @@ public class PromotionsCollectiveApproval extends BaseBacking {
 		    WFInstance instance = (WFInstance) (((Object[]) obj)[2]);
 		    EmployeeData requester = (EmployeeData) (((Object[]) obj)[4]);
 		    PromotionReportData report = PromotionsService.getPromotionReportDataById(promotionRequest.getReportId());
-		    PromotionsWorkFlow.doPromotionSM(requester, report, instance, task, WFActionFlagsEnum.APPROVE.getCode());
+		    if (mode == 1)
+			PromotionsWorkFlow.doPromotionAOM(requester, report, instance, task, WFActionFlagsEnum.APPROVE.getCode());
+		    else if (mode == 2)
+			PromotionsWorkFlow.doPromotionSM(requester, report, instance, task, WFActionFlagsEnum.APPROVE.getCode());
 		} catch (BusinessException e) {
 		    unsuccessfulTaskIdsIfAny += comma + task.getTaskId();
 		    unsuccessfulTasksCount++;
@@ -137,6 +150,14 @@ public class PromotionsCollectiveApproval extends BaseBacking {
 
     public int getPagesize() {
 	return pageSize;
+    }
+
+    public int getMode() {
+	return mode;
+    }
+
+    public void setMode(int mode) {
+	this.mode = mode;
     }
 
 }

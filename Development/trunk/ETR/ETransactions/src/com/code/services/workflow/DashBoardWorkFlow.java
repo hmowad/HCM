@@ -13,7 +13,8 @@ import com.code.exceptions.BusinessException;
 public class DashBoardWorkFlow extends BaseWorkFlow {
 
     private final static String[] ACCEPTANCE_ASSIGNEE_WF_ROLES = new String[] {
-	    WFTaskRolesEnum.DIRECT_MANAGER.getCode()
+	    WFTaskRolesEnum.DIRECT_MANAGER.getCode(),
+	    WFTaskRolesEnum.ADMINISTRATIVE_ORGANIZATION_MANAGER.getCode()
     };
 
     private final static String[] APPROVAL_ASSIGNEE_WF_ROLES = new String[] {
@@ -27,7 +28,8 @@ public class DashBoardWorkFlow extends BaseWorkFlow {
 	    (long) WFProcessesGroupsEnum.VACATIONS.getCode(),
 	    (long) WFProcessesGroupsEnum.MISSIONS.getCode(),
 	    (long) WFProcessesGroupsEnum.TRAINING_AND_SCHOLARSHIP.getCode(),
-	    (long) WFProcessesGroupsEnum.MOVEMENTS.getCode()
+	    (long) WFProcessesGroupsEnum.MOVEMENTS.getCode(),
+	    (long) WFProcessesGroupsEnum.PROMOTIONS.getCode()
     };
 
     private final static Long[] APPROVAL_PROCESS_GROUPS = new Long[] {
@@ -58,7 +60,7 @@ public class DashBoardWorkFlow extends BaseWorkFlow {
 	    WFProcessesEnum.MILITARY_INTERNAL_COURSE_EVENT_CANCEL_REQUEST.getCode(),
 	    WFProcessesEnum.MILITARY_INTERNAL_COURSE_EVENT_RESULTS.getCode(),
 	    WFProcessesEnum.ADD_MILITARY_TRAINING_COURSE_NAME_REQUEST.getCode(),
-	    WFProcessesEnum.ADD_CIVILLAIN_TRAINING_COURSE_NAME_REQUEST.getCode(),
+	    WFProcessesEnum.ADD_CIVILLAIN_TRAINING_COURSE_NAME_REQUEST.getCode()
 
     };
 
