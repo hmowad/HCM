@@ -139,7 +139,7 @@
 							<tr>
 								<td width="100%">
 									<h:inputHidden id="promotionsTasksListSizeId" value="#{PromotionsCollectiveApproval.promotionsTasksListSize}" />
-									<h:commandButton onclick="return handleOnAction('#{msgs.q_superSignToNOfTasks}'.format(selectedTasksCount), 'validateApproval()');" action="#{PromotionsCollectiveApproval.doPromotionsCollectiveApprovalSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+									<h:commandButton onclick="return handleOnAction('#{msgs.q_superSignToNOfTasks}'.format(selectedTasksCount), 'validateApproval()');" action="#{PromotionsCollectiveApproval.doPromotionsCollective()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 										<f:ajax render="promotionsCollectiveApprovalForm:notifyMessagesId promotionsCollectiveApprovalForm:headerInboxProceduresCountId promotionsCollectiveApprovalForm:tasksId promotionsCollectiveApprovalForm:promotionsTasksListSizeId" execute="promotionsCollectiveApprovalForm:tasksId" />
 									</h:commandButton>
 								</td>
