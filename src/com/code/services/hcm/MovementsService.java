@@ -327,7 +327,10 @@ public class MovementsService extends BaseService {
 			adminDecision = AdminDecisionsEnum.OFFICERS_MOVE_JOINING_DATE_REQUEST.getCode();
 		    else {
 			if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
-			    adminDecision = AdminDecisionsEnum.OFFICERS_MOVE_DECISION_REQUEST.getCode();
+			    if (movementTransactions.get(0).getRequestTransactionFlag().equals(FlagsEnum.ON.getCode()))
+				adminDecision = AdminDecisionsEnum.OFFICERS_MOVE_REQUEST.getCode();
+			    else
+				adminDecision = AdminDecisionsEnum.OFFICERS_MOVE_DECISION_REQUEST.getCode();
 			} else {
 			    adminDecision = AdminDecisionsEnum.OFFICERS_MOVE_REGISTERATION.getCode();
 			}
@@ -338,26 +341,38 @@ public class MovementsService extends BaseService {
 			    adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_JOINING_DATE_REQUEST.getCode();
 			else {
 			    if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
-				adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_DECISION_REQUEST.getCode();
+				if (movementTransactions.get(0).getRequestTransactionFlag().equals(FlagsEnum.ON.getCode()))
+				    adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_REQUEST.getCode();
+				else
+				    adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_DECISION_REQUEST.getCode();
 			    } else {
 				adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_REGISTERATION.getCode();
 			    }
 			}
 		    } else if (movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
 			if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
-			    adminDecision = AdminDecisionsEnum.OFFICERS_EXTEND_SUBJOIN_DECISION_REQUEST.getCode();
+			    if (movementTransactions.get(0).getRequestTransactionFlag().equals(FlagsEnum.ON.getCode()))
+				adminDecision = AdminDecisionsEnum.OFFICERS_EXTEND_SUBJOIN_REQUEST.getCode();
+			    else
+				adminDecision = AdminDecisionsEnum.OFFICERS_EXTEND_SUBJOIN_DECISION_REQUEST.getCode();
 			} else {
 			    adminDecision = AdminDecisionsEnum.OFFICERS_EXTEND_SUBJOIN_REGISTERATION.getCode();
 			}
 		    } else if (movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_CANCEL_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
 			if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
-			    adminDecision = AdminDecisionsEnum.OFFICERS_CANCEL_SUBJOIN_DECISION_REQUEST.getCode();
+			    if (movementTransactions.get(0).getRequestTransactionFlag().equals(FlagsEnum.ON.getCode()))
+				adminDecision = AdminDecisionsEnum.OFFICERS_CANCEL_SUBJOIN_REQUEST.getCode();
+			    else
+				adminDecision = AdminDecisionsEnum.OFFICERS_CANCEL_SUBJOIN_DECISION_REQUEST.getCode();
 			} else {
 			    adminDecision = AdminDecisionsEnum.OFFICERS_CANCEL_SUBJOIN_REGISTERATION.getCode();
 			}
 		    } else if (movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_TERMINATION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
 			if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
-			    adminDecision = AdminDecisionsEnum.OFFICERS_TERMINATE_SUBJOIN_DECISION_REQUEST.getCode();
+			    if (movementTransactions.get(0).getRequestTransactionFlag().equals(FlagsEnum.ON.getCode()))
+				adminDecision = AdminDecisionsEnum.OFFICERS_TERMINATE_SUBJOIN_REQUEST.getCode();
+			    else
+				adminDecision = AdminDecisionsEnum.OFFICERS_TERMINATE_SUBJOIN_DECISION_REQUEST.getCode();
 			} else {
 			    adminDecision = AdminDecisionsEnum.OFFICERS_TERMINATE_SUBJOIN_REGISTERATION.getCode();
 			}

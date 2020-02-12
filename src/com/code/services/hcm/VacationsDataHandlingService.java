@@ -409,9 +409,7 @@ public class VacationsDataHandlingService extends BaseService {
      * @throws BusinessException
      *             if any error occurs
      */
-    protected static void updateVacationJoiningDate(long vacationTransactionId, Date joiningDate, long userId, CustomSession... useSession) throws BusinessException {
-
-	Vacation vacation = VacationsService.getVacationById(vacationTransactionId);
+    protected static void updateVacationJoiningDate(Vacation vacation, Date joiningDate, long userId, CustomSession... useSession) throws BusinessException {
 
 	if (joiningDate == null || !HijriDateService.isValidHijriDate(joiningDate))
 	    throw new BusinessException("error_invalidHijriDate");
