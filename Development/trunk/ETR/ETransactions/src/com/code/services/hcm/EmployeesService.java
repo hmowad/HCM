@@ -33,6 +33,7 @@ import com.code.dal.orm.setup.Country;
 import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.CountriesEnum;
+import com.code.enums.DegreesEnum;
 import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
@@ -81,7 +82,7 @@ public class EmployeesService extends BaseService {
 
 	    addEmployeeQualifications(employeeQualificationsData, empData, session);
 
-	    EmployeeLog log = new EmployeeLog.Builder().setRankId(empData.getRankId()).setSocialStatus(empData.getSocialStatus()).setGeneralSpecialization(empData.getGeneralSpecialization())
+	    EmployeeLog log = new EmployeeLog.Builder().setRankId(empData.getRankId()).setSocialStatus(empData.getSocialStatus()).setGeneralSpecialization(empData.getGeneralSpecialization()).setDegreeId(DegreesEnum.FIRST.getCode())
 		    .constructCommonFields(empData.getEmpId(), FlagsEnum.ON.getCode(), null, null, HijriDateService.getHijriSysDate(), DataAccess.getTableName(Employee.class)).build();
 	    LogService.logEmployeeData(log, session);
 
