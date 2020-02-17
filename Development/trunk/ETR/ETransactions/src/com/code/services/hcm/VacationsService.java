@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
@@ -162,7 +161,8 @@ public class VacationsService extends BaseService {
 	    String gregVacationEndDateString = HijriDateService.hijriToGregDateString(request.getEndDateString());
 	    EmployeeData employee = EmployeesService.getEmployeeData(request.getEmpId());
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(
-		    Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), request.getVacationId(), null, gregVacationStartDateString, gregVacationEndDateString, request.getJoiningDate() != null ? UUID.randomUUID().toString() : request.getDecisionNumber(), originalVacation != null && originalVacation.getDecisionNumber() != null ? originalVacation.getDecisionNumber() : null)));
+		    Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), request.getVacationId(), null, request.getJoiningDate() != null ? HijriDateService.getHijriDateString(request.getJoiningDate()) : gregVacationStartDateString, request.getJoiningDate() != null ? null : gregVacationEndDateString, request.getJoiningDate() != null ? System.currentTimeMillis() + "" : request.getDecisionNumber(),
+			    originalVacation != null && originalVacation.getDecisionNumber() != null ? originalVacation.getDecisionNumber() : null)));
 	    session.flushTransaction();
 	    PayrollEngineService.doPayrollIntegration(adminDecisionId, vacationBeneficiary.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
 	}
