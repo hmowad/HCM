@@ -166,7 +166,8 @@ public class PayrollEngineService extends BaseService {
 				.add("value", mappingValue == null ? "" : mappingValue)
 				.add("variableMapping", adminDecisionVariable.getVariableMapping())
 				.build();
-			employeeLisVariablesArray.add(variable);
+			if (mappingValue != null)
+			    employeeLisVariablesArray.add(variable);
 		    }
 
 		    JsonObject employeeObject = Json.createObjectBuilder()
@@ -218,7 +219,8 @@ public class PayrollEngineService extends BaseService {
 			    .add("value", mappingValue == null ? "" : mappingValue)
 			    .add("variableMapping", adminDecisionVariable.getVariableMapping())
 			    .build();
-		    variableArray.add(variable);
+		    if (mappingValue != null)
+			variableArray.add(variable);
 		}
 
 		JsonObject decisionTypeObject = Json.createObjectBuilder()
