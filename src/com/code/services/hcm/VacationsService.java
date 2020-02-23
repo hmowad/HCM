@@ -157,12 +157,13 @@ public class VacationsService extends BaseService {
 	    if (session == null)
 		throw new BusinessException("error_general");
 	    String gregDecisionDateString = HijriDateService.hijriToGregDateString(request.getDecisionDateString());
-	    String gregVacationStartDateString = HijriDateService.hijriToGregDateString(request.getStartDateString());
-	    String gregVacationEndDateString = HijriDateService.hijriToGregDateString(request.getEndDateString());
+	    String gregVacationStartDateString = request.getJoiningDate() != null ? HijriDateService.hijriToGregDateString(HijriDateService.getHijriDateString(request.getJoiningDate())) : HijriDateService.hijriToGregDateString(request.getStartDateString());
+	    String gregVacationEndDateString = request.getJoiningDate() != null ? null : HijriDateService.hijriToGregDateString(request.getEndDateString());
+	    String requestDecisionNumber = request.getJoiningDate() != null ? System.currentTimeMillis() + "" : request.getDecisionNumber();
+	    String originalDecisionNumber = originalVacation != null && originalVacation.getDecisionNumber() != null ? originalVacation.getDecisionNumber() : null;
 	    EmployeeData employee = EmployeesService.getEmployeeData(request.getEmpId());
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(
-		    Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), request.getVacationId(), null, request.getJoiningDate() != null ? HijriDateService.getHijriDateString(request.getJoiningDate()) : gregVacationStartDateString, request.getJoiningDate() != null ? null : gregVacationEndDateString, request.getJoiningDate() != null ? System.currentTimeMillis() + "" : request.getDecisionNumber(),
-			    originalVacation != null && originalVacation.getDecisionNumber() != null ? originalVacation.getDecisionNumber() : null)));
+		    Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), request.getVacationId(), null, gregVacationStartDateString, gregVacationEndDateString, requestDecisionNumber, originalDecisionNumber)));
 	    session.flushTransaction();
 	    PayrollEngineService.doPayrollIntegration(adminDecisionId, vacationBeneficiary.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
 	}
