@@ -17,6 +17,7 @@ import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.ReportNamesEnum;
+import com.code.enums.payroll.PayrollCategoriesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
@@ -139,9 +140,10 @@ public class RetirementsService extends BaseService {
 	    if (terminationTransactionData.getTransEmpUnitId() == null) {
 		throw new BusinessException("error_noUnitIdInTerminationTransaction");
 	    }
+	    Long employeeCategory = EmployeesService.getEmployeeMedicalStaffDataByEmpId(disclaimerTransactionData.getEmpId()) != null ? PayrollCategoriesEnum.MILITARY_MEDICAL_STAFF.getCode() : disclaimerTransactionData.getTransEmpCategoryId();
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(disclaimerTransactionData.getEmpId(), terminationTransactionData.getEmpName(), disclaimerTransactionData.getId(), null, gregTerminationDateString, gregTerminationDateString, disclaimerTransactionData.getDecisionNumber(), null)));
 	    session.flushTransaction();
-	    PayrollEngineService.doPayrollIntegration(disclaimerAdminDecisionId, disclaimerTransactionData.getTransEmpCategoryId(), gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionData.getTransEmpUnitId(), gregDecisionDateString, session);
+	    PayrollEngineService.doPayrollIntegration(disclaimerAdminDecisionId, employeeCategory, gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionData.getTransEmpUnitId(), gregDecisionDateString, session);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(e.getMessage());
