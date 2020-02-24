@@ -145,10 +145,14 @@ public class VacationsService extends BaseService {
 		}
 	    }
 	} else if (vacationBeneficiary.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
-	    if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
-		adminDecisionId = AdminDecisionsEnum.SOLDIERS_REGULAR_VACATION_REQUEST.getCode();
-	    } else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
-		adminDecisionId = AdminDecisionsEnum.SOLDIERS_COMPELLING_VACATION_REQUEST.getCode();
+	    if (request.getJoiningDate() == null) {
+		if (request.getStatus() == RequestTypesEnum.NEW.getCode()) {
+		    if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
+			adminDecisionId = AdminDecisionsEnum.SOLDIERS_REGULAR_VACATION_REQUEST.getCode();
+		    } else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
+			adminDecisionId = AdminDecisionsEnum.SOLDIERS_COMPELLING_VACATION_REQUEST.getCode();
+		    }
+		}
 	    }
 	}
 	if (adminDecisionId != null) {
