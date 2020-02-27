@@ -288,6 +288,7 @@
 		<mapping class="com.code.dal.orm.integration.security.WSSession" />
 		
 		<mapping class="com.code.dal.orm.integration.payroll.AdminDecisionVariablesMapping" />
+		<mapping class="com.code.dal.orm.integration.payroll.PayrollIntegrationFailureLog" />
 		
 		<mapping class="com.code.dal.orm.integration.finance.PaidIssueOrderData" />
 		
