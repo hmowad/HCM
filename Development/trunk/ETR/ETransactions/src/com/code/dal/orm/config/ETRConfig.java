@@ -4,6 +4,7 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -49,7 +50,7 @@ public class ETRConfig extends AuditEntity implements UpdatableAuditEntity {
 	this.code = code;
     }
 
-    @Basic
+    @Lob
     @Column(name = "VALUE")
     public String getValue() {
 	return value;
