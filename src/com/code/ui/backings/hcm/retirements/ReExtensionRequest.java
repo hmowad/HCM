@@ -61,6 +61,8 @@ public class ReExtensionRequest extends WFBaseBacking {
 		setMode(2);
 		extensionRequestTransaction = ExtensionRequestTransactionsClient.getExtensionRequestTransactionByInstanceId(instance.getInstanceId());
 		selectedEmployee = EmployeesService.getEmployeeData(extensionRequestTransaction.getEmpId());
+	    } else if (role.equals(WFProcessRolesEnum.HISTORY.getCode())) {
+		setMode(3);
 	    }
 	} catch (BusinessException e) {
 	    reset();

@@ -125,7 +125,11 @@ public class EServicesWorkFlowClient extends BaseClient {
 	if (response.getStatus() == HTTPStatusCodeEnum.OK.getCode()) {
 	    return getEntityList(WFTaskData.class, response.readEntity(String.class));
 	} else {
-	    throw new BusinessException(getExceptionMessage(response.getStatus(), response.readEntity(String.class)));
+	    String responseMessage = response.readEntity(String.class);
+	    if (responseMessage.contains("error_noData"))
+		return new ArrayList<WFTaskData>();
+	    else
+		throw new BusinessException(getExceptionMessage(response.getStatus(), responseMessage));
 	}
     }
 
