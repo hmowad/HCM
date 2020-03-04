@@ -19,7 +19,6 @@ import com.code.dal.orm.BaseEntity;
 @Table(name = "HCM_PAYROLL_INTEG_FAIL_LOG")
 public class PayrollIntegrationFailureLog extends BaseEntity {
 
-    private static final long serialVersionUID = 1L;
     private Long id;
     private String requestURL;
     private String requestBody;
@@ -52,7 +51,6 @@ public class PayrollIntegrationFailureLog extends BaseEntity {
 	this.requestURL = requestURL;
     }
 
-    @Basic
     @Column(name = "REQUEST_BODY")
     @Lob
     public String getRequestBody() {
@@ -63,7 +61,6 @@ public class PayrollIntegrationFailureLog extends BaseEntity {
 	this.requestBody = requestBody;
     }
 
-    @Basic
     @Column(name = "RESPONSE")
     @Lob
     public String getResponse() {

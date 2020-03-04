@@ -39,7 +39,6 @@ public class PayrollEngineService extends BaseService {
     private static Map<String, String> employeeIdMapping;
     private static Map<String, String> transactionIdMapping;
     private static Integer integrationFlag;
-    private static PayrollIntegrationFailureLog payrollIntegrationFailureLog;
 
     public static void init() {
 	employeeIdMapping = new HashMap<String, String>();
@@ -51,12 +50,12 @@ public class PayrollEngineService extends BaseService {
 	    transactionIdMapping.put(transactionId.getTableName(), transactionId.getTransactionIdColumnName());
 	}
 	integrationFlag = ETRConfigurationService.getIntegrationWithAllowanceAndDeductionFlag();
-	payrollIntegrationFailureLog = new PayrollIntegrationFailureLog();
     }
 
     public static void doPayrollIntegration(Long adminDecisionId, Long categoryId, String executionDateString, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, String tableName, CustomSession... useSession) throws BusinessException {
 	try {
 	    Log4jService.traceInfo(PayrollEngineService.class, "Start of doPayrollIntegration() method");
+	    PayrollIntegrationFailureLog payrollIntegrationFailureLog = new PayrollIntegrationFailureLog();
 	    payrollIntegrationFailureLog.setDecisionNumber(adminDecisionEmployeeDataList.get(0).getDecisionNumber());
 	    payrollIntegrationFailureLog.setDecisionDate(HijriDateService.getHijriDate(HijriDateService.gregToHijriDateString(decisionDateString)));
 	    payrollIntegrationFailureLog.setTableName(tableName);
@@ -69,19 +68,19 @@ public class PayrollEngineService extends BaseService {
 
 	    if (adminDecision.getIntegrationTypeFlag() == IntegrationTypeFlagEnum.NO_INTEGRATON.getCode())
 		return;
-	    String adminDecisionVariables = PayrollRestClient.getAdminDecisionVariables(adminDecision.getIntegrationTypeFlag(), adminDecision.getId(), categoryId, executionDateString);
+	    String adminDecisionVariables = PayrollRestClient.getAdminDecisionVariables(adminDecision.getIntegrationTypeFlag(), adminDecision.getId(), categoryId, executionDateString, payrollIntegrationFailureLog);
 	    Log4jService.traceInfo(PayrollEngineService.class, "adminDecisionVariables: " + adminDecisionVariables);
 	    if (adminDecisionVariables == null)
 		return;
-	    List<AdminDecisionResponse> adminDecisionList = getAdminDecisionVariablesMap(adminDecisionVariables, useSession);
+	    List<AdminDecisionResponse> adminDecisionList = getAdminDecisionVariablesMap(adminDecisionVariables, payrollIntegrationFailureLog, useSession);
 	    if (adminDecisionList == null)
 		return;
 	    Log4jService.traceInfo(PayrollEngineService.class, "adminDecisionList successfully created");
-	    JsonObject applyAdminDecisionBody = getApplyAdminDecisionBody(adminDecisionList, adminDecisionEmployeeDataList, unitId, decisionDateString, adminDecision.getId(), categoryId, useSession);
+	    JsonObject applyAdminDecisionBody = getApplyAdminDecisionBody(adminDecisionList, adminDecisionEmployeeDataList, unitId, decisionDateString, adminDecision.getId(), categoryId, payrollIntegrationFailureLog, useSession);
 	    if (applyAdminDecisionBody == null)
 		return;
 	    Log4jService.traceInfo(PayrollEngineService.class, "applyAdminDecisionBody: " + applyAdminDecisionBody.toString());
-	    PayrollRestClient.applyAdminDecision(adminDecision.getIntegrationTypeFlag(), applyAdminDecisionBody);
+	    PayrollRestClient.applyAdminDecision(adminDecision.getIntegrationTypeFlag(), applyAdminDecisionBody, payrollIntegrationFailureLog);
 	    Log4jService.traceInfo(PayrollEngineService.class, "End of doPayrollIntegration() method");
 	} catch (BusinessException e) {
 	    throw new BusinessException(e.getMessage());
@@ -94,7 +93,7 @@ public class PayrollEngineService extends BaseService {
 	return integrationFlag;
     }
 
-    private static List<AdminDecisionResponse> getAdminDecisionVariablesMap(String adminDecisionVariables, CustomSession... useSession) throws DatabaseException {
+    private static List<AdminDecisionResponse> getAdminDecisionVariablesMap(String adminDecisionVariables, PayrollIntegrationFailureLog payrollIntegrationFailureLog, CustomSession... useSession) throws DatabaseException {
 	try {
 	    List<AdminDecisionResponse> adminDecisionsList = new ArrayList<AdminDecisionResponse>();
 	    JsonReader jsonReader = Json.createReader(new StringReader(adminDecisionVariables));
@@ -123,12 +122,12 @@ public class PayrollEngineService extends BaseService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    Log4jService.traceInfo(PayrollEngineService.class, "Exception: " + e.getMessage());
-	    addPayrollIntegrationFailureReport(useSession);
+	    addPayrollIntegrationFailureReport(payrollIntegrationFailureLog, useSession);
 	    return null;
 	}
     }
 
-    private static JsonObject getApplyAdminDecisionBody(List<AdminDecisionResponse> adminDecisionList, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, Long adminDecisionId, Long categoryId, CustomSession... useSession) throws DatabaseException {
+    private static JsonObject getApplyAdminDecisionBody(List<AdminDecisionResponse> adminDecisionList, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, Long adminDecisionId, Long categoryId, PayrollIntegrationFailureLog payrollIntegrationFailureLog, CustomSession... useSession) throws DatabaseException {
 	try {
 	    Log4jService.traceInfo(PayrollEngineService.class, "start of getApplyAdminDecisionBody() method");
 	    if (adminDecisionEmployeeDataList == null || adminDecisionEmployeeDataList.size() == 0) {
@@ -263,7 +262,7 @@ public class PayrollEngineService extends BaseService {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    Log4jService.traceInfo(PayrollEngineService.class, "Exception: " + e.getMessage());
-	    addPayrollIntegrationFailureReport(useSession);
+	    addPayrollIntegrationFailureReport(payrollIntegrationFailureLog, useSession);
 	    return null;
 	}
 
@@ -294,15 +293,7 @@ public class PayrollEngineService extends BaseService {
 	}
     }
 
-    public static PayrollIntegrationFailureLog getPayrollIntegrationFailureLog() {
-	return payrollIntegrationFailureLog;
-    }
-
-    public static void setPayrollIntegrationFailureLog(PayrollIntegrationFailureLog payrollIntegrationFailureLog) {
-	PayrollEngineService.payrollIntegrationFailureLog = payrollIntegrationFailureLog;
-    }
-
-    public static void addPayrollIntegrationFailureReport(CustomSession... useSession) throws DatabaseException {
+    public static void addPayrollIntegrationFailureReport(PayrollIntegrationFailureLog payrollIntegrationFailureLog, CustomSession... useSession) throws DatabaseException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
