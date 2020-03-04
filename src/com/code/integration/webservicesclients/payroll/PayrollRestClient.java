@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.code.dal.CustomSession;
+import com.code.dal.orm.integration.payroll.PayrollIntegrationFailureLog;
 import com.code.enums.FlagsEnum;
 import com.code.enums.IntegrationTypeFlagEnum;
 import com.code.exceptions.BusinessException;
@@ -63,7 +64,7 @@ public class PayrollRestClient {
 	}
     }
 
-    public static String getAdminDecisionVariables(Integer integrationTypeFlag, Long adminDecisionId, Long categoryId, String executionDateString, CustomSession... useSession) throws DatabaseException {
+    public static String getAdminDecisionVariables(Integer integrationTypeFlag, Long adminDecisionId, Long categoryId, String executionDateString, PayrollIntegrationFailureLog payrollIntegrationFailureLog, CustomSession... useSession) throws DatabaseException {
 	Response response = null;
 	WebTarget webTarget = null;
 	String responseString = "";
@@ -86,6 +87,8 @@ public class PayrollRestClient {
 		response = webTarget.request().get();
 		responseString = response == null ? null : response.readEntity(String.class);
 	    }
+	    payrollIntegrationFailureLog.setRequestURL(webTarget.getUri().toString());
+	    payrollIntegrationFailureLog.setResponse(responseString);
 	    if (response.getStatus() != Status.OK.getStatusCode()) {
 		Log4jService.traceInfo(PayrollRestClient.class, "Error: " + responseString);
 		throw new BusinessException("error_payrollServiceExecutionError");
@@ -94,19 +97,16 @@ public class PayrollRestClient {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    Log4jService.traceInfo(PayrollRestClient.class, "Error in retrieving AdminDecisionVariables");
-	    PayrollEngineService.getPayrollIntegrationFailureLog().setRequestURL(webTarget.getUri().toString());
-	    PayrollEngineService.getPayrollIntegrationFailureLog().setResponse(responseString);
-	    PayrollEngineService.addPayrollIntegrationFailureReport(useSession);
+	    PayrollEngineService.addPayrollIntegrationFailureReport(payrollIntegrationFailureLog, useSession);
 	    return null;
 	}
     }
 
-    public static void applyAdminDecision(Integer integrationTypeFlag, JsonObject body, CustomSession... useSession) throws DatabaseException {
+    public static void applyAdminDecision(Integer integrationTypeFlag, JsonObject body, PayrollIntegrationFailureLog payrollIntegrationFailureLog, CustomSession... useSession) throws DatabaseException {
 	Response response = null;
 	WebTarget webTarget = null;
 	String responseString = "";
 	try {
-	    PayrollEngineService.getPayrollIntegrationFailureLog().setRequestBody(body.toString());
 	    if (esbEnabledFlag != null && esbEnabledFlag.equals(FlagsEnum.ON.getCode())) {
 		webTarget = client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? esbAllowanceRestServicesApplyAdminDecisionUrl : esbPayrollRestServicesApplyAdminDecisionUrl);
 		response = webTarget.request()
@@ -121,6 +121,9 @@ public class PayrollRestClient {
 			.post(Entity.entity(body, MediaType.APPLICATION_JSON + "; charset=utf-8"));
 		responseString = response == null ? null : response.readEntity(String.class);
 	    }
+	    payrollIntegrationFailureLog.setRequestBody(body.toString());
+	    payrollIntegrationFailureLog.setRequestURL(webTarget.getUri().toString());
+	    payrollIntegrationFailureLog.setResponse(responseString);
 	    if (response.getStatus() != Status.OK.getStatusCode()) {
 		Log4jService.traceInfo(PayrollRestClient.class, "Error: " + responseString);
 		throw new BusinessException("error_payrollServiceExecutionError");
@@ -128,9 +131,7 @@ public class PayrollRestClient {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    Log4jService.traceInfo(PayrollRestClient.class, "Error in applyAdminDecision");
-	    PayrollEngineService.getPayrollIntegrationFailureLog().setRequestURL(webTarget.getUri().toString());
-	    PayrollEngineService.getPayrollIntegrationFailureLog().setResponse(responseString);
-	    PayrollEngineService.addPayrollIntegrationFailureReport(useSession);
+	    PayrollEngineService.addPayrollIntegrationFailureReport(payrollIntegrationFailureLog, useSession);
 	}
     }
 
