@@ -5,25 +5,34 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.code.dal.orm.BaseEntity;
+
 @Entity
 @Table(name = "HCM_PAYROLL_INTEG_FAIL_LOG")
-public class PayrollIntegrationFailureLog {
+public class PayrollIntegrationFailureLog extends BaseEntity {
 
+    private static final long serialVersionUID = 1L;
     private Long id;
     private String requestURL;
     private String requestBody;
     private String response;
-    private Long transactionId;
     private String tableName;
     private Date requestDate;
+    private String decisionNumber;
+    private Date decisionDate;
 
+    @SequenceGenerator(name = "HCMPayrollIntgFailSeq",
+	    sequenceName = "HCM_PAYROLL_INTG_FAIL_SEQ")
     @Id
+    @GeneratedValue(generator = "HCMPayrollIntgFailSeq")
     @Column(name = "ID")
     public Long getId() {
 	return id;
@@ -66,16 +75,6 @@ public class PayrollIntegrationFailureLog {
     }
 
     @Basic
-    @Column(name = "TRANSACTION_ID")
-    public Long getTransactionId() {
-	return transactionId;
-    }
-
-    public void setTransactionId(Long transactionId) {
-	this.transactionId = transactionId;
-    }
-
-    @Basic
     @Column(name = "TABLE_NAME")
     public String getTableName() {
 	return tableName;
@@ -94,6 +93,27 @@ public class PayrollIntegrationFailureLog {
 
     public void setRequestDate(Date requestDate) {
 	this.requestDate = requestDate;
+    }
+
+    @Basic
+    @Column(name = "DECISION_NUMBER")
+    public String getDecisionNumber() {
+	return decisionNumber;
+    }
+
+    public void setDecisionNumber(String decisionNumber) {
+	this.decisionNumber = decisionNumber;
+    }
+
+    @Basic
+    @Column(name = "DECISION_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getDecisionDate() {
+	return decisionDate;
+    }
+
+    public void setDecisionDate(Date decisionDate) {
+	this.decisionDate = decisionDate;
     }
 
 }
