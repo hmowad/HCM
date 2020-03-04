@@ -523,7 +523,7 @@ public class EmployeesService extends BaseService {
 	EmployeeData employee = EmployeesService.getEmployeeData(employeeId);
 	List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), null, null, gregSysDateString, gregSysDateString, System.currentTimeMillis() + "", null)));
 	if (employee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()))
-	    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_REGISTRATION.getCode(), CategoriesEnum.OFFICERS.getCode(), gregSysDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : employee.getPhysicalUnitId(), gregSysDateString);
+	    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_REGISTRATION.getCode(), CategoriesEnum.OFFICERS.getCode(), gregSysDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : employee.getPhysicalUnitId(), gregSysDateString, DataAccess.getTableName(Employee.class));
     }
 
     public static EmployeeData getEmployeeDirectManager(long employeeId) throws BusinessException {

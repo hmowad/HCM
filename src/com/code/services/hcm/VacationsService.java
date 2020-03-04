@@ -169,7 +169,7 @@ public class VacationsService extends BaseService {
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(
 		    Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), request.getVacationId(), null, gregVacationStartDateString, gregVacationEndDateString, requestDecisionNumber, originalDecisionNumber)));
 	    session.flushTransaction();
-	    PayrollEngineService.doPayrollIntegration(adminDecisionId, vacationBeneficiary.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, session);
+	    PayrollEngineService.doPayrollIntegration(adminDecisionId, vacationBeneficiary.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(Vacation.class), session);
 	}
     }
 

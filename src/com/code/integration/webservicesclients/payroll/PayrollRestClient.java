@@ -6,15 +6,19 @@ import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.code.dal.CustomSession;
 import com.code.enums.FlagsEnum;
 import com.code.enums.IntegrationTypeFlagEnum;
 import com.code.exceptions.BusinessException;
+import com.code.exceptions.DatabaseException;
 import com.code.services.config.ETRConfigurationService;
+import com.code.services.integration.PayrollEngineService;
 import com.code.services.util.Log4jService;
 
 public class PayrollRestClient {
@@ -59,51 +63,74 @@ public class PayrollRestClient {
 	}
     }
 
-    public static String getAdminDecisionVariables(Integer integrationTypeFlag, Long adminDecisionId, Long categoryId, String executionDateString) throws BusinessException {
+    public static String getAdminDecisionVariables(Integer integrationTypeFlag, Long adminDecisionId, Long categoryId, String executionDateString, CustomSession... useSession) throws DatabaseException {
+	Response response = null;
+	WebTarget webTarget = null;
+	String responseString = "";
 	try {
 	    Log4jService.traceInfo(PayrollRestClient.class, "Start of getAdminDecisionVariables() method");
-	    if (esbEnabledFlag != null && esbEnabledFlag.equals(FlagsEnum.ON.getCode()))
-		return client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? esbAllowanceRestServicesGetAdminDecisionUrl : esbPayrollRestServicesGetAdminDecisionUrl)
+	    if (esbEnabledFlag != null && esbEnabledFlag.equals(FlagsEnum.ON.getCode())) {
+		webTarget = client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? esbAllowanceRestServicesGetAdminDecisionUrl : esbPayrollRestServicesGetAdminDecisionUrl)
 			.queryParam("adminDecisionId", adminDecisionId)
 			.queryParam("categoryId", categoryId)
-			.queryParam("executionDate", executionDateString).request()
+			.queryParam("executionDate", executionDateString);
+		response = webTarget.request()
 			.header(HttpHeaders.AUTHORIZATION, ESBAuthorizationHeaderValue)
-			.get(String.class);
-	    else
-		return client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? allowanceRestServicesGetAdminDecisionUrl : payrollRestServicesGetAdminDecisionUrl)
+			.get();
+		responseString = response == null ? null : response.readEntity(String.class);
+	    } else {
+		webTarget = client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? allowanceRestServicesGetAdminDecisionUrl : payrollRestServicesGetAdminDecisionUrl)
 			.queryParam("adminDecisionId", adminDecisionId)
 			.queryParam("categoryId", categoryId)
-			.queryParam("executionDate", executionDateString).request().get(String.class);
+			.queryParam("executionDate", executionDateString);
+		response = webTarget.request().get();
+		responseString = response == null ? null : response.readEntity(String.class);
+	    }
+	    if (response.getStatus() != Status.OK.getStatusCode()) {
+		Log4jService.traceInfo(PayrollRestClient.class, "Error: " + responseString);
+		throw new BusinessException("error_payrollServiceExecutionError");
+	    }
+	    return responseString;
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    Log4jService.traceInfo(PayrollRestClient.class, "Error in retrieving AdminDecisionVariables");
-	    throw new BusinessException("error_adminDecisionParametersError");
+	    PayrollEngineService.getPayrollIntegrationFailureLog().setRequestURL(webTarget.getUri().toString());
+	    PayrollEngineService.getPayrollIntegrationFailureLog().setResponse(responseString);
+	    PayrollEngineService.addPayrollIntegrationFailureReport(useSession);
+	    return null;
 	}
     }
 
-    public static void applyAdminDecision(Integer integrationTypeFlag, JsonObject body) throws BusinessException {
+    public static void applyAdminDecision(Integer integrationTypeFlag, JsonObject body, CustomSession... useSession) throws DatabaseException {
+	Response response = null;
+	WebTarget webTarget = null;
+	String responseString = "";
 	try {
-	    Response response;
-
-	    if (esbEnabledFlag != null && esbEnabledFlag.equals(FlagsEnum.ON.getCode()))
-		response = client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? esbAllowanceRestServicesApplyAdminDecisionUrl : esbPayrollRestServicesApplyAdminDecisionUrl)
-			.request()
+	    PayrollEngineService.getPayrollIntegrationFailureLog().setRequestBody(body.toString());
+	    if (esbEnabledFlag != null && esbEnabledFlag.equals(FlagsEnum.ON.getCode())) {
+		webTarget = client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? esbAllowanceRestServicesApplyAdminDecisionUrl : esbPayrollRestServicesApplyAdminDecisionUrl);
+		response = webTarget.request()
 			.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
 			.header(HttpHeaders.AUTHORIZATION, ESBAuthorizationHeaderValue)
 			.post(Entity.entity(body, MediaType.APPLICATION_JSON + "; charset=utf-8"));
-	    else
-		response = client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? allowanceRestServicesApplyAdminDecisionUrl : payrollRestServicesApplyAdminDecisionUrl)
-			.request()
+		responseString = response == null ? null : response.readEntity(String.class);
+	    } else {
+		webTarget = client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? allowanceRestServicesApplyAdminDecisionUrl : payrollRestServicesApplyAdminDecisionUrl);
+		response = webTarget.request()
 			.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
 			.post(Entity.entity(body, MediaType.APPLICATION_JSON + "; charset=utf-8"));
+		responseString = response == null ? null : response.readEntity(String.class);
+	    }
 	    if (response.getStatus() != Status.OK.getStatusCode()) {
-		Log4jService.traceInfo(PayrollRestClient.class, "Error: " + response.readEntity(String.class));
+		Log4jService.traceInfo(PayrollRestClient.class, "Error: " + responseString);
 		throw new BusinessException("error_payrollServiceExecutionError");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    Log4jService.traceInfo(PayrollRestClient.class, "Error in applyAdminDecision");
-	    throw new BusinessException("error_payrollServiceExecutionError");
+	    PayrollEngineService.getPayrollIntegrationFailureLog().setRequestURL(webTarget.getUri().toString());
+	    PayrollEngineService.getPayrollIntegrationFailureLog().setResponse(responseString);
+	    PayrollEngineService.addPayrollIntegrationFailureReport(useSession);
 	}
     }
 

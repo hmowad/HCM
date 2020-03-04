@@ -396,7 +396,7 @@ public class MovementsService extends BaseService {
 		String gregDecisionDateString = HijriDateService.hijriToGregDateString(movementTransactions.get(0).getDecisionDateString());
 		if (session != null)
 		    session.flushTransaction();
-		PayrollEngineService.doPayrollIntegration(adminDecision, movementTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, (movementTransactions.get(0).getUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : movementTransactions.get(0).getUnitId()), gregDecisionDateString, session);
+		PayrollEngineService.doPayrollIntegration(adminDecision, movementTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, (movementTransactions.get(0).getUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : movementTransactions.get(0).getUnitId()), gregDecisionDateString, DataAccess.getTableName(MovementTransaction.class), session);
 	    }
 	}
     }

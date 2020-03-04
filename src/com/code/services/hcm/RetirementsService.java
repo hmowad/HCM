@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
+import com.code.dal.orm.hcm.retirements.DisclaimerTransaction;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransactionData;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransactionDetail;
 import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
@@ -143,7 +144,7 @@ public class RetirementsService extends BaseService {
 	    Long employeeCategory = EmployeesService.getEmployeeMedicalStaffDataByEmpId(disclaimerTransactionData.getEmpId()) != null ? PayrollCategoriesEnum.MILITARY_MEDICAL_STAFF.getCode() : disclaimerTransactionData.getTransEmpCategoryId();
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(disclaimerTransactionData.getEmpId(), terminationTransactionData.getEmpName(), disclaimerTransactionData.getId(), null, gregTerminationDateString, gregTerminationDateString, disclaimerTransactionData.getDecisionNumber(), null)));
 	    session.flushTransaction();
-	    PayrollEngineService.doPayrollIntegration(disclaimerAdminDecisionId, employeeCategory, gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionData.getTransEmpUnitId(), gregDecisionDateString, session);
+	    PayrollEngineService.doPayrollIntegration(disclaimerAdminDecisionId, employeeCategory, gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionData.getTransEmpUnitId(), gregDecisionDateString, DataAccess.getTableName(DisclaimerTransaction.class), session);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(e.getMessage());
