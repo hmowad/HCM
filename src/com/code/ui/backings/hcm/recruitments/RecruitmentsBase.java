@@ -104,7 +104,7 @@ public class RecruitmentsBase extends WFBaseBacking implements Serializable {
 	    RecruitmentsWorkFlow.doRecruitmentSM(requester, instance, recruitmentsList, currentTask, WFActionFlagsEnum.APPROVE.getCode());
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	    return null;
 	}
     }

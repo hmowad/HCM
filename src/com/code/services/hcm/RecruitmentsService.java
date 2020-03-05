@@ -822,7 +822,7 @@ public class RecruitmentsService extends BaseService {
 
 		EmployeeData employee = EmployeesService.getEmployeeData(recruitmentTransactions.get(0).getEmployeeId());
 		if (employee == null)
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_noEmployeeDataForThisId", new Object[] { recruitmentTransactions.get(0).getEmployeeId() });
 
 		RecruitmentsService.addRecruitmentTransactions(recruitmentTransactions, processName, session);
 
@@ -848,7 +848,7 @@ public class RecruitmentsService extends BaseService {
 
 			employeeQualificationsData = EmployeesService.getEmployeeQualificationsByEmpId(emp.getEmpId());
 			if (employeeQualificationsData == null)
-			    throw new BusinessException("error_general");
+			    throw new BusinessException("error_noQualDataForEmployee", new Object[] { emp.getName() });
 
 			employeeQualificationsData.setCurGraduationPlaceDetailId(employeeQualificationsData.getRecGraduationPlaceDetailId());
 			employeeQualificationsData.setCurGraduationYear(employeeQualificationsData.getRecGraduationYear());
