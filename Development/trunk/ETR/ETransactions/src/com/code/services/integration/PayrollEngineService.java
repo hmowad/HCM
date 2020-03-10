@@ -301,6 +301,7 @@ public class PayrollEngineService extends BaseService {
 		session.beginTransaction();
 	    payrollIntegrationFailureLog.setRequestDate(new Date());
 	    DataAccess.addEntity(payrollIntegrationFailureLog, session);
+	    Log4jService.traceInfo(PayrollEngineService.class, "ERROR: payroll integration failure occured!! " + "id: " + payrollIntegrationFailureLog.getId());
 
 	    if (!isOpenedSession)
 		session.commitTransaction();

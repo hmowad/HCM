@@ -307,6 +307,10 @@ public class ETRConfigurationService extends BaseService {
 	return Integer.parseInt(getETRConfigByCode("MVT_MIN_PERIOD_BETWEEN_MOVEMENT_AND_SERVICE_TERMINATION_DUE_DATE").getValue());
     }
 
+    public static String getMovementTerminationJoiningApplyDate() {
+	return configurationMap.get("MVT_MOVE_TERMINATION_JOINING_APPLY_DATE");
+    }
+
     /*------------------------------------------------------Promotions Configurations------------------------------------------------------*/
     public static String[] getDrugsTestConfigInfo() {
 	return configurationMap.get("DRUGS_TEST_CONFIG_INFO").split(",");

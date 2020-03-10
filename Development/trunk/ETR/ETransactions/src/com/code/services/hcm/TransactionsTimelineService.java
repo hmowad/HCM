@@ -17,6 +17,7 @@ import com.code.enums.TransactionTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.services.BaseService;
+import com.code.services.config.ETRConfigurationService;
 import com.code.services.util.HijriDateService;
 
 /*
@@ -38,14 +39,19 @@ public class TransactionsTimelineService extends BaseService {
     private static List<TransactionTimeline> getMovementsTransactions(long employeeId) throws BusinessException {
 
 	List<MovementTransactionData> movementsTransactions = MovementsService.getMovementTransactionsHistory(employeeId);
+	List<TransactionTimeline> returnList = new ArrayList<>();
+	MovementTransactionData lastValidTrnForTerminationJoining = MovementsService.getLastValidMovementTransactionForReturnJoiningDate(employeeId, MovementTypesEnum.SUBJOIN.getCode(), ETRConfigurationService.getMovementTerminationJoiningApplyDate());
+	if (lastValidTrnForTerminationJoining != null) {
+	    returnList.add(constructSubjoinTerminationJoiningDateTransactionTimeline(lastValidTrnForTerminationJoining));
+	}
 	if (movementsTransactions.isEmpty()) {
-	    return new ArrayList<>();
+	    return returnList;
 	}
 
-	List<TransactionTimeline> returnList = new ArrayList<>();
 	for (int i = 0; i < movementsTransactions.size(); i++) {
 	    if (movementsTransactions.get(i).getTransactionTypeCode() == TransactionTypesEnum.MVT_NEW_DECISION.getCode() && movementsTransactions.get(i).getSuccessorDecisionEffectFlag() == null && HijriDateService.getHijriSysDate().before(movementsTransactions.get(i).getExecutionDate())) {
-		return constructFutureMovementTransactionTimeline(movementsTransactions.get(i));
+		returnList.addAll(constructFutureMovementTransactionTimeline(movementsTransactions.get(i)));
+		return returnList;
 	    } else if (movementsTransactions.get(i).getEndDate() != null && HijriDateService.getHijriSysDate().before(movementsTransactions.get(i).getEndDate())) {
 		TransactionTimeline transaction = consturctActiveTransactionTimeline(movementsTransactions.subList(i, movementsTransactions.size()));
 		if (transaction != null) {
@@ -105,6 +111,15 @@ public class TransactionsTimelineService extends BaseService {
 	}
 
 	return transactions;
+    }
+
+    private static TransactionTimeline constructSubjoinTerminationJoiningDateTransactionTimeline(MovementTransactionData movementsTransaction) {
+	TransactionTimeline transaction = new TransactionTimeline();
+	String period = calculatePeriod(movementsTransaction.getPeriodDays() == null ? "-" : movementsTransaction.getPeriodDays() + "", "-", movementsTransaction.getPeriodMonths() == null ? "-" : movementsTransaction.getPeriodMonths() + "");
+	transaction.setPeriod(period);
+	transaction.setTransactionTypeDescription(getMessage("label_subjoinTerminationJoiningDate"));
+	transaction.setDueDateString(movementsTransaction.getEndDateString());
+	return transaction;
     }
 
     private static TransactionTimeline consturctActiveTransactionTimeline(List<MovementTransactionData> movementsTransactions) {

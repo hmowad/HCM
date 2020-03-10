@@ -121,6 +121,8 @@ public class WFMovementData extends BaseEntity implements Serializable {
     private Boolean transferAllowanceFlagBoolean;
     private Date joiningDate;
     private String joiningDateString;
+    private Date returnJoiningDate;
+    private String returnJoiningDateString;
     private Long transactionId;
     private WFMovement wfMovement;
 
@@ -1072,6 +1074,31 @@ public class WFMovementData extends BaseEntity implements Serializable {
     public void setJoiningDateString(String joiningDateString) {
 	this.joiningDateString = joiningDateString;
 	this.joiningDate = HijriDateService.getHijriDate(joiningDateString);
+    }
+
+    @Basic
+    @Column(name = "RETURN_JOINING_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    @XmlTransient
+    public Date getReturnJoiningDate() {
+	return returnJoiningDate;
+    }
+
+    public void setReturnJoiningDate(Date returnJoiningDate) {
+	this.returnJoiningDate = returnJoiningDate;
+	this.returnJoiningDateString = HijriDateService.getHijriDateString(returnJoiningDate);
+	wfMovement.setReturnJoiningDate(returnJoiningDate);
+    }
+
+    @Transient
+    @XmlTransient
+    public String getReturnJoiningDateString() {
+	return returnJoiningDateString;
+    }
+
+    public void setReturnJoiningDateString(String returnJoiningDateString) {
+	this.returnJoiningDateString = returnJoiningDateString;
+	this.returnJoiningDate = HijriDateService.getHijriDate(returnJoiningDateString);
     }
 
     @Basic

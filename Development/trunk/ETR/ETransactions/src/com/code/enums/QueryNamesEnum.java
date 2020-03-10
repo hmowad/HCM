@@ -389,6 +389,7 @@ public enum QueryNamesEnum {
 
     HCM_GET_LAST_DEDUCTED_WORK_DATE("hcm_work_getLastDeductedWorkDate"),
     HCM_GET_LAST_MOVE_TRANSACTION_FOR_JOINING_DATE("hcm_movementTransactionData_getLastMovementTransactionForJoiningDate"),
+    HCM_GET_LAST_MOVE_TRANSACTION_FOR_RETURN_JOINING_DATE("hcm_movementTransactionData_getLastMovementTransactionForReturnJoiningDate"),
     HCM_GET_MOVEMENT_TRANSACTION_FOR_JOINING_REPORT("hcm_movementTransactionData_getMovementTransactionForJoiningReport"),
     /* ****************************************** Movement Workflow ********************************************* */
     WF_GET_WFMOVEMENT_BY_INSTANCE_ID("wf_movementData_getWFMovementDataByInstanceId"),

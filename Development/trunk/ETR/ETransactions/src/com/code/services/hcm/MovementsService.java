@@ -337,7 +337,9 @@ public class MovementsService extends BaseService {
 		    }
 		} else if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.SUBJOIN.getCode()) {
 		    if (movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
-			if (movementTransactions.get(0).getJoiningDate() != null)
+			if (movementTransactions.get(0).getReturnJoiningDate() != null)
+			    adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_RETURN_JOINING_DATE_REQUEST.getCode();
+			else if (movementTransactions.get(0).getJoiningDate() != null)
 			    adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_JOINING_DATE_REQUEST.getCode();
 			else {
 			    if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
@@ -390,7 +392,7 @@ public class MovementsService extends BaseService {
 		    String gregStartDateString = HijriDateService.hijriToGregDateString(movementTransactionData.getExecutionDateString());
 		    String gregEndDateString = HijriDateService.hijriToGregDateString(movementTransactionData.getEndDateString());
 		    EmployeeData employee = EmployeesService.getEmployeeData(movementTransactionData.getEmployeeId());
-		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(movementTransactionData.getEmployeeId(), employee.getName(), movementTransactionData.getId(), null, gregStartDateString, gregEndDateString, movementTransactionData.getDecisionNumber(), movementTransactionData.getBasedOnDecisionNumber()));
+		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(movementTransactionData.getEmployeeId(), employee.getName(), movementTransactionData.getId(), null, gregStartDateString, gregEndDateString, (movementTransactionData.getJoiningDate() != null || movementTransactionData.getReturnJoiningDate() != null) ? System.currentTimeMillis() + "" : movementTransactionData.getDecisionNumber(), movementTransactionData.getBasedOnDecisionNumber()));
 		}
 		String gregExecutionDateString = HijriDateService.hijriToGregDateString(movementTransactions.get(0).getExecutionDateString());
 		String gregDecisionDateString = HijriDateService.hijriToGregDateString(movementTransactions.get(0).getDecisionDateString());
@@ -2573,6 +2575,26 @@ public class MovementsService extends BaseService {
 	}
     }
 
+    public static MovementTransactionData getLastValidMovementTransactionForReturnJoiningDate(long employeeId, long movementTypeId, String applyDateString) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+
+	    qParams.put("P_EMP_ID", employeeId);
+	    qParams.put("P_MOVEMENT_TYPE_ID", movementTypeId);
+	    qParams.put("P_HIJRI_APPLY_DATE", applyDateString == null ? FlagsEnum.ALL.getCode() + "" : applyDateString);
+	    qParams.put("P_HIJRI_SYS_DATE", HijriDateService.getHijriSysDateString());
+
+	    List<MovementTransactionData> movementTransactions = DataAccess.executeNamedQuery(MovementTransactionData.class, QueryNamesEnum.HCM_GET_LAST_MOVE_TRANSACTION_FOR_RETURN_JOINING_DATE.getCode(), qParams);
+	    if (movementTransactions != null && movementTransactions.size() > 0) {
+		return movementTransactions.get(0);
+	    }
+	    return null;
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
     /**
      * Query to get the last valid movement transaction that can be followed by another transaction
      * 
@@ -3305,6 +3327,18 @@ public class MovementsService extends BaseService {
 	    doPayrollIntegration(list, isSessionOpened(useSession) ? useSession[0] : null);
     }
 
+    public static void handleMovementTrasactionReturnJoiningDate(long transactionId, Date returnJoiningDate, long loginUserId, CustomSession... useSession) throws BusinessException {
+	MovementTransactionData movementTransaction = getMovementTransactionById(transactionId);
+
+	movementTransaction.setReturnJoiningDate(returnJoiningDate);
+	List<MovementTransactionData> list = new ArrayList<MovementTransactionData>();
+	movementTransaction.getMovementTransaction().setSystemUser(loginUserId + ""); // For auditing.
+	list.add(movementTransaction);
+	updateMovementTransactions(list, useSession);
+	if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+	    doPayrollIntegration(list, isSessionOpened(useSession) ? useSession[0] : null);
+    }
+
     /**
      * Updates the transaction joining date, used in the employee file
      * 
@@ -3344,6 +3378,25 @@ public class MovementsService extends BaseService {
 	}
 	if (movementTransaction.getEndDate() != null && joiningDate.after(movementTransaction.getEndDate()))
 	    throw new BusinessException("error_movementJoiningDateCannotBeAfterEndDate");
+    }
+
+    public static void validateMovementTrasactionReturnJoiningDate(MovementTransactionData movementTransaction, Date returnJoiningDate) throws BusinessException {
+	if (movementTransaction == null)
+	    throw new BusinessException("error_general");
+
+	if (returnJoiningDate == null || !HijriDateService.isValidHijriDate(returnJoiningDate))
+	    throw new BusinessException("error_invalidHijriDate");
+
+	if (returnJoiningDate.after(HijriDateService.getHijriSysDate()))
+	    throw new BusinessException("error_movementJoiningDateCannotBeAfterSystemDate");
+
+	if (returnJoiningDate.before(movementTransaction.getExecutionDate())) {
+	    if (movementTransaction.getMovementTypeId() == MovementTypesEnum.MOVE.getCode())
+		throw new BusinessException("error_movingDateCannotBeBeforeExecutionDate");
+
+	    else if (movementTransaction.getMovementTypeId() == MovementTypesEnum.SUBJOIN.getCode())
+		throw new BusinessException("error_subReturnjoiningDateCannotBeBeforeExecutionDate");
+	}
     }
 
     /*

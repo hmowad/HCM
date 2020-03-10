@@ -43,6 +43,7 @@ public class Home extends BaseBacking {
     private VacationData lastVacation;
     private MovementTransactionData lastValidMovTrans;
     private MovementTransactionData lastValidSubjoinTran;
+    private MovementTransactionData lastValidSubjoinTranForTerminationJoining;
     private boolean showTransactionsTimelineScreenFlag;
 
     public Home() {
@@ -72,11 +73,11 @@ public class Home extends BaseBacking {
 
     private void calculateInboxCount() {
 	try {
-		if(eservicesFlag ==  FlagsEnum.ON.getCode()) {
-		    inboxCount = " ( " + EServicesBaseWorkFlowService.countWFTasks(this.loginEmpData.getEmpId(), FlagsEnum.OFF.getCode()) + " ) ";
-		} else {
-		    inboxCount = " ( " + BaseWorkFlow.countWFTasks(this.loginEmpData.getEmpId(), FlagsEnum.OFF.getCode()) + " ) ";
-		}
+	    if (eservicesFlag == FlagsEnum.ON.getCode()) {
+		inboxCount = " ( " + EServicesBaseWorkFlowService.countWFTasks(this.loginEmpData.getEmpId(), FlagsEnum.OFF.getCode()) + " ) ";
+	    } else {
+		inboxCount = " ( " + BaseWorkFlow.countWFTasks(this.loginEmpData.getEmpId(), FlagsEnum.OFF.getCode()) + " ) ";
+	    }
 	} catch (BusinessException e) {
 	    e.printStackTrace();
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -86,11 +87,11 @@ public class Home extends BaseBacking {
 
     private void calculateNotificationsCount() {
 	try {
-		if(eservicesFlag ==  FlagsEnum.ON.getCode()) {
-		    notificationsCount = " ( " + EServicesBaseWorkFlowService.countWFTasks(this.loginEmpData.getEmpId(), FlagsEnum.ON.getCode()) + " ) ";
-		} else {
-		    notificationsCount = " ( " + BaseWorkFlow.countWFTasks(this.loginEmpData.getEmpId(), FlagsEnum.ON.getCode()) + " ) ";
-		}
+	    if (eservicesFlag == FlagsEnum.ON.getCode()) {
+		notificationsCount = " ( " + EServicesBaseWorkFlowService.countWFTasks(this.loginEmpData.getEmpId(), FlagsEnum.ON.getCode()) + " ) ";
+	    } else {
+		notificationsCount = " ( " + BaseWorkFlow.countWFTasks(this.loginEmpData.getEmpId(), FlagsEnum.ON.getCode()) + " ) ";
+	    }
 	} catch (BusinessException e) {
 	    e.printStackTrace();
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -117,12 +118,12 @@ public class Home extends BaseBacking {
 
     public void calculateDelegationsCount() {
 	try {
-		ArrayList<Object> returnedCounts;
-		if(eservicesFlag ==  FlagsEnum.ON.getCode()) {
-			returnedCounts = (ArrayList<Object>) EServicesBaseWorkFlowService.countWFDelegations(this.loginEmpData.getEmpId());
-		} else {
-		    returnedCounts = (ArrayList<Object>) BaseWorkFlow.countWFDelegations(this.loginEmpData.getEmpId());
-		}
+	    ArrayList<Object> returnedCounts;
+	    if (eservicesFlag == FlagsEnum.ON.getCode()) {
+		returnedCounts = (ArrayList<Object>) EServicesBaseWorkFlowService.countWFDelegations(this.loginEmpData.getEmpId());
+	    } else {
+		returnedCounts = (ArrayList<Object>) BaseWorkFlow.countWFDelegations(this.loginEmpData.getEmpId());
+	    }
 	    delegationsCounts = (Object[]) (returnedCounts.get(0));
 	    for (int i = 0; i < delegationsCounts.length; i++) {
 		delegationsCounts[i] = " ( " + delegationsCounts[i] + " ) ";
@@ -179,6 +180,7 @@ public class Home extends BaseBacking {
 	    }
 	    lastValidMovTrans = MovementsService.getLastValidMovementTransactionForJoiningDate(loginEmpData.getEmpId(), MovementTypesEnum.MOVE.getCode());
 	    lastValidSubjoinTran = MovementsService.getLastValidMovementTransactionForJoiningDate(loginEmpData.getEmpId(), MovementTypesEnum.SUBJOIN.getCode());
+	    lastValidSubjoinTranForTerminationJoining = MovementsService.getLastValidMovementTransactionForReturnJoiningDate(loginEmpData.getEmpId(), MovementTypesEnum.SUBJOIN.getCode(), ETRConfigurationService.getMovementTerminationJoiningApplyDate());
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -306,6 +308,14 @@ public class Home extends BaseBacking {
 
     public void setLastValidSubjoinTran(MovementTransactionData lastValidSubjoinTran) {
 	this.lastValidSubjoinTran = lastValidSubjoinTran;
+    }
+
+    public MovementTransactionData getLastValidSubjoinTranForTerminationJoining() {
+	return lastValidSubjoinTranForTerminationJoining;
+    }
+
+    public void setLastValidSubjoinTranForTerminationJoining(MovementTransactionData lastValidSubjoinTranForTerminationJoining) {
+	this.lastValidSubjoinTranForTerminationJoining = lastValidSubjoinTranForTerminationJoining;
     }
 
     public boolean isShowTransactionsTimelineScreenFlag() {

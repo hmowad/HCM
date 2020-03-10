@@ -1559,7 +1559,10 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 	if (!wfMovementsRunningRequests.isEmpty())
 	    throw new BusinessException("error_conflictMovementsEmployee");
 
-	MovementsService.validateMovementTrasactionJoiningDate(MovementsService.getMovementTransactionById(movementRequest.getTransactionId()), movementRequest.getJoiningDate(), FlagsEnum.ON.getCode());
+	if (movementRequest.getReturnJoiningDate() != null)
+	    MovementsService.validateMovementTrasactionReturnJoiningDate(MovementsService.getMovementTransactionById(movementRequest.getTransactionId()), movementRequest.getReturnJoiningDate());
+	else
+	    MovementsService.validateMovementTrasactionJoiningDate(MovementsService.getMovementTransactionById(movementRequest.getTransactionId()), movementRequest.getJoiningDate(), FlagsEnum.ON.getCode());
 
 	CustomSession session = DataAccess.getSession();
 	try {
@@ -1602,7 +1605,10 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		EmployeeData nextDM = EmployeesService.getEmployeeDirectManager(dmTask.getOriginalId());
 
 		if (nextDM.getUnitTypeCode().intValue() == UnitTypesEnum.PRESIDENCY.getCode()) {
-		    MovementsService.handleMovementTrasactionJoiningDate(movementRequest.getTransactionId(), movementRequest.getJoiningDate(), dmTask.getOriginalId(), dmTask.getAssigneeId(), FlagsEnum.ON.getCode());
+		    if (movementRequest.getReturnJoiningDate() != null)
+			MovementsService.handleMovementTrasactionReturnJoiningDate(movementRequest.getTransactionId(), movementRequest.getReturnJoiningDate(), dmTask.getAssigneeId(), session);
+		    else
+			MovementsService.handleMovementTrasactionJoiningDate(movementRequest.getTransactionId(), movementRequest.getJoiningDate(), dmTask.getOriginalId(), dmTask.getAssigneeId(), FlagsEnum.ON.getCode(), session);
 		    closeWFInstanceByAction(requester.getEmpId(), instance, dmTask, WFTaskActionsEnum.APPROVE.getCode(), new Long[] { movementRequest.getEmployeeId() }, session);
 		} else {
 		    long originalId = nextDM.getEmpId();
