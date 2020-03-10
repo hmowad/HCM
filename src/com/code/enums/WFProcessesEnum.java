@@ -193,6 +193,7 @@ public enum WFProcessesEnum {
     SOLDIERS_MOVE_JOINING_DATE_REQUEST(457),
     OFFICERS_SUBJOIN_JOINING_DATE_REQUEST(458),
     SOLDIERS_SUBJOIN_JOINING_DATE_REQUEST(459),
+    OFFICERS_SUBJOIN_RETURN_JOINING_DATE_REQUEST(460),
 
     OFFICERS_MISSION(810),
     SOLDIERS_MISSION(820),
@@ -295,7 +296,7 @@ public enum WFProcessesEnum {
     // ---------------------------General Notifications------------------------------------------
     NOTIFICATION_MESSAGE(2000),
     GENERAL_MESSAGE(2010),
-    
+
     // ---------------------------ESERVICES------------------------------------------
     ESERVICES_NOTIFICATIONS(100);
 

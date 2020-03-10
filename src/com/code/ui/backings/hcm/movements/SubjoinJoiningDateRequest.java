@@ -19,7 +19,7 @@ import com.code.services.workflow.hcm.MovementsWorkFlow;
 @ViewScoped
 public class SubjoinJoiningDateRequest extends MovementsBase {
     /**
-     * 1 for Officers, 2 for Soldiers and 3 for Persons
+     * 1 for Officers subjoin joining, 2 for Soldiers subjoin joining and 3 for Officers subjoin return joining
      **/
     private MovementTransactionData lastValidTran;
 
@@ -36,6 +36,10 @@ public class SubjoinJoiningDateRequest extends MovementsBase {
 		case 2:
 		    setScreenTitle(getMessage("title_soldiersSubjoinJoiningDateRequest"));
 		    this.processId = WFProcessesEnum.SOLDIERS_SUBJOIN_JOINING_DATE_REQUEST.getCode();
+		    break;
+		case 3:
+		    setScreenTitle(getMessage("title_officersSubjoinTerminationJoiningDateRequest"));
+		    this.processId = WFProcessesEnum.OFFICERS_SUBJOIN_RETURN_JOINING_DATE_REQUEST.getCode();
 		    break;
 
 		default:
@@ -65,9 +69,20 @@ public class SubjoinJoiningDateRequest extends MovementsBase {
 	    if (mode == 2 && beneficiary.getCategoryId() == CategoriesEnum.OFFICERS.getCode())
 		return;
 
-	    lastValidTran = MovementsService.getLastValidMovementTransactionForJoiningDate(wfMovement.getEmployeeId(), MovementTypesEnum.SUBJOIN.getCode());
-	    if (lastValidTran == null)
-		throw new BusinessException("error_noValidMovementTransactionForEmployee");
+	    if (mode == 3 && beneficiary.getCategoryId() != CategoriesEnum.OFFICERS.getCode())
+		return;
+
+	    if (mode == 3)
+		lastValidTran = MovementsService.getLastValidMovementTransactionForReturnJoiningDate(wfMovement.getEmployeeId(), MovementTypesEnum.SUBJOIN.getCode(), null);
+	    else
+		lastValidTran = MovementsService.getLastValidMovementTransactionForJoiningDate(wfMovement.getEmployeeId(), MovementTypesEnum.SUBJOIN.getCode());
+
+	    if (lastValidTran == null) {
+		if (mode == 3)
+		    throw new BusinessException("error_thereIsNoLastValidTrans");
+		else
+		    throw new BusinessException("error_noValidMovementTransactionForEmployee");
+	    }
 
 	    wfMovement = MovementsWorkFlow.constructWFMovementForJoiningDate(wfMovement.getEmployeeId(), MovementTypesEnum.SUBJOIN.getCode(), lastValidTran.getId());
 	} catch (BusinessException e) {

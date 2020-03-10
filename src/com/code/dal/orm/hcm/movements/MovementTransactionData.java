@@ -134,6 +134,19 @@ import com.code.services.util.HijriDateService;
 			" and (m.movementTypeId = :P_MOVEMENT_TYPE_ID)" +
 			" and (m.joiningDate is null) " +
 			" and (m.transactionTypeCode = 1) "),
+	@NamedQuery(name = "hcm_movementTransactionData_getLastMovementTransactionForReturnJoiningDate",
+		query = "select m from MovementTransactionData m where " +
+			" (m.employeeId = :P_EMP_ID) " +
+			" and m.executionDate= (select max(mt.executionDate) from MovementTransactionData mt where " +
+			" (mt.employeeId = :P_EMP_ID) " +
+			" and (mt.movementTypeId <> 6) " +
+			" and (mt.effectFlag = 1))" +
+			" and (  (m.transactionTypeCode = 1 and m.endDate < to_date(:P_HIJRI_SYS_DATE, 'MI/MM/YYYY') and ((m.locationFlag = 1) or (m.locationFlag = 0 and (m.joiningDate is not null)))) " +
+			"     or (m.transactionTypeCode = 2 and m.endDate < to_date(:P_HIJRI_SYS_DATE, 'MI/MM/YYYY')) " +
+			"     or (m.transactionTypeCode = 3))" +
+			" and (m.movementTypeId = :P_MOVEMENT_TYPE_ID) " +
+			" and (:P_HIJRI_APPLY_DATE = '-1' or m.endDate > to_date(:P_HIJRI_APPLY_DATE, 'MI/MM/YYYY'))" +
+			" and (m.returnJoiningDate is null)"),
 	@NamedQuery(name = "hcm_movementTransactionData_getMovementTransactionForJoiningReport",
 		query = "select m from MovementTransactionData m where " +
 			"(m.employeeId = :P_EMPLOYEE_ID) " +
@@ -187,6 +200,8 @@ public class MovementTransactionData extends BaseEntity implements Serializable 
     private String endDateString;
     private Date joiningDate;
     private String joiningDateString;
+    private Date returnJoiningDate;
+    private String returnJoiningDateString;
     private Integer periodDays;
     private Integer periodMonths;
     private Integer locationFlag;
@@ -708,6 +723,32 @@ public class MovementTransactionData extends BaseEntity implements Serializable 
 	this.joiningDateString = joiningDateString;
 	this.joiningDate = HijriDateService.getHijriDate(joiningDateString);
 	movementTransaction.setJoiningDateString(joiningDateString);
+    }
+
+    @Basic
+    @Column(name = "RETURN_JOINING_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    @XmlTransient
+    public Date getReturnJoiningDate() {
+	return returnJoiningDate;
+    }
+
+    public void setReturnJoiningDate(Date returnJoiningDate) {
+	this.returnJoiningDate = returnJoiningDate;
+	this.returnJoiningDateString = HijriDateService.getHijriDateString(returnJoiningDate);
+	movementTransaction.setReturnJoiningDate(returnJoiningDate);
+    }
+
+    @Transient
+    @XmlTransient
+    public String getReturnJoiningDateString() {
+	return returnJoiningDateString;
+    }
+
+    public void setReturnJoiningDateString(String returnJoiningDateString) {
+	this.returnJoiningDateString = returnJoiningDateString;
+	this.returnJoiningDate = HijriDateService.getHijriDate(returnJoiningDateString);
+	movementTransaction.setReturnJoiningDateString(returnJoiningDateString);
     }
 
     @Basic

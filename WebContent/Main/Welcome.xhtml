@@ -314,7 +314,7 @@
 						<td width="100%" height="10" />
 					</tr>
 
-					<h:panelGroup rendered="#{home.loginEmpData.statusId &lt; 70 and ((home.socialIdRenewalPeriodWarning or home.socialIdExpiredWarning) or home.lastVacation != null or home.lastValidMovTrans != null or home.lastValidSubjoinTran != null)}">
+					<h:panelGroup rendered="#{home.loginEmpData.statusId &lt; 70 and ((home.socialIdRenewalPeriodWarning or home.socialIdExpiredWarning) or home.lastVacation != null or home.lastValidMovTrans != null or home.lastValidSubjoinTran != null or home.lastValidSubjoinTranForTerminationJoining != null)}">
 						<tr>
 							<td width="100%">
 								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
@@ -370,6 +370,17 @@
 											<td>
 												<h:outputText value="#{msgs.notify_pleaseProvideSubjoinJoining}" styleClass="remarkMessage" />
 												<a target="_blank" href="#{request.contextPath}/Movements/SubjoinJoiningDateRequest.jsf?mode=#{employeesDataView.loginEmpData.categoryId}" style="text-decoration: none;">
+													<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_details}"></i>
+												</a>
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{home.lastValidSubjoinTranForTerminationJoining != null}">
+										<tr>
+											<th width="10%">#{msgs.label_subjoinTerminationJoiningDate}</th>
+											<td>
+												<h:outputText value="#{msgs.notify_pleaseProvideSubjoinTerminationJoining}" styleClass="remarkMessage" />
+												<a target="_blank" href="#{request.contextPath}/Movements/SubjoinJoiningDateRequest.jsf?mode=3" style="text-decoration: none;">
 													<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_details}"></i>
 												</a>
 											</td>

@@ -95,6 +95,7 @@ public class WFMovement extends AuditEntity implements Serializable, InsertableA
     private Integer sequentialMvtFlag;
     private Integer transferAllowanceFlag;
     private Date joiningDate;
+    private Date returnJoiningDate;
     private Long transactionId;
 
     @Id
@@ -586,6 +587,17 @@ public class WFMovement extends AuditEntity implements Serializable, InsertableA
 
     public void setJoiningDate(Date joiningDate) {
 	this.joiningDate = joiningDate;
+    }
+
+    @Basic
+    @Column(name = "RETURN_JOINING_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getReturnJoiningDate() {
+	return returnJoiningDate;
+    }
+
+    public void setReturnJoiningDate(Date returnJoiningDate) {
+	this.returnJoiningDate = returnJoiningDate;
     }
 
     @Basic
