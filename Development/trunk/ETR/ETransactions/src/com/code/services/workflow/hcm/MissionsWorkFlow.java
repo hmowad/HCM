@@ -736,39 +736,79 @@ public class MissionsWorkFlow extends BaseWorkFlow {
      */
 
     private static String adjustDirectedToJobName(EmployeeData missionEmp, EmployeeData signManager) throws BusinessException {
+//	long categoryId = missionEmp.getCategoryId();
+//	long regionId = missionEmp.getPhysicalRegionId();
+//
+//	if (regionId == RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) { // General region.
+//	    Long officialManagerId;
+//	    if (categoryId == CategoriesEnum.OFFICERS.getCode())
+//		officialManagerId = UnitsService.getUnitById(getWFPosition(WFPositionsEnum.MILITARY_AFFAIRS_ASSISTANT.getCode(), regionId).getUnitId()).getOfficialManagerId();
+//
+//	    else if (categoryId == CategoriesEnum.SOLDIERS.getCode())
+//		officialManagerId = UnitsService.getUnitById(getWFPosition(WFPositionsEnum.SOLDIERS_HUMAN_RESOURCES_MANAGER.getCode(), regionId).getUnitId()).getOfficialManagerId();
+//
+//	    else
+//		return null;
+//
+//	    if (officialManagerId == null)
+//		throw new BusinessException("error_notValidPosition");
+//	    return EmployeesService.getEmployeesByEmpsIds(new Long[] { officialManagerId }).get(0).getJobDesc();
+//	}
+//	// Another region.
+//	else if (categoryId == CategoriesEnum.OFFICERS.getCode() || categoryId == CategoriesEnum.SOLDIERS.getCode()) {
+//	    if (signManager.getPhysicalRegionId().longValue() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) {
+//		Long officialManagerId;
+//		if (signManager.getPhysicalRegionId().equals(RegionsEnum.ACADEMY.getCode()))
+//		    officialManagerId = UnitsService.getUnitById(getWFPosition(WFPositionsEnum.REGION_ADMINISTRATION_AND_FINANCIAL_MANAGER.getCode(), signManager.getPhysicalRegionId()).getUnitId()).getOfficialManagerId();
+//		else
+//		    officialManagerId = UnitsService.getUnitById(getWFPosition(WFPositionsEnum.REGION_MISSION_DIRECTED_TO.getCode(), signManager.getPhysicalRegionId()).getUnitId()).getOfficialManagerId();
+//
+//		if (officialManagerId == null)
+//		    throw new BusinessException("error_notValidPosition");
+//		return EmployeesService.getEmployeesByEmpsIds(new Long[] { officialManagerId }).get(0).getJobDesc();
+//
+//	    } else {
+//		return UnitsService.getUnitsByTypeAndRegion(UnitTypesEnum.REGION_COMMANDER.getCode(), regionId).get(0).getName();
+//	    }
+//	}
+//
+//	return null;
+	
 	long categoryId = missionEmp.getCategoryId();
 	long regionId = missionEmp.getPhysicalRegionId();
 
 	if (regionId == RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) { // General region.
-	    Long officialManagerId;
 	    if (categoryId == CategoriesEnum.OFFICERS.getCode())
-		officialManagerId = UnitsService.getUnitById(getWFPosition(WFPositionsEnum.MILITARY_AFFAIRS_ASSISTANT.getCode(), regionId).getUnitId()).getOfficialManagerId();
-
+		return getMessage("label_presidencyAssistant");
 	    else if (categoryId == CategoriesEnum.SOLDIERS.getCode())
-		officialManagerId = UnitsService.getUnitById(getWFPosition(WFPositionsEnum.SOLDIERS_HUMAN_RESOURCES_MANAGER.getCode(), regionId).getUnitId()).getOfficialManagerId();
-
+		return getMessage("label_generalMangerForSoldiersDirector");
 	    else
 		return null;
-
-	    if (officialManagerId == null)
-		throw new BusinessException("error_notValidPosition");
-	    return EmployeesService.getEmployeesByEmpsIds(new Long[] { officialManagerId }).get(0).getJobDesc();
 	}
 	// Another region.
-	else if (categoryId == CategoriesEnum.OFFICERS.getCode() || categoryId == CategoriesEnum.SOLDIERS.getCode()) {
+	if (categoryId == CategoriesEnum.OFFICERS.getCode() || categoryId == CategoriesEnum.SOLDIERS.getCode()) {
 	    if (signManager.getPhysicalRegionId().longValue() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) {
-		Long officialManagerId;
-		if (signManager.getPhysicalRegionId().equals(RegionsEnum.ACADEMY.getCode()))
-		    officialManagerId = UnitsService.getUnitById(getWFPosition(WFPositionsEnum.REGION_ADMINISTRATION_AND_FINANCIAL_MANAGER.getCode(), signManager.getPhysicalRegionId()).getUnitId()).getOfficialManagerId();
-		else
-		    officialManagerId = UnitsService.getUnitById(getWFPosition(WFPositionsEnum.REGION_MISSION_DIRECTED_TO.getCode(), signManager.getPhysicalRegionId()).getUnitId()).getOfficialManagerId();
-
-		if (officialManagerId == null)
-		    throw new BusinessException("error_notValidPosition");
-		return EmployeesService.getEmployeesByEmpsIds(new Long[] { officialManagerId }).get(0).getJobDesc();
-
-	    } else {
-		return UnitsService.getUnitsByTypeAndRegion(UnitTypesEnum.REGION_COMMANDER.getCode(), regionId).get(0).getName();
+		return signManager.getPhysicalRegionId().equals(RegionsEnum.ACADEMY.getCode()) ? getMessage("label_managerOfFinancialAffairs") : getMessage("label_managerOfHumanResource");
+	    } else if (regionId == RegionsEnum.ALJOOF_REGION.getCode()) {
+		return getMessage("label_commanderOfBordersGraudsAljoof");
+	    } else if (regionId == RegionsEnum.ALMADEENAH_ALMONAWRAH_REGION.getCode()) {
+		return getMessage("label_commanderOfBordersGraudsAlMadinaElMonara");
+	    } else if (regionId == RegionsEnum.ASEER_REGION.getCode()) {
+		return getMessage("label_commanderOfBordersGraudsAseer");
+	    } else if (regionId == RegionsEnum.EASTERN_REGION.getCode()) {
+		return getMessage("label_commanderOfBordersGraudsEastrn");
+	    } else if (regionId == RegionsEnum.NORTHERN_REGION.getCode()) {
+		return getMessage("label_commanderOfBordersGraudsNorth");
+	    } else if (regionId == RegionsEnum.JAZAN_REGION.getCode()) {
+		return getMessage("label_commanderOfBordersGraudsJazan");
+	    } else if (regionId == RegionsEnum.TABOOK_REGION.getCode()) {
+		return getMessage("label_commanderOfBordersGraudsTabouk");
+	    } else if (regionId == RegionsEnum.MAKKAH_ALMOKARRAMAH_REGION.getCode()) {
+		return getMessage("label_commanderOfBordersGraudsMAKAAELMOKARAMA");
+	    } else if (regionId == RegionsEnum.NAJRAN_REGION.getCode()) {
+		return getMessage("label_commanderOfBordersGraudsNajran");
+	    } else if (regionId == RegionsEnum.ACADEMY.getCode()) {
+		return getMessage("label_commanderOfAcademy");
 	    }
 	}
 
