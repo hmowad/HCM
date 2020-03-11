@@ -200,6 +200,7 @@
 		<mapping class="com.code.dal.orm.hcm.work.Work" />
 		<mapping class="com.code.dal.orm.workflow.hcm.vacations.WFVacation" />
 		<mapping class="com.code.dal.orm.workflow.hcm.vacations.WFVacationData" />
+		<mapping class="com.code.dal.orm.hcm.vacations.TransientVacationTransaction" />
 		<mapping class="com.code.dal.orm.hcm.vacations.HistoricalVacationTransaction" />
 		<mapping class="com.code.dal.orm.hcm.vacations.HistoricalVacationTransactionData" />
 		
