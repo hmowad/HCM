@@ -761,7 +761,7 @@ public class EmployeesService extends BaseService {
 	    qParams.put("P_SHIELD_MOBILE_NUMBER", (shieldMobileNumber == null || shieldMobileNumber.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + shieldMobileNumber + "%");
 	    qParams.put("P_IP_PHONE_EXT", (ipPhoneExt == null || ipPhoneExt.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + ipPhoneExt + "%");
 	    qParams.put("P_EMAIL", (email == null || email.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + email + "%");
-	    qParams.put("P_USER_ACCOUNT", (userAccount == null || userAccount.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + userAccount + "%");
+	    qParams.put("P_USER_ACCOUNT", (userAccount == null || userAccount.equals("")) ? FlagsEnum.ALL.getCode() + "" : userAccount + "@" + ETRConfigurationService.getLDAPDomain());
 
 	    return DataAccess.executeNamedQuery(EmployeeData.class, QueryNamesEnum.HCM_SEARCH_EMPLOYEES_BY_COMMUNICATION_DATA.getCode(), qParams);
 	} catch (DatabaseException e) {
