@@ -4,16 +4,86 @@
 <h:head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<h:outputStylesheet library="css" name="styles.css" />
-	<h:outputStylesheet library="css" name="grid.css" />
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
 
 	<script type="text/javascript">
-    //<![CDATA[ 
-     // ]]>
-        </script>
+		//<![CDATA[ 
+		function getEmp(contextPath) {
+			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',1, -1, -1, -1, -1, -1, -1);
+		}
+
+		function handleEmpMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('generalManagerVacationFormId:empIdHId').value = ret[0];
+				document.getElementById('generalManagerVacationFormId:selectEmpBtnHId').click();
+			}
+		}
+
+		function getCountries(contextPath) {
+			openSelectCountries(1, contextPath,'handleCountryMiniSearchResult(ret)');
+		}
+
+		function handleCountryMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('generalManagerVacationFormId:locationId').innerHTML = ret[0];
+				document.getElementById('generalManagerVacationFormId:countriesNamesId').value = ret[0];
+			}
+		}
+
+		function validateVacationData() {
+			var empId = document.getElementById('generalManagerVacationFormId:empIdHId').value;
+			if (empId == null || empId == '') {
+				alert('#{msgs.error_employeeMandatory}');
+				return false;
+			}
+			var decisionNumber = document.getElementById('generalManagerVacationFormId:decisionNumberId').value;
+			if (decisionNumber == null || decisionNumber == '') {
+				alert('#{msgs.error_decisionNumberMandatory}');
+				return false;
+			}
+
+			var decisionDateDay = document.getElementById('generalManagerVacationFormId:decisionDateId:day').value;
+			if (decisionDateDay == null || decisionDateDay == 0) {
+				alert('#{msgs.error_decDateMandatory}');
+				return false;
+			}
+
+			var period = document.getElementById('generalManagerVacationFormId:periodId').value;
+			if (period == null || period == '') {
+				alert('#{msgs.error_periodMandatory}');
+				return false;
+			} else if (period <= 0) {
+				alert('#{msgs.error_periodNotNegative}');
+				return false;
+			}
+			var vacationTypeId  = document.getElementById('generalManagerVacationFormId:historicalvacTypeId').value;
+	       if(vacationTypeId == 1 || vacationTypeId == 2 || vacationTypeId == 3 ||vacationTypeId == 11){
+			var location = document.getElementById('generalManagerVacationFormId:locationId').innerHTML;
+			if (location == null || location == '') {
+				alert('#{msgs.error_locationMandatory}');
+				return false;
+			}}
+
+			var contactNumber = document.getElementById('generalManagerVacationFormId:contactNumberId').value;
+			if (contactNumber == null || contactNumber == '') {
+				alert('#{msgs.error_contactNumberMandatory}');
+				return false;
+			}
+
+			var contactAdd = document.getElementById('generalManagerVacationFormId:contactAddressId').value;
+			if (contactAdd == null || contactAdd == '') {
+				alert('#{msgs.error_contactAddressMandatory}');
+				return false;
+			}
+
+			return true;
+		}
+
+		// ]]>
+	</script>
 </h:head>
 <h:body styleClass="screenBg">
-	<h:form id="addFutureVacationFormId" dir="#{msgs.dir}">
+	<h:form id="generalManagerVacationFormId" dir="#{msgs.dir}">
 		<ui:decorate template="/Main/Template.xhtml">
 			<table border="0" cellpadding="0" cellspacing="0" width="100%">
 				<tr>
@@ -35,9 +105,250 @@
 						</table>
 					</td>
 				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="selectEmpId">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+
+									<tr>
+										<th width="15%">
+											#{msgs.label_selectEmp}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="85%" colspan="3">
+											<h:outputText id="empNameId" value="#{addFutureVacation.currentEmployee.name}" />
+											<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" rendered="#{addFutureVacation.viewMode == 0 and addFutureVacation.futureVacation.approvedFlag == 0 }" />
+											<h:inputHidden id="empIdHId" value="#{addFutureVacation.currentEmployee.empId}" />
+											<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{addFutureVacation.selectEmployee}">
+												<f:ajax execute="generalManagerVacationFormId:empIdHId" render=" generalManagerVacationFormId:selectEmpId generalManagerVacationFormId:currentEmployeeId generalManagerVacationFormId:HistoricalVacationTitle generalManagerVacationFormId:HistoricalVacationId generalManagerVacationFormId:actionsPanelId generalManagerVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</td>
+									</tr>
+
+								</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+					<h:panelGroup id="currentEmployeeId">
+						<code:emp  value="#{addFutureVacation.currentEmployee}" rendered="#{addFutureVacation.currentEmployee.empId != null}" />
+					</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+					<h:panelGroup id="HistoricalVacationTitle"> 
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<h:panelGroup rendered="#{addFutureVacation.currentEmployee.empId != null}">
+								<tr>
+									<td>#{msgs.label_vacationData}</td>
+								</tr>
+							</h:panelGroup>
+						</table>
+					</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="HistoricalVacationId">
+							<h:panelGroup rendered="#{addFutureVacation.currentEmployee.empId != null}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_vacType}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%">
+											<h:selectOneMenu id="historicalvacTypeId" value="#{addFutureVacation.futureVacation.vacationTypeId}" disabled="#{addFutureVacation.futureVacation.id != null}">
+												<f:selectItems value="#{addFutureVacation.vacTypeList}" var="vacType" itemLabel="#{(addFutureVacation.currentEmployee.categoryId == 1 or addFutureVacation.currentEmployee.categoryId == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
+												<f:ajax event="change" listener="#{addFutureVacation.vacationTypeListener()}" execute="generalManagerVacationFormId:historicalvacTypeId" render="generalManagerVacationFormId:HistoricalVacationId generalManagerVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneMenu>
+										</td>
+										<h:panelGroup rendered="#{(addFutureVacation.currentEmployee.categoryId == 2 and addFutureVacation.futureVacation.vacationTypeId == 2) or (addFutureVacation.currentEmployee.categoryId != 1 and addFutureVacation.currentEmployee.categoryId != 2 and addFutureVacation.currentEmployee.categoryId != 6 and addFutureVacation.futureVacation.vacationTypeId == 3)}" >
+											<th width="15%" >
+												<h:panelGroup id="subVacationHeaderPanelId">
+													<h:outputText value="#{msgs.label_subVacationType}"  />
+												</h:panelGroup>
+											</th>
+											<td width="35%">
+												<h:panelGroup id="subVacationPanelId">
+													<h:selectOneMenu value="#{addFutureVacation.futureVacation.subVacationType}" rendered="#{(addFutureVacation.currentEmployee.categoryId == 2 and addFutureVacation.futureVacation.vacationTypeId == 2) }" disabled="#{addFutureVacation.futureVacation.id != null or addFutureVacation.viewMode == 1}">
+														<f:selectItem itemValue="1" itemLabel="#{msgs.label_sickVacationA}" />
+														<f:selectItem itemValue="2" itemLabel="#{msgs.label_sickVacationB}" />
+														<f:ajax event="change" listener="#{addFutureVacation.inquiryBalance()}" execute="@this" render="generalManagerVacationFormId:vacationBalanceId generalManagerVacationFormId:notifyMessagesId" />
+													</h:selectOneMenu>
+	
+													<h:selectOneMenu value="#{addFutureVacation.futureVacation.subVacationType}" rendered="#{(addFutureVacation.currentEmployee.categoryId != 1 and addFutureVacation.currentEmployee.categoryId != 2 and addFutureVacation.currentEmployee.categoryId != 6 and addFutureVacation.futureVacation.vacationTypeId == 3)}" disabled="#{addFutureVacation.futureVacation.id != null or addFutureVacation.viewMode == 1}">
+														<f:selectItem itemValue="1" itemLabel="#{msgs.label_forCircumstances}" />
+														<f:selectItem itemValue="2" itemLabel="#{msgs.label_forAccompany}" />
+														<f:ajax event="change" listener="#{addFutureVacation.inquiryBalance()}" execute="@this" render="generalManagerVacationFormId:vacationBalanceId  generalManagerVacationFormId:notifyMessagesId" />
+													</h:selectOneMenu>
+												</h:panelGroup>
+											</td>
+										</h:panelGroup>
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_decisionNumber}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="decisionNumberId" value="#{addFutureVacation.futureVacation.decisionNumber}" maxlength="50" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}" />
+											<h:outputText rendered="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1}" value="#{addFutureVacation.futureVacation.decisionNumber}" />
+										</td>
+										<th width="15%">
+											#{msgs.label_decisionDate}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%">
+											<h:outputText rendered="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1}" value="#{addFutureVacation.futureVacation.decisionDateString}" />
+											<util:hijri id="decisionDateId" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}" value="#{addFutureVacation.futureVacation.decisionDate}" viewOldRange="true" nullable="true" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_decisionRegion}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%" colspan="3">
+											<h:inputText id="decisionIssuerPlaceId" value="#{addFutureVacation.futureVacation.decisionIssuerPlace}" maxlength="100" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}" />
+											<h:outputText rendered="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1}" value="#{addFutureVacation.futureVacation.decisionIssuerPlace}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_period}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="periodId" value="#{addFutureVacation.futureVacation.period}" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}" maxlength="4" onkeypress="return isDigit(event);">
+												<f:ajax event="blur" execute="generalManagerVacationFormId:selectedVacationStartDateId generalManagerVacationFormId:historicalvacTypeId" listener="#{addFutureVacation.startDateAndPeriodChangeListener}" render="generalManagerVacationFormId:selectedVacationEndDateId generalManagerVacationFormId:notifyMessagesId" />
+											</h:inputText>
+											<h:outputText rendered="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1}" value="#{addFutureVacation.futureVacation.period}" />
+										</td>
+										<h:panelGroup rendered="#{addFutureVacation.viewMode != 1}">
+											<th width="15%">
+												<h:outputText value="#{msgs.label_vacationBalance}" rendered="#{addFutureVacation.viewMode != 1}" />
+											</th>
+											<td width="35%">
+												<h:outputText id="vacationBalanceId" value="#{addFutureVacation.balance}" rendered="#{addFutureVacation.viewMode != 1}" />
+											</td>
+										</h:panelGroup>
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_startDate}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%">
+											<h:outputText rendered="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1}" value="#{addFutureVacation.futureVacation.startDateString}" />
+											<util:hijri rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}" id="selectedVacationStartDateId" value="#{addFutureVacation.futureVacation.startDate}" onChangeAjaxSubmit="true" viewOldRange="true" listenerMethod="#{addFutureVacation.startDateAndPeriodChangeListener}"
+												reRenderIds="generalManagerVacationFormId:vacationBalanceId generalManagerVacationFormId:selectedVacationEndDateId generalManagerVacationFormId:notifyMessagesId" />
+										</td>
+										<th width="15%">#{msgs.label_endDate}</th>
+										<td width="35%">
+											<h:outputText id="selectedVacationEndDateId" value="#{addFutureVacation.futureVacation.endDateString}" />
+										</td>
+									</tr>
+									<h:panelGroup id="LocationRadioPanelId">
+										<h:panelGroup rendered="#{(addFutureVacation.futureVacation.vacationTypeId == 1 or addFutureVacation.futureVacation.vacationTypeId == 2 or (addFutureVacation.futureVacation.vacationTypeId == 3 and addFutureVacation.currentEmployee.categoryId == 1)
+										 or addFutureVacation.futureVacation.vacationTypeId == 11) and (addFutureVacation.currentEmployee.categoryId == 1 or addFutureVacation.currentEmployee.categoryId == 2)}">
+											<tr>
+												<th width="15%">#{msgs.label_location}</th>
+												<td width="35%">
+													<h:selectOneRadio id="locationFlagId" value="#{addFutureVacation.futureVacation.locationFlag}" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}">
+														<f:selectItem itemValue="0" itemLabel="#{msgs.label_locIn}" />
+														<f:selectItem itemValue="1" itemLabel="#{msgs.label_locOut}" />
+
+														<f:ajax event="click" execute="@this" listener="#{addFutureVacation.locationFlagChangeListner}" render="countriesNamesId locationId locationBtnId notifyMessagesId locationFlagId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+													</h:selectOneRadio>
+													<h:outputText rendered="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1 }" value="#{addFutureVacation.futureVacation.locationFlag == 0 ? msgs.label_locIn : msgs.label_locOut}" />
+												</td>
+
+												<th width="15%">
+													<h:commandButton id="locationBtnId" value="#{msgs.label_selectCountries}" onclick="getCountries('#{request.contextPath}');return false;" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 }" disabled="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1 or addFutureVacation.futureVacation.locationFlag == 0}" styleClass="btn_normal" />
+													<h:outputText value="*" style="color: red;" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 }"/>
+												</th>
+												<td width="35%">
+													<h:outputText id="locationId" value="#{addFutureVacation.futureVacation.location}" />
+													<h:inputHidden id="countriesNamesId" value="#{addFutureVacation.futureVacation.location}" />
+												</td>
+											</tr>
+										</h:panelGroup>
+									</h:panelGroup>
+									<tr>
+										<th width="15%">
+											#{msgs.label_contactNumber}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="contactNumberId" value="#{addFutureVacation.futureVacation.contactNumber}" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}" maxlength="14" onkeypress="return isDigit(event);" />
+											<h:outputText rendered="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1}" value="#{addFutureVacation.futureVacation.contactNumber}" />
+										</td>
+										<td width="50%" colspan="2" />
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_contactAddress}
+											<h:panelGroup id="contactAddressPanelGroupId">
+												<h:outputText value="*" style="color: red;" rendered="#{addFutureVacation.futureVacation.locationFlag == 0}" />
+											</h:panelGroup>
+										</th>
+										<td width="85%" colspan="3">
+											<h:inputText id="contactAddressId" value="#{addFutureVacation.futureVacation.contactAddress}" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}" maxlength="200" styleClass="inputDataLarge" />
+											<h:outputText rendered="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1}" value="#{addFutureVacation.futureVacation.contactAddress}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_notes}</th>
+										<td width="85%" colspan="3">
+											<h:inputText value="#{addFutureVacation.futureVacation.remarks}" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}" maxlength="100" styleClass="inputDataLarge" />
+											<h:outputText rendered="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1}" value="#{addFutureVacation.futureVacation.remarks}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_attachments}</th>
+										<td width="85%" colspan="3">
+											<code:attachments loginEmpId="#{addFutureVacation.currentEmployee.empId}" attachmentId="#{addFutureVacation.futureVacation.attachments}" addEnableFlag="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}" viewEnableFlag="true" deleteEnableFlag="#{addFutureVacation.futureVacation.approvedFlag == 0}" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:panelGroup id="actionsPanelId">
+										<h:panelGroup rendered="#{addFutureVacation.currentEmployee.empId != null}">
+											<h:commandButton rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}" onclick="return handleOnAction('#{msgs.q_save}', 'validateVacationData()');" action="#{addFutureVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
+												<f:ajax execute="generalManagerVacationFormId:HistoricalVacationId" render="generalManagerVacationFormId:HistoricalVacationId generalManagerVacationFormId:actionsPanelId generalManagerVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:commandButton rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1 and addFutureVacation.futureVacation.id != null}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{addFutureVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+												<f:ajax execute="generalManagerVacationFormId:HistoricalVacationId" render="generalManagerVacationFormId:HistoricalVacationId generalManagerVacationFormId:actionsPanelId generalManagerVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:commandButton rendered="#{addFutureVacation.viewMode == 0}" action="#{addFutureVacation.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+												<f:ajax execute="@form" render=" generalManagerVacationFormId:selectEmpId generalManagerVacationFormId:currentEmployeeId generalManagerVacationFormId:HistoricalVacationTitle generalManagerVacationFormId:HistoricalVacationId generalManagerVacationFormId:actionsPanelId generalManagerVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</h:panelGroup>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
 			</table>
 		</ui:decorate>
 	</h:form>
 </h:body>
 </html>
-
