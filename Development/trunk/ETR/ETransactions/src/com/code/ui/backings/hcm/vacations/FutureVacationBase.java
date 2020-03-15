@@ -33,6 +33,7 @@ public class FutureVacationBase extends BaseBacking {
     protected int viewMode;
     protected Long vacationId;
     protected Long empId;
+    protected String employeeIds;
 
     public void init() {
 	try {
@@ -57,7 +58,10 @@ public class FutureVacationBase extends BaseBacking {
 		futureVacation.setApprovedFlag(FlagsEnum.OFF.getCode());
 		futureVacation.setLocation(getMessage("label_ksa"));
 		futureVacation.setVacationTypeId(VacationTypesEnum.REGULAR.getCode());
+		futureVacation.setDecisionDate(HijriDateService.getHijriSysDate());
 	    }
+	    this.employeeIds = VacationsService.getPresidencyManagers();
+
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(this.getParameterizedMessage(e.getMessage(), e.getParams()));
 	} catch (Exception e) {
@@ -163,6 +167,22 @@ public class FutureVacationBase extends BaseBacking {
 	this.vacTypeList = vacTypeList;
     }
 
+    public int getScreenMode() {
+	return screenMode;
+    }
+
+    public void setScreenMode(int screenMode) {
+	this.screenMode = screenMode;
+    }
+
+    public int getViewMode() {
+	return viewMode;
+    }
+
+    public void setViewMode(int viewMode) {
+	this.viewMode = viewMode;
+    }
+
     public Long getVacationId() {
 	return vacationId;
     }
@@ -179,12 +199,12 @@ public class FutureVacationBase extends BaseBacking {
 	this.empId = empId;
     }
 
-    public int getScreenMode() {
-	return screenMode;
+    public String getEmployeeIds() {
+	return employeeIds;
     }
 
-    public int getViewMode() {
-	return viewMode;
+    public void setEmployeeIds(String employeeIds) {
+	this.employeeIds = employeeIds;
     }
 
 }

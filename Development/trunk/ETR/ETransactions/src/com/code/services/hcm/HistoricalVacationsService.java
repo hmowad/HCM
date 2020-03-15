@@ -171,7 +171,7 @@ public class HistoricalVacationsService extends BaseService {
     public static void validateDecisionNumber(HistoricalVacationTransaction historicalVacationTransaction) throws BusinessException {
 	if (countHistoricalVacationsByDecisionNumber(historicalVacationTransaction.getDecisionNumber(), historicalVacationTransaction.getId()) > 0
 		|| VacationsService.countVacationByDecisionNumber(historicalVacationTransaction.getDecisionNumber(), historicalVacationTransaction.getVacationTransactionId()) > 0)
-	    throw new BusinessException("error_historicalDecisionNumberRepeted");
+	    throw new BusinessException("error_vacationDecisionNumberRepeted");
     }
 
     protected static void validateHistoricalRegularVacationRules(HistoricalVacationTransaction historicalVacationTransaction, EmployeeData vacationBeneficiary) throws BusinessException {
