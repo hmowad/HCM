@@ -51,7 +51,9 @@ public enum AdminDecisionsEnum {
     OFFICERS_EXTERNAL_ASSIGNMENT_REGISTRATION(29),
     OFFICERS_MOVE_JOINING_DATE_REQUEST(23),
     OFFICERS_SUBJOIN_JOINING_DATE_REQUEST(24),
-    OFFICERS_SUBJOIN_RETURN_JOINING_DATE_REQUEST(47);
+    OFFICERS_SUBJOIN_RETURN_JOINING_DATE_REQUEST(47),
+    /****************************************** Promotion ********************************************/
+    OFFICERS_PROMOTION_REPORT(50);
 
     private long code;
 
