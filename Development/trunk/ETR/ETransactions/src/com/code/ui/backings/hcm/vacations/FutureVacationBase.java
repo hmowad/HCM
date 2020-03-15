@@ -2,15 +2,20 @@ package com.code.ui.backings.hcm.vacations;
 
 import java.util.List;
 
+import javax.faces.event.AjaxBehaviorEvent;
+
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.vacations.TransientVacationTransaction;
 import com.code.dal.orm.hcm.vacations.VacationType;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.LocationFlagsEnum;
+import com.code.enums.SubVacationTypesEnum;
 import com.code.enums.VacationTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.VacationsService;
+import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
 
 public class FutureVacationBase extends BaseBacking {
@@ -61,6 +66,71 @@ public class FutureVacationBase extends BaseBacking {
 	}
     }
 
+    public void inquiryBalance() {
+	try {
+	    if (futureVacation.getVacationTypeId() == VacationTypesEnum.SICK.getCode()
+		    || (futureVacation.getVacationTypeId() == VacationTypesEnum.EXCEPTIONAL.getCode()
+			    && (CategoriesEnum.PERSONS.getCode() == currentEmployee.getCategoryId()
+				    || CategoriesEnum.USERS.getCode() == currentEmployee.getCategoryId()
+				    || CategoriesEnum.WAGES.getCode() == currentEmployee.getCategoryId()
+				    || CategoriesEnum.MEDICAL_STAFF.getCode() == currentEmployee.getCategoryId()))) {
+		if (futureVacation.getSubVacationType() == null)
+		    futureVacation.setSubVacationType(SubVacationTypesEnum.SUB_TYPE_ONE.getCode());
+	    } else {
+		futureVacation.setSubVacationType(null);
+	    }
+	    balance = VacationsService.calculateVacationBalance(futureVacation.getVacationTypeId(), futureVacation.getSubVacationType(), futureVacation.getLocationFlag(), currentEmployee, futureVacation.getStartDate());
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
+    }
+
+    public void selectEmployee() {
+	try {
+	    currentEmployee = EmployeesService.getEmployeeData(currentEmployee.getEmpId());
+	    futureVacation = new TransientVacationTransaction();
+	    futureVacation.setLocationFlag(LocationFlagsEnum.INTERNAL.getCode());
+	    futureVacation.setApprovedFlag(FlagsEnum.OFF.getCode());
+	    futureVacation.setStartDate(HijriDateService.getHijriSysDate());
+	    futureVacation.setLocation(getMessage("label_ksa"));
+	    futureVacation.setVacationTypeId(VacationTypesEnum.REGULAR.getCode());
+	    inquiryBalance();
+
+	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
+    }
+
+    public void startDateAndPeriodChangeListener(AjaxBehaviorEvent event) {
+	try {
+	    if (futureVacation.getStartDate() != null && futureVacation.getPeriod() != null && futureVacation.getPeriod() > 0) {
+		futureVacation.setEndDateString(HijriDateService.addSubStringHijriDays(futureVacation.getStartDateString(), futureVacation.getPeriod() - 1));
+	    } else {
+		futureVacation.setEndDateString("");
+	    }
+
+	    inquiryBalance();
+	} catch (BusinessException e) {
+	    e.printStackTrace();
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
+    }
+
+    public void vacationTypeListener() {
+	futureVacation.setLocationFlag(LocationFlagsEnum.INTERNAL.getCode());
+	futureVacation.setLocation(getMessage("label_ksa"));
+	inquiryBalance();
+    }
+
+    public void locationFlagChangeListner(AjaxBehaviorEvent event) {
+	if (futureVacation.getLocationFlag().equals(LocationFlagsEnum.EXTERNAL.getCode())) {
+	    futureVacation.setLocation(null);
+	} else {
+	    futureVacation.setLocation(getMessage("label_ksa"));
+	}
+    }
+
     public EmployeeData getCurrentEmployee() {
 	return currentEmployee;
     }
@@ -107,6 +177,14 @@ public class FutureVacationBase extends BaseBacking {
 
     public void setEmpId(Long empId) {
 	this.empId = empId;
+    }
+
+    public int getScreenMode() {
+	return screenMode;
+    }
+
+    public int getViewMode() {
+	return viewMode;
     }
 
 }
