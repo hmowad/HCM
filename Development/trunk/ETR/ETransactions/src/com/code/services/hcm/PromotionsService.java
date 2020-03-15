@@ -31,6 +31,7 @@ import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
 import com.code.dal.orm.hcm.trainings.TrainingTransactionData;
 import com.code.dal.orm.hcm.vacations.VacationData;
 import com.code.dal.orm.log.EmployeeLog;
+import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.CategoryModesEnum;
 import com.code.enums.CivilianReportRanksEnum;
@@ -53,6 +54,7 @@ import com.code.enums.TransactionClassesEnum;
 import com.code.enums.TransactionTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
 import com.code.integration.webservicesclients.infosys.HCMWebService;
 import com.code.integration.webservicesclients.infosys.HCMWebServiceService;
 import com.code.integration.webservicesclients.promotiondrugtest.DrugsTestJMSClient;
@@ -61,6 +63,7 @@ import com.code.services.buswfcoop.BusinessWorkflowCooperation;
 import com.code.services.buswfcoop.EmployeesJobsConflictValidator;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.cor.ETRCorrespondence;
+import com.code.services.integration.PayrollEngineService;
 import com.code.services.log.LogService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
@@ -3796,6 +3799,9 @@ public class PromotionsService extends BaseService {
 		JobsService.handleJobsTransactions(null, null, null, jobsToFreeze, null, jobsToScaleUp, null, null, etrCorInfo[0], HijriDateService.getHijriDate(etrCorInfo[1]), promotionReportData.getPromotionDate(), userId, false, false, true, true, session);
 	    }
 
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		doPayrollIntegration(promotionTransactionDataList, promotionReportData.getCategoryId(), useSession);
+
 	    if (!isOpenedSession)
 		session.commitTransaction();
 
@@ -3819,6 +3825,25 @@ public class PromotionsService extends BaseService {
 	    if (!isOpenedSession)
 		session.close();
 	}
+    }
+
+    private static void doPayrollIntegration(List<PromotionTransactionData> promotionTransactionDataList, Long promotionReportCategoryId, CustomSession... useSession) throws BusinessException {
+	Long adminDecisionId = null;
+	if (promotionReportCategoryId.equals(CategoriesEnum.OFFICERS.getCode()))
+	    adminDecisionId = AdminDecisionsEnum.OFFICERS_PROMOTION_REPORT.getCode();
+
+	if (adminDecisionId != null) {
+	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<>();
+	    String gregNewLastPromotionDateString = null;
+	    for (PromotionTransactionData promotionTransactionData : promotionTransactionDataList) {
+		EmployeeData empData = EmployeesService.getEmployeeData(promotionTransactionData.getEmpId());
+		gregNewLastPromotionDateString = HijriDateService.hijriToGregDateString(promotionTransactionData.getNewLastPromotionDateString());
+		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(empData.getEmpId(), empData.getName(), promotionTransactionData.getId(), null, gregNewLastPromotionDateString, null, promotionTransactionData.getDecisionNumber(), null));
+	    }
+	    String gregDecisionDateString = HijriDateService.hijriToGregDateString(promotionTransactionDataList.get(0).getDecisionDateString());
+	    PayrollEngineService.doPayrollIntegration(adminDecisionId, promotionTransactionDataList.get(0).getCategoryId(), gregNewLastPromotionDateString, adminDecisionEmployeeDataList, promotionTransactionDataList.get(0).getNewUnitId(), gregDecisionDateString, DataAccess.getTableName(PromotionTransaction.class), useSession);
+	}
+
     }
 
     /**
