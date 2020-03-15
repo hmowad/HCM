@@ -684,12 +684,18 @@ public class EmployeesService extends BaseService {
 	    }
 	    qParams.put("P_MILITARY_NUMBER", militaryNumber);
 	    qParams.put("P_SOCIAL_ID", (socialID == null || socialID.equals("")) ? FlagsEnum.ALL.getCode() + "" : socialID);
-	    qParams.put("P_STATUSES_IDS", statusesIds);
+	    if (statusesIds != null && statusesIds.length > 0) {
+		qParams.put("P_STATUSES_IDS_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_STATUSES_IDS", statusesIds);
+	    } else {
+		qParams.put("P_STATUSES_IDS_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_STATUSES_IDS", new Long[] { (long) FlagsEnum.ALL.getCode() });
+	    }
 	    if (employeesId != null && employeesId.length > 0) {
 		qParams.put("P_EMP_IDS_FLAG", FlagsEnum.ON.getCode());
 		qParams.put("P_EMP_IDS", employeesId);
 	    } else {
-		qParams.put("P_EMP_IDS_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_EMP_IDS_FLAG", FlagsEnum.ALL.getCode());
 		qParams.put("P_EMP_IDS", new Long[] { (long) FlagsEnum.ALL.getCode() });
 	    }
 	    qParams.put("P_JOB_DESC", (jobDesc == null || jobDesc.equals("") || jobDesc.equals(FlagsEnum.ALL.getCode() + "")) ? FlagsEnum.ALL.getCode() + "" : "%" + jobDesc + "%");

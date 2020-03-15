@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -16,6 +18,17 @@ import javax.persistence.Transient;
 
 import com.code.dal.orm.BaseEntity;
 import com.code.services.util.HijriDateService;
+
+@NamedQueries({
+	@NamedQuery(name = "hcm_futureVacationTransaction_countfutureVacationsByDecisionNumber",
+		query = " select count(v.id) from TransientVacationTransaction v " +
+			" where v.decisionNumber = :P_DECISION_NUMBER " +
+			" and (:P_VACATION_ID = -1 or v.id <> :P_VACATION_ID)"),
+
+	@NamedQuery(name = "hcm_futureVacationTransaction_getFutureVacationById",
+		query = " select v from TransientVacationTransaction v " +
+			" where v.id = :P_VACATION_ID ")
+})
 
 @Entity
 @Table(name = "HCM_VAC_TRANSIENT_TRANS")

@@ -54,7 +54,8 @@ import com.code.services.util.HijriDateService;
 			" and (:P_MILITARY_NUMBER = -1 or e.militaryNumber = :P_MILITARY_NUMBER) " +
 			" and (:P_SEQUENCE_NUMBER = -1 or e.sequenceNumber = :P_SEQUENCE_NUMBER) " +
 			" and (:P_SOCIAL_ID = '-1' or e.socialID = :P_SOCIAL_ID) " +
-			" and ( e.statusId in ( :P_STATUSES_IDS ) or (:P_EMP_IDS_FLAG = -1 or e.empId in ( :P_EMP_IDS ))) " +
+			" and (:P_STATUSES_IDS_FLAG = -1 or e.statusId in ( :P_STATUSES_IDS ))" +
+			" and  (:P_EMP_IDS_FLAG = -1 or e.empId in ( :P_EMP_IDS )) " +
 			" and (:P_JOB_DESC = '-1' or e.jobDesc like :P_JOB_DESC ) " +
 			" and (:P_PHYSICAL_UNIT_FULL_NAME = '-1' or e.physicalUnitFullName like :P_PHYSICAL_UNIT_FULL_NAME ) " +
 			" order by e.rankId, e.militaryNumber, e.recruitmentDate, e.name "),
