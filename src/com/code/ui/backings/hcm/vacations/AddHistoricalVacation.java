@@ -212,15 +212,15 @@ public class AddHistoricalVacation extends BaseBacking {
     }
 
     public void reset() {
-	currentEmployee = new EmployeeData();
-	historicalVacationTransactionData = new HistoricalVacationTransactionData();
-	historicalVacationTransactionData.setLocationFlag(LocationFlagsEnum.INTERNAL.getCode());
-	historicalVacationTransactionData.setApprovedFlag(FlagsEnum.OFF.getCode());
-	historicalVacationTransactionData.setLocation(getMessage("label_ksa"));
-	historicalVacationTransactionData.setVacationTypeId(VacationTypesEnum.REGULAR.getCode());
-	exceededFlag = FlagsEnum.OFF.getCode();
-	balance = "";
 	try {
+	    currentEmployee = new EmployeeData();
+	    historicalVacationTransactionData = new HistoricalVacationTransactionData();
+	    historicalVacationTransactionData.setLocationFlag(LocationFlagsEnum.INTERNAL.getCode());
+	    historicalVacationTransactionData.setApprovedFlag(FlagsEnum.OFF.getCode());
+	    historicalVacationTransactionData.setLocation(getMessage("label_ksa"));
+	    historicalVacationTransactionData.setVacationTypeId(VacationTypesEnum.REGULAR.getCode());
+	    exceededFlag = FlagsEnum.OFF.getCode();
+	    balance = "";
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
