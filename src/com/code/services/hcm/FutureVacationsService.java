@@ -10,16 +10,11 @@ import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.vacations.TransientVacationTransaction;
 import com.code.dal.orm.hcm.vacations.Vacation;
 import com.code.enums.FlagsEnum;
-import com.code.enums.LocationFlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.RequestTypesEnum;
-import com.code.enums.TransactionClassesEnum;
-import com.code.enums.VacationTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.services.BaseService;
-import com.code.services.buswfcoop.EmployeesTransactionsConflictValidator;
-import com.code.services.config.ETRConfigurationService;
 import com.code.services.util.HijriDateService;
 
 public class FutureVacationsService extends BaseService {
@@ -72,13 +67,13 @@ public class FutureVacationsService extends BaseService {
 	    if (futureVacationTransaction.getRequestType() != RequestTypesEnum.CANCEL.getCode() && !skipValidationFlag) {
 		validateFutureVacationRules(futureVacationTransaction, vacationBeneficiary);
 	    }
-	    modifyHistoricalVacationTransaction(futureVacationTransaction, signFutureVacationFlag, useSession);
+	    modifyFutureVacationTransaction(futureVacationTransaction, signFutureVacationFlag, useSession);
 	} else {
-	    throw new BusinessException("error_historicalVacationDeleted");
+	    throw new BusinessException("error_vacationDeleted");
 	}
     }
 
-    private static void modifyHistoricalVacationTransaction(TransientVacationTransaction futureVacationTransaction, boolean signFutureVacationFlag, CustomSession... useSession) throws BusinessException {
+    private static void modifyFutureVacationTransaction(TransientVacationTransaction futureVacationTransaction, boolean signFutureVacationFlag, CustomSession... useSession) throws BusinessException {
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -128,7 +123,7 @@ public class FutureVacationsService extends BaseService {
 	if (futureVacationTransaction.getRequestType() != RequestTypesEnum.NEW.getCode()) {
 	    TransientVacationTransaction oldFutureVacation = getFutureVacationTransactionDataById(futureVacationTransaction.getId());
 	    oldFutureVacation.setActiveFlag(FlagsEnum.ON.getCode());
-	    modifyHistoricalVacationTransaction(oldFutureVacation, false, useSession);
+	    modifyFutureVacationTransaction(oldFutureVacation, false, useSession);
 	}
 	deleteFutureVacationTransaction(futureVacationTransaction, useSession);
     }
@@ -167,63 +162,9 @@ public class FutureVacationsService extends BaseService {
 
     private static void validateFutureVacationRules(TransientVacationTransaction futureVacationTransaction, EmployeeData vacationBeneficiary) throws BusinessException {
 	validateFutureVacationData(futureVacationTransaction, vacationBeneficiary);
-	validateVacationDates(futureVacationTransaction);
-	validateVacationLocation(futureVacationTransaction);
-
-	EmployeesTransactionsConflictValidator
-		.validateEmployeesTransactionsConflicts(
-			new Long[] { vacationBeneficiary.getEmpId() }, new String[] { vacationBeneficiary.getName() },
-			TransactionClassesEnum.VACATIONS.getCode(), futureVacationTransaction.getRequestType(),
-			futureVacationTransaction.getVacationTypeId(), FlagsEnum.ALL.getCode(), new String[] { futureVacationTransaction.getStartDateString() }, new String[] { futureVacationTransaction.getEndDateString() },
-			futureVacationTransaction.getRequestType().equals(RequestTypesEnum.MODIFY.getCode()) ? futureVacationTransaction.getVacationTransactionId() : null, null);
-
-	if (ETRConfigurationService.getVacationRequestRequireJoining() == FlagsEnum.ON.getCode() && futureVacationTransaction.getRequestType() == RequestTypesEnum.NEW.getCode())
-	    VacationsBusinessRulesService.validatePreviousVacationJoining(vacationBeneficiary.getEmpId(), vacationBeneficiary.getCategoryId(), futureVacationTransaction.getStartDate());
-
-	if (futureVacationTransaction.getRequestType() == RequestTypesEnum.MODIFY.getCode() || futureVacationTransaction.getRequestType() == RequestTypesEnum.CANCEL.getCode())
-	    VacationsBusinessRulesService.validateModifyAndCancelEVacation(futureVacationTransaction.getId(), futureVacationTransaction.getRequestType(), FlagsEnum.OFF.getCode());
-
-	if (futureVacationTransaction.getRequestType() == RequestTypesEnum.NEW.getCode() || futureVacationTransaction.getRequestType() == RequestTypesEnum.MODIFY.getCode()) {
-
-	    VacationsBusinessRulesService.validateAbsenceOfLaterVacations(vacationBeneficiary.getEmpId(), futureVacationTransaction.getVacationTypeId(), futureVacationTransaction.getStartDateString());
-	    Vacation vacation = constructVacation(futureVacationTransaction);
-	    if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.REGULAR.getCode())
-		VacationsBusinessRulesService.validateRegularVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.COMPELLING.getCode())
-		VacationsBusinessRulesService.validateCompellingVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.SICK.getCode())
-		VacationsBusinessRulesService.validateSickVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.FIELD.getCode())
-		VacationsBusinessRulesService.validateFieldVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.EXCEPTIONAL.getCode())
-		VacationsBusinessRulesService.validateExceptionalVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.STUDY.getCode())
-		VacationsBusinessRulesService.validateStudyVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.EXAM.getCode())
-		VacationsBusinessRulesService.validateExamVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.ACCOMPANY.getCode())
-		VacationsBusinessRulesService.validateAccompanyVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.RELIEF.getCode())
-		VacationsBusinessRulesService.validateReliefVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.SPORTIVE.getCode()
-		    || futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.CULTURAL.getCode()
-		    || futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.SOCIAL.getCode())
-		VacationsBusinessRulesService.validateSportiveCultureSocialVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.COMPENSATION.getCode())
-		VacationsBusinessRulesService.validateCompensationVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.MATERNITY.getCode())
-		VacationsBusinessRulesService.validateMaternityVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.MOTHERHOOD.getCode())
-		VacationsBusinessRulesService.validateMotherhoodVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.ORPHAN_CARE.getCode())
-		VacationsBusinessRulesService.validateOrphanCareVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.DEATH_WAITING_PERIOD.getCode())
-		VacationsBusinessRulesService.validateDeathWaitingPeriodVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.DEATH_OF_RELATIVE.getCode())
-		VacationsBusinessRulesService.validateDeathOfRelativeVacationRules(vacation, vacationBeneficiary);
-	    else if (futureVacationTransaction.getVacationTypeId() == VacationTypesEnum.NEW_BABY.getCode())
-		VacationsBusinessRulesService.validateNewBabyVacationRules(vacation, vacationBeneficiary);
-	}
+	validateFutureVacationDates(futureVacationTransaction);
+	Vacation vacation = constructVacation(futureVacationTransaction);
+	VacationsService.validateVacationRules(vacation, vacationBeneficiary, FlagsEnum.ON.getCode());
     }
 
     private static void validateFutureVacationData(TransientVacationTransaction futureVacationTransaction, EmployeeData vacationBeneficiary) throws BusinessException {
@@ -249,20 +190,11 @@ public class FutureVacationsService extends BaseService {
 
     }
 
-    private static void validateVacationDates(TransientVacationTransaction futureVacationTransaction) throws BusinessException {
-	if (futureVacationTransaction.getRequestType().equals(RequestTypesEnum.NEW.getCode()) && !HijriDateService.isValidHijriDate(futureVacationTransaction.getStartDate()))
-	    throw new BusinessException("error_invalidHijriDate");
-
-	if (futureVacationTransaction.getStartDate().after(HijriDateService.addSubHijriDays(HijriDateService.getHijriSysDate(), 1)))
+    private static void validateFutureVacationDates(TransientVacationTransaction futureVacationTransaction) throws BusinessException {
+	if (futureVacationTransaction.getStartDate().before(HijriDateService.getHijriSysDate()))
 	    throw new BusinessException("error_vacationBeforeSysDate");
     }
 
-    private static void validateVacationLocation(TransientVacationTransaction futureVacationTransaction) throws BusinessException {
-	if (futureVacationTransaction.getRequestType() == RequestTypesEnum.NEW.getCode()
-		&& futureVacationTransaction.getLocationFlag().equals(LocationFlagsEnum.EXTERNAL.getCode())
-		&& futureVacationTransaction.getLocation().contains(getMessage("label_ksa")))
-	    throw new BusinessException("error_invalidLocation");
-    }
     /*---------------------------Utilities------------------------------*/
 
     private static Vacation constructVacation(TransientVacationTransaction futureVacationTransaction) {
@@ -290,11 +222,11 @@ public class FutureVacationsService extends BaseService {
     }
 
     /*---------------------------Queries------------------------------*/
-    private static long countFutureVacationsByDecisionNumber(String decisionNumber, Long historicalVacationId) throws BusinessException {
+    private static long countFutureVacationsByDecisionNumber(String decisionNumber, Long futureVacationId) throws BusinessException {
 	try {
 	    Map<String, Object> queryParam = new HashMap<String, Object>();
 	    queryParam.put("P_DECISION_NUMBER", decisionNumber);
-	    queryParam.put("P_VACATION_ID", historicalVacationId == null ? FlagsEnum.ALL.getCode() : historicalVacationId);
+	    queryParam.put("P_VACATION_ID", futureVacationId == null ? FlagsEnum.ALL.getCode() : futureVacationId);
 	    List<Long> count = DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_FUTURE_VACATIONS_BY_DECISION_NUMBER.getCode(), queryParam);
 	    return (count.isEmpty() || count == null ? 0 : count.get(0));
 	} catch (DatabaseException e) {

@@ -58,7 +58,7 @@ public class HistoricalVacationsService extends BaseService {
 	    }
 	    modifyHistoricalVacation(historicalVacationTransaction, signHistoricalVacationFlag, useSession);
 	} else {
-	    throw new BusinessException("error_historicalVacationDeleted");
+	    throw new BusinessException("error_vacationDeleted");
 	}
     }
 
