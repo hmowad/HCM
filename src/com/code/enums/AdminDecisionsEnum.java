@@ -53,7 +53,10 @@ public enum AdminDecisionsEnum {
     OFFICERS_SUBJOIN_JOINING_DATE_REQUEST(24),
     OFFICERS_SUBJOIN_RETURN_JOINING_DATE_REQUEST(47),
     /****************************************** Promotion ********************************************/
-    OFFICERS_PROMOTION_REPORT(50);
+    OFFICERS_PROMOTION_REPORT(50),
+
+    /****************************************** Raises ********************************************/
+    OFFICERS_ANNUAL_RAISE(48);
 
     private long code;
 
