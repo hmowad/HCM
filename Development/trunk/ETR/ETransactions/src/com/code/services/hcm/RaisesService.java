@@ -20,6 +20,8 @@ import com.code.dal.orm.hcm.raises.RaiseTransaction;
 import com.code.dal.orm.hcm.raises.RaiseTransactionData;
 import com.code.dal.orm.hcm.raises.RaiseTransactionLog;
 import com.code.dal.orm.log.EmployeeLog;
+import com.code.enums.AdminDecisionsEnum;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.RaiseEmployeesTypesEnum;
@@ -27,9 +29,12 @@ import com.code.enums.RaiseStatusEnum;
 import com.code.enums.RaiseTransactionTypesEnum;
 import com.code.enums.RaiseTypesEnum;
 import com.code.enums.ReportNamesEnum;
+import com.code.enums.UnitTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
 import com.code.services.BaseService;
+import com.code.services.integration.PayrollEngineService;
 import com.code.services.log.LogService;
 import com.code.services.util.HijriDateService;
 
@@ -290,6 +295,31 @@ public class RaisesService extends BaseService {
 	raise.setType(type);
 	raise.setStatus(RaiseStatusEnum.INITIAL.getCode());
 	return raise;
+    }
+
+    private static void doPayrollIntegration(List<RaiseTransaction> raiseTransactions, CustomSession session) throws BusinessException {
+	if (raiseTransactions != null && raiseTransactions.size() > 0) {
+	    Long adminDecisionId = null;
+	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
+	    if (raiseTransactions.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+		if (raiseTransactions.get(0).getType().equals(RaiseTypesEnum.ANNUAL.getCode())) {
+		    adminDecisionId = AdminDecisionsEnum.OFFICERS_ANNUAL_RAISE.getCode();
+		}
+	    }
+	    if (adminDecisionId != null) {
+		if (session == null)
+		    throw new BusinessException("error_general");
+		String gregDecisionDateString = HijriDateService.hijriToGregDateString(HijriDateService.getHijriDateString(raiseTransactions.get(0).getDecisionDate()));
+		String gregExecutionDateString = HijriDateService.hijriToGregDateString(HijriDateService.getHijriDateString(raiseTransactions.get(0).getExecutionDate()));
+		EmployeeData employee = null;
+		for (RaiseTransaction raiseTransactionData : raiseTransactions) {
+		    employee = EmployeesService.getEmployeeData(raiseTransactionData.getEmpId());
+		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), raiseTransactionData.getId(), null, gregExecutionDateString, null, raiseTransactionData.getDecisionNumber(), null));
+		}
+		session.flushTransaction();
+		PayrollEngineService.doPayrollIntegration(adminDecisionId, raiseTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, employee == null || employee.getPhysicalUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(RaiseTransaction.class), session);
+	    }
+	}
     }
     /*----------------------------------------Validations----------------------------------------------*/
 
@@ -1343,7 +1373,9 @@ public class RaisesService extends BaseService {
 	    doAnnualRaiseEffect(raise, loginEmpId, session);
 
 	    updateRaise(raise, session);
-
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode())) {
+		doPayrollIntegration(raiseTransactions, session);
+	    }
 	    if (!isOpenedSession)
 		session.commitTransaction();
 	} catch (Exception e) {
