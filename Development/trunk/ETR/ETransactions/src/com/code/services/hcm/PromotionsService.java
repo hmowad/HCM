@@ -3800,7 +3800,7 @@ public class PromotionsService extends BaseService {
 	    }
 
 	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
-		doPayrollIntegration(promotionTransactionDataList, promotionReportData.getCategoryId(), useSession);
+		doPayrollIntegration(promotionTransactionDataList, promotionReportData.getCategoryId(), session);
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -3827,7 +3827,7 @@ public class PromotionsService extends BaseService {
 	}
     }
 
-    private static void doPayrollIntegration(List<PromotionTransactionData> promotionTransactionDataList, Long promotionReportCategoryId, CustomSession... useSession) throws BusinessException {
+    private static void doPayrollIntegration(List<PromotionTransactionData> promotionTransactionDataList, Long promotionReportCategoryId, CustomSession session) throws BusinessException {
 	Long adminDecisionId = null;
 	if (promotionReportCategoryId.equals(CategoriesEnum.OFFICERS.getCode()))
 	    adminDecisionId = AdminDecisionsEnum.OFFICERS_PROMOTION_REPORT.getCode();
@@ -3841,7 +3841,8 @@ public class PromotionsService extends BaseService {
 		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(empData.getEmpId(), empData.getName(), promotionTransactionData.getId(), null, gregNewLastPromotionDateString, null, promotionTransactionData.getDecisionNumber(), null));
 	    }
 	    String gregDecisionDateString = HijriDateService.hijriToGregDateString(promotionTransactionDataList.get(0).getDecisionDateString());
-	    PayrollEngineService.doPayrollIntegration(adminDecisionId, promotionTransactionDataList.get(0).getCategoryId(), gregNewLastPromotionDateString, adminDecisionEmployeeDataList, promotionTransactionDataList.get(0).getNewUnitId(), gregDecisionDateString, DataAccess.getTableName(PromotionTransaction.class), useSession);
+	    session.commitTransaction();
+	    PayrollEngineService.doPayrollIntegration(adminDecisionId, promotionTransactionDataList.get(0).getCategoryId(), gregNewLastPromotionDateString, adminDecisionEmployeeDataList, promotionTransactionDataList.get(0).getNewUnitId(), gregDecisionDateString, DataAccess.getTableName(PromotionTransaction.class), session);
 	}
 
     }
