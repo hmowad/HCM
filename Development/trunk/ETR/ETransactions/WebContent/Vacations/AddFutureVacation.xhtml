@@ -120,7 +120,7 @@
 									<td width="85%" colspan="3">
 										<h:outputText id="empNameId" value="#{addFutureVacation.currentEmployee.name}" />
 										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
-										<h:inputHidden id="empIdHId" value="#{addFutureVacation.currentEmployee.empId}" />
+										<h:inputHidden id="empIdHId" value="#{addFutureVacation.empId}" />
 										<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{addFutureVacation.selectEmployee()}">
 											<f:ajax execute="addFutureVacationFormId:empIdHId" render="addFutureVacationFormId:currentEmployeeId addFutureVacationFormId:vacationDataTitle addFutureVacationFormId:futureVacationId addFutureVacationFormId:actionsPanelId addFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>

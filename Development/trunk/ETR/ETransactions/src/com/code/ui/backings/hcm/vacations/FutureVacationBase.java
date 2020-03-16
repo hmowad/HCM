@@ -14,6 +14,7 @@ import com.code.enums.SubVacationTypesEnum;
 import com.code.enums.VacationTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
+import com.code.services.hcm.FutureVacationsService;
 import com.code.services.hcm.VacationsService;
 import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
@@ -26,11 +27,11 @@ public class FutureVacationBase extends BaseBacking {
     protected List<VacationType> vacTypeList;
     // screenMode= 1 open General Manager Screen
     // screenMode= 2 open External Employees Screen
-    protected int screenMode;
+    protected int screenMode=0;
     // viewMode= 0 open the page from menu
     // viewMode =1 opened as detail from management page
     // viewMode = 2 opened as edit from management page
-    protected int viewMode;
+    protected int viewMode=0;
     protected Long vacationId;
     protected Long empId;
     protected String employeeIds;
@@ -48,19 +49,13 @@ public class FutureVacationBase extends BaseBacking {
 		    empId = Long.parseLong(this.getRequest().getParameter("employeeId").trim());
 
 		currentEmployee = EmployeesService.getEmployeeData(empId);
-		// futureVacation = FutureVacationsService.getTransientVacationTransactionById(vacationId);
+		futureVacation = FutureVacationsService.getFutureVacationTransactionDataById(vacationId);
 		vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
 	    } else {
-		currentEmployee = new EmployeeData();
-		viewMode = 0;
-		futureVacation = new TransientVacationTransaction();
-		futureVacation.setLocationFlag(LocationFlagsEnum.INTERNAL.getCode());
-		futureVacation.setApprovedFlag(FlagsEnum.OFF.getCode());
-		futureVacation.setLocation(getMessage("label_ksa"));
-		futureVacation.setVacationTypeId(VacationTypesEnum.REGULAR.getCode());
-		futureVacation.setDecisionDate(HijriDateService.getHijriSysDate());
+		reset();
 	    }
-	    this.employeeIds = VacationsService.getPresidencyManagers();
+	    if (screenMode == 1)
+		this.employeeIds = VacationsService.getPresidencyManagers();
 
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(this.getParameterizedMessage(e.getMessage(), e.getParams()));
@@ -91,16 +86,10 @@ public class FutureVacationBase extends BaseBacking {
 
     public void selectEmployee() {
 	try {
-	    currentEmployee = EmployeesService.getEmployeeData(currentEmployee.getEmpId());
-	    futureVacation = new TransientVacationTransaction();
-	    futureVacation.setLocationFlag(LocationFlagsEnum.INTERNAL.getCode());
-	    futureVacation.setApprovedFlag(FlagsEnum.OFF.getCode());
-	    futureVacation.setStartDate(HijriDateService.getHijriSysDate());
-	    futureVacation.setLocation(getMessage("label_ksa"));
-	    futureVacation.setVacationTypeId(VacationTypesEnum.REGULAR.getCode());
-	    inquiryBalance();
-
+	    reset();
+	    currentEmployee = EmployeesService.getEmployeeData(empId);
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
+	    inquiryBalance();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -132,6 +121,23 @@ public class FutureVacationBase extends BaseBacking {
 	    futureVacation.setLocation(null);
 	} else {
 	    futureVacation.setLocation(getMessage("label_ksa"));
+	}
+    }
+
+    public void reset() {
+	try {
+	    currentEmployee = new EmployeeData();
+	    futureVacation = new TransientVacationTransaction();
+	    futureVacation.setLocationFlag(LocationFlagsEnum.INTERNAL.getCode());
+	    futureVacation.setApprovedFlag(FlagsEnum.OFF.getCode());
+	    futureVacation.setLocation(getMessage("label_ksa"));
+	    futureVacation.setVacationTypeId(VacationTypesEnum.REGULAR.getCode());
+	    futureVacation.setStartDate(HijriDateService.getHijriSysDate());
+	    futureVacation.setDecisionDate(HijriDateService.getHijriSysDate());
+
+	    balance = "";
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
