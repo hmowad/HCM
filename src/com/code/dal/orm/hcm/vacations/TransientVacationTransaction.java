@@ -25,9 +25,6 @@ import com.code.services.util.HijriDateService;
 			" where v.decisionNumber = :P_DECISION_NUMBER " +
 			" and (:P_VACATION_ID = -1 or v.id <> :P_VACATION_ID)"),
 
-	@NamedQuery(name = "hcm_futureVacationTransaction_getFutureVacationById",
-		query = " select v from TransientVacationTransaction v " +
-			" where v.id = :P_VACATION_ID ")
 })
 
 @Entity

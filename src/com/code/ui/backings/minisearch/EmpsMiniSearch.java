@@ -28,6 +28,7 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
     private Long searchUnitId;
     private String searchMilitaryNumber;
     private int categoryMode;
+    private Long[] categoryIds;
     private long recruitmentRegionId = -1;
     private int graduationGroupNumber = -1;
     private int graduationGroupPlace = -1;
@@ -59,6 +60,13 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 	    mode = Integer.parseInt(getRequest().getParameter("mode"));
 	if (getRequest().getParameter("categoryMode") != null)
 	    categoryMode = Integer.parseInt(getRequest().getParameter("categoryMode"));
+	if (getRequest().getParameter("categoryIds") != null && !getRequest().getParameter("categoryIds").equals("-1")) {
+	    String categoryIdsString = getRequest().getParameter("categoryIds");
+	    String[] categoryIdsStringArray = categoryIdsString.split(",");
+	    categoryIds = new Long[categoryIdsStringArray.length];
+	    for (int i = 0; i < categoryIdsStringArray.length; i++)
+		categoryIds[i] = Long.parseLong(categoryIdsStringArray[i]);
+	}
 	if (getRequest().getParameter("recruitmentRegionId") != null)
 	    recruitmentRegionId = Long.parseLong(getRequest().getParameter("recruitmentRegionId"));
 	if (getRequest().getParameter("graduationGroupNumber") != null)
@@ -238,11 +246,24 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 			    EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode() };
 		}
 
-		searchEmployeeList = EmployeesService.searchEmployeesForBeneficiary(searchEmpName, getCategoriesIdsArrayByBeneficiaryMode(categoryMode), employeeIds, militaryNumber, searchSocialId, statusIds, searchJobDesc, searchUnitFullName, sequenceNumber);
+		searchEmployeeList = EmployeesService.searchEmployeesForFutureVacation(searchEmpName, getCategoriesIdsArrayByBeneficiaryMode(categoryMode), employeeIds, militaryNumber, searchSocialId, statusIds, searchJobDesc, searchUnitFullName, sequenceNumber);
 		break;
 	    case 20: // Get terminated employees for eservices
 		searchEmployeeList = EmployeesService.getTerminatedEmployeesByUnitId(searchUnitId, searchEmpName, searchSocialId, searchJobDesc, searchUnitFullName, militaryNumber, sequenceNumber);
 		break;
+	    case 21: // Get employees with statusIds and get President and vicePresident For Future Vacations
+		     // used to make vac Request to President , vicePresident for officiers category and External Mission Employees
+		if (employeeIds == null) {
+		    statusIds = new Long[] { EmployeeStatusEnum.MANDATED.getCode(),
+			    EmployeeStatusEnum.SECONDMENTED.getCode(),
+			    EmployeeStatusEnum.ASSIGNED_EXTERNALLY.getCode(),
+			    EmployeeStatusEnum.PERSONS_SUBJOINED_EXTERNALLY.getCode(),
+			    EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode() };
+		}
+
+		searchEmployeeList = EmployeesService.searchEmployeesForFutureVacation(searchEmpName, categoryIds, employeeIds, militaryNumber, searchSocialId, statusIds, searchJobDesc, searchUnitFullName, sequenceNumber);
+		break;
+
 	    }
 
 	    if (searchEmployeeList == null || searchEmployeeList.isEmpty()) {

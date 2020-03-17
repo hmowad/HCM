@@ -5,6 +5,9 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -12,6 +15,12 @@ import javax.persistence.Transient;
 
 import com.code.dal.orm.BaseEntity;
 import com.code.services.util.HijriDateService;
+
+@NamedQueries({
+	@NamedQuery(name = "hcm_futureVacationTransaction_getFutureVacationById",
+		query = " select v from TransientVacationTransactionData v " +
+			" where v.id = :P_VACATION_ID ")
+})
 
 @Entity
 @Table(name = "HCM_VW_VAC_TRANSIENT_TRANS")
@@ -56,6 +65,7 @@ public class TransientVacationTransactionData extends BaseEntity {
 	transientVacationTransaction = new TransientVacationTransaction();
     }
 
+    @Id
     @Column(name = "ID")
     public Long getId() {
 	return id;

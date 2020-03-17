@@ -8,6 +8,7 @@ import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.vacations.TransientVacationTransaction;
+import com.code.dal.orm.hcm.vacations.TransientVacationTransactionData;
 import com.code.dal.orm.hcm.vacations.Vacation;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
@@ -61,7 +62,7 @@ public class FutureVacationsService extends BaseService {
     }
 
     public static void modifyFutureVacation(TransientVacationTransaction futureVacationTransaction, EmployeeData vacationBeneficiary, boolean signFutureVacationFlag, boolean skipValidationFlag, CustomSession... useSession) throws BusinessException {
-	TransientVacationTransaction vacationData = getFutureVacationTransactionDataById(futureVacationTransaction.getId());
+	TransientVacationTransactionData vacationData = getFutureVacationTransactionDataById(futureVacationTransaction.getId());
 	if (vacationData != null) {
 	    validateDecisionNumber(futureVacationTransaction);
 	    if (futureVacationTransaction.getRequestType() != RequestTypesEnum.CANCEL.getCode() && !skipValidationFlag) {
@@ -86,7 +87,7 @@ public class FutureVacationsService extends BaseService {
 	    if (signFutureVacationFlag) {
 		vacation = constructVacation(futureVacationTransaction);
 		if (futureVacationTransaction.getRequestType() == RequestTypesEnum.MODIFY.getCode() || futureVacationTransaction.getRequestType() == RequestTypesEnum.CANCEL.getCode()) {
-		    TransientVacationTransaction oldFutureVacationTransaction = getFutureVacationTransactionDataById(futureVacationTransaction.getTransientVacationParentId());
+		    TransientVacationTransactionData oldFutureVacationTransaction = getFutureVacationTransactionDataById(futureVacationTransaction.getTransientVacationParentId());
 		    vacation.setVacationId(oldFutureVacationTransaction.getVacationTransactionId());
 		    if (futureVacationTransaction.getRequestType() == RequestTypesEnum.CANCEL.getCode())
 			vacation.setStatus(RequestTypesEnum.CANCEL.getCode());
@@ -116,14 +117,14 @@ public class FutureVacationsService extends BaseService {
 
     public static void deleteFutureVacation(TransientVacationTransaction futureVacationTransaction, CustomSession... useSession) throws BusinessException {
 
-	TransientVacationTransaction vacationData = getFutureVacationTransactionDataById(futureVacationTransaction.getId());
+	TransientVacationTransactionData vacationData = getFutureVacationTransactionDataById(futureVacationTransaction.getId());
 	if (vacationData.getApprovedFlag() == FlagsEnum.ON.getCode())
 	    throw new BusinessException("error_vacationHasBeenModifiedOrCanceled");
 	// if the deletion for initial cancel/modify vacation get the parent and set the active flag to on
 	if (futureVacationTransaction.getRequestType() != RequestTypesEnum.NEW.getCode()) {
-	    TransientVacationTransaction oldFutureVacation = getFutureVacationTransactionDataById(futureVacationTransaction.getId());
+	    TransientVacationTransactionData oldFutureVacation = getFutureVacationTransactionDataById(futureVacationTransaction.getId());
 	    oldFutureVacation.setActiveFlag(FlagsEnum.ON.getCode());
-	    modifyFutureVacationTransaction(oldFutureVacation, false, useSession);
+	    modifyFutureVacationTransaction(oldFutureVacation.getTransientVacationTransaction(), false, useSession);
 	}
 	deleteFutureVacationTransaction(futureVacationTransaction, useSession);
     }
@@ -214,7 +215,7 @@ public class FutureVacationsService extends BaseService {
 	vacation.setJoiningDate(futureVacationTransaction.getJoiningDate());
 	vacation.setStatus(futureVacationTransaction.getRequestType());
 	vacation.setEtrFlag(FlagsEnum.OFF.getCode());
-	vacation.setMigrationFlag(FlagsEnum.ON.getCode());
+	vacation.setMigrationFlag(FlagsEnum.OFF.getCode());
 	vacation.setDecisionNumber(futureVacationTransaction.getDecisionNumber());
 	vacation.setDecisionDate(futureVacationTransaction.getDecisionDate());
 	vacation.setAttachments(futureVacationTransaction.getAttachments());
@@ -235,12 +236,12 @@ public class FutureVacationsService extends BaseService {
 	}
     }
 
-    public static TransientVacationTransaction getFutureVacationTransactionDataById(long id) throws BusinessException {
+    public static TransientVacationTransactionData getFutureVacationTransactionDataById(long id) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_VACATION_ID", id);
 
-	    List<TransientVacationTransaction> result = DataAccess.executeNamedQuery(TransientVacationTransaction.class, QueryNamesEnum.HCM_GET_FUTURE_VACATION_TRANSACTION_BY_ID.getCode(), qParams);
+	    List<TransientVacationTransactionData> result = DataAccess.executeNamedQuery(TransientVacationTransactionData.class, QueryNamesEnum.HCM_GET_FUTURE_VACATION_TRANSACTION_BY_ID.getCode(), qParams);
 	    return result.isEmpty() ? null : result.get(0);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
