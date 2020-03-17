@@ -671,7 +671,7 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    public static List<EmployeeData> searchEmployeesForBeneficiary(String empName, Long[] categoriesIds, Long[] employeesId, int militaryNumber, String socialID, Long[] statusesIds, String jobDesc, String physicalUnitFullName, Long sequenceNumber) throws BusinessException {
+    public static List<EmployeeData> searchEmployeesForFutureVacation(String empName, Long[] categoriesIds, Long[] employeesId, int militaryNumber, String socialID, Long[] statusesIds, String jobDesc, String physicalUnitFullName, Long sequenceNumber) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_NAME", (empName == null || empName.equals("") || empName.equals(FlagsEnum.ALL.getCode() + "")) ? FlagsEnum.ALL.getCode() + "" : "%" + empName + "%");

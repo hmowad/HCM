@@ -5,36 +5,41 @@ import java.util.List;
 import javax.faces.event.AjaxBehaviorEvent;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
-import com.code.dal.orm.hcm.vacations.TransientVacationTransaction;
+import com.code.dal.orm.hcm.vacations.TransientVacationTransactionData;
 import com.code.dal.orm.hcm.vacations.VacationType;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.LocationFlagsEnum;
+import com.code.enums.MenuActionsEnum;
+import com.code.enums.MenuCodesEnum;
 import com.code.enums.SubVacationTypesEnum;
 import com.code.enums.VacationTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.FutureVacationsService;
 import com.code.services.hcm.VacationsService;
+import com.code.services.security.SecurityService;
 import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
 
 public class FutureVacationBase extends BaseBacking {
 
     protected EmployeeData currentEmployee;
-    protected TransientVacationTransaction futureVacation;
+    protected TransientVacationTransactionData futureVacation;
     protected String balance;
     protected List<VacationType> vacTypeList;
     // screenMode= 1 open General Manager Screen
     // screenMode= 2 open External Employees Screen
-    protected int screenMode=0;
+    protected int screenMode = 0;
     // viewMode= 0 open the page from menu
     // viewMode =1 opened as detail from management page
     // viewMode = 2 opened as edit from management page
-    protected int viewMode=0;
+    protected int viewMode = 0;
     protected Long vacationId;
     protected Long empId;
     protected String employeeIds;
+    protected boolean isAdmin;
+    protected boolean isSignAdmin;
 
     public void init() {
 	try {
@@ -90,8 +95,27 @@ public class FutureVacationBase extends BaseBacking {
 	    currentEmployee = EmployeesService.getEmployeeData(empId);
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
 	    inquiryBalance();
+	    validateSignAdmins();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
+    }
+
+    private void validateSignAdmins() throws BusinessException {
+	if (currentEmployee.getCategoryId() == CategoriesEnum.OFFICERS.getCode()) {
+	    this.setSignAdmin(SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_ADD_EXTERNAL_EMPLOYEES_VACATION.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_SIGN_EXTERNAL_OFFICERS.getCode()));
+	} else if (currentEmployee.getCategoryId() == CategoriesEnum.SOLDIERS.getCode()) {
+	    this.setSignAdmin(SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_ADD_EXTERNAL_EMPLOYEES_VACATION.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_SIGN_EXTERNAL_SOLDIERS.getCode()));
+	} else if (currentEmployee.getCategoryId() == CategoriesEnum.PERSONS.getCode()) {
+	    this.setSignAdmin(SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_ADD_EXTERNAL_EMPLOYEES_VACATION.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_SIGN_EXTERNAL_PERSONS.getCode()));
+	} else if (currentEmployee.getCategoryId() == CategoriesEnum.USERS.getCode()) {
+	    this.setSignAdmin(SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_ADD_EXTERNAL_EMPLOYEES_VACATION.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_SIGN_EXTERNAL_USERS.getCode()));
+	} else if (currentEmployee.getCategoryId() == CategoriesEnum.WAGES.getCode()) {
+	    this.setSignAdmin(SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_ADD_EXTERNAL_EMPLOYEES_VACATION.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_SIGN_EXTERNAL_WAGES.getCode()));
+	} else if (currentEmployee.getCategoryId() == CategoriesEnum.CONTRACTORS.getCode()) {
+	    this.setSignAdmin(SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_ADD_EXTERNAL_EMPLOYEES_VACATION.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_SIGN_EXTERNAL_CONTRACTORS.getCode()));
+	} else if (currentEmployee.getCategoryId() == CategoriesEnum.MEDICAL_STAFF.getCode()) {
+	    this.setSignAdmin(SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_ADD_EXTERNAL_EMPLOYEES_VACATION.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_SIGN_EXTERNAL_MEDICAL_STAFF.getCode()));
 	}
     }
 
@@ -127,7 +151,7 @@ public class FutureVacationBase extends BaseBacking {
     public void reset() {
 	try {
 	    currentEmployee = new EmployeeData();
-	    futureVacation = new TransientVacationTransaction();
+	    futureVacation = new TransientVacationTransactionData();
 	    futureVacation.setLocationFlag(LocationFlagsEnum.INTERNAL.getCode());
 	    futureVacation.setApprovedFlag(FlagsEnum.OFF.getCode());
 	    futureVacation.setLocation(getMessage("label_ksa"));
@@ -149,11 +173,11 @@ public class FutureVacationBase extends BaseBacking {
 	this.currentEmployee = currentEmployee;
     }
 
-    public TransientVacationTransaction getFutureVacation() {
+    public TransientVacationTransactionData getFutureVacation() {
 	return futureVacation;
     }
 
-    public void setFutureVacation(TransientVacationTransaction futureVacation) {
+    public void setFutureVacation(TransientVacationTransactionData futureVacation) {
 	this.futureVacation = futureVacation;
     }
 
@@ -211,6 +235,22 @@ public class FutureVacationBase extends BaseBacking {
 
     public void setEmployeeIds(String employeeIds) {
 	this.employeeIds = employeeIds;
+    }
+
+    public boolean isAdmin() {
+	return isAdmin;
+    }
+
+    public void setAdmin(boolean isAdmin) {
+	this.isAdmin = isAdmin;
+    }
+
+    public boolean isSignAdmin() {
+	return isSignAdmin;
+    }
+
+    public void setSignAdmin(boolean isSignAdmin) {
+	this.isSignAdmin = isSignAdmin;
     }
 
 }

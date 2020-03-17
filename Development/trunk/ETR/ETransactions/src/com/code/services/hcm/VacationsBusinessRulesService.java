@@ -1458,15 +1458,17 @@ public class VacationsBusinessRulesService extends BaseService {
      * @see RequestTypesEnum
      */
     protected static void validateModifyAndCancelEVacation(Long oldVacationId, Integer status, Integer skipWFFlag) throws BusinessException {
-	Vacation oldVac = VacationsService.getVacationById(oldVacationId);
-	if (oldVac == null)
-	    throw new BusinessException("error_general");
-	if (oldVac.getEtrFlag() != FlagsEnum.ON.getCode() && skipWFFlag == FlagsEnum.OFF.getCode())
-	    throw new BusinessException("error_cannotModifyOrCancelNotElectronicVacation");
-	if (oldVac.getJoiningDate() != null && status == RequestTypesEnum.MODIFY.getCode() && skipWFFlag == FlagsEnum.OFF.getCode())
-	    throw new BusinessException("error_modifyVacAfterJoining");
-	if (oldVac.getJoiningDate() != null && status == RequestTypesEnum.CANCEL.getCode() && skipWFFlag == FlagsEnum.OFF.getCode())
-	    throw new BusinessException("error_cancelVacAfterJoining");
+	if (skipWFFlag == FlagsEnum.OFF.getCode()) {
+	    Vacation oldVac = VacationsService.getVacationById(oldVacationId);
+	    if (oldVac == null)
+		throw new BusinessException("error_general");
+	    if (oldVac.getEtrFlag() != FlagsEnum.ON.getCode())
+		throw new BusinessException("error_cannotModifyOrCancelNotElectronicVacation");
+	    if (oldVac.getJoiningDate() != null && status == RequestTypesEnum.MODIFY.getCode())
+		throw new BusinessException("error_modifyVacAfterJoining");
+	    if (oldVac.getJoiningDate() != null && status == RequestTypesEnum.CANCEL.getCode())
+		throw new BusinessException("error_cancelVacAfterJoining");
+	}
     }
 
     /**

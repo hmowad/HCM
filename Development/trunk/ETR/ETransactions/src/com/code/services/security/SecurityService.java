@@ -54,16 +54,10 @@ public class SecurityService extends BaseService {
 
     public static EmployeeData authenticateUser(String username, String password) throws BusinessException {
 	if (!(FlagsEnum.OFF.getCode() + "").equals(getConfig("noLdapFlag"))) {
-	    
-	    if(!ETRConfigurationService.getTempNoLdapPassKey().equals(password)) {
-		throw new BusinessException("error_invalidUser");
-	    }
-	    
-	    if ((FlagsEnum.ON.getCode() + "").equals(getConfig("noLdapFlag"))) {
+	    if ((FlagsEnum.ON.getCode() + "").equals(getConfig("noLdapFlag")))
 		return EmployeesService.getEmployeeBySocialID(username);
-	    } else {
+	    else
 		return EmployeesService.getEmployeeData(Long.valueOf(username));
-	    }
 	}
 
 	try {

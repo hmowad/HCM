@@ -320,44 +320,47 @@ function openEmpsMiniSearchForTerminatedEmps(contextPath, miniSearchReturnHandle
 }
 
 function openEmpsMiniSearchForRecruitmentModule(contextPath, miniSearchReturnHandler, mode, categoryMode, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankIdValue, recruitmentTrainingUnitId, gender, exceptionalRecruitmentFlag, statusIds) {
-	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankIdValue, -1, -1, -1, recruitmentTrainingUnitId, -1, -1 , gender, statusIds, exceptionalRecruitmentFlag, 0,-1);
+	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, -1, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankIdValue, -1, -1, -1, recruitmentTrainingUnitId, -1, -1 , gender, statusIds, exceptionalRecruitmentFlag, 0,-1);
 }
 
 function openEmpsMiniSearchWithRankIdAndPromotionDueDate(contextPath, miniSearchReturnHandler, mode, categoryMode, rankId, promotionDueDate, officialRegionId){
-	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, -1, -1 , -1, -1, -1, rankId, promotionDueDate, -1, -1, officialRegionId, -1, -1, -1, 0,-1);
+	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, -1, -1, -1 , -1, -1, -1, rankId, promotionDueDate, -1, -1, officialRegionId, -1, -1, -1, 0,-1);
 }
 
 function openEmpsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankId, managerPhysicalUnitHKey){
-	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankId, managerPhysicalUnitHKey, -1, -1, -1, -1, -1, -1, -1, -1, 0,-1);
+	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, -1, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankId, managerPhysicalUnitHKey, -1, -1, -1, -1, -1, -1, -1, -1, 0,-1);
 }
 
 function openEmployeesMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankId, managerPhysicalUnitHKey, physicalRegionId){
-	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankId, managerPhysicalUnitHKey, -1, -1, -1, physicalRegionId, -1, -1, -1, -1, 0,-1);
+	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, -1, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankId, managerPhysicalUnitHKey, -1, -1, -1, physicalRegionId, -1, -1, -1, -1, 0,-1);
 }
 
-function openEmployeesMiniSearchForBeneficiary(contextPath, miniSearchReturnHandler, mode, categoryMode,employeeIds) {
-	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, -1, -1 , -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,employeeIds);
+function openEmployeesMiniSearchForFutureVacation(contextPath, miniSearchReturnHandler, mode, categoryIds,employeeIds) {
+	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, -1,categoryIds, -1, -1 , -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,employeeIds);
+} 
 
+function openEmployeesMiniSearchForBeneficiary(contextPath, miniSearchReturnHandler, mode, categoryMode,employeeIds) {
+	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode,-1, -1, -1 , -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,employeeIds);
 } 
 
 function openEmployeesMiniSearchForDecisionCopies(contextPath, miniSearchReturnHandler, mode){
-	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, -1, -1, -1 , -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1,-1);
+	empsMiniSearch(contextPath, miniSearchReturnHandler, mode,-1, -1, -1, -1 , -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1,-1);
 }
 
 function openEmployeesMiniSearchByOfficialRegionId(contextPath, miniSearchReturnHandler, mode, categoryMode, officialRegionId){
-	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, -1, -1, -1, -1, -1, -1, -1, -1, -1, officialRegionId, -1, -1, -1, 0,-1);
+	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode,-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, officialRegionId, -1, -1, -1, 0,-1);
 }
 
 function openEmpsMiniSearchByPhysicalRegionForMultipleEmployees(contextPath, miniSearchReturnHandler, mode, categoryMode,physicalRegionId){
-	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, -1, -1 , -1, -1, -1, -1, -1, -1, physicalRegionId,-1, -1, -1, -1, 1,-1);
+	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, -1, -1, -1 , -1, -1, -1, -1, -1, -1, physicalRegionId,-1, -1, -1, -1, 1,-1);
 }
 function openEmpsMiniSearchForAdditionalRaises(contextPath, miniSearchReturnHandler, mode, categoryMode, physicalRegionId, statusIds){
-	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, -1, -1 , -1, -1, -1, -1, -1, -1, physicalRegionId,-1, -1, statusIds, -1, 0,-1);
+	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, -1, -1, -1 , -1, -1, -1, -1, -1, -1, physicalRegionId,-1, -1, statusIds, -1, 0,-1);
 }
-function empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankId, managerPhysicalUnitHKey, rankId, promotionDueDate, recruitmentTrainingUnitId, physicalRegionId, officialRegionId, gender, statusIds, exceptionalRecruitmentFlag, multipleSelectFlag,employeeIds){
+function empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, categoryIds, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankId, managerPhysicalUnitHKey, rankId, promotionDueDate, recruitmentTrainingUnitId, physicalRegionId, officialRegionId, gender, statusIds, exceptionalRecruitmentFlag, multipleSelectFlag,employeeIds){
 	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
 	maskOpenerScreen();
-	var childWindow = window.open(contextPath+'/MiniSearch/EmpsMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&mode=' + mode+'&categoryMode=' + categoryMode+'&recruitmentRegionId='+recruitmentRegionId+'&graduationGroupNumber='+graduationGroupNumber+'&graduationGroupPlace='+graduationGroupPlace+'&recruitmentRankId='+recruitmentRankId+'&managerPhysicalUnitHKey='+managerPhysicalUnitHKey+'&rankId='+rankId+'&promotionDueDate='+promotionDueDate+'&recruitmentTrainingUnitId='+recruitmentTrainingUnitId+'&physicalRegionId='+physicalRegionId+'&officialRegionId='+officialRegionId+'&gender='+gender+'&statusIds='+statusIds+'&exceptionalRecruitmentFlag='+exceptionalRecruitmentFlag+'&multipleSelectFlag='+multipleSelectFlag+'&employeeIds='+employeeIds, null, specsStr);
+	var childWindow = window.open(contextPath+'/MiniSearch/EmpsMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&mode=' + mode+'&categoryMode=' + categoryMode+'&categoryIds=' + categoryIds+'&recruitmentRegionId='+recruitmentRegionId+'&graduationGroupNumber='+graduationGroupNumber+'&graduationGroupPlace='+graduationGroupPlace+'&recruitmentRankId='+recruitmentRankId+'&managerPhysicalUnitHKey='+managerPhysicalUnitHKey+'&rankId='+rankId+'&promotionDueDate='+promotionDueDate+'&recruitmentTrainingUnitId='+recruitmentTrainingUnitId+'&physicalRegionId='+physicalRegionId+'&officialRegionId='+officialRegionId+'&gender='+gender+'&statusIds='+statusIds+'&exceptionalRecruitmentFlag='+exceptionalRecruitmentFlag+'&multipleSelectFlag='+multipleSelectFlag+'&employeeIds='+employeeIds, null, specsStr);
     unMaskOnPopupClose(childWindow);
 }
 

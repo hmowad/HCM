@@ -266,10 +266,7 @@ public class ETRConfigurationService extends BaseService {
     public static String getESBPassword() {
 	return configurationMap.get("ESB_PAYROLL_WEBSERVICE_PASSWORD");
     }
-    
-    public static String getTempNoLdapPassKey() {
-	return configurationMap.get("TEMP_NO_LDAP_PASS_KEY");
-    }
+
     /*------------------------------------------------------General Notifications Configurations------------------------------------------------------*/
 
     public static String getGeneralMessagesUrl() {

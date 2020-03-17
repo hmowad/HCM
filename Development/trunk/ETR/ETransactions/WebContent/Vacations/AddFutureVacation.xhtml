@@ -11,9 +11,9 @@
     //<![CDATA[ 
     	function getEmp(contextPath) {
     	     if(#{addFutureVacation.screenMode == 1})
-       	 	    openEmployeesMiniSearchForBeneficiary(contextPath, 'handleEmpMiniSearchResult(ret)', 19, '1', '#{addFutureVacation.employeeIds}');
+    	    	 openEmployeesMiniSearchForFutureVacation(contextPath, 'handleEmpMiniSearchResult(ret)', 21, '1', '#{addFutureVacation.employeeIds}');
              else
-        	 	openEmployeesMiniSearchForBeneficiary(contextPath, 'handleEmpMiniSearchResult(ret)', 19, '1', '-1');
+            	 openEmployeesMiniSearchForFutureVacation(contextPath, 'handleEmpMiniSearchResult(ret)', 21, '#{addFutureVacation.categoriesIds}', '-1');
 			
 		}
 
@@ -119,7 +119,7 @@
 									</th>
 									<td width="85%" colspan="3">
 										<h:outputText id="empNameId" value="#{addFutureVacation.currentEmployee.name}" />
-										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+										<h:commandButton disabled="#{addFutureVacation.admin == false}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
 										<h:inputHidden id="empIdHId" value="#{addFutureVacation.empId}" />
 										<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{addFutureVacation.selectEmployee()}">
 											<f:ajax execute="addFutureVacationFormId:empIdHId" render="addFutureVacationFormId:currentEmployeeId addFutureVacationFormId:vacationDataTitle addFutureVacationFormId:futureVacationId addFutureVacationFormId:actionsPanelId addFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
@@ -328,7 +328,7 @@
 											<h:commandButton rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}" onclick="return handleOnAction('#{msgs.q_save}', 'validateVacationData()');" action="#{addFutureVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
 												<f:ajax execute="addFutureVacationFormId:futureVacationId" render="addFutureVacationFormId:futureVacationId addFutureVacationFormId:actionsPanelId addFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
-											<h:commandButton rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1 and addFutureVacation.futureVacation.id != null}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{addFutureVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<h:commandButton rendered="#{addFutureVacation.signAdmin == true and addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1 and addFutureVacation.futureVacation.id != null}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{addFutureVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 												<f:ajax execute="addFutureVacationFormId:futureVacationId" render="addFutureVacationFormId:futureVacationId addFutureVacationFormId:actionsPanelId addFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 											<h:commandButton rendered="#{addFutureVacation.viewMode == 0}" action="#{addFutureVacation.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
