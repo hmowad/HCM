@@ -291,6 +291,7 @@
 		
 		<mapping class="com.code.dal.orm.integration.payroll.AdminDecisionVariablesMapping" />
 		<mapping class="com.code.dal.orm.integration.payroll.PayrollIntegrationFailureLog" />
+		<mapping class="com.code.dal.orm.integration.payroll.PayrollIntegrationFailureLogData" />
 		
 		<mapping class="com.code.dal.orm.integration.finance.PaidIssueOrderData" />
 		

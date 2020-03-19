@@ -536,9 +536,9 @@ public enum QueryNamesEnum {
     HCM_GET_ALL_FUTURE_TRANSACTIONS("hcm_transactionTimeline_getAllFutureTransactions"),
 
     /* ******************************************* Payroll integration ****************************************************** */
-    HCM_GET_ADMIN_DECISION_BY_ID("hcm_adminDecision_getAdminDecisionById"),
-    HCM_GET_ADMIN_DECISION_VARIABLES_MAPPING_BY_VARIABLE_NAME_AND_HCM_VALUE("hcm_adminDecisionVariablesMapping_getAdminDecisionVariablesMappingByVariableNameAndHCMValue");
-
+    HCM_SEARCH_ADMIN_DECISION("hcm_adminDecision_searchAdminDecision"),
+    HCM_GET_ADMIN_DECISION_VARIABLES_MAPPING_BY_VARIABLE_NAME_AND_HCM_VALUE("hcm_adminDecisionVariablesMapping_getAdminDecisionVariablesMappingByVariableNameAndHCMValue"),
+    HCM_GET_NON_EXECUTED_PAYROLL_INTEGRATION_FAILURE_LOG("hcm_payrollIntegrationFailureLog_getNonExecutedPayrollIntegrationFailureLog");
     private String code;
 
     private QueryNamesEnum(String code) {
