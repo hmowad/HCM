@@ -4,12 +4,52 @@
 <h:head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<h:outputStylesheet library="css" name="styles.css" />
-	<h:outputStylesheet library="css" name="grid.css" />
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
 
 	<script type="text/javascript">
-    //<![CDATA[ 
-     // ]]>
+   		 //<![CDATA[
+   		 
+    	function getEmp(contextPath) {
+    	     if(#{modifyFutureVacation.screenMode == 1})
+    	    	 openEmployeesMiniSearchForFutureVacation(contextPath, 'handleEmpMiniSearchResult(ret)', 21, '1', '#{modifyFutureVacation.employeeIds}');
+             else
+            	 openEmployeesMiniSearchForFutureVacation(contextPath, 'handleEmpMiniSearchResult(ret)', 21, '#{modifyFutureVacation.categoriesIds}', '-1');
+					}
+   		  		function handleEmpMiniSearchResult(ret) {
+		   			if (ret != null) {
+		   				document.getElementById('modifyFutureVacationFormId:empIdHId').value = ret[0];
+		   				document.getElementById('modifyFutureVacationFormId:selectEmpBtnHId').click();
+		   		     	}
+   		     		}
+   		       
+   			function validateVacationData() {
+   				var VacationType = document.getElementById('modifyFutureVacationFormId:futureVacTypeId').value;
+   				if(VacationType == null || VacationType == ''){
+   					alert("#{msgs.error_vacationTypeMandatory}");
+   					return false;
+   				}
+   				
+   				var decisionNumber = document.getElementById('modifyFutureVacationFormId:decisionNumberId').value;
+   				if(decisionNumber == null || decisionNumber == ''){
+   					alert("#{msgs.error_decisionNumberMandatory}");
+   					return false;
+   				}
+   				var decisionDateDay = document.getElementById('modifyFutureVacationFormId:decisionDateId:day').value;
+   				if (decisionDateDay == null || decisionDateDay == 0) {
+   				   	alert('#{msgs.error_decDateMandatory}');
+   				   	return false;
+   				   	}
+   				var period = document.getElementById('modifyFutureVacationFormId:periodId').value;
+   				if(period == null || period == ''){
+   					alert("#{msgs.error_periodMandatory}");
+   					return false;
+   				} else if (period <= 0) {
+   					alert('#{msgs.error_periodNotNegative}');
+   					return false;
+   				}
+   				return true;
+   			}
+   		            // ]]>
         </script>
 </h:head>
 <h:body styleClass="screenBg">
@@ -35,9 +75,219 @@
 						</table>
 					</td>
 				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="selectEmpId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_selectEmp}
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText id="empNameId" value="#{modifyFutureVacation.currentEmployee.name}" />
+										<h:commandButton disabled="#{modifyFutureVacation.admin == false}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+										<h:inputHidden id="empIdHId" value="#{modifyFutureVacation.empId}" />
+										<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{modifyFutureVacation.selectEmployee}">
+											<f:ajax execute="modifyFutureVacationFormId:empIdHId" render="modifyFutureVacationFormId:selectEmpId modifyFutureVacationFormId:newDataId modifyFutureVacationFormId:currentEmployeeId  modifyFutureVacationFormId:vacationDataTitle modifyFutureVacationFormId:futureVacationDataId modifyFutureVacationFormId:actionsPanelId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="currentEmployeeId">
+							<code:emp value="#{modifyFutureVacation.currentEmployee}" rendered="#{modifyFutureVacation.currentEmployee.empId != null}" />
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="vacationDataTitle">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+
+								<h:panelGroup rendered="#{modifyFutureVacation.currentEmployee.empId != null}">
+									<tr>
+										<td>#{msgs.label_vacationData}</td>
+									</tr>
+								</h:panelGroup>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="futureVacationDataId">
+							<h:panelGroup rendered="#{modifyFutureVacation.currentEmployee.empId != null}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_vacType}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%">
+											<h:selectOneMenu id="futureVacTypeId" value="#{modifyFutureVacation.vacationTypeId}" disabled="#{modifyFutureVacation.viewMode != 0 and modifyFutureVacation.futureVacation.approvedFlag != 0}">
+												<f:selectItems value="#{modifyFutureVacation.vacTypeList}" var="vacType" itemLabel="#{(modifyFutureVacation.currentEmployee.categoryId == 1 or modifyFutureVacation.currentEmployee.categoryId == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
+												<f:ajax event="change" listener="#{modifyFutureVacation.selectVacation()}" execute="modifyFutureVacationFormId:futureVacTypeId" render="modifyFutureVacationFormId:futureVacationDataId modifyFutureVacationFormId:newDataId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneMenu>
+										</td>
+										<th width="15%">#{msgs.label_period}</th>
+										<td width="35%">
+											<h:outputText value="#{modifyFutureVacation.futureVacation.period}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_startDate}</th>
+										<td width="35%">
+											<h:outputText value="#{modifyFutureVacation.futureVacation.startDateString}" />
+										</td>
+										<th width="15%">#{msgs.label_endDate}</th>
+										<td width="35%">
+											<h:outputText value="#{modifyFutureVacation.futureVacation.endDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_decisionNumber}</th>
+										<td width="35%">
+											<h:outputText value="#{modifyFutureVacation.futureVacation.decisionNumber}" />
+										</td>
+										<th width="15%">#{msgs.label_decisionDate}</th>
+										<td width="35%">
+											<h:outputText value="#{modifyFutureVacation.futureVacation.decisionDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_location}</th>
+										<td width="35%">
+											<h:outputText rendered="#{modifyFutureVacation.futureVacation.id != null}" value="#{modifyFutureVacation.futureVacation.locationFlag == 0 ? msgs.label_locIn : msgs.label_locOut}" />
+										</td>
+										<th width="15%">
+											<h:panelGroup id="locationBtnPanelGroupId">
+												<h:panelGroup rendered="#{modifyFutureVacation.futureVacation.locationFlag == 1}">
+													<h:commandButton id="locationBtnId" value="#{msgs.label_selectCountries}" onclick="getCountries('#{request.contextPath}'); return false;" disabled="true" styleClass="btn_normal" />
+													<h:outputText value="#{msgs.label_country}" />
+												</h:panelGroup>
+											</h:panelGroup>
+										</th>
+										<td width="35%">
+											<h:panelGroup id="locationPanelGroupId">
+												<h:panelGroup rendered="#{modifyFutureVacation.futureVacation.locationFlag == 1}">
+													<h:outputText id="locationId" value="#{modifyFutureVacation.futureVacation.location}" />
+												</h:panelGroup>
+											</h:panelGroup>
+										</td>
+									</tr>
+
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="newDataTitle">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<h:panelGroup rendered="#{modifyFutureVacation.currentEmployee.empId != null}">
+									<tr>
+										<td>#{msgs.label_requestData}</td>
+									</tr>
+								</h:panelGroup>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="newDataId">
+							<h:panelGroup rendered="#{modifyFutureVacation.currentEmployee.empId != null}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_modifyDecisionNumber}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="decisionNumberId" disabled="#{modifyFutureVacation.newFutureVacation.approvedFlag == 1 or modifyFutureVacation.viewMode== 1}" value="#{modifyFutureVacation.newFutureVacation.decisionNumber}" />
+										</td>
+										<th width="15%">
+											#{msgs.label_decisionDate}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%">
+											<util:hijri id="decisionDateId" rendered="#{modifyFutureVacation.newFutureVacation.approvedFlag == 0 and modifyFutureVacation.viewMode != 1}" value="#{modifyFutureVacation.newFutureVacation.decisionDate}" nullable="true" viewOldRange="true" />
+											<h:outputText rendered="#{modifyFutureVacation.newFutureVacation.approvedFlag == 1 or modifyFutureVacation.viewMode== 1}" value="#{modifyFutureVacation.newFutureVacation.decisionDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_period}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%">
+											<h:inputText disabled="#{modifyFutureVacation.newFutureVacation.approvedFlag == 1 or modifyFutureVacation.viewMode== 1}" id="periodId" value="#{modifyFutureVacation.newFutureVacation.period}" maxlength="4" onkeypress="return isDigit(event);">
+												<f:ajax event="blur" execute="modifyFutureVacationFormId:newDataId" listener="#{modifyFutureVacation.startDateAndPeriodChangeListener(modifyFutureVacation.newFutureVacation)}" render="modifyFutureVacationFormId:newDataId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:inputText>
+
+										</td>
+										<th width="15%">#{msgs.label_endDate}</th>
+										<td width="35%">
+											<h:outputText id="futureVacationEndDateId" value="#{modifyFutureVacation.newFutureVacation.endDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_notes}</th>
+										<td width="85%" colspan="3">
+											<h:inputText disabled="#{modifyFutureVacation.newFutureVacation.approvedFlag == 1 or  modifyFutureVacation.viewMode== 1}" value="#{modifyFutureVacation.newFutureVacation.remarks}" maxlength="100" styleClass="inputDataLarge" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_attachments}</th>
+										<td width="85%" colspan="3">
+											<code:attachments loginEmpId="#{modifyFutureVacation.currentEmployee.empId}" attachmentId="#{modifyFutureVacation.newFutureVacation.attachments}" addEnableFlag="#{modifyFutureVacation.newFutureVacation.approvedFlag == 0 and modifyFutureVacation.viewMode != 1}" viewEnableFlag="true" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:panelGroup id="actionsPanelId">
+										<h:panelGroup rendered="#{modifyFutureVacation.currentEmployee.empId != null}">
+											<h:commandButton rendered="#{modifyFutureVacation.newFutureVacation.approvedFlag == 0 and  modifyFutureVacation.viewMode!= 1}" onclick="return handleOnAction('#{msgs.q_save}', 'validateVacationData()');" action="#{modifyFutureVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
+												<f:ajax execute="modifyFutureVacationFormId:newDataId" render="modifyFutureVacationFormId:actionsPanelId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:commandButton rendered="#{modifyFutureVacation.newFutureVacation.approvedFlag == 0 and modifyFutureVacation.newFutureVacation.id != null and  modifyFutureVacation.viewMode!= 1 }" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{modifyFutureVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+												<f:ajax execute="modifyFutureVacationFormId:newDataId" render="modifyFutureVacationFormId:selectEmpId modifyFutureVacationFormId:currentEmployeeId  modifyFutureVacationFormId:vacationDataTitle modifyFutureVacationFormId:futureVacationDataId modifyFutureVacationFormId:newDataTitle modifyFutureVacationFormId:newDataId modifyFutureVacationFormId:actionsPanelId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:commandButton rendered="#{modifyFutureVacation.viewMode == 0}" action="#{modifyFutureVacation.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+												<f:ajax execute="@form" render="modifyFutureVacationFormId:selectEmpId modifyFutureVacationFormId:currentEmployeeId  modifyFutureVacationFormId:vacationDataTitle modifyFutureVacationFormId:futureVacationDataId modifyFutureVacationFormId:newDataTitle modifyFutureVacationFormId:newDataId modifyFutureVacationFormId:actionsPanelId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</h:panelGroup>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
 			</table>
 		</ui:decorate>
 	</h:form>
 </h:body>
 </html>
-

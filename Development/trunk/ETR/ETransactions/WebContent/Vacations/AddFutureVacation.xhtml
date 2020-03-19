@@ -221,7 +221,7 @@
 										</th>
 										<td width="35%">
 											<h:inputText id="periodId" value="#{addFutureVacation.futureVacation.period}" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}" maxlength="4" onkeypress="return isDigit(event);">
-												<f:ajax event="blur" execute="addFutureVacationFormId:selectedVacationStartDateId addFutureVacationFormId:futureVacTypeId" listener="#{addFutureVacation.startDateAndPeriodChangeListener}" render="addFutureVacationFormId:selectedVacationEndDateId  addFutureVacationFormId:notifyMessagesId" />
+												<f:ajax event="blur" execute="addFutureVacationFormId:selectedVacationStartDateId addFutureVacationFormId:futureVacTypeId" listener="#{addFutureVacation.startDateAndPeriodChangeListener(addFutureVacation.futureVacation)}" render="addFutureVacationFormId:selectedVacationEndDateId  addFutureVacationFormId:notifyMessagesId" />
 											</h:inputText>
 											<h:outputText rendered="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1}" value="#{addFutureVacation.futureVacation.period}" />
 										</td>
@@ -241,7 +241,7 @@
 										</th>
 										<td width="35%">
 											<h:outputText rendered="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1}" value="#{addFutureVacation.futureVacation.startDateString}" />
-											<util:hijri id="selectedVacationStartDateId" value="#{addFutureVacation.futureVacation.startDate}" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}" onChangeAjaxSubmit="true" viewOldRange="true" listenerMethod="#{addFutureVacation.startDateAndPeriodChangeListener}" reRenderIds="addFutureVacationFormId:vacationBalanceId addFutureVacationFormId:selectedVacationEndDateId  addFutureVacationFormId:notifyMessagesId" />
+											<util:hijri id="selectedVacationStartDateId" value="#{addFutureVacation.futureVacation.startDate}" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 and addFutureVacation.viewMode != 1}" onChangeAjaxSubmit="true" viewOldRange="true" listenerMethod="#{addFutureVacation.startDateAndPeriodChangeListener(addFutureVacation.futureVacation)}" reRenderIds="addFutureVacationFormId:vacationBalanceId addFutureVacationFormId:selectedVacationEndDateId  addFutureVacationFormId:notifyMessagesId" />
 										</td>
 										<th width="15%">#{msgs.label_endDate}</th>
 										<td width="35%">

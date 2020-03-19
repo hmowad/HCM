@@ -62,8 +62,7 @@ public class FutureVacationsService extends BaseService {
     }
 
     public static void modifyFutureVacation(TransientVacationTransaction futureVacationTransaction, EmployeeData vacationBeneficiary, boolean signFutureVacationFlag, boolean skipValidationFlag, CustomSession... useSession) throws BusinessException {
-	TransientVacationTransactionData vacationData = getFutureVacationTransactionDataById(futureVacationTransaction.getId());
-	if (vacationData != null) {
+	if (futureVacationTransaction != null) {
 	    validateDecisionNumber(futureVacationTransaction);
 	    if (futureVacationTransaction.getRequestType() != RequestTypesEnum.CANCEL.getCode() && !skipValidationFlag) {
 		validateFutureVacationRules(futureVacationTransaction, vacationBeneficiary);
@@ -196,6 +195,11 @@ public class FutureVacationsService extends BaseService {
 	    throw new BusinessException("error_vacationBeforeSysDate");
     }
 
+    public static void validateOldFutureVacationActivationStatus(Long parentVacationId, Long vacationId) throws BusinessException {
+	TransientVacationTransactionData oldFutureVacationTransactionData = getFutureVacationTransactionDataByParentId(parentVacationId, vacationId);
+	if (oldFutureVacationTransactionData != null)
+	    throw new BusinessException("error_vacationHasBeenModifiedOrCanceled");
+    }
     /*---------------------------Utilities------------------------------*/
 
     private static Vacation constructVacation(TransientVacationTransaction futureVacationTransaction) {
@@ -237,11 +241,35 @@ public class FutureVacationsService extends BaseService {
     }
 
     public static TransientVacationTransactionData getFutureVacationTransactionDataById(long id) throws BusinessException {
+	return getFutureVacationTransactionData(id, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.OFF.getCode());
+    }
+
+    public static TransientVacationTransactionData getFutureVacationTransactionDataByVacType(long empId, long vactionTypeId, long approvedFlag) throws BusinessException {
+	return getFutureVacationTransactionData(FlagsEnum.ALL.getCode(), empId, vactionTypeId, approvedFlag);
+    }
+
+    private static TransientVacationTransactionData getFutureVacationTransactionData(long id, long empId, long vactionTypeId, long approvedFlag) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_VACATION_ID", id);
+	    qParams.put("P_EMPLOYEE_ID", empId);
+	    qParams.put("P_VACATION_TYPE_ID", vactionTypeId);
+	    qParams.put("P_APPROVED_FLAG", approvedFlag);
 
 	    List<TransientVacationTransactionData> result = DataAccess.executeNamedQuery(TransientVacationTransactionData.class, QueryNamesEnum.HCM_GET_FUTURE_VACATION_TRANSACTION_BY_ID.getCode(), qParams);
+	    return result.isEmpty() ? null : result.get(0);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_getVacationData");
+	}
+    }
+
+    public static TransientVacationTransactionData getFutureVacationTransactionDataByParentId(Long parentId, Long vacationId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_PARENT_ID", parentId);
+	    qParams.put("P_VACATION_ID", vacationId == null ? FlagsEnum.ALL.getCode() : vacationId);
+	    List<TransientVacationTransactionData> result = DataAccess.executeNamedQuery(TransientVacationTransactionData.class, QueryNamesEnum.HCM_GET_FUTURE_VACATION_TRANSACTION_BY_PARENT_ID.getCode(), qParams);
 	    return result.isEmpty() ? null : result.get(0);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
