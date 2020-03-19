@@ -1,5 +1,7 @@
 package com.code.dal.orm.setup;
 
+import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,13 +11,14 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @NamedQueries({
-	@NamedQuery(name = "hcm_adminDecision_getAdminDecisionById",
+	@NamedQuery(name = "hcm_adminDecision_searchAdminDecision",
 		query = " select a from AdminDecision a" +
-			" where (a.id = :P_ADMIN_DECISION_ID)")
+			" where (:P_ADMIN_DECISION_ID = -1 OR a.id = :P_ADMIN_DECISION_ID) " +
+			" and (:P_ADMIN_DECISION_NAME = '-1' OR a.name = :P_ADMIN_DECISION_NAME)")
 })
 @Entity
 @Table(name = "HCM_VW_ADMIN_DECISIONS")
-public class AdminDecision {
+public class AdminDecision implements Serializable {
 
     private Long id;
     private String name;

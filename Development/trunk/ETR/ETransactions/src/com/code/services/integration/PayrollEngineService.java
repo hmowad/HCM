@@ -15,8 +15,10 @@ import javax.json.JsonReader;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
+import com.code.dal.orm.hcm.retirements.DisclaimerTransaction;
 import com.code.dal.orm.integration.payroll.AdminDecisionVariablesMapping;
 import com.code.dal.orm.integration.payroll.PayrollIntegrationFailureLog;
+import com.code.dal.orm.integration.payroll.PayrollIntegrationFailureLogData;
 import com.code.dal.orm.setup.AdminDecision;
 import com.code.enums.FlagsEnum;
 import com.code.enums.IntegrationTypeFlagEnum;
@@ -59,6 +61,9 @@ public class PayrollEngineService extends BaseService {
 	    payrollIntegrationFailureLog.setDecisionNumber(adminDecisionEmployeeDataList.get(0).getDecisionNumber());
 	    payrollIntegrationFailureLog.setDecisionDate(HijriDateService.getHijriDate(HijriDateService.gregToHijriDateString(decisionDateString)));
 	    payrollIntegrationFailureLog.setTableName(tableName);
+	    payrollIntegrationFailureLog.setAdminDecisionId(adminDecisionId);
+	    payrollIntegrationFailureLog.setCategoryId(categoryId);
+	    payrollIntegrationFailureLog.setExecutedFlag(FlagsEnum.OFF.getCode());
 	    if (adminDecisionId == null)
 		throw new BusinessException("error_adminDecisionRecordDosntExist");
 
@@ -268,29 +273,20 @@ public class PayrollEngineService extends BaseService {
 
     }
 
-    public static AdminDecision getAdminDecisionById(long adminDecisionId) throws BusinessException {
-	try {
-	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put("P_ADMIN_DECISION_ID", adminDecisionId);
-	    List<AdminDecision> result = DataAccess.executeNamedQuery(AdminDecision.class, QueryNamesEnum.HCM_GET_ADMIN_DECISION_BY_ID.getCode(), qParams);
-	    return (result != null && result.size() > 0) ? result.get(0) : null;
-	} catch (DatabaseException e) {
-	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+    public static void resendFailedTransaction(PayrollIntegrationFailureLogData payrollIntegrationFailureLogData) throws BusinessException {
+	if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(DisclaimerTransaction.class))) {
+
 	}
+	// TODO:
     }
 
-    private static AdminDecisionVariablesMapping getAdminDecisionVariablesMappingByVariableNameAndHCMValue(String variableName, String hcmValue) throws BusinessException {
-	try {
-	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put("P_VARIABLE_NAME", variableName == null ? FlagsEnum.ALL.getCode() + "" : variableName);
-	    qParams.put("P_HCM_VALUE", hcmValue == null ? FlagsEnum.ALL.getCode() + "" : hcmValue);
-	    List<AdminDecisionVariablesMapping> result = DataAccess.executeNamedQuery(AdminDecisionVariablesMapping.class, QueryNamesEnum.HCM_GET_ADMIN_DECISION_VARIABLES_MAPPING_BY_VARIABLE_NAME_AND_HCM_VALUE.getCode(), qParams);
-	    return (result != null && result.size() > 0) ? result.get(0) : null;
-	} catch (DatabaseException e) {
-	    e.printStackTrace();
-	    throw new BusinessException("error_general");
-	}
+    public static AdminDecision getAdminDecisionById(long adminDecisionId) throws BusinessException {
+	List<AdminDecision> result = searchAdminDecision(adminDecisionId, null);
+	return (result != null && result.size() > 0) ? result.get(0) : null;
+    }
+
+    public static List<AdminDecision> getAllAdminDecisions() throws BusinessException {
+	return searchAdminDecision(null, null);
     }
 
     public static void addPayrollIntegrationFailureReport(PayrollIntegrationFailureLog payrollIntegrationFailureLog, CustomSession... useSession) throws DatabaseException {
@@ -313,6 +309,52 @@ public class PayrollEngineService extends BaseService {
 	} finally {
 	    if (!isOpenedSession)
 		session.close();
+	}
+    }
+
+    private static List<AdminDecision> searchAdminDecision(Long adminDecisionId, String adminDecisionName) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_ADMIN_DECISION_ID", adminDecisionId == null ? FlagsEnum.ALL.getCode() : adminDecisionId);
+	    qParams.put("P_ADMIN_DECISION_NAME", adminDecisionName == null || adminDecisionName.equals("") ? FlagsEnum.ALL.getCode() + "" : adminDecisionName);
+	    return DataAccess.executeNamedQuery(AdminDecision.class, QueryNamesEnum.HCM_SEARCH_ADMIN_DECISION.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    private static AdminDecisionVariablesMapping getAdminDecisionVariablesMappingByVariableNameAndHCMValue(String variableName, String hcmValue) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_VARIABLE_NAME", variableName == null ? FlagsEnum.ALL.getCode() + "" : variableName);
+	    qParams.put("P_HCM_VALUE", hcmValue == null ? FlagsEnum.ALL.getCode() + "" : hcmValue);
+	    List<AdminDecisionVariablesMapping> result = DataAccess.executeNamedQuery(AdminDecisionVariablesMapping.class, QueryNamesEnum.HCM_GET_ADMIN_DECISION_VARIABLES_MAPPING_BY_VARIABLE_NAME_AND_HCM_VALUE.getCode(), qParams);
+	    return (result != null && result.size() > 0) ? result.get(0) : null;
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static List<PayrollIntegrationFailureLogData> getPayrollIntegrationFailureLog(Long categoryId, Long adminDecisionId, String decisionNumber, String decisionDateString) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_CATEGORY_ID", categoryId == null ? FlagsEnum.ALL.getCode() : categoryId);
+	    qParams.put("P_ADMIN_DECISION_ID", adminDecisionId == null ? FlagsEnum.ALL.getCode() : adminDecisionId);
+	    qParams.put("P_DECISION_NUMBER", decisionNumber == null || decisionNumber.equals("") ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
+	    if (decisionDateString == null || decisionDateString.equals("")) {
+		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_DECISION_DATE", HijriDateService.getHijriSysDateString());
+	    } else {
+		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_DECISION_DATE", decisionDateString);
+	    }
+
+	    return DataAccess.executeNamedQuery(PayrollIntegrationFailureLogData.class, QueryNamesEnum.HCM_GET_NON_EXECUTED_PAYROLL_INTEGRATION_FAILURE_LOG.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
 	}
     }
 

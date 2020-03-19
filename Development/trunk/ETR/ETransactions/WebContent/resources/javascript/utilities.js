@@ -459,6 +459,13 @@ function openSelectCountries(mode, contextPath, miniSearchReturnHandler){
     unMaskOnPopupClose(childWindow);
 }
 
+function openSelectAdminDecision(contextPath, miniSearchReturnHandler){
+	var specsStr = getPopupWindowSpecsString(0.85, 0.75, 'no', 'yes');
+	maskOpenerScreen();
+	var childWindow = window.open(contextPath+'/MiniSearch/AdminDecisionMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler, null, specsStr);
+    unMaskOnPopupClose(childWindow);
+}
+
 function openUnitsMiniSearchByUnitsIdsString(contextPath, miniSearchReturnHandler, unitsIdsString, multipleSelectFlag){
 	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
 	maskOpenerScreen();
