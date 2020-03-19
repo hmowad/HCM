@@ -4,12 +4,42 @@
 <h:head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<h:outputStylesheet library="css" name="styles.css" />
-	<h:outputStylesheet library="css" name="grid.css" />
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
 
 	<script type="text/javascript">
-    //<![CDATA[ 
-     // ]]>
+   		 //<![CDATA[
+    	function getEmp(contextPath) {
+    	     if(#{cancelFutureVacation.screenMode == 1})
+    	    	 openEmployeesMiniSearchForFutureVacation(contextPath, 'handleEmpMiniSearchResult(ret)', 21, '1', '#{cancelFutureVacation.employeeIds}');
+             else
+            	 openEmployeesMiniSearchForFutureVacation(contextPath, 'handleEmpMiniSearchResult(ret)', 21, '#{cancelFutureVacation.categoriesIds}', '-1');
+					}
+   		  		function handleEmpMiniSearchResult(ret) {
+		   			if (ret != null) {
+		   				document.getElementById('cancelFutureVacationFormId:empIdHId').value = ret[0];
+		   				document.getElementById('cancelFutureVacationFormId:selectEmpBtnHId').click();
+		   				}
+   		     		}
+ 
+   		    function validateVacationData() {
+  				var VacationType = document.getElementById('cancelFutureVacationFormId:futureVacTypeId').value;
+   				if(VacationType == null || VacationType == ''){
+   					alert("#{msgs.error_vacationTypeMandatory}");
+   					return false;
+   				}
+   				var decisionNumber = document.getElementById('cancelFutureVacationFormId:decisionNumberId').value;
+   				if(decisionNumber == null || decisionNumber == ''){
+   					alert("#{msgs.error_decisionNumberMandatory}");
+   					return false;
+   				}
+   				var decisionDateDay = document.getElementById('cancelFutureVacationFormId:decisionDateId:day').value;
+   				if (decisionDateDay == null || decisionDateDay == 0) {
+   				   	alert('#{msgs.error_decDateMandatory}');
+   				   	return false;
+   				   	}
+   				return true;
+   		    }
+   		 // ]]>
         </script>
 </h:head>
 <h:body styleClass="screenBg">
@@ -19,13 +49,13 @@
 				<tr>
 					<td width="100%" height="5" />
 				</tr>
-
 				<tr>
 					<td class="screenTitle">#{cancelFutureVacation.screenTitle}</td>
 				</tr>
 				<tr>
 					<td width="100%" height="5" />
 				</tr>
+
 				<tr>
 					<td width="100%">
 						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
@@ -35,9 +65,204 @@
 						</table>
 					</td>
 				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="selectEmpId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">
+										#{msgs.label_selectEmp}
+										<font style="color: red;"> *</font>
+									</th>
+									<td width="85%" colspan="3">
+										<h:outputText id="empNameId" value="#{cancelFutureVacation.currentEmployee.name}" />
+										<h:commandButton disabled="#{cancelFutureVacation.admin == false}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectVacation}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+										<h:inputHidden id="empIdHId" value="#{cancelFutureVacation.empId}" />
+										<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{cancelFutureVacation.selectEmployee}">
+											<f:ajax execute="cancelFutureVacationFormId:empIdHId" render="cancelFutureVacationFormId:selectEmpId cancelFutureVacationFormId:currentEmployeeId  cancelFutureVacationFormId:vacationDataTitle cancelFutureVacationFormId:futureVacationDataId cancelFutureVacationFormId:newDataTitle cancelFutureVacationFormId:newDataId cancelFutureVacationFormId:actionsPanelId cancelFutureVacationFormId:notifyMessagesId " onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="currentEmployeeId">
+							<code:emp value="#{cancelFutureVacation.currentEmployee}" rendered="#{cancelFutureVacation.currentEmployee.empId != null}" />
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="vacationDataTitle">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+
+								<h:panelGroup rendered="#{cancelFutureVacation.currentEmployee.empId != null}">
+									<tr>
+										<td>#{msgs.label_vacationData}</td>
+									</tr>
+								</h:panelGroup>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+							<h:panelGroup id="futureVacationDataId">
+							<h:panelGroup rendered="#{cancelFutureVacation.currentEmployee.empId != null}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_vacType}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%">
+											<h:selectOneMenu id="futureVacTypeId" value="#{cancelFutureVacation.vacationTypeId}" disabled="#{cancelFutureVacation.viewMode != 0 and cancelFutureVacation.futureVacation.approvedFlag != 0}">
+												<f:selectItems value="#{cancelFutureVacation.vacTypeList}" var="vacType" itemLabel="#{(cancelFutureVacation.currentEmployee.categoryId == 1 or cancelFutureVacation.currentEmployee.categoryId == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
+												<f:ajax event="change" listener="#{cancelFutureVacation.selectVacation()}" execute="cancelFutureVacationFormId:futureVacTypeId" render="cancelFutureVacationFormId:futureVacationDataId cancelFutureVacationFormId:newDataId cancelFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneMenu>
+										</td>
+										<th width="15%">#{msgs.label_period}</th>
+										<td width="35%">
+											<h:outputText value="#{cancelFutureVacation.futureVacation.period}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_startDate}</th>
+										<td width="35%">
+											<h:outputText value="#{cancelFutureVacation.futureVacation.startDateString}" />
+										</td>
+										<th width="15%">#{msgs.label_endDate}</th>
+										<td width="35%">
+											<h:outputText value="#{cancelFutureVacation.futureVacation.endDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_decisionNumber}</th>
+										<td width="35%">
+											<h:outputText value="#{cancelFutureVacation.futureVacation.decisionNumber}" />
+										</td>
+										<th width="15%">#{msgs.label_decisionDate}</th>
+										<td width="35%">
+											<h:outputText value="#{cancelFutureVacation.futureVacation.decisionDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_location}</th>
+										<td width="35%">
+											<h:outputText rendered="#{cancelFutureVacation.futureVacation.id != null}" value="#{cancelFutureVacation.futureVacation.locationFlag == 0 ? msgs.label_locIn : msgs.label_locOut}" />
+										</td>
+										<th width="15%">
+											<h:panelGroup id="locationBtnPanelGroupId">
+												<h:panelGroup rendered="#{cancelFutureVacation.futureVacation.locationFlag == 1}">
+													<h:commandButton id="locationBtnId" value="#{msgs.label_selectCountries}" onclick="getCountries('#{request.contextPath}'); return false;" disabled="true" styleClass="btn_normal" />
+													<h:outputText value="#{msgs.label_country}" />
+												</h:panelGroup>
+											</h:panelGroup>
+										</th>
+										<td width="35%">
+											<h:panelGroup id="locationPanelGroupId">
+												<h:panelGroup rendered="#{cancelFutureVacation.futureVacation.locationFlag == 1}">
+													<h:outputText id="locationId" value="#{cancelFutureVacation.futureVacation.location}" />
+												</h:panelGroup>
+											</h:panelGroup>
+										</td>
+									</tr>
+
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="newDataTitle">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<h:panelGroup rendered="#{cancelFutureVacation.currentEmployee.empId != null}">
+									<tr>
+										<td>#{msgs.label_requestData}</td>
+									</tr>
+								</h:panelGroup>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="newDataId">
+							<h:panelGroup rendered="#{cancelFutureVacation.currentEmployee.empId != null}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_cancelDecisionNumber}
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%">
+											<h:inputText id="decisionNumberId" value="#{cancelFutureVacation.newFutureVacation.decisionNumber}" disabled="#{cancelFutureVacation.newFutureVacation.approvedFlag == 1 or cancelFutureVacation.viewMode==1}" />
+										</td>
+										<th width="15%">
+											#{msgs.label_decisionDate} `
+											<font style="color: red;"> *</font>
+										</th>
+										<td width="35%">
+											<util:hijri id="decisionDateId" rendered="#{cancelFutureVacation.newFutureVacation.approvedFlag == 0 and cancelFutureVacation.viewMode!=1}" value="#{cancelFutureVacation.newFutureVacation.decisionDate}" nullable="true" viewOldRange="true" />
+											<h:outputText rendered="#{cancelFutureVacation.newFutureVacation.approvedFlag == 1 or cancelFutureVacation.viewMode== 1}" value="#{cancelFutureVacation.newFutureVacation.decisionDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_notes}</th>
+										<td width="85%" colspan="3">
+											<h:inputText id="remarks" value="#{cancelFutureVacation.newFutureVacation.remarks}" disabled="#{cancelFutureVacation.newFutureVacation.approvedFlag == 1 or cancelFutureVacation.viewMode==1}" maxlength="100" styleClass="inputDataLarge">
+											</h:inputText>
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_attachments}</th>
+										<td width="85%" colspan="3">
+											<code:attachments loginEmpId="#{cancelFutureVacation.currentEmployee.empId}" attachmentId="#{cancelFutureVacation.futureVacation.attachments}" addEnableFlag="#{cancelFutureVacation.newFutureVacation.approvedFlag == 0 and cancelFutureVacation.viewMode != 1}" viewEnableFlag="true" />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:panelGroup id="actionsPanelId">
+										<h:panelGroup rendered="#{cancelFutureVacation.currentEmployee.empId != null}">
+											<h:commandButton rendered="#{cancelFutureVacation.newFutureVacation.approvedFlag == 0 and cancelFutureVacation.viewMode!=1}" onclick="return handleOnAction('#{msgs.q_save}', 'validateVacationData()');" action="#{cancelFutureVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
+												<f:ajax execute="@form" render="cancelFutureVacationFormId:actionsPanelId cancelFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:commandButton rendered="#{cancelFutureVacation.newFutureVacation.approvedFlag == 0 and cancelFutureVacation.newFutureVacation.id != null and cancelFutureVacation.viewMode!=1}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{cancelFutureVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+												<f:ajax execute="@form" render="cancelFutureVacationFormId:selectEmpId cancelFutureVacationFormId:currentEmployeeId  cancelFutureVacationFormId:vacationDataTitle cancelFutureVacationFormId:futureVacationDataId cancelFutureVacationFormId:newDataTitle cancelFutureVacationFormId:newDataId cancelFutureVacationFormId:actionsPanelId cancelFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+											<h:commandButton rendered="#{cancelFutureVacation.viewMode==0}" action="#{cancelFutureVacation.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+												<f:ajax execute="@form" render="cancelFutureVacationFormId:selectEmpId cancelFutureVacationFormId:currentEmployeeId  cancelFutureVacationFormId:vacationDataTitle cancelFutureVacationFormId:futureVacationDataId cancelFutureVacationFormId:newDataTitle cancelFutureVacationFormId:newDataId cancelFutureVacationFormId:actionsPanelId cancelFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:commandButton>
+										</h:panelGroup>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
 			</table>
 		</ui:decorate>
 	</h:form>
 </h:body>
 </html>
-
