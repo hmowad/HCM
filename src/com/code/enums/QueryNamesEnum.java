@@ -69,6 +69,7 @@ public enum QueryNamesEnum {
     HCM_UPDATE_EMPLOYEES_DUE_TO_ANNUAL_RAISE_EFFECT("hcm_raiseEmployee_updateEmployeesDueToAnnualRaiseEffect"),
     HCM_DELETE_RAISE_EMPLOYEES_BY_RAISE_ID("hcm_raiseEmployee_deleteRaiseEmployeesByRaiseId"),
     HCM_GET_FIRST_RAISE_TRRANSACTION_AFTER_GIVEN_DATE("hcm_raiseTransaction_getFirstRaiseTransactionAfterGivenDate"),
+    HCM_GET_RAISE_TRANSACTION_DATA_BY_DECISION_DATE_AND_NUMBER("hcm_raiseTransaction_getRaiseTransactionByDecisionNumberAndDecisionDate"),
     HCM_GET_ALL_RAISES_FOR_EMPLOYEES_AFTER_GIVEN_DATE("hcm_raiseTransaction_getAllRaisesForEmployeesAfterGivenDate"),
     HCM_GET_FUTURE_RAISES_BY_EMP_ID("hcm_raiseTransactionData_getFutureRaisesByEmpId"),
     HCM_GET_ALL_RAISES_BY_EMP_ID("hcm_raiseTransactionData_getAllRaisesByEmpId"),
@@ -424,6 +425,7 @@ public enum QueryNamesEnum {
     HCM_GET_PROMOTION_TRANSACTIONS("hcm_promotionTransactionData_searchPromotionTransactions"),
     HCM_GET_PROMOTIONS_DECISIONS("hcm_promotionTransactionData_searchPromotionTransactionsDecisions"),
     HCM_COUNT_PROMOTION_TRANSACTIONS("hcm_promotionTransaction_countPromotionTransactions"),
+    HCM_GET_PROMOTION_TRANSACTION_DATA_BY_DECISION_NUMBER_AND_DECISION_DATE("hcm_promotionTransactionData_getPromotionTransactionDataByDecisionDateAndDecisionNumber"),
 
     WF_GET_WFPROMOTION_BY_INSTANCE_ID("wf_wfPromotion_getWFPromotionByInstanceId"),
     WF_GET_WFPROMOTIONS_TASKS("wf_wfPromotion_getWFPromotionsTasks"),
@@ -506,6 +508,7 @@ public enum QueryNamesEnum {
     /* ****************************************** Disclaimer ******************************************* */
     HCM_GET_DISCLAIMER_TRANSACTION_DATA("hcm_disclaimerTransactionData_getDisclaimerTransaction"),
     HCM_GET_DISCLAIMER_TRANSACTION_DATA_AFTER_DESICION_DATE("hcm_disclaimerTransactionData_getDisclaimerTransactionBasedOnDecisionDate"),
+    HCM_GET_DISCLAIMER_TRANSACTION_DATA_BY_DECISION_DATE_AND_NUMBER("hcm_disclaimerTransactionData_getDisclaimerTransactionBasedOnDecisionDateAndDecisionNumber"),
     WF_GET_DISCLAIMER_DATA("wf_disclaimerData_getWFDisclaimerData"),
     WF_GET_RETIREMENT_TASKS("wf_disclaimerData_getRetirementsTasks"),
     WF_GET_RUNNING_DISCLAIMER_REQUESTS("wf_disclaimerData_getRunningDisclaimerRequests"),

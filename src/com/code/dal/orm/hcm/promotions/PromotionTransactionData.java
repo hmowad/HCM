@@ -38,7 +38,12 @@ import com.code.services.util.HijriDateService;
 			" and (:P_CATEGORY_ID = -1 or p.categoryId = :P_CATEGORY_ID) " +
 			" and p.eflag != 0  " +
 			" and (p.id = (select min(pt.id) from PromotionTransaction pt where pt.decisionNumber = p.decisionNumber and pt.decisionDate = p.decisionDate and (:P_EMP_ID = -1 or pt.empId = :P_EMP_ID))) " +
-			" order by p.decisionDate desc ")
+			" order by p.decisionDate desc "),
+	@NamedQuery(name = "hcm_promotionTransactionData_getPromotionTransactionDataByDecisionDateAndDecisionNumber",
+		query = " select d from PromotionTransactionData d " +
+			" where (:P_DECISION_NUMBER = '-1' or d.decisionNumber = :P_DECISION_NUMBER) "
+			+ "and (:P_DECISION_DATE_FLAG = '-1' or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') = d.decisionDate)" +
+			" order by d.decisionDate")
 })
 
 @Entity

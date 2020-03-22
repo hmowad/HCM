@@ -302,7 +302,7 @@ public class MovementsService extends BaseService {
 		    handleInternalAssignmentTransactions(movementTransactions, session);
 
 		if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode())) {
-		    doPayrollIntegration(movementTransactions, session);
+		    doPayrollIntegration(movementTransactions, FlagsEnum.OFF.getCode(), session);
 		}
 		if (!isOpenedSession)
 		    session.commitTransaction();
@@ -317,7 +317,7 @@ public class MovementsService extends BaseService {
 	}
     }
 
-    private static void doPayrollIntegration(List<MovementTransactionData> movementTransactions, CustomSession session) throws BusinessException {
+    private static void doPayrollIntegration(List<MovementTransactionData> movementTransactions, Integer resendFlag, CustomSession session) throws BusinessException {
 	List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
 	Long adminDecision = null;
 	if (movementTransactions != null && movementTransactions.size() > 0) {
@@ -398,8 +398,18 @@ public class MovementsService extends BaseService {
 		String gregDecisionDateString = HijriDateService.hijriToGregDateString(movementTransactions.get(0).getDecisionDateString());
 		if (session != null)
 		    session.flushTransaction();
-		PayrollEngineService.doPayrollIntegration(adminDecision, movementTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, (movementTransactions.get(0).getUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : movementTransactions.get(0).getUnitId()), gregDecisionDateString, DataAccess.getTableName(MovementTransaction.class), session);
+		PayrollEngineService.doPayrollIntegration(adminDecision, movementTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, (movementTransactions.get(0).getUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : movementTransactions.get(0).getUnitId()), gregDecisionDateString, DataAccess.getTableName(MovementTransaction.class), resendFlag, session);
 	    }
+	}
+    }
+
+    public static void payrollIntegrationFailureHandle(String decisionNumber, Date decisionDate, CustomSession session) throws BusinessException {
+	List<MovementTransactionData> movementTransactionDataList = getMovementTransactionsByDecisionNumberAndDecisionDate(decisionNumber, decisionDate, decisionDate);
+	if (movementTransactionDataList != null && movementTransactionDataList.size() != 0) {
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		doPayrollIntegration(movementTransactionDataList, FlagsEnum.ON.getCode(), session);
+	} else {
+	    throw new BusinessException("error_transactionDataRetrievingError");
 	}
     }
 
@@ -3324,7 +3334,7 @@ public class MovementsService extends BaseService {
 	list.add(movementTransaction);
 	updateMovementTransactions(list, useSession);
 	if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
-	    doPayrollIntegration(list, isSessionOpened(useSession) ? useSession[0] : null);
+	    doPayrollIntegration(list, FlagsEnum.OFF.getCode(), isSessionOpened(useSession) ? useSession[0] : null);
     }
 
     public static void handleMovementTrasactionReturnJoiningDate(long transactionId, Date returnJoiningDate, long loginUserId, CustomSession... useSession) throws BusinessException {
@@ -3336,7 +3346,7 @@ public class MovementsService extends BaseService {
 	list.add(movementTransaction);
 	updateMovementTransactions(list, useSession);
 	if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
-	    doPayrollIntegration(list, isSessionOpened(useSession) ? useSession[0] : null);
+	    doPayrollIntegration(list, FlagsEnum.OFF.getCode(), isSessionOpened(useSession) ? useSession[0] : null);
     }
 
     /**

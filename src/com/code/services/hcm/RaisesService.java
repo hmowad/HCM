@@ -297,7 +297,7 @@ public class RaisesService extends BaseService {
 	return raise;
     }
 
-    private static void doPayrollIntegration(List<RaiseTransaction> raiseTransactions, CustomSession session) throws BusinessException {
+    private static void doPayrollIntegration(List<RaiseTransaction> raiseTransactions, Integer resendFlag, CustomSession session) throws BusinessException {
 	if (raiseTransactions != null && raiseTransactions.size() > 0) {
 	    Long adminDecisionId = null;
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
@@ -317,8 +317,18 @@ public class RaisesService extends BaseService {
 		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), raiseTransactionData.getId(), null, gregExecutionDateString, null, raiseTransactionData.getDecisionNumber(), null));
 		}
 		session.flushTransaction();
-		PayrollEngineService.doPayrollIntegration(adminDecisionId, raiseTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, employee == null || employee.getPhysicalUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(RaiseTransaction.class), session);
+		PayrollEngineService.doPayrollIntegration(adminDecisionId, raiseTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, employee == null || employee.getPhysicalUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(RaiseTransaction.class), resendFlag, session);
 	    }
+	}
+    }
+
+    public static void PayrollIntegrationFailureHandle(String decisionNumber, Date decisionDate, CustomSession session) throws BusinessException {
+	List<RaiseTransaction> raiseTransactionDataList = getRaiseTransactionByDecisionNumberAndDecisionDate(decisionNumber, decisionDate);
+	if (raiseTransactionDataList != null && raiseTransactionDataList.size() != 0) {
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		doPayrollIntegration(raiseTransactionDataList, FlagsEnum.ON.getCode(), session);
+	} else {
+	    throw new BusinessException("error_transactionDataRetrievingError");
 	}
     }
     /*----------------------------------------Validations----------------------------------------------*/
@@ -1374,7 +1384,7 @@ public class RaisesService extends BaseService {
 
 	    updateRaise(raise, session);
 	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode())) {
-		doPayrollIntegration(raiseTransactions, session);
+		doPayrollIntegration(raiseTransactions, FlagsEnum.OFF.getCode(), session);
 	    }
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -1697,5 +1707,23 @@ public class RaisesService extends BaseService {
 	    throw new BusinessException("error_general");
 	}
 
+    }
+
+    private static List<RaiseTransaction> getRaiseTransactionByDecisionNumberAndDecisionDate(String decisionNumber, Date decisionDate) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put(":P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.length() == 0) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
+	    if (decisionDate == null) {
+		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ALL.getCode()+"");
+		qParams.put("P_DECISION_DATE", HijriDateService.getHijriSysDateString());
+	    } else {
+		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ON.getCode()+"");
+		qParams.put("P_DECISION_DATE", HijriDateService.getHijriDateString(decisionDate));
+	    }
+	    return DataAccess.executeNamedQuery(RaiseTransaction.class, QueryNamesEnum.HCM_GET_RAISE_TRANSACTION_DATA_BY_DECISION_DATE_AND_NUMBER.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
     }
 }

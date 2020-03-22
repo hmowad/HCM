@@ -27,7 +27,12 @@ import com.code.services.util.HijriDateService;
 		query = " select d from DisclaimerTransactionData d "
 			+ " where (:P_EMP_ID = -1 or d.empId = :P_EMP_ID) "
 			+ " and (:P_DECISION_DATE_FLAG = -1 or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') <= d.decisionDate) "
-			+ " order by d.decisionDate ")
+			+ " order by d.decisionDate"),
+	@NamedQuery(name = "hcm_disclaimerTransactionData_getDisclaimerTransactionBasedOnDecisionDateAndDecisionNumber",
+		query = " select d from DisclaimerTransactionData d " +
+			" where (:P_DECISION_NUMBER = '-1' or d.decisionNumber = :P_DECISION_NUMBER) "
+			+ "and (:P_DECISION_DATE_FLAG = -1 or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') = d.decisionDate)" +
+			" order by d.decisionDate")
 })
 
 @Entity
