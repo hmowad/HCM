@@ -847,7 +847,7 @@ public class VacationsWorkFlow extends BaseWorkFlow {
 
     private static void validateVacationRequestData(EmployeeData vacBeneficiary, WFVacation vacRequest, Integer skipWFFlag) throws BusinessException {
 
-	VacationsService.validateVacationRules(constructVacationTransaction(vacRequest, vacBeneficiary, null), vacBeneficiary, skipWFFlag);
+	VacationsService.validateVacationRules(constructVacationTransaction(vacRequest, vacBeneficiary, null), vacBeneficiary, skipWFFlag, FlagsEnum.ON.getCode());
     }
 
     public static void validateRunningVacationRequests(long beneficiaryId, long vacationTypeId) throws BusinessException {

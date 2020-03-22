@@ -13,10 +13,16 @@ import com.code.services.hcm.FutureVacationsService;
 public class ModifyFutureVacation extends FutureVacationBase {
 
     public ModifyFutureVacation() {
-
-	super.init();
-	adjustProcess();
-
+	try {
+	    super.init();
+	    if (viewMode != 0) {
+		newFutureVacation = FutureVacationsService.getFutureVacationTransactionDataById(vacationId);
+		futureVacation = FutureVacationsService.getFutureActiveVacationTransactionDataById(newFutureVacation.getTransientVacationParentId());
+	    }
+	    adjustProcess();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(e.getMessage());
+	}
     }
 
     public void adjustProcess() {
@@ -72,7 +78,7 @@ public class ModifyFutureVacation extends FutureVacationBase {
 	    }
 	    futureVacation.setActiveFlag(FlagsEnum.OFF.getCode());
 	    // todo wfskipFlag=true
-	    FutureVacationsService.modifyFutureVacation(futureVacation.getTransientVacationTransaction(), currentEmployee, false, false);
+	    FutureVacationsService.modifyFutureVacation(futureVacation.getTransientVacationTransaction(), currentEmployee, false, true);
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(this.getParameterizedMessage(e.getMessage(), e.getParams()));

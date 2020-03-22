@@ -57,9 +57,7 @@ public class FutureVacationBase extends BaseBacking {
 		    vacationId = Long.parseLong(this.getRequest().getParameter("vacId").trim());
 		if (this.getRequest().getParameter("employeeId") != null)
 		    empId = Long.parseLong(this.getRequest().getParameter("employeeId").trim());
-
 		currentEmployee = EmployeesService.getEmployeeData(empId);
-		futureVacation = FutureVacationsService.getFutureVacationTransactionDataById(vacationId);
 		vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
 	    } else {
 		reset();
@@ -100,7 +98,6 @@ public class FutureVacationBase extends BaseBacking {
 	    reset();
 	    currentEmployee = EmployeesService.getEmployeeData(empId);
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
-	    inquiryBalance();
 	    validateSignAdmins();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -109,7 +106,8 @@ public class FutureVacationBase extends BaseBacking {
 
     public void selectVacation() {
 	try {
-	    TransientVacationTransactionData selectedVacation = FutureVacationsService.getFutureVacationTransactionDataByVacType(empId, vacationTypeId, FlagsEnum.ON.getCode());
+	    vacationTypeId = futureVacation.getVacationTypeId();
+	    TransientVacationTransactionData selectedVacation = FutureVacationsService.getFutureVacationTransactionDataByVacType(empId, futureVacation.getVacationTypeId(), FlagsEnum.ON.getCode());
 	    if (selectedVacation != null) {
 		if ((selectedVacation.getRequestType() == RequestTypesEnum.MODIFY.getCode() || selectedVacation.getRequestType() == RequestTypesEnum.CANCEL.getCode()) && selectedVacation.getApprovedFlag() == FlagsEnum.OFF.getCode()) {
 		    newFutureVacation = selectedVacation;
@@ -137,6 +135,7 @@ public class FutureVacationBase extends BaseBacking {
 	    } else {
 		selectedVacation = new TransientVacationTransactionData();
 		selectedVacation.setApprovedFlag(FlagsEnum.OFF.getCode());
+		selectedVacation.setVacationTypeId(vacationTypeId);
 		newFutureVacation = selectedVacation;
 		futureVacation = selectedVacation;
 	    }
@@ -227,21 +226,12 @@ public class FutureVacationBase extends BaseBacking {
     }
 
     public void reset() {
-	try {
-	    currentEmployee = new EmployeeData();
-	    futureVacation = new TransientVacationTransactionData();
-	    newFutureVacation = new TransientVacationTransactionData();
-	    futureVacation.setLocationFlag(LocationFlagsEnum.INTERNAL.getCode());
-	    futureVacation.setApprovedFlag(FlagsEnum.OFF.getCode());
-	    futureVacation.setLocation(getMessage("label_ksa"));
-	    futureVacation.setVacationTypeId(VacationTypesEnum.REGULAR.getCode());
-	    futureVacation.setStartDate(HijriDateService.getHijriSysDate());
-	    futureVacation.setDecisionDate(HijriDateService.getHijriSysDate());
-	    vacationTypeId = VacationTypesEnum.REGULAR.getCode();
-	    balance = "";
-	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	}
+	currentEmployee = new EmployeeData();
+	futureVacation = new TransientVacationTransactionData();
+	newFutureVacation = new TransientVacationTransactionData();
+	futureVacation.setApprovedFlag(FlagsEnum.OFF.getCode());
+	futureVacation.setVacationTypeId(VacationTypesEnum.REGULAR.getCode());
+
     }
 
     public EmployeeData getCurrentEmployee() {
@@ -318,14 +308,6 @@ public class FutureVacationBase extends BaseBacking {
 
     public Long getEmpId() {
 	return empId;
-    }
-
-    public Long getVacationTypeId() {
-	return vacationTypeId;
-    }
-
-    public void setVacationTypeId(Long vacationTypeId) {
-	this.vacationTypeId = vacationTypeId;
     }
 
     public void setEmpId(Long empId) {

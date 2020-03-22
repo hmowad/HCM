@@ -113,7 +113,7 @@
 				</tr>
 				<tr>
 					<td width="100%">
-							<h:panelGroup id="futureVacationDataId">
+						<h:panelGroup id="futureVacationDataId">
 							<h:panelGroup rendered="#{cancelFutureVacation.currentEmployee.empId != null}">
 								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 									<tr>
@@ -122,7 +122,7 @@
 											<font style="color: red;"> *</font>
 										</th>
 										<td width="35%">
-											<h:selectOneMenu id="futureVacTypeId" value="#{cancelFutureVacation.vacationTypeId}" disabled="#{cancelFutureVacation.viewMode != 0 and cancelFutureVacation.futureVacation.approvedFlag != 0}">
+											<h:selectOneMenu id="futureVacTypeId" value="#{cancelFutureVacation.futureVacation.vacationTypeId}" disabled="#{cancelFutureVacation.viewMode != 0 and cancelFutureVacation.futureVacation.approvedFlag != 0}">
 												<f:selectItems value="#{cancelFutureVacation.vacTypeList}" var="vacType" itemLabel="#{(cancelFutureVacation.currentEmployee.categoryId == 1 or cancelFutureVacation.currentEmployee.categoryId == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
 												<f:ajax event="change" listener="#{cancelFutureVacation.selectVacation()}" execute="cancelFutureVacationFormId:futureVacTypeId" render="cancelFutureVacationFormId:futureVacationDataId cancelFutureVacationFormId:newDataId cancelFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:selectOneMenu>
@@ -158,19 +158,10 @@
 											<h:outputText rendered="#{cancelFutureVacation.futureVacation.id != null}" value="#{cancelFutureVacation.futureVacation.locationFlag == 0 ? msgs.label_locIn : msgs.label_locOut}" />
 										</td>
 										<th width="15%">
-											<h:panelGroup id="locationBtnPanelGroupId">
-												<h:panelGroup rendered="#{cancelFutureVacation.futureVacation.locationFlag == 1}">
-													<h:commandButton id="locationBtnId" value="#{msgs.label_selectCountries}" onclick="getCountries('#{request.contextPath}'); return false;" disabled="true" styleClass="btn_normal" />
-													<h:outputText value="#{msgs.label_country}" />
-												</h:panelGroup>
-											</h:panelGroup>
+											<h:outputText value="#{msgs.label_country}" />
 										</th>
 										<td width="35%">
-											<h:panelGroup id="locationPanelGroupId">
-												<h:panelGroup rendered="#{cancelFutureVacation.futureVacation.locationFlag == 1}">
-													<h:outputText id="locationId" value="#{cancelFutureVacation.futureVacation.location}" />
-												</h:panelGroup>
-											</h:panelGroup>
+											<h:outputText id="locationId" value="#{cancelFutureVacation.futureVacation.location}" />
 										</td>
 									</tr>
 
