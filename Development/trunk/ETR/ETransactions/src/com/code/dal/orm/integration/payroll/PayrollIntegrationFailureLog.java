@@ -30,6 +30,7 @@ public class PayrollIntegrationFailureLog extends BaseEntity {
     private Long adminDecisionId;
     private Long categoryId;
     private Integer executedFlag;
+    private Long rowId;
 
     @SequenceGenerator(name = "HCMPayrollIntgFailSeq",
 	    sequenceName = "HCM_PAYROLL_INTG_FAIL_SEQ")
@@ -144,6 +145,16 @@ public class PayrollIntegrationFailureLog extends BaseEntity {
 
     public void setExecutedFlag(Integer executedFlag) {
 	this.executedFlag = executedFlag;
+    }
+
+    @Basic
+    @Column(name = "ROW_ID")
+    public Long getRowId() {
+	return rowId;
+    }
+
+    public void setRowId(Long rowId) {
+	this.rowId = rowId;
     }
 
 }

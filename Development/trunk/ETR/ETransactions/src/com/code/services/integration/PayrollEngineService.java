@@ -15,6 +15,7 @@ import javax.json.JsonReader;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
+import com.code.dal.orm.hcm.employees.Employee;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransaction;
 import com.code.dal.orm.integration.payroll.AdminDecisionVariablesMapping;
 import com.code.dal.orm.integration.payroll.PayrollIntegrationFailureLog;
@@ -58,12 +59,13 @@ public class PayrollEngineService extends BaseService {
 	try {
 	    Log4jService.traceInfo(PayrollEngineService.class, "Start of doPayrollIntegration() method");
 	    PayrollIntegrationFailureLog payrollIntegrationFailureLog = new PayrollIntegrationFailureLog();
-	    payrollIntegrationFailureLog.setDecisionNumber(adminDecisionEmployeeDataList.get(0).getDecisionNumber());
+	    payrollIntegrationFailureLog.setDecisionNumber(adminDecisionEmployeeDataList.get(0).getOriginalAdminDecisionNumber() != null ? adminDecisionEmployeeDataList.get(0).getOriginalAdminDecisionNumber() : adminDecisionEmployeeDataList.get(0).getDecisionNumber());
 	    payrollIntegrationFailureLog.setDecisionDate(HijriDateService.getHijriDate(HijriDateService.gregToHijriDateString(decisionDateString)));
 	    payrollIntegrationFailureLog.setTableName(tableName);
 	    payrollIntegrationFailureLog.setAdminDecisionId(adminDecisionId);
 	    payrollIntegrationFailureLog.setCategoryId(categoryId);
 	    payrollIntegrationFailureLog.setExecutedFlag(FlagsEnum.OFF.getCode());
+	    payrollIntegrationFailureLog.setRowId(DataAccess.getTableName(Employee.class).equals(tableName) ? adminDecisionEmployeeDataList.get(0).getEmpId() : adminDecisionEmployeeDataList.get(0).getTransactionId());
 	    if (adminDecisionId == null)
 		throw new BusinessException("error_adminDecisionRecordDosntExist");
 
