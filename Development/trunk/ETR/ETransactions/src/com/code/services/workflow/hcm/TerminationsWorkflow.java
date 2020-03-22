@@ -863,7 +863,7 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 
 		TerminationsService.terminateEmployeeService(tempEmployees, session);
 		if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
-		    TerminationsService.doPayrollIntegration(terminationTransactionList, session);
+		    TerminationsService.doPayrollIntegration(terminationTransactionList, FlagsEnum.OFF.getCode(), session);
 	    }
 	    TerminationsService.logTerminatedEmployeeData(nonFutureTerminationTransaction, session);
 
@@ -1287,7 +1287,7 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 		    LogService.logEmployeeData(log, session);
 		}
 		if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
-		    TerminationsService.doPayrollIntegration(tmpList, session);
+		    TerminationsService.doPayrollIntegration(tmpList, FlagsEnum.OFF.getCode(), session);
 	    }
 
 	} catch (BusinessException e) {

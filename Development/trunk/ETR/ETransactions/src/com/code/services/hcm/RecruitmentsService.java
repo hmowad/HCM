@@ -909,7 +909,7 @@ public class RecruitmentsService extends BaseService {
 		    }
 		}
 		if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode())) {
-		    doPayrollIntegration(recruitmentTransactions, session);
+		    doPayrollIntegration(recruitmentTransactions, FlagsEnum.OFF.getCode(), session);
 		}
 	    }
 	} catch (BusinessException e) {
@@ -920,7 +920,7 @@ public class RecruitmentsService extends BaseService {
 	}
     }
 
-    private static void doPayrollIntegration(List<RecruitmentTransactionData> recruitmentTransactions, CustomSession session) throws BusinessException {
+    private static void doPayrollIntegration(List<RecruitmentTransactionData> recruitmentTransactions, Integer resendFlag, CustomSession session) throws BusinessException {
 	if (recruitmentTransactions.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
 	    EmployeeData emp = null;
@@ -933,7 +933,17 @@ public class RecruitmentsService extends BaseService {
 	    String gregDecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getDecisionDateString());
 	    session.flushTransaction();
 	    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_RECRUITMENT.getCode(), CategoriesEnum.OFFICERS.getCode(), gregRecDateString, adminDecisionEmployeeDataList,
-		    recruitmentTransactions != null && recruitmentTransactions.size() > 0 && recruitmentTransactions.get(0).getTransUnitFullName() != null ? UnitsService.getUnitByExactFullName(recruitmentTransactions.get(0).getTransUnitFullName()).getId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId(), gregDecDateString, DataAccess.getTableName(RecruitmentTransaction.class), session);
+		    recruitmentTransactions != null && recruitmentTransactions.size() > 0 && recruitmentTransactions.get(0).getTransUnitFullName() != null ? UnitsService.getUnitByExactFullName(recruitmentTransactions.get(0).getTransUnitFullName()).getId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId(), gregDecDateString, DataAccess.getTableName(RecruitmentTransaction.class), resendFlag, session);
+	}
+    }
+
+    public static void payrollIntegrationFailureHandle(String decisionNumber, Date decisionDate, CustomSession session) throws BusinessException {
+	List<RecruitmentTransactionData> recruitmentTransactionDataList = getRecruitmentTransactionsByDecisionNumberAndDecisionDate(decisionNumber, decisionDate, decisionDate);
+	if (recruitmentTransactionDataList != null && recruitmentTransactionDataList.size() != 0) {
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		doPayrollIntegration(recruitmentTransactionDataList, FlagsEnum.ON.getCode(), session);
+	} else {
+	    throw new BusinessException("error_transactionDataRetrievingError");
 	}
     }
 

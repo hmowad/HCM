@@ -86,7 +86,7 @@ public class RetirementsService extends BaseService {
 	    DataAccess.addEntity(disclaimerTransactionData.getDisclaimerTransaction(), session);
 	    disclaimerTransactionData.setId(disclaimerTransactionData.getDisclaimerTransaction().getId());
 	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
-		doPayrollIntegration(disclaimerTransactionData, session);
+		doPayrollIntegration(disclaimerTransactionData, FlagsEnum.OFF.getCode(), session);
 	    if (!isOpenedSession)
 		session.commitTransaction();
 
@@ -126,7 +126,7 @@ public class RetirementsService extends BaseService {
 	}
     }
 
-    private static void doPayrollIntegration(DisclaimerTransactionData disclaimerTransactionData, CustomSession session) throws BusinessException {
+    private static void doPayrollIntegration(DisclaimerTransactionData disclaimerTransactionData, Integer resendFlag, CustomSession session) throws BusinessException {
 
 	try {
 	    Long disclaimerAdminDecisionId = null;
@@ -144,10 +144,20 @@ public class RetirementsService extends BaseService {
 	    Long employeeCategory = EmployeesService.getEmployeeMedicalStaffDataByEmpId(disclaimerTransactionData.getEmpId()) != null ? PayrollCategoriesEnum.MILITARY_MEDICAL_STAFF.getCode() : disclaimerTransactionData.getTransEmpCategoryId();
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(disclaimerTransactionData.getEmpId(), terminationTransactionData.getEmpName(), disclaimerTransactionData.getId(), null, gregTerminationDateString, gregTerminationDateString, disclaimerTransactionData.getDecisionNumber(), null)));
 	    session.flushTransaction();
-	    PayrollEngineService.doPayrollIntegration(disclaimerAdminDecisionId, employeeCategory, gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionData.getTransEmpUnitId(), gregDecisionDateString, DataAccess.getTableName(DisclaimerTransaction.class), session);
+	    PayrollEngineService.doPayrollIntegration(disclaimerAdminDecisionId, employeeCategory, gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionData.getTransEmpUnitId(), gregDecisionDateString, DataAccess.getTableName(DisclaimerTransaction.class), resendFlag, session);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(e.getMessage());
+	}
+    }
+
+    public static void payrollIntegrationFailureHandle(String decisionNumber, Date decisionDate, CustomSession session) throws BusinessException {
+	DisclaimerTransactionData disclaimerTransactionData = getDisclaimerTransByDecisionNumberAndDate(decisionNumber, decisionDate).get(0);
+	if (disclaimerTransactionData != null) {
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		doPayrollIntegration(disclaimerTransactionData, FlagsEnum.ON.getCode(), session);
+	} else {
+	    throw new BusinessException("error_transactionDataRetrievingError");
 	}
     }
 
@@ -199,6 +209,24 @@ public class RetirementsService extends BaseService {
 	    qParams.put("P_EMP_ID", empId == null ? FlagsEnum.ALL.getCode() : empId);
 	    qParams.put("P_TERM_TRANS_ID", terminationTransactionId == null ? FlagsEnum.ALL.getCode() : terminationTransactionId);
 	    return DataAccess.executeNamedQuery(DisclaimerTransactionData.class, QueryNamesEnum.HCM_GET_DISCLAIMER_TRANSACTION_DATA.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    private static List<DisclaimerTransactionData> getDisclaimerTransByDecisionNumberAndDate(String decisionNumber, Date decisionDate) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put(":P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.length() == 0) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
+	    if (decisionDate == null) {
+		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_DECISION_DATE", HijriDateService.getHijriSysDateString());
+	    } else {
+		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_DECISION_DATE", HijriDateService.getHijriDateString(decisionDate));
+	    }
+	    return DataAccess.executeNamedQuery(DisclaimerTransactionData.class, QueryNamesEnum.HCM_GET_DISCLAIMER_TRANSACTION_DATA_BY_DECISION_DATE_AND_NUMBER.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");

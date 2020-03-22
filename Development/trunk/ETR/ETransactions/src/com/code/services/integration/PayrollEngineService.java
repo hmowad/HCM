@@ -16,7 +16,13 @@ import javax.json.JsonReader;
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.employees.Employee;
+import com.code.dal.orm.hcm.movements.MovementTransaction;
+import com.code.dal.orm.hcm.promotions.PromotionTransaction;
+import com.code.dal.orm.hcm.raises.RaiseTransaction;
+import com.code.dal.orm.hcm.recruitments.RecruitmentTransaction;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransaction;
+import com.code.dal.orm.hcm.terminations.TerminationTransaction;
+import com.code.dal.orm.hcm.vacations.Vacation;
 import com.code.dal.orm.integration.payroll.AdminDecisionVariablesMapping;
 import com.code.dal.orm.integration.payroll.PayrollIntegrationFailureLog;
 import com.code.dal.orm.integration.payroll.PayrollIntegrationFailureLogData;
@@ -34,6 +40,12 @@ import com.code.integration.responses.payroll.AdminDecisionVariable;
 import com.code.integration.webservicesclients.payroll.PayrollRestClient;
 import com.code.services.BaseService;
 import com.code.services.config.ETRConfigurationService;
+import com.code.services.hcm.MovementsService;
+import com.code.services.hcm.PromotionsService;
+import com.code.services.hcm.RaisesService;
+import com.code.services.hcm.RecruitmentsService;
+import com.code.services.hcm.RetirementsService;
+import com.code.services.hcm.TerminationsService;
 import com.code.services.util.HijriDateService;
 import com.code.services.util.Log4jService;
 
@@ -55,7 +67,7 @@ public class PayrollEngineService extends BaseService {
 	integrationFlag = ETRConfigurationService.getIntegrationWithAllowanceAndDeductionFlag();
     }
 
-    public static void doPayrollIntegration(Long adminDecisionId, Long categoryId, String executionDateString, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, String tableName, CustomSession... useSession) throws BusinessException {
+    public static void doPayrollIntegration(Long adminDecisionId, Long categoryId, String executionDateString, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, String tableName, Integer resendFlag, CustomSession... useSession) throws BusinessException {
 	try {
 	    Log4jService.traceInfo(PayrollEngineService.class, "Start of doPayrollIntegration() method");
 	    PayrollIntegrationFailureLog payrollIntegrationFailureLog = new PayrollIntegrationFailureLog();
@@ -276,10 +288,42 @@ public class PayrollEngineService extends BaseService {
     }
 
     public static void resendFailedTransaction(PayrollIntegrationFailureLogData payrollIntegrationFailureLogData) throws BusinessException {
-	if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(DisclaimerTransaction.class))) {
+	CustomSession session = DataAccess.getSession();
+	try {
 
+	    session.beginTransaction();
+	    if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(DisclaimerTransaction.class))) {
+		RetirementsService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getDecisionNumber(), payrollIntegrationFailureLogData.getDecisionDate(), session);
+	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(TerminationTransaction.class))) {
+		TerminationsService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getDecisionNumber(), payrollIntegrationFailureLogData.getDecisionDate(), session);
+	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(RecruitmentTransaction.class))) {
+		RecruitmentsService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getDecisionNumber(), payrollIntegrationFailureLogData.getDecisionDate(), session);
+	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(MovementTransaction.class))) {
+		MovementsService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getDecisionNumber(), payrollIntegrationFailureLogData.getDecisionDate(), session);
+	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(PromotionTransaction.class))) {
+		PromotionsService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getDecisionNumber(), payrollIntegrationFailureLogData.getDecisionDate(), payrollIntegrationFailureLogData.getCategoryId(), session);
+	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(Employee.class))) {
+
+	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(RaiseTransaction.class))) {
+		RaisesService.PayrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getDecisionNumber(), payrollIntegrationFailureLogData.getDecisionDate(), session);
+	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(Vacation.class))) {
+
+	    }
+
+	    payrollIntegrationFailureLogData.setExecutedFlag(FlagsEnum.ON.getCode());
+	    DataAccess.updateEntity(payrollIntegrationFailureLogData, session);
+	    session.commitTransaction();
+
+	} catch (DatabaseException e) {
+	    session.rollbackTransaction();
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} catch (BusinessException e1) {
+	    session.rollbackTransaction();
+	    throw e1;
+	} finally {
+	    session.close();
 	}
-	// TODO:
     }
 
     public static AdminDecision getAdminDecisionById(long adminDecisionId) throws BusinessException {

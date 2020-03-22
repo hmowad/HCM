@@ -1961,7 +1961,7 @@ public class TerminationsService extends BaseService {
     }
 
     /************************************************ Payroll Integration *******************************************************/
-    public static void doPayrollIntegration(List<TerminationTransactionData> terminationTransactionsList, CustomSession session) throws BusinessException {
+    public static void doPayrollIntegration(List<TerminationTransactionData> terminationTransactionsList, Integer resendFlag, CustomSession session) throws BusinessException {
 	try {
 	    Long adminDecisionId = null;
 	    TerminationTransactionData cancelledTerminationTransaction = null;
@@ -1997,10 +1997,20 @@ public class TerminationsService extends BaseService {
 		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(terminationTransactionData.getEmpId(), employee.getName(), terminationTransactionData.getId(), terminationTransactionData.getCancelTransactionId(), gregTerminationDateString, null, terminationTransactionData.getDecisionNumber(), cancelledTerminationTransaction != null && cancelledTerminationTransaction.getDecisionNumber() != null ? cancelledTerminationTransaction.getDecisionNumber() : null));
 		}
 		gregDecisionDateString = HijriDateService.hijriToGregDateString(terminationTransactionsList.get(0).getDecisionDateString());
-		PayrollEngineService.doPayrollIntegration(adminDecisionId, terminationTransactionsList.get(0).getCategoryId(), gregTerminationDateString, adminDecisionEmployeeDataList, employee != null && employee.getPhysicalUnitId() != null ? employee.getPhysicalUnitId() : terminationTransactionsList.get(0).getTransEmpUnitId(), gregDecisionDateString, DataAccess.getTableName(TerminationTransaction.class), session);
+		PayrollEngineService.doPayrollIntegration(adminDecisionId, terminationTransactionsList.get(0).getCategoryId(), gregTerminationDateString, adminDecisionEmployeeDataList, employee != null && employee.getPhysicalUnitId() != null ? employee.getPhysicalUnitId() : terminationTransactionsList.get(0).getTransEmpUnitId(), gregDecisionDateString, DataAccess.getTableName(TerminationTransaction.class), resendFlag, session);
 	    }
 	} catch (BusinessException e) {
 	    throw e;
+	}
+    }
+
+    public static void payrollIntegrationFailureHandle(String decisionNumber, Date decisionDate, CustomSession session) throws BusinessException {
+	List<TerminationTransactionData> terminationTransactionDataList = getTerminationTransactionsByDecisionNumberAndDecisionDate(decisionNumber, decisionDate);
+	if (terminationTransactionDataList != null && terminationTransactionDataList.size() != 0) {
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		doPayrollIntegration(terminationTransactionDataList, FlagsEnum.ON.getCode(), session);
+	} else {
+	    throw new BusinessException("error_transactionDataRetrievingError");
 	}
     }
 
@@ -2390,6 +2400,11 @@ public class TerminationsService extends BaseService {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
+    }
+
+    private static List<TerminationTransactionData> getTerminationTransactionsByDecisionNumberAndDecisionDate(String decisionNumber, Date decisionDate) throws BusinessException {
+	List<TerminationTransactionData> terminationTransactions = searchTerminationTransactions(null, null, null, decisionNumber, decisionDate, decisionDate, null);
+	return terminationTransactions;
     }
 
     public static TerminationTransactionData searchTerminationMovementTransaction(Long transactionId, Long empId, Date movementJoiningDate, Date disclaimerDate, Date serviceTerminationDate, String movementJoiningDesc) throws BusinessException {

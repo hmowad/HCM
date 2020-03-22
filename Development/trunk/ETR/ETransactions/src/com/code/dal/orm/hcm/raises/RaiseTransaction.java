@@ -29,7 +29,12 @@ import com.code.dal.orm.AuditEntity;
 			" where a.executionDate > to_date(:P_PROMOTION_DATE, 'MI/MM/YYYY')" +
 			" and a.executionDate = (select min(b.executionDate) from RaiseTransaction b where b.executionDate > to_date(:P_PROMOTION_DATE, 'MI/MM/YYYY') and a.empId = b.empId)" +
 			" and a.empId in (:P_EMP_IDS)" +
-			" order by a.empId")
+			" order by a.empId"),
+	@NamedQuery(name = "hcm_raiseTransaction_getRaiseTransactionByDecisionNumberAndDecisionDate",
+		query = "select a from RaiseTransaction a" +
+			" where (:P_DECISION_NUMBER = '-1' or a.decisionNumber = :P_DECISION_NUMBER)" +
+			" and (:P_DECISION_DATE_FLAG = '-1' or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') = a.decisionDate)" +
+			" order by a.decisionDate")
 
 })
 

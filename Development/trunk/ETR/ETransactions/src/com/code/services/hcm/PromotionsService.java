@@ -3800,7 +3800,7 @@ public class PromotionsService extends BaseService {
 	    }
 
 	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
-		doPayrollIntegration(promotionTransactionDataList, promotionReportData.getCategoryId(), session);
+		doPayrollIntegration(promotionTransactionDataList, promotionReportData.getCategoryId(), FlagsEnum.OFF.getCode(), session);
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -3827,7 +3827,7 @@ public class PromotionsService extends BaseService {
 	}
     }
 
-    private static void doPayrollIntegration(List<PromotionTransactionData> promotionTransactionDataList, Long promotionReportCategoryId, CustomSession session) throws BusinessException {
+    private static void doPayrollIntegration(List<PromotionTransactionData> promotionTransactionDataList, Long promotionReportCategoryId, Integer resendFlag, CustomSession session) throws BusinessException {
 	Long adminDecisionId = null;
 	if (promotionReportCategoryId.equals(CategoriesEnum.OFFICERS.getCode()))
 	    adminDecisionId = AdminDecisionsEnum.OFFICERS_PROMOTION_REPORT.getCode();
@@ -3842,9 +3842,19 @@ public class PromotionsService extends BaseService {
 	    }
 	    String gregDecisionDateString = HijriDateService.hijriToGregDateString(promotionTransactionDataList.get(0).getDecisionDateString());
 	    session.commitTransaction();
-	    PayrollEngineService.doPayrollIntegration(adminDecisionId, promotionTransactionDataList.get(0).getCategoryId(), gregNewLastPromotionDateString, adminDecisionEmployeeDataList, promotionTransactionDataList.get(0).getNewUnitId(), gregDecisionDateString, DataAccess.getTableName(PromotionTransaction.class), session);
+	    PayrollEngineService.doPayrollIntegration(adminDecisionId, promotionTransactionDataList.get(0).getCategoryId(), gregNewLastPromotionDateString, adminDecisionEmployeeDataList, promotionTransactionDataList.get(0).getNewUnitId(), gregDecisionDateString, DataAccess.getTableName(PromotionTransaction.class), resendFlag, session);
 	}
 
+    }
+
+    public static void payrollIntegrationFailureHandle(String decisionNumber, Date decisionDate, Long categoryId, CustomSession session) throws BusinessException {
+	List<PromotionTransactionData> promotionTransactionDataList = getPromotionTransactionsByDecisionNumberAndDecisionDate(decisionNumber, decisionDate);
+	if (promotionTransactionDataList != null && promotionTransactionDataList.size() != 0) {
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		doPayrollIntegration(promotionTransactionDataList, categoryId, FlagsEnum.ON.getCode(), session);
+	} else {
+	    throw new BusinessException("error_transactionDataRetrievingError");
+	}
     }
 
     /**
@@ -4106,6 +4116,25 @@ public class PromotionsService extends BaseService {
     public static PromotionTransactionData getPromotionTransactionByDecisionNumberAndDecisionDate(String decisionNumber, Date decisionDate, long promotionTypeId) throws BusinessException {
 	List<PromotionTransactionData> promotionTransactions = searchPromotionTransactionsDecisions(decisionNumber, decisionDate, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), promotionTypeId);
 	return promotionTransactions.isEmpty() ? null : promotionTransactions.get(0);
+    }
+
+    public static List<PromotionTransactionData> getPromotionTransactionsByDecisionNumberAndDecisionDate(String decisionNumber, Date decisionDate) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put(":P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.length() == 0) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
+	    if (decisionDate == null) {
+		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ALL.getCode() + "");
+		qParams.put("P_DECISION_DATE", HijriDateService.getHijriSysDateString());
+	    } else {
+		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ON.getCode() + "");
+		qParams.put("P_DECISION_DATE", HijriDateService.getHijriDateString(decisionDate));
+	    }
+	    return DataAccess.executeNamedQuery(PromotionTransactionData.class, QueryNamesEnum.HCM_GET_PROMOTION_TRANSACTION_DATA_BY_DECISION_NUMBER_AND_DECISION_DATE.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+
     }
 
     private static List<PromotionTransactionData> searchPromotionTransactionsDecisions(String decisionNumber, Date decisionDate, long empId, int categoryId, long promotionTypeId) throws BusinessException {
