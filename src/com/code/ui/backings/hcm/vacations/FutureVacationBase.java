@@ -37,6 +37,7 @@ public class FutureVacationBase extends BaseBacking {
     // viewMode= 0 open the page from menu
     // viewMode =1 opened as detail from management page
     // viewMode = 2 opened as edit from management page
+    // viewMode = 3 open FutureJoiningVacation from management page
     protected int viewMode = 0;
     protected Long vacationId;
     protected Long empId;

@@ -28,7 +28,22 @@ import com.code.services.util.HijriDateService;
 	@NamedQuery(name = "hcm_futureVacationTransactionData_getfutureVacationByParentId",
 		query = " select v from TransientVacationTransactionData v " +
 			" where v.transientVacationParentId = :P_PARENT_ID " +
-			" and (:P_VACATION_ID = -1 or v.id <> :P_VACATION_ID )")
+			" and (:P_VACATION_ID = -1 or v.id <> :P_VACATION_ID )"),
+
+	@NamedQuery(name = "hcm_transientVacationTransactionData_searchFutureVacations",
+		query = " select v from TransientVacationTransactionData v " +
+			" where (:P_EMP_ID = -1 or v.empId = :P_EMP_ID )" +
+			" and (:P_DECISION_NUMBER = '-1' or v.decisionNumber = :P_DECISION_NUMBER)" +
+			" and (:P_REQUEST_TYPE = -1 or v.requestType = :P_REQUEST_TYPE ) " +
+			" and (:P_VACATION_TYPE_ID = -1 or v.vacationTypeId = :P_VACATION_TYPE_ID)" +
+			" and (:P_APPROVED_FLAG = -1 or v.approvedFlag = :P_APPROVED_FLAG)" +
+			" and (:P_FROM_DATE_FLAG = -1 or v.startDate >= to_date(:P_FROM_DATE, 'MI/MM/YYYY')" +
+			" or to_date(:P_FROM_DATE, 'MI/MM/YYYY') between v.startDate and v.endDate)" +
+			" and (:P_TO_DATE_FLAG = -1 or v.startDate <= to_date(:P_TO_DATE, 'MI/MM/YYYY'))" +
+			" and (:P_PERIOD = -1 or v.period = :P_PERIOD )" +
+			" and (:P_LOCATION_FLAG = -1 or v.locationFlag = :P_LOCATION_FLAG ) " +
+			" and  v.activeFlag = 1" +
+			" order by v.decisionDate , v.approvedFlag")
 })
 
 @Entity

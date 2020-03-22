@@ -1,5 +1,6 @@
 package com.code.services.hcm;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,8 +117,7 @@ public class FutureVacationsService extends BaseService {
 
     public static void deleteFutureVacation(TransientVacationTransaction futureVacationTransaction, CustomSession... useSession) throws BusinessException {
 
-	TransientVacationTransactionData vacationData = getFutureVacationTransactionDataById(futureVacationTransaction.getId());
-	if (vacationData.getApprovedFlag() == FlagsEnum.ON.getCode())
+	if (futureVacationTransaction.getApprovedFlag() == FlagsEnum.ON.getCode())
 	    throw new BusinessException("error_vacationHasBeenModifiedOrCanceled");
 	// if the deletion for initial cancel/modify vacation get the parent and set the active flag to on
 	if (futureVacationTransaction.getRequestType() != RequestTypesEnum.NEW.getCode()) {
@@ -227,6 +227,31 @@ public class FutureVacationsService extends BaseService {
     }
 
     /*---------------------------Queries------------------------------*/
+    public static List<TransientVacationTransactionData> getFutureVacations(EmployeeData employee, String decisionNumber, Integer requestType, Long vacationTypeId, Integer approvedFlag, Date fromDate, Date toDate, Integer period, Integer locationFlag)
+	    throws BusinessException {
+	try {
+	    Map<String, Object> qParam = new HashMap<String, Object>();
+	    qParam.put("P_EMP_ID", employee.getEmpId() == null ? FlagsEnum.ALL.getCode() : employee.getEmpId());
+	    qParam.put("P_DECISION_NUMBER", decisionNumber.equals("") ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
+	    // qParam.put("P_REQUEST_TYPE_FLAG", requestType == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode());
+	    qParam.put("P_REQUEST_TYPE", requestType);
+	    // qParam.put("P_VACATION_TYPE_FLAG", vacationTypeId == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode());
+	    qParam.put("P_VACATION_TYPE_ID", vacationTypeId);
+	    qParam.put("P_APPROVED_FLAG", approvedFlag);
+	    // qParam.put("P_SKIP_DATES", fromDate == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode());
+	    qParam.put("P_FROM_DATE_FLAG", fromDate == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode());
+	    qParam.put("P_FROM_DATE", fromDate == null ? HijriDateService.getHijriDateString(HijriDateService.getHijriSysDate()) : HijriDateService.getHijriDateString(fromDate));
+	    qParam.put("P_TO_DATE_FLAG", toDate == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode());
+	    qParam.put("P_TO_DATE", toDate == null ? HijriDateService.getHijriDateString(HijriDateService.getHijriSysDate()) : HijriDateService.getHijriDateString(toDate));
+	    qParam.put("P_PERIOD", (period == null ? FlagsEnum.ALL.getCode() : period));
+	    qParam.put("P_LOCATION_FLAG", locationFlag);
+	    return DataAccess.executeNamedQuery(TransientVacationTransactionData.class, QueryNamesEnum.HCM_SEARCH_FUTURE_VACATIONS.getCode(), qParam);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
     private static long countFutureVacationsByDecisionNumber(String decisionNumber, Long futureVacationId) throws BusinessException {
 	try {
 	    Map<String, Object> queryParam = new HashMap<String, Object>();
