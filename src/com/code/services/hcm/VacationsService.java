@@ -91,13 +91,22 @@ public class VacationsService extends BaseService {
 	    origninalVacation = VacationsDataHandlingService.cancelVacData(request, vacationBeneficiary, skipWFFlag, subject, useSession);
 	}
 	if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
-	    doPayrollIntegration(request.getStatus() == RequestTypesEnum.NEW.getCode() ? request : origninalVacation, vacationBeneficiary, useSession);
+	    doPayrollIntegration(request.getStatus() == RequestTypesEnum.NEW.getCode() ? request : origninalVacation, FlagsEnum.OFF.getCode(), useSession);
     }
 
-    private static void doPayrollIntegration(Vacation request, EmployeeData vacationBeneficiary, CustomSession... useSession) throws BusinessException {
+    public static void payrollIntegrationFailureHandle(Date decisionDate, String decisionNumber, CustomSession session) throws BusinessException {
+	Vacation vacation = getVacationByDecisionDateAndDecisionNumber(decisionDate, decisionNumber);
+	if (vacation != null)
+	    doPayrollIntegration(vacation, FlagsEnum.ON.getCode(), session);
+	else
+	    throw new BusinessException("error_transactionDataRetrievingError");
+    }
+
+    private static void doPayrollIntegration(Vacation request, Integer resendFlag, CustomSession... useSession) throws BusinessException {
 	Long adminDecisionId = null;
 	Vacation originalVacation = null;
-	if (vacationBeneficiary.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+	EmployeeData employee = EmployeesService.getEmployeeData(request.getEmpId());
+	if (employee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 	    if (request.getJoiningDate() != null) { // in case of vacation joining
 		originalVacation = request;
 		if (request.getVacationTypeId().equals(VacationTypesEnum.SICK.getCode())) {
@@ -144,7 +153,7 @@ public class VacationsService extends BaseService {
 		    }
 		}
 	    }
-	} else if (vacationBeneficiary.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
+	} else if (employee.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
 	    if (request.getJoiningDate() == null) {
 		if (request.getStatus() == RequestTypesEnum.NEW.getCode()) {
 		    if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
@@ -165,11 +174,10 @@ public class VacationsService extends BaseService {
 	    String gregVacationEndDateString = request.getJoiningDate() != null ? null : HijriDateService.hijriToGregDateString(request.getEndDateString());
 	    String requestDecisionNumber = request.getJoiningDate() != null ? System.currentTimeMillis() + "" : request.getDecisionNumber();
 	    String originalDecisionNumber = originalVacation != null && originalVacation.getDecisionNumber() != null ? originalVacation.getDecisionNumber() : null;
-	    EmployeeData employee = EmployeesService.getEmployeeData(request.getEmpId());
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(
 		    Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), request.getVacationId(), null, gregVacationStartDateString, gregVacationEndDateString, requestDecisionNumber, originalDecisionNumber)));
 	    session.flushTransaction();
-	    PayrollEngineService.doPayrollIntegration(adminDecisionId, vacationBeneficiary.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(Vacation.class), session);
+	    PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(Vacation.class), resendFlag, session);
 	}
     }
 
@@ -464,6 +472,26 @@ public class VacationsService extends BaseService {
 	}
     }
 
+    private static Vacation getVacationByDecisionDateAndDecisionNumber(Date decisionDate, String decisionNumber) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    if (decisionDate == null) {
+		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ALL.getCode() + "");
+		qParams.put("P_DECISION_DATE", HijriDateService.getHijriSysDateString());
+	    } else {
+		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ON.getCode() + "");
+		qParams.put("P_DECISION_DATE", HijriDateService.getHijriDateString(decisionDate));
+	    }
+	    qParams.put("P_DECISION_NUMBER", decisionNumber == null ? FlagsEnum.ALL.getCode() : decisionNumber);
+
+	    List<Vacation> result = DataAccess.executeNamedQuery(Vacation.class, QueryNamesEnum.HCM_GET_VACATION_BY_DECISION_DATE_AND_DECISION_NUMBER.getCode(), qParams);
+	    return result != null && result.size() > 0 ? result.get(0) : null;
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
     /************************************** get President and VicePresident For BeneficiaryVacationsTypes Method ********************************/
     public static String getPresidencyManagers() throws BusinessException {
 	WFPosition vicePresidentPosition = BaseWorkFlow.getWFPosition(WFPositionsEnum.VICE_PRESIDENT.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
@@ -718,7 +746,7 @@ public class VacationsService extends BaseService {
     public static void updateVacationJoiningDate(long vacationTransactionId, Date joiningDate, long userId, CustomSession... useSession) throws BusinessException {
 	Vacation vacation = VacationsService.getVacationById(vacationTransactionId);
 	VacationsDataHandlingService.updateVacationJoiningDate(vacation, joiningDate, userId, useSession);
-	doPayrollIntegration(vacation, EmployeesService.getEmployeeData(vacation.getEmpId()), useSession);
+	doPayrollIntegration(vacation, FlagsEnum.OFF.getCode(), useSession);
     }
 
     /**
