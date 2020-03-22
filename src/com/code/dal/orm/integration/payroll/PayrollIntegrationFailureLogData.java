@@ -48,6 +48,7 @@ public class PayrollIntegrationFailureLogData extends BaseEntity {
     private Long categoryId;
     private String categoryDesc;
     private Integer executedFlag;
+    private Long rowId;
 
     private PayrollIntegrationFailureLog payrollIntegrationFailureLog;
 
@@ -211,6 +212,17 @@ public class PayrollIntegrationFailureLogData extends BaseEntity {
     public void setExecutedFlag(Integer executedFlag) {
 	this.executedFlag = executedFlag;
 	this.payrollIntegrationFailureLog.setExecutedFlag(executedFlag);
+    }
+
+    @Basic
+    @Column(name = "ROW_ID")
+    public Long getRowId() {
+	return rowId;
+    }
+
+    public void setRowId(Long rowId) {
+	this.rowId = rowId;
+	this.payrollIntegrationFailureLog.setRowId(rowId);
     }
 
     @Transient
