@@ -209,17 +209,17 @@ public class VacationsService extends BaseService {
      * 
      * @see VacationTypesEnum
      */
-    public static void validateVacationRules(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag) throws BusinessException {
+    public static void validateVacationRules(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, Integer skipBaseVacConflicts) throws BusinessException {
 	VacationsBusinessRulesService.validateVacationDates(request);
 	VacationsBusinessRulesService.validateVacationLocation(request);
-
-	EmployeesTransactionsConflictValidator
-		.validateEmployeesTransactionsConflicts(
-			new Long[] { vacationBeneficiary.getEmpId() }, new String[] { vacationBeneficiary.getName() },
-			TransactionClassesEnum.VACATIONS.getCode(), request.getStatus(),
-			request.getVacationTypeId(), FlagsEnum.ALL.getCode(), new String[] { request.getStartDateString() }, new String[] { request.getEndDateString() },
-			request.getStatus().equals(RequestTypesEnum.MODIFY.getCode()) ? request.getVacationId() : null, null);
-
+	if (skipBaseVacConflicts == FlagsEnum.ON.getCode()) {
+	    EmployeesTransactionsConflictValidator
+		    .validateEmployeesTransactionsConflicts(
+			    new Long[] { vacationBeneficiary.getEmpId() }, new String[] { vacationBeneficiary.getName() },
+			    TransactionClassesEnum.VACATIONS.getCode(), request.getStatus(),
+			    request.getVacationTypeId(), FlagsEnum.ALL.getCode(), new String[] { request.getStartDateString() }, new String[] { request.getEndDateString() },
+			    request.getStatus().equals(RequestTypesEnum.MODIFY.getCode()) ? request.getVacationId() : null, null);
+	}
 	if (ETRConfigurationService.getVacationRequestRequireJoining() == FlagsEnum.ON.getCode() && request.getStatus() == RequestTypesEnum.NEW.getCode())
 	    VacationsBusinessRulesService.validatePreviousVacationJoining(vacationBeneficiary.getEmpId(), vacationBeneficiary.getCategoryId(), request.getStartDate());
 

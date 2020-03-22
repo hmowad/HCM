@@ -89,7 +89,7 @@
 										<h:commandButton disabled="#{modifyFutureVacation.admin == false}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
 										<h:inputHidden id="empIdHId" value="#{modifyFutureVacation.empId}" />
 										<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{modifyFutureVacation.selectEmployee}">
-											<f:ajax execute="modifyFutureVacationFormId:empIdHId" render="modifyFutureVacationFormId:selectEmpId modifyFutureVacationFormId:newDataId modifyFutureVacationFormId:currentEmployeeId  modifyFutureVacationFormId:vacationDataTitle modifyFutureVacationFormId:futureVacationDataId modifyFutureVacationFormId:actionsPanelId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											<f:ajax execute="modifyFutureVacationFormId:empIdHId" render="modifyFutureVacationFormId:selectEmpId modifyFutureVacationFormId:newDataId modifyFutureVacationFormId:newDataTitle modifyFutureVacationFormId:currentEmployeeId  modifyFutureVacationFormId:vacationDataTitle modifyFutureVacationFormId:futureVacationDataId modifyFutureVacationFormId:actionsPanelId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</td>
 								</tr>
@@ -132,7 +132,7 @@
 											<font style="color: red;"> *</font>
 										</th>
 										<td width="35%">
-											<h:selectOneMenu id="futureVacTypeId" value="#{modifyFutureVacation.vacationTypeId}" disabled="#{modifyFutureVacation.viewMode != 0 and modifyFutureVacation.futureVacation.approvedFlag != 0}">
+											<h:selectOneMenu id="futureVacTypeId" value="#{modifyFutureVacation.futureVacation.vacationTypeId}" disabled="#{modifyFutureVacation.viewMode != 0 and modifyFutureVacation.futureVacation.approvedFlag != 0}">
 												<f:selectItems value="#{modifyFutureVacation.vacTypeList}" var="vacType" itemLabel="#{(modifyFutureVacation.currentEmployee.categoryId == 1 or modifyFutureVacation.currentEmployee.categoryId == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
 												<f:ajax event="change" listener="#{modifyFutureVacation.selectVacation()}" execute="modifyFutureVacationFormId:futureVacTypeId" render="modifyFutureVacationFormId:futureVacationDataId modifyFutureVacationFormId:newDataId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:selectOneMenu>
@@ -168,19 +168,10 @@
 											<h:outputText rendered="#{modifyFutureVacation.futureVacation.id != null}" value="#{modifyFutureVacation.futureVacation.locationFlag == 0 ? msgs.label_locIn : msgs.label_locOut}" />
 										</td>
 										<th width="15%">
-											<h:panelGroup id="locationBtnPanelGroupId">
-												<h:panelGroup rendered="#{modifyFutureVacation.futureVacation.locationFlag == 1}">
-													<h:commandButton id="locationBtnId" value="#{msgs.label_selectCountries}" onclick="getCountries('#{request.contextPath}'); return false;" disabled="true" styleClass="btn_normal" />
-													<h:outputText value="#{msgs.label_country}" />
-												</h:panelGroup>
-											</h:panelGroup>
+											<h:outputText value="#{msgs.label_country}" />
 										</th>
 										<td width="35%">
-											<h:panelGroup id="locationPanelGroupId">
-												<h:panelGroup rendered="#{modifyFutureVacation.futureVacation.locationFlag == 1}">
-													<h:outputText id="locationId" value="#{modifyFutureVacation.futureVacation.location}" />
-												</h:panelGroup>
-											</h:panelGroup>
+											<h:outputText id="locationId" value="#{modifyFutureVacation.futureVacation.location}" />
 										</td>
 									</tr>
 

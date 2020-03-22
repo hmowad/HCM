@@ -5,18 +5,27 @@ import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.vacations.TransientVacationTransactionData;
 import com.code.enums.FlagsEnum;
+import com.code.enums.LocationFlagsEnum;
 import com.code.enums.RequestTypesEnum;
+import com.code.enums.VacationTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.FutureVacationsService;
+import com.code.services.util.HijriDateService;
 
 @ManagedBean(name = "addFutureVacation")
 @ViewScoped
 public class AddFutureVacation extends FutureVacationBase {
 
     public AddFutureVacation() {
-
-	super.init();
-	adjustProcess();
+	try {
+	    super.init();
+	    if (viewMode != 0) {
+		futureVacation = FutureVacationsService.getFutureVacationTransactionDataById(vacationId);
+	    }
+	    adjustProcess();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(e.getMessage());
+	}
     }
 
     public void adjustProcess() {
@@ -49,6 +58,12 @@ public class AddFutureVacation extends FutureVacationBase {
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(this.getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
+    }
+
+    public void selectEmployee() {
+	super.selectEmployee();
+	inquiryBalance();
+
     }
 
     public void startDateAndPeriodChangeListener(TransientVacationTransactionData futureVac) {
@@ -89,4 +104,17 @@ public class AddFutureVacation extends FutureVacationBase {
 	}
     }
 
+    public void reset() {
+	try {
+	    super.reset();
+	    futureVacation.setLocationFlag(LocationFlagsEnum.INTERNAL.getCode());
+	    futureVacation.setLocation(getMessage("label_ksa"));
+	    futureVacation.setVacationTypeId(VacationTypesEnum.REGULAR.getCode());
+	    futureVacation.setStartDate(HijriDateService.getHijriSysDate());
+	    futureVacation.setDecisionDate(HijriDateService.getHijriSysDate());
+	    balance = "";
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
+    }
 }

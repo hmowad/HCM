@@ -14,9 +14,16 @@ public class CancelFutureVacation extends FutureVacationBase {
 
     public CancelFutureVacation() {
 
-	super.init();
-	adjustProcess();
-
+	try {
+	    super.init();
+	    if (viewMode != 0) {
+		newFutureVacation = FutureVacationsService.getFutureVacationTransactionDataById(vacationId);
+		futureVacation = FutureVacationsService.getFutureActiveVacationTransactionDataById(newFutureVacation.getTransientVacationParentId());
+	    }
+	    adjustProcess();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(e.getMessage());
+	}
     }
 
     public void adjustProcess() {

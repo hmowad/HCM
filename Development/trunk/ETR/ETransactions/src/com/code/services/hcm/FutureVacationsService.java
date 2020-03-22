@@ -14,9 +14,11 @@ import com.code.dal.orm.hcm.vacations.Vacation;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.RequestTypesEnum;
+import com.code.enums.TransactionClassesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.services.BaseService;
+import com.code.services.buswfcoop.EmployeesTransactionsConflictValidator;
 import com.code.services.util.HijriDateService;
 
 public class FutureVacationsService extends BaseService {
@@ -87,7 +89,7 @@ public class FutureVacationsService extends BaseService {
 	    if (signFutureVacationFlag) {
 		vacation = constructVacation(futureVacationTransaction);
 		if (futureVacationTransaction.getRequestType() == RequestTypesEnum.MODIFY.getCode() || futureVacationTransaction.getRequestType() == RequestTypesEnum.CANCEL.getCode()) {
-		    TransientVacationTransactionData oldFutureVacationTransaction = getFutureVacationTransactionDataById(futureVacationTransaction.getTransientVacationParentId());
+		    TransientVacationTransactionData oldFutureVacationTransaction = getFutureActiveVacationTransactionDataById(futureVacationTransaction.getTransientVacationParentId());
 		    vacation.setVacationId(oldFutureVacationTransaction.getVacationTransactionId());
 		    if (futureVacationTransaction.getRequestType() == RequestTypesEnum.CANCEL.getCode())
 			vacation.setStatus(RequestTypesEnum.CANCEL.getCode());
@@ -164,7 +166,15 @@ public class FutureVacationsService extends BaseService {
 	validateFutureVacationData(futureVacationTransaction, vacationBeneficiary);
 	validateFutureVacationDates(futureVacationTransaction);
 	Vacation vacation = constructVacation(futureVacationTransaction);
-	VacationsService.validateVacationRules(vacation, vacationBeneficiary, FlagsEnum.ON.getCode());
+
+	EmployeesTransactionsConflictValidator
+		.validateEmployeesTransactionsConflicts(
+			new Long[] { vacationBeneficiary.getEmpId() }, new String[] { vacationBeneficiary.getName() },
+			TransactionClassesEnum.VACATIONS.getCode(), futureVacationTransaction.getRequestType(),
+			futureVacationTransaction.getVacationTypeId(), FlagsEnum.ALL.getCode(), new String[] { futureVacationTransaction.getStartDateString() }, new String[] { futureVacationTransaction.getEndDateString() },
+			futureVacationTransaction.getRequestType().equals(RequestTypesEnum.MODIFY.getCode()) ? futureVacationTransaction.getVacationTransactionId() : null, null);
+
+	VacationsService.validateVacationRules(vacation, vacationBeneficiary, FlagsEnum.ON.getCode(), FlagsEnum.OFF.getCode());
     }
 
     private static void validateFutureVacationData(TransientVacationTransaction futureVacationTransaction, EmployeeData vacationBeneficiary) throws BusinessException {
@@ -263,6 +273,10 @@ public class FutureVacationsService extends BaseService {
 	    e.printStackTrace();
 	    throw new BusinessException("error_getVacationsData");
 	}
+    }
+
+    public static TransientVacationTransactionData getFutureActiveVacationTransactionDataById(long id) throws BusinessException {
+	return getFutureVacationTransactionData(id, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ON.getCode());
     }
 
     public static TransientVacationTransactionData getFutureVacationTransactionDataById(long id) throws BusinessException {
