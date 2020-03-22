@@ -17,7 +17,6 @@ import com.code.dal.orm.integration.payroll.PayrollIntegrationFailureLog;
 import com.code.enums.FlagsEnum;
 import com.code.enums.IntegrationTypeFlagEnum;
 import com.code.exceptions.BusinessException;
-import com.code.exceptions.DatabaseException;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.integration.PayrollEngineService;
 import com.code.services.util.Log4jService;
@@ -64,7 +63,7 @@ public class PayrollRestClient {
 	}
     }
 
-    public static String getAdminDecisionVariables(Integer integrationTypeFlag, Long adminDecisionId, Long categoryId, String executionDateString, PayrollIntegrationFailureLog payrollIntegrationFailureLog, CustomSession... useSession) throws DatabaseException {
+    public static String getAdminDecisionVariables(Integer integrationTypeFlag, Long adminDecisionId, Long categoryId, String executionDateString, PayrollIntegrationFailureLog payrollIntegrationFailureLog, Integer resendFlag, CustomSession... useSession) throws BusinessException {
 	Response response = null;
 	WebTarget webTarget = null;
 	String responseString = "";
@@ -91,18 +90,27 @@ public class PayrollRestClient {
 	    payrollIntegrationFailureLog.setResponse(responseString);
 	    if (response.getStatus() != Status.OK.getStatusCode()) {
 		Log4jService.traceInfo(PayrollRestClient.class, "Error: " + responseString);
-		throw new BusinessException("error_payrollServiceExecutionError");
+		if (response.getStatus() == Status.EXPECTATION_FAILED.getStatusCode())
+		    throw new BusinessException(responseString, new Object[] { FlagsEnum.OFF.getCode() });
+		else {
+		    if (integrationTypeFlag.equals(IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode()))
+			throw new BusinessException("error_cantAccessAllowanceSystem");
+		    else
+			throw new BusinessException("error_cantAccessAllowanceSystem");
+		}
 	    }
 	    return responseString;
-	} catch (Exception e) {
+	} catch (BusinessException e) {
 	    e.printStackTrace();
 	    Log4jService.traceInfo(PayrollRestClient.class, "Error in retrieving AdminDecisionVariables");
+	    if (resendFlag.equals(FlagsEnum.ON.getCode()))
+		throw new BusinessException(e.getMessage());
 	    PayrollEngineService.addPayrollIntegrationFailureReport(payrollIntegrationFailureLog, useSession);
 	    return null;
 	}
     }
 
-    public static void applyAdminDecision(Integer integrationTypeFlag, JsonObject body, PayrollIntegrationFailureLog payrollIntegrationFailureLog, CustomSession... useSession) throws DatabaseException {
+    public static void applyAdminDecision(Integer integrationTypeFlag, JsonObject body, PayrollIntegrationFailureLog payrollIntegrationFailureLog, Integer resendFlag, CustomSession... useSession) throws BusinessException {
 	Response response = null;
 	WebTarget webTarget = null;
 	String responseString = "";
@@ -126,11 +134,20 @@ public class PayrollRestClient {
 	    payrollIntegrationFailureLog.setResponse(responseString);
 	    if (response.getStatus() != Status.OK.getStatusCode()) {
 		Log4jService.traceInfo(PayrollRestClient.class, "Error: " + responseString);
-		throw new BusinessException("error_payrollServiceExecutionError");
+		if (response.getStatus() == Status.EXPECTATION_FAILED.getStatusCode())
+		    throw new BusinessException(responseString, new Object[] { FlagsEnum.OFF.getCode() });
+		else {
+		    if (integrationTypeFlag.equals(IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode()))
+			throw new BusinessException("error_cantAccessAllowanceSystem");
+		    else
+			throw new BusinessException("error_cantAccessAllowanceSystem");
+		}
 	    }
-	} catch (Exception e) {
+	} catch (BusinessException e) {
 	    e.printStackTrace();
 	    Log4jService.traceInfo(PayrollRestClient.class, "Error in applyAdminDecision");
+	    if (resendFlag.equals(FlagsEnum.ON.getCode()))
+		throw new BusinessException(e.getMessage());
 	    PayrollEngineService.addPayrollIntegrationFailureReport(payrollIntegrationFailureLog, useSession);
 	}
     }

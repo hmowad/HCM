@@ -134,7 +134,12 @@ import com.code.services.util.HijriDateService;
 	@NamedQuery(name = "hcm_vacation_countVacationByDecisionNumber",
 		query = "select count(v.vacationId) from Vacation v " +
 			" where v.decisionNumber = :P_DECISION_NUMBER " +
-			" and (:P_VACATION_ID = -1 or v.vacationId <> :P_VACATION_ID)")
+			" and (:P_VACATION_ID = -1 or v.vacationId <> :P_VACATION_ID)"),
+
+	@NamedQuery(name = "hcm_vacationData_getVacationByDecisionDateAndDecisionNumber",
+		query = " select v from VacationData v " +
+			" where ( :P_DECISION_NUMBER = '-1' OR v.decisionNumber = :P_DECISION_NUMBER ) " +
+			" and ( :P_DECISION_DATE_FLAG = '-1' OR v.decisionDate = to_date(:P_DECISION_DATE, 'MI/MM/YYYY')) )")
 
 })
 @Entity
