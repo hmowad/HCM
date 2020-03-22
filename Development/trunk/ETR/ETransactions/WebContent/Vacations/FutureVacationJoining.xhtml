@@ -1,0 +1,272 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:rich="http://richfaces.org/rich">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript">
+    //<![CDATA[  
+            function getEmp(contextPath){
+            	openEmployeesMiniSearch(contextPath, 'handleEmpsMiniSearchResult(ret)', 1, -1, -1, -1, -1, -1, -1, #{vacationJoining.getLoginEmpPhysicalRegionFlag(false)});
+             }
+            
+            function handleEmpsMiniSearchResult(ret){
+            	if(ret != null){
+                    document.getElementById('vacationJoiningForm:beneficiarySearchId').value = ret[0];
+                    document.getElementById('vacationJoiningForm:searchEmpButton').click();
+                 }
+            }
+
+            function validateData(){
+                var oldVacationId = document.getElementById('vacationJoiningForm:oldVacationId').value;
+                if(oldVacationId == null || oldVacationId == ''){
+                	alert('#{msgs.error_noPrevVacation}');
+                    return false;
+                }
+
+                var exceededFlag = getSelectOneRadioValue('vacationJoiningForm:exceededFlagId');            
+                if(exceededFlag == 1){
+                    var exceededDays = document.getElementById('vacationJoiningForm:exceededDaysId').value;
+                    if(exceededDays == null || exceededDays == '' || exceededDays == 0){
+                    	alert('#{msgs.error_exceededDaysIsZero}');
+                        return false;
+                    }
+                }
+                
+                return true;
+              }
+
+        // ]]>
+        </script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="vacationJoiningForm" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">#{msgs.title_vacationJoining}</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.title_employeeData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="currentEmployeeId">
+							<code:emp value="#{futureVacationJoining.currentEmployee}" rendered="#{futureVacationJoining.currentEmployee.empId != null}" />
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="10" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_vacationData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="futureVacationId">
+							<h:panelGroup rendered="#{futureVacationJoining.vacationId != null}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<th width="15%">
+											#{msgs.label_vacType}
+										</th>
+										<td width="35%">
+											<h:selectOneMenu id="futureVacTypeId" value="#{futureVacationJoining.futureVacation.vacationTypeId}" disabled="true">
+												<f:selectItems value="#{futureVacationJoining.vacTypeList}" var="vacType" itemLabel="#{(futureVacationJoining.currentEmployee.categoryId == 1 or futureVacationJoining.currentEmployee.categoryId == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
+											</h:selectOneMenu>
+										</td>
+										<h:panelGroup rendered="#{(futureVacationJoining.currentEmployee.categoryId == 2 and futureVacationJoining.futureVacation.vacationTypeId == 2) or (futureVacationJoining.currentEmployee.categoryId != 1 and futureVacationJoining.currentEmployee.categoryId != 2 and futureVacationJoining.currentEmployee.categoryId != 6 and futureVacationJoining.futureVacation.vacationTypeId == 3)}">
+											<th width="15%">
+												<h:panelGroup id="subVacationHeaderPanelId">
+													<h:outputText value="#{msgs.label_subVacationType}" />
+												</h:panelGroup>
+											</th>
+											<td width="35%">
+												<h:panelGroup id="subVacationPanelId">
+													<h:selectOneMenu value="#{futureVacationJoining.futureVacation.subVacationType}" rendered="#{(futureVacationJoining.currentEmployee.categoryId == 2 and futureVacationJoining.futureVacation.vacationTypeId == 2) }" disabled="true">
+														<f:selectItem itemValue="1" itemLabel="#{msgs.label_sickVacationA}" />
+														<f:selectItem itemValue="2" itemLabel="#{msgs.label_sickVacationB}" />
+													</h:selectOneMenu>
+
+													<h:selectOneMenu value="#{futureVacationJoining.futureVacation.subVacationType}" rendered="#{(futureVacationJoining.currentEmployee.categoryId != 1 and futureVacationJoining.currentEmployee.categoryId != 2 and futureVacationJoining.currentEmployee.categoryId != 6 and futureVacationJoining.futureVacation.vacationTypeId == 3)}" disabled="true">
+														<f:selectItem itemValue="1" itemLabel="#{msgs.label_forCircumstances}" />
+														<f:selectItem itemValue="2" itemLabel="#{msgs.label_forAccompany}" />
+													</h:selectOneMenu>
+												</h:panelGroup>
+											</td>
+										</h:panelGroup>
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_decisionNumber}
+										</th>
+										<td width="35%">
+											<h:outputText value="#{futureVacationJoining.futureVacation.decisionNumber}" />
+										</td>
+										<th width="15%">
+											#{msgs.label_decisionDate}
+										</th>
+										<td width="35%">
+											<h:outputText value="#{futureVacationJoining.futureVacation.decisionDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_period}
+										</th>
+										<td width="35%">
+											<h:outputText value="#{futureVacationJoining.futureVacation.period}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											#{msgs.label_startDate}
+										</th>
+										<td width="35%">
+											<h:outputText value="#{futureVacationJoining.futureVacation.startDateString}" />
+										</td>
+										<th width="15%">#{msgs.label_endDate}</th>
+										<td width="35%">
+											<h:outputText value="#{futureVacationJoining.futureVacation.endDateString}" />
+										</td>
+									</tr>
+									<h:panelGroup id="LocationRadioPanelId">
+										<h:panelGroup>
+											<tr>
+												<th width="15%">#{msgs.label_location}</th>
+												<td width="35%">
+													<h:outputText value="#{futureVacationJoining.futureVacation.locationFlag == 0 ? msgs.label_locIn : msgs.label_locOut}" />
+												</td>
+
+												<th width="15%">
+													<h:outputText value="*" style="color: red;" />
+												</th>
+												<td width="35%">
+													<h:outputText id="locationId" value="#{futureVacationJoining.futureVacation.location}" />
+												</td>
+											</tr>
+										</h:panelGroup>
+									</h:panelGroup>
+
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.title_vacationJoining}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="requestInfoPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_joining}</th>
+									<td width="85%">
+										<h:selectOneRadio id="exceededFlagId" value="#{futureVacationJoining.exceededFlag}" >
+											<f:selectItem itemValue="0" itemLabel="#{msgs.label_attendInTime}" />
+											<f:selectItem itemValue="1" itemLabel="#{msgs.label_attendAfterTime}" />
+											<f:ajax event="click" listener="#{futureVacationJoining.exceededFlagListener()}" execute="@this" render="vacationJoiningForm:requestInfoPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										</h:selectOneRadio>
+										<h:inputHidden id="oldVacationId" value="#{vacationJoining.vacRequest.oldVacationId}" />
+									</td>
+								</tr>
+								<tr>
+									<h:panelGroup rendered="#{futureVacationJoining.exceededFlag == 1}">
+										<th width="15%">
+											#{msgs.label_numberOfExceededDays}
+											<font style="color: red;">*</font>
+										</th>
+										<td width="85%">
+											<h:inputText id="exceededDaysId" value="#{futureVacationJoining.futureVacation.exceededDays}"  maxlength="3" style="font-weight: bold !important; color: red !important;" >
+												<f:ajax event="blur" execute="@this" listener="#{futureVacationJoining.exceededDaysListener}" render="vacationJoiningForm:joiningDateId vacationJoiningForm:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:inputText>
+										</td>
+									</h:panelGroup>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_joiningDate}</th>
+									<td width="85%">
+										<h:outputText id="joiningDateId" value="#{futureVacationJoining.futureVacation.joiningDateString}" />
+									</td>
+								</tr>
+								<tr>
+									<th width="15%">#{msgs.label_notes}</th>
+									<td width="85%">
+										<h:inputText value="#{futureVacationJoining.futureVacation.joiningRemarks}" maxlength="500" styleClass="inputDataLarge"/>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="100%" height="15" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:panelGroup rendered="#{futureVacationJoining.vacationId != null}">
+										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');" action="#{futureVacationJoining.saveJoiningVacation()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon">
+											<f:ajax render="vacationJoiningForm:notifyMessagesId" execute="vacationJoiningForm:requestInfoPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+										</h:commandButton>
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>
