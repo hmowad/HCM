@@ -311,7 +311,7 @@ public class PayrollEngineService extends BaseService {
 	    }
 
 	    payrollIntegrationFailureLogData.setExecutedFlag(FlagsEnum.ON.getCode());
-	    DataAccess.updateEntity(payrollIntegrationFailureLogData, session);
+	    DataAccess.updateEntity(payrollIntegrationFailureLogData.getPayrollIntegrationFailureLog(), session);
 	    session.commitTransaction();
 
 	} catch (DatabaseException e) {

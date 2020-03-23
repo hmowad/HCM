@@ -218,7 +218,7 @@ public class RetirementsService extends BaseService {
     private static List<DisclaimerTransactionData> getDisclaimerTransByDecisionNumberAndDate(String decisionNumber, Date decisionDate) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put(":P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.length() == 0) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
+	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.length() == 0) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
 	    if (decisionDate == null) {
 		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ALL.getCode());
 		qParams.put("P_DECISION_DATE", HijriDateService.getHijriSysDateString());

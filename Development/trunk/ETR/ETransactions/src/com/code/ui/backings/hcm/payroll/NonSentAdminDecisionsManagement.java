@@ -42,9 +42,10 @@ public class NonSentAdminDecisionsManagement extends BaseBacking {
     public void resendTransaction(PayrollIntegrationFailureLogData payrollIntegrationFailureLogData) {
 	try {
 	    PayrollEngineService.resendFailedTransaction(payrollIntegrationFailureLogData);
+	    payrollIntegrationFailureLogDataList.remove(payrollIntegrationFailureLogData);
 	    setServerSideSuccessMessages(getMessage("notify_adminDecisionSentSuccessfully"));
 	} catch (BusinessException e) {
-	    if (e.getParams().length > 0)
+	    if (e.getParams() != null && e.getParams().length > 0)
 		setServerSideErrorMessages(e.getMessage());
 	    else
 		setServerSideErrorMessages(getMessage(e.getMessage()));
