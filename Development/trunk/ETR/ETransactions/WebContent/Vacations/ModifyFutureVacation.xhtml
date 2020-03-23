@@ -134,7 +134,7 @@
 										<td width="35%">
 											<h:selectOneMenu id="futureVacTypeId" value="#{modifyFutureVacation.futureVacation.vacationTypeId}" disabled="#{modifyFutureVacation.viewMode != 0 and modifyFutureVacation.futureVacation.approvedFlag != 0}">
 												<f:selectItems value="#{modifyFutureVacation.vacTypeList}" var="vacType" itemLabel="#{(modifyFutureVacation.currentEmployee.categoryId == 1 or modifyFutureVacation.currentEmployee.categoryId == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
-												<f:ajax event="change" listener="#{modifyFutureVacation.selectVacation()}" execute="modifyFutureVacationFormId:futureVacTypeId" render="modifyFutureVacationFormId:futureVacationDataId modifyFutureVacationFormId:newDataId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												<f:ajax event="change" listener="#{modifyFutureVacation.selectVacation()}" execute="modifyFutureVacationFormId:futureVacTypeId" render="modifyFutureVacationFormId:futureVacationDataId modifyFutureVacationFormId:newDataId modifyFutureVacationFormId:newDataTitle modifyFutureVacationFormId:actionsPanelId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:selectOneMenu>
 										</td>
 										<th width="15%">#{msgs.label_period}</th>
@@ -187,7 +187,7 @@
 					<td width="100%">
 						<h:panelGroup id="newDataTitle">
 							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
-								<h:panelGroup rendered="#{modifyFutureVacation.currentEmployee.empId != null}">
+								<h:panelGroup rendered="#{modifyFutureVacation.currentEmployee.empId != null and modifyFutureVacation.futureVacation.id !=null}">
 									<tr>
 										<td>#{msgs.label_requestData}</td>
 									</tr>
@@ -199,7 +199,7 @@
 				<tr>
 					<td width="100%">
 						<h:panelGroup id="newDataId">
-							<h:panelGroup rendered="#{modifyFutureVacation.currentEmployee.empId != null}">
+							<h:panelGroup rendered="#{modifyFutureVacation.currentEmployee.empId != null and modifyFutureVacation.futureVacation.id !=null}">
 								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 									<tr>
 										<th width="15%">
@@ -225,7 +225,7 @@
 										</th>
 										<td width="35%">
 											<h:inputText disabled="#{modifyFutureVacation.newFutureVacation.approvedFlag == 1 or modifyFutureVacation.viewMode== 1}" id="periodId" value="#{modifyFutureVacation.newFutureVacation.period}" maxlength="4" onkeypress="return isDigit(event);">
-												<f:ajax event="blur" execute="modifyFutureVacationFormId:newDataId" listener="#{modifyFutureVacation.startDateAndPeriodChangeListener(modifyFutureVacation.newFutureVacation)}" render="modifyFutureVacationFormId:newDataId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												<f:ajax event="blur" execute="modifyFutureVacationFormId:newDataId" listener="#{modifyFutureVacation.startDateAndPeriodChangeListener(modifyFutureVacation.newFutureVacation)}" render="modifyFutureVacationFormId:futureVacationEndDateId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:inputText>
 
 										</td>
@@ -261,10 +261,10 @@
 								<td width="100%">
 									<h:panelGroup id="actionsPanelId">
 										<h:panelGroup rendered="#{modifyFutureVacation.currentEmployee.empId != null}">
-											<h:commandButton rendered="#{modifyFutureVacation.newFutureVacation.approvedFlag == 0 and  modifyFutureVacation.viewMode!= 1}" onclick="return handleOnAction('#{msgs.q_save}', 'validateVacationData()');" action="#{modifyFutureVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
+											<h:commandButton rendered="#{modifyFutureVacation.newFutureVacation.approvedFlag == 0 and  modifyFutureVacation.viewMode!= 1 and modifyFutureVacation.futureVacation.id !=null}" onclick="return handleOnAction('#{msgs.q_save}', 'validateVacationData()');" action="#{modifyFutureVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
 												<f:ajax execute="modifyFutureVacationFormId:newDataId" render="modifyFutureVacationFormId:actionsPanelId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
-											<h:commandButton rendered="#{modifyFutureVacation.newFutureVacation.approvedFlag == 0 and modifyFutureVacation.newFutureVacation.id != null and  modifyFutureVacation.viewMode!= 1 }" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{modifyFutureVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<h:commandButton rendered="#{modifyFutureVacation.newFutureVacation.approvedFlag == 0 and modifyFutureVacation.newFutureVacation.id != null and  modifyFutureVacation.viewMode!= 1}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{modifyFutureVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 												<f:ajax execute="modifyFutureVacationFormId:newDataId" render="modifyFutureVacationFormId:selectEmpId modifyFutureVacationFormId:currentEmployeeId  modifyFutureVacationFormId:vacationDataTitle modifyFutureVacationFormId:futureVacationDataId modifyFutureVacationFormId:newDataTitle modifyFutureVacationFormId:newDataId modifyFutureVacationFormId:actionsPanelId modifyFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 											<h:commandButton rendered="#{modifyFutureVacation.viewMode == 0}" action="#{modifyFutureVacation.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">

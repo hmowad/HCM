@@ -17,7 +17,7 @@ import com.code.dal.orm.BaseEntity;
 import com.code.services.util.HijriDateService;
 
 @NamedQueries({
-	@NamedQuery(name = "hcm_futureVacationTransaction_getFutureVacationById",
+	@NamedQuery(name = "hcm_transientVacationTransactionData_getFutureVacationById",
 		query = " select v from TransientVacationTransactionData v " +
 			" where (:P_VACATION_ID = -1 or v.id = :P_VACATION_ID )" +
 			" and (:P_EMPLOYEE_ID = -1 or v.empId = :P_EMPLOYEE_ID )" +
@@ -25,7 +25,7 @@ import com.code.services.util.HijriDateService;
 			+ "and (:P_APPROVED_FLAG = -1 or v.approvedFlag = :P_APPROVED_FLAG)" +
 			" order by v.endDate desc "),
 
-	@NamedQuery(name = "hcm_futureVacationTransactionData_getfutureVacationByParentId",
+	@NamedQuery(name = "hcm_transientVacationTransactionData_getFutureVacationByParentId",
 		query = " select v from TransientVacationTransactionData v " +
 			" where v.transientVacationParentId = :P_PARENT_ID " +
 			" and (:P_VACATION_ID = -1 or v.id <> :P_VACATION_ID )"),
