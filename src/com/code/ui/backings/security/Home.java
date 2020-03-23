@@ -62,8 +62,9 @@ public class Home extends BaseBacking {
 	try {
 	    HttpSession session = getSession();
 	    EmployeePreferences empPreferences = EmployeesPreferencesService.getEmployeePreferences(loginEmpData.getEmpId());
-	    if ((loginEmpData.getStatusId() < EmployeeStatusEnum.SERVICE_TERMINATED.getCode()) && (session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode()) != null) && (TransactionsTimelineService.getFutureTransactionsCount(loginEmpData.getEmpId()) > 0) && (!empPreferences.getTimeLineAutoHideFlagBoolean())) {
-		showTransactionsTimelineScreenFlag = (boolean) session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode());
+	    if ((loginEmpData.getStatusId() < EmployeeStatusEnum.SERVICE_TERMINATED.getCode()) && (session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode()) != null) && (!empPreferences.getTimeLineAutoHideFlagBoolean())) {
+		if (TransactionsTimelineService.getFutureTransactionsCount(loginEmpData.getEmpId()) > 0)
+		    showTransactionsTimelineScreenFlag = (boolean) session.getAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode());
 	    }
 	    session.setAttribute(SessionAttributesEnum.TRANSACTIONS_TIME_LINE_SHOW_FLAG.getCode(), false);
 	} catch (BusinessException e) {
