@@ -20,7 +20,7 @@ import com.code.dal.orm.BaseEntity;
 import com.code.services.util.HijriDateService;
 
 @NamedQueries({
-	@NamedQuery(name = "hcm_futureVacationTransaction_countfutureVacationsByDecisionNumber",
+	@NamedQuery(name = "hcm_transientVacationTransaction_countFutureVacationsByDecisionNumber",
 		query = " select count(v.id) from TransientVacationTransaction v " +
 			" where v.decisionNumber = :P_DECISION_NUMBER " +
 			" and (:P_VACATION_ID = -1 or v.id <> :P_VACATION_ID)"),

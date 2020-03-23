@@ -124,7 +124,7 @@
 										<td width="35%">
 											<h:selectOneMenu id="futureVacTypeId" value="#{cancelFutureVacation.futureVacation.vacationTypeId}" disabled="#{cancelFutureVacation.viewMode != 0 and cancelFutureVacation.futureVacation.approvedFlag != 0}">
 												<f:selectItems value="#{cancelFutureVacation.vacTypeList}" var="vacType" itemLabel="#{(cancelFutureVacation.currentEmployee.categoryId == 1 or cancelFutureVacation.currentEmployee.categoryId == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
-												<f:ajax event="change" listener="#{cancelFutureVacation.selectVacation()}" execute="cancelFutureVacationFormId:futureVacTypeId" render="cancelFutureVacationFormId:futureVacationDataId cancelFutureVacationFormId:newDataId cancelFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												<f:ajax event="change" listener="#{cancelFutureVacation.selectVacation()}" execute="cancelFutureVacationFormId:futureVacTypeId" render="cancelFutureVacationFormId:futureVacationDataId cancelFutureVacationFormId:newDataId cancelFutureVacationFormId:newDataTitle cancelFutureVacationFormId:actionsPanelId cancelFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:selectOneMenu>
 										</td>
 										<th width="15%">#{msgs.label_period}</th>
@@ -177,7 +177,7 @@
 					<td width="100%">
 						<h:panelGroup id="newDataTitle">
 							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
-								<h:panelGroup rendered="#{cancelFutureVacation.currentEmployee.empId != null}">
+								<h:panelGroup rendered="#{cancelFutureVacation.currentEmployee.empId != null and cancelFutureVacation.futureVacation.id !=null}">
 									<tr>
 										<td>#{msgs.label_requestData}</td>
 									</tr>
@@ -189,7 +189,7 @@
 				<tr>
 					<td width="100%">
 						<h:panelGroup id="newDataId">
-							<h:panelGroup rendered="#{cancelFutureVacation.currentEmployee.empId != null}">
+							<h:panelGroup rendered="#{cancelFutureVacation.currentEmployee.empId != null and cancelFutureVacation.futureVacation.id !=null}">
 								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 									<tr>
 										<th width="15%">
@@ -236,7 +236,7 @@
 								<td width="100%">
 									<h:panelGroup id="actionsPanelId">
 										<h:panelGroup rendered="#{cancelFutureVacation.currentEmployee.empId != null}">
-											<h:commandButton rendered="#{cancelFutureVacation.newFutureVacation.approvedFlag == 0 and cancelFutureVacation.viewMode!=1}" onclick="return handleOnAction('#{msgs.q_save}', 'validateVacationData()');" action="#{cancelFutureVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
+											<h:commandButton rendered="#{cancelFutureVacation.newFutureVacation.approvedFlag == 0 and cancelFutureVacation.viewMode!=1 and cancelFutureVacation.futureVacation.id !=null}" onclick="return handleOnAction('#{msgs.q_save}', 'validateVacationData()');" action="#{cancelFutureVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
 												<f:ajax execute="@form" render="cancelFutureVacationFormId:actionsPanelId cancelFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 											<h:commandButton rendered="#{cancelFutureVacation.newFutureVacation.approvedFlag == 0 and cancelFutureVacation.newFutureVacation.id != null and cancelFutureVacation.viewMode!=1}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{cancelFutureVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
