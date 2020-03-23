@@ -3841,7 +3841,7 @@ public class PromotionsService extends BaseService {
 		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(empData.getEmpId(), empData.getName(), promotionTransactionData.getId(), null, gregNewLastPromotionDateString, null, promotionTransactionData.getDecisionNumber(), null));
 	    }
 	    String gregDecisionDateString = HijriDateService.hijriToGregDateString(promotionTransactionDataList.get(0).getDecisionDateString());
-	    session.commitTransaction();
+	    session.flushTransaction();
 	    PayrollEngineService.doPayrollIntegration(adminDecisionId, promotionTransactionDataList.get(0).getCategoryId(), gregNewLastPromotionDateString, adminDecisionEmployeeDataList, promotionTransactionDataList.get(0).getNewUnitId(), gregDecisionDateString, DataAccess.getTableName(PromotionTransaction.class), resendFlag, session);
 	}
 
@@ -4121,7 +4121,7 @@ public class PromotionsService extends BaseService {
     public static List<PromotionTransactionData> getPromotionTransactionsByDecisionNumberAndDecisionDate(String decisionNumber, Date decisionDate) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put(":P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.length() == 0) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
+	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.length() == 0) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
 	    if (decisionDate == null) {
 		qParams.put("P_DECISION_DATE_FLAG", FlagsEnum.ALL.getCode() + "");
 		qParams.put("P_DECISION_DATE", HijriDateService.getHijriSysDateString());

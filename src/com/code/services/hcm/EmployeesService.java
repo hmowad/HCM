@@ -1681,7 +1681,7 @@ public class EmployeesService extends BaseService {
 	    personInfoRequest.setOperatorId(loginSocialId);
 	    personInfoRequest.setIdType(socialId.charAt(0) == '1' ? IdType.C : (socialId.charAt(0) == '2' ? IdType.R : IdType.V));
 	    personInfoRequest.setDateOfBirth(personInfoRequest.getIdType() == IdType.C ? birthDate.replace('/', '-') : HijriDateService.hijriToGregDateString(birthDate).replace('/', '-'));
-	    personInfoRequest.setClientIpAddress(clientIpAddress);
+	    personInfoRequest.setClientIpAddress(/* clientIpAddress */"1.0.0.1");
 	    String systemCode = ETRConfigurationService.getYaqeenSystemCode();
 	    personInfoRequest.setSystemCode(systemCode);
 	    Yakeen4BorderGuardService yakeen4BorderGuardService = new Yakeen4BorderGuardService();
