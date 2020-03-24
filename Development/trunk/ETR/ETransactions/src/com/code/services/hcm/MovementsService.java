@@ -398,8 +398,7 @@ public class MovementsService extends BaseService {
 		String gregDecisionDateString = HijriDateService.hijriToGregDateString(movementTransactions.get(0).getDecisionDateString());
 		if (session != null)
 		    session.flushTransaction();
-		PayrollEngineService.doPayrollIntegration(adminDecision, movementTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, (movementTransactions.get(0).getUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : movementTransactions.get(0).getUnitId()), gregDecisionDateString, DataAccess.getTableName(MovementTransaction.class), resendFlag,
-			movementTransactions.get(0).getJoiningDate() != null ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode(), session);
+		PayrollEngineService.doPayrollIntegration(adminDecision, movementTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, (movementTransactions.get(0).getUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : movementTransactions.get(0).getUnitId()), gregDecisionDateString, DataAccess.getTableName(MovementTransaction.class), resendFlag, session);
 	    }
 	}
     }
@@ -3401,9 +3400,12 @@ public class MovementsService extends BaseService {
 	if (returnJoiningDate.after(HijriDateService.getHijriSysDate()))
 	    throw new BusinessException("error_movementJoiningDateCannotBeAfterSystemDate");
 
-	if (returnJoiningDate.before(movementTransaction.getEndDate())) {
-	    if (movementTransaction.getMovementTypeId() == MovementTypesEnum.SUBJOIN.getCode())
-		throw new BusinessException("error_subReturnjoiningDateCannotBeBeforeEndDate");
+	if (returnJoiningDate.before(movementTransaction.getExecutionDate())) {
+	    if (movementTransaction.getMovementTypeId() == MovementTypesEnum.MOVE.getCode())
+		throw new BusinessException("error_movingDateCannotBeBeforeExecutionDate");
+
+	    else if (movementTransaction.getMovementTypeId() == MovementTypesEnum.SUBJOIN.getCode())
+		throw new BusinessException("error_subReturnjoiningDateCannotBeBeforeExecutionDate");
 	}
     }
 
