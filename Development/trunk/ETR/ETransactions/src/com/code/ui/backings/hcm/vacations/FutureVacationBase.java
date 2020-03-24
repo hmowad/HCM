@@ -55,6 +55,8 @@ public class FutureVacationBase extends BaseBacking {
 		if (this.getRequest().getParameter("employeeId") != null)
 		    empId = Long.parseLong(this.getRequest().getParameter("employeeId").trim());
 		currentEmployee = EmployeesService.getEmployeeData(empId);
+		if (viewMode == 2)
+		    validateSignAdmins();
 	    } else {
 		reset();
 	    }
@@ -107,11 +109,11 @@ public class FutureVacationBase extends BaseBacking {
     public void selectVacation() {
 	try {
 	    vacationTypeId = futureVacation.getVacationTypeId();
-	    TransientVacationTransactionData selectedVacation = FutureVacationsService.getFutureVacationTransactionDataByVacType(empId, futureVacation.getVacationTypeId(), FlagsEnum.ON.getCode());
+	    TransientVacationTransactionData selectedVacation = FutureVacationsService.getFutureVacationTransactionDataByVacType(empId, futureVacation.getVacationTypeId(), FlagsEnum.ALL.getCode(), FlagsEnum.ON.getCode());
 	    if (selectedVacation != null) {
 		if ((selectedVacation.getRequestType() == RequestTypesEnum.MODIFY.getCode() || selectedVacation.getRequestType() == RequestTypesEnum.CANCEL.getCode()) && selectedVacation.getApprovedFlag() == FlagsEnum.OFF.getCode()) {
 		    newFutureVacation = selectedVacation;
-		    futureVacation = FutureVacationsService.getFutureVacationTransactionDataByParentId(newFutureVacation.getTransientVacationParentId(), vacationId);
+		    futureVacation = FutureVacationsService.getFutureVacationTransactionDataById(newFutureVacation.getTransientVacationParentId());
 
 		} else {
 		    futureVacation = selectedVacation;

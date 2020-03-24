@@ -24,7 +24,7 @@ public class CancelFutureVacation extends FutureVacationBase {
 	    if (viewMode != 0) {
 		vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
 		newFutureVacation = FutureVacationsService.getFutureVacationTransactionDataById(vacationId);
-		futureVacation = FutureVacationsService.getFutureActiveVacationTransactionDataById(newFutureVacation.getTransientVacationParentId());
+		futureVacation = FutureVacationsService.getFutureVacationTransactionDataById(newFutureVacation.getTransientVacationParentId());
 	    }
 	    adjustProcess();
 	} catch (BusinessException e) {

@@ -21,8 +21,9 @@ import com.code.services.util.HijriDateService;
 		query = " select v from TransientVacationTransactionData v " +
 			" where (:P_VACATION_ID = -1 or v.id = :P_VACATION_ID )" +
 			" and (:P_EMPLOYEE_ID = -1 or v.empId = :P_EMPLOYEE_ID )" +
-			" and (:P_VACATION_TYPE_ID = -1 or v.vacationTypeId = :P_VACATION_TYPE_ID)"
-			+ "and (:P_APPROVED_FLAG = -1 or v.approvedFlag = :P_APPROVED_FLAG)" +
+			" and (:P_VACATION_TYPE_ID = -1 or v.vacationTypeId = :P_VACATION_TYPE_ID)" +
+			"and (:P_APPROVED_FLAG = -1 or v.approvedFlag = :P_APPROVED_FLAG)" +
+			"and (:P_ACTIVE_FLAG = -1 or v.activeFlag = :P_ACTIVE_FLAG)" +
 			" order by v.endDate desc "),
 
 	@NamedQuery(name = "hcm_transientVacationTransactionData_getFutureVacationByParentId",
