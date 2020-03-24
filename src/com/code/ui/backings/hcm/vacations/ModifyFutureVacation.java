@@ -27,7 +27,7 @@ public class ModifyFutureVacation extends FutureVacationBase {
 	    if (viewMode != 0) {
 		getVacationTypesByEmpCategoryId();
 		newFutureVacation = FutureVacationsService.getFutureVacationTransactionDataById(vacationId);
-		futureVacation = FutureVacationsService.getFutureActiveVacationTransactionDataById(newFutureVacation.getTransientVacationParentId());
+		futureVacation = FutureVacationsService.getFutureVacationTransactionDataById(newFutureVacation.getTransientVacationParentId());
 	    }
 	    adjustProcess();
 	} catch (BusinessException e) {

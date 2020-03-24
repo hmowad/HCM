@@ -4,8 +4,10 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 
+import com.code.enums.FlagsEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.FutureVacationsService;
+import com.code.services.hcm.VacationsService;
 import com.code.services.util.HijriDateService;
 
 @ManagedBean(name = "futureVacationJoining")
@@ -15,7 +17,15 @@ public class FutureVacationJoining extends FutureVacationBase {
     private int exceededFlag = 0;
 
     public FutureVacationJoining() {
-	super.init();
+	try {
+	    super.init();
+	    if (viewMode != 0) {
+		vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
+		futureVacation = FutureVacationsService.getFutureVacationTransactionDataById(vacationId);
+	    }
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(e.getMessage());
+	}
     }
 
     public void exceededFlagListener() {

@@ -89,7 +89,7 @@ public class FutureVacationsService extends BaseService {
 	    if (signFutureVacationFlag) {
 		vacation = constructVacation(futureVacationTransaction);
 		if (futureVacationTransaction.getRequestType() == RequestTypesEnum.MODIFY.getCode() || futureVacationTransaction.getRequestType() == RequestTypesEnum.CANCEL.getCode()) {
-		    TransientVacationTransactionData oldFutureVacationTransaction = getFutureActiveVacationTransactionDataById(futureVacationTransaction.getTransientVacationParentId());
+		    TransientVacationTransactionData oldFutureVacationTransaction = getFutureVacationTransactionDataById(futureVacationTransaction.getTransientVacationParentId());
 		    vacation.setVacationId(oldFutureVacationTransaction.getVacationTransactionId());
 		    if (futureVacationTransaction.getRequestType() == RequestTypesEnum.CANCEL.getCode())
 			vacation.setStatus(RequestTypesEnum.CANCEL.getCode());
@@ -275,25 +275,22 @@ public class FutureVacationsService extends BaseService {
 	}
     }
 
-    public static TransientVacationTransactionData getFutureActiveVacationTransactionDataById(long id) throws BusinessException {
-	return getFutureVacationTransactionData(id, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ON.getCode());
-    }
-
     public static TransientVacationTransactionData getFutureVacationTransactionDataById(long id) throws BusinessException {
-	return getFutureVacationTransactionData(id, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.OFF.getCode());
+	return getFutureVacationTransactionData(id, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode());
     }
 
-    public static TransientVacationTransactionData getFutureVacationTransactionDataByVacType(long empId, long vactionTypeId, long approvedFlag) throws BusinessException {
-	return getFutureVacationTransactionData(FlagsEnum.ALL.getCode(), empId, vactionTypeId, approvedFlag);
+    public static TransientVacationTransactionData getFutureVacationTransactionDataByVacType(long empId, long vactionTypeId, long approvedFlag, long activeFlag) throws BusinessException {
+	return getFutureVacationTransactionData(FlagsEnum.ALL.getCode(), empId, vactionTypeId, approvedFlag, activeFlag);
     }
 
-    private static TransientVacationTransactionData getFutureVacationTransactionData(long id, long empId, long vactionTypeId, long approvedFlag) throws BusinessException {
+    private static TransientVacationTransactionData getFutureVacationTransactionData(long id, long empId, long vactionTypeId, long approvedFlag, long activeFlag) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_VACATION_ID", id);
 	    qParams.put("P_EMPLOYEE_ID", empId);
 	    qParams.put("P_VACATION_TYPE_ID", vactionTypeId);
 	    qParams.put("P_APPROVED_FLAG", approvedFlag);
+	    qParams.put("P_ACTIVE_FLAG", activeFlag);
 
 	    List<TransientVacationTransactionData> result = DataAccess.executeNamedQuery(TransientVacationTransactionData.class, QueryNamesEnum.HCM_GET_FUTURE_VACATION_TRANSACTION_BY_ID.getCode(), qParams);
 	    return result.isEmpty() ? null : result.get(0);

@@ -26,7 +26,9 @@ public class AddFutureVacation extends FutureVacationBase {
 	    if (viewMode != 0) {
 		vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
 		futureVacation = FutureVacationsService.getFutureVacationTransactionDataById(vacationId);
+		inquiryBalance();
 	    }
+
 	    adjustProcess();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(e.getMessage());
