@@ -130,8 +130,8 @@ public class AddFutureVacation extends FutureVacationBase {
 
     }
 
-    public void startDateAndPeriodChangeListener(TransientVacationTransactionData futureVac) {
-	super.startDateAndPeriodChangeListener(futureVacation);
+    public void startDateAndPeriodChangeListener(TransientVacationTransactionData futureVacationTransactionData) {
+	super.startDateAndPeriodChangeListener(futureVacationTransactionData);
 	inquiryBalance();
     }
 
