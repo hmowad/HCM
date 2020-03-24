@@ -9,7 +9,7 @@
 	<script type="text/javascript">
 		//<![CDATA[ 
 		function getEmp(contextPath) {
-			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',1, -1, -1, -1, -1, -1, -1);
+			openEmpsMiniSearchForHistorical(contextPath, 'handleEmpMiniSearchResult(ret)',22,'#{historicalVacation.categoriesIds}');
 		}
 
 		function handleEmpMiniSearchResult(ret) {
@@ -125,7 +125,7 @@
 										</th>
 										<td width="85%" colspan="3">
 											<h:outputText id="empNameId" value="#{historicalVacation.currentEmployee.name}" />
-											<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" rendered="#{historicalVacation.viewMode == 0 and historicalVacation.historicalVacationTransactionData.approvedFlag == 0 }" />
+											<h:commandButton disabled="#{historicalVacation.admin == false}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" rendered="#{historicalVacation.viewMode == 0 and historicalVacation.historicalVacationTransactionData.approvedFlag == 0 }" />
 											<h:inputHidden id="empIdHId" value="#{historicalVacation.currentEmployee.empId}" />
 											<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{historicalVacation.selectEmployee}">
 												<f:ajax execute="historicalVacationFormId:empIdHId" render=" historicalVacationFormId:selectEmpId historicalVacationFormId:currentEmployeeId historicalVacationFormId:HistoricalVacationTitle historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationTitle historicalVacationFormId:joiningVacationId historicalVacationFormId:actionsPanelId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
@@ -407,7 +407,7 @@
 											<h:commandButton rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}" onclick="return handleOnAction('#{msgs.q_save}', 'validateVacationData()');" action="#{historicalVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
 												<f:ajax execute="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationId" render="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationId historicalVacationFormId:actionsPanelId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
-											<h:commandButton rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1 and historicalVacation.historicalVacationTransactionData.id != null}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{historicalVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<h:commandButton rendered="#{historicalVacation.signAdmin == true and historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1 and historicalVacation.historicalVacationTransactionData.id != null}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{historicalVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 												<f:ajax execute="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationId" render="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationId historicalVacationFormId:actionsPanelId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 											<h:commandButton rendered="#{historicalVacation.viewMode == 0}" action="#{historicalVacation.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
