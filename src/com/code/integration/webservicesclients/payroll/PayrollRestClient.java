@@ -1,8 +1,11 @@
 package com.code.integration.webservicesclients.payroll;
 
+import java.io.StringReader;
 import java.util.Base64;
 
+import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonReader;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -77,39 +80,24 @@ public class PayrollRestClient {
 		response = webTarget.request()
 			.header(HttpHeaders.AUTHORIZATION, ESBAuthorizationHeaderValue)
 			.get();
-		responseString = response == null ? null : response.readEntity(String.class);
 	    } else {
 		webTarget = client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? allowanceRestServicesGetAdminDecisionUrl : payrollRestServicesGetAdminDecisionUrl)
 			.queryParam("adminDecisionId", adminDecisionId)
 			.queryParam("categoryId", categoryId)
 			.queryParam("executionDate", executionDateString);
 		response = webTarget.request().get();
-		responseString = response == null ? null : response.readEntity(String.class);
 	    }
+	    responseString = response == null ? null : response.readEntity(String.class);
 	    if (response.getStatus() != Status.OK.getStatusCode()) {
 		Log4jService.traceInfo(PayrollRestClient.class, "Error: " + responseString);
 		if (response.getStatus() == Status.EXPECTATION_FAILED.getStatusCode())
-		    throw new BusinessException(responseString, new Object[] { FlagsEnum.OFF.getCode() });
+		    handlePayrollException(responseString);
 		else
 		    throw new Exception();
 	    }
 	    return responseString;
-	} catch (BusinessException e) {
-	    e.printStackTrace();
-	    Log4jService.traceInfo(PayrollRestClient.class, "Error in retrieving AdminDecisionVariables");
-	    if (resendFlag.equals(FlagsEnum.ON.getCode()))
-		throw new BusinessException(e.getMessage());
-	    payrollIntegrationFailureLog.setRequestURL(webTarget.getUri().toString());
-	    payrollIntegrationFailureLog.setResponse(responseString);
-	    PayrollEngineService.addPayrollIntegrationFailureReport(payrollIntegrationFailureLog, useSession);
-	    return null;
 	} catch (Exception e) {
-	    if (resendFlag.equals(FlagsEnum.ON.getCode())) {
-		if (integrationTypeFlag.equals(IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode()))
-		    throw new BusinessException("error_cantAccessAllowanceSystem");
-		else
-		    throw new BusinessException("error_cantAccessAllowanceSystem");
-	    }
+	    handleBusinessException(e, resendFlag, integrationTypeFlag);
 	    payrollIntegrationFailureLog.setRequestURL(webTarget.getUri().toString());
 	    payrollIntegrationFailureLog.setResponse(responseString);
 	    PayrollEngineService.addPayrollIntegrationFailureReport(payrollIntegrationFailureLog, useSession);
@@ -128,41 +116,49 @@ public class PayrollRestClient {
 			.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
 			.header(HttpHeaders.AUTHORIZATION, ESBAuthorizationHeaderValue)
 			.post(Entity.entity(body, MediaType.APPLICATION_JSON + "; charset=utf-8"));
-		responseString = response == null ? null : response.readEntity(String.class);
 	    } else {
 		webTarget = client.target(integrationTypeFlag == IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode() ? allowanceRestServicesApplyAdminDecisionUrl : payrollRestServicesApplyAdminDecisionUrl);
 		response = webTarget.request()
 			.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
 			.post(Entity.entity(body, MediaType.APPLICATION_JSON + "; charset=utf-8"));
-		responseString = response == null ? null : response.readEntity(String.class);
 	    }
+	    responseString = response == null ? null : response.readEntity(String.class);
 	    if (response.getStatus() != Status.OK.getStatusCode()) {
 		Log4jService.traceInfo(PayrollRestClient.class, "Error: " + responseString);
 		if (response.getStatus() == Status.EXPECTATION_FAILED.getStatusCode())
-		    throw new BusinessException(responseString, new Object[] { FlagsEnum.OFF.getCode() });
+		    handlePayrollException(responseString);
 		else
 		    throw new Exception();
 	    }
-	} catch (BusinessException e) {
-	    e.printStackTrace();
-	    Log4jService.traceInfo(PayrollRestClient.class, "Error in applyAdminDecision");
-	    if (resendFlag.equals(FlagsEnum.ON.getCode()))
-		throw new BusinessException(e.getMessage());
+	} catch (Exception e) {
+	    handleBusinessException(e, resendFlag, integrationTypeFlag);
 	    payrollIntegrationFailureLog.setRequestBody(body.toString());
 	    payrollIntegrationFailureLog.setRequestURL(webTarget.getUri().toString());
 	    payrollIntegrationFailureLog.setResponse(responseString);
 	    PayrollEngineService.addPayrollIntegrationFailureReport(payrollIntegrationFailureLog, useSession);
-	} catch (Exception e) {
+	}
+    }
+
+    private static void handlePayrollException(String responseString) throws BusinessException {
+	JsonReader jsonReader = Json.createReader(new StringReader(responseString));
+	JsonObject errorJson = jsonReader.readObject();
+	if (errorJson.containsKey("Response"))
+	    throw new BusinessException(errorJson.get("Response").toString(), new Object[] { FlagsEnum.OFF.getCode() });
+	else
+	    throw new BusinessException(responseString, new Object[] { FlagsEnum.OFF.getCode() });
+    }
+
+    private static void handleBusinessException(Exception e, Integer resendFlag, Integer integrationTypeFlag) throws BusinessException {
+	if (e instanceof BusinessException) {
+	    if (resendFlag.equals(FlagsEnum.ON.getCode()))
+		throw (BusinessException) e;
+	} else {
 	    if (resendFlag.equals(FlagsEnum.ON.getCode())) {
 		if (integrationTypeFlag.equals(IntegrationTypeFlagEnum.INTEGRATE_ALLOWANCES.getCode()))
 		    throw new BusinessException("error_cantAccessAllowanceSystem");
 		else
-		    throw new BusinessException("error_cantAccessAllowanceSystem");
+		    throw new BusinessException("error_cantAccessPayrollSystem");
 	    }
-	    payrollIntegrationFailureLog.setRequestBody(body.toString());
-	    payrollIntegrationFailureLog.setRequestURL(webTarget.getUri().toString());
-	    payrollIntegrationFailureLog.setResponse(responseString);
-	    PayrollEngineService.addPayrollIntegrationFailureReport(payrollIntegrationFailureLog, useSession);
 	}
     }
 
