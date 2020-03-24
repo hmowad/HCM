@@ -9,7 +9,7 @@
 	<script type="text/javascript">
    		 //<![CDATA[
    		            function getEmp(contextPath) {
-						openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',1, -1, -1, -1, -1, -1, -1);
+   		 			openEmpsMiniSearchForHistorical(contextPath, 'handleEmpMiniSearchResult(ret)',22,'#{cancelHistoricalVacation.categoriesIds}');
 					}
    		  		function handleEmpMiniSearchResult(ret) {
 		   			if (ret != null) {
@@ -88,7 +88,7 @@
 											</th>
 											<td width="85%" colspan="3">
 												<h:outputText id="empNameId" value="#{cancelHistoricalVacation.currentEmployee.name}" />
-												<h:commandButton rendered="#{cancelHistoricalVacation.viewMode == 0 and cancelHistoricalVacation.newHistoricalVacationTransaction.approvedFlag == 0}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectVacation}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+												<h:commandButton  disabled="#{cancelHistoricalVacation.admin == false}" rendered="#{cancelHistoricalVacation.viewMode == 0 and cancelHistoricalVacation.newHistoricalVacationTransaction.approvedFlag == 0}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectVacation}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
 												<h:inputHidden id="empIdHId" value="#{cancelHistoricalVacation.currentEmployee.empId}" />
 												<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{cancelHistoricalVacation.selectEmployee}">
 													<f:ajax execute="cancelHistoricalVacationFormId:empIdHId" render="cancelHistoricalVacationFormId:selectEmpId cancelHistoricalVacationFormId:currentEmployeeId  cancelHistoricalVacationFormId:historicalVacationTitle cancelHistoricalVacationFormId:historicalVacationData cancelHistoricalVacationFormId:newDataTitle cancelHistoricalVacationFormId:newDataId cancelHistoricalVacationFormId:actionsPanelId cancelHistoricalVacationFormId:notifyMessagesId "  onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
@@ -290,7 +290,7 @@
 											<h:commandButton rendered="#{cancelHistoricalVacation.newHistoricalVacationTransaction.approvedFlag == 0 and cancelHistoricalVacation.viewMode!=1}" onclick="return handleOnAction('#{msgs.q_save}', 'validateVacationData()');" action="#{cancelHistoricalVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
 												<f:ajax execute="@form" render="cancelHistoricalVacationFormId:actionsPanelId cancelHistoricalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
-											<h:commandButton rendered="#{cancelHistoricalVacation.newHistoricalVacationTransaction.approvedFlag == 0 and cancelHistoricalVacation.newHistoricalVacationTransaction.id != null and cancelHistoricalVacation.viewMode!=1}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{cancelHistoricalVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<h:commandButton rendered="#{cancelHistoricalVacation.signAdmin == true and cancelHistoricalVacation.newHistoricalVacationTransaction.approvedFlag == 0 and cancelHistoricalVacation.newHistoricalVacationTransaction.id != null and cancelHistoricalVacation.viewMode!=1}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{cancelHistoricalVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 												<f:ajax execute="@form" render="cancelHistoricalVacationFormId:selectEmpId cancelHistoricalVacationFormId:currentEmployeeId  cancelHistoricalVacationFormId:historicalVacationTitle cancelHistoricalVacationFormId:historicalVacationData cancelHistoricalVacationFormId:newDataTitle cancelHistoricalVacationFormId:newDataId cancelHistoricalVacationFormId:actionsPanelId cancelHistoricalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 											<h:commandButton rendered="#{cancelHistoricalVacation.viewMode==0}" action="#{cancelHistoricalVacation.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">

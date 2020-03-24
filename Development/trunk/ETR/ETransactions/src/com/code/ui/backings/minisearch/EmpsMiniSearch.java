@@ -264,6 +264,10 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 		searchEmployeeList = EmployeesService.searchEmployeesForFutureVacation(searchEmpName, categoryIds, employeeIds, militaryNumber, searchSocialId, statusIds, searchJobDesc, searchUnitFullName, sequenceNumber);
 		break;
 
+	    case 22: // Get employees For HistroicalVacation
+		searchEmployeeList = EmployeesService.searchEmployeesForFutureVacation(searchEmpName, categoryIds, employeeIds, militaryNumber, searchSocialId, statusIds, searchJobDesc, searchUnitFullName, sequenceNumber);
+		break;
+
 	    }
 
 	    if (searchEmployeeList == null || searchEmployeeList.isEmpty()) {
