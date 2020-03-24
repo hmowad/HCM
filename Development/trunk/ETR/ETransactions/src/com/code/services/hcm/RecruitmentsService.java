@@ -933,7 +933,7 @@ public class RecruitmentsService extends BaseService {
 	    String gregDecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getDecisionDateString());
 	    session.flushTransaction();
 	    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_RECRUITMENT.getCode(), CategoriesEnum.OFFICERS.getCode(), gregRecDateString, adminDecisionEmployeeDataList,
-		    recruitmentTransactions != null && recruitmentTransactions.size() > 0 && recruitmentTransactions.get(0).getTransUnitFullName() != null ? UnitsService.getUnitByExactFullName(recruitmentTransactions.get(0).getTransUnitFullName()).getId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId(), gregDecDateString, DataAccess.getTableName(RecruitmentTransaction.class), resendFlag, session);
+		    recruitmentTransactions != null && recruitmentTransactions.size() > 0 && recruitmentTransactions.get(0).getTransUnitFullName() != null ? UnitsService.getUnitByExactFullName(recruitmentTransactions.get(0).getTransUnitFullName()).getId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId(), gregDecDateString, DataAccess.getTableName(RecruitmentTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
 	}
     }
 

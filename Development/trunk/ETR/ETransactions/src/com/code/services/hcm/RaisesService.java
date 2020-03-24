@@ -317,7 +317,7 @@ public class RaisesService extends BaseService {
 		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), raiseTransactionData.getId(), null, gregExecutionDateString, null, raiseTransactionData.getDecisionNumber(), null));
 		}
 		session.flushTransaction();
-		PayrollEngineService.doPayrollIntegration(adminDecisionId, raiseTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, employee == null || employee.getPhysicalUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(RaiseTransaction.class), resendFlag, session);
+		PayrollEngineService.doPayrollIntegration(adminDecisionId, raiseTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, employee == null || employee.getPhysicalUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(RaiseTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
 	    }
 	}
     }
