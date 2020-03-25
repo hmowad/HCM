@@ -212,19 +212,10 @@
 											<h:outputText rendered="#{modifyHistoricalVacation.historicalVacationTransaction.id != null}" value="#{modifyHistoricalVacation.historicalVacationTransaction.locationFlag == 0 ? msgs.label_locIn : msgs.label_locOut}" />
 										</td>
 										<th width="15%">
-											<h:panelGroup id="locationBtnPanelGroupId">
-												<h:panelGroup rendered="#{modifyHistoricalVacation.historicalVacationTransaction.locationFlag == 1}">
-													<h:commandButton id="locationBtnId" value="#{msgs.label_selectCountries}" onclick="getCountries('#{request.contextPath}'); return false;" disabled="true" styleClass="btn_normal" />
-													<h:outputText value="#{msgs.label_country}" />
-												</h:panelGroup>
-											</h:panelGroup>
+											<h:outputText value="#{msgs.label_country}" />
 										</th>
 										<td width="35%">
-											<h:panelGroup id="locationPanelGroupId">
-												<h:panelGroup rendered="#{modifyHistoricalVacation.historicalVacationTransaction.locationFlag == 1}">
-													<h:outputText id="locationId" value="#{modifyHistoricalVacation.historicalVacationTransaction.location}" />
-												</h:panelGroup>
-											</h:panelGroup>
+											<h:outputText id="locationId" value="#{modifyHistoricalVacation.historicalVacationTransaction.location}" />
 										</td>
 									</tr>
 								</table>

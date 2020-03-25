@@ -195,27 +195,16 @@
 										</td>
 									</tr>
 									<tr>
-
 										<th width="15%">#{msgs.label_location}</th>
 										<td width="35%">
 											<h:outputText rendered="#{cancelHistoricalVacation.historicalVacationTransaction.id != null}" value="#{cancelHistoricalVacation.historicalVacationTransaction.locationFlag == 0 ? msgs.label_locIn : msgs.label_locOut}" />
 										</td>
 										<th width="15%">
-											<h:panelGroup id="locationBtnPanelGroupId">
-												<h:panelGroup rendered="#{cancelHistoricalVacation.historicalVacationTransaction.locationFlag == 1}">
-													<h:commandButton id="locationBtnId" value="#{msgs.label_selectCountries}" onclick="getCountries('#{request.contextPath}'); return false;" disabled="true" styleClass="btn_normal" />
-													<h:outputText value="#{msgs.label_country}" />
-												</h:panelGroup>
-											</h:panelGroup>
+											<h:outputText value="#{msgs.label_country}" />
 										</th>
 										<td width="35%">
-											<h:panelGroup id="locationPanelGroupId">
-												<h:panelGroup rendered="#{cancelHistoricalVacation.historicalVacationTransaction.locationFlag == 1}">
-													<h:outputText id="locationId" value="#{cancelHistoricalVacation.historicalVacationTransaction.location}" />
-												</h:panelGroup>
-											</h:panelGroup>
+											<h:outputText id="locationId" value="#{cancelHistoricalVacation.historicalVacationTransaction.location}" />
 										</td>
-
 									</tr>
 								</table>
 							</h:panelGroup>
