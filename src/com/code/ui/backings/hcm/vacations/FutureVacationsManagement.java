@@ -23,9 +23,7 @@ import com.code.services.util.HijriDateService;
 @ManagedBean(name = "futureVacationsManagement")
 @ViewScoped
 public class FutureVacationsManagement extends FutureVacationBase {
-    // private EmployeeData currentEmployee;
     private long vacationTypeId;
-    // private List<VacationType> vacTypeList;
     private Date fromDate;
     private Date toDate;
     private Integer period;
@@ -35,7 +33,6 @@ public class FutureVacationsManagement extends FutureVacationBase {
     private Integer approvedFlag;
     // screenMode= 1 open General Manager Screen
     // screenMode= 2 open External Employees Screen
-    // int screenMode;
     private Date currentDate;
     private int pageSize = 5;
 
@@ -68,8 +65,8 @@ public class FutureVacationsManagement extends FutureVacationBase {
 
     public void searchFutureVacations() {
 	try {
-	    // if (currentEmployee.getEmpId() == null)
-	    // throw new BusinessException("error_employeeMandatory");
+	    if (currentEmployee.getEmpId() == null)
+		throw new BusinessException("error_employeeMandatory");
 	    futureVacations = FutureVacationsService.searchFutureVacations(currentEmployee, decisionNumber, requestType, vacationTypeId, approvedFlag, fromDate, toDate, period, locationFlag);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
