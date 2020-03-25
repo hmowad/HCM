@@ -119,7 +119,7 @@
 									</th>
 									<td width="85%" colspan="3">
 										<h:outputText id="empNameId" value="#{addFutureVacation.currentEmployee.name}" />
-										<h:commandButton disabled="#{addFutureVacation.admin == false}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" rendered="#{addFutureVacation.viewMode == 0 and addFutureVacation.futureVacation.approvedFlag == 0 }"/>
+										<h:commandButton rendered="#{addFutureVacation.viewMode == 0 and addFutureVacation.futureVacation.approvedFlag == 0}" disabled="#{!addFutureVacation.admin}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon"/>
 										<h:inputHidden id="empIdHId" value="#{addFutureVacation.empId}" />
 										<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{addFutureVacation.selectEmployee()}">
 											<f:ajax execute="addFutureVacationFormId:empIdHId" render="addFutureVacationFormId:currentEmployeeId addFutureVacationFormId:vacationDataTitle addFutureVacationFormId:futureVacationId addFutureVacationFormId:actionsPanelId addFutureVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />

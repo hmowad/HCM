@@ -28,7 +28,7 @@ import com.code.services.util.HijriDateService;
 
 	@NamedQuery(name = "hcm_transientVacationTransactionData_getFutureVacationByParentId",
 		query = " select v from TransientVacationTransactionData v " +
-			" where v.transientVacationParentId = :P_PARENT_ID " +
+			" where v.id = :P_PARENT_ID " +
 			" and (:P_VACATION_ID = -1 or v.id <> :P_VACATION_ID )"),
 
 	@NamedQuery(name = "hcm_transientVacationTransactionData_searchFutureVacations",

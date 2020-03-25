@@ -9,10 +9,15 @@
 
 	<script type="text/javascript">
     //<![CDATA[ 
-               	function getEmp(contextPath) {
-			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',1, -1, -1, -1, -1, -1, -1);
+    
+         function getEmp(contextPath) {
+    	     if(#{addFutureVacation.screenMode == 1})
+    	    	 openEmployeesMiniSearchForFutureVacation(contextPath, 'handleEmpMiniSearchResult(ret)', 21, '1', '#{futureVacationsManagement.employeeIds}');
+             else
+            	 openEmployeesMiniSearchForFutureVacation(contextPath, 'handleEmpMiniSearchResult(ret)', 21, '#{futureVacationsManagement.categoriesIds}', '-1');
+			
 		}
-
+ 		
 		function handleEmpMiniSearchResult(ret) {
 			if (ret != null) {
 				document.getElementById('futureVacationsManagementFormId:empIdHId').value = ret[0];
@@ -31,6 +36,13 @@
 				row.classList.remove("ui-state-hover");
 			}
 			commandBtnParentRow.classList.add("ui-state-highlight");
+		}
+		function validateVacationData() {
+			var empId = document.getElementById('futureVacationsManagementFormId:empIdHId').value;
+			if (empId == null || empId == '') {
+				alert('#{msgs.error_employeeMandatory}');
+				return false;
+			}
 		}
     // ]]>
         </script>
@@ -66,10 +78,11 @@
 								<tr>
 									<th width="15%">
 										#{msgs.label_selectEmp}
+										<font style="color: red;"> *</font>
 									</th>
 									<td width="35%" colspan="3">
 										<h:outputText id="empNameId" value="#{futureVacationsManagement.currentEmployee.name}" />
-										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+										<h:commandButton disabled="#{!futureVacationsManagement.admin}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
 										<h:inputHidden id="empIdHId" value="#{futureVacationsManagement.currentEmployee.empId}" />
 										<h:inputHidden id="empNameHId" value="#{futureVacationsManagement.currentEmployee.name}" />
 										<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{futureVacationsManagement.selectEmployee()}">
@@ -148,7 +161,7 @@
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{futureVacationsManagement.searchFutureVacations()}" styleClass="btn_normal_icon" title="#{msgs.label_searchByRoot}">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}"  action="#{futureVacationsManagement.searchFutureVacations()}" styleClass="btn_normal_icon" title="#{msgs.label_searchByRoot}">
 										<f:ajax execute="futureVacationsManagementFormId:searchPanelId" render="futureVacationsManagementFormId:futureVacationsTableId  futureVacationsManagementFormId:notifyMessagesId" />
 									</h:commandButton>
 									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{futureVacationsManagement.resetForm()}" styleClass="btn_normal_icon">
@@ -220,11 +233,12 @@
 							</rich:column>
 							<rich:column style="width : 5%">
 								<f:facet name="header">#{msgs.label_joining}</f:facet>
-								<h:panelGroup rendered="#{(futureVacation.requestType == 1 or futureVacation.requestType == 2) and futureVacation.approvedFlag == 1 and futureVacationsManagement.currentDate >= futureVacation.endDate}">
+								<h:panelGroup rendered="#{(futureVacation.requestType == 1 or futureVacation.requestType == 2) and futureVacation.approvedFlag == 1 and (futureVacationsManagement.currentDate >= futureVacation.endDate) and futureVacation.joiningDate == null}">
 									<a target="_blank"  href="#{request.contextPath}/Vacations/FutureVacationJoining.jsf?viewMode=3&amp;employeeId=#{futureVacation.empId}&amp;vacId=#{futureVacation.id}" style="text-decoration: none;">
 										<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_joining}"></i>
 									</a>
 								</h:panelGroup>
+								<h:outputText value="#{futureVacation.joiningDateString}" rendered="#{futureVacation.joiningDate != null}" />
 							</rich:column>
 							<rich:column style="width : 5%">
 								<f:facet name="header">#{msgs.label_details}</f:facet>

@@ -27,7 +27,7 @@ public class FutureVacationsService extends BaseService {
 
     }
 
-    /***************************** Future Vacatons *****************************/
+    /***************************** Future Vacations *****************************/
     /*---------------------------Operations---------------------------*/
 
     public static void insertFutureVacation(TransientVacationTransaction futureVacationTransaction, EmployeeData vacationBeneficiary, CustomSession... useSession) throws BusinessException {
@@ -66,11 +66,16 @@ public class FutureVacationsService extends BaseService {
 
     public static void modifyFutureVacation(TransientVacationTransaction futureVacationTransaction, EmployeeData vacationBeneficiary, boolean signFutureVacationFlag, boolean skipValidationFlag, CustomSession... useSession) throws BusinessException {
 	if (futureVacationTransaction != null) {
-	    validateDecisionNumber(futureVacationTransaction);
-	    if (futureVacationTransaction.getRequestType() != RequestTypesEnum.CANCEL.getCode() && !skipValidationFlag) {
-		validateFutureVacationRules(futureVacationTransaction, vacationBeneficiary);
+	    if (!skipValidationFlag) {
+		validateDecisionNumber(futureVacationTransaction);
+		if (futureVacationTransaction.getRequestType() != RequestTypesEnum.CANCEL.getCode())
+		    validateFutureVacationRules(futureVacationTransaction, vacationBeneficiary);
+	    } else {
+		if (futureVacationTransaction.getJoiningDate() != null && futureVacationTransaction.getApprovedFlag() == FlagsEnum.ON.getCode() && futureVacationTransaction.getActiveFlag() == FlagsEnum.ON.getCode())
+		    validateFutureVacationJoining(futureVacationTransaction);
 	    }
 	    modifyFutureVacationTransaction(futureVacationTransaction, signFutureVacationFlag, useSession);
+
 	} else {
 	    throw new BusinessException("error_vacationDeleted");
 	}
@@ -123,7 +128,7 @@ public class FutureVacationsService extends BaseService {
 	    throw new BusinessException("error_vacationHasBeenModifiedOrCanceled");
 	// if the deletion for initial cancel/modify vacation get the parent and set the active flag to on
 	if (futureVacationTransaction.getRequestType() != RequestTypesEnum.NEW.getCode()) {
-	    TransientVacationTransactionData oldFutureVacation = getFutureVacationTransactionDataById(futureVacationTransaction.getId());
+	    TransientVacationTransactionData oldFutureVacation = getFutureVacationTransactionDataByParentId(futureVacationTransaction.getTransientVacationParentId(), futureVacationTransaction.getId());
 	    oldFutureVacation.setActiveFlag(FlagsEnum.ON.getCode());
 	    modifyFutureVacationTransaction(oldFutureVacation.getTransientVacationTransaction(), false, useSession);
 	}
@@ -210,6 +215,11 @@ public class FutureVacationsService extends BaseService {
 	if (oldFutureVacationTransactionData != null)
 	    throw new BusinessException("error_vacationHasBeenModifiedOrCanceled");
     }
+
+    private static void validateFutureVacationJoining(TransientVacationTransaction futureVacationTransaction) throws BusinessException {
+	if (futureVacationTransaction.getExceededDays() == null || futureVacationTransaction.getExceededDays() < 0)
+	    throw new BusinessException("error_exceededDaysPositive");
+    }
     /*---------------------------Utilities------------------------------*/
 
     private static Vacation constructVacation(TransientVacationTransaction futureVacationTransaction) {
@@ -237,18 +247,20 @@ public class FutureVacationsService extends BaseService {
     }
 
     /*---------------------------Queries------------------------------*/
-    public static List<TransientVacationTransactionData> getFutureVacations(EmployeeData employee, String decisionNumber, Integer requestType, Long vacationTypeId, Integer approvedFlag, Date fromDate, Date toDate, Integer period, Integer locationFlag)
+    public static List<TransientVacationTransactionData> searchFutureVacations(EmployeeData employee, String decisionNumber, Integer requestType, Long vacationTypeId, Integer approvedFlag, Date fromDate, Date toDate, Integer period, Integer locationFlag)
+	    throws BusinessException {
+	return getFutureVacations(employee, decisionNumber, requestType, vacationTypeId, approvedFlag, fromDate, toDate, period, locationFlag);
+    }
+
+    private static List<TransientVacationTransactionData> getFutureVacations(EmployeeData employee, String decisionNumber, Integer requestType, Long vacationTypeId, Integer approvedFlag, Date fromDate, Date toDate, Integer period, Integer locationFlag)
 	    throws BusinessException {
 	try {
 	    Map<String, Object> qParam = new HashMap<String, Object>();
 	    qParam.put("P_EMP_ID", employee.getEmpId() == null ? FlagsEnum.ALL.getCode() : employee.getEmpId());
 	    qParam.put("P_DECISION_NUMBER", decisionNumber.equals("") ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
-	    // qParam.put("P_REQUEST_TYPE_FLAG", requestType == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode());
 	    qParam.put("P_REQUEST_TYPE", requestType);
-	    // qParam.put("P_VACATION_TYPE_FLAG", vacationTypeId == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode());
 	    qParam.put("P_VACATION_TYPE_ID", vacationTypeId);
 	    qParam.put("P_APPROVED_FLAG", approvedFlag);
-	    // qParam.put("P_SKIP_DATES", fromDate == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode());
 	    qParam.put("P_FROM_DATE_FLAG", fromDate == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode());
 	    qParam.put("P_FROM_DATE", fromDate == null ? HijriDateService.getHijriDateString(HijriDateService.getHijriSysDate()) : HijriDateService.getHijriDateString(fromDate));
 	    qParam.put("P_TO_DATE_FLAG", toDate == null ? FlagsEnum.ALL.getCode() : FlagsEnum.ON.getCode());
@@ -283,10 +295,10 @@ public class FutureVacationsService extends BaseService {
 	return getFutureVacationTransactionData(FlagsEnum.ALL.getCode(), empId, vactionTypeId, approvedFlag, activeFlag);
     }
 
-    private static TransientVacationTransactionData getFutureVacationTransactionData(long id, long empId, long vactionTypeId, long approvedFlag, long activeFlag) throws BusinessException {
+    private static TransientVacationTransactionData getFutureVacationTransactionData(long futureVacationId, long empId, long vactionTypeId, long approvedFlag, long activeFlag) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put("P_VACATION_ID", id);
+	    qParams.put("P_VACATION_ID", futureVacationId);
 	    qParams.put("P_EMPLOYEE_ID", empId);
 	    qParams.put("P_VACATION_TYPE_ID", vactionTypeId);
 	    qParams.put("P_APPROVED_FLAG", approvedFlag);

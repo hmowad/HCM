@@ -139,18 +139,19 @@ public class FutureVacationBase extends BaseBacking {
 		selectedVacation.setVacationTypeId(vacationTypeId);
 		newFutureVacation = selectedVacation;
 		futureVacation = selectedVacation;
+		throw new BusinessException("error_noPrevVacation");
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
-    public void startDateAndPeriodChangeListener(TransientVacationTransactionData futureVac) {
+    public void startDateAndPeriodChangeListener(TransientVacationTransactionData futureVactionTransactionData) {
 	try {
-	    if (futureVac.getStartDate() != null && futureVac.getPeriod() != null && futureVac.getPeriod() > 0) {
-		futureVac.setEndDateString(HijriDateService.addSubStringHijriDays(futureVac.getStartDateString(), futureVac.getPeriod() - 1));
+	    if (futureVactionTransactionData.getStartDate() != null && futureVactionTransactionData.getPeriod() != null && futureVactionTransactionData.getPeriod() > 0) {
+		futureVactionTransactionData.setEndDateString(HijriDateService.addSubStringHijriDays(futureVactionTransactionData.getStartDateString(), futureVactionTransactionData.getPeriod() - 1));
 	    } else {
-		futureVac.setEndDateString("");
+		futureVactionTransactionData.setEndDateString("");
 	    }
 	} catch (BusinessException e) {
 	    e.printStackTrace();
