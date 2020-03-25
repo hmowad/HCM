@@ -108,7 +108,7 @@ public class FutureVacationBase extends BaseBacking {
     public void selectVacation() {
 	try {
 	    vacationTypeId = futureVacation.getVacationTypeId();
-	    TransientVacationTransactionData selectedVacation = FutureVacationsService.getFutureVacationTransactionDataByVacType(empId, futureVacation.getVacationTypeId(), FlagsEnum.ON.getCode(), FlagsEnum.ON.getCode());
+	    TransientVacationTransactionData selectedVacation = FutureVacationsService.getFutureVacationTransactionDataByVacType(empId, futureVacation.getVacationTypeId(), FlagsEnum.ON.getCode(), FlagsEnum.ON.getCode(), FlagsEnum.ON.getCode());
 	    if (selectedVacation != null) {
 		if ((selectedVacation.getRequestType() == RequestTypesEnum.MODIFY.getCode() || selectedVacation.getRequestType() == RequestTypesEnum.CANCEL.getCode()) && selectedVacation.getApprovedFlag() == FlagsEnum.OFF.getCode()) {
 		    newFutureVacation = selectedVacation;

@@ -209,7 +209,7 @@ public class VacationsService extends BaseService {
      * 
      * @see VacationTypesEnum
      */
-    public static void validateVacationRules(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, Integer skipEmpsVacationConflicts) throws BusinessException {
+    public static void validateVacationRules(Vacation request, EmployeeData vacationBeneficiary, Integer skipEVacationValidation, Integer skipEmpsVacationConflicts) throws BusinessException {
 	VacationsBusinessRulesService.validateVacationDates(request);
 	VacationsBusinessRulesService.validateVacationLocation(request);
 	if (skipEmpsVacationConflicts == FlagsEnum.ON.getCode()) {
@@ -224,7 +224,7 @@ public class VacationsService extends BaseService {
 	    VacationsBusinessRulesService.validatePreviousVacationJoining(vacationBeneficiary.getEmpId(), vacationBeneficiary.getCategoryId(), request.getStartDate());
 
 	if (request.getStatus() == RequestTypesEnum.MODIFY.getCode() || request.getStatus() == RequestTypesEnum.CANCEL.getCode())
-	    VacationsBusinessRulesService.validateModifyAndCancelEVacation(request.getVacationId(), request.getStatus(), skipWFFlag);
+	    VacationsBusinessRulesService.validateModifyAndCancelEVacation(request.getVacationId(), request.getStatus(), skipEVacationValidation);
 
 	if (request.getStatus() == RequestTypesEnum.NEW.getCode() || request.getStatus() == RequestTypesEnum.MODIFY.getCode()) {
 
