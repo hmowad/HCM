@@ -261,11 +261,17 @@
 													</h:selectOneRadio>
 													<h:outputText rendered="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1 }" value="#{addFutureVacation.futureVacation.locationFlag == 0 ? msgs.label_locIn : msgs.label_locOut}" />
 												</td>
-
-												<th width="15%">
-													<h:commandButton id="locationBtnId" value="#{msgs.label_selectCountries}" onclick="getCountries('#{request.contextPath}');return false;" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 }" disabled="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1 or addFutureVacation.futureVacation.locationFlag == 0}" styleClass="btn_normal" />
-													<h:outputText value="*" style="color: red;" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 }" />
-												</th>
+												<h:panelGroup rendered="#{addFutureVacation.viewMode != 1}">
+													<th width="15%">
+														<h:commandButton id="locationBtnId" value="#{msgs.label_selectCountries}" onclick="getCountries('#{request.contextPath}');return false;" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 }" disabled="#{addFutureVacation.futureVacation.approvedFlag == 1 or addFutureVacation.viewMode == 1 or addFutureVacation.futureVacation.locationFlag == 0}" styleClass="btn_normal" />
+														<h:outputText value="*" style="color: red;" rendered="#{addFutureVacation.futureVacation.approvedFlag == 0 }" />
+													</th>
+												</h:panelGroup>
+												<h:panelGroup rendered="#{addFutureVacation.viewMode == 1}">
+													<th width="15%">
+														<h:outputText value="#{msgs.label_country}" />
+													</th>
+												</h:panelGroup>
 												<td width="35%">
 													<h:outputText id="locationId" value="#{addFutureVacation.futureVacation.location}" />
 													<h:inputHidden id="countriesNamesId" value="#{addFutureVacation.futureVacation.location}" />

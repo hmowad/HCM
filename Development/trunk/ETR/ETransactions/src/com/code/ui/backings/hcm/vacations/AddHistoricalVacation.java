@@ -187,6 +187,7 @@ public class AddHistoricalVacation extends BaseBacking {
 	    exceededFlag = FlagsEnum.OFF.getCode();
 
 	    vacTypeList = VacationsService.getVacationTypes(currentEmployee.getEmpId() == null ? FlagsEnum.ALL.getCode() : currentEmployee.getCategoryId());
+	    inquiryBalance();
 	    validateSignAdmins();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
