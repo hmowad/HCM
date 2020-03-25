@@ -9,11 +9,15 @@ import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.vacations.TransientVacationTransactionData;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
+import com.code.enums.MenuActionsEnum;
+import com.code.enums.MenuCodesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.FutureVacationsService;
 import com.code.services.hcm.VacationsService;
+import com.code.services.security.SecurityService;
 import com.code.services.util.HijriDateService;
 
 @ManagedBean(name = "futureVacationsManagement")
@@ -42,26 +46,31 @@ public class FutureVacationsManagement extends FutureVacationBase {
 	resetForm();
 	try {
 	    currentDate = HijriDateService.getHijriSysDate();
+
+	    if (this.getRequest().getParameter("mode") != null)
+		screenMode = Integer.parseInt(this.getRequest().getParameter("mode"));
+	    switch (screenMode) {
+	    case 1:
+		this.setScreenTitle(this.getMessage("title_generalManagerVacationsManagement"));
+		validateGeneralManagerAdmins();
+		break;
+	    case 2:
+		this.setScreenTitle(this.getMessage("title_externalEmployeesVacationsManagement"));
+		validateExternalEmployeesAdmins();
+		break;
+	    default:
+		this.setServerSideErrorMessages(this.getMessage("error_general"));
+	    }
 	} catch (BusinessException e) {
 	    e.printStackTrace();
-	}
-	if (this.getRequest().getParameter("mode") != null)
-	    screenMode = Integer.parseInt(this.getRequest().getParameter("mode"));
-	switch (screenMode) {
-	case 1:
-	    this.setScreenTitle(this.getMessage("title_generalManagerVacationsManagement"));
-	    break;
-	case 2:
-	    this.setScreenTitle(this.getMessage("title_externalEmployeesVacationsManagement"));
-	    break;
-	default:
-	    this.setServerSideErrorMessages(this.getMessage("error_general"));
 	}
     }
 
     public void searchFutureVacations() {
 	try {
-	    futureVacations = FutureVacationsService.getFutureVacations(currentEmployee, decisionNumber, requestType, vacationTypeId, approvedFlag, fromDate, toDate, period, locationFlag);
+	    // if (currentEmployee.getEmpId() == null)
+	    // throw new BusinessException("error_employeeMandatory");
+	    futureVacations = FutureVacationsService.searchFutureVacations(currentEmployee, decisionNumber, requestType, vacationTypeId, approvedFlag, fromDate, toDate, period, locationFlag);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -111,6 +120,39 @@ public class FutureVacationsManagement extends FutureVacationBase {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
 
+    }
+
+    private void validateGeneralManagerAdmins() throws BusinessException {
+	this.setAdmin(SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_GENEAL_MANAGER_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_GENEAL_MANAGER.getCode()));
+
+    }
+
+    private void validateExternalEmployeesAdmins() throws BusinessException {
+	if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_EXTERNAL_EMPLOYEES_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_EXTERNAL_OFFICERS.getCode()))
+	    categoriesIds.append(CategoriesEnum.OFFICERS.getCode() + ",");
+
+	if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_EXTERNAL_EMPLOYEES_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_EXTERNAL_SOLDIERS.getCode()))
+	    categoriesIds.append(CategoriesEnum.SOLDIERS.getCode() + ",");
+
+	if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_EXTERNAL_EMPLOYEES_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_EXTERNAL_PERSONS.getCode()))
+	    categoriesIds.append(CategoriesEnum.PERSONS.getCode() + ",");
+
+	if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_EXTERNAL_EMPLOYEES_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_EXTERNAL_USERS.getCode()))
+	    categoriesIds.append(CategoriesEnum.USERS.getCode() + ",");
+
+	if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_EXTERNAL_EMPLOYEES_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_EXTERNAL_WAGES.getCode()))
+	    categoriesIds.append(CategoriesEnum.WAGES.getCode() + ",");
+
+	if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_EXTERNAL_EMPLOYEES_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_EXTERNAL_CONTRACTORS.getCode()))
+	    categoriesIds.append(CategoriesEnum.CONTRACTORS.getCode() + ",");
+
+	if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_FUTURE_VAC_EXTERNAL_EMPLOYEES_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_FUTURE_VACATIONS_EXTERNAL_MEDICAL_STAFF.getCode()))
+	    categoriesIds.append(CategoriesEnum.MEDICAL_STAFF.getCode() + ",");
+
+	if (categoriesIds.length() != 0 && categoriesIds.substring(categoriesIds.length() - 1).equals(","))
+	    categoriesIds.delete(categoriesIds.length() - 1, categoriesIds.length());
+
+	this.setAdmin(categoriesIds.length() != 0 ? true : false);
     }
 
     public List<TransientVacationTransactionData> getFutureVacations() {

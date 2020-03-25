@@ -76,7 +76,7 @@
 									</th>
 									<td width="85%" colspan="3">
 										<h:outputText id="empNameId" value="#{cancelFutureVacation.currentEmployee.name}" />
-										<h:commandButton disabled="#{cancelFutureVacation.admin == false}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectVacation}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+										<h:commandButton rendered="#{modifyFutureVacation.viewMode == 0 and modifyFutureVacation.futureVacation.approvedFlag == 0 and modifyFutureVacation.admin}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectVacation}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
 										<h:inputHidden id="empIdHId" value="#{cancelFutureVacation.empId}" />
 										<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{cancelFutureVacation.selectEmployee}">
 											<f:ajax execute="cancelFutureVacationFormId:empIdHId" render="cancelFutureVacationFormId:selectEmpId cancelFutureVacationFormId:currentEmployeeId  cancelFutureVacationFormId:vacationDataTitle cancelFutureVacationFormId:futureVacationDataId cancelFutureVacationFormId:newDataTitle cancelFutureVacationFormId:newDataId cancelFutureVacationFormId:actionsPanelId cancelFutureVacationFormId:notifyMessagesId " onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />

@@ -208,7 +208,7 @@
 								<tr>
 									<th width="15%">#{msgs.label_joining}</th>
 									<td width="85%">
-										<h:selectOneRadio id="exceededFlagId" value="#{futureVacationJoining.exceededFlag}" >
+										<h:selectOneRadio id="exceededFlagId" value="#{futureVacationJoining.exceededFlag}" disabled="#{futureVacationJoining.joiningSaveFlag == true}">
 											<f:selectItem itemValue="0" itemLabel="#{msgs.label_attendInTime}" />
 											<f:selectItem itemValue="1" itemLabel="#{msgs.label_attendAfterTime}" />
 											<f:ajax event="click" listener="#{futureVacationJoining.exceededFlagListener()}" execute="@this" render="vacationJoiningForm:requestInfoPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
@@ -223,9 +223,10 @@
 											<font style="color: red;">*</font>
 										</th>
 										<td width="85%">
-											<h:inputText id="exceededDaysId" value="#{futureVacationJoining.futureVacation.exceededDays}"  maxlength="3" style="font-weight: bold !important; color: red !important;" >
+											<h:inputText id="exceededDaysId" rendered="#{futureVacationJoining.joiningSaveFlag == false}" value="#{futureVacationJoining.futureVacation.exceededDays}"  maxlength="3" style="font-weight: bold !important; color: red !important;" >
 												<f:ajax event="blur" execute="@this" listener="#{futureVacationJoining.exceededDaysListener}" render="vacationJoiningForm:joiningDateId vacationJoiningForm:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:inputText>
+											<h:outputText value="#{futureVacationJoining.futureVacation.exceededDays}" rendered="#{futureVacationJoining.joiningSaveFlag == true}"/>
 										</td>
 									</h:panelGroup>
 								</tr>
@@ -238,7 +239,8 @@
 								<tr>
 									<th width="15%">#{msgs.label_notes}</th>
 									<td width="85%">
-										<h:inputText value="#{futureVacationJoining.futureVacation.joiningRemarks}" maxlength="500" styleClass="inputDataLarge"/>
+										<h:inputText value="#{futureVacationJoining.futureVacation.joiningRemarks}" rendered="#{futureVacationJoining.joiningSaveFlag == false}" maxlength="500" styleClass="inputDataLarge"/>
+										<h:outputText value="#{futureVacationJoining.futureVacation.joiningRemarks}" rendered="#{futureVacationJoining.joiningSaveFlag == true}"/>
 									</td>
 								</tr>
 							</table>
@@ -255,9 +257,9 @@
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-									<h:panelGroup rendered="#{futureVacationJoining.vacationId != null}">
+									<h:panelGroup rendered="#{futureVacationJoining.vacationId != null and futureVacationJoining.joiningSaveFlag == false}">
 										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');" action="#{futureVacationJoining.saveJoiningVacation()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon">
-											<f:ajax render="vacationJoiningForm:notifyMessagesId" execute="vacationJoiningForm:requestInfoPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+											<f:ajax render="vacationJoiningForm:requestInfoPanelId vacationJoiningForm:notifyMessagesId" execute="vacationJoiningForm:requestInfoPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
 										</h:commandButton>
 									</h:panelGroup>
 								</td>

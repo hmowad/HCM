@@ -141,8 +141,6 @@ public class ModifyFutureVacation extends FutureVacationBase {
 
     public void saveVacation() {
 	try {
-	    if (futureVacation.getId() == null)
-		throw new BusinessException("error_noPrevVacation");
 	    FutureVacationsService.validateOldFutureVacationActivationStatus(newFutureVacation.getTransientVacationParentId(), newFutureVacation.getId());
 	    if (newFutureVacation.getId() == null) {
 		newFutureVacation.setRequestType(RequestTypesEnum.MODIFY.getCode());

@@ -209,10 +209,10 @@ public class VacationsService extends BaseService {
      * 
      * @see VacationTypesEnum
      */
-    public static void validateVacationRules(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, Integer skipBaseVacConflicts) throws BusinessException {
+    public static void validateVacationRules(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, Integer skipEmpsVacationConflicts) throws BusinessException {
 	VacationsBusinessRulesService.validateVacationDates(request);
 	VacationsBusinessRulesService.validateVacationLocation(request);
-	if (skipBaseVacConflicts == FlagsEnum.ON.getCode()) {
+	if (skipEmpsVacationConflicts == FlagsEnum.ON.getCode()) {
 	    EmployeesTransactionsConflictValidator
 		    .validateEmployeesTransactionsConflicts(
 			    new Long[] { vacationBeneficiary.getEmpId() }, new String[] { vacationBeneficiary.getName() },
