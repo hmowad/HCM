@@ -124,7 +124,8 @@ public class FutureVacationsService extends BaseService {
 
     public static void deleteFutureVacation(TransientVacationTransaction futureVacationTransaction, CustomSession... useSession) throws BusinessException {
 
-	if (futureVacationTransaction.getApprovedFlag() == FlagsEnum.ON.getCode())
+	TransientVacationTransactionData futureVacation = getFutureVacationTransactionDataById(futureVacationTransaction.getId());
+	if (futureVacation.getApprovedFlag() == FlagsEnum.ON.getCode())
 	    throw new BusinessException("error_vacationHasBeenModifiedOrCanceled");
 	// if the deletion for initial cancel/modify vacation get the parent and set the active flag to on
 	if (futureVacationTransaction.getRequestType() != RequestTypesEnum.NEW.getCode()) {

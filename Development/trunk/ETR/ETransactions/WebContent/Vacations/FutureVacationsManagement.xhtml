@@ -161,7 +161,7 @@
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}"  action="#{futureVacationsManagement.searchFutureVacations()}" styleClass="btn_normal_icon" title="#{msgs.label_searchByRoot}">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" onclick="return validateVacationData();" action="#{futureVacationsManagement.searchFutureVacations()}" styleClass="btn_normal_icon" title="#{msgs.label_searchByRoot}">
 										<f:ajax execute="futureVacationsManagementFormId:searchPanelId" render="futureVacationsManagementFormId:futureVacationsTableId  futureVacationsManagementFormId:notifyMessagesId" />
 									</h:commandButton>
 									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{futureVacationsManagement.resetForm()}" styleClass="btn_normal_icon">
@@ -238,7 +238,7 @@
 										<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_joining}"></i>
 									</a>
 								</h:panelGroup>
-								<h:outputText value="#{futureVacation.joiningDateString}" rendered="#{futureVacation.joiningDate != null}" />
+								<h:outputText value="#{futureVacation.joiningDateString}" rendered="#{(futureVacation.requestType == 1 or futureVacation.requestType == 2) and futureVacation.approvedFlag == 1 and (futureVacationsManagement.currentDate >= futureVacation.endDate) and futureVacation.joiningDate != null}" />
 							</rich:column>
 							<rich:column style="width : 5%">
 								<f:facet name="header">#{msgs.label_details}</f:facet>
