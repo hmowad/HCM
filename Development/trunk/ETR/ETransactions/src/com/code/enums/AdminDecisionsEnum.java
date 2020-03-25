@@ -8,6 +8,8 @@ public enum AdminDecisionsEnum {
 
     /****************************************** Recruitment ********************************************/
     OFFICERS_RECRUITMENT(11),
+    OFFICERS_RE_RECRUITMENT(51),
+    OFFICERS_RECRUITMENT_BY_EXTERNAL_MOVE(52),
 
     /****************************************** Employees ********************************************/
     OFFICERS_REGISTRATION(10),

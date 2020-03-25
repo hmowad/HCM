@@ -921,7 +921,17 @@ public class RecruitmentsService extends BaseService {
     }
 
     private static void doPayrollIntegration(List<RecruitmentTransactionData> recruitmentTransactions, Integer resendFlag, CustomSession session) throws BusinessException {
+	Long adminDecisionId = null;
 	if (recruitmentTransactions.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+	    if (recruitmentTransactions.get(0).getRecruitmentType().equals(RecruitmentTypeEnum.RECRUITMENT.getCode())) {
+		adminDecisionId = AdminDecisionsEnum.OFFICERS_RECRUITMENT.getCode();
+	    } else if (recruitmentTransactions.get(0).getRecruitmentType().equals(RecruitmentTypeEnum.RE_RECRUITMENT.getCode())) {
+		adminDecisionId = AdminDecisionsEnum.OFFICERS_RE_RECRUITMENT.getCode();
+	    } else if (recruitmentTransactions.get(0).getRecruitmentType().equals(RecruitmentTypeEnum.RECRUITMENT_BY_EXTERNAL_MOVE.getCode())) {
+		adminDecisionId = AdminDecisionsEnum.OFFICERS_RECRUITMENT_BY_EXTERNAL_MOVE.getCode();
+	    }
+	}
+	if (adminDecisionId != null) {
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
 	    EmployeeData emp = null;
 	    for (RecruitmentTransactionData recruitmentTransactionData : recruitmentTransactions) {
@@ -932,13 +942,14 @@ public class RecruitmentsService extends BaseService {
 	    String gregRecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getRecruitmentDateString());
 	    String gregDecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getDecisionDateString());
 	    session.flushTransaction();
-	    PayrollEngineService.doPayrollIntegration(AdminDecisionsEnum.OFFICERS_RECRUITMENT.getCode(), CategoriesEnum.OFFICERS.getCode(), gregRecDateString, adminDecisionEmployeeDataList,
+	    PayrollEngineService.doPayrollIntegration(adminDecisionId, recruitmentTransactions.get(0).getCategoryId(), gregRecDateString, adminDecisionEmployeeDataList,
 		    recruitmentTransactions != null && recruitmentTransactions.size() > 0 && recruitmentTransactions.get(0).getTransUnitFullName() != null ? UnitsService.getUnitByExactFullName(recruitmentTransactions.get(0).getTransUnitFullName()).getId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId(), gregDecDateString, DataAccess.getTableName(RecruitmentTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
+
 	}
     }
 
     public static void payrollIntegrationFailureHandle(String decisionNumber, Date decisionDate, CustomSession session) throws BusinessException {
-	List<RecruitmentTransactionData> recruitmentTransactionDataList = getRecruitmentTransactionsByDecisionNumberAndDecisionDate(decisionNumber, decisionDate, decisionDate);
+	List<RecruitmentTransactionData> recruitmentTransactionDataList = getRecruitmentTransactionsByDecisionNumberAndDecisionDate(decisionNumber, decisionDate, decisionDate,null);
 	if (recruitmentTransactionDataList != null && recruitmentTransactionDataList.size() != 0) {
 	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
 		doPayrollIntegration(recruitmentTransactionDataList, FlagsEnum.ON.getCode(), session);
@@ -1198,7 +1209,7 @@ public class RecruitmentsService extends BaseService {
 	    String reportName = "";
 	    boolean isSingleReport;
 	    Map<String, Object> parameters = new HashMap<String, Object>();
-	    List<RecruitmentTransactionData> transactions = getRecruitmentTransactionsByDecisionNumberAndDecisionDate(transaction.getDecisionNumber(), transaction.getDecisionDate(), transaction.getDecisionDate());
+	    List<RecruitmentTransactionData> transactions = getRecruitmentTransactionsByDecisionNumberAndDecisionDate(transaction.getDecisionNumber(), transaction.getDecisionDate(), transaction.getDecisionDate(), FlagsEnum.ON.getCode());
 	    if (transactions.size() == 1) {
 		isSingleReport = true;
 	    } else {
@@ -1471,11 +1482,12 @@ public class RecruitmentsService extends BaseService {
      * @throws BusinessException
      *             if any error occurs
      */
-    private static List<RecruitmentTransactionData> getRecruitmentTransactionsByDecisionNumberAndDecisionDate(String decisionNumber, Date decisionDateFrom, Date decisionDateTo) throws BusinessException {
+    private static List<RecruitmentTransactionData> getRecruitmentTransactionsByDecisionNumberAndDecisionDate(String decisionNumber, Date decisionDateFrom, Date decisionDateTo, Integer eflag) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 
 	    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.length() == 0) ? FlagsEnum.ALL.getCode() + "" : decisionNumber);
+	    qParams.put("P_E_FLAG", (eflag == null) ? FlagsEnum.ALL.getCode() : eflag);
 	    if (decisionDateFrom != null) {
 		qParams.put("P_DECISION_DATE_FROM_FLAG", FlagsEnum.ON.getCode());
 		qParams.put("P_DECISION_DATE_FROM", HijriDateService.getHijriDateString(decisionDateFrom));
@@ -1815,7 +1827,9 @@ public class RecruitmentsService extends BaseService {
 	    List<RecruitmentTransactionData> recruitmentTransctions = new ArrayList<>();
 	    recruitmentTransctions.add(recruitmentTransaction);
 	    addRecruitmentTransactions(recruitmentTransctions, null, session);
-
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode())) {
+		doPayrollIntegration(recruitmentTransctions, FlagsEnum.OFF.getCode(), session);
+	    }
 	    if (!isOpenedSession)
 		session.commitTransaction();
 	} catch (BusinessException e) {

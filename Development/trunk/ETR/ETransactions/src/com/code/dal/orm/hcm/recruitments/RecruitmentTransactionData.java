@@ -40,7 +40,7 @@ import com.code.services.util.HijriDateService;
 			" (:P_DECISION_NUMBER = '-1' or r.decisionNumber = :P_DECISION_NUMBER) " +
 			" and (:P_DECISION_DATE_FROM_FLAG = -1 or to_date(:P_DECISION_DATE_FROM, 'MI/MM/YYYY') <= r.decisionDate) " +
 			" and (:P_DECISION_DATE_TO_FLAG = -1 or to_date(:P_DECISION_DATE_TO, 'MI/MM/YYYY') >= r.decisionDate) " +
-			" and (r.etrFlag = 1) " +
+			" and (:P_E_FLAG = -1 or r.etrFlag = :P_E_FLAG) " +
 			" order by r.employeeMilitaryNumber, r.rankId, r.recruitmentDate, r.employeeName "),
 	@NamedQuery(name = "hcm_recruitmentTransactionData_getRecruitmentTransactionDataById",
 		query = " select r from RecruitmentTransactionData r where " +
