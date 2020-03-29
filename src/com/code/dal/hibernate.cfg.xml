@@ -193,6 +193,8 @@
 		<mapping class="com.code.dal.orm.workflow.hcm.terminations.WFTerminationCancellationMovement" />
 		<mapping class="com.code.dal.orm.workflow.hcm.terminations.WFTerminationCancellationMovementData" />
 		
+		<mapping class="com.code.dal.orm.hcm.dutyextension.DutyExtensionTransaction" />
+		
 		<mapping class="com.code.dal.orm.hcm.vacations.VacationType" />
 		<mapping class="com.code.dal.orm.hcm.vacations.Vacation" />
 		<mapping class="com.code.dal.orm.hcm.vacations.VacationLog" />

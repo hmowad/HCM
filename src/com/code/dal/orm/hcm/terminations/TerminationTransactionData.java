@@ -53,6 +53,12 @@ import com.code.services.util.HijriDateService;
 		query = (" select tt from TerminationTransactionData tt "
 			+ " where (:P_EMP_ID = -1 or tt.empId = :P_EMP_ID) "
 			+ " and (:P_DECISION_DATE_FLAG = -1 or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') <= tt.decisionDate) "
+			+ " order by tt.decisionDate,tt.decisionNumber ")),
+
+	@NamedQuery(name = "hcm_terminationTransactionData_getTerminationTransactionsByunitId",
+		query = (" select tt from TerminationTransactionData tt "
+			+ " where (tt.transEmpUnitId = :P_UNIT_ID) "
+			+ " and ( tt.categoryId <> 6) "
 			+ " order by tt.decisionDate,tt.decisionNumber "))
 })
 @Entity
