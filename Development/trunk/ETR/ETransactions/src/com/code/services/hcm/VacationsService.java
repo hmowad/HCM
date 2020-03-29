@@ -171,7 +171,7 @@ public class VacationsService extends BaseService {
 		throw new BusinessException("error_general");
 	    String gregDecisionDateString = HijriDateService.hijriToGregDateString(request.getDecisionDateString());
 	    String gregVacationStartDateString = request.getJoiningDate() != null ? HijriDateService.hijriToGregDateString(HijriDateService.getHijriDateString(request.getJoiningDate())) : HijriDateService.hijriToGregDateString(request.getStartDateString());
-	    String gregVacationEndDateString = request.getJoiningDate() != null ? null : HijriDateService.hijriToGregDateString(request.getEndDateString());
+	    String gregVacationEndDateString = (request.getJoiningDate() != null || adminDecisionId.equals(AdminDecisionsEnum.OFFICERS_CANCEL_HALF_PAID_SICK_VACATION_REQUEST.getCode())) ? null : HijriDateService.hijriToGregDateString(request.getEndDateString());
 	    String requestDecisionNumber = request.getJoiningDate() != null ? System.currentTimeMillis() + "" : request.getDecisionNumber();
 	    String originalDecisionNumber = originalVacation != null && originalVacation.getDecisionNumber() != null ? originalVacation.getDecisionNumber() : null;
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(
