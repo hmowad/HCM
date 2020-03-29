@@ -38,14 +38,10 @@ public class IncentivesWS {
 	    IncentiveTransaction incentiveTransaction = gson.fromJson(incentiveTransactionString, IncentiveTransaction.class);
 	    IncentivesService.addIncentiveTransaction(incentiveTransaction);
 	} catch (Exception e) {
-	    if (e instanceof NumberFormatException)
-		return Response.status(Status.EXPECTATION_FAILED).entity(NumberFormatException.class.getSimpleName()).build();
-
-	    if (e instanceof BusinessException) {
+	    if (e instanceof BusinessException)
 		return Response.status(Status.EXPECTATION_FAILED).entity(BaseService.getMessage(e.getMessage())).build();
-	    }
-	    if (e instanceof DatabaseException)
-		return Response.status(Status.EXPECTATION_FAILED).entity(DatabaseException.class.getSimpleName()).build();
+	    else
+		return Response.status(Status.EXPECTATION_FAILED).entity(e.getClass().getSimpleName()).build();
 	}
 	return Response.status(Status.OK).build();
     }
@@ -60,11 +56,7 @@ public class IncentivesWS {
 	try {
 	    missionsDetailsData = MissionsService.getMissionsDetailsWithNoIncentivesByEmpId(Long.parseLong(employeeId));
 	} catch (Exception e) {
-	    if (e instanceof DatabaseException)
-		return Response.status(Status.EXPECTATION_FAILED).entity(DatabaseException.class.getSimpleName()).build();
-
-	    if (e instanceof NumberFormatException)
-		return Response.status(Status.EXPECTATION_FAILED).entity(NumberFormatException.class.getSimpleName()).build();
+	    return Response.status(Status.EXPECTATION_FAILED).entity(e.getClass().getSimpleName()).build();
 	}
 
 	// construct response

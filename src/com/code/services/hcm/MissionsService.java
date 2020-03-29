@@ -743,6 +743,15 @@ public class MissionsService extends BaseService {
 	}
     }
 
+    /**
+     * 
+     * Get list of {@link MissionDetailData} that have no incentives transactions using Employee Id, used by Incentives Web Service
+     * 
+     * @param empId
+     *            Employee Id to select employee's mission details
+     * @return List of {@link MissionDetailData} to Incentives Web Service
+     * @throws DatabaseException
+     */
     public static List<MissionDetailData> getMissionsDetailsWithNoIncentivesByEmpId(long empId) throws DatabaseException {
 	Map<String, Object> qParams = new HashMap<String, Object>();
 	qParams.put("P_EMP_ID", empId);
