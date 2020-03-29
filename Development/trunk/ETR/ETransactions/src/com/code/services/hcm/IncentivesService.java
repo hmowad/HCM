@@ -42,7 +42,7 @@ public class IncentivesService extends BaseService {
 
     private static void validateIncentiveTransaction(IncentiveTransaction incentiveTransaction) throws BusinessException {
 	if (incentiveTransaction == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_integrationMandatoryFields");
 	if (incentiveTransaction.getIncentiveTypeId() == null)
 	    throw new BusinessException("error_integrationMandatoryFields");
 	if (incentiveTransaction.getEmployeeId() == null)
