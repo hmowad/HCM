@@ -3401,7 +3401,7 @@ public class MovementsService extends BaseService {
 	if (returnJoiningDate.after(HijriDateService.getHijriSysDate()))
 	    throw new BusinessException("error_movementJoiningDateCannotBeAfterSystemDate");
 
-	if (returnJoiningDate.before(movementTransaction.getEndDate())) {
+	if (!returnJoiningDate.after(movementTransaction.getEndDate())) {
 	    if (movementTransaction.getMovementTypeId() == MovementTypesEnum.SUBJOIN.getCode())
 		throw new BusinessException("error_subReturnjoiningDateCannotBeBeforeEndDate");
 	}
