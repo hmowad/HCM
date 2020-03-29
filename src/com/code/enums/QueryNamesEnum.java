@@ -347,6 +347,7 @@ public enum QueryNamesEnum {
     HCM_MISSION_DETAIL_DATA_SUM_ACTUAL_AND_ROAD_PARIOD("hcm_missionDetailData_sumActualPariodAndRoadPariod"),
     HCM_MISSION_DETAIL_OVERLAP("hcm_missionDetail_overLap"),
     HCM_GET_MISSION_DETAIL_DATA_AFTER_DECISION_DATE("hcm_missionDetailData_getMissionTransactionAfterDecisionDate"),
+    HCM_MISSION_DETAIL_DATA_GET_MISSIONS_DETAILS_WITH_NO_INCENTIVES_BY_EMP_ID("hcm_missionDetailData_getMissionsDetailsWithNoIncentivesByEmpId"),
 
     /* ****************************************** WF Mission Detail ******************************************* */
     WF_MISSIONS_DETAILS_VALIDATE_RUNNING_PROCESSES("wf_missionDetail_validateRunningProcesses"),
@@ -546,7 +547,12 @@ public enum QueryNamesEnum {
     /* ******************************************* Payroll integration ****************************************************** */
     HCM_SEARCH_ADMIN_DECISION("hcm_adminDecision_searchAdminDecision"),
     HCM_GET_ADMIN_DECISION_VARIABLES_MAPPING_BY_VARIABLE_NAME_AND_HCM_VALUE("hcm_adminDecisionVariablesMapping_getAdminDecisionVariablesMappingByVariableNameAndHCMValue"),
-    HCM_GET_NON_EXECUTED_PAYROLL_INTEGRATION_FAILURE_LOG("hcm_payrollIntegrationFailureLog_getNonExecutedPayrollIntegrationFailureLog");
+    HCM_GET_NON_EXECUTED_PAYROLL_INTEGRATION_FAILURE_LOG("hcm_payrollIntegrationFailureLog_getNonExecutedPayrollIntegrationFailureLog"),
+
+    /* ******************************************* Incentives ****************************************************** */
+    HCM_INCENTIVE_PORT_GET_INCENTIVE_PORTS("hcm_incentivePort_getIncentivePorts"),
+    HCM_GOVERNMENTAL_COMMITTEE_CATEGORY_GET_GOVERNMENTAL_COMMITTEES_CATEGORIES("hcm_governmentalCommitteeCategory_getGovernmentalCommitteesCategories");
+
     private String code;
 
     private QueryNamesEnum(String code) {
