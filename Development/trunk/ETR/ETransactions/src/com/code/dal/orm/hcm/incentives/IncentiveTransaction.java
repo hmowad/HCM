@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.code.dal.orm.BaseEntity;
 
@@ -65,6 +67,7 @@ public class IncentiveTransaction extends BaseEntity {
 
     @Basic
     @Column(name = "START_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
     public Date getStartDate() {
 	return startDate;
     }
@@ -75,6 +78,7 @@ public class IncentiveTransaction extends BaseEntity {
 
     @Basic
     @Column(name = "END_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
     public Date getEndDate() {
 	return endDate;
     }
@@ -95,6 +99,7 @@ public class IncentiveTransaction extends BaseEntity {
 
     @Basic
     @Column(name = "TRANSACTION_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
     public Date getTransactionDate() {
 	return transactionDate;
     }
