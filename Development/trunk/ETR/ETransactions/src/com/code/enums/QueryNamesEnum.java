@@ -447,6 +447,7 @@ public enum QueryNamesEnum {
     HCM_SEARCH_LAST_TERMINATION_MOVEMENT_TRANSACTION("hcm_terminationTransaction_searchLastTerminationMovementTransaction"),
 
     HCM_GET_TERMINATION_TRANSACTIONS("hcm_terminationTransactionData_searchTerminationTransactions"),
+    HCM_GET_TERMINATION_TRANSACTIONS_BY_UNIT_ID("hcm_terminationTransactionData_getTerminationTransactionsByunitId"),
     HCM_GET_TERMINATION_TRANSACTIONS_BY_ID("hcm_terminationTransactionData_searchTerminationTransactionsById"),
     HCM_GET_TERMINATION_TRANSACTIONS_AFTER_DECISION_DATE("hcm_terminationTransactionData_getTerminationTransactionAfterDecisionDate"),
     HCM_GET_TERMINATION_MOVEMENT_TRANSACTIONS("hcm_terminationTransactionData_searchTerminationCivilianMovementTransaction"),
@@ -468,6 +469,10 @@ public enum QueryNamesEnum {
     WF_GET_TERMINATION_CANCELATION_MOVEMENT_BY_INSTANCE_ID("wf_serviceCancelMvt_getWFTerminationCancellationMovementByInstanceId"),
     WF_GET_RUNNING_TERMINATION_CANCELLATION_MOVEMENTS("wf_serviceCancelMvt_getRunningTerminationCancellationMovements"),
     WF_GET_WFTERMINATIONS_TASKS("wf_terminationData_getTerminationsTasks"),
+
+    /* ****************************************** Duty Extension ******************************************* */
+    HCM_SEARCH_DUTY_EXTENSION_TRANSACTION("hcm_dutyExtensionTransaction_searchDutyExtensionTransactions"),
+
     /* ****************************************** Training And Scholarship ******************************************* */
     WF_GET_WFTRAINING("wf_trainingData_searchWFTrainingData"),
     WF_GET_WFTRAINING_TASKS("wf_trainingData_searchWFTrainingTasks"),

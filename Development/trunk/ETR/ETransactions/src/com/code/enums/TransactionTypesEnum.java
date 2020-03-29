@@ -87,8 +87,11 @@ public enum TransactionTypesEnum {
 
     /************************** Eservices transactions **********************************/
     EXTENSION_REQUEST(1),
-    REEXTENSION_REQUEST(2);
-    
+    REEXTENSION_REQUEST(2),
+
+    DUTY_EXTENSION_TRANSACTION(1),
+    DUTY_REEXTENSION_TRANSACTION(2);
+
     private int code;
 
     private TransactionTypesEnum(int code) {
