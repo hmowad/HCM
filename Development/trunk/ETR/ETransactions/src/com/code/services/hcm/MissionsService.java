@@ -743,6 +743,12 @@ public class MissionsService extends BaseService {
 	}
     }
 
+    public static List<MissionDetailData> getMissionsDetailsWithNoIncentivesByEmpId(long empId) throws DatabaseException {
+	Map<String, Object> qParams = new HashMap<String, Object>();
+	qParams.put("P_EMP_ID", empId);
+	return DataAccess.executeNamedQuery(MissionDetailData.class, QueryNamesEnum.HCM_MISSION_DETAIL_DATA_GET_MISSIONS_DETAILS_WITH_NO_INCENTIVES_BY_EMP_ID.getCode(), qParams);
+    }
+
     /**
      * 
      * Get list of {@link MissionDetailData} from DB using Id and Employee Id

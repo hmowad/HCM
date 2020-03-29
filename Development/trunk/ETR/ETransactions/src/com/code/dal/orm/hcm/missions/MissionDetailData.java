@@ -57,7 +57,13 @@ import com.code.services.util.HijriDateService;
 		query = (" select m from MissionDetailData m "
 			+ " where (:P_EMP_ID = -1 or m.empId = :P_EMP_ID) "
 			+ " and (:P_MISSION_DECISION_DATE_FLAG = -1 or to_date(:P_MISSION_DECISION_DATE, 'MI/MM/YYYY') <= m.missionDecisionDate) "
-			+ " order by m.missionDecisionDate "))
+			+ " order by m.missionDecisionDate ")),
+
+	@NamedQuery(name = "hcm_missionDetailData_getMissionsDetailsWithNoIncentivesByEmpId",
+		query = (" select m from MissionDetailData m "
+			+ " where m.empId = :P_EMP_ID "
+			+ " and (select count(i.id) from IncentiveTransaction i, MissionDetailData m where i.missionTransactionId = m.id) = 0 "
+			+ " order by m.id "))
 })
 @SuppressWarnings("serial")
 @Entity
