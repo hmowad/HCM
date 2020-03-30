@@ -472,7 +472,7 @@ public class VacationsService extends BaseService {
 	}
     }
 
-    private static Vacation getVacationByDecisionDateAndDecisionNumber(Date decisionDate, String decisionNumber) throws BusinessException {
+    public static Vacation getVacationByDecisionDateAndDecisionNumber(Date decisionDate, String decisionNumber) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    if (decisionDate == null) {

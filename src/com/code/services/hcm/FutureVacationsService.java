@@ -1,5 +1,7 @@
 package com.code.services.hcm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,14 +13,21 @@ import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.vacations.TransientVacationTransaction;
 import com.code.dal.orm.hcm.vacations.TransientVacationTransactionData;
 import com.code.dal.orm.hcm.vacations.Vacation;
+import com.code.enums.AdminDecisionsEnum;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
+import com.code.enums.PaidVacationTypesEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.RequestTypesEnum;
 import com.code.enums.TransactionClassesEnum;
+import com.code.enums.UnitTypesEnum;
+import com.code.enums.VacationTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
 import com.code.services.BaseService;
 import com.code.services.buswfcoop.EmployeesTransactionsConflictValidator;
+import com.code.services.integration.PayrollEngineService;
 import com.code.services.util.HijriDateService;
 
 public class FutureVacationsService extends BaseService {
@@ -104,7 +113,8 @@ public class FutureVacationsService extends BaseService {
 		    DataAccess.addEntity(vacation, session);
 		    futureVacationTransaction.setVacationTransactionId(vacation.getVacationId());
 		}
-
+		if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		    doPayrollIntegration(vacation, FlagsEnum.OFF.getCode(), session);
 	    }
 	    DataAccess.updateEntity(futureVacationTransaction, session);
 	    if (!isOpenedSession)
@@ -158,6 +168,85 @@ public class FutureVacationsService extends BaseService {
 		session.close();
 	}
 
+    }
+
+    private static void doPayrollIntegration(Vacation request, Integer resendFlag, CustomSession... useSession) throws BusinessException {
+	Long adminDecisionId = null;
+	Vacation originalVacation = null;
+	EmployeeData employee = EmployeesService.getEmployeeData(request.getEmpId());
+	if (employee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+	    if (employee.getPhysicalUnitId().equals(UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId())) {
+		if (request.getJoiningDate() != null) { // in case of vacation joining
+		    originalVacation = request;
+		    if (request.getVacationTypeId().equals(VacationTypesEnum.SICK.getCode())) {
+			if (request.getPaidVacationType().equals(PaidVacationTypesEnum.HALF_PAID.getCode())) {
+			    adminDecisionId = AdminDecisionsEnum.PRESIDENCY_HALF_PAID_SICK_VACATION_JOINING.getCode();
+			}
+		    }
+		} else {
+		    if (request.getStatus() == RequestTypesEnum.NEW.getCode()) {
+			if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
+			    adminDecisionId = AdminDecisionsEnum.PRESIDENCY_REGULAR_VACATION_REQUEST.getCode();
+			} else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
+			    adminDecisionId = AdminDecisionsEnum.PRESIDENCY_COMPELLING_VACATION_REQUEST.getCode();
+			} else if (request.getVacationTypeId().equals(VacationTypesEnum.SICK.getCode())) {
+			    if (request.getPaidVacationType().equals(PaidVacationTypesEnum.FULL_PAID.getCode())) {
+				adminDecisionId = AdminDecisionsEnum.PRESIDENCY_FULL_PAID_SICK_VACATION_REQUEST.getCode();
+			    } else if (request.getPaidVacationType().equals(PaidVacationTypesEnum.HALF_PAID.getCode())) {
+				adminDecisionId = AdminDecisionsEnum.PRESIDENCY_HALF_PAID_SICK_VACATION_REQUEST.getCode();
+			    }
+			}
+		    } else if (request.getStatus() == RequestTypesEnum.MODIFY.getCode()) {
+			originalVacation = VacationsService.getVacationById(request.getVacationId());
+			if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
+			    adminDecisionId = AdminDecisionsEnum.PRESIDENCY_MODIFY_REGULAR_VACATION_REQUEST.getCode();
+			} else if (request.getVacationTypeId().equals(VacationTypesEnum.SICK.getCode())) {
+			    if (request.getPaidVacationType().equals(PaidVacationTypesEnum.FULL_PAID.getCode())) {
+				adminDecisionId = AdminDecisionsEnum.PRESIDENCY_MODIFY_FULL_PAID_SICK_VACATION_REQUEST.getCode();
+			    } else if (request.getPaidVacationType().equals(PaidVacationTypesEnum.HALF_PAID.getCode())) {
+				adminDecisionId = AdminDecisionsEnum.PRESIDENCY_MODIFY_HALF_PAID_SICK_VACATION_REQUEST.getCode();
+			    }
+			}
+		    } else if (request.getStatus() == RequestTypesEnum.CANCEL.getCode()) {
+			originalVacation = VacationsService.getVacationById(request.getVacationId());
+			if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
+			    adminDecisionId = AdminDecisionsEnum.PRESIDENCY_CANCEL_REGULAR_VACATION_REQUEST.getCode();
+			} else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
+			    adminDecisionId = AdminDecisionsEnum.PRESIDENCY_CANCEL_COMPELLING_VACATION_REQUEST.getCode();
+			} else if (request.getVacationTypeId().equals(VacationTypesEnum.SICK.getCode())) {
+			    if (request.getPaidVacationType().equals(PaidVacationTypesEnum.FULL_PAID.getCode())) {
+				adminDecisionId = AdminDecisionsEnum.PRESIDENCY_CANCEL_FULL_PAID_SICK_VACATION_REQUEST.getCode();
+			    } else if (request.getPaidVacationType().equals(PaidVacationTypesEnum.HALF_PAID.getCode())) {
+				adminDecisionId = AdminDecisionsEnum.PRESIDENCY_CANCEL_HALF_PAID_SICK_VACATION_REQUEST.getCode();
+			    }
+			}
+		    }
+		}
+	    }
+	}
+	if (adminDecisionId != null) {
+	    boolean isOpenedSession = isSessionOpened(useSession);
+	    CustomSession session = isOpenedSession ? useSession[0] : null;
+	    if (session == null)
+		throw new BusinessException("error_general");
+	    String gregDecisionDateString = HijriDateService.hijriToGregDateString(request.getDecisionDateString());
+	    String gregVacationStartDateString = request.getJoiningDate() != null ? HijriDateService.hijriToGregDateString(HijriDateService.getHijriDateString(request.getJoiningDate())) : HijriDateService.hijriToGregDateString(request.getStartDateString());
+	    String gregVacationEndDateString = (request.getJoiningDate() != null || adminDecisionId.equals(AdminDecisionsEnum.PRESIDENCY_CANCEL_HALF_PAID_SICK_VACATION_REQUEST.getCode())) ? null : HijriDateService.hijriToGregDateString(request.getEndDateString());
+	    String requestDecisionNumber = request.getJoiningDate() != null ? System.currentTimeMillis() + "" : request.getDecisionNumber();
+	    String originalDecisionNumber = originalVacation != null && originalVacation.getDecisionNumber() != null ? originalVacation.getDecisionNumber() : null;
+	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(
+		    Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), request.getVacationId(), null, gregVacationStartDateString, gregVacationEndDateString, requestDecisionNumber, originalDecisionNumber)));
+	    session.flushTransaction();
+	    PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(TransientVacationTransaction.class), resendFlag, request.getJoiningDate() != null ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode(), session);
+	}
+    }
+
+    public static void payrollIntegrationFailureHandle(Date decisionDate, String decisionNumber, CustomSession session) throws BusinessException {
+	Vacation vacation = VacationsService.getVacationByDecisionDateAndDecisionNumber(decisionDate, decisionNumber);
+	if (vacation != null)
+	    doPayrollIntegration(vacation, FlagsEnum.ON.getCode(), session);
+	else
+	    throw new BusinessException("error_transactionDataRetrievingError");
     }
     /*---------------------------Validations--------------------------*/
 
