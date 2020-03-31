@@ -29,7 +29,7 @@ public class DutyExtensionRestWS {
     public Response getServiceTerminatedEmployeesByDepartmentId(@QueryParam("departmentId") Long departmentId) {
 
 	try {
-	    List<WSTerminatedEmployeesResponse> wsTerminatedEmployeesResponseList = DutyExtensionService.getTerminatedEmployeesByUnitId(departmentId);
+	    List<WSTerminatedEmployeesResponse> wsTerminatedEmployeesResponseList = DutyExtensionService.getTerminatedEmployeesByParentUnitId(departmentId);
 	    Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	    return Response.status(Status.OK.getStatusCode()).entity(gson.toJson(wsTerminatedEmployeesResponseList == null || wsTerminatedEmployeesResponseList.size() == 0 ? "" : wsTerminatedEmployeesResponseList)).build();
 	} catch (Exception e) {

@@ -55,9 +55,10 @@ import com.code.services.util.HijriDateService;
 			+ " and (:P_DECISION_DATE_FLAG = -1 or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') <= tt.decisionDate) "
 			+ " order by tt.decisionDate,tt.decisionNumber ")),
 
-	@NamedQuery(name = "hcm_terminationTransactionData_getTerminationTransactionsByunitId",
-		query = (" select tt from TerminationTransactionData tt "
-			+ " where (tt.transEmpUnitId = :P_UNIT_ID) "
+	@NamedQuery(name = "hcm_terminationTransactionData_getTerminationTransactionsByunitHkey",
+		query = (" select tt from TerminationTransactionData tt, UnitData u "
+			+ " where (tt.transEmpUnitId = u.id) "
+			+ " and ( u.hKey like :P_UNIT_HKEY ) "
 			+ " and ( tt.categoryId <> 6) "
 			+ " order by tt.decisionDate,tt.decisionNumber "))
 })
