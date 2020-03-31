@@ -313,9 +313,13 @@ public class RaisesService extends BaseService {
 		String gregExecutionDateString = HijriDateService.hijriToGregDateString(HijriDateService.getHijriDateString(raiseTransactions.get(0).getExecutionDate()));
 		EmployeeData employee = null;
 		for (RaiseTransaction raiseTransactionData : raiseTransactions) {
-		    employee = EmployeesService.getEmployeeData(raiseTransactionData.getEmpId());
-		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), raiseTransactionData.getId(), null, gregExecutionDateString, null, raiseTransactionData.getDecisionNumber(), null));
+		    if (raiseTransactionData.getDeservedFlag() != null && raiseTransactionData.getDeservedFlag().equals(RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode())) {
+			employee = EmployeesService.getEmployeeData(raiseTransactionData.getEmpId());
+			adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), raiseTransactionData.getId(), null, gregExecutionDateString, null, raiseTransactionData.getDecisionNumber(), null));
+		    }
 		}
+		if (adminDecisionEmployeeDataList == null || adminDecisionEmployeeDataList.size() == 0)
+		    return;
 		session.flushTransaction();
 		PayrollEngineService.doPayrollIntegration(adminDecisionId, raiseTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, employee == null || employee.getPhysicalUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(RaiseTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
 	    }
