@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.dutyextension.DutyExtensionTransaction;
+import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
@@ -18,14 +19,22 @@ import com.code.services.BaseService;
 
 public class DutyExtensionService extends BaseService {
 
-    public static List<WSTerminatedEmployeesResponse> getTerminatedEmployeesByUnitId(Long unitId) throws DatabaseException {
-
-	List<TerminationTransactionData> terminationTransactionsDataList = TerminationsService.getTerminationTransactionsDataByUnitId(unitId);
-	List<WSTerminatedEmployeesResponse> wsTerminatedEmployeesResponseList = new ArrayList<WSTerminatedEmployeesResponse>();
-	for (TerminationTransactionData terminationTransactionData : terminationTransactionsDataList) {
-	    wsTerminatedEmployeesResponseList.add(new WSTerminatedEmployeesResponse(terminationTransactionData.getEmpId(), terminationTransactionData.getEmpName(), terminationTransactionData.getReasonId(), terminationTransactionData.getReasonDesc()));
+    public static List<WSTerminatedEmployeesResponse> getTerminatedEmployeesByParentUnitId(Long unitId) throws DatabaseException, BusinessException {
+	try {
+	    UnitData unitData = UnitsService.getUnitById(unitId);
+	    if (unitData == null)
+		throw new Exception();
+	    List<TerminationTransactionData> terminationTransactionsDataList = TerminationsService.getTerminationTransactionsDataByUnitHKey(UnitsService.getHKeyPrefix(unitData.gethKey()) + "%");
+	    List<WSTerminatedEmployeesResponse> wsTerminatedEmployeesResponseList = new ArrayList<WSTerminatedEmployeesResponse>();
+	    for (TerminationTransactionData terminationTransactionData : terminationTransactionsDataList) {
+		wsTerminatedEmployeesResponseList.add(new WSTerminatedEmployeesResponse(terminationTransactionData.getEmpId(), terminationTransactionData.getEmpName(), terminationTransactionData.getReasonId(), terminationTransactionData.getReasonDesc()));
+	    }
+	    return wsTerminatedEmployeesResponseList;
+	} catch (BusinessException e) {
+	    throw new DatabaseException(e.getMessage());
+	} catch (Exception e) {
+	    throw new BusinessException("error_unitDoesntExist");
 	}
-	return wsTerminatedEmployeesResponseList;
     }
 
     public static DutyExtensionTransaction getDutyExtensionTransactionByEmpId(Long empId) throws DatabaseException {

@@ -2318,12 +2318,12 @@ public class TerminationsService extends BaseService {
 	}
     }
 
-    public static List<TerminationTransactionData> getTerminationTransactionsDataByUnitId(Long unitId) throws DatabaseException {
+    public static List<TerminationTransactionData> getTerminationTransactionsDataByUnitHKey(String unitHKey) throws DatabaseException {
 
 	Map<String, Object> qParams = new HashMap<String, Object>();
-	qParams.put("P_UNIT_ID", unitId);
+	qParams.put("P_UNIT_HKEY", unitHKey);
 
-	return DataAccess.executeNamedQuery(TerminationTransactionData.class, QueryNamesEnum.HCM_GET_TERMINATION_TRANSACTIONS_BY_UNIT_ID.getCode(), qParams);
+	return DataAccess.executeNamedQuery(TerminationTransactionData.class, QueryNamesEnum.HCM_GET_TERMINATION_TRANSACTIONS_BY_UNIT_HKEY.getCode(), qParams);
     }
 
     private static List<TerminationTransactionData> searchTerminationTransactions(Long recordDetailId, Long empId, Integer transactionTypeCode, String decisionNumber, Date fromDate, Date toDate, Long[] categoriesIds) throws BusinessException {

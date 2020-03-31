@@ -447,7 +447,7 @@ public enum QueryNamesEnum {
     HCM_SEARCH_LAST_TERMINATION_MOVEMENT_TRANSACTION("hcm_terminationTransaction_searchLastTerminationMovementTransaction"),
 
     HCM_GET_TERMINATION_TRANSACTIONS("hcm_terminationTransactionData_searchTerminationTransactions"),
-    HCM_GET_TERMINATION_TRANSACTIONS_BY_UNIT_ID("hcm_terminationTransactionData_getTerminationTransactionsByunitId"),
+    HCM_GET_TERMINATION_TRANSACTIONS_BY_UNIT_HKEY("hcm_terminationTransactionData_getTerminationTransactionsByunitHkey"),
     HCM_GET_TERMINATION_TRANSACTIONS_BY_ID("hcm_terminationTransactionData_searchTerminationTransactionsById"),
     HCM_GET_TERMINATION_TRANSACTIONS_AFTER_DECISION_DATE("hcm_terminationTransactionData_getTerminationTransactionAfterDecisionDate"),
     HCM_GET_TERMINATION_MOVEMENT_TRANSACTIONS("hcm_terminationTransactionData_searchTerminationCivilianMovementTransaction"),
