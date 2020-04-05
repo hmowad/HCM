@@ -75,7 +75,9 @@ public class TrainingSetupService extends BaseService {
 		session.beginTransaction();
 
 	    // Generate Name
-	    trainingYear.setName(generateTrainingYearName(trainingYear.getStartDate(), trainingYear.getSemesterName()));
+	    trainingYear.setName(generateTrainingYearName(trainingYear.getStartDate(), trainingYear.getSemesterName(), true));
+	    trainingYear.setNameEnglish(generateTrainingYearName(trainingYear.getStartDate(), trainingYear.getSemesterNameEnglish(), false));
+
 	    // Add Training Year
 	    DataAccess.addEntity(trainingYear, session);
 
@@ -117,7 +119,9 @@ public class TrainingSetupService extends BaseService {
 		session.beginTransaction();
 
 	    // Generate Name
-	    trainingYear.setName(generateTrainingYearName(trainingYear.getStartDate(), trainingYear.getSemesterName()));
+	    trainingYear.setName(generateTrainingYearName(trainingYear.getStartDate(), trainingYear.getSemesterName(), true));
+	    trainingYear.setNameEnglish(generateTrainingYearName(trainingYear.getStartDate(), trainingYear.getSemesterNameEnglish(), false));
+
 	    // Update Training Year
 	    DataAccess.updateEntity(trainingYear, session);
 
@@ -163,9 +167,13 @@ public class TrainingSetupService extends BaseService {
      *            the start date of the training year
      * @return the generated name of the training year
      */
-    private static String generateTrainingYearName(Date startDate, String semesterName) throws BusinessException {
+    private static String generateTrainingYearName(Date startDate, String semesterName, Boolean arabicFlag) throws BusinessException {
 	int startYear = HijriDateService.getHijriDateYear(startDate);
-	StringBuilder trainingYearName = new StringBuilder(getParameterizedMessage("label_trainingYearGeneratedName", startYear + "", (startYear + 1) + ""));
+	StringBuilder trainingYearName;
+	if (arabicFlag)
+	    trainingYearName = new StringBuilder(getParameterizedMessage("label_trainingYearGeneratedName", startYear + "", (startYear + 1) + ""));
+	else
+	    trainingYearName = new StringBuilder(startYear + " / " + (startYear + 1));
 
 	if (semesterName != null) {
 	    trainingYearName.append(String.format(" - %s", semesterName));

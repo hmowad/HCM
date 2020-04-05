@@ -38,6 +38,7 @@ public class TrainingYear extends AuditEntity implements InsertableAuditEntity, 
 
     private Long id;
     private String name;
+    private String nameEnglish;
     private Date startDate;
     private String startDateString;
     private Date endDate;
@@ -55,6 +56,7 @@ public class TrainingYear extends AuditEntity implements InsertableAuditEntity, 
     private Integer migFlag;
     private Long relatedYearId;
     private String semesterName;
+    private String semesterNameEnglish;
 
     @SequenceGenerator(name = "HCMTrainingPlanSeq",
 	    sequenceName = "HCM_TRN_PLAN_SEQ")
@@ -79,6 +81,16 @@ public class TrainingYear extends AuditEntity implements InsertableAuditEntity, 
     public void setName(
 	    String name) {
 	this.name = name;
+    }
+
+    @Basic
+    @Column(name = "NAME_ENGLISH")
+    public String getNameEnglish() {
+	return nameEnglish;
+    }
+
+    public void setNameEnglish(String nameEnglish) {
+	this.nameEnglish = nameEnglish;
     }
 
     @Basic
@@ -266,6 +278,16 @@ public class TrainingYear extends AuditEntity implements InsertableAuditEntity, 
 	this.semesterName = semesterName;
     }
 
+    @Basic
+    @Column(name = "SEMESTER_NAME_ENGLISH")
+    public String getSemesterNameEnglish() {
+	return semesterNameEnglish;
+    }
+
+    public void setSemesterNameEnglish(String semesterNameEnglish) {
+	this.semesterNameEnglish = semesterNameEnglish;
+    }
+
     @Override
     public Long calculateContentId() {
 	return id;
@@ -274,6 +296,7 @@ public class TrainingYear extends AuditEntity implements InsertableAuditEntity, 
     @Override
     public String calculateContent() {
 	return "name:" + name + AUDIT_SEPARATOR +
+		"nameEnglish:" + nameEnglish + AUDIT_SEPARATOR +
 		"startDate:" + startDate + AUDIT_SEPARATOR +
 		"endDate:" + endDate + AUDIT_SEPARATOR +
 		"needsStartDate:" + needsStartDate + AUDIT_SEPARATOR +
@@ -285,6 +308,7 @@ public class TrainingYear extends AuditEntity implements InsertableAuditEntity, 
 		"decisionApprovedId:" + decisionApprovedId + AUDIT_SEPARATOR +
 		"relatedYearId:" + relatedYearId + AUDIT_SEPARATOR +
 		"semesterName:" + semesterName + AUDIT_SEPARATOR +
+		"semesterNameEnglish:" + semesterNameEnglish + AUDIT_SEPARATOR +
 		"eFlag:" + eFlag + AUDIT_SEPARATOR +
 		"migFlag:" + migFlag + AUDIT_SEPARATOR;
     }

@@ -108,8 +108,7 @@
 								<h:outputText value="#{year.name}" />
 							</rich:column>
 							<rich:column style="width:16%">
-								<h:inputText id="semesterNameId" value="#{year.semesterName}" rendered="#{year.status!=trainingYears.statusApproved and trainingYears.trainingYearTypeId != 3}" styleClass="inputDataSuperLarge" maxlength="30" />
-								<h:outputText value="#{year.semesterName == null ? msgs.label_trainingYearWithNoSemesters : year.semesterName}" rendered="#{year.status==trainingYears.statusApproved or trainingYears.trainingYearTypeId == 3}" />
+								<h:outputText value="#{year.semesterName == null ? msgs.label_trainingYearWithNoSemesters : year.semesterName}" />
 							</rich:column>
 							<rich:column style="width:11%">
 								<util:hijri rendered="#{year.status!=trainingYears.statusApproved}" id="startDateId" value="#{year.startDate}" />

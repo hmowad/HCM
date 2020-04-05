@@ -1151,10 +1151,18 @@ public class TrainingEmployeesService extends BaseService {
     }
 
     /*---------------------------Reports------------------------------*/
+    private static String getTraineeCertificateReportName(long trainingTransactionDetailId) throws BusinessException {
+	TrainingCourseData courseData = TrainingCoursesService.getTrainingCourseDataByTransactionDetailId(trainingTransactionDetailId);
+	if (courseData.getGraduationDecisionFlag() != null && courseData.getGraduationDecisionFlag().equals(FlagsEnum.ON.getCode()))
+	    return ReportNamesEnum.TRAINING_DECISION_TRAINEE_ELECTRONIC_CERTIFICATE.getCode();
+	else
+	    return ReportNamesEnum.TRAINING_DECISION_TRAINEE_CERTIFICATE.getCode();
+    }
+
     public static byte[] getTraineeCertificateBytes(long trainingTransactionDetailId) throws BusinessException {
 	try {
 	    Map<String, Object> parameters = new HashMap<String, Object>();
-	    String reportName = ReportNamesEnum.TRAINING_DECISION_TRAINEE_CERTIFICATE.getCode();
+	    String reportName = getTraineeCertificateReportName(trainingTransactionDetailId);
 	    parameters.put("P_TRN_TRANSACTIONS_DTLS_ID", trainingTransactionDetailId);
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {

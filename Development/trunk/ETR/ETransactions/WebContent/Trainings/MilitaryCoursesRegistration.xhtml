@@ -115,7 +115,7 @@
 								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 									<tr>
 										<th width="15%">
-											#{msgs.label_trainingCourseName}
+											#{msgs.label_trainingCourseNameArabic}
 											<h:outputText value=" " />
 											<font style="color: red;">*</font>
 										</th>
@@ -123,6 +123,17 @@
 											<h:inputText id="trainingCourseNameId" value="#{militaryCoursesRegistration.trainingCourseData.name}" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" styleClass="inputDataSuperLarge" />
 											<h:outputText value="#{militaryCoursesRegistration.trainingCourseData.name}" rendered="#{militaryCoursesRegistration.viewAdmin}" />
 										</td>
+										
+										<th width="15%">
+											#{msgs.label_trainingCourseNameEnglish}
+										</th>
+										<td width="35%">
+											<h:inputText id="trainingCourseNameEnglisghId" value="#{militaryCoursesRegistration.trainingCourseData.nameEnglish}" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}" styleClass="inputDataSuperLarge" />
+											<h:outputText value="#{militaryCoursesRegistration.trainingCourseData.nameEnglish}" rendered="#{militaryCoursesRegistration.viewAdmin}" />
+										</td>
+
+									</tr>
+									<tr>
 										<th width="15%">
 											#{msgs.label_trainingQualificationMinorSpec}
 											<h:outputText value=" " />
@@ -329,7 +340,10 @@
 											<h:outputText value="#{msgs.label_jobTypeTechnical}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.jobGeneralType == 2}" />
 											<h:outputText value="#{msgs.label_jobTypeField}" rendered="#{militaryCoursesRegistration.viewAdmin and militaryCoursesRegistration.trainingCourseData.jobGeneralType == 3}" />
 										</td>
-										<td width="50%" colspan="3"></td>
+										<td width="50%">
+											<h:selectBooleanCheckbox value="#{militaryCoursesRegistration.trainingCourseData.graduationDecisionBoolean}" />
+											<h:outputText value=" #{msgs.label_courseWithGraduationDecision}" />
+										</td>
 									</tr>
 									<tr>
 										<th width="15%">#{msgs.label_qualificationLevel}</th>
@@ -365,7 +379,8 @@
 									<tr>
 										<td width="100%">
 											<h:commandButton id="saveBtnId" action="#{militaryCoursesRegistration.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validate()');" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}">
-												<f:ajax execute="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId militaryCoursesRegistrationFormId:trainingCourseNameAndQualificationPanelId militaryCoursesRegistrationFormId:extraDataPanelId militaryCoursesRegistrationFormId:syllabusAttachmentsDataPanelId militaryCoursesRegistrationFormId:notifyMessagesId" render="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId militaryCoursesRegistrationFormId:trainingCourseNameAndQualificationPanelId militaryCoursesRegistrationFormId:extraDataPanelId militaryCoursesRegistrationFormId:syllabusAttachmentsDataPanelId militaryCoursesRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												<f:ajax execute="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId militaryCoursesRegistrationFormId:trainingCourseNameAndQualificationPanelId militaryCoursesRegistrationFormId:extraDataPanelId militaryCoursesRegistrationFormId:syllabusAttachmentsDataPanelId militaryCoursesRegistrationFormId:notifyMessagesId"
+													render="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId militaryCoursesRegistrationFormId:trainingCourseNameAndQualificationPanelId militaryCoursesRegistrationFormId:extraDataPanelId militaryCoursesRegistrationFormId:syllabusAttachmentsDataPanelId militaryCoursesRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 											<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{militaryCoursesRegistration.resetForm()}" styleClass="btn_normal_icon" rendered="#{militaryCoursesRegistration.modifyAndInsertAdmin}">
 												<f:ajax render="militaryCoursesRegistrationFormId:courseNominationPrequisitesPanelId militaryCoursesRegistrationFormId:trainingCourseNameAndQualificationPanelId militaryCoursesRegistrationFormId:extraDataPanelId militaryCoursesRegistrationFormId:syllabusAttachmentsDataPanelId militaryCoursesRegistrationFormId:notifyMessagesId" />
