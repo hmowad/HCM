@@ -126,7 +126,7 @@ public class MilitaryCoursesRegistration extends BaseBacking implements Serializ
 	trainingCourseData = new TrainingCourseData();
 	trainingCourseData.setType(MilitaryCivillianEnum.Military.getCode());
 	trainingCourseData.setRankingFlag(FlagsEnum.OFF.getCode());
-	trainingCourseData.setGraduationDecisionFlag(FlagsEnum.OFF.getCode());
+	trainingCourseData.setElectronicCertificateFlag(FlagsEnum.OFF.getCode());
 	qualificationLevelsDesc = null;
 	minorSpecializationDesc = null;
 	ranks = new ArrayList<>();

@@ -197,7 +197,7 @@ public class TrainingCoursesService extends BaseService {
 	    throw new BusinessException("error_courseNameMandatory");
 	if (trainingCourseData.getQualificationMinorSpecId() == null)
 	    throw new BusinessException("error_qualificationMinorSpecMandatory");
-	if (trainingCourseData.isGraduationDecisionBoolean() && (trainingCourseData.getNameEnglish() == null || trainingCourseData.getNameEnglish().length() == 0))
+	if (trainingCourseData.isElectronicCertificateBoolean() && (trainingCourseData.getNameEnglish() == null || trainingCourseData.getNameEnglish().length() == 0))
 	    throw new BusinessException("error_courseNameEnglishMandatory");
 
     }

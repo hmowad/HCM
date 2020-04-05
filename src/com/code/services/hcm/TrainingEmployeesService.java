@@ -1153,7 +1153,7 @@ public class TrainingEmployeesService extends BaseService {
     /*---------------------------Reports------------------------------*/
     private static String getTraineeCertificateReportName(long trainingTransactionDetailId) throws BusinessException {
 	TrainingCourseData courseData = TrainingCoursesService.getTrainingCourseDataByTransactionDetailId(trainingTransactionDetailId);
-	if (courseData.getGraduationDecisionFlag() != null && courseData.getGraduationDecisionFlag().equals(FlagsEnum.ON.getCode()))
+	if (courseData.getElectronicCertificateFlag() != null && courseData.getElectronicCertificateFlag().equals(FlagsEnum.ON.getCode()))
 	    return ReportNamesEnum.TRAINING_DECISION_TRAINEE_ELECTRONIC_CERTIFICATE.getCode();
 	else
 	    return ReportNamesEnum.TRAINING_DECISION_TRAINEE_CERTIFICATE.getCode();

@@ -37,7 +37,7 @@ public class TrainingCourse extends AuditEntity implements InsertableAuditEntity
     private String syllabusAttachments;
     private String syllabusAttachmentsHistory;
     private Integer rankingFlag;
-    private Integer graduationDecisionFlag;
+    private Integer electronicCertificateFlag;
 
     @SequenceGenerator(name = "HCMTrainingQualSeq",
 	    sequenceName = "HCM_TRN_QUAL_SEQ")
@@ -253,13 +253,13 @@ public class TrainingCourse extends AuditEntity implements InsertableAuditEntity
     }
 
     @Basic
-    @Column(name = "GRADUATION_DECISION_FLAG")
-    public Integer getGraduationDecisionFlag() {
-	return graduationDecisionFlag;
+    @Column(name = "ELECTRONIC_CERTIFICATE_FLAG")
+    public Integer getElectronicCertificateFlag() {
+	return electronicCertificateFlag;
     }
 
-    public void setGraduationDecisionFlag(Integer graduationDecisionFlag) {
-	this.graduationDecisionFlag = graduationDecisionFlag;
+    public void setElectronicCertificateFlag(Integer electronicCertificateFlag) {
+	this.electronicCertificateFlag = electronicCertificateFlag;
     }
 
     @Override
@@ -289,6 +289,6 @@ public class TrainingCourse extends AuditEntity implements InsertableAuditEntity
 		"syllabusAttachments:" + syllabusAttachments + AUDIT_SEPARATOR +
 		"syllabusAttachmentsHistory" + syllabusAttachmentsHistory + AUDIT_SEPARATOR +
 		"rankingFlag" + rankingFlag + AUDIT_SEPARATOR +
-		"graduationDecisionFlag" + graduationDecisionFlag + AUDIT_SEPARATOR;
+		"electronicCertificateFlag" + electronicCertificateFlag + AUDIT_SEPARATOR;
     }
 }
