@@ -64,9 +64,9 @@ public class TrainingCourseData extends BaseEntity {
     private String syllabusAttachments;
     private String syllabusAttachmentsHistory;
     private Integer rankingFlag;
-    private Integer graduationDecisionFlag;
+    private Integer electronicCertificateFlag;
     private Boolean rankingFlagBoolean;
-    private Boolean graduationDecisionBoolean;
+    private Boolean electronicCertificateBoolean;
     private TrainingCourse trainingCourse;
 
     public TrainingCourseData() {
@@ -407,20 +407,19 @@ public class TrainingCourseData extends BaseEntity {
 
     @Basic
     @XmlTransient
-    @Column(name = "GRADUATION_DECISION_FLAG")
-    public Integer getGraduationDecisionFlag() {
-	return graduationDecisionFlag;
+    @Column(name = "ELECTRONIC_CERTIFICATE_FLAG")
+    public Integer getElectronicCertificateFlag() {
+	return electronicCertificateFlag;
     }
 
-    public void setGraduationDecisionFlag(Integer graduationDecisionFlag) {
-	this.graduationDecisionFlag = graduationDecisionFlag;
-
-	if (this.graduationDecisionFlag == null || this.graduationDecisionFlag == FlagsEnum.OFF.getCode())
-	    this.graduationDecisionBoolean = false;
+    public void setElectronicCertificateFlag(Integer electronicCertificateFlag) {
+	this.electronicCertificateFlag = electronicCertificateFlag;
+	if (this.electronicCertificateFlag == null || this.electronicCertificateFlag == FlagsEnum.OFF.getCode())
+	    this.electronicCertificateBoolean = false;
 	else
-	    this.graduationDecisionBoolean = true;
+	    this.electronicCertificateBoolean = true;
 
-	this.trainingCourse.setGraduationDecisionFlag(graduationDecisionFlag);
+	this.trainingCourse.setElectronicCertificateFlag(electronicCertificateFlag);
     }
 
     @Transient
@@ -443,20 +442,19 @@ public class TrainingCourseData extends BaseEntity {
 
     @Transient
     @XmlTransient
-    public boolean isGraduationDecisionBoolean() {
-	return graduationDecisionBoolean;
+    public boolean isElectronicCertificateBoolean() {
+	return electronicCertificateBoolean;
     }
 
-    public void setGraduationDecisionBoolean(boolean graduationDecisionBoolean) {
-	this.graduationDecisionBoolean = graduationDecisionBoolean;
-
-	if (this.graduationDecisionBoolean == null || !this.graduationDecisionBoolean) {
-	    this.graduationDecisionFlag = FlagsEnum.OFF.getCode();
+    public void setElectronicCertificateBoolean(boolean electronicCertificateBoolean) {
+	this.electronicCertificateBoolean = electronicCertificateBoolean;
+	if (this.electronicCertificateBoolean == null || !this.electronicCertificateBoolean) {
+	    this.electronicCertificateFlag = FlagsEnum.OFF.getCode();
 	} else {
-	    this.graduationDecisionFlag = FlagsEnum.ON.getCode();
+	    this.electronicCertificateFlag = FlagsEnum.ON.getCode();
 	}
 
-	this.trainingCourse.setGraduationDecisionFlag(graduationDecisionFlag);
+	this.trainingCourse.setElectronicCertificateFlag(electronicCertificateFlag);
     }
 
     @Transient
