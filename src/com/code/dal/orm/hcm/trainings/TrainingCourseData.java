@@ -24,7 +24,14 @@ import com.code.enums.FlagsEnum;
 			+ "and (:P_QUAL_MINOR_SPEC_DESC = '-1' or c.qualificationMinorSpecDesc LIKE :P_QUAL_MINOR_SPEC_DESC)"
 			+ "and (:P_QUAL_MAJOR_SPEC_ID = -1 or c.qualificationMajorSpecId = :P_QUAL_MAJOR_SPEC_ID)"
 			+ "and (:P_QUAL_MAJOR_SPEC_DESC = '-1' or c.qualificationMajorSpecDesc LIKE :P_QUAL_MAJOR_SPEC_DESC)"
-			+ "order by c.id")
+			+ "order by c.id"),
+
+	@NamedQuery(name = "hcm_trainingCourseData_getTrainingCourseDataByTransactionDetailId",
+		query = "select c from TrainingCourseData c, TrainingCourseEvent ce, TrainingTransaction t, TrainingTransactionDetail td "
+			+ "where (td.trainingTransactionId = t.id) "
+			+ "and (t.courseEventId = ce.id) "
+			+ "and (ce.courseId = c.id) "
+			+ "and (td.id = :P_TRAINING_TRANSACTION_DETAIL_ID) ")
 
 })
 @Entity
@@ -32,6 +39,7 @@ import com.code.enums.FlagsEnum;
 public class TrainingCourseData extends BaseEntity {
     private Long id;
     private String name;
+    private String nameEnglish;
     private Integer type;
     private Long qualificationMinorSpecId;
     private String qualificationMinorSpecDesc;
@@ -56,7 +64,9 @@ public class TrainingCourseData extends BaseEntity {
     private String syllabusAttachments;
     private String syllabusAttachmentsHistory;
     private Integer rankingFlag;
+    private Integer graduationDecisionFlag;
     private Boolean rankingFlagBoolean;
+    private Boolean graduationDecisionBoolean;
     private TrainingCourse trainingCourse;
 
     public TrainingCourseData() {
@@ -83,6 +93,17 @@ public class TrainingCourseData extends BaseEntity {
     public void setName(String name) {
 	this.name = name;
 	this.trainingCourse.setName(name);
+    }
+
+    @Basic
+    @Column(name = "NAME_ENGLISH")
+    public String getNameEnglish() {
+	return nameEnglish;
+    }
+
+    public void setNameEnglish(String nameEnglish) {
+	this.nameEnglish = nameEnglish;
+	this.trainingCourse.setNameEnglish(nameEnglish);
     }
 
     @Basic
@@ -384,6 +405,24 @@ public class TrainingCourseData extends BaseEntity {
 	this.trainingCourse.setRankingFlag(rankingFlag);
     }
 
+    @Basic
+    @XmlTransient
+    @Column(name = "GRADUATION_DECISION_FLAG")
+    public Integer getGraduationDecisionFlag() {
+	return graduationDecisionFlag;
+    }
+
+    public void setGraduationDecisionFlag(Integer graduationDecisionFlag) {
+	this.graduationDecisionFlag = graduationDecisionFlag;
+
+	if (this.graduationDecisionFlag == null || this.graduationDecisionFlag == FlagsEnum.OFF.getCode())
+	    this.graduationDecisionBoolean = false;
+	else
+	    this.graduationDecisionBoolean = true;
+
+	this.trainingCourse.setGraduationDecisionFlag(graduationDecisionFlag);
+    }
+
     @Transient
     @XmlTransient
     public boolean isRankingFlagBoolean() {
@@ -400,6 +439,24 @@ public class TrainingCourseData extends BaseEntity {
 	}
 
 	this.trainingCourse.setRankingFlag(rankingFlag);
+    }
+
+    @Transient
+    @XmlTransient
+    public boolean isGraduationDecisionBoolean() {
+	return graduationDecisionBoolean;
+    }
+
+    public void setGraduationDecisionBoolean(boolean graduationDecisionBoolean) {
+	this.graduationDecisionBoolean = graduationDecisionBoolean;
+
+	if (this.graduationDecisionBoolean == null || !this.graduationDecisionBoolean) {
+	    this.graduationDecisionFlag = FlagsEnum.OFF.getCode();
+	} else {
+	    this.graduationDecisionFlag = FlagsEnum.ON.getCode();
+	}
+
+	this.trainingCourse.setGraduationDecisionFlag(graduationDecisionFlag);
     }
 
     @Transient

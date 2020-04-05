@@ -18,6 +18,7 @@ import com.code.dal.orm.AuditEntity;
 public class TrainingCourse extends AuditEntity implements InsertableAuditEntity, UpdatableAuditEntity, DeletableAuditEntity {
     private Long id;
     private String name;
+    private String nameEnglish;
     private Integer type;
     private Long qualificationMinorSpecId;
     private Integer candidatesMin;
@@ -36,6 +37,7 @@ public class TrainingCourse extends AuditEntity implements InsertableAuditEntity
     private String syllabusAttachments;
     private String syllabusAttachmentsHistory;
     private Integer rankingFlag;
+    private Integer graduationDecisionFlag;
 
     @SequenceGenerator(name = "HCMTrainingQualSeq",
 	    sequenceName = "HCM_TRN_QUAL_SEQ")
@@ -58,6 +60,16 @@ public class TrainingCourse extends AuditEntity implements InsertableAuditEntity
 
     public void setName(String name) {
 	this.name = name;
+    }
+
+    @Basic
+    @Column(name = "NAME_ENGLISH")
+    public String getNameEnglish() {
+	return nameEnglish;
+    }
+
+    public void setNameEnglish(String nameEnglish) {
+	this.nameEnglish = nameEnglish;
     }
 
     @Basic
@@ -240,6 +252,16 @@ public class TrainingCourse extends AuditEntity implements InsertableAuditEntity
 	this.rankingFlag = rankingFlag;
     }
 
+    @Basic
+    @Column(name = "GRADUATION_DECISION_FLAG")
+    public Integer getGraduationDecisionFlag() {
+	return graduationDecisionFlag;
+    }
+
+    public void setGraduationDecisionFlag(Integer graduationDecisionFlag) {
+	this.graduationDecisionFlag = graduationDecisionFlag;
+    }
+
     @Override
     public Long calculateContentId() {
 	return id;
@@ -248,6 +270,7 @@ public class TrainingCourse extends AuditEntity implements InsertableAuditEntity
     @Override
     public String calculateContent() {
 	return "name:" + name + AUDIT_SEPARATOR +
+		"nameEnglish:" + nameEnglish + AUDIT_SEPARATOR +
 		"type:" + type + AUDIT_SEPARATOR +
 		"qualificationMinorSpecId:" + qualificationMinorSpecId + AUDIT_SEPARATOR +
 		"candidatesMin:" + candidatesMin + AUDIT_SEPARATOR +
@@ -265,6 +288,7 @@ public class TrainingCourse extends AuditEntity implements InsertableAuditEntity
 		"promotionWitninMonths:" + promotionWitninMonths + AUDIT_SEPARATOR +
 		"syllabusAttachments:" + syllabusAttachments + AUDIT_SEPARATOR +
 		"syllabusAttachmentsHistory" + syllabusAttachmentsHistory + AUDIT_SEPARATOR +
-		"rankingFlag" + rankingFlag + AUDIT_SEPARATOR;
+		"rankingFlag" + rankingFlag + AUDIT_SEPARATOR +
+		"graduationDecisionFlag" + graduationDecisionFlag + AUDIT_SEPARATOR;
     }
 }

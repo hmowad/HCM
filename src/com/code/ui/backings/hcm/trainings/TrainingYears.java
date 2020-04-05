@@ -77,10 +77,14 @@ public class TrainingYears extends BaseBacking {
 	    }
 
 	    // generate semester name if needed
-	    if (trainingYearTypeId == TrainingYearTypesEnum.NEW_SEMESTER_IN_NEW_TRAINING_YEAR.getCode())
-		year.setSemesterName(generateSemesterName(0));
-	    if (trainingYearTypeId == TrainingYearTypesEnum.NEW_SEMESTER_IN_EXISTING_TRAINING_YEAR.getCode())
-		year.setSemesterName(generateSemesterName(TrainingSetupService.countNumberOfSemesterInTrainingYear(lastTrainingYear.getRelatedYearId())));
+	    if (trainingYearTypeId == TrainingYearTypesEnum.NEW_SEMESTER_IN_NEW_TRAINING_YEAR.getCode()) {
+		year.setSemesterName(generateSemesterName(0, true));
+		year.setSemesterNameEnglish(generateSemesterName(0, false));
+	    }
+	    if (trainingYearTypeId == TrainingYearTypesEnum.NEW_SEMESTER_IN_EXISTING_TRAINING_YEAR.getCode()) {
+		year.setSemesterName(generateSemesterName(TrainingSetupService.countNumberOfSemesterInTrainingYear(lastTrainingYear.getRelatedYearId()), true));
+		year.setSemesterNameEnglish(generateSemesterName(TrainingSetupService.countNumberOfSemesterInTrainingYear(lastTrainingYear.getRelatedYearId()), false));
+	    }
 
 	    years.add(year);
 	    disableAddButton = true;
@@ -104,10 +108,10 @@ public class TrainingYears extends BaseBacking {
 	}
     }
 
-    public String generateSemesterName(long lastSemesterNumber) {
+    public String generateSemesterName(long lastSemesterNumber, Boolean arabicFlag) {
 	try {
 
-	    String semesterName = getMessage(String.format("%s%d", "label_semester_", lastSemesterNumber + 1));
+	    String semesterName = getMessage(String.format("%s%d", arabicFlag ? "label_semester_" : "label_semesterEnglish_", lastSemesterNumber + 1));
 	    return semesterName == null ? "" : semesterName;
 	} catch (Exception e) {
 	    return "";

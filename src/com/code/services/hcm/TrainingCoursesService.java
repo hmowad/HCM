@@ -197,6 +197,8 @@ public class TrainingCoursesService extends BaseService {
 	    throw new BusinessException("error_courseNameMandatory");
 	if (trainingCourseData.getQualificationMinorSpecId() == null)
 	    throw new BusinessException("error_qualificationMinorSpecMandatory");
+	if (trainingCourseData.isGraduationDecisionBoolean() && (trainingCourseData.getNameEnglish() == null || trainingCourseData.getNameEnglish().length() == 0))
+	    throw new BusinessException("error_courseNameEnglishMandatory");
 
     }
 
@@ -273,6 +275,18 @@ public class TrainingCoursesService extends BaseService {
 	    qParams.put("P_EXCLUDED_ID", excludedCourseId);
 	    List<TrainingCourseData> result = DataAccess.executeNamedQuery(TrainingCourseData.class, QueryNamesEnum.HCM_SEARCH_TRAINING_COURSES.getCode(), qParams);
 	    return result;
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static TrainingCourseData getTrainingCourseDataByTransactionDetailId(long trainingTransactionDetailId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_TRAINING_TRANSACTION_DETAIL_ID", trainingTransactionDetailId);
+	    List<TrainingCourseData> result = DataAccess.executeNamedQuery(TrainingCourseData.class, QueryNamesEnum.HCM_GET_TRAINING_COURSE_BY_TRAINING_TRANSACTION_DETAIL_ID.getCode(), qParams);
+	    return result == null || result.size() == 0 ? null : result.get(0);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
