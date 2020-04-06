@@ -7,6 +7,8 @@ import java.util.Map;
 
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.dutyextension.DutyExtensionTransaction;
+import com.code.dal.orm.hcm.dutyextension.DutyExtensionTransactionData;
+import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
 import com.code.enums.FlagsEnum;
@@ -24,10 +26,12 @@ public class DutyExtensionService extends BaseService {
 	    UnitData unitData = UnitsService.getUnitById(unitId);
 	    if (unitData == null)
 		throw new Exception();
-	    List<TerminationTransactionData> terminationTransactionsDataList = TerminationsService.getTerminationTransactionsDataByUnitHKey(UnitsService.getHKeyPrefix(unitData.gethKey()) + "%");
+	    List<Object> terminationTransactionsDataAndEmployeeDataList = TerminationsService.getTerminationTransactionsDataByUnitHKey(UnitsService.getHKeyPrefix(unitData.gethKey()) + "%");
 	    List<WSTerminatedEmployeesResponse> wsTerminatedEmployeesResponseList = new ArrayList<WSTerminatedEmployeesResponse>();
-	    for (TerminationTransactionData terminationTransactionData : terminationTransactionsDataList) {
-		wsTerminatedEmployeesResponseList.add(new WSTerminatedEmployeesResponse(terminationTransactionData.getEmpId(), terminationTransactionData.getEmpName(), terminationTransactionData.getReasonId(), terminationTransactionData.getReasonDesc()));
+	    for (Object terminationTransactionsDataAndEmployeeData : terminationTransactionsDataAndEmployeeDataList) {
+		TerminationTransactionData terminationTransactionData = (TerminationTransactionData) ((Object[]) terminationTransactionsDataAndEmployeeData)[0];
+		EmployeeData employee = (EmployeeData) ((Object[]) terminationTransactionsDataAndEmployeeData)[1];
+		wsTerminatedEmployeesResponseList.add(new WSTerminatedEmployeesResponse(terminationTransactionData, employee));
 	    }
 	    return wsTerminatedEmployeesResponseList;
 	} catch (BusinessException e) {
@@ -37,8 +41,8 @@ public class DutyExtensionService extends BaseService {
 	}
     }
 
-    public static DutyExtensionTransaction getDutyExtensionTransactionByEmpId(Long empId) throws DatabaseException {
-	List<DutyExtensionTransaction> result = searchDutyExtensionTransactions(null, empId, null, TransactionTypesEnum.DUTY_EXTENSION_TRANSACTION.getCode());
+    public static DutyExtensionTransactionData getDutyExtensionTransactionDataByEmpId(Long empId) throws DatabaseException {
+	List<DutyExtensionTransactionData> result = searchDutyExtensionTransactionData(null, empId, null, null);
 	return (result == null || result.size() == 0) ? null : result.get(0);
     }
 
@@ -71,14 +75,14 @@ public class DutyExtensionService extends BaseService {
 
     }
 
-    private static List<DutyExtensionTransaction> searchDutyExtensionTransactions(Long id, Long empId, Integer serviceTerminationReason, Integer transactionType) throws DatabaseException {
+    private static List<DutyExtensionTransactionData> searchDutyExtensionTransactionData(Long id, Long empId, Integer serviceTerminationReason, Integer transactionType) throws DatabaseException {
 	Map<String, Object> qParams = new HashMap<String, Object>();
 	qParams.put("P_ID", id == null ? FlagsEnum.ALL.getCode() : id);
 	qParams.put("P_EMP_ID", empId == null ? FlagsEnum.ALL.getCode() : empId);
 	qParams.put("P_SERVICE_TERMINATION_REASON", serviceTerminationReason == null ? FlagsEnum.ALL.getCode() : serviceTerminationReason);
 	qParams.put("P_TRANSACTION_TYPE", transactionType == null ? FlagsEnum.ALL.getCode() : transactionType);
 
-	return DataAccess.executeNamedQuery(DutyExtensionTransaction.class, QueryNamesEnum.HCM_SEARCH_DUTY_EXTENSION_TRANSACTION.getCode(), qParams);
+	return DataAccess.executeNamedQuery(DutyExtensionTransactionData.class, QueryNamesEnum.HCM_SEARCH_DUTY_EXTENSION_TRANSACTION_DATA.getCode(), qParams);
     }
 
 }

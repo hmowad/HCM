@@ -471,7 +471,7 @@ public enum QueryNamesEnum {
     WF_GET_WFTERMINATIONS_TASKS("wf_terminationData_getTerminationsTasks"),
 
     /* ****************************************** Duty Extension ******************************************* */
-    HCM_SEARCH_DUTY_EXTENSION_TRANSACTION("hcm_dutyExtensionTransaction_searchDutyExtensionTransactions"),
+    HCM_SEARCH_DUTY_EXTENSION_TRANSACTION_DATA("hcm_dutyExtensionTransactionData_searchDutyExtensionDataTransactions"),
 
     /* ****************************************** Training And Scholarship ******************************************* */
     WF_GET_WFTRAINING("wf_trainingData_searchWFTrainingData"),
