@@ -56,10 +56,12 @@ import com.code.services.util.HijriDateService;
 			+ " order by tt.decisionDate,tt.decisionNumber ")),
 
 	@NamedQuery(name = "hcm_terminationTransactionData_getTerminationTransactionsByunitHkey",
-		query = (" select tt from TerminationTransactionData tt, UnitData u "
+		query = (" select tt, e from TerminationTransactionData tt ,EmployeeData e, UnitData u "
 			+ " where (tt.transEmpUnitId = u.id) "
 			+ " and ( u.hKey like :P_UNIT_HKEY ) "
 			+ " and ( tt.categoryId <> 6) "
+			+ " and ( tt.empId = e.id) "
+			+ " and (tt.transactionTypeCode = 10) "
 			+ " order by tt.decisionDate,tt.decisionNumber "))
 })
 @Entity

@@ -194,6 +194,7 @@
 		<mapping class="com.code.dal.orm.workflow.hcm.terminations.WFTerminationCancellationMovementData" />
 		
 		<mapping class="com.code.dal.orm.hcm.dutyextension.DutyExtensionTransaction" />
+		<mapping class="com.code.dal.orm.hcm.dutyextension.DutyExtensionTransactionData" />
 		
 		<mapping class="com.code.dal.orm.hcm.vacations.VacationType" />
 		<mapping class="com.code.dal.orm.hcm.vacations.Vacation" />

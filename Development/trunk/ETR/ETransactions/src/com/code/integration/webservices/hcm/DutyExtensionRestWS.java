@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.code.dal.orm.hcm.dutyextension.DutyExtensionTransaction;
+import com.code.dal.orm.hcm.dutyextension.DutyExtensionTransactionData;
 import com.code.exceptions.BusinessException;
 import com.code.integration.responses.hcm.WSTerminatedEmployeesResponse;
 import com.code.services.BaseService;
@@ -30,7 +31,7 @@ public class DutyExtensionRestWS {
 
 	try {
 	    List<WSTerminatedEmployeesResponse> wsTerminatedEmployeesResponseList = DutyExtensionService.getTerminatedEmployeesByParentUnitId(departmentId);
-	    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	    Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 	    return Response.status(Status.OK.getStatusCode()).entity(gson.toJson(wsTerminatedEmployeesResponseList == null || wsTerminatedEmployeesResponseList.size() == 0 ? "" : wsTerminatedEmployeesResponseList)).build();
 	} catch (Exception e) {
 	    if (e instanceof BusinessException)
@@ -43,14 +44,14 @@ public class DutyExtensionRestWS {
     }
 
     @GET
-    @Path("/getDutyExtension")
+    @Path("/getLastDutyExtension")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDutyExtensionByEmpId(@QueryParam("employeeId") Long employeeId) {
 
 	try {
-	    DutyExtensionTransaction dutyExtensionTransaction = DutyExtensionService.getDutyExtensionTransactionByEmpId(employeeId);
-	    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-	    return Response.status(Status.OK.getStatusCode()).entity(gson.toJson(dutyExtensionTransaction == null ? "" : dutyExtensionTransaction)).build();
+	    DutyExtensionTransactionData dutyExtensionTransactionData = DutyExtensionService.getDutyExtensionTransactionDataByEmpId(employeeId);
+	    Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
+	    return Response.status(Status.OK.getStatusCode()).entity(gson.toJson(dutyExtensionTransactionData == null ? "" : dutyExtensionTransactionData)).build();
 	} catch (Exception e) {
 	    if (e instanceof BusinessException)
 		return Response.status(Status.EXPECTATION_FAILED.getStatusCode()).entity(BaseService.getMessage(e.getMessage())).build();
