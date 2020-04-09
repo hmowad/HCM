@@ -7,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -21,6 +23,13 @@ import com.code.services.util.HijriDateService;
  * 
  * 
  */
+@NamedQueries({
+
+	@NamedQuery(name = "hcm_vacationLog_getVacationLogByVacationIdAndStatus",
+		query = " select v from VacationLog v " +
+			" where ( v.vacationId = :P_VACATION_ID ) "
+			+ " and ( :P_STATUS = -1 or v.status = :P_STATUS ) "),
+})
 @Entity
 @Table(name = "HCM_VAC_LOG")
 public class VacationLog extends BaseEntity {

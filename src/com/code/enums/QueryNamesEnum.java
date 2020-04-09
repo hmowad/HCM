@@ -128,6 +128,7 @@ public enum QueryNamesEnum {
     HCM_GET_FUTURE_VACATION_TRANSACTION_BY_ID("hcm_transientVacationTransactionData_getFutureVacationById"),
     HCM_GET_FUTURE_VACATION_TRANSACTION_BY_PARENT_ID("hcm_transientVacationTransactionData_getFutureVacationByParentId"),
 
+    HCM_GET_VACATION_LOG_BY_VACATION_ID_AND_STATUS("hcm_vacationLog_getVacationLogByVacationIdAndStatus"),
     /* ************************************************ Payroll ********************************************************** */
     HCM_GET_PAYROLL_DIFF_BY_TRANS_STATUS("hcm_EmployeePayrollDifferenceData_getPayrollDiffByTrnsStatus"),
 

@@ -13,6 +13,7 @@ import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.vacations.Vacation;
 import com.code.dal.orm.hcm.vacations.VacationConfiguration;
 import com.code.dal.orm.hcm.vacations.VacationData;
+import com.code.dal.orm.hcm.vacations.VacationLog;
 import com.code.dal.orm.hcm.vacations.VacationType;
 import com.code.dal.orm.workflow.WFPosition;
 import com.code.enums.AdminDecisionsEnum;
@@ -76,7 +77,6 @@ public class VacationsService extends BaseService {
      * @see RequestTypesEnum
      */
     public static void handleVacRequest(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
-	Vacation origninalVacation = null;
 	if (request.getStatus() == RequestTypesEnum.NEW.getCode()) {
 	    // Order of the next two lines is CRITICAL
 	    request.setRelatedDeductedBalance(VacationsBusinessRulesService.getRelatedDeductedBalance(vacationBeneficiary, request.getVacationTypeId(), request.getStartDate(), request.getPeriod()));
@@ -86,12 +86,12 @@ public class VacationsService extends BaseService {
 
 	    VacationsDataHandlingService.insertVacData(request, vacationBeneficiary, skipWFFlag, subject, useSession);
 	} else if (request.getStatus() == RequestTypesEnum.MODIFY.getCode()) {
-	    origninalVacation = VacationsDataHandlingService.modifyVacData(request, vacationBeneficiary, skipWFFlag, subject, useSession);
+	    VacationsDataHandlingService.modifyVacData(request, vacationBeneficiary, skipWFFlag, subject, useSession);
 	} else if (request.getStatus() == RequestTypesEnum.CANCEL.getCode()) {
-	    origninalVacation = VacationsDataHandlingService.cancelVacData(request, vacationBeneficiary, skipWFFlag, subject, useSession);
+	    VacationsDataHandlingService.cancelVacData(request, vacationBeneficiary, skipWFFlag, subject, useSession);
 	}
 	if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
-	    doPayrollIntegration(request.getStatus() == RequestTypesEnum.NEW.getCode() ? request : origninalVacation, FlagsEnum.OFF.getCode(), useSession);
+	    doPayrollIntegration(request, FlagsEnum.OFF.getCode(), useSession);
     }
 
     public static void payrollIntegrationFailureHandle(Date decisionDate, String decisionNumber, CustomSession session) throws BusinessException {
@@ -103,12 +103,17 @@ public class VacationsService extends BaseService {
     }
 
     private static void doPayrollIntegration(Vacation request, Integer resendFlag, CustomSession... useSession) throws BusinessException {
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : null;
+	if (session == null)
+	    throw new BusinessException("error_general");
+	session.flushTransaction();
 	Long adminDecisionId = null;
-	Vacation originalVacation = null;
+	String originalVacationDecisionNumber = null;
 	EmployeeData employee = EmployeesService.getEmployeeData(request.getEmpId());
 	if (employee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 	    if (request.getJoiningDate() != null) { // in case of vacation joining
-		originalVacation = request;
+		originalVacationDecisionNumber = request.getDecisionNumber();
 		if (request.getVacationTypeId().equals(VacationTypesEnum.SICK.getCode())) {
 		    if (request.getPaidVacationType().equals(PaidVacationTypesEnum.HALF_PAID.getCode())) {
 			adminDecisionId = AdminDecisionsEnum.OFFICERS_HALF_PAID_SICK_VACATION_JOINING.getCode();
@@ -128,7 +133,7 @@ public class VacationsService extends BaseService {
 			}
 		    }
 		} else if (request.getStatus() == RequestTypesEnum.MODIFY.getCode()) {
-		    originalVacation = VacationsService.getVacationById(request.getVacationId());
+		    originalVacationDecisionNumber = VacationsService.getVacationLogByVacationIdAndStatus(request.getVacationId(), RequestTypesEnum.NEW.getCode()).getDecisionNumber();
 		    if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
 			adminDecisionId = AdminDecisionsEnum.OFFICERS_MODIFY_REGULAR_VACATION_REQUEST.getCode();
 		    } else if (request.getVacationTypeId().equals(VacationTypesEnum.SICK.getCode())) {
@@ -139,7 +144,7 @@ public class VacationsService extends BaseService {
 			}
 		    }
 		} else if (request.getStatus() == RequestTypesEnum.CANCEL.getCode()) {
-		    originalVacation = VacationsService.getVacationById(request.getVacationId());
+		    originalVacationDecisionNumber = VacationsService.getVacationLogByVacationIdAndStatus(request.getVacationId(), RequestTypesEnum.NEW.getCode()).getDecisionNumber();
 		    if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
 			adminDecisionId = AdminDecisionsEnum.OFFICERS_CANCEL_REGULAR_VACATION_REQUEST.getCode();
 		    } else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
@@ -165,18 +170,12 @@ public class VacationsService extends BaseService {
 	    }
 	}
 	if (adminDecisionId != null) {
-	    boolean isOpenedSession = isSessionOpened(useSession);
-	    CustomSession session = isOpenedSession ? useSession[0] : null;
-	    if (session == null)
-		throw new BusinessException("error_general");
 	    String gregDecisionDateString = HijriDateService.hijriToGregDateString(request.getDecisionDateString());
 	    String gregVacationStartDateString = request.getJoiningDate() != null ? HijriDateService.hijriToGregDateString(HijriDateService.getHijriDateString(request.getJoiningDate())) : HijriDateService.hijriToGregDateString(request.getStartDateString());
 	    String gregVacationEndDateString = (request.getJoiningDate() != null || adminDecisionId.equals(AdminDecisionsEnum.OFFICERS_CANCEL_HALF_PAID_SICK_VACATION_REQUEST.getCode())) ? null : HijriDateService.hijriToGregDateString(request.getEndDateString());
 	    String requestDecisionNumber = request.getJoiningDate() != null ? System.currentTimeMillis() + "" : request.getDecisionNumber();
-	    String originalDecisionNumber = originalVacation != null && originalVacation.getDecisionNumber() != null ? originalVacation.getDecisionNumber() : null;
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(
-		    Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), request.getVacationId(), null, gregVacationStartDateString, gregVacationEndDateString, requestDecisionNumber, originalDecisionNumber)));
-	    session.flushTransaction();
+		    Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), request.getVacationId(), null, gregVacationStartDateString, gregVacationEndDateString, requestDecisionNumber, originalVacationDecisionNumber)));
 	    PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(Vacation.class), resendFlag, request.getJoiningDate() != null ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode(), session);
 	}
     }
@@ -660,6 +659,20 @@ public class VacationsService extends BaseService {
 	    qParams.put("P_STATUS", status);
 
 	    List<Vacation> result = DataAccess.executeNamedQuery(Vacation.class, QueryNamesEnum.HCM_GET_VACATION_BY_BENEFICIARY_AND_START_DATE.getCode(), qParams);
+	    return result.isEmpty() ? null : result.get(0);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static VacationLog getVacationLogByVacationIdAndStatus(long vacationId, Integer status) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_VACATION_ID", vacationId);
+	    qParams.put("P_STATUS", status == null ? FlagsEnum.ALL.getCode() : status);
+
+	    List<VacationLog> result = DataAccess.executeNamedQuery(VacationLog.class, QueryNamesEnum.HCM_GET_VACATION_LOG_BY_VACATION_ID_AND_STATUS.getCode(), qParams);
 	    return result.isEmpty() ? null : result.get(0);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
