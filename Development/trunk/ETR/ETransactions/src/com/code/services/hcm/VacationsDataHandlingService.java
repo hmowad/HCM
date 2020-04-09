@@ -125,7 +125,7 @@ public class VacationsDataHandlingService extends BaseService {
      * @throws BusinessException
      *             if any error occurs like a database error
      */
-    protected static Vacation modifyVacData(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
+    protected static void modifyVacData(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
 
 	Vacation originalVacation = VacationsService.getVacationById(request.getVacationId());
 
@@ -196,7 +196,6 @@ public class VacationsDataHandlingService extends BaseService {
 	    if (!isOpenedSession)
 		session.commitTransaction();
 
-	    return originalVacation;
 	} catch (BusinessException e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
@@ -226,7 +225,7 @@ public class VacationsDataHandlingService extends BaseService {
      * @throws BusinessException
      *             if any error occurs like a database error
      */
-    protected static Vacation cancelVacData(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
+    protected static void cancelVacData(Vacation request, EmployeeData vacationBeneficiary, Integer skipWFFlag, String subject, CustomSession... useSession) throws BusinessException {
 
 	Vacation originalVacation = VacationsService.getVacationById(request.getVacationId());
 
@@ -280,7 +279,6 @@ public class VacationsDataHandlingService extends BaseService {
 	    if (!isOpenedSession)
 		session.commitTransaction();
 
-	    return originalVacation;
 	} catch (BusinessException e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();

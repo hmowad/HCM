@@ -88,13 +88,8 @@ public class PayrollRestClient {
 		response = webTarget.request().get();
 	    }
 	    responseString = response == null ? null : response.readEntity(String.class);
-	    if (response.getStatus() != Status.OK.getStatusCode()) {
-		Log4jService.traceInfo(PayrollRestClient.class, "Error: " + responseString);
-		if (response.getStatus() == Status.EXPECTATION_FAILED.getStatusCode())
-		    handlePayrollException(responseString);
-		else
-		    throw new Exception();
-	    }
+	    if (response.getStatus() != Status.OK.getStatusCode())
+		handlePayrollException(responseString);
 	    return responseString;
 	} catch (Exception e) {
 	    handleBusinessException(e, resendFlag, integrationTypeFlag);
@@ -123,13 +118,8 @@ public class PayrollRestClient {
 			.post(Entity.entity(body, MediaType.APPLICATION_JSON + "; charset=utf-8"));
 	    }
 	    responseString = response == null ? null : response.readEntity(String.class);
-	    if (response.getStatus() != Status.OK.getStatusCode()) {
-		Log4jService.traceInfo(PayrollRestClient.class, "Error: " + responseString);
-		if (response.getStatus() == Status.EXPECTATION_FAILED.getStatusCode())
-		    handlePayrollException(responseString);
-		else
-		    throw new Exception();
-	    }
+	    if (response.getStatus() != Status.OK.getStatusCode())
+		handlePayrollException(responseString);
 	} catch (Exception e) {
 	    handleBusinessException(e, resendFlag, integrationTypeFlag);
 	    payrollIntegrationFailureLog.setRequestBody(body.toString());
@@ -139,13 +129,15 @@ public class PayrollRestClient {
 	}
     }
 
-    private static void handlePayrollException(String responseString) throws BusinessException {
+    private static void handlePayrollException(String responseString) throws Exception {
+	Log4jService.traceInfo(PayrollRestClient.class, "Error: " + responseString);
 	JsonReader jsonReader = Json.createReader(new StringReader(responseString));
 	JsonObject errorJson = jsonReader.readObject();
-	if (errorJson.containsKey("Response"))
-	    throw new BusinessException(errorJson.get("Response").toString(), new Object[] { FlagsEnum.OFF.getCode() });
-	else
-	    throw new BusinessException(responseString, new Object[] { FlagsEnum.OFF.getCode() });
+	if (errorJson.containsKey("Response")) {
+	    String errorString = errorJson.get("Response").toString();
+	    throw new BusinessException(responseString == null ? null : errorString.substring(1, errorString.length() - 1), new Object[] { FlagsEnum.OFF.getCode() });
+	} else
+	    throw new Exception();
     }
 
     private static void handleBusinessException(Exception e, Integer resendFlag, Integer integrationTypeFlag) throws BusinessException {
