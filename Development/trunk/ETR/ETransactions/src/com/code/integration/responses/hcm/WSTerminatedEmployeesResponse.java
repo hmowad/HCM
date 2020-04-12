@@ -12,6 +12,9 @@ public class WSTerminatedEmployeesResponse {
     private String empSocialId;
     private Long empJobId;
     private String empJobName;
+    private Long empCategoryId;
+    private String empCategoryDesc;
+    private String empRankDesc;
     private Long serviceTerminationReasonId;
     private String serviceTerminationReasonDesc;
 
@@ -23,6 +26,9 @@ public class WSTerminatedEmployeesResponse {
 	this.empSocialId = employee.getSocialID();
 	this.empJobId = terminationTransactionData.getJobId();
 	this.empJobName = terminationTransactionData.getJobName();
+	this.empCategoryId = employee.getCategoryId();
+	this.empCategoryDesc = employee.getCategoryDesc();
+	this.empRankDesc = terminationTransactionData.getTransEmpRankDesc();
 	this.serviceTerminationReasonId = terminationTransactionData.getReasonId();
 	this.serviceTerminationReasonDesc = terminationTransactionData.getReasonDesc();
     }
@@ -41,6 +47,30 @@ public class WSTerminatedEmployeesResponse {
 
     public void setEmpName(String empName) {
 	this.empName = empName;
+    }
+
+    public Long getEmpCategoryId() {
+	return empCategoryId;
+    }
+
+    public void setEmpCategoryId(Long empCategoryId) {
+	this.empCategoryId = empCategoryId;
+    }
+
+    public String getEmpCategoryDesc() {
+	return empCategoryDesc;
+    }
+
+    public void setEmpCategoryDesc(String empCategoryDesc) {
+	this.empCategoryDesc = empCategoryDesc;
+    }
+
+    public String getEmpRankDesc() {
+	return empRankDesc;
+    }
+
+    public void setEmpRankDesc(String empRankDesc) {
+	this.empRankDesc = empRankDesc;
     }
 
     public Long getEmpDepartmentId() {

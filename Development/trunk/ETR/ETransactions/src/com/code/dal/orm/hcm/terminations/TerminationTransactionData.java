@@ -59,9 +59,10 @@ import com.code.services.util.HijriDateService;
 		query = (" select tt, e from TerminationTransactionData tt ,EmployeeData e, UnitData u "
 			+ " where (tt.transEmpUnitId = u.id) "
 			+ " and ( u.hKey like :P_UNIT_HKEY ) "
-			+ " and ( tt.categoryId <> 6) "
-			+ " and ( tt.empId = e.id) "
-			+ " and (tt.transactionTypeCode = 10) "
+			+ " and ( tt.categoryId <> 6 ) "
+			+ " and ( tt.empId = e.id ) "
+			+ " and ( tt.transactionTypeCode = 10 ) "
+			+ " and ( e.statusId = 70 ) "
 			+ " order by tt.decisionDate,tt.decisionNumber "))
 })
 @Entity

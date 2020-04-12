@@ -1,5 +1,7 @@
 package com.code.dal.orm.hcm.dutyextension;
 
+import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.code.dal.orm.BaseEntity;
 
@@ -22,6 +26,7 @@ public class DutyExtensionTransaction extends BaseEntity {
     private String extensionReason;
     private Integer transactionType;
     private Long basedOnExtensionId;
+    private Date transactionDate;
 
     @SequenceGenerator(name = "HCMDutyExtensionTransactionsSeq",
 	    sequenceName = "HCM_DUTY_EXTENSION_SEQ")
@@ -94,6 +99,17 @@ public class DutyExtensionTransaction extends BaseEntity {
 
     public void setBasedOnExtensionId(Long basedOnExtensionId) {
 	this.basedOnExtensionId = basedOnExtensionId;
+    }
+
+    @Basic
+    @Column(name = "TRANSACTION_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getTransactionDate() {
+	return transactionDate;
+    }
+
+    public void setTransactionDate(Date transactionDate) {
+	this.transactionDate = transactionDate;
     }
 
 }
