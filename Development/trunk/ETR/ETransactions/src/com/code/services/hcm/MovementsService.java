@@ -389,17 +389,20 @@ public class MovementsService extends BaseService {
 	    }
 	    if (adminDecision != null) {
 		for (MovementTransactionData movementTransactionData : movementTransactions) {
-		    String gregStartDateString = HijriDateService.hijriToGregDateString(movementTransactionData.getExecutionDateString());
-		    String gregEndDateString = HijriDateService.hijriToGregDateString(movementTransactionData.getEndDateString());
+		    String gregStartDateString = movementTransactionData.getReturnJoiningDate() != null ? HijriDateService.hijriToGregDateString(movementTransactionData.getReturnJoiningDateString()) : movementTransactionData.getJoiningDate() != null ? HijriDateService.hijriToGregDateString(movementTransactionData.getJoiningDateString()) : HijriDateService.hijriToGregDateString(movementTransactionData.getExecutionDateString());
+		    String gregEndDateString = (movementTransactionData.getJoiningDate() != null || movementTransactionData.getReturnJoiningDate() != null) ? null : HijriDateService.hijriToGregDateString(movementTransactionData.getEndDateString());
 		    EmployeeData employee = EmployeesService.getEmployeeData(movementTransactionData.getEmployeeId());
-		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(movementTransactionData.getEmployeeId(), employee.getName(), movementTransactionData.getId(), null, gregStartDateString, gregEndDateString, (movementTransactionData.getJoiningDate() != null || movementTransactionData.getReturnJoiningDate() != null) ? System.currentTimeMillis() + "" : movementTransactionData.getDecisionNumber(), movementTransactionData.getBasedOnDecisionNumber()));
+		    String decisionNumber = (movementTransactionData.getJoiningDate() != null || movementTransactionData.getReturnJoiningDate() != null) ? System.currentTimeMillis() + "" : movementTransactionData.getDecisionNumber();
+		    String originalDecisionNumber = (movementTransactionData.getJoiningDate() != null || movementTransactionData.getReturnJoiningDate() != null) ? movementTransactionData.getDecisionNumber() : movementTransactionData.getBasedOnDecisionNumber();
+		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(movementTransactionData.getEmployeeId(), employee.getName(), movementTransactionData.getId(), null, gregStartDateString, gregEndDateString, decisionNumber, originalDecisionNumber));
 		}
 		String gregExecutionDateString = HijriDateService.hijriToGregDateString(movementTransactions.get(0).getExecutionDateString());
 		String gregDecisionDateString = HijriDateService.hijriToGregDateString(movementTransactions.get(0).getDecisionDateString());
+		Long unitId = (movementTransactions.get(0).getUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : movementTransactions.get(0).getUnitId());
+		Integer originalDecisionFlag = (movementTransactions.get(0).getJoiningDate() != null || movementTransactions.get(0).getReturnJoiningDate() != null) ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode();
 		if (session != null)
 		    session.flushTransaction();
-		PayrollEngineService.doPayrollIntegration(adminDecision, movementTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, (movementTransactions.get(0).getUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : movementTransactions.get(0).getUnitId()), gregDecisionDateString, DataAccess.getTableName(MovementTransaction.class), resendFlag,
-			movementTransactions.get(0).getJoiningDate() != null ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode(), session);
+		PayrollEngineService.doPayrollIntegration(adminDecision, movementTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(MovementTransaction.class), resendFlag, originalDecisionFlag, session);
 	    }
 	}
     }
