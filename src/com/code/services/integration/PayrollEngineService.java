@@ -22,6 +22,7 @@ import com.code.dal.orm.hcm.raises.RaiseTransaction;
 import com.code.dal.orm.hcm.recruitments.RecruitmentTransaction;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransaction;
 import com.code.dal.orm.hcm.terminations.TerminationTransaction;
+import com.code.dal.orm.hcm.vacations.TransientVacationTransaction;
 import com.code.dal.orm.hcm.vacations.Vacation;
 import com.code.dal.orm.integration.payroll.AdminDecisionVariablesMapping;
 import com.code.dal.orm.integration.payroll.PayrollIntegrationFailureLog;
@@ -41,6 +42,7 @@ import com.code.integration.webservicesclients.payroll.PayrollRestClient;
 import com.code.services.BaseService;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.hcm.EmployeesService;
+import com.code.services.hcm.FutureVacationsService;
 import com.code.services.hcm.MovementsService;
 import com.code.services.hcm.PromotionsService;
 import com.code.services.hcm.RaisesService;
@@ -312,6 +314,8 @@ public class PayrollEngineService extends BaseService {
 		RaisesService.PayrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getDecisionNumber(), payrollIntegrationFailureLogData.getDecisionDate(), session);
 	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(Vacation.class))) {
 		VacationsService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getDecisionDate(), payrollIntegrationFailureLogData.getDecisionNumber(), session);
+	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(TransientVacationTransaction.class))) {
+		FutureVacationsService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getDecisionDate(), payrollIntegrationFailureLogData.getDecisionNumber(), session);
 	    }
 
 	    payrollIntegrationFailureLogData.setExecutedFlag(FlagsEnum.ON.getCode());
