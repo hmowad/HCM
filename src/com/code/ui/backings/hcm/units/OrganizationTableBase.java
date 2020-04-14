@@ -68,7 +68,7 @@ public abstract class OrganizationTableBase extends UnitTreeBase {
 
 	    done = false;
 	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
@@ -143,7 +143,7 @@ public abstract class OrganizationTableBase extends UnitTreeBase {
 	    selectedOrganizationTableDetail = organizationTableDetailData;
 
 	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
