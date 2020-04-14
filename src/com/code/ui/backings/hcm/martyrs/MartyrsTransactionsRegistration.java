@@ -134,7 +134,7 @@ public class MartyrsTransactionsRegistration extends BaseBacking {
 		    moralMartyrHonors = MartyrsService.getMartyrHonors(martyrTransactionData.getId(), MartyrsHonorsTypesEnum.MORAL.getCode());
 		}
 	    } else {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_UIError");
 	    }
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));

@@ -172,7 +172,11 @@ public class MartyrsService extends BaseService {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    if (e instanceof BusinessException) {
+		throw (BusinessException) e;
+	    } else {
+		throw new BusinessException("error_general");
+	    }
 	} finally {
 	    if (!isOpenedSession)
 		session.close();
@@ -182,7 +186,7 @@ public class MartyrsService extends BaseService {
     private static void validateMartyrTransaction(MartyrTransactionData martyrTransactionData) throws BusinessException {
 
 	if (martyrTransactionData == null || martyrTransactionData.getMedicalDecisionFlag() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (martyrTransactionData.getEmployeeId() == null)
 	    throw new BusinessException("error_empSelectionManadatory");
 
@@ -296,7 +300,7 @@ public class MartyrsService extends BaseService {
 
     public static void deleteMartyrHonor(MartyrHonor martyrHonor, CustomSession... useSession) throws BusinessException {
 	if (martyrHonor == null || martyrHonor.getId() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -321,7 +325,7 @@ public class MartyrsService extends BaseService {
 
     private static void validateMartyrHonor(MartyrHonor martyrHonor, Date martyrTransactionDate) throws BusinessException {
 	if (martyrHonor == null || martyrHonor.getMartyrTransactionId() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (martyrHonor.getHonorType() == null)
 	    throw new BusinessException("error_martyrHonorTypeMandatory");
 	if (martyrHonor.getHonorNumber() == null || martyrHonor.getHonorNumber().length() == 0)
@@ -407,7 +411,7 @@ public class MartyrsService extends BaseService {
 
     public static void deleteMartyrdomReason(MartyrdomReason martyrdomReason, CustomSession... useSession) throws BusinessException {
 	if (martyrdomReason == null || martyrdomReason.getId() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (checkUsageOfMartyrdomReason(martyrdomReason))
 	    throw new BusinessException("error_martyrdomReasonIsUsedBymartyrTransaction");
 
@@ -435,7 +439,7 @@ public class MartyrsService extends BaseService {
 
     private static void validateMartyrdomReason(MartyrdomReason martyrdomReason) throws BusinessException {
 	if (martyrdomReason == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (martyrdomReason.getId() != null && checkUsageOfMartyrdomReason(martyrdomReason))
 	    throw new BusinessException("error_martyrdomReasonIsUsedBymartyrTransaction");
 	if (martyrdomReason.getDescription() == null || martyrdomReason.getDescription().length() == 0)
@@ -511,7 +515,7 @@ public class MartyrsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -524,7 +528,7 @@ public class MartyrsService extends BaseService {
 	    return getReportData(ReportNamesEnum.MARTYR_FILE.getCode(), parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 }
