@@ -49,7 +49,7 @@ public class PayrollDifferencesWS {
 	try {
 	    EmployeeData employeeData = EmployeesService.getEmployeeData(employeeId);
 	    if (employeeData == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 
 	    List<EmployeePayrollDifferenceData> payrollDifferences = PayrollsService.getEmployeePayrollDifferences(employeeData.getSocialID(), mode, elementDescription);
 	    response.setPayrollDifferences(payrollDifferences);
