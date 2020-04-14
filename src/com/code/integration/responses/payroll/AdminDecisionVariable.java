@@ -5,7 +5,7 @@ public class AdminDecisionVariable {
     private Integer variableId;
     private String variableName;
     private String variableMapping;
-    private Integer isLov;
+    private Integer isLOV;
 
     public Integer getVariableId() {
 	return variableId;
@@ -31,12 +31,12 @@ public class AdminDecisionVariable {
 	this.variableMapping = variableMapping;
     }
 
-    public Integer getIsLov() {
-	return isLov;
+    public Integer getIsLOV() {
+	return isLOV;
     }
 
-    public void setIsLov(Integer isLov) {
-	this.isLov = isLov;
+    public void setIsLOV(Integer isLOV) {
+	this.isLOV = isLOV;
     }
 
 }

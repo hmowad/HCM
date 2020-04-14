@@ -1,12 +1,10 @@
 package com.code.integration.responses.payroll;
 
-import java.util.List;
-
 public class AdminDecisionResponse {
 
     private Integer id;
     private String name;
-    private List<AdminDecisionVariable> variableArray;
+    private AdminDecisionVariable[] variableArray;
 
     public Integer getId() {
 	return id;
@@ -24,11 +22,11 @@ public class AdminDecisionResponse {
 	this.name = name;
     }
 
-    public List<AdminDecisionVariable> getVariableArray() {
+    public AdminDecisionVariable[] getVariableArray() {
 	return variableArray;
     }
 
-    public void setVariableArray(List<AdminDecisionVariable> variableArray) {
+    public void setVariableArray(AdminDecisionVariable[] variableArray) {
 	this.variableArray = variableArray;
     }
 
