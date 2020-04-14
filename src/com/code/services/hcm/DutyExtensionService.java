@@ -63,6 +63,8 @@ public class DutyExtensionService extends BaseService {
 	    throw new BusinessException("error_employeeIsMandatory");
 	if (dutyExtensionTransaction.getServiceTerminationReasonId() == null)
 	    throw new BusinessException("error_terminationReasonIsMandatory");
+	if (dutyExtensionTransaction.getTransactionDate() == null)
+	    throw new BusinessException("error_transactionDateIsMandatory");
 	if (dutyExtensionTransaction.getTransactionType().equals(TransactionTypesEnum.DUTY_EXTENSION_TRANSACTION.getCode())) {
 	    if (dutyExtensionTransaction.getExtensionPeriodMonths() == null)
 		throw new BusinessException("error_monthsMandatorySoldier");
