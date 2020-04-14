@@ -24,7 +24,7 @@ public class UnitCancel extends UnitTreeBase implements Serializable {
 	    decDate = HijriDateService.getHijriSysDate();
 	    decNumber = "";
 	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 

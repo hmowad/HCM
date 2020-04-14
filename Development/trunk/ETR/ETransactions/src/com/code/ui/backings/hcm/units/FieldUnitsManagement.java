@@ -28,9 +28,6 @@ public class FieldUnitsManagement extends BaseBacking {
 	    fieldUnitsList = UnitsService.getUnitsByIdsString(ETRConfigurationService.getFieldUnitsIds());
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(this.getParameterizedMessage(e.getMessage(), e.getParams()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(this.getMessage("error_general"));
 	}
     }
 

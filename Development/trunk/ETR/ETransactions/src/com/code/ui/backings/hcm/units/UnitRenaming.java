@@ -23,7 +23,7 @@ public class UnitRenaming extends UnitTreeBase implements Serializable {
 	    super.init();
 	    decDate = HijriDateService.getHijriSysDate();
 	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 

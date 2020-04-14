@@ -61,7 +61,7 @@ public class OrganizationHierarchy extends UnitTreeBase implements Serializable 
 	    unitTransactionDataList = UnitsService.getUnitTransactionsByUnitId(selectedUnitData.getId());
 	    jobDataList = JobsService.getVacantAndFozenJobsByUnitId(selectedUnitData.getId());
 	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 

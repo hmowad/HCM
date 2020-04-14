@@ -88,16 +88,15 @@ public class UnitsService extends BaseService {
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
-	} catch (BusinessException e) {
-	    if (!isOpenedSession)
-		session.rollbackTransaction();
-	    unitData.setId(null);
-	    throw e;
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
-	    e.printStackTrace();
 	    unitData.setId(null);
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
 	    if (!isOpenedSession)
@@ -153,19 +152,16 @@ public class UnitsService extends BaseService {
 	    if (!isOpenedSession)
 		session.commitTransaction();
 
-	} catch (BusinessException e) {
-	    if (!isOpenedSession)
-		session.rollbackTransaction();
-	    String newName = unitData.getName();
-	    unitData.setName(oldUnitName);
-	    unitData.setNewName(newName);
-	    throw e;
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
 	    String newName = unitData.getName();
 	    unitData.setName(oldUnitName);
 	    unitData.setNewName(newName);
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -217,6 +213,10 @@ public class UnitsService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -307,15 +307,6 @@ public class UnitsService extends BaseService {
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
-	} catch (BusinessException e) {
-	    if (!isOpenedSession)
-		session.rollbackTransaction();
-	    unit.setParentUnitName(oldUnitParentName);
-	    unit.setParentUnitId(oldUnitParentId);
-	    String newName = unit.getName();
-	    unit.setName(oldUnitName);
-	    unit.setNewName(newName);
-	    throw e;
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
@@ -324,6 +315,10 @@ public class UnitsService extends BaseService {
 	    String newName = unit.getName();
 	    unit.setName(oldUnitName);
 	    unit.setNewName(newName);
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -418,19 +413,16 @@ public class UnitsService extends BaseService {
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
-	} catch (BusinessException e) {
-	    String newName = separatedUnitData.getNewName();
-	    separatedUnitData.setName(unitOldName);
-	    separatedUnitData.setNewName(newName);
-	    if (!isOpenedSession)
-		session.rollbackTransaction();
-	    throw e;
 	} catch (Exception e) {
 	    String newName = separatedUnitData.getNewName();
 	    separatedUnitData.setName(unitOldName);
 	    separatedUnitData.setNewName(newName);
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -506,20 +498,18 @@ public class UnitsService extends BaseService {
 	    }
 	    if (!isOpenedSession)
 		session.commitTransaction();
-	} catch (BusinessException e) {
-	    if (!isOpenedSession)
-		session.rollbackTransaction();
-	    String newUnitName = unit.getName();
-	    unit.setName(oldUnitName);
-	    unit.setNewName(newUnitName);
-	    throw e;
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
-	    e.printStackTrace();
+
 	    String newUnitName = unit.getName();
 	    unit.setName(oldUnitName);
 	    unit.setNewName(newUnitName);
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
 	    if (!isOpenedSession)
@@ -655,19 +645,16 @@ public class UnitsService extends BaseService {
 	    }
 	    if (!isOpenedSession)
 		session.commitTransaction();
-	} catch (BusinessException e) {
-	    if (!isOpenedSession)
-		session.rollbackTransaction();
-	    String newName = modifiedUnitData.getNewName();
-	    modifiedUnitData.setName(oldUnitName);
-	    modifiedUnitData.setNewName(newName);
-	    throw e;
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
 	    String newName = modifiedUnitData.getNewName();
 	    modifiedUnitData.setName(oldUnitName);
 	    modifiedUnitData.setNewName(newName);
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -771,6 +758,9 @@ public class UnitsService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -1797,6 +1787,10 @@ public class UnitsService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -1993,7 +1987,7 @@ public class UnitsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 }
