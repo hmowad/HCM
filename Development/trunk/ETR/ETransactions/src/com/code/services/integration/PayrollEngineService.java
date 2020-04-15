@@ -137,7 +137,7 @@ public class PayrollEngineService extends BaseService {
 	    Log4jService.traceInfo(PayrollEngineService.class, "start of getApplyAdminDecisionBody() method");
 	    if (adminDecisionEmployeeDataList == null || adminDecisionEmployeeDataList.size() == 0) {
 		Log4jService.traceInfo(PayrollEngineService.class, "Employees list is empty!!");
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_integrationError");
 	    }
 	    JsonArrayBuilder decisionTypesList = Json.createArrayBuilder();
 	    for (int i = 0; i < adminDecisionList.length; i++) {
@@ -152,7 +152,7 @@ public class PayrollEngineService extends BaseService {
 			if (variablesMappingData.length > 1) {
 			    if (employeeData.getOriginalTransactionId() == null) {
 				Log4jService.traceInfo(PayrollEngineService.class, "Exception: originalTransactionId is null!!");
-				throw new BusinessException("error_general");
+				throw new BusinessException("error_integrationError");
 			    }
 			    queryTransactionId = employeeData.getOriginalTransactionId() + "";
 			    tableName = variablesMappingData[1].substring(0, variablesMappingData[1].indexOf("."));
