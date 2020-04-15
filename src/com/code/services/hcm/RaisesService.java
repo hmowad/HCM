@@ -107,7 +107,7 @@ public class RaisesService extends BaseService {
      */
     public static void addAdditionalRaise(Raise raise, List<RaiseEmployeeData> raiseEmployeeDataList, CustomSession... useSession) throws BusinessException {
 	if (raise.getType() != RaiseTypesEnum.ADDITIONAL.getCode())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (raiseEmployeeDataList.isEmpty())
 	    throw new BusinessException("error_mustAddOneEmployeeAtLeastToSaveAdditionalRaise");
@@ -144,7 +144,7 @@ public class RaisesService extends BaseService {
     public static List<RaiseEmployeeData> addAnnualRaise(Raise raise, CustomSession... useSession) throws BusinessException {
 	List<RaiseEmployeeData> raiseEmployees = new ArrayList<>();
 	if (raise.getType() != RaiseTypesEnum.ANNUAL.getCode())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -1213,7 +1213,7 @@ public class RaisesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1597,21 +1597,21 @@ public class RaisesService extends BaseService {
      */
     private static void validateRaiseTransactionMandatoryFields(RaiseTransactionData raiseTransactionData) throws BusinessException {
 	if (raiseTransactionData.getEmpId() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (raiseTransactionData.getRaiseCategoryId() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (raiseTransactionData.getRaiseType() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (raiseTransactionData.getDeservedFlag() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (raiseTransactionData.getEmpNewDegreeId() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (raiseTransactionData.getRaiseDecisionDate() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (raiseTransactionData.getRaiseDecisionNumber() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (raiseTransactionData.getRaiseExecutionDate() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
     }
 
     /*------------------------------------------Queries------------------------------------------------*/
