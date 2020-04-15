@@ -73,7 +73,7 @@ public class NavyFormationsService extends BaseService {
 
     public static void deleteNavyFormation(NavyFormation navyFormation, CustomSession... useSession) throws BusinessException {
 	if (navyFormation == null || navyFormation.getId() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -101,7 +101,7 @@ public class NavyFormationsService extends BaseService {
     private static void validateNavyFormation(NavyFormation navyFormation, int type) throws BusinessException {
 
 	if (type != FlagsEnum.OFF.getCode() && type != FlagsEnum.ON.getCode())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (navyFormation.getDescription() == null || navyFormation.getDescription().isEmpty())
 	    throw new BusinessException(type == FlagsEnum.OFF.getCode() ? "error_navyCommitteeDescription" : "error_navyCommitteeDescription");
@@ -159,7 +159,7 @@ public class NavyFormationsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 }

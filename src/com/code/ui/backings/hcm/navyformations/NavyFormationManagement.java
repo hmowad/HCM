@@ -36,7 +36,7 @@ public class NavyFormationManagement extends BaseBacking {
 		    navyFormationList = NavyFormationsService.getNavyCommittees(null);
 		    break;
 		default:
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_URLError");
 		}
 		regions = CommonService.getAllRegions();
 	    }

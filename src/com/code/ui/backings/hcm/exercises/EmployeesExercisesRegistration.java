@@ -41,10 +41,10 @@ public class EmployeesExercisesRegistration extends BaseBacking {
 		    setScreenTitle(getMessage("title_employeesExercisesRegistrationForSoldiers"));
 		    break;
 		default:
-		    this.setServerSideErrorMessages(getMessage("error_general"));
+		    this.setServerSideErrorMessages(getMessage("error_URLError"));
 		}
 	    } else {
-		this.setServerSideErrorMessages(getMessage("error_general"));
+		this.setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	    exercisesData = ExercisesService.getExercises();

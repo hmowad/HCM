@@ -30,11 +30,11 @@ public class EmployeesNavyFormationData extends BaseBacking implements Serializa
 	    } else if (mode == CategoryModesEnum.SOLDIERS.getCode()) {
 		setScreenTitle(getMessage("title_soldiersNavyFormationData"));
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	    reset();
 	} else {
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
 	}
     }
 
@@ -43,7 +43,7 @@ public class EmployeesNavyFormationData extends BaseBacking implements Serializa
 	    if (selectedEmpId != null && !selectedEmpId.trim().equals("")) {
 		employeeData = EmployeesService.getEmployeeData(Long.parseLong(selectedEmpId));
 		if (employeeData == null)
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_UIError");
 		else if (employeeData.getGeneralSpecialization() != GeneralSpecializationsEnum.NAVY.getCode()) {
 		    reset();
 		    if (mode == CategoryModesEnum.OFFICERS.getCode()) {
