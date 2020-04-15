@@ -38,12 +38,13 @@ public class EmployeesNavyFormationReport extends BaseBacking {
 		else if (mode == CategoryModesEnum.SOLDIERS.getCode())
 		    setScreenTitle(getMessage("title_soldiersNavyFormationReport"));
 		else
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }

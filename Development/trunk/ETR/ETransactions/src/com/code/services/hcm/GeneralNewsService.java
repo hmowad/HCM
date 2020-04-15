@@ -17,6 +17,7 @@ public class GeneralNewsService {
 	try {
 	    return DataAccess.executeNamedQuery(GeneralNews.class, QueryNamesEnum.HCM_GET_GENERAL_NEWS.getCode(), null);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
