@@ -47,7 +47,7 @@ public class MissionView extends BaseBacking {
 		    else if (mode == CategoryModesEnum.CIVILIANS.getCode())
 			setScreenTitle(getMessage("title_personsMissionView"));
 		    else
-			setServerSideErrorMessages(getMessage("error_general"));
+			setServerSideErrorMessages(getMessage("error_URLError"));
 
 		    missionDetailList = MissionsService.getMissionDetailsByMissionId(missionId);
 		    if (missionDetailList.size() > 0) {
@@ -74,12 +74,9 @@ public class MissionView extends BaseBacking {
 		    selectedMissionDetail = new MissionDetailData();
 		}
 	    } else
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 

@@ -46,12 +46,10 @@ public class MissionsCollectiveApproval extends BaseBacking {
 	} else if (mode == 2) {
 	    this.setScreenTitle(getMessage("title_missionsCollectiveApproval"));
 	}
-	try {
-	    // Load the missions tasks data
-	    searchMissionTasks();
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	}
+
+	// Load the missions tasks data
+	searchMissionTasks();
+
     }
 
     // Load the missions tasks data
@@ -128,7 +126,7 @@ public class MissionsCollectiveApproval extends BaseBacking {
 	    searchMissionTasks();
 
 	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(e.getMessage());
 	}
     }
 

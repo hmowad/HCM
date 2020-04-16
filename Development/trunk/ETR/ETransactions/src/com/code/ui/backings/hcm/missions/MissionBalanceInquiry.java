@@ -38,16 +38,13 @@ public class MissionBalanceInquiry extends BaseBacking {
 	    employeeMenuActions = SecurityService.getEmployeeMenuActions(this.loginEmpData.getEmpId(), MenuCodesEnum.MSN_BALANCE_INQUIRY.getCode());
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    super.setServerSideErrorMessages(getMessage("error_general"));
-	}
+	} 
     }
 
     public void resetSpecificFinancialYearDate() {
 	specificFinancialYearDate = null;
     }
-    
+
     public void printMissionBalance(int hajjFlag) {
 	try {
 	    if (!(this.loginEmpData.getEmpId().equals(searchEmp.getEmpId())
@@ -57,15 +54,12 @@ public class MissionBalanceInquiry extends BaseBacking {
 
 	    if (financialYear == 3 && specificFinancialYearDate == null)
 		throw new BusinessException("error_specificFinancialYearDateIsManatory");
-		
+
 	    byte[] bytes = MissionsService.getMissionBalanceInquiryBytes(hajjFlag, searchEmp, financialYear, specificFinancialYearDate);
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	}
+	} 
     }
 
     private boolean isRequesterAuthorized() throws BusinessException {
@@ -91,11 +85,7 @@ public class MissionBalanceInquiry extends BaseBacking {
 	    searchEmp = EmployeesService.getEmployeeData(empId);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    searchEmp = null;
-	    e.printStackTrace();
-	    super.setServerSideErrorMessages(getMessage("error_general"));
-	}
+	} 
     }
 
     public long getEmpId() {
