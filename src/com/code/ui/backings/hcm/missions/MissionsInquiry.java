@@ -53,10 +53,10 @@ public class MissionsInquiry extends BaseBacking {
 		} else if (mode == CategoryModesEnum.CIVILIANS.getCode()) {
 		    setScreenTitle(getMessage("title_personsMissionInquiry"));
 		} else {
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 		}
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	    decisionsPrivileges = SecurityService.getEmployeesDecisionsPrivileges(this.loginEmpData.getEmpId(), WFProcessesGroupsEnum.MISSIONS.getCode(), mode);
@@ -96,10 +96,6 @@ public class MissionsInquiry extends BaseBacking {
 	} catch (BusinessException e) {
 	    missionList = new ArrayList<MissionData>();
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    missionList = new ArrayList<MissionData>();
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 

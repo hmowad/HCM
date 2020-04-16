@@ -45,10 +45,10 @@ public class MissionClosing extends BaseBacking {
 	    } else if (mode == CategoryModesEnum.CIVILIANS.getCode()) {
 		setScreenTitle(getMessage("title_personsMissionClosing"));
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else {
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
 	}
 	resetForm();
 

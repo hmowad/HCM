@@ -36,7 +36,7 @@ public class MissionsWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -57,7 +57,7 @@ public class MissionsWS {
 	    MissionDetailData missionDetail = MissionsService.getMissionsDetailById(missionDetailId);
 
 	    if (missionDetail == null || missionDetail.getEmpId() != employeeId)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_integrationError"); // TODO: to be discussed
 
 	    MissionData mission = MissionsService.getMissionsById(missionDetail.getMissionId());
 	    byte[] bytes = MissionsService.getMissionDecisionBytes(mission.getId(), mission.getCategoryMode());
@@ -65,7 +65,7 @@ public class MissionsWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}

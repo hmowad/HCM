@@ -48,13 +48,13 @@ public class MissionsWorkFlowWS {
 
 	    WFTask wfTask = BaseWorkFlow.getWFTaskById(taskId);
 	    if (employeeId != wfTask.getAssigneeId())
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_integrationError"); // TODO: to be discussed
 
 	    WFMissionData wfMission = MissionsWorkFlow.getWFMissionByInstanceId(wfTask.getInstanceId());
 	    List<WFMissionDetailData> wfMissionDetailDataList = MissionsWorkFlow.getWFMissionDetailsByInstanceId(wfTask.getInstanceId());
 
 	    if (wfMission == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_integrationError"); // TODO: to be discussed
 
 	    response.setWfMission(wfMission);
 	    response.setWfMissionDetails(wfMissionDetailDataList);
@@ -62,7 +62,7 @@ public class MissionsWorkFlowWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -84,7 +84,7 @@ public class MissionsWorkFlowWS {
 
 	    WFTask dmTask = BaseWorkFlow.getWFTaskById(taskId);
 	    if (employeeId != dmTask.getAssigneeId() || dmTask.getAction() != null || !dmTask.getAssigneeWfRole().equals(WFTaskRolesEnum.DIRECT_MANAGER.getCode()))
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_integrationError"); // TODO: to be discussed
 
 	    if (!isApproved)
 		dmTask.setRefuseReasons(refuseReasons);
@@ -103,7 +103,7 @@ public class MissionsWorkFlowWS {
 	    if (e instanceof BusinessException)
 		response.setMessage(BaseService.getParameterizedMessage(e.getMessage(), ((BusinessException) e).getParams()));
 	    else
-		response.setMessage(BaseService.getMessage("error_general"));
+		response.setMessage(BaseService.getMessage("error_integrationError"));
 
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
@@ -127,7 +127,7 @@ public class MissionsWorkFlowWS {
 
 	    WFTask smTask = BaseWorkFlow.getWFTaskById(taskId);
 	    if (employeeId != smTask.getAssigneeId() || smTask.getAction() != null || !smTask.getAssigneeWfRole().equals(WFTaskRolesEnum.SIGN_MANAGER.getCode()))
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_integrationError"); // TODO: to be discussed
 
 	    if (notes != null && !notes.trim().isEmpty())
 		smTask.setNotes(notes);
@@ -145,7 +145,7 @@ public class MissionsWorkFlowWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -198,7 +198,7 @@ public class MissionsWorkFlowWS {
 		}
 	    }
 	    if (taskIdsSet.isEmpty())
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_integrationError"); // TODO: to be discussed
 	    Long[] selectedMissionRequestsInstanceIdsArray = new Long[selectedMissionRequestsInstanceIds.size()];
 	    wfMissionDetails = MissionsWorkFlow.getWFMissionDetailsByInstanceIds(selectedMissionRequestsInstanceIds.toArray(selectedMissionRequestsInstanceIdsArray));
 
@@ -238,7 +238,7 @@ public class MissionsWorkFlowWS {
 	    }
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -304,7 +304,7 @@ public class MissionsWorkFlowWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}

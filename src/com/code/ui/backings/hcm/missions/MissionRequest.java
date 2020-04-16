@@ -68,10 +68,10 @@ public class MissionRequest extends WFBaseBacking {
 		this.processId = WFProcessesEnum.CIVILIANS_MISSION.getCode();
 		setScreenTitle(getMessage("title_personsMissionView"));
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else {
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
 	}
 
 	this.init();
@@ -118,8 +118,6 @@ public class MissionRequest extends WFBaseBacking {
 	    messionRegions = CommonService.getAllRegions();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
 
     }
