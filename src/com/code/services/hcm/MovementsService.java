@@ -320,6 +320,7 @@ public class MovementsService extends BaseService {
     private static void doPayrollIntegration(List<MovementTransactionData> movementTransactions, Integer resendFlag, CustomSession session) throws BusinessException {
 	List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
 	Long adminDecision = null;
+	Boolean endDateFlag = false;
 	if (movementTransactions != null && movementTransactions.size() > 0) {
 	    if (movementTransactions.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 		if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.MOVE.getCode()) {
@@ -342,6 +343,7 @@ public class MovementsService extends BaseService {
 			else if (movementTransactions.get(0).getJoiningDate() != null)
 			    adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_JOINING_DATE_REQUEST.getCode();
 			else {
+			    endDateFlag = true;
 			    if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
 				if (movementTransactions.get(0).getRequestTransactionFlag().equals(FlagsEnum.ON.getCode()))
 				    adminDecision = AdminDecisionsEnum.OFFICERS_SUBJOIN_REQUEST.getCode();
@@ -352,6 +354,7 @@ public class MovementsService extends BaseService {
 			    }
 			}
 		    } else if (movementTransactions.get(0).getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()) {
+			endDateFlag = true;
 			if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
 			    if (movementTransactions.get(0).getRequestTransactionFlag().equals(FlagsEnum.ON.getCode()))
 				adminDecision = AdminDecisionsEnum.OFFICERS_EXTEND_SUBJOIN_REQUEST.getCode();
@@ -380,6 +383,7 @@ public class MovementsService extends BaseService {
 			}
 		    }
 		} else if (movementTransactions.get(0).getMovementTypeId().longValue() == MovementTypesEnum.ASSIGNMENT.getCode()) {
+		    endDateFlag = true;
 		    if (movementTransactions.get(0).getLocationFlag().intValue() == LocationFlagsEnum.INTERNAL.getCode()) {
 			adminDecision = AdminDecisionsEnum.OFFICERS_INTERNAL_ASSIGNMENT_DECISION_REQUEST.getCode();
 		    } else {
@@ -390,7 +394,7 @@ public class MovementsService extends BaseService {
 	    if (adminDecision != null) {
 		for (MovementTransactionData movementTransactionData : movementTransactions) {
 		    String gregStartDateString = movementTransactionData.getReturnJoiningDate() != null ? HijriDateService.hijriToGregDateString(movementTransactionData.getReturnJoiningDateString()) : movementTransactionData.getJoiningDate() != null ? HijriDateService.hijriToGregDateString(movementTransactionData.getJoiningDateString()) : HijriDateService.hijriToGregDateString(movementTransactionData.getExecutionDateString());
-		    String gregEndDateString = (movementTransactionData.getJoiningDate() != null || movementTransactionData.getReturnJoiningDate() != null) ? null : HijriDateService.hijriToGregDateString(movementTransactionData.getEndDateString());
+		    String gregEndDateString = endDateFlag ? HijriDateService.hijriToGregDateString(movementTransactionData.getEndDateString()) : null;
 		    EmployeeData employee = EmployeesService.getEmployeeData(movementTransactionData.getEmployeeId());
 		    String decisionNumber = (movementTransactionData.getJoiningDate() != null || movementTransactionData.getReturnJoiningDate() != null) ? System.currentTimeMillis() + "" : movementTransactionData.getDecisionNumber();
 		    String originalDecisionNumber = (movementTransactionData.getJoiningDate() != null || movementTransactionData.getReturnJoiningDate() != null) ? movementTransactionData.getDecisionNumber() : movementTransactionData.getBasedOnDecisionNumber();
