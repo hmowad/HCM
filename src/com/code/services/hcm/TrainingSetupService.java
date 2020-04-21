@@ -776,6 +776,18 @@ public class TrainingSetupService extends BaseService {
 	return result.size() > 0 ? result.get(0) : null;
     }
 
+    public static TrainingUnitData getTrainingUnitDataByTransactionDetailId(long trainingTransactionDetailId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_TRAINING_TRANSACTION_DETAIL_ID", trainingTransactionDetailId);
+	    List<TrainingUnitData> result = DataAccess.executeNamedQuery(TrainingUnitData.class, QueryNamesEnum.HCM_GET_TRAINING_UNIT_DATA_BY_TRAINING_TRANSACTION_DETAIL_ID.getCode(), qParams);
+	    return result == null || result.size() == 0 ? null : result.get(0);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
     private static List<TrainingUnitData> searchTrainingUnitsData(Long[] regionsIds, long allowedNominationRegionId, long unitId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();

@@ -17,6 +17,7 @@ import com.code.dal.orm.hcm.trainings.TrainingUnitData;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
+import com.code.enums.RegionsEnum;
 import com.code.enums.ReportNamesEnum;
 import com.code.enums.TraineeStatusEnum;
 import com.code.enums.TrainingCourseEventStatusEnum;
@@ -1153,9 +1154,13 @@ public class TrainingEmployeesService extends BaseService {
     /*---------------------------Reports------------------------------*/
     private static String getTraineeCertificateReportName(long trainingTransactionDetailId) throws BusinessException {
 	TrainingCourseData courseData = TrainingCoursesService.getTrainingCourseDataByTransactionDetailId(trainingTransactionDetailId);
-	if (courseData.getElectronicCertificateFlag() != null && courseData.getElectronicCertificateFlag().equals(FlagsEnum.ON.getCode()))
-	    return ReportNamesEnum.TRAINING_DECISION_TRAINEE_ELECTRONIC_CERTIFICATE.getCode();
-	else
+	if (courseData.getElectronicCertificateFlag() != null && courseData.getElectronicCertificateFlag().equals(FlagsEnum.ON.getCode())) {
+	    TrainingUnitData trainingUnitData = TrainingSetupService.getTrainingUnitDataByTransactionDetailId(trainingTransactionDetailId);
+	    if (trainingUnitData.getRegionId() != null && (trainingUnitData.getRegionId().equals(RegionsEnum.ACADEMY.getCode()) || trainingUnitData.getRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode())))
+		return ReportNamesEnum.TRAINING_DECISION_TRAINEE_ELECTRONIC_CERTIFICATE.getCode();
+	    else
+		throw new BusinessException("error_cantPrintElectronicGraduationCertificate");
+	} else
 	    return ReportNamesEnum.TRAINING_DECISION_TRAINEE_CERTIFICATE.getCode();
     }
 
@@ -1166,6 +1171,8 @@ public class TrainingEmployeesService extends BaseService {
 	    parameters.put("P_TRN_TRANSACTIONS_DTLS_ID", trainingTransactionDetailId);
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
