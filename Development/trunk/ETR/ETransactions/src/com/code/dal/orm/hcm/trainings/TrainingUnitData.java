@@ -22,7 +22,15 @@ import com.code.dal.orm.BaseEntity;
 		query = " select t from TrainingUnitData t " +
 			" where t.unitId not in ( " +
 			" select distinct (e.trainingUnitId) from TrainingCourseEventData e " +
-			" where (e.trainingYearId = :P_TRAINING_YEAR_ID )) ")
+			" where (e.trainingYearId = :P_TRAINING_YEAR_ID )) "),
+
+	@NamedQuery(name = "hcm_trainingUnitData_getTrainingUnitDataByTransactionDetailId",
+		query = "select tu from TrainingUnitData tu, TrainingCourseEvent ce, TrainingTransaction t, TrainingTransactionDetail td "
+			+ "where (td.trainingTransactionId = t.id) "
+			+ " and (t.courseEventId = ce.id) "
+			+ " and (ce.trainingUnitId = tu.id) "
+			+ "and (td.id = :P_TRAINING_TRANSACTION_DETAIL_ID) ")
+
 })
 
 @Entity

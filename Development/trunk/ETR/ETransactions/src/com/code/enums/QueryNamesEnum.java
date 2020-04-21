@@ -484,6 +484,7 @@ public enum QueryNamesEnum {
     HCM_SEARCH_TRAINING_YEARS("hcm_trainingYear_searchTrainingYears"),
     HCM_SEARCH_TRAINING_COURSES("hcm_trainingCourseData_searchTrainingCourseData"),
     HCM_GET_TRAINING_COURSE_BY_TRAINING_TRANSACTION_DETAIL_ID("hcm_trainingCourseData_getTrainingCourseDataByTransactionDetailId"),
+    HCM_GET_TRAINING_UNIT_DATA_BY_TRAINING_TRANSACTION_DETAIL_ID("hcm_trainingUnitData_getTrainingUnitDataByTransactionDetailId"),
     HCM_SEARCH_ANNUAL_COURSES("hcm_trainingAnnualCourseData_searchTrainingAnnualCourseData"),
     HCM_SEARCH_TRAINING_COURSES_EVENTS("hcm_trainingCourseEventData_searchTrainingCourseEventData"),
     HCM_SEARCH_MILITARY_TRAINING_COURSES_EVENTS_FOR_BROWSING("hcm_trainingCourseEventData_searchMilitaryTrainingCourseEventDataForBrowsing"),
