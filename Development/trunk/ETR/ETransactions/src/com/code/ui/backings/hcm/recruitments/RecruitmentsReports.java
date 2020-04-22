@@ -73,12 +73,12 @@ public class RecruitmentsReports extends BaseBacking implements Serializable {
 		    break;
 
 		default:
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 		}
 
 		resetForm();
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	} catch (BusinessException e) {

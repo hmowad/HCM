@@ -57,10 +57,10 @@ public class SoldiersRecruitment extends RecruitmentsBase implements Serializabl
 		this.processId = WFProcessesEnum.SOLDIERS_GRADUATION_LETTER_DECISION_RECRUITMENT.getCode();
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
 	init();
     }
 

@@ -60,7 +60,7 @@ public class ReRecruitment extends BaseBacking {
 		setScreenTitle(getMessage("title_civiliansRerecruitment"));
 		break;
 	    default:
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_URLError");
 	    }
 
 	    qualificationLevels = TrainingSetupService.getAllQualificationLevels();
@@ -77,7 +77,7 @@ public class ReRecruitment extends BaseBacking {
 	    employee = EmployeesService.getEmployeeData(employee.getEmpId());
 
 	    if (employee == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_UIError");
 	    else if (employee.getStatusId() != EmployeeStatusEnum.SERVICE_TERMINATED.getCode() && employee.getStatusId() != EmployeeStatusEnum.MOVED_EXTERNALLY.getCode()) {
 		throw new BusinessException("error_empShouldBeTerminatedOrMovedExternally");
 	    }
