@@ -133,6 +133,7 @@ public class VacationsService extends BaseService {
 			}
 		    }
 		} else if (request.getStatus() == RequestTypesEnum.MODIFY.getCode()) {
+		    request = VacationsService.getVacationById(request.getVacationId());
 		    originalVacationDecisionNumber = VacationsService.getVacationLogByVacationIdAndStatus(request.getVacationId(), RequestTypesEnum.NEW.getCode()).getDecisionNumber();
 		    if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
 			adminDecisionId = AdminDecisionsEnum.OFFICERS_MODIFY_REGULAR_VACATION_REQUEST.getCode();
@@ -144,6 +145,7 @@ public class VacationsService extends BaseService {
 			}
 		    }
 		} else if (request.getStatus() == RequestTypesEnum.CANCEL.getCode()) {
+		    request = VacationsService.getVacationById(request.getVacationId());
 		    originalVacationDecisionNumber = VacationsService.getVacationLogByVacationIdAndStatus(request.getVacationId(), RequestTypesEnum.NEW.getCode()).getDecisionNumber();
 		    if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
 			adminDecisionId = AdminDecisionsEnum.OFFICERS_CANCEL_REGULAR_VACATION_REQUEST.getCode();
