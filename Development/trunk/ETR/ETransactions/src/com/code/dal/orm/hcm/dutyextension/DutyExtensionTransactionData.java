@@ -11,6 +11,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 
 @NamedQueries({
 	@NamedQuery(name = "hcm_dutyExtensionTransactionData_searchDutyExtensionDataTransactions",
@@ -36,6 +38,11 @@ public class DutyExtensionTransactionData {
     private Integer transactionType;
     private Long basedOnExtensionId;
     private Date transactionDate;
+    private transient DutyExtensionTransaction dutyExtensionTransaction;
+
+    public DutyExtensionTransactionData() {
+	dutyExtensionTransaction = new DutyExtensionTransaction();
+    }
 
     @Id
     @Column(name = "ID")
@@ -45,6 +52,7 @@ public class DutyExtensionTransactionData {
 
     public void setId(Long id) {
 	this.id = id;
+	this.dutyExtensionTransaction.setId(id);
     }
 
     @Basic
@@ -55,6 +63,7 @@ public class DutyExtensionTransactionData {
 
     public void setEmpId(Long empId) {
 	this.empId = empId;
+	this.dutyExtensionTransaction.setEmpId(empId);
     }
 
     @Basic
@@ -65,6 +74,7 @@ public class DutyExtensionTransactionData {
 
     public void setServiceTerminationReasonId(Integer serviceTerminationReasonId) {
 	this.serviceTerminationReasonId = serviceTerminationReasonId;
+	this.dutyExtensionTransaction.setServiceTerminationReasonId(serviceTerminationReasonId);
     }
 
     @Basic
@@ -85,6 +95,7 @@ public class DutyExtensionTransactionData {
 
     public void setExtensionPeriodMonths(Integer extensionPeriodMonths) {
 	this.extensionPeriodMonths = extensionPeriodMonths;
+	this.dutyExtensionTransaction.setExtensionPeriodMonths(extensionPeriodMonths);
     }
 
     @Basic
@@ -95,6 +106,7 @@ public class DutyExtensionTransactionData {
 
     public void setExtensionReason(String extensionReason) {
 	this.extensionReason = extensionReason;
+	this.dutyExtensionTransaction.setExtensionReason(extensionReason);
     }
 
     @Basic
@@ -105,6 +117,7 @@ public class DutyExtensionTransactionData {
 
     public void setTransactionType(Integer transactionType) {
 	this.transactionType = transactionType;
+	this.dutyExtensionTransaction.setTransactionType(transactionType);
     }
 
     @Basic
@@ -115,6 +128,7 @@ public class DutyExtensionTransactionData {
 
     public void setBasedOnExtensionId(Long basedOnExtensionId) {
 	this.basedOnExtensionId = basedOnExtensionId;
+	this.dutyExtensionTransaction.setBasedOnExtensionId(basedOnExtensionId);
     }
 
     @Basic
@@ -126,6 +140,17 @@ public class DutyExtensionTransactionData {
 
     public void setTransactionDate(Date transactionDate) {
 	this.transactionDate = transactionDate;
+	this.dutyExtensionTransaction.setTransactionDate(transactionDate);
+    }
+
+    @Transient
+    @XmlTransient
+    public DutyExtensionTransaction getDutyExtensionTransaction() {
+	return dutyExtensionTransaction;
+    }
+
+    public void setDutyExtensionTransaction(DutyExtensionTransaction dutyExtensionTransaction) {
+	this.dutyExtensionTransaction = dutyExtensionTransaction;
     }
 
 }

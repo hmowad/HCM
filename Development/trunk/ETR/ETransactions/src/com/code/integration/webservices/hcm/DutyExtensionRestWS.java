@@ -14,12 +14,15 @@ import javax.ws.rs.core.Response.Status;
 
 import com.code.dal.orm.hcm.dutyextension.DutyExtensionTransaction;
 import com.code.dal.orm.hcm.dutyextension.DutyExtensionTransactionData;
+import com.code.enums.TransactionTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.integration.responses.hcm.WSTerminatedEmployeesResponse;
 import com.code.services.BaseService;
 import com.code.services.hcm.DutyExtensionService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import javassist.Modifier;
 
 @Path("/extension")
 public class DutyExtensionRestWS {
@@ -50,7 +53,7 @@ public class DutyExtensionRestWS {
 
 	try {
 	    DutyExtensionTransactionData dutyExtensionTransactionData = DutyExtensionService.getDutyExtensionTransactionDataByEmpId(employeeId);
-	    Gson gson = new GsonBuilder().serializeNulls().setDateFormat("mm/MM/yyyy").setPrettyPrinting().create();
+	    Gson gson = new GsonBuilder().serializeNulls().excludeFieldsWithModifiers(Modifier.TRANSIENT).setDateFormat("mm/MM/yyyy").setPrettyPrinting().create();
 	    return Response.status(Status.OK.getStatusCode()).entity(gson.toJson(dutyExtensionTransactionData == null ? "" : dutyExtensionTransactionData)).build();
 	} catch (Exception e) {
 	    if (e instanceof BusinessException)
@@ -68,7 +71,9 @@ public class DutyExtensionRestWS {
     public Response postDutyExtensionTransaction(String transaction) {
 	try {
 	    Gson gson = new GsonBuilder().setDateFormat("mm/MM/yyyy").setPrettyPrinting().create();
-	    DutyExtensionService.addExtensionTransaction(gson.fromJson(transaction, DutyExtensionTransaction.class));
+	    DutyExtensionTransaction dutyExtensionTransaction = gson.fromJson(transaction, DutyExtensionTransaction.class);
+	    dutyExtensionTransaction.setTransactionType(TransactionTypesEnum.DUTY_EXTENSION_TRANSACTION.getCode());
+	    DutyExtensionService.addExtensionTransaction(dutyExtensionTransaction);
 	    return Response.status(Status.OK.getStatusCode()).build();
 	} catch (Exception e) {
 	    if (e instanceof BusinessException)
@@ -86,7 +91,9 @@ public class DutyExtensionRestWS {
     public Response postDutyReExtensionTransaction(String transaction) {
 	try {
 	    Gson gson = new GsonBuilder().setDateFormat("mm/MM/yyyy").setPrettyPrinting().create();
-	    DutyExtensionService.addReExtensionTransaction(gson.fromJson(transaction, DutyExtensionTransaction.class));
+	    DutyExtensionTransaction dutyExtensionTransaction = gson.fromJson(transaction, DutyExtensionTransaction.class);
+	    dutyExtensionTransaction.setTransactionType(TransactionTypesEnum.DUTY_REEXTENSION_TRANSACTION.getCode());
+	    DutyExtensionService.addExtensionTransaction(dutyExtensionTransaction);
 	    return Response.status(Status.OK.getStatusCode()).build();
 	} catch (Exception e) {
 	    if (e instanceof BusinessException)

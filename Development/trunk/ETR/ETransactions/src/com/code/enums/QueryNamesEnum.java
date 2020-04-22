@@ -558,6 +558,7 @@ public enum QueryNamesEnum {
     HCM_GET_NON_EXECUTED_PAYROLL_INTEGRATION_FAILURE_LOG("hcm_payrollIntegrationFailureLog_getNonExecutedPayrollIntegrationFailureLog"),
 
     /* ******************************************* Incentives ****************************************************** */
+    HCM_INCENTIVE_GET_INCENTIVE_BY_ID("hcm_incentive_getIncentiveById"),
     HCM_INCENTIVE_PORT_GET_INCENTIVE_PORTS("hcm_incentivePort_getIncentivePorts"),
     HCM_GOVERNMENTAL_COMMITTEE_CATEGORY_GET_GOVERNMENTAL_COMMITTEES_CATEGORIES("hcm_governmentalCommitteeCategory_getGovernmentalCommitteesCategories");
 

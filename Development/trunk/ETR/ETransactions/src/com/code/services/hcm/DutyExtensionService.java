@@ -1,23 +1,30 @@
 package com.code.services.hcm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.dutyextension.DutyExtensionTransaction;
 import com.code.dal.orm.hcm.dutyextension.DutyExtensionTransactionData;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.dal.orm.hcm.terminations.TerminationTransactionData;
+import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.TransactionTypesEnum;
+import com.code.enums.UnitTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.integration.responses.hcm.WSTerminatedEmployeesResponse;
+import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
 import com.code.services.BaseService;
+import com.code.services.integration.PayrollEngineService;
+import com.code.services.util.HijriDateService;
 
 public class DutyExtensionService extends BaseService {
 
@@ -46,16 +53,53 @@ public class DutyExtensionService extends BaseService {
 	return (result == null || result.size() == 0) ? null : result.get(0);
     }
 
-    public static void addExtensionTransaction(DutyExtensionTransaction dutyExtensionTransaction) throws DatabaseException, BusinessException {
-	dutyExtensionTransaction.setTransactionType(TransactionTypesEnum.DUTY_EXTENSION_TRANSACTION.getCode());
-	validateExtensionTransaction(dutyExtensionTransaction);
-	DataAccess.addEntity(dutyExtensionTransaction);
+    public static DutyExtensionTransactionData getDutyExtensionTransactionDataById(Long id) throws DatabaseException {
+	List<DutyExtensionTransactionData> result = searchDutyExtensionTransactionData(id, null, null, null);
+	return (result == null || result.size() == 0) ? null : result.get(0);
     }
 
-    public static void addReExtensionTransaction(DutyExtensionTransaction dutyExtensionTransaction) throws DatabaseException, BusinessException {
-	dutyExtensionTransaction.setTransactionType(TransactionTypesEnum.DUTY_REEXTENSION_TRANSACTION.getCode());
-	validateExtensionTransaction(dutyExtensionTransaction);
-	DataAccess.addEntity(dutyExtensionTransaction);
+    public static void addExtensionTransaction(DutyExtensionTransaction dutyExtensionTransaction) throws DatabaseException, BusinessException {
+	CustomSession session = DataAccess.getSession();
+	try {
+	    session.beginTransaction();
+	    validateExtensionTransaction(dutyExtensionTransaction);
+	    DataAccess.addEntity(dutyExtensionTransaction, session);
+	    doPayrollIntegration(dutyExtensionTransaction, FlagsEnum.OFF.getCode(), session);
+	    session.commitTransaction();
+	} catch (Exception e) {
+	    session.rollbackTransaction();
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+	    throw new DatabaseException(e.getMessage());
+	} finally {
+	    session.close();
+	}
+
+    }
+
+    public static void payrollIntegrationFailureHandle(Long transactionId, CustomSession session) throws DatabaseException, BusinessException {
+	DutyExtensionTransactionData dutyExtensionTransactionData = getDutyExtensionTransactionDataById(transactionId);
+	if (dutyExtensionTransactionData == null)
+	    throw new BusinessException("error_transactionDataRetrievingError");
+	doPayrollIntegration(dutyExtensionTransactionData.getDutyExtensionTransaction(), FlagsEnum.ON.getCode(), session);
+    }
+
+    private static void doPayrollIntegration(DutyExtensionTransaction dutyExtensionTransaction, int resendFlag, CustomSession session) throws BusinessException {
+	Long adminDecisionId = null;
+	if (dutyExtensionTransaction.getTransactionType().equals(TransactionTypesEnum.DUTY_EXTENSION_TRANSACTION.getCode()))
+	    adminDecisionId = AdminDecisionsEnum.DUTY_EXTENSION.getCode();
+	else if (dutyExtensionTransaction.getTransactionType().equals(TransactionTypesEnum.DUTY_REEXTENSION_TRANSACTION.getCode()))
+	    adminDecisionId = AdminDecisionsEnum.DUTY_REEXTENSION.getCode();
+
+	if (adminDecisionId != null) {
+	    String gregTransactionDateString = HijriDateService.hijriToGregDateString(HijriDateService.getHijriDateString(dutyExtensionTransaction.getTransactionDate()));
+	    EmployeeData employee = EmployeesService.getEmployeeData(dutyExtensionTransaction.getEmpId());
+	    if (employee == null)
+		throw new BusinessException("error_employeeDataError");
+	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), dutyExtensionTransaction.getId(), dutyExtensionTransaction.getBasedOnExtensionId(), gregTransactionDateString, null, System.currentTimeMillis() + "", null)));
+	    session.flushTransaction();
+	    PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregTransactionDateString, adminDecisionEmployeeDataList, UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId(), gregTransactionDateString, DataAccess.getTableName(DutyExtensionTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
+	}
     }
 
     private static void validateExtensionTransaction(DutyExtensionTransaction dutyExtensionTransaction) throws BusinessException {
