@@ -89,7 +89,7 @@ public class RecruitmentByExternalMove extends BaseBacking {
 		}
 		break;
 	    default:
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_URLError");
 	    }
 
 	    officersGraduationGroupPlaces = CommonService.getAllGraduationGroupPlaces();
@@ -109,7 +109,7 @@ public class RecruitmentByExternalMove extends BaseBacking {
 	    employee = EmployeesService.getEmployeeData(employee.getEmpId());
 
 	    if (employee == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_UIError");
 	    // TODO check on moved externally also
 	    else {
 		if (employee.getCategoryId() == CategoriesEnum.CONTRACTORS.getCode()) {

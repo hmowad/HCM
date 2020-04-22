@@ -67,11 +67,11 @@ public class RecruitmentsInquiry extends BaseBacking implements Serializable {
 		    categories = CommonService.getPersonsCategories();
 		    break;
 		default:
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 		}
 
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	    categoryId = new Long(-1);
@@ -92,7 +92,8 @@ public class RecruitmentsInquiry extends BaseBacking implements Serializable {
 	    if (!SecurityService.isDecisionPrivilegeGranted(this.loginEmpData, employeeId, decisionsPrivileges))
 		throw new BusinessException("error_notAuthorized");
 
-	    recruitmentsTransactions = RecruitmentsService.getRecruitmentTransactions(categoryId.longValue() == -1 ? categoriesIds : new Long[] { categoryId }, employeeId == null ? FlagsEnum.ALL.getCode() : employeeId, decisionNumber, basedOnOrderNumber, decisionDateFrom, decisionDateTo, graduationGroupNumber == null ? FlagsEnum.ALL.getCode() : graduationGroupNumber, graduationGroupPlace == null ? FlagsEnum.ALL.getCode() : graduationGroupPlace, regionId, recruitmentType == FlagsEnum.ALL.getCode() ? null : new Integer[]{recruitmentType});
+	    recruitmentsTransactions = RecruitmentsService.getRecruitmentTransactions(categoryId.longValue() == -1 ? categoriesIds : new Long[] { categoryId }, employeeId == null ? FlagsEnum.ALL.getCode() : employeeId, decisionNumber, basedOnOrderNumber, decisionDateFrom, decisionDateTo, graduationGroupNumber == null ? FlagsEnum.ALL.getCode() : graduationGroupNumber, graduationGroupPlace == null ? FlagsEnum.ALL.getCode() : graduationGroupPlace, regionId,
+		    recruitmentType == FlagsEnum.ALL.getCode() ? null : new Integer[] { recruitmentType });
 
 	} catch (BusinessException e) {
 	    recruitmentsTransactions = new ArrayList<RecruitmentTransactionData>();

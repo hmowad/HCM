@@ -66,7 +66,7 @@ public class RecruitmentsService extends BaseService {
      */
     public static void addRecruitmentWish(RecruitmentWishData recruitmentWishData, CustomSession... useSession) throws BusinessException {
 	if (recruitmentWishData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	validateRecruitmentWish(recruitmentWishData);
 
@@ -114,7 +114,7 @@ public class RecruitmentsService extends BaseService {
      */
     public static void updateRecruitmentWish(RecruitmentWishData recruitmentWishData, CustomSession... useSession) throws BusinessException {
 	if (recruitmentWishData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	validateRecruitmentWish(recruitmentWishData);
 
@@ -159,7 +159,7 @@ public class RecruitmentsService extends BaseService {
     public static RecruitmentWishData constructRecruitmentWishByEmpId(long employeeId) throws BusinessException {
 	EmployeeData employeeData = EmployeesService.getEmployeeData(employeeId);
 	if (employeeData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	RecruitmentWishData recWish = new RecruitmentWishData();
 	recWish.setEmpId(employeeId);
@@ -368,7 +368,7 @@ public class RecruitmentsService extends BaseService {
      */
     public static void addRecruitmentDistribution(RecruitmentDistributionData recruitmentDistributionData, CustomSession... useSession) throws BusinessException {
 	if (recruitmentDistributionData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	validateRecruitmentDistribution(recruitmentDistributionData);
 
@@ -416,7 +416,7 @@ public class RecruitmentsService extends BaseService {
      */
     public static void updateRecruitmentDistribution(RecruitmentDistributionData recruitmentDistributionData, CustomSession... useSession) throws BusinessException {
 	if (recruitmentDistributionData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	validateRecruitmentDistribution(recruitmentDistributionData);
 
@@ -738,7 +738,7 @@ public class RecruitmentsService extends BaseService {
     public static void updateRecruitmentTransactionJoiningDate(long recTransactionId, Date joiningDate, long loginUserId, CustomSession... useSession) throws BusinessException {
 	RecruitmentTransactionData recTransactionData = getRecruitmentTransactionById(recTransactionId);
 	if (recTransactionData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (joiningDate == null || !HijriDateService.isValidHijriDate(joiningDate))
 	    throw new BusinessException("error_invalidHijriDate");
@@ -949,7 +949,7 @@ public class RecruitmentsService extends BaseService {
     }
 
     public static void payrollIntegrationFailureHandle(String decisionNumber, Date decisionDate, CustomSession session) throws BusinessException {
-	List<RecruitmentTransactionData> recruitmentTransactionDataList = getRecruitmentTransactionsByDecisionNumberAndDecisionDate(decisionNumber, decisionDate, decisionDate,null);
+	List<RecruitmentTransactionData> recruitmentTransactionDataList = getRecruitmentTransactionsByDecisionNumberAndDecisionDate(decisionNumber, decisionDate, decisionDate, null);
 	if (recruitmentTransactionDataList != null && recruitmentTransactionDataList.size() != 0) {
 	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
 		doPayrollIntegration(recruitmentTransactionDataList, FlagsEnum.ON.getCode(), session);
@@ -1053,7 +1053,7 @@ public class RecruitmentsService extends BaseService {
 	if (jobId != null) {
 	    JobData job = JobsService.getJobById(jobId);
 	    if (job == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    if (job.getStatus().intValue() != JobStatusEnum.VACANT.getCode())
 		throw new BusinessException("error_recAllowedOnVacantJobsOnly");
@@ -1159,8 +1159,10 @@ public class RecruitmentsService extends BaseService {
 
 	    EmployeeData employee = EmployeesService.getEmployeeData(recruitmentTransactions.get(i).getEmployeeId());
 	    JobData job = JobsService.getJobById(recruitmentTransactions.get(i).getJobId());
-	    if (employee == null || job == null)
-		throw new BusinessException("error_general");
+	    if (employee == null)
+		throw new BusinessException("error_employeeDataError");
+	    if (job == null)
+		throw new BusinessException("error_transactionDataError");
 
 	    long empStatusId = employee.getStatusId().longValue();
 	    if (empStatusId != EmployeeStatusEnum.UNDER_RECRUITMENT.getCode() && empStatusId != EmployeeStatusEnum.NEW_STUDENT_SOLDIER.getCode() && empStatusId != EmployeeStatusEnum.NEW_STUDENT_RANKED_SOLDIER.getCode() && empStatusId != EmployeeStatusEnum.ON_DUTY_UNDER_RECRUITMENT.getCode())
@@ -1278,7 +1280,7 @@ public class RecruitmentsService extends BaseService {
 	    throw e;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1294,7 +1296,7 @@ public class RecruitmentsService extends BaseService {
 	    return getReportData(ReportNamesEnum.RECRUITMENT_SOLDIERS_COUNT_STATEMENT.getCode(), new HashMap<String, Object>());
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1318,7 +1320,7 @@ public class RecruitmentsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1362,7 +1364,7 @@ public class RecruitmentsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1391,7 +1393,7 @@ public class RecruitmentsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1420,7 +1422,7 @@ public class RecruitmentsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1854,7 +1856,7 @@ public class RecruitmentsService extends BaseService {
     private static void validateReRecruitmentTransaction(RecruitmentTransactionData recruitmentTransaction, EmployeeData empData, EmployeeQualificationsData employeeQualificationsData, int existingEmployee) throws BusinessException {
 	// Mandatory Fields
 	if (empData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 	if ((recruitmentTransaction.getRecruitmentType() == RecruitmentTypeEnum.RE_RECRUITMENT.getCode() && empData.getEmpId() == null)
 		|| (recruitmentTransaction.getRecruitmentType() == RecruitmentTypeEnum.RECRUITMENT_BY_EXTERNAL_MOVE.getCode() && empData.getEmpId() == null && existingEmployee == FlagsEnum.ON.getCode()))
 	    throw new BusinessException("error_empSelectionManadatory");

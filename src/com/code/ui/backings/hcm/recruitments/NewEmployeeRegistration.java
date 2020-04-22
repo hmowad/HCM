@@ -73,7 +73,7 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 		insertModeInit();
 
 	    else
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_URLError");
 
 	    commonInit();
 	} catch (BusinessException e) {
@@ -86,14 +86,27 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 	updateMode = false;
 	mode = Integer.parseInt(getRequest().getParameter("mode"));
 
-	if (mode == 1 && SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_OFFICER_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_INSERT_OFFICERS.getCode())) {
-	    categoryId = CategoriesEnum.OFFICERS.getCode();
-	} else if (mode == 2 && SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_SOLDIER_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_INSERT_SOLDIERS.getCode())) {
-	    categoryId = CategoriesEnum.SOLDIERS.getCode();
-	} else if (mode == 3 && SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_CIVILIAN_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_INSERT_CIVILIANS.getCode())) {
-	    // !!
+	if (mode == 1) {
+	    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_OFFICER_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_INSERT_OFFICERS.getCode())) {
+		categoryId = CategoriesEnum.OFFICERS.getCode();
+	    } else {
+		throw new BusinessException("error_notAuthorized");
+	    }
+	} else if (mode == 2) {
+	    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_SOLDIER_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_INSERT_SOLDIERS.getCode())) {
+		categoryId = CategoriesEnum.SOLDIERS.getCode();
+	    } else {
+		throw new BusinessException("error_notAuthorized");
+	    }
+	} else if (mode == 3) {
+	    if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_CIVILIAN_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_INSERT_CIVILIANS.getCode())) {
+		// !!
+	    } else {
+		throw new BusinessException("error_notAuthorized");
+	    }
+
 	} else {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_URLError");
 	}
 
     }
@@ -102,7 +115,7 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 	updateMode = true;
 	employee = EmployeesService.getEmployeeData(Long.parseLong(getRequest().getParameter("employeeId")));
 	if (employee == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	employeeQualificationsData = EmployeesService.getEmployeeQualificationsByEmpId(employee.getEmpId());
 
@@ -115,7 +128,7 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 	    else if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_OFFICER_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_SHOW_OFFICERS.getCode()))
 		viewOnly = true;
 	    else
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_notAuthorized");
 
 	    mode = CategoryModesEnum.OFFICERS.getCode();
 	} else if (categoryId == CategoriesEnum.SOLDIERS.getCode()) {
@@ -126,7 +139,7 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 		    (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_SOLDIER_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_SHOW_FEMALE_SOLDIERS.getCode()) && GendersEnum.FEMALE.getCode().equals(employee.getGender())))
 		viewOnly = true;
 	    else
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_notAuthorized");
 
 	    mode = CategoryModesEnum.SOLDIERS.getCode();
 	} else {
@@ -137,7 +150,7 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 		    (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.REC_NEW_CIVILIAN_REGISTRATION.getCode(), MenuActionsEnum.REC_EMPS_REGISTRATION_SHOW_FEMALE_CIVILIANS.getCode()) && GendersEnum.FEMALE.getCode().equals(employee.getGender())))
 		viewOnly = true;
 	    else
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_notAuthorized");
 
 	    mode = CategoryModesEnum.CIVILIANS.getCode();
 	}
@@ -171,7 +184,7 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 
 	    break;
 	default:
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_URLError");
 	}
 
 	qualificationLevels = TrainingSetupService.getAllQualificationLevels();

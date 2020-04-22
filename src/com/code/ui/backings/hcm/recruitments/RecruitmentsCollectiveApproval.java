@@ -36,12 +36,8 @@ public class RecruitmentsCollectiveApproval extends BaseBacking implements Seria
     public RecruitmentsCollectiveApproval() {
 	super();
 	this.setScreenTitle(getMessage("title_recruitmentsCollectiveApproval"));
-	try {
-	    // Load the recruitments tasks data
-	    searchRecruitmentTasks();
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	}
+	// Load the recruitments tasks data
+	searchRecruitmentTasks();
     }
 
     // Load the recruitments tasks data
@@ -112,7 +108,8 @@ public class RecruitmentsCollectiveApproval extends BaseBacking implements Seria
 	    searchRecruitmentTasks();
 
 	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    e.printStackTrace();
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 

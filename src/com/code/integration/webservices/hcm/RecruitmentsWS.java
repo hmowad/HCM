@@ -91,7 +91,7 @@ public class RecruitmentsWS {
 	    System.out.println("****************************************************** migrateSoldiers ******************************************************");
 	    e.printStackTrace();
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage("error_general"));
+	    response.setMessage(BaseService.getMessage("error_integrationError"));
 	}
 
 	return response;
@@ -147,7 +147,7 @@ public class RecruitmentsWS {
 	    System.out.println("****************************************************** migrateRecruitmentsWishesAndDegrees ******************************************************");
 	    e.printStackTrace();
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage("error_general"));
+	    response.setMessage(BaseService.getMessage("error_integrationError"));
 	}
 
 	return response;

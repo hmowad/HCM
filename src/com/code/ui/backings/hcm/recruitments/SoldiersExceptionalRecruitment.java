@@ -62,12 +62,12 @@ public class SoldiersExceptionalRecruitment extends RecruitmentsBase implements 
 		recruitmentClass = RecruitmentClassesEnum.INSPECTORS_EXCEPTIONAL_RECRUITMENT.getCode();
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	    init();
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     public void init() {
@@ -106,7 +106,7 @@ public class SoldiersExceptionalRecruitment extends RecruitmentsBase implements 
 
 	    employee = EmployeesService.getEmployeeData(selectedEmpId);
 	    if (employee == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_UIError");
 
 	    if (processId == WFProcessesEnum.SOLDIERS_SOLDIER_OR_FIRST_SOLDIER_EXCEPTIONAL_RECRUITMENT.getCode())
 		instituteOrTrainingCenterUnitHKey = UnitsService.getUnitById(employee.getRecTrainingUnitId()).gethKey();

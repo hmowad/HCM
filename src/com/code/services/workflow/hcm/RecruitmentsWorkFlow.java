@@ -410,7 +410,7 @@ public class RecruitmentsWorkFlow extends BaseWorkFlow {
 		} else {
 		    JobData jobData = JobsService.getJobById(recRequests.get(0).getJobId());
 		    if (jobData == null)
-			throw new BusinessException("error_general");
+			throw new BusinessException("error_transactionDataError");
 
 		    UnitData directedToUnit = UnitsService.getAncestorUnderPresidencyByLevel(jobData.getUnitId(), UnitsAncestorsLevelsEnum.LEVEL_TWO.getCode());
 		    if (directedToUnit == null || directedToUnit.getOfficialManagerId() == null)
@@ -450,7 +450,7 @@ public class RecruitmentsWorkFlow extends BaseWorkFlow {
 	    } else if (processId == WFProcessesEnum.MEDICAL_STAFF_RECRUITMENT.getCode()) {
 		recruitmentClass = RecruitmentClassesEnum.MEDICAL_STAFF_RECRUITMENT.getCode();
 	    } else {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 	    }
 
 	    for (WFRecruitmentData recRequest : recRequests) {
@@ -480,7 +480,7 @@ public class RecruitmentsWorkFlow extends BaseWorkFlow {
 
 		EmployeeData directManagerOfDecisionApprovedEmployee = EmployeesService.getEmployeeDirectManager(recRequest.getDecisionApprovedId());
 		if (directManagerOfDecisionApprovedEmployee == null)
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_employeeDataError");
 		recTransaction.setOriginalDecisionApprovedId(directManagerOfDecisionApprovedEmployee.getEmpId());
 
 		recTransaction.setEtrFlag(FlagsEnum.ON.getCode());
@@ -544,7 +544,7 @@ public class RecruitmentsWorkFlow extends BaseWorkFlow {
     public static WFRecruitmentData constructOfficersWFRecruitment(long processId, Long empId, String basedOnOrderNumber, Date basedOnOrderDate) throws BusinessException {
 	EmployeeData employee = EmployeesService.getEmployeeData(empId);
 	if (employee == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 	return constructWFRecruitment(processId, employee, basedOnOrderNumber, basedOnOrderDate, null, null, null, null, null, null, null);
     }
 
@@ -574,7 +574,7 @@ public class RecruitmentsWorkFlow extends BaseWorkFlow {
     public static WFRecruitmentData constructSoldiersWFRecruitment(long processId, Long empId, String basedOnOrderNumber, Date basedOnOrderDate, Long regionId, Long rankId, Long degreeId, Date recruitmentDate, Integer QualificationLevelReward, JobData jobData) throws BusinessException {
 	EmployeeData employee = EmployeesService.getEmployeeData(empId);
 	if (employee == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 	return constructWFRecruitment(processId, employee, basedOnOrderNumber, basedOnOrderDate, null, regionId, rankId, degreeId, recruitmentDate, QualificationLevelReward, jobData);
     }
 
@@ -601,7 +601,7 @@ public class RecruitmentsWorkFlow extends BaseWorkFlow {
     public static WFRecruitmentData constructCiviliansWFRecruitment(long processId, Long empId, String basedOnOrderNumber, Date basedOnOrderDate, String basedOn) throws BusinessException {
 	EmployeeData employee = EmployeesService.getEmployeeData(empId);
 	if (employee == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 	return constructWFRecruitment(processId, employee, basedOnOrderNumber, basedOnOrderDate, basedOn, null, null, null, null, null, null);
     }
 
@@ -786,17 +786,17 @@ public class RecruitmentsWorkFlow extends BaseWorkFlow {
     public static EmployeeData getMilitaryAffairsUnitManager(long regionId) throws BusinessException {
 	WFPosition position = getWFPosition(WFPositionsEnum.REGION_OFFICERS_AFFAIRS_UNIT_MANAGER.getCode(), regionId);
 	if (position == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_positionNotFound");
 	}
 
 	EmployeeData emp = EmployeesService.getEmployeeByPosition(position.getUnitId(), position.getEmpId());
 	if (emp == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 	}
 
 	EmployeeData militaryAffairsUnitManager = EmployeesService.getEmployeeDirectManager(emp.getEmpId());
 	if (militaryAffairsUnitManager == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 	}
 
 	return militaryAffairsUnitManager;
@@ -907,6 +907,7 @@ public class RecruitmentsWorkFlow extends BaseWorkFlow {
 	    qParams.put("P_PROCESS_GROUP_ID", WFProcessesGroupsEnum.RECRUITMENTS.getCode());
 	    return DataAccess.executeNamedQuery(Object.class, QueryNamesEnum.WF_GET_WFRECRUITMENT_TASKS.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -959,7 +960,7 @@ public class RecruitmentsWorkFlow extends BaseWorkFlow {
 
 	    EmployeeData emp = EmployeesService.getEmployeeData(recRequests.get(i).getEmployeeId());
 	    if (emp == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 
 	    long empStatusId = emp.getStatusId().longValue();
 	    if (emp.getCategoryId() == CategoriesEnum.SOLDIERS.getCode()) {
@@ -974,7 +975,7 @@ public class RecruitmentsWorkFlow extends BaseWorkFlow {
 
 		JobData job = JobsService.getJobById(recRequests.get(i).getJobId());
 		if (job == null)
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_transactionDataError");
 
 		if (recRequests.get(i).getEmpRecruitmentRankId().longValue() != job.getRankId().longValue())
 		    throw new BusinessException("error_jobsAreNotSuitableForSoldiers");
@@ -1197,7 +1198,7 @@ public class RecruitmentsWorkFlow extends BaseWorkFlow {
 	else if (processId == WFProcessesEnum.SOLDIERS_GRADUATION_LETTER_DECISION_RECRUITMENT.getCode())
 	    statusId = EmployeeStatusEnum.ON_DUTY_UNDER_RECRUITMENT.getCode();
 	else
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	List<EmployeeData> matchingSoldiers = EmployeesService.getSoldiersByRecruitmentInfo(new Long[] { statusId }, rankId, regionId == null ? (long) FlagsEnum.ALL.getCode() : regionId, trainingUnitId == null ? (long) FlagsEnum.ALL.getCode() : trainingUnitId, "M", FlagsEnum.OFF.getCode());
 

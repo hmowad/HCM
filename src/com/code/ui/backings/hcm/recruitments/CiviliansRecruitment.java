@@ -49,11 +49,11 @@ public class CiviliansRecruitment extends RecruitmentsBase implements Serializab
 		this.processId = WFProcessesEnum.MEDICAL_STAFF_RECRUITMENT.getCode();
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	    this.init();
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     public void init() {
