@@ -70,7 +70,22 @@ public enum AdminDecisionsEnum {
     OFFICERS_PROMOTION_REPORT(50),
 
     /****************************************** Raises ********************************************/
-    OFFICERS_ANNUAL_RAISE(48);
+    OFFICERS_ANNUAL_RAISE(48),
+
+    /****************************************** Duty Extension ********************************************/
+    DUTY_EXTENSION(16),
+    DUTY_REEXTENSION(17),
+
+    /****************************************** Incentives ********************************************/
+    FINANCIAL_LOSS_COMPENSATION(67),
+    ADVISORY_COUNCILS(68),
+    GOVERNMENTAL_COMMITTEES(69),
+    DRUGS_DESTRUCTION(70),
+    TEST_COMMITTEES(71),
+    HAJJ(72),
+    COMPUTER(73),
+    MILITARY_VACATIONS(74),
+    MISSIONS_DIFFERENCES(75);
 
     private long code;
 

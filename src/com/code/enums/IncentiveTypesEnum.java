@@ -12,13 +12,13 @@ public enum IncentiveTypesEnum {
     MILITARY_VACATIONS(8),
     MISSIONS_DIFFERENCES(9);
 
-    private int code;
+    private long code;
 
-    private IncentiveTypesEnum(int code) {
+    private IncentiveTypesEnum(long code) {
 	this.code = code;
     }
 
-    public int getCode() {
+    public long getCode() {
 	return code;
     }
 }

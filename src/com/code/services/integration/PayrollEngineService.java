@@ -14,7 +14,9 @@ import javax.json.JsonReader;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
+import com.code.dal.orm.hcm.dutyextension.DutyExtensionTransaction;
 import com.code.dal.orm.hcm.employees.Employee;
+import com.code.dal.orm.hcm.incentives.IncentiveTransaction;
 import com.code.dal.orm.hcm.movements.MovementTransaction;
 import com.code.dal.orm.hcm.promotions.PromotionTransaction;
 import com.code.dal.orm.hcm.raises.RaiseTransaction;
@@ -40,8 +42,10 @@ import com.code.integration.responses.payroll.AdminDecisionVariable;
 import com.code.integration.webservicesclients.payroll.PayrollRestClient;
 import com.code.services.BaseService;
 import com.code.services.config.ETRConfigurationService;
+import com.code.services.hcm.DutyExtensionService;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.FutureVacationsService;
+import com.code.services.hcm.IncentivesService;
 import com.code.services.hcm.MovementsService;
 import com.code.services.hcm.PromotionsService;
 import com.code.services.hcm.RaisesService;
@@ -256,6 +260,10 @@ public class PayrollEngineService extends BaseService {
 		VacationsService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getDecisionDate(), payrollIntegrationFailureLogData.getDecisionNumber(), session);
 	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(TransientVacationTransaction.class))) {
 		FutureVacationsService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getDecisionDate(), payrollIntegrationFailureLogData.getDecisionNumber(), session);
+	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(DutyExtensionTransaction.class))) {
+		DutyExtensionService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getRowId(), session);
+	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(IncentiveTransaction.class))) {
+		IncentivesService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getRowId(), session);
 	    }
 
 	    payrollIntegrationFailureLogData.setExecutedFlag(FlagsEnum.ON.getCode());

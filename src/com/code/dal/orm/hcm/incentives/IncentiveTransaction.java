@@ -7,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -14,6 +16,12 @@ import javax.persistence.TemporalType;
 
 import com.code.dal.orm.BaseEntity;
 
+@NamedQueries({
+	@NamedQuery(name = "hcm_incentive_getIncentiveById",
+		query = " select i" +
+			" from IncentiveTransaction i" +
+			" where i.id = :P_ID ")
+})
 @Entity
 @Table(name = "HCM_INC_TRANSCATIONS")
 public class IncentiveTransaction extends BaseEntity {
