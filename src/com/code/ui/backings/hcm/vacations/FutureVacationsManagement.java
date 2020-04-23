@@ -56,7 +56,7 @@ public class FutureVacationsManagement extends FutureVacationBase {
 		validateExternalEmployeesAdmins();
 		break;
 	    default:
-		this.setServerSideErrorMessages(this.getMessage("error_general"));
+		this.setServerSideErrorMessages(this.getMessage("error_URLError"));
 	    }
 	} catch (BusinessException e) {
 	    e.printStackTrace();

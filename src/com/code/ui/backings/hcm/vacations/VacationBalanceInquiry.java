@@ -52,9 +52,6 @@ public class VacationBalanceInquiry extends BaseBacking implements Serializable 
 	    inquiryBalance();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    super.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 
@@ -73,9 +70,6 @@ public class VacationBalanceInquiry extends BaseBacking implements Serializable 
 
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 

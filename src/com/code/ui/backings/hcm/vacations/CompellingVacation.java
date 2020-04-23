@@ -43,9 +43,6 @@ public class CompellingVacation extends VacationBase {
 	    this.getBeneficiaryPanelTitle();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(this.getParameterizedMessage(e.getMessage(), e.getParams()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(this.getMessage("error_general"));
 	}
     }
 
@@ -82,7 +79,7 @@ public class CompellingVacation extends VacationBase {
 		    this.setScreenTitle(this.getMessage("title_contractorsWithoutSalaryVacation"));
 		    break;
 		default:
-		    this.setServerSideErrorMessages(this.getMessage("error_general"));
+		    this.setServerSideErrorMessages(this.getMessage("error_URLError"));
 		}
 	    } else {
 		switch (this.vacationMode) {
@@ -111,7 +108,7 @@ public class CompellingVacation extends VacationBase {
 		    this.employeeIds = FlagsEnum.ALL.getCode() + "";
 		    break;
 		default:
-		    this.setServerSideErrorMessages(this.getMessage("error_general"));
+		    this.setServerSideErrorMessages(this.getMessage("error_URLError"));
 		}
 	    }
 	} catch (BusinessException e) {

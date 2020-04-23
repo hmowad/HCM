@@ -43,9 +43,6 @@ public class ManyVacations extends VacationBase {
 	    this.getBeneficiaryPanelTitle();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(this.getParameterizedMessage(e.getMessage(), e.getParams()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(this.getMessage("error_general"));
 	}
     }
 
@@ -150,7 +147,7 @@ public class ManyVacations extends VacationBase {
 		    super.setScreenTitle(getMessage("title_employeesNewBabyVacation"));
 		    break;
 		default:
-		    this.setServerSideErrorMessages(this.getMessage("error_general"));
+		    this.setServerSideErrorMessages(this.getMessage("error_URLError"));
 		}
 	    } else {
 		switch (this.vacationMode) {
@@ -275,12 +272,12 @@ public class ManyVacations extends VacationBase {
 		    this.employeeIds = FlagsEnum.ALL.getCode() + "";
 		    break;
 		default:
-		    this.setServerSideErrorMessages(this.getMessage("error_general"));
+		    this.setServerSideErrorMessages(this.getMessage("error_URLError"));
 		}
 	    }
-	} catch (Exception e) {
+	} catch (BusinessException e) {
 	    e.printStackTrace();
-	    this.setServerSideErrorMessages(this.getMessage("error_general"));
+	    this.setServerSideErrorMessages(e.getMessage());
 	}
     }
 

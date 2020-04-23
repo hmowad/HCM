@@ -357,7 +357,7 @@ public class VacationsBusinessRulesService extends BaseService {
 	try {
 	    if (!(CategoriesEnum.CONTRACTORS.getCode() == vacationBeneficiary.getCategoryId() && VacationTypesEnum.REGULAR.getCode() == request.getVacationTypeId()
 		    && (RequestTypesEnum.NEW.getCode() == request.getStatus() || RequestTypesEnum.MODIFY.getCode() == request.getStatus())))
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    if (vacationBeneficiary.getRecruitmentDate() == null)
 		throw new BusinessException("error_empRecruitmentDateMandatoryForVacations");
@@ -1460,7 +1460,7 @@ public class VacationsBusinessRulesService extends BaseService {
     protected static void validateModifyAndCancelEVacation(Long oldVacationId, Integer status, Integer skipEVacationValidation) throws BusinessException {
 	Vacation oldVac = VacationsService.getVacationById(oldVacationId);
 	if (oldVac == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (skipEVacationValidation == FlagsEnum.OFF.getCode()) {
 	    if (oldVac.getEtrFlag() != FlagsEnum.ON.getCode())
 		throw new BusinessException("error_cannotModifyOrCancelNotElectronicVacation");
@@ -1698,6 +1698,9 @@ public class VacationsBusinessRulesService extends BaseService {
 	    }
 	    return balance;
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -1794,6 +1797,9 @@ public class VacationsBusinessRulesService extends BaseService {
 		return activeVacationConfiguration.getBalance() - sumVacDays(emp.getEmpId(), VacationTypesEnum.COMPELLING.getCode(), "01/01/" + vacYear, HijriDateService.getHijriCalendar(12, Integer.valueOf(vacYear)).getHijriMonthLength() + "/12/" + vacYear);
 	    }
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -1873,6 +1879,9 @@ public class VacationsBusinessRulesService extends BaseService {
 		balance -= periodBalance;
 	    }
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -1925,6 +1934,9 @@ public class VacationsBusinessRulesService extends BaseService {
 	    Date[] result = { frameStartDate, frameEndDate };
 	    return result;
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -1965,6 +1977,9 @@ public class VacationsBusinessRulesService extends BaseService {
 
 	    return activeVacationConfiguration.getBalance() - sumVacDays(emp.getEmpId(), VacationTypesEnum.FIELD.getCode(), HijriDateService.getHijriDateString(frameStartDate), HijriDateService.getHijriDateString(frameEndDate));
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -2027,6 +2042,9 @@ public class VacationsBusinessRulesService extends BaseService {
 	    }
 	    return balance;
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -2087,6 +2105,9 @@ public class VacationsBusinessRulesService extends BaseService {
 		balance -= periodBalance;
 	    }
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -2126,6 +2147,9 @@ public class VacationsBusinessRulesService extends BaseService {
 
 	    return activeVacationConfiguration.getBalance() - sumVacDays(emp.getEmpId(), VacationTypesEnum.RELIEF.getCode(), HijriDateService.getHijriDateString(frameStartDate), HijriDateService.getHijriDateString(frameEndDate));
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -2150,6 +2174,9 @@ public class VacationsBusinessRulesService extends BaseService {
 
 	    return activeVacationConfiguration.getBalance() - vacDays;
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -2180,6 +2207,9 @@ public class VacationsBusinessRulesService extends BaseService {
 
 	    return activeVacationConfiguration.getBalance() - sumVacDays(emp.getEmpId(), VacationTypesEnum.MOTHERHOOD.getCode(), emp.getRecruitmentDateString(), HijriDateService.getHijriDateString(balanceToDate));
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -2210,6 +2240,9 @@ public class VacationsBusinessRulesService extends BaseService {
 
 	    return activeVacationConfiguration.getBalance() - sumVacDays(emp.getEmpId(), VacationTypesEnum.ORPHAN_CARE.getCode(), emp.getRecruitmentDateString(), HijriDateService.getHijriDateString(balanceToDate));
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -2246,6 +2279,9 @@ public class VacationsBusinessRulesService extends BaseService {
 		paidVacationType = Integer.parseInt(balanceAndPaidVacationType.split(",")[1]);
 	    }
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -2264,6 +2300,9 @@ public class VacationsBusinessRulesService extends BaseService {
 		    decisionData = "1";
 	    }
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -2320,6 +2359,9 @@ public class VacationsBusinessRulesService extends BaseService {
 		    relatedDeductedBalance = regularBalance;
 	    }
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -2938,7 +2980,7 @@ public class VacationsBusinessRulesService extends BaseService {
 	    }
 	}
 	if (activeVacationConfiguration == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	return activeVacationConfiguration;
     }

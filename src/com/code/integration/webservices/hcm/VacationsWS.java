@@ -39,14 +39,14 @@ public class VacationsWS {
 
 	try {
 	    if (vacationTypeId != VacationTypesEnum.REGULAR.getCode())
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_unsupportedVacationType");
 
 	    List<Vacation> vacations = VacationsService.searchVacations(employeeId, FlagsEnum.ALL.getCode(), vacationTypeId, FlagsEnum.OFF.getCode());
 	    response.setVacations(vacations);
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -76,7 +76,7 @@ public class VacationsWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -102,7 +102,7 @@ public class VacationsWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -126,7 +126,7 @@ public class VacationsWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -145,14 +145,15 @@ public class VacationsWS {
 	try {
 	    Vacation vacation = VacationsService.getVacationById(vacationId);
 	    if (vacation == null || vacation.getEmpId() != employeeId)
-		throw new BusinessException("error_general");
+		//TODO: change error message
+		throw new BusinessException("error_integrationError");
 
 	    byte[] bytes = VacationsService.getVacationDecisionBytes(vacation.getVacationId(), vacation.getVacationTypeId(), vacation.getTransactionEmpCategoryId());
 	    response.setPrintBytes(bytes);
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
