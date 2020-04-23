@@ -100,7 +100,7 @@ public class VacationsWorkFlowWS {
 	    if (e instanceof BusinessException)
 		response.setMessage(BaseService.getParameterizedMessage(e.getMessage(), ((BusinessException) e).getParams()));
 	    else {
-		response.setMessage(BaseService.getMessage("error_general"));
+		response.setMessage(BaseService.getMessage("error_integrationError"));
 		e.printStackTrace();
 	    }
 	}
@@ -204,7 +204,7 @@ public class VacationsWorkFlowWS {
 	    if (e instanceof BusinessException)
 		response.setMessage(BaseService.getParameterizedMessage(e.getMessage(), ((BusinessException) e).getParams()));
 	    else {
-		response.setMessage(BaseService.getMessage("error_general"));
+		response.setMessage(BaseService.getMessage("error_integrationError"));
 		e.printStackTrace();
 	    }
 	}
@@ -407,7 +407,8 @@ public class VacationsWorkFlowWS {
 
 	    WFTask dmTask = BaseWorkFlow.getWFTaskById(taskId);
 	    if (employeeId != dmTask.getAssigneeId() || dmTask.getAction() != null || !dmTask.getAssigneeWfRole().equals(WFTaskRolesEnum.DIRECT_MANAGER.getCode()))
-		throw new BusinessException("error_general");
+		// TODO: change error message
+		throw new BusinessException("error_integrationError");
 
 	    if (!isApproved)
 		dmTask.setRefuseReasons(refuseReasons);
@@ -422,7 +423,7 @@ public class VacationsWorkFlowWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -444,7 +445,8 @@ public class VacationsWorkFlowWS {
 
 	    WFTask smTask = BaseWorkFlow.getWFTaskById(taskId);
 	    if (employeeId != smTask.getAssigneeId() || smTask.getAction() != null || !smTask.getAssigneeWfRole().equals(WFTaskRolesEnum.SIGN_MANAGER.getCode()))
-		throw new BusinessException("error_general");
+		// TODO: change error message
+		throw new BusinessException("error_integrationError");
 
 	    if (notes != null && !notes.trim().isEmpty())
 		smTask.setNotes(notes);
@@ -462,7 +464,7 @@ public class VacationsWorkFlowWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -483,7 +485,8 @@ public class VacationsWorkFlowWS {
 	try {
 	    WFTask wfTask = BaseWorkFlow.getWFTaskById(taskId);
 	    if (employeeId != wfTask.getAssigneeId() || wfTask.getAction() != null)
-		throw new BusinessException("error_general");
+		// TODO: change error message
+		throw new BusinessException("error_integrationError");
 
 	    WFVacation vacRequest = VacationsWorkFlow.getWFVacationByInstanceId(wfTask.getInstanceId());
 	    response.setWfVacation(vacRequest);
@@ -501,7 +504,7 @@ public class VacationsWorkFlowWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -544,7 +547,8 @@ public class VacationsWorkFlowWS {
 	    }
 
 	    if (selectedVacationsTasks.isEmpty())
-		throw new BusinessException("error_general");
+		// TODO: change error message
+		throw new BusinessException("error_integrationError");
 
 	    VacationsWorkFlow.doVacationsCollectiveAction(selectedVacationsTasks, actionTypeFlag);
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
@@ -553,7 +557,7 @@ public class VacationsWorkFlowWS {
 	    if (e instanceof BusinessException) {
 		response.setMessage(BaseService.getParameterizedMessage(e.getMessage(), ((BusinessException) e).getParams()));
 	    } else {
-		response.setMessage(BaseService.getMessage("error_general"));
+		response.setMessage(BaseService.getMessage("error_integrationError"));
 		e.printStackTrace();
 	    }
 	}
@@ -616,7 +620,7 @@ public class VacationsWorkFlowWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
