@@ -198,6 +198,10 @@ public class JobsService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -300,6 +304,10 @@ public class JobsService extends BaseService {
 		jobData.setCode(null);
 		jobData.setSerial(null);
 	    }
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -374,6 +382,10 @@ public class JobsService extends BaseService {
 		String originalJobCode = jobsOriginalCodes.get(jobData.getId());
 		jobData.setCode(originalJobCode);
 	    }
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -422,6 +434,10 @@ public class JobsService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -474,6 +490,10 @@ public class JobsService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -521,6 +541,10 @@ public class JobsService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -608,6 +632,10 @@ public class JobsService extends BaseService {
 		String originalJobCode = jobsOriginalCodes.get(jobData.getId());
 		jobData.setCode(originalJobCode);
 	    }
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -677,6 +705,9 @@ public class JobsService extends BaseService {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
 
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -722,6 +753,10 @@ public class JobsService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -766,6 +801,10 @@ public class JobsService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -809,6 +848,10 @@ public class JobsService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -929,6 +972,9 @@ public class JobsService extends BaseService {
 
 	    return generateJobsSerials(categoriesIds, neededRegionsIds, regionsNewSerialsNeeds);
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -2870,7 +2916,7 @@ public class JobsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -2907,7 +2953,7 @@ public class JobsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 

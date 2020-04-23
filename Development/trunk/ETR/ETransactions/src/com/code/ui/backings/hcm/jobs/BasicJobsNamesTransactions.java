@@ -43,21 +43,19 @@ public class BasicJobsNamesTransactions extends BaseBacking {
 		categorieslist = CommonService.getPersonsCategories();
 		break;
 	    default:
-		this.setServerSideErrorMessages(getMessage("error_general"));
+		this.setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
+	    reset();
+	} else {
+	    this.setServerSideErrorMessages(getMessage("error_URLError"));
 	}
-	reset();
     }
 
     public void reset() {
-	try {
-	    basicJobName = "";
+	basicJobName = "";
+	if (categorieslist != null && !categorieslist.isEmpty())
 	    selectedCategoryId = categorieslist.get(0).getId();
-	    searchBasicJobsNames();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	}
+	searchBasicJobsNames();
     }
 
     public void searchBasicJobsNames() {

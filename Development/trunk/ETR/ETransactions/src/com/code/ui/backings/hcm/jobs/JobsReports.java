@@ -88,10 +88,10 @@ public class JobsReports extends BaseBacking implements Serializable {
 		    showJobsInTransactionsReports = SecurityService.isEmployeeMenuActionGranted(this.loginEmpData.getEmpId(), MenuCodesEnum.JOBS_REPORTS_FOR_CIVILIANS.getCode(), MenuActionsEnum.JOBS_REPORTS_SHOW_JOBS_IN_TRANSACTIONS_REPORTS.getCode());
 		    break;
 		default:
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 		}
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	    reportType = 10;

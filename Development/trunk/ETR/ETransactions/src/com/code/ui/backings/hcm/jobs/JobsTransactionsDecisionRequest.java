@@ -114,7 +114,7 @@ public class JobsTransactionsDecisionRequest extends WFBaseBacking {
 		    this.processId = WFProcessesEnum.SOLDIERS_JOBS_TRANSACTIONS.getCode();
 		    break;
 		default:
-		    this.setServerSideErrorMessages(getMessage("error_general"));
+		    this.setServerSideErrorMessages(getMessage("error_URLError"));
 		}
 
 		ranks = CommonService.getRanks(null, new Long[] { (long) mode });
@@ -163,6 +163,8 @@ public class JobsTransactionsDecisionRequest extends WFBaseBacking {
 			reviewerEmps = EmployeesService.getManagerEmployees(currentEmployee.getEmpId());
 		    }
 		}
+	    } else {
+		this.setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));

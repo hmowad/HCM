@@ -65,13 +65,13 @@ public class ManpowerNeedsRequest extends WFBaseBacking {
 		setScreenTitle(getMessage("title_manpowerNeedsRequestForSoldiers"));
 		break;
 	    default:
-		this.setServerSideErrorMessages(getMessage("error_general"));
+		this.setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	    intializeRequestData();
 
 	} else {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage("error_URLError"));
 	}
     }
 

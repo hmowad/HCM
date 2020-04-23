@@ -83,7 +83,7 @@ public class JobsMiniSearch extends BaseBacking implements Serializable {
 		setScreenTitle(getMessage("title_jobs"));
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else {
 	    categoriesIds = null;
