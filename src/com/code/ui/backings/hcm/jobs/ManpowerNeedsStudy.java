@@ -66,13 +66,13 @@ public class ManpowerNeedsStudy extends WFBaseBacking {
 		setScreenTitle(getMessage("title_manpowerNeedsStudyForSoldiers"));
 		break;
 	    default:
-		this.setServerSideErrorMessages(getMessage("error_general"));
+		this.setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	    intializeStudyData();
 
 	} else {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage("error_URLError"));
 	}
     }
 

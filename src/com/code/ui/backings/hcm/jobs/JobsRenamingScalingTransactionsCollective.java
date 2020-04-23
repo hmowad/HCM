@@ -62,7 +62,7 @@ public class JobsRenamingScalingTransactionsCollective extends BaseBacking {
 		setScreenTitle(getMessage("title_personsJobsRenamingTransactionsCollective"));
 		break;
 	    default:
-		this.setServerSideErrorMessages(getMessage("error_general"));
+		this.setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	    if (mode == 2) {
 		ranks = getJobsRanks(CategoriesEnum.SOLDIERS.getCode());
@@ -73,7 +73,7 @@ public class JobsRenamingScalingTransactionsCollective extends BaseBacking {
 	    resetForm();
 
 	} else {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage("error_URLError"));
 	}
     }
 

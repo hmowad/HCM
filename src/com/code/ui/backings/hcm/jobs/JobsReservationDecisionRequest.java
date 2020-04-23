@@ -71,7 +71,7 @@ public class JobsReservationDecisionRequest extends WFBaseBacking {
 		    this.processId = WFProcessesEnum.SOLDIERS_JOBS_UNRESERVATION.getCode();
 		    break;
 		default:
-		    this.setServerSideErrorMessages(getMessage("error_general"));
+		    this.setServerSideErrorMessages(getMessage("error_URLError"));
 		}
 
 		if (this.role.equals(WFTaskRolesEnum.REQUESTER.getCode())) {
@@ -101,6 +101,8 @@ public class JobsReservationDecisionRequest extends WFBaseBacking {
 			reviewerEmps = EmployeesService.getManagerEmployees(currentEmployee.getEmpId());
 		    }
 		}
+	    } else {
+		this.setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));

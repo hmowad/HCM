@@ -42,10 +42,10 @@ public class JobsTransactionsDecisionsInquiry extends BaseBacking {
 		setScreenTitle(getMessage("title_soldiersJobsTransactionsDecisionsInquiry"));
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else {
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
 	}
 	resetForm();
     }

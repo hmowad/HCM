@@ -63,7 +63,7 @@ public class JobsConstructionTransactionsCollective extends BaseBacking {
 		setScreenTitle(getMessage("title_personsJobsConstructionTransactionsCollective"));
 		break;
 	    default:
-		this.setServerSideErrorMessages(getMessage("error_general"));
+		this.setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	    if (mode != 3) {
@@ -74,7 +74,7 @@ public class JobsConstructionTransactionsCollective extends BaseBacking {
 	    resetForm();
 
 	} else {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage("error_URLError"));
 	}
     }
 

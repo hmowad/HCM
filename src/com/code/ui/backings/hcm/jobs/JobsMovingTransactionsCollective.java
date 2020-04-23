@@ -51,13 +51,13 @@ public class JobsMovingTransactionsCollective extends BaseBacking {
 		setScreenTitle(getMessage("title_personsJobsMovingTransactionsCollective"));
 		break;
 	    default:
-		this.setServerSideErrorMessages(getMessage("error_general"));
+		this.setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	    resetForm();
 
 	} else {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage("error_URLError"));
 	}
     }
 

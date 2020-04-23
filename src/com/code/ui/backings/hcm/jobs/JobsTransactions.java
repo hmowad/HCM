@@ -65,10 +65,10 @@ public class JobsTransactions extends BaseBacking implements Serializable {
 		    setScreenTitle(getMessage("title_personsJobTransactions"));
 		    break;
 		default:
-		    this.setServerSideErrorMessages(getMessage("error_general"));
+		    this.setServerSideErrorMessages(getMessage("error_URLError"));
 		}
 	    } else {
-		this.setServerSideErrorMessages(getMessage("error_general"));
+		this.setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	    today = HijriDateService.getHijriSysDate();

@@ -50,9 +50,6 @@ public class ManpowerNeedsRequestsMiniSearch extends BaseBacking {
 	    transactionDateTo = HijriDateService.getHijriSysDate();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    super.setServerSideErrorMessages(getMessage("error_general"));
 	}
 
 	searchManpowerNeedRequest();

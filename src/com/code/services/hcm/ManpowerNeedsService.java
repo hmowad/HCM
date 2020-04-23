@@ -326,6 +326,10 @@ public class ManpowerNeedsService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -629,7 +633,7 @@ public class ManpowerNeedsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -657,7 +661,7 @@ public class ManpowerNeedsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 }

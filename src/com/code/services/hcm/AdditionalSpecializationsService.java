@@ -281,7 +281,7 @@ public class AdditionalSpecializationsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(getMessage("error_general"));
+	    throw new BusinessException(getMessage("error_reportPrintingError"));
 	}
     }
 }
