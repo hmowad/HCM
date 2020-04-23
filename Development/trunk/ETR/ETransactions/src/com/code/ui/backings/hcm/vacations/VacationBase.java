@@ -62,7 +62,7 @@ public abstract class VacationBase extends WFBaseBacking {
 		if (!vacRequest.getBeneficiaryId().equals(this.requester.getEmpId())) {
 		    this.beneficiary = EmployeesService.getEmployeeData(vacRequest.getBeneficiaryId());
 		    if (this.beneficiary == null)
-			throw new BusinessException("error_general");
+			throw new BusinessException("error_UIError");
 		}
 
 		if (vacRequest.getOldVacationId() != null)
@@ -82,9 +82,6 @@ public abstract class VacationBase extends WFBaseBacking {
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(this.getParameterizedMessage(e.getMessage(), e.getParams()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(this.getMessage("error_general"));
 	}
     }
 

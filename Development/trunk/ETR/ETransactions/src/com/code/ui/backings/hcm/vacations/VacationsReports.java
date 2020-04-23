@@ -47,9 +47,6 @@ public class VacationsReports extends BaseBacking implements Serializable {
 	    resetForm();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 

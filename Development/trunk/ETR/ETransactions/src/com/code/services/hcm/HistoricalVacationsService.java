@@ -893,6 +893,9 @@ public class HistoricalVacationsService extends BaseService {
 		return activeVacationConfiguration.getBalance() - VacationsBusinessRulesService.sumVacDays(emp.getEmpId(), VacationTypesEnum.COMPELLING.getCode(), "01/01/" + vacYear, HijriDateService.getHijriCalendar(12, Integer.valueOf(vacYear)).getHijriMonthLength() + "/12/" + vacYear);
 	    }
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}

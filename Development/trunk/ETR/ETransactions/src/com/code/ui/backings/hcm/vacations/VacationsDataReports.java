@@ -72,10 +72,10 @@ public class VacationsDataReports extends BaseBacking implements Serializable {
 		    this.setScreenTitle(getMessage("title_vacationsDataReportForEmployees"));
 		    break;
 		default:
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 		}
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	    regionList = CommonService.getAllRegions();

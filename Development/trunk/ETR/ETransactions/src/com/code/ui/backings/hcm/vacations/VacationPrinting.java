@@ -88,10 +88,6 @@ public class VacationPrinting extends BaseBacking implements Serializable {
 	} catch (BusinessException e) {
 	    vacations = new ArrayList<Vacation>();
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    vacations = new ArrayList<Vacation>();
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 

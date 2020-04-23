@@ -43,15 +43,9 @@ public class VacationsCollectiveApproval extends BaseBacking implements Serializ
 	else if (mode == 2)
 	    this.setScreenTitle(getMessage("title_VacationsCollectiveApproval"));
 	else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
 
-	try {
-	    // Load the vacations tasks data
-	    searchVacationTasks();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	}
+	searchVacationTasks();
     }
 
     // Load the vacations tasks data

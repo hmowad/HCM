@@ -60,7 +60,7 @@ public class ModifyFutureVacation extends FutureVacationBase {
 		    this.setScreenTitle(this.getMessage("title_modifyExternalEmployeesVacationDetails"));
 		    break;
 		default:
-		    this.setServerSideErrorMessages(this.getMessage("error_general"));
+		    this.setServerSideErrorMessages(this.getMessage("error_URLError"));
 		}
 	    } else {
 		switch (screenMode) {
@@ -73,7 +73,7 @@ public class ModifyFutureVacation extends FutureVacationBase {
 		    validateExternalEmployeesAdmins();
 		    break;
 		default:
-		    this.setServerSideErrorMessages(this.getMessage("error_general"));
+		    this.setServerSideErrorMessages(this.getMessage("error_URLError"));
 		}
 	    }
 	} catch (BusinessException e) {

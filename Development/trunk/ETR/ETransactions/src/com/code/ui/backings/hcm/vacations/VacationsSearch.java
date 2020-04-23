@@ -54,41 +54,42 @@ public class VacationsSearch extends BaseBacking implements Serializable {
 
     public VacationsSearch() {
 	super();
-	mode = Integer.parseInt(getRequest().getParameter("mode"));
+	if (getRequest().getParameter("mode") != null) {
+	    mode = Integer.parseInt(getRequest().getParameter("mode"));
 
-	try {
-	    if (mode == 1) {
-		super.setScreenTitle(getMessage("title_vacationsSearchForOfficers"));
-		employeeMenuActions = SecurityService.getEmployeeMenuActions(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_VACATIONS_SEARCH_FOR_OFFICERS.getCode());
-	    } else if (mode == 2) {
-		super.setScreenTitle(getMessage("title_vacationsSearchForSoldiers"));
-		employeeMenuActions = SecurityService.getEmployeeMenuActions(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_VACATIONS_SEARCH_FOR_SOLDIERS.getCode());
-	    } else if (mode == 3) {
-		super.setScreenTitle(getMessage("title_vacationsSearchForEmployees"));
-		employeeMenuActions = SecurityService.getEmployeeMenuActions(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_VACATIONS_SEARCH_FOR_EMPLOYEES.getCode());
+	    try {
+		if (mode == 1) {
+		    super.setScreenTitle(getMessage("title_vacationsSearchForOfficers"));
+		    employeeMenuActions = SecurityService.getEmployeeMenuActions(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_VACATIONS_SEARCH_FOR_OFFICERS.getCode());
+		} else if (mode == 2) {
+		    super.setScreenTitle(getMessage("title_vacationsSearchForSoldiers"));
+		    employeeMenuActions = SecurityService.getEmployeeMenuActions(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_VACATIONS_SEARCH_FOR_SOLDIERS.getCode());
+		} else if (mode == 3) {
+		    super.setScreenTitle(getMessage("title_vacationsSearchForEmployees"));
+		    employeeMenuActions = SecurityService.getEmployeeMenuActions(this.loginEmpData.getEmpId(), MenuCodesEnum.VAC_VACATIONS_SEARCH_FOR_EMPLOYEES.getCode());
+		}
+
+		if (employeeMenuActions != null && employeeMenuActions.size() > 0)
+		    admin = true;
+
+		if (FlagsEnum.ON.getCode() == this.loginEmpData.getIsManager())
+		    manager = true;
+
+		if (manager || admin) {
+		    if (!admin)
+			units = UnitsService.getUnitChildren(this.loginEmpData.getPhysicalUnitId(), true, false, FlagsEnum.ON.getCode());
+
+		    selectedDate = HijriDateService.getHijriSysDate();
+		    selectedUnitName = this.loginEmpData.getPhysicalUnitFullName();
+		    selectedUnitHKey = this.loginEmpData.getPhysicalUnitHKey();
+		    selectedUnitRegionId = this.loginEmpData.getPhysicalRegionId().longValue();
+		    getVacations(null);
+		}
+	    } catch (BusinessException e) {
+		this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	    }
-
-	    if (employeeMenuActions != null && employeeMenuActions.size() > 0)
-		admin = true;
-
-	    if (FlagsEnum.ON.getCode() == this.loginEmpData.getIsManager())
-		manager = true;
-
-	    if (manager || admin) {
-		if (!admin)
-		    units = UnitsService.getUnitChildren(this.loginEmpData.getPhysicalUnitId(), true, false, FlagsEnum.ON.getCode());
-
-		selectedDate = HijriDateService.getHijriSysDate();
-		selectedUnitName = this.loginEmpData.getPhysicalUnitFullName();
-		selectedUnitHKey = this.loginEmpData.getPhysicalUnitHKey();
-		selectedUnitRegionId = this.loginEmpData.getPhysicalRegionId().longValue();
-		getVacations(null);
-	    }
-	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	} else {
+	    setServerSideErrorMessages(getMessage("error_URLError"));
 	}
     }
 
