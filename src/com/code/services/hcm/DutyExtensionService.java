@@ -64,7 +64,8 @@ public class DutyExtensionService extends BaseService {
 	    session.beginTransaction();
 	    validateExtensionTransaction(dutyExtensionTransaction);
 	    DataAccess.addEntity(dutyExtensionTransaction, session);
-	    doPayrollIntegration(dutyExtensionTransaction, FlagsEnum.OFF.getCode(), session);
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		doPayrollIntegration(dutyExtensionTransaction, FlagsEnum.OFF.getCode(), session);
 	    session.commitTransaction();
 	} catch (Exception e) {
 	    session.rollbackTransaction();
@@ -92,11 +93,14 @@ public class DutyExtensionService extends BaseService {
 	    adminDecisionId = AdminDecisionsEnum.DUTY_REEXTENSION.getCode();
 
 	if (adminDecisionId != null) {
-	    String gregTransactionDateString = HijriDateService.hijriToGregDateString(HijriDateService.getHijriDateString(dutyExtensionTransaction.getTransactionDate()));
 	    EmployeeData employee = EmployeesService.getEmployeeData(dutyExtensionTransaction.getEmpId());
 	    if (employee == null)
 		throw new BusinessException("error_employeeDataError");
-	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), dutyExtensionTransaction.getId(), dutyExtensionTransaction.getBasedOnExtensionId(), gregTransactionDateString, null, System.currentTimeMillis() + "", null)));
+	    if (employee.getServiceTerminationDate() == null)
+		throw new BusinessException("error_empShouldBeTerminated");
+	    String gregTransactionDateString = HijriDateService.hijriToGregDateString(HijriDateService.getHijriDateString(dutyExtensionTransaction.getTransactionDate()));
+	    String gregServiceTerminationDateString = HijriDateService.hijriToGregDateString(employee.getServiceTerminationDateString());
+	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), dutyExtensionTransaction.getId(), dutyExtensionTransaction.getBasedOnExtensionId(), gregServiceTerminationDateString, null, System.currentTimeMillis() + "", null)));
 	    session.flushTransaction();
 	    PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregTransactionDateString, adminDecisionEmployeeDataList, UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId(), gregTransactionDateString, DataAccess.getTableName(DutyExtensionTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
 	}
