@@ -37,7 +37,8 @@ public class IncentivesService extends BaseService {
 
 	    incentiveTransaction.setTransactionDate(HijriDateService.getHijriSysDate());
 	    DataAccess.addEntity(incentiveTransaction, session);
-	    doPayrollIntegration(incentiveTransaction, FlagsEnum.OFF.getCode(), session);
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		doPayrollIntegration(incentiveTransaction, FlagsEnum.OFF.getCode(), session);
 	    session.commitTransaction();
 	} catch (Exception e) {
 	    session.rollbackTransaction();
