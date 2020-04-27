@@ -23,7 +23,7 @@ public class EmployeesTransactionsConflictValidator extends BaseService {
 
     public static void validateEmployeesTransactionsConflicts(Long[] empsIds, String[] empsNames, int transactionClass, int transactionType, long transactionBusinessType, long processId, String[] startDatesStrings, String[] endDatesStrings, Long excludedTransactionId, Long excludedInstanceId) throws BusinessException {
 	if (empsIds == null || empsNames == null || startDatesStrings == null || endDatesStrings == null || empsIds.length != empsNames.length || empsIds.length != startDatesStrings.length || empsIds.length != endDatesStrings.length)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	Map<Long, Integer> employeesIdsIndexesMap = new HashMap<Long, Integer>();
 	for (int i = 0; i < empsIds.length; i++)

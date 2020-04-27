@@ -25,6 +25,7 @@ public class AttachmentsService extends BaseService {
 	try {
 	    return DataAccess.getNextValFromSequence(SequenceNamesEnum.ETR_ATTACHMENTS_SEQUENCE.getCode()) + "";
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -59,7 +60,7 @@ public class AttachmentsService extends BaseService {
 	try {
 	    String securityKey = getSecurityKey();
 	    if (securityKey == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    return ETRConfigurationService.getAttachmentsAddURL().replace("P_ATTACHMENTS_ID", attachmentId).replace("P_LOGGED_USER", employeeId + "").replace("P_SEC_FLG", securityKey);
 	} catch (Exception e) {
@@ -76,7 +77,7 @@ public class AttachmentsService extends BaseService {
 	try {
 	    String securityKey = getSecurityKey();
 	    if (securityKey == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    int accessRight = 1; // view only
 	    return ETRConfigurationService.getAttachmentsViewURL().replace("P_ATTACHMENTS_ID", attachmentId).replace("P_USER_NAME", employeeId + "").replace("P_ACL_RIGHT", accessRight + "").replace("P_SEC_FLG", securityKey);

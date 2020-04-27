@@ -152,7 +152,7 @@ public class DashBoardWorkFlow extends BaseWorkFlow {
 		assigneeWfRoles = APPROVAL_ASSIGNEE_WF_ROLES;
 		actionProcessesGroups = APPROVAL_PROCESS_GROUPS;
 	    } else {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 	    }
 
 	    dashBoardData = getWFProcessesGroupsApprovalCounts(employeeId, assigneeWfRoles, actionProcessesGroups, actionTypeFlag == 1 ? ACCEPTANCE_EXCLUDED_PROCESS_IDS : APPROVAL_EXCLUDED_PROCESS_IDS);

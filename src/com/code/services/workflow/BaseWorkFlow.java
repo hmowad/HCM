@@ -128,6 +128,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	try {
 	    closeWFInstance(instance, task, WFTaskActionsEnum.NOTIFIED.getCode(), new Date(), HijriDateService.getHijriSysDate());
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -233,6 +234,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    else
 		return result.get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -262,6 +264,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    else
 		return result.get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -282,6 +285,7 @@ public abstract class BaseWorkFlow extends BaseService {
 
 	    return instances;
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -293,6 +297,7 @@ public abstract class BaseWorkFlow extends BaseService {
 
 	    return DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.WF_GET_WFINSTANCE_UNDER_PROCESSING_COUNT.getCode(), qParams).get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -330,7 +335,7 @@ public abstract class BaseWorkFlow extends BaseService {
 
     public static void addWFInstanceBeneficiaries(long instanceId, List<Long> instanceBeneficiariesIds, CustomSession session) throws BusinessException {
 	if (instanceBeneficiariesIds == null || instanceBeneficiariesIds.isEmpty())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	try {
 	    for (Long newBeneficiaryId : instanceBeneficiariesIds) {
@@ -348,7 +353,7 @@ public abstract class BaseWorkFlow extends BaseService {
     // Should be used only if there is a chance to remove a beneficiary without taking a WorkFlow action.
     public static void deleteWFInstanceBeneficiaries(long instanceId, List<Long> instanceBeneficiariesIds, CustomSession session) throws BusinessException {
 	if (instanceBeneficiariesIds == null || instanceBeneficiariesIds.isEmpty())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	try {
 	    for (Long removedInstanceBeneficiaryId : instanceBeneficiariesIds) {
@@ -371,7 +376,7 @@ public abstract class BaseWorkFlow extends BaseService {
     private static void saveWFInstanceBeneficiaries(long instanceId, List<Long> instanceBeneficiariesIds, boolean isNewInstance, CustomSession session) throws BusinessException {
 
 	if (instanceBeneficiariesIds == null || instanceBeneficiariesIds.isEmpty())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	try {
 	    Map<Long, WFInstanceBeneficiary> oldInstanceBeneficiariesMap = new HashMap<Long, WFInstanceBeneficiary>();
@@ -411,6 +416,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    qParams.put("P_INSTANCE_ID", instanceId);
 	    return DataAccess.executeNamedQuery(WFInstanceBeneficiary.class, QueryNamesEnum.WF_GET_WF_INSTANCE_BENEFICIARIES_BY_INSTANCE_ID.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -490,8 +496,10 @@ public abstract class BaseWorkFlow extends BaseService {
     }
 
     public static Long[] invalidateWFTasksByAssigneesIdsOrOriginalsIds(Long[] assigneesIdsOrOriginalsIds, String refuseReasons, CustomSession session) throws BusinessException {
-	if (session == null || assigneesIdsOrOriginalsIds == null || assigneesIdsOrOriginalsIds.length == 0 || refuseReasons == null || refuseReasons.isEmpty())
+	if (session == null)
 	    throw new BusinessException("error_general");
+	if (assigneesIdsOrOriginalsIds == null || assigneesIdsOrOriginalsIds.length == 0 || refuseReasons == null || refuseReasons.isEmpty())
+	    throw new BusinessException("error_transactionDataError");
 
 	try {
 	    long lastInstanceId = -1;
@@ -520,13 +528,16 @@ public abstract class BaseWorkFlow extends BaseService {
 	    return instancesIds.toArray(new Long[instancesIds.size()]);
 
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
 
     public static Long[] invalidateWFTasksByProcessesIds(Long[] processesIds, String refuseReasons, CustomSession session) throws BusinessException {
-	if (session == null || processesIds == null || processesIds.length == 0 || refuseReasons == null || refuseReasons.isEmpty())
+	if (session == null)
 	    throw new BusinessException("error_general");
+	if (processesIds == null || processesIds.length == 0 || refuseReasons == null || refuseReasons.isEmpty())
+	    throw new BusinessException("error_transactionDataError");
 
 	try {
 	    long lastInstanceId = -1;
@@ -555,6 +566,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    return instancesIds.toArray(new Long[instancesIds.size()]);
 
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -624,6 +636,7 @@ public abstract class BaseWorkFlow extends BaseService {
 		return result.get(0);
 
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -648,6 +661,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    qParams.put("P_INSTANCE_ID", instanceId);
 	    return DataAccess.executeNamedQuery(WFTask.class, QueryNamesEnum.WF_GET_WFINSTANCE_TASKS.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -659,6 +673,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    qParams.put("P_ROLE", role);
 	    return DataAccess.executeNamedQuery(WFTask.class, QueryNamesEnum.WF_GET_WFINSTANCE_TASKS_BY_ROLE.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -681,6 +696,7 @@ public abstract class BaseWorkFlow extends BaseService {
 
 	    return DataAccess.executeNamedQuery(Object.class, QueryNamesEnum.WF_GET_RUNNING_WFTASK_FOR_INVALIDATION_BY_PROCESSES.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -693,6 +709,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    qParams.put("P_ORIGINAL_ID", originalId);
 	    return DataAccess.executeNamedQuery(WFTask.class, QueryNamesEnum.WF_GET_WFINSTANCE_COMPLETED_TASKS_BY_LEVEL_AND_ORIGINAL_ID.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -707,6 +724,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    else
 		return result.get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -729,6 +747,7 @@ public abstract class BaseWorkFlow extends BaseService {
 
 	    return tasks;
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -741,6 +760,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    qParams.put("P_NOTIFICATION_FLAG", notificationFlag);
 	    return DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.WF_COUNT_TASKS.getCode(), qParams).get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -760,6 +780,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    qParams.put("P_TASK_ROLE", taskRole);
 	    return DataAccess.executeNamedQuery(WFTaskData.class, QueryNamesEnum.WF_GET_WFINSTANCE_TASKS_DATA.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -789,6 +810,7 @@ public abstract class BaseWorkFlow extends BaseService {
 
 	    return DataAccess.executeNamedQuery(WFTaskData.class, QueryNamesEnum.WF_GET_WFINSTANCE_COMPLETED_TASKS_DATA.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -802,6 +824,7 @@ public abstract class BaseWorkFlow extends BaseService {
 
 	    return DataAccess.executeNamedQuery(WFTaskData.class, QueryNamesEnum.WF_GET_WFINSTANCE_COMPLETED_TASKS_DATA_ORDERED_BY_LEVEL_LENGTH.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -834,6 +857,7 @@ public abstract class BaseWorkFlow extends BaseService {
 
 	    return DataAccess.executeNamedQuery(Object.class, QueryNamesEnum.WF_GET_PROCESSES_GROUPS_APRRROVAL_COUNTS.getCode(), qParams);
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -842,16 +866,18 @@ public abstract class BaseWorkFlow extends BaseService {
 	try {
 	    return DataAccess.executeNamedQuery(WFProcessGroup.class, QueryNamesEnum.WF_GET_PROCESSES_GROUPS.getCode(), null);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
-    
+
     public static WFProcessGroup getWFProcessesGroupById(Long id) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_ID", id);
 	    return DataAccess.executeNamedQuery(WFProcessGroup.class, QueryNamesEnum.WF_GET_PROCESSES_GROUP_BY_ID.getCode(), qParams).get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -878,6 +904,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    }
 	    return DataAccess.executeNamedQuery(WFProcess.class, QueryNamesEnum.WF_GET_GROUP_PROCESSES.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -888,10 +915,11 @@ public abstract class BaseWorkFlow extends BaseService {
 	    qParams.put("P_PROCESS_ID", processId);
 	    return DataAccess.executeNamedQuery(WFProcess.class, QueryNamesEnum.WF_GET_PROCESS.getCode(), qParams).get(0);
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
-    
+
     public static List<WFProcess> getWFProcessesByGroupIdAndName(String processName, Long[] processGroupsIds, Long[] processesIds) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
@@ -906,6 +934,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    }
 	    return DataAccess.executeNamedQuery(WFProcess.class, QueryNamesEnum.WF_GET_PROCESSES_BY_GROUP_AND_NAME.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -1076,8 +1105,10 @@ public abstract class BaseWorkFlow extends BaseService {
     }
 
     public static void invalidateWFDelegations(Long[] empsIds, CustomSession session) throws BusinessException {
-	if (session == null || empsIds == null || empsIds.length == 0)
+	if (session == null)
 	    throw new BusinessException("error_general");
+	if (empsIds == null || empsIds.length == 0)
+	    throw new BusinessException("error_transactionDataError");
 
 	List<WFDelegation> delegations = getManyEntities(WFDelegation.class, getWFDelegationsEitherFromOrToEmployeesQueryInfo(empsIds), empsIds);
 	for (WFDelegation delegation : delegations)
@@ -1103,6 +1134,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
 	    if (!isOpenedSession)
@@ -1206,6 +1238,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    List<Long> result = DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.WF_GET_DELEGATE_ID_ALL_HIERARCHY.getCode(), qParams);
 	    return result.isEmpty() ? null : result.get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -1220,6 +1253,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    List<Long> result = DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.WF_GET_DELEGATE_ID_SPECIFIC_HIERARCHY.getCode(), qParams);
 	    return result.isEmpty() ? null : result.get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -1230,6 +1264,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    qParams.put("P_EMP_ID", empId);
 	    return DataAccess.executeNamedQuery(Object.class, QueryNamesEnum.WF_GET_DELEGATIONS_COUNT.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -1258,6 +1293,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    qParams.put("P_PROCESS_ID_FLAG", processIdFlag);
 	    return DataAccess.executeNamedQuery(WFDelegationData.class, QueryNamesEnum.WF_GET_DELEGATE_DATA.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -1289,6 +1325,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    else
 		return result.get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }

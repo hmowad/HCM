@@ -32,7 +32,7 @@ public class PushNotificationsWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -58,7 +58,7 @@ public class PushNotificationsWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}

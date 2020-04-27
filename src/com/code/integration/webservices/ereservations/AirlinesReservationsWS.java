@@ -37,13 +37,13 @@ public class AirlinesReservationsWS {
 	try {
 	    EmployeeData empData = EmployeesService.getEmployeeData(employeeId);
 	    if (empData == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 
 	    response.setAirports(EReservationsWSClient.getAirports(empData.getSocialID()));
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(e instanceof ClientIntegrationException ? e.getMessage() : BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(e instanceof ClientIntegrationException ? e.getMessage() : BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException || e instanceof ClientIntegrationException))
 		e.printStackTrace();
 	}
@@ -63,7 +63,7 @@ public class AirlinesReservationsWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -91,13 +91,13 @@ public class AirlinesReservationsWS {
 	try {
 	    EmployeeData empData = EmployeesService.getEmployeeData(employeeId);
 	    if (empData == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 
 	    response.setBookings(EReservationsWSClient.getBookings(empData.getSocialID(), previousBookingsFlag));
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(e instanceof ClientIntegrationException ? e.getMessage() : BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(e instanceof ClientIntegrationException ? e.getMessage() : BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException || e instanceof ClientIntegrationException))
 		e.printStackTrace();
 	}
@@ -118,7 +118,7 @@ public class AirlinesReservationsWS {
 	try {
 	    EmployeeData empData = EmployeesService.getEmployeeData(employeeId);
 	    if (empData == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 
 	    Object[] getFlightsResult = EReservationsWSClient.getFlights(empData.getSocialID(), fromAirportId, toAirportId, departureDateString, returnDateString);
 
@@ -128,7 +128,7 @@ public class AirlinesReservationsWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(e instanceof ClientIntegrationException ? e.getMessage() : BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(e instanceof ClientIntegrationException ? e.getMessage() : BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException || e instanceof ClientIntegrationException))
 		e.printStackTrace();
 	}
@@ -150,14 +150,14 @@ public class AirlinesReservationsWS {
 	try {
 	    EmployeeData empData = EmployeesService.getEmployeeData(employeeId);
 	    if (empData == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 
 	    EReservationsWSClient.bookFlight(empData.getSocialID(), goingLegsIds, returnLegsIds, waitingFlightFlag, contactPhone, contactEmail, mealCode, needTransportationFlag);
 
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(e instanceof ClientIntegrationException ? e.getMessage() : BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(e instanceof ClientIntegrationException ? e.getMessage() : BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException || e instanceof ClientIntegrationException))
 		e.printStackTrace();
 	}

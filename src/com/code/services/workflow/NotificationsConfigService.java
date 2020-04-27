@@ -249,7 +249,7 @@ public class NotificationsConfigService extends BaseService {
      */
     private static void validateNotificationConfig(WFNotificationsConfigData notificationData) throws BusinessException {
 	if (notificationData == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	}
 
 	// Validate mandatory fields

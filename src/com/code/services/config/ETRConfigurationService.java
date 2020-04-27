@@ -784,7 +784,7 @@ public class ETRConfigurationService extends BaseService {
 	    } else if (categoryId == CategoriesEnum.SOLDIERS.getCode()) {
 		unitsIds = configurationMap.get("DISCLAIMER_GENERAL_DIRECTORATE_OF_BORDER_GUARDS_UNITS_IDS_SOLDIERS");
 	    } else
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 	} else if (physicalRegionId == RegionsEnum.ALJOOF_REGION.getCode()) {
 	    unitsIds = configurationMap.get("DISCLAIMER_ALJOOF_REGION_UNITS_IDS");
 	} else if (physicalRegionId == RegionsEnum.ALMADEENAH_ALMONAWRAH_REGION.getCode()) {
@@ -806,7 +806,7 @@ public class ETRConfigurationService extends BaseService {
 	} else if (physicalRegionId == RegionsEnum.ACADEMY.getCode()) {
 	    unitsIds = configurationMap.get("DISCLAIMER_ACADEMY_UNITS_IDS");
 	} else
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	return unitsIds;
     }
 

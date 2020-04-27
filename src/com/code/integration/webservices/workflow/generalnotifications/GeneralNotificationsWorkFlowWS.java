@@ -50,13 +50,14 @@ public class GeneralNotificationsWorkFlowWS {
 	try {
 	    WFTask task = BaseWorkFlow.getWFTaskById(taskId);
 	    if (employeeId != task.getAssigneeId() || task.getAction() != null || !task.getAssigneeWfRole().equals(WFTaskRolesEnum.NOTIFICATION.getCode()))
-		throw new BusinessException("error_general");
+		// TODO:To Be Discussed
+		throw new BusinessException("error_integrationError");
 
 	    response.setNotificationMessage(task.getFlexField1());
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -75,7 +76,8 @@ public class GeneralNotificationsWorkFlowWS {
 	try {
 	    WFTask task = BaseWorkFlow.getWFTaskById(taskId);
 	    if (employeeId != task.getAssigneeId())
-		throw new BusinessException("error_general");
+		// To Be Discussed
+		throw new BusinessException("error_integrationError");
 
 	    WFInstance instance = BaseWorkFlow.getWFInstanceById(task.getInstanceId());
 
@@ -83,7 +85,7 @@ public class GeneralNotificationsWorkFlowWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}

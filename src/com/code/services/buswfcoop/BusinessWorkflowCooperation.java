@@ -37,7 +37,7 @@ public class BusinessWorkflowCooperation extends BaseService {
 	else if (transactionClass == TransactionClassesEnum.PROMOTIONS.getCode())
 	    refuseReasons = BaseService.getMessage("notify_refuseReasonsForPromotions");
 	else
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	Long[] instancesIds = BaseWorkFlow.invalidateWFTasksByAssigneesIdsOrOriginalsIds(empsIds, refuseReasons, session);
 	BaseWorkFlow.invalidateWFDelegations(empsIds, session);
