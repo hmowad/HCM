@@ -163,7 +163,7 @@ public class SignaturesService extends BaseService {
     private static void validateClonedSignature(int signatureStampType, Signature existingSignature, String signatureDescription, Date newValidFromDate) throws BusinessException {
 
 	if (existingSignature == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (signatureDescription == null || signatureDescription.trim().isEmpty())
 	    throw new BusinessException(signatureStampType == SignaturesTypesEnum.SIGNATURE.getCode() ? "error_signatureDescriptionIsMandatory" : "error_stampDescriptionIsMandatory");

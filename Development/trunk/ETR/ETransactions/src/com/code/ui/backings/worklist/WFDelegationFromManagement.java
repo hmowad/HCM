@@ -58,9 +58,6 @@ public class WFDelegationFromManagement extends BaseBacking implements Serializa
 		this.setServerSideErrorMessages(getMessage("error_notAuthorized"));
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    super.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 
@@ -118,8 +115,8 @@ public class WFDelegationFromManagement extends BaseBacking implements Serializa
 	    BaseWorkFlow.deleteWFDelegation(delegation.getId(), curEmployee.getEmpId());
 	    totalDelegationList.remove(delegation);
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
-	} catch (Exception e) {
-	    super.setServerSideErrorMessages(getMessage("error_general"));
+	} catch (BusinessException e) {
+	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
@@ -129,8 +126,8 @@ public class WFDelegationFromManagement extends BaseBacking implements Serializa
 	    BaseWorkFlow.deleteWFDelegation(delegation.getId(), curEmployee.getEmpId());
 	    partialDelegationList.remove(delegation);
 	    super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
-	} catch (Exception e) {
-	    super.setServerSideErrorMessages(getMessage("error_general"));
+	} catch (BusinessException e) {
+	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 

@@ -106,23 +106,24 @@ public class WFInbox extends BaseBacking {
 	try {
 	    if (!this.loginEmpData.getEmpId().equals(searchByAssigneeId) && !isEmployeeAuthorizedViewCategory()) {
 		EmployeeData assigneeEmployee = EmployeesService.getEmployeeData(searchByAssigneeId);
-
-		if (FlagsEnum.ON.getCode() != this.loginEmpData.getIsManager()
+		if (assigneeEmployee == null)
+		    throw new BusinessException("error_employeeDataError");
+		if (FlagsEnum.ON.getCode() != this.loginEmpData.getIsManager() || assigneeEmployee.getPhysicalUnitHKey() == null
 			|| !assigneeEmployee.getPhysicalUnitHKey().startsWith(UnitsService.getHKeyPrefix(this.loginEmpData.getPhysicalUnitHKey()))) // TODO handle null?
 		    throw new BusinessException("error_notAuthorized");
 	    }
-	    
-	    if(eservicesFlag == FlagsEnum.ON.getCode()){
-	    	 tasks = EServicesBaseWorkFlowService.searchWFTasksData(searchByAssigneeId, searchByBeneficiaryId, searchByTaskOwnerName, selectedProcessGroupId, selectedProcessId, runningFlag, selectedTaskRole, isDESC);
-	    }else{
-	    	 tasks = BaseWorkFlow.searchWFTasksData(searchByAssigneeId, searchByBeneficiaryId, searchByTaskOwnerName, selectedProcessGroupId, selectedProcessId, runningFlag, selectedTaskRole, isDESC);
+
+	    if (eservicesFlag == FlagsEnum.ON.getCode()) {
+		tasks = EServicesBaseWorkFlowService.searchWFTasksData(searchByAssigneeId, searchByBeneficiaryId, searchByTaskOwnerName, selectedProcessGroupId, selectedProcessId, runningFlag, selectedTaskRole, isDESC);
+	    } else {
+		tasks = BaseWorkFlow.searchWFTasksData(searchByAssigneeId, searchByBeneficiaryId, searchByTaskOwnerName, selectedProcessGroupId, selectedProcessId, runningFlag, selectedTaskRole, isDESC);
 	    }
-	   
+
 	    tasksListSize = tasks.size();
-	} catch (Exception e) {
+	} catch (BusinessException e) {
 	    tasks = new ArrayList<WFTaskData>();
 	    tasksListSize = 0;
-	    this.setServerSideErrorMessages(getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
 	selectAll = false;
     }
@@ -218,10 +219,10 @@ public class WFInbox extends BaseBacking {
 		}
 	    }
 
-	    if(eservicesFlag == FlagsEnum.ON.getCode()) {
-//		    EServicesBaseWorkFlowService.closeWFInstancesByNotification(BaseWorkFlow.getWFTasksByIds(selectedTasksIds));
+	    if (eservicesFlag == FlagsEnum.ON.getCode()) {
+		// EServicesBaseWorkFlowService.closeWFInstancesByNotification(BaseWorkFlow.getWFTasksByIds(selectedTasksIds));
 	    } else {
-		    BaseWorkFlow.closeWFInstancesByNotification(BaseWorkFlow.getWFInstancesByIds(selectedInstancesIds), BaseWorkFlow.getWFTasksByIds(selectedTasksIds));
+		BaseWorkFlow.closeWFInstancesByNotification(BaseWorkFlow.getWFInstancesByIds(selectedInstancesIds), BaseWorkFlow.getWFTasksByIds(selectedTasksIds));
 	    }
 
 	    for (WFTaskData task : selectedTasks) {

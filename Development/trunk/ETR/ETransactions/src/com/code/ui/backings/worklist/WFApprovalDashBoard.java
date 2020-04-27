@@ -30,7 +30,7 @@ public class WFApprovalDashBoard extends BaseBacking {
 	    else if (mode == 2)
 		this.setScreenTitle(getMessage("title_wfApprovalDashBoard"));
 	    else
-		this.setServerSideErrorMessages(getMessage("error_general"));
+		this.setServerSideErrorMessages(getMessage("error_URLError"));
 
 	    dashBoardData = DashBoardWorkFlow.getDashBoardData(mode, this.loginEmpData.getEmpId());
 

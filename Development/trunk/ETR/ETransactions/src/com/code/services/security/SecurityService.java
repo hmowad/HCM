@@ -165,14 +165,14 @@ public class SecurityService extends BaseService {
 
     public static void authenticateExternalService(String externalServiceAuthCode, String externalServiceAuthValue) throws BusinessException {
 	if (externalServiceAuthCode == null || externalServiceAuthCode.isEmpty())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (externalServiceAuthValue == null || externalServiceAuthValue.isEmpty())
 	    throw new BusinessException("error_invalidExtServicesAuthCode");
 
 	String correctExternalServiceAuthValue = ETRConfigurationService.getExternalServiceAuthValue(externalServiceAuthCode);
 	if (correctExternalServiceAuthValue == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	final byte[] decodedBytes = Base64.decodeBase64(externalServiceAuthValue.getBytes());
 	String decodedString = new String(decodedBytes);
@@ -445,7 +445,7 @@ public class SecurityService extends BaseService {
     /*---------------------------VALIDATIONS-----------------------*/
     public static void validateDecisionPrivileges(DecisionPrivilegeData decisionPrivilegeData) throws BusinessException {
 	if (decisionPrivilegeData == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	}
 
 	if (decisionPrivilegeData.getBeneficiaryCategoryId() == null) {

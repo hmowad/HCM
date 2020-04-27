@@ -64,7 +64,7 @@ public class ETRCorrespondence {
 	etrCorUpdaterThread.join();
 
 	if (etrCor.getSeq() == FlagsEnum.OFF.getCode())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
     }
 
     private static ETRCor getETRCor(int hijriYear) throws BusinessException {

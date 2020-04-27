@@ -46,6 +46,7 @@ public class HijriDateService extends BaseService {
 	try {
 	    return gregToHijriDate(new Date());
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -54,6 +55,7 @@ public class HijriDateService extends BaseService {
 	try {
 	    return getHijriDateString(gregToHijriDate(new Date()));
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -99,6 +101,7 @@ public class HijriDateService extends BaseService {
 
 	    return false;
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -175,6 +178,7 @@ public class HijriDateService extends BaseService {
 	    }
 	    return newHijriDate;
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -283,6 +287,7 @@ public class HijriDateService extends BaseService {
 
 	    return diff;
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -406,6 +411,7 @@ public class HijriDateService extends BaseService {
 	try {
 	    return hijriCalendarMap.get(hijriMonth + "" + hijriYear);
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -428,6 +434,7 @@ public class HijriDateService extends BaseService {
 
 	    return hijriCalendar.getHijriMonthLength();
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -438,6 +445,7 @@ public class HijriDateService extends BaseService {
 	    String[] dateArray = dateString.split("/");
 	    return Integer.parseInt(dateArray[0]);
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -448,6 +456,7 @@ public class HijriDateService extends BaseService {
 	    String[] dateArray = dateString.split("/");
 	    return Integer.parseInt(dateArray[1]);
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -458,6 +467,7 @@ public class HijriDateService extends BaseService {
 	    String[] dateArray = dateString.split("/");
 	    return Integer.parseInt(dateArray[2]);
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -467,6 +477,7 @@ public class HijriDateService extends BaseService {
 	    String[] dateArray = date.split("/");
 	    return Integer.parseInt(dateArray[0]);
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -476,6 +487,7 @@ public class HijriDateService extends BaseService {
 	    String[] dateArray = date.split("/");
 	    return Integer.parseInt(dateArray[1]);
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -485,6 +497,7 @@ public class HijriDateService extends BaseService {
 	    String[] dateArray = date.split("/");
 	    return Integer.parseInt(dateArray[2]);
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }

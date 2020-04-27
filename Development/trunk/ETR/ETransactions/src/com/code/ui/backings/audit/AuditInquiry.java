@@ -51,12 +51,8 @@ public class AuditInquiry extends BaseBacking {
 	    operations.add(AuditOperationsEnum.DELETE.toString());
 
 	    resetForm();
-
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(this.getParameterizedMessage(e.getMessage(), e.getParams()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(this.getMessage("error_general"));
 	}
     }
 

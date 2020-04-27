@@ -93,23 +93,25 @@ public class WFOutbox extends BaseBacking {
 	    if (!this.loginEmpData.getEmpId().equals(searchByRequesterId) && !this.loginEmpData.getEmpId().equals(searchByBeneficiaryId) && !isEmployeeAuthorizedViewCategory()) {
 		if (searchByRequesterId != null) {
 		    EmployeeData requesterEmployee = EmployeesService.getEmployeeData(searchByRequesterId);
-
-		    if (FlagsEnum.ON.getCode() != this.loginEmpData.getIsManager()
+		    if (requesterEmployee == null)
+			throw new BusinessException("error_employeeDataError");
+		    if (FlagsEnum.ON.getCode() != this.loginEmpData.getIsManager() || requesterEmployee.getPhysicalUnitHKey() == null
 			    || !requesterEmployee.getPhysicalUnitHKey().startsWith(UnitsService.getHKeyPrefix(this.loginEmpData.getPhysicalUnitHKey())))
 			throw new BusinessException("error_notAuthorized");
 		} else {
 		    EmployeeData beneficiaryEmployee = EmployeesService.getEmployeeData(searchByBeneficiaryId);
-
-		    if (FlagsEnum.ON.getCode() != this.loginEmpData.getIsManager()
+		    if (beneficiaryEmployee == null)
+			throw new BusinessException("error_employeeDataError");
+		    if (FlagsEnum.ON.getCode() != this.loginEmpData.getIsManager() || beneficiaryEmployee.getPhysicalUnitHKey() == null
 			    || !beneficiaryEmployee.getPhysicalUnitHKey().startsWith(UnitsService.getHKeyPrefix(this.loginEmpData.getPhysicalUnitHKey())))
 			throw new BusinessException("error_notAuthorized");
 		}
 	    }
 
 	    instances = BaseWorkFlow.searchWFInstancesData(searchByRequesterId, searchByBeneficiaryId, selectedProcessGroupId, selectedProcessId, runningFlag, isASC);
-	} catch (Exception e) {
+	} catch (BusinessException e) {
 	    instances = new ArrayList<WFInstanceData>();
-	    this.setServerSideErrorMessages(getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 

@@ -124,7 +124,7 @@ public class DecisionsPrivileges extends BaseBacking implements Serializable {
 	try {
 	    EmployeeData employeeData = EmployeesService.getEmployeeData(selectedDecisionPrivilege.getEmpId());
 	    if (employeeData == null) {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_UIError"));
 		return;
 	    }
 	    if (employeeData.getPhysicalUnitId() == null) {
