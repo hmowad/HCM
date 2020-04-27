@@ -276,7 +276,6 @@ public class ManyVacations extends VacationBase {
 		}
 	    }
 	} catch (BusinessException e) {
-	    e.printStackTrace();
 	    this.setServerSideErrorMessages(e.getMessage());
 	}
     }
