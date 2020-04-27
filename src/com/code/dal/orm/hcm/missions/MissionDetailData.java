@@ -62,7 +62,7 @@ import com.code.services.util.HijriDateService;
 	@NamedQuery(name = "hcm_missionDetailData_getMissionsDetailsWithNoIncentivesByEmpId",
 		query = (" select m from MissionDetailData m "
 			+ " where m.empId = :P_EMP_ID "
-			+ " and (select count(i.id) from IncentiveTransaction i, MissionDetailData m where i.missionTransactionId = m.id) = 0 "
+			+ " and (select count(i.id) from IncentiveTransaction i where i.missionTransactionId = m.id) = 0 "
 			+ " order by m.id "))
 })
 @SuppressWarnings("serial")
