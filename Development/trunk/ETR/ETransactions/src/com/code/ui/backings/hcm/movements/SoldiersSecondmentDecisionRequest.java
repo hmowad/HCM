@@ -61,14 +61,14 @@ public class SoldiersSecondmentDecisionRequest extends MovementsBase implements 
 		setServerSideErrorMessages(getMessage(e.getMessage()));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     public void searchSoldiers() {
 	try {
 	    soldier = EmployeesService.getEmployeeData(wfMovement.getEmployeeId());
 	    if (soldier == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_UIError");
 
 	    wfMovement = MovementsWorkFlow.constructWFMovement(processId, soldier.getEmpId(), null, FlagsEnum.OFF.getCode(), HijriDateService.getHijriSysDate(), null, null, null, null, null, LocationFlagsEnum.EXTERNAL.getCode(), null, null, null, MovementsReasonTypesEnum.FOR_WORK_INTEREST.getCode(), null,
 		    null, null, movementTypeId, TransactionTypesEnum.MVT_NEW_DECISION.getCode());

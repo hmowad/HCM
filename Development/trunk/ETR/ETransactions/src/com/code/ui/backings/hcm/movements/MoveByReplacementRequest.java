@@ -46,7 +46,7 @@ public class MoveByReplacementRequest extends MovementsBase implements Serializa
 		setScreenTitle(getMessage("title_personsReplacementMoveRequest"));
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 
 	    }
 	    init();
@@ -86,14 +86,14 @@ public class MoveByReplacementRequest extends MovementsBase implements Serializa
 		setServerSideErrorMessages(getMessage(e.getMessage()));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     public void searchReplacementEmployee() {
 	try {
 	    replacementEmployee = EmployeesService.getEmployeeData(wfMovement.getReplacementEmployeeId());
 	    if (replacementEmployee == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_UIError");
 
 	    wfMovement.setReplacementEmployeeId(replacementEmployee.getEmpId());
 	    wfMovement.setUnitId(replacementEmployee.getOfficialUnitId());

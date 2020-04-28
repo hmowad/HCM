@@ -44,7 +44,7 @@ public class MoveRequest extends MovementsBase implements Serializable {
 		setScreenTitle(getMessage("title_personsMoveRequest"));
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 
 	    }
 	    init();
@@ -86,7 +86,7 @@ public class MoveRequest extends MovementsBase implements Serializable {
 		setServerSideErrorMessages(getMessage(e.getMessage()));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     public void init() {

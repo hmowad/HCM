@@ -44,7 +44,7 @@ public class MovementsWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -62,14 +62,15 @@ public class MovementsWS {
 	try {
 	    MovementTransactionData movement = MovementsService.getMovementTransactionById(movementId);
 	    if (movement == null || movement.getEmployeeId() != employeeId)
-		throw new BusinessException("error_general");
+		// TODO: Change error message
+		throw new BusinessException("error_integrationError");
 
 	    byte[] bytes = MovementsService.getMovementDecisionBytes(movement);
 	    response.setPrintBytes(bytes);
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -88,10 +89,12 @@ public class MovementsWS {
 	    EmployeeData beneficiaryEmployee = EmployeesService.getEmployeeData(beneficiaryEmpId);
 	    if (beneficiaryEmployee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) || beneficiaryEmployee.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
 		if (!beneficiaryEmployee.getCategoryId().equals(categoryMode))
-		    throw new BusinessException("error_general");
+		    // TODO: change error message
+		    throw new BusinessException("error_integrationError");
 	    } else {
 		if (categoryMode != CategoriesEnum.PERSONS.getCode())
-		    throw new BusinessException("error_general");
+		    // TODO: change error message
+		    throw new BusinessException("error_integrationError");
 	    }
 
 	    EmployeeData requester = EmployeesService.getEmployeeData(employeeId);
@@ -121,7 +124,7 @@ public class MovementsWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}

@@ -50,10 +50,10 @@ public class SubjoinDecisionRequest extends MovementsBase implements Serializabl
 		this.processId = WFProcessesEnum.PERSONS_ASSIGNMENT.getCode();
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     protected void init() {

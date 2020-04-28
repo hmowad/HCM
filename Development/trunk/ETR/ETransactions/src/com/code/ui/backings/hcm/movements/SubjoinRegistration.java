@@ -41,10 +41,10 @@ public class SubjoinRegistration extends BaseBacking implements Serializable {
 		setScreenTitle(getMessage("title_personsExternalAssignmentRegistration"));
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     public void init() {

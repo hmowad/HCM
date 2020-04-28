@@ -95,7 +95,7 @@ public class MovementsWorkFlowWS {
 	    if (e instanceof BusinessException)
 		response.setMessage(BaseService.getParameterizedMessage(e.getMessage(), ((BusinessException) e).getParams()));
 	    else {
-		response.setMessage(BaseService.getMessage("error_general"));
+		response.setMessage(BaseService.getMessage("error_integrationError"));
 		e.printStackTrace();
 	    }
 	}
@@ -145,7 +145,8 @@ public class MovementsWorkFlowWS {
 
 	    WFTask smTask = BaseWorkFlow.getWFTaskById(taskId);
 	    if (employeeId != smTask.getAssigneeId() || smTask.getAction() != null || !smTask.getAssigneeWfRole().equals(WFTaskRolesEnum.SIGN_MANAGER.getCode()))
-		throw new BusinessException("error_general");
+		// TODO: Change error message
+		throw new BusinessException("error_integrationError");
 
 	    if (notes != null && !notes.trim().isEmpty())
 		smTask.setNotes(notes);
@@ -162,7 +163,7 @@ public class MovementsWorkFlowWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -180,12 +181,14 @@ public class MovementsWorkFlowWS {
 	try {
 	    WFTask wfTask = BaseWorkFlow.getWFTaskById(taskId);
 	    if (employeeId != wfTask.getAssigneeId())
-		throw new BusinessException("error_general");
+		// TODO: Change error message
+		throw new BusinessException("error_integrationError");
 
 	    List<WFMovementData> wfMovementDataList = MovementsWorkFlow.getWFMovementDataByInstanceId(wfTask.getInstanceId());
 
 	    if (wfMovementDataList.size() == 0 || !wfMovementDataList.get(0).getMovementTypeId().equals(MovementTypesEnum.ASSIGNMENT.getCode()))
-		throw new BusinessException("error_general");
+		// TODO: Change error message
+		throw new BusinessException("error_integrationError");
 
 	    response.setWfMovementDataList(wfMovementDataList);
 
@@ -199,7 +202,7 @@ public class MovementsWorkFlowWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
@@ -232,7 +235,7 @@ public class MovementsWorkFlowWS {
 	    if (e instanceof BusinessException)
 		response.setMessage(BaseService.getParameterizedMessage(e.getMessage(), ((BusinessException) e).getParams()));
 	    else {
-		response.setMessage(BaseService.getMessage("error_general"));
+		response.setMessage(BaseService.getMessage("error_integrationError"));
 		e.printStackTrace();
 	    }
 	}

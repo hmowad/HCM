@@ -49,10 +49,10 @@ public class SubjoinExtensionDecisionRequest extends MovementsBase implements Se
 		this.processId = WFProcessesEnum.PERSONS_ASSIGNMENT_EXTENSION.getCode();
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     protected void init() {

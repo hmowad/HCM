@@ -51,10 +51,10 @@ public class SubjoinCancellationRequest extends MovementsBase implements Seriali
 		this.processId = WFProcessesEnum.PERSONS_ASSIGNMENT_CANCELLATION_REQUEST.getCode();
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     protected void init() {
@@ -90,8 +90,6 @@ public class SubjoinCancellationRequest extends MovementsBase implements Seriali
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 

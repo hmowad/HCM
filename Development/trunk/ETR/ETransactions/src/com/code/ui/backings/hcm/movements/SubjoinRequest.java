@@ -45,10 +45,10 @@ public class SubjoinRequest extends MovementsBase implements Serializable {
 		this.processId = WFProcessesEnum.PERSONS_ASSIGNMENT_REQUEST.getCode();
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     protected void init() {
@@ -78,8 +78,6 @@ public class SubjoinRequest extends MovementsBase implements Serializable {
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 

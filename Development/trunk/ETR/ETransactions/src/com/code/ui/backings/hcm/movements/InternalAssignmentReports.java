@@ -71,17 +71,17 @@ public class InternalAssignmentReports extends BaseBacking implements Serializab
 
 		    break;
 		default:
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 		}
 
 		if (hasPrivilege)
 		    resetForm();
 
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} catch (BusinessException e) {
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 

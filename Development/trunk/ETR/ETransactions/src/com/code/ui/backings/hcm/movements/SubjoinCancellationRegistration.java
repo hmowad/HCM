@@ -45,10 +45,10 @@ public class SubjoinCancellationRegistration extends BaseBacking implements Seri
 		setScreenTitle(getMessage("title_personsExternalAssignmentCancellationRegistration"));
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     public void init() {

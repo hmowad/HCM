@@ -49,10 +49,10 @@ public class SubjoinTerminationRequest extends MovementsBase implements Serializ
 		this.processId = WFProcessesEnum.PERSONS_ASSIGNMENT_TERMINATION_REQUEST.getCode();
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     protected void init() {
@@ -89,8 +89,6 @@ public class SubjoinTerminationRequest extends MovementsBase implements Serializ
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 

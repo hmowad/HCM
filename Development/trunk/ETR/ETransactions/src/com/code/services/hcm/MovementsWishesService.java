@@ -107,7 +107,7 @@ public class MovementsWishesService extends BaseService {
 
     public static void setMovementWishesConfig(int minServicePeriod, boolean openFlag, long loginEmpId, CustomSession session) throws BusinessException {
 	if (minServicePeriod < 0 || minServicePeriod > 99)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_movementWishesMinServicePeriod");
 
 	ETRConfigurationService.setMovementOpenWishesFlag(openFlag, loginEmpId, session);
 	ETRConfigurationService.setMovementWishesMinServicePeriod(minServicePeriod, loginEmpId, session);
@@ -183,7 +183,7 @@ public class MovementsWishesService extends BaseService {
 
     private static void validateMovementWishMandatoryFields(MovementWishTransaction movementWishTransaction) throws BusinessException {
 	if (movementWishTransaction.getStatus() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (movementWishTransaction.getEmployeeId() == null)
 	    throw new BusinessException("error_empSelectionManadatory");
@@ -299,7 +299,7 @@ public class MovementsWishesService extends BaseService {
 	    return getReportData(ReportNamesEnum.MOVEMENTS_SOLDIERS_MOVE_WISHES.getCode(), parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
 
     }
