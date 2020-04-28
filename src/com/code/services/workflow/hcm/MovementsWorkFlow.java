@@ -1551,7 +1551,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
     public static void initMovementJoiningDate(EmployeeData requester, WFMovementData movementRequest, long processId, String taskUrl) throws BusinessException {
 
 	if (movementRequest == null || movementRequest.getTransactionTypeId() == null || movementRequest.getMovementTypeId() == null || movementRequest.getTransactionId() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (movementRequest.getEmployeeId() == null)
 	    throw new BusinessException("error_employeeMandatory");
 
@@ -1734,7 +1734,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 
 	EmployeeData employee = EmployeesService.getEmployeeData(employeeId);
 	if (employee == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	movementRequest.setEmployeeId(employeeId);
 	movementRequest.setCategoryId(employee.getCategoryId());
@@ -1819,7 +1819,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 
 	EmployeeData employee = EmployeesService.getEmployeeData(employeeId);
 	if (employee == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	movementRequest.setEmployeeId(employeeId);
 	movementRequest.setCategoryId(employee.getCategoryId());
@@ -1877,6 +1877,10 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -2013,13 +2017,13 @@ public class MovementsWorkFlow extends BaseWorkFlow {
     public static void calculateWarnings(WFMovementData movementRequest, long processId) throws BusinessException {
 	EmployeeData emp = EmployeesService.getEmployeeData(movementRequest.getEmployeeId());
 	if (emp == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	EmployeeData replacementEmp = null;
 	if (movementRequest.getReplacementEmployeeId() != null) {
 	    replacementEmp = EmployeesService.getEmployeeData(movementRequest.getReplacementEmployeeId());
 	    if (replacementEmp == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 	}
 
 	movementRequest.setWarningMessages("");
@@ -2141,7 +2145,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 	    if (movementRequest.getReplacementEmployeeId() != null && !empsIds.add(movementRequest.getReplacementEmployeeId())) {
 		EmployeeData replacementEmployee = EmployeesService.getEmployeeData(movementRequest.getReplacementEmployeeId());
 		if (replacementEmployee == null)
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_employeeDataError");
 		throw new BusinessException("error_repeatedEmployee", new Object[] { replacementEmployee.getName() });
 	    }
 	    // prevent adding more than one emp as manager to the same unit.
@@ -2161,7 +2165,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 
 	    EmployeeData employee = EmployeesService.getEmployeeData(movementRequest.getEmployeeId());
 	    if (employee == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 	    if (employee.getStatusId() >= EmployeeStatusEnum.MOVED_EXTERNALLY.getCode())
 		throw new BusinessException("error_employeeSpecifiedStatusIsNotSuitable", new Object[] { employee.getName() });
 	    // Check that the units is under the same parent under the general manager for Officers Assignments
@@ -2793,12 +2797,12 @@ public class MovementsWorkFlow extends BaseWorkFlow {
     private static EmployeeData getMovementManager(long categoryId, long regionId, long movementTypeId) throws BusinessException {
 	WFPosition position = getWFPositionByCategoryIdAndRegionId(categoryId, regionId, movementTypeId);
 	if (position == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_positionNotFound");
 	}
 
 	EmployeeData emp = EmployeesService.getEmployeeByPosition(position.getUnitId(), position.getEmpId());
 	if (emp == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 	}
 
 	return emp;
@@ -2817,7 +2821,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
     private static boolean checkIfEmployeeExistsInWFPositionUnit(long categoryId, EmployeeData employee, long movementTypeId) throws BusinessException {
 	WFPosition position = getWFPositionByCategoryIdAndRegionId(categoryId, employee.getPhysicalRegionId(), movementTypeId);
 	if (position == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_positionNotFound");
 	}
 
 	if (position.getUnitId() != null && position.getUnitId().equals(employee.getPhysicalUnitId())) {

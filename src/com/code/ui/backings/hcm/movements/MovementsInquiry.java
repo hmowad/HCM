@@ -49,7 +49,7 @@ public class MovementsInquiry extends BaseBacking implements Serializable {
     public MovementsInquiry() {
 	try {
 	    if (getRequest().getParameter("mode") == null) {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_URLError");
 	    }
 
 	    mode = Integer.parseInt(getRequest().getParameter("mode"));
@@ -68,7 +68,7 @@ public class MovementsInquiry extends BaseBacking implements Serializable {
 		personsCategories = CommonService.getPersonsCategories();
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	    decisionsPrivileges = SecurityService.getEmployeesDecisionsPrivileges(this.loginEmpData.getEmpId(), WFProcessesGroupsEnum.MOVEMENTS.getCode(), mode);

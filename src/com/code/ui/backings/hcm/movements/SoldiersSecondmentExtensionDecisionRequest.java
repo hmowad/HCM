@@ -63,7 +63,7 @@ public class SoldiersSecondmentExtensionDecisionRequest extends MovementsBase im
 		setServerSideErrorMessages(getMessage(e.getMessage()));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     public void searchSoldiers() {
@@ -71,7 +71,7 @@ public class SoldiersSecondmentExtensionDecisionRequest extends MovementsBase im
 	    lastSecondment = MovementsService.getLastValidMovementTransaction(wfMovement.getEmployeeId(), movementTypeId, FlagsEnum.ON.getCode());
 	    soldier = EmployeesService.getEmployeeData(wfMovement.getEmployeeId());
 	    if (soldier == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_UIError");
 
 	    if (lastSecondment != null) {
 		wfMovement = MovementsWorkFlow.constructWFMovement(processId, soldier.getEmpId(), null, lastSecondment.getExecutionDateFlag(), null, lastSecondment.getEndDate(), null, null, null, null, lastSecondment.getLocationFlag(), lastSecondment.getLocation(), lastSecondment.getDecisionNumber(), lastSecondment.getDecisionDate(), lastSecondment.getReasonType(),

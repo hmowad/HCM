@@ -43,7 +43,7 @@ public class SubjoinJoiningDateRequest extends MovementsBase {
 		    break;
 
 		default:
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 		}
 
 		wfMovement = new WFMovementData();
@@ -56,7 +56,7 @@ public class SubjoinJoiningDateRequest extends MovementsBase {
 		    beneficiary = EmployeesService.getEmployeeData(wfMovement.getEmployeeId());
 		}
 	    } else
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}

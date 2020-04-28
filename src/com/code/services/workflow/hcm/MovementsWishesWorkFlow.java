@@ -233,7 +233,7 @@ public class MovementsWishesWorkFlow extends BaseWorkFlow {
 
 	    EmployeeData employee = EmployeesService.getEmployeeData(employeeId);
 	    if (employee == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 
 	    wfMovementWish.setEmployeeId(employeeId);
 	    wfMovementWish.setFromRegionId(employee.getOfficialRegionId());
@@ -350,7 +350,7 @@ public class MovementsWishesWorkFlow extends BaseWorkFlow {
     /*---------------------------Validations---------------------------*/
     private static void validateWFMovementWish(WFMovementWish wfMovementWish, long processId, String attachments) throws BusinessException {
 	if (wfMovementWish == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (wfMovementWish.getEmployeeId() == null)
 	    throw new BusinessException("error_empSelectionManadatory");
 

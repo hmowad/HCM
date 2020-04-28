@@ -195,7 +195,7 @@ public class MovementsService extends BaseService {
 
 	EmployeeData employee = EmployeesService.getEmployeeData(employeeId);
 	if (employee == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	JobData job = null;
 	if (employee.getJobId() != null)
@@ -823,7 +823,7 @@ public class MovementsService extends BaseService {
 		EmployeeData emp = EmployeesService.getEmployeeData(movementTransaction.getEmployeeId());
 
 		if (emp == null)
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_employeeDataError");
 
 		// add empId to the affected list to do changes after effect like invalidating the inbox
 		affectedEmployeesIds.add(emp.getEmpId());
@@ -919,7 +919,7 @@ public class MovementsService extends BaseService {
 	    EmployeeData emp = EmployeesService.getEmployeeData(movementTransaction.getEmployeeId());
 
 	    if (emp == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 
 	    // add empId to the affected list to do changes after effect like invalidating the inbox
 	    affectedEmployeesIds.add(emp.getEmpId());
@@ -1005,7 +1005,7 @@ public class MovementsService extends BaseService {
 		EmployeeData emp = EmployeesService.getEmployeeData(movementTransaction.getEmployeeId());
 
 		if (emp == null)
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_employeeDataError");
 
 		if (sysDate.after(movementTransaction.getEndDate())) {
 		    EmployeeLogData lastEmployeeLog = LogService.getLastEmployeeLogBeforeGivenDate(emp.getEmpId(), movementTransaction.getExecutionDate());
@@ -1063,7 +1063,7 @@ public class MovementsService extends BaseService {
 		EmployeeData emp = EmployeesService.getEmployeeData(movementTransaction.getEmployeeId());
 
 		if (emp == null)
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_employeeDataError");
 
 		if (sysDate.after(movementTransaction.getEndDate())) {
 		    EmployeeLogData lastEmployeeLog = LogService.getLastEmployeeLogBeforeGivenDate(emp.getEmpId(), movementTransaction.getExecutionDate());
@@ -1111,7 +1111,7 @@ public class MovementsService extends BaseService {
 	    EmployeeData empData = EmployeesService.getEmployeeData(movementTransaction.getEmployeeId());
 
 	    if (empData == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 
 	    // add empId to the affected list to do changes after effect like invalidating the inbox
 	    affectedEmployeesIds.add(empData.getEmpId());
@@ -1542,11 +1542,11 @@ public class MovementsService extends BaseService {
 
 	// Common mandatory fields
 	if (movementTransaction.getCategoryId() == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	} else if (movementTransaction.getMovementTypeId() == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	} else if (movementTransaction.getTransactionTypeId() == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	} else if (movementTransaction.getEmployeeId() == null) {
 	    throw new BusinessException("error_empSelectionManadatory");
 	} else if (movementTransaction.getLocationFlag() == null) {
@@ -1556,7 +1556,7 @@ public class MovementsService extends BaseService {
 	} else if (movementTransaction.getLocationFlag().longValue() == FlagsEnum.ON.getCode() && (movementTransaction.getLocation() == null || movementTransaction.getLocation().trim().isEmpty())) {
 	    throw new BusinessException("error_locationIsMandatory");
 	} else if (movementTransaction.getVerbalOrderFlag() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (transactionSourceView != MovementTransactionViewsEnum.REGISTRATION.getCode()) {
 	    if (movementTransaction.getRequestTransactionFlag().equals(FlagsEnum.OFF.getCode()) && movementTransaction.getVerbalOrderFlag().equals(FlagsEnum.OFF.getCode()) &&
@@ -1863,13 +1863,13 @@ public class MovementsService extends BaseService {
 
 	    replacementEmp = EmployeesService.getEmployeeData(replacementEmployeeId);
 	    if (replacementEmp == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 	}
 
 	EmployeeData emp;
 	emp = EmployeesService.getEmployeeData(movementTransaction.getEmployeeId());
 	if (emp == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	JobData job = null;
 	if (movementTransaction.getJobId() != null && !movementTransaction.getJobId().equals(-1L))
@@ -1965,7 +1965,7 @@ public class MovementsService extends BaseService {
 	EmployeeData emp = null;
 	emp = EmployeesService.getEmployeeData(movementTransaction.getEmployeeId());
 	if (emp == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	// Validations
 	commonValidate(movementTransaction, emp, null, transactionSourceView);
@@ -2041,7 +2041,7 @@ public class MovementsService extends BaseService {
 	EmployeeData emp = null;
 	emp = EmployeesService.getEmployeeData(movementTransaction.getEmployeeId());
 	if (emp == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	boolean isCancellation = movementTransaction.getTransactionTypeId().equals(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_CANCEL_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId());
 
@@ -2067,7 +2067,7 @@ public class MovementsService extends BaseService {
 	EmployeeData emp = null;
 	emp = EmployeesService.getEmployeeData(movementTransaction.getEmployeeId());
 	if (emp == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	// Validations
 	commonValidate(movementTransaction, emp, null, MovementTransactionViewsEnum.REGISTRATION.getCode());
@@ -2079,7 +2079,7 @@ public class MovementsService extends BaseService {
 
 	EmployeeData originalDecisionApprovedEmployee = EmployeesService.getEmployeeData(movementTransaction.getOriginalDecisionApprovedId());
 	if (originalDecisionApprovedEmployee == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	// Manager cannot assign other employee in his own place
 	if (movementTransaction.getManagerFlagBoolean() && originalDecisionApprovedEmployee.getPhysicalUnitId().equals(movementTransaction.getUnitId())) {
@@ -2104,7 +2104,7 @@ public class MovementsService extends BaseService {
 	EmployeeData emp = null;
 	emp = EmployeesService.getEmployeeData(movementTransaction.getEmployeeId());
 	if (emp == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	boolean isCancellation = movementTransaction.getTransactionTypeId().equals(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_CANCEL_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId());
 	boolean isTermination = movementTransaction.getTransactionTypeId().equals(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_TERMINATION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId());
@@ -2133,7 +2133,7 @@ public class MovementsService extends BaseService {
 	EmployeeData emp = null;
 	emp = EmployeesService.getEmployeeData(movementTransaction.getEmployeeId());
 	if (emp == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	boolean isCancellation = movementTransaction.getTransactionTypeId().equals(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_CANCEL_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId());
 	boolean isTermination = movementTransaction.getTransactionTypeId().equals(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_TERMINATION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId());
@@ -2212,7 +2212,7 @@ public class MovementsService extends BaseService {
     private static void countConflictDatesTransactions(long employeeId, Date executionDate, Date endDate) throws BusinessException {
 	try {
 	    if (executionDate == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_EMP_ID", employeeId);
@@ -2788,7 +2788,7 @@ public class MovementsService extends BaseService {
     private static long countEmployeeTransactionsAfterGivenExecutionDate(long employeeId, Date executionDate) throws BusinessException {
 	try {
 	    if (executionDate == null) {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 	    }
 
 	    Map<String, Object> qParams = new HashMap<String, Object>();
@@ -3041,7 +3041,7 @@ public class MovementsService extends BaseService {
 	    throw e;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -3081,7 +3081,7 @@ public class MovementsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -3138,7 +3138,7 @@ public class MovementsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -3183,7 +3183,7 @@ public class MovementsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -3225,7 +3225,7 @@ public class MovementsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -3261,7 +3261,7 @@ public class MovementsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -3276,7 +3276,7 @@ public class MovementsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -3315,7 +3315,7 @@ public class MovementsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -3328,11 +3328,11 @@ public class MovementsService extends BaseService {
 
 	if (etrFlag == FlagsEnum.ON.getCode()) {
 	    if (approvedId == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 
 	    EmployeeData approvedEmployee = EmployeesService.getEmployeeData(approvedId);
 	    if (approvedEmployee == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 	    movementTransaction.setTransJoiningApprovedJobName(approvedEmployee.getJobDesc());
 	}
 
@@ -3373,7 +3373,7 @@ public class MovementsService extends BaseService {
      */
     public static void validateMovementTrasactionJoiningDate(MovementTransactionData movementTransaction, Date joiningDate, int etrFlag) throws BusinessException {
 	if (movementTransaction == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (joiningDate == null || !HijriDateService.isValidHijriDate(joiningDate))
 	    throw new BusinessException("error_invalidHijriDate");
@@ -3400,7 +3400,7 @@ public class MovementsService extends BaseService {
 
     public static void validateMovementTrasactionReturnJoiningDate(MovementTransactionData movementTransaction, Date returnJoiningDate) throws BusinessException {
 	if (movementTransaction == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (returnJoiningDate == null || !HijriDateService.isValidHijriDate(returnJoiningDate))
 	    throw new BusinessException("error_invalidHijriDate");

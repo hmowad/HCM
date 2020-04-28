@@ -45,10 +45,10 @@ public class SubjoinTerminationRegistration extends BaseBacking implements Seria
 		setScreenTitle(getMessage("title_personsExternalAssignmentTerminationRegistration"));
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     public void init() {

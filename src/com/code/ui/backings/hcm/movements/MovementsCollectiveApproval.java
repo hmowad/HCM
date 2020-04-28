@@ -48,12 +48,9 @@ public class MovementsCollectiveApproval extends BaseBacking implements Serializ
 	else if (mode == 2)
 	    this.setScreenTitle(getMessage("title_MovementsCollectiveApproval"));
 	else
-	    setServerSideErrorMessages(getMessage("error_general"));
-	try {
-	    searchMovementTasks(); // Load the movements tasks data
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	}
+	    setServerSideErrorMessages(getMessage("error_URLError"));
+
+	searchMovementTasks(); // Load the movements tasks data
     }
 
     // Load the Movements tasks data
@@ -140,7 +137,7 @@ public class MovementsCollectiveApproval extends BaseBacking implements Serializ
 	    // Call the search method here to Reload the tasks
 	    searchMovementTasks();
 	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 

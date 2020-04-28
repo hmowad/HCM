@@ -43,10 +43,10 @@ public class MoveRegistration extends BaseBacking implements Serializable {
 		setScreenTitle(getMessage("title_personsExternalMoveRegistration"));
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     public void init() {

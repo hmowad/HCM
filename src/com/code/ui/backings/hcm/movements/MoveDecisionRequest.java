@@ -48,7 +48,7 @@ public class MoveDecisionRequest extends MovementsBase implements Serializable {
 		setScreenTitle(getMessage("title_personsMoveDecisionRequest"));
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 		break;
 
 	    }
@@ -92,7 +92,7 @@ public class MoveDecisionRequest extends MovementsBase implements Serializable {
 		setServerSideErrorMessages(getMessage(e1.getMessage()));
 	    }
 	} else {
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
 	}
     }
 

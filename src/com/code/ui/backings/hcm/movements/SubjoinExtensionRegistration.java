@@ -45,10 +45,10 @@ public class SubjoinExtensionRegistration extends BaseBacking implements Seriali
 		setScreenTitle(getMessage("title_personsExternalAssignmentExtensionRegistration"));
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     public void init() {

@@ -50,10 +50,10 @@ public class SubjoinTerminationDecisionRequest extends MovementsBase implements 
 		this.processId = WFProcessesEnum.PERSONS_ASSIGNMENT_TERMINATION.getCode();
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
     }
 
     protected void init() {
