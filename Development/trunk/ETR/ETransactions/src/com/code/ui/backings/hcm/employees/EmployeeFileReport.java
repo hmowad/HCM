@@ -61,7 +61,7 @@ public class EmployeeFileReport extends BaseBacking implements Serializable {
 	    EmployeeData searchEmployee = EmployeesService.getEmployeeData(employeeId);
 
 	    if (searchEmployee == null) {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_UIError");
 	    }
 
 	    if (!(this.loginEmpData.getEmpId().equals(searchEmployee.getEmpId())

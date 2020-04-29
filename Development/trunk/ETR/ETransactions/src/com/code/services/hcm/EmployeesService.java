@@ -1013,6 +1013,7 @@ public class EmployeesService extends BaseService {
 
 	    return result.isEmpty() ? null : result.get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -1026,6 +1027,7 @@ public class EmployeesService extends BaseService {
 
 	    return result.isEmpty() ? null : result.get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -1093,6 +1095,7 @@ public class EmployeesService extends BaseService {
 
 	    return DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_EMPS_BY_UNIT_ID.getCode(), qParams).get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -1116,6 +1119,7 @@ public class EmployeesService extends BaseService {
 	    }
 	    return DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_EMPS_BY_UNIT_HKEY_PREFIX.getCode(), qParams).get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -1135,6 +1139,7 @@ public class EmployeesService extends BaseService {
 	    }
 	    return DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_EMPS_BY_OFFICIAL_UNIT_HKEY_PREFIX.getCode(), qParams).get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -1154,6 +1159,7 @@ public class EmployeesService extends BaseService {
 	    }
 	    return DataAccess.executeNamedQuery(Long.class, QueryNamesEnum.HCM_COUNT_EMPS_BY_PHYSICAL_UNIT_HKEY_PREFIX.getCode(), qParams).get(0);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -1225,7 +1231,7 @@ public class EmployeesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(getMessage("error_general"));
+	    throw new BusinessException(getMessage("error_reportPrintingError"));
 	}
     }
 
@@ -1265,7 +1271,7 @@ public class EmployeesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1341,7 +1347,7 @@ public class EmployeesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1383,7 +1389,7 @@ public class EmployeesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1404,7 +1410,7 @@ public class EmployeesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(getMessage("error_general"));
+	    throw new BusinessException(getMessage("error_reportPrintingError"));
 	}
     }
 
@@ -1421,7 +1427,7 @@ public class EmployeesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException(getMessage("error_general"));
+	    throw new BusinessException(getMessage("error_reportPrintingError"));
 	}
 
     }
@@ -1695,7 +1701,7 @@ public class EmployeesService extends BaseService {
 		throw new BusinessException("error_cannotRetrieveInformationsFromYakeenAsDataEnteredIsWrong");
 	    if (e instanceof BusinessException_Exception || e instanceof DataValidationException || e instanceof WebServiceException)
 		throw new BusinessException("error_cannotRetrieveInformationsFromYakeenAsItIsNotAvailableNow");
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_integrationError");
 	}
     }
 

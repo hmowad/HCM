@@ -117,13 +117,13 @@ public class EmployeesReports extends BaseBacking implements Serializable {
 			isAdmin = true;
 		    break;
 		default:
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_URLError");
 		}
 		if (loginEmpData.getIsManager() == FlagsEnum.ON.getCode() && !isAdmin)
 		    isManager = true;
 		resetForm();
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));

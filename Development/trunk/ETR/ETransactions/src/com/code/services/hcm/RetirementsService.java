@@ -164,7 +164,7 @@ public class RetirementsService extends BaseService {
     /*---------------------------Validations--------------------------*/
     private static void validateDisclaimerTransactionAndDisclaimerTransactionDetails(DisclaimerTransactionData disclaimerTransactionData, List<DisclaimerTransactionDetail> disclaimerTransactionDetails) throws BusinessException {
 	if (disclaimerTransactionData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (disclaimerTransactionData.getEmpId() == null)
 	    throw new BusinessException("error_empSelectionManadatory");
 	if (disclaimerTransactionData.getTransEmpCategoryId() == null)
@@ -241,7 +241,7 @@ public class RetirementsService extends BaseService {
 	    return getReportData(ReportNamesEnum.RETIREMENTS_DISCLAIMER_DECISION.getCode(), qParams);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -264,7 +264,7 @@ public class RetirementsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -307,7 +307,7 @@ public class RetirementsService extends BaseService {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 }

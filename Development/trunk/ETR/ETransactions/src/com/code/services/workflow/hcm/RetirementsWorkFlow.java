@@ -104,7 +104,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    Date curHijriDate = HijriDateService.getHijriSysDate();
 	    WFPosition position = getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
 	    if (position == null) {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_positionNotFound");
 	    }
 	    UnitData regionUnit = UnitsService.getUnitById(position.getUnitId());
 	    if (approvalFlag == WFActionFlagsEnum.REDIRECT.getCode()) {
@@ -166,14 +166,14 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 			    addModifyWFDisclaimerDetail(managerWFDisclaimerDetail);
 			}
 		    } else {
-			throw new BusinessException("error_general");
+			throw new BusinessException("error_transactionDataError");
 		    }
 		} else {
 		    setWFTaskAction(ssmTask, wfTaskAction, curDate, curHijriDate, session);
 		}
 		addModifyWFDisclaimerDetail(wfDisclaimerDetail, session);
 	    } else {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 	    }
 
 	    session.commitTransaction();
@@ -211,7 +211,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    } else if (reviewFlag == WFActionFlagsEnum.APPROVE.getCode()) {
 		WFTask previousTask = getPredecessorWFTask(sreTask);
 		if (previousTask == null)
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_transactionDataError");
 		WFTask task = completeWFTask(sreTask, WFTaskActionsEnum.REVIEW.getCode(), curDate, curHijriDate, wfDisclaimerData.getInstanceId(), getDelegate(previousTask.getOriginalId(), processId, requester.getEmpId()), previousTask.getOriginalId(), previousTask.getTaskUrl(), previousTask.getAssigneeWfRole(), sreTask.getLevel(), session);
 		task.setFlexField1(previousTask.getFlexField1());
 		task.setFlexField2(previousTask.getFlexField2());
@@ -222,11 +222,11 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		    DataAccess.updateEntity(previousTask, session);
 		}
 	    } else {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 	    }
 	    WFPosition position = getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
 	    if (position == null) {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_positionNotFound");
 	    }
 	    if (sreTask.getFlexField3().equals(UnitsService.getUnitById(position.getUnitId()).getId() + "")) {
 		updateDisclaimerAmounts(wfDisclaimerData);
@@ -259,7 +259,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		position = getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
 	    }
 	    if (position == null) {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_positionNotFound");
 	    }
 	    UnitData regionUnit = UnitsService.getUnitById(position.getUnitId());
 	    if (approvalFlag == WFActionFlagsEnum.REDIRECT.getCode()) {
@@ -285,10 +285,10 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		if (countUncompletedWFInstanceTasks(instance.getInstanceId()) == FlagsEnum.ON.getCode()) { // if function returned 1, it means that current task is the only remaining task so a task for ESM will be added
 		    WFPosition retirementAffairsUnitManagerPosition = getWFPosition(WFPositionsEnum.RETIREMENT_AFFAIRS_UNIT_MANAGER.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
 		    if (retirementAffairsUnitManagerPosition == null)
-			throw new BusinessException("error_general");
+			throw new BusinessException("error_positionNotFound");
 		    Long retirementAffairsUnitManagerId = UnitsService.getUnitPhysicalManagerId(retirementAffairsUnitManagerPosition.getUnitId());
 		    if (retirementAffairsUnitManagerId == null)
-			throw new BusinessException("error_general");
+			throw new BusinessException("error_positionNotFound");
 		    completeWFTask(smTask, wfTaskAction, curDate, curHijriDate, instance.getInstanceId(), getDelegate(retirementAffairsUnitManagerId, instance.getProcessId(), requester.getEmpId()), retirementAffairsUnitManagerId, smTask.getTaskUrl(), WFTaskRolesEnum.EXTRA_SIGN_MANAGER.getCode(), smTask.getLevel(), session);
 		    wfDisclaimerData.setSentBackUnitsString(null);
 		    addModifyWFDisclaimerData(wfDisclaimerData, instance.getInstanceId(), session);
@@ -297,7 +297,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		}
 		addModifyWFDisclaimerDetail(wfDisclaimerDetail, session);
 	    } else {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 	    }
 
 	    session.commitTransaction();
@@ -335,7 +335,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    } else if (reviewFlag == WFActionFlagsEnum.APPROVE.getCode()) {
 		WFTask previousTask = getPredecessorWFTask(reTask);
 		if (previousTask == null)
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_transactionDataError");
 		WFTask task = completeWFTask(reTask, WFTaskActionsEnum.REVIEW.getCode(), curDate, curHijriDate, wfDisclaimerData.getInstanceId(), getDelegate(previousTask.getOriginalId(), processId, requester.getEmpId()), previousTask.getOriginalId(), previousTask.getTaskUrl(), previousTask.getAssigneeWfRole(), reTask.getLevel(), session);
 		task.setFlexField1(previousTask.getFlexField1());
 		task.setFlexField2(previousTask.getFlexField2());
@@ -346,11 +346,11 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 		    DataAccess.updateEntity(previousTask, session);
 		}
 	    } else {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 	    }
 	    WFPosition position = getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
 	    if (position == null) {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_positionNotFound");
 	    }
 	    if (reTask.getFlexField3().equals(UnitsService.getUnitById(position.getUnitId()).getId() + "")) {
 		updateDisclaimerAmounts(wfDisclaimerData);
@@ -372,7 +372,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
     private static UnitData getPayrollUnitData(Long physicalRegionId) throws BusinessException {
 	WFPosition regionPosition = getRegionPayrollUnitManager(physicalRegionId);
 	if (regionPosition == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_positionNotFound");
 	}
 	return UnitsService.getUnitById(regionPosition.getUnitId());
     }
@@ -672,7 +672,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
     private static void validateDisclaimerRequest(WFDisclaimerData wfDisclaimerData) throws BusinessException {
 
 	if (wfDisclaimerData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (wfDisclaimerData.getEmpId() == null)
 	    throw new BusinessException("error_employeeMandatory");
 	if (wfDisclaimerData.getEmpOfficialUnitFullName() == null)
@@ -717,7 +717,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	managersUnits.addAll(UnitsService.getUnitsByIdsString(configuredManagersUnits));
 	WFPosition position = getRegionPayrollUnitManager(empPhysicalRegionId);
 	if (position == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_positionNotFound");
 	}
 	managersUnits.add(UnitsService.getUnitById(position.getUnitId()));
 	return managersUnits;
@@ -727,7 +727,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	try {
 	    UnitData empUnit = UnitsService.getUnitByExactFullName(unitName);
 	    if (empUnit == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 	    return UnitsService.getAncestorUnderPresidencyByLevel(empUnit.getId(), empUnit.getRegionId() == RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() ? 2 : 3);
 	} catch (BusinessException e) {
 	    e.printStackTrace();
@@ -769,6 +769,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	try {
 	    return getWFPosition(WFPositionsEnum.REGION_PAYROLL_UNIT_MANAGER.getCode(), physicalRegionId);
 	} catch (BusinessException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -832,6 +833,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    qParams.put("P_PROCESS_GROUP_ID", WFProcessesGroupsEnum.RETIREMENTS.getCode());
 	    return DataAccess.executeNamedQuery(Object.class, QueryNamesEnum.WF_GET_RETIREMENT_TASKS.getCode(), qParams);
 	} catch (DatabaseException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }

@@ -68,7 +68,7 @@ public class DefinitionLetter extends WFBaseBacking {
 		if (WFDefLetter.getEmbassyId() != null) {
 		    Country embassy = CountryService.getEmbassyById(WFDefLetter.getEmbassyId());
 		    if (embassy == null)
-			throw new BusinessException("error_general");
+			throw new BusinessException("error_transactionDataError");
 		    embassyList.add(embassy);
 		}
 	    }
@@ -97,17 +97,13 @@ public class DefinitionLetter extends WFBaseBacking {
 	    beneficiary = requester;
 	    beneficiarySearchId = beneficiary.getEmpId().toString();
 	    WFDefLetter.setRelatedUserId(beneficiary.getEmpId());
-	    try {
-		adjustRetiredFlag();
-	    } catch (BusinessException e1) {
-		this.setServerSideErrorMessages(getMessage("error_general"));
-	    }
+	    adjustRetiredFlag();
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
-    private void adjustRetiredFlag() throws BusinessException {
-	if (EmployeeStatusEnum.SERVICE_TERMINATED.getCode() == beneficiary.getStatusId().longValue()) {
+    private void adjustRetiredFlag() {
+	if (beneficiary != null && beneficiary.getStatusId() != null && EmployeeStatusEnum.SERVICE_TERMINATED.getCode() == beneficiary.getStatusId().longValue()) {
 	    retiredFlag = true;
 	    WFDefLetter.setLetterType("60");
 	} else {

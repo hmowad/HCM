@@ -69,15 +69,15 @@ public class EmployeesInquiry extends BaseBacking implements Serializable {
 		    isAuthorizedForFemales = SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_CIVILIAN_INQUIRY.getCode(), MenuActionsEnum.PRS_EMPS_INQUIRY_FEMALE_CIVILIANS.getCode());
 		    break;
 		default:
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 		}
 		resetForm();
 	    } catch (BusinessException e) {
 		e.printStackTrace();
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage(e.getMessage()));
 	    }
 	} else
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
 
 	regionsList = CommonService.getAllRegions();
     }

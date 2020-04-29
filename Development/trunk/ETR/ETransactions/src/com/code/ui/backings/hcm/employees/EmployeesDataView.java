@@ -76,12 +76,12 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 		empParam = EmployeesService.getEmployeeData(empId);
 		employeeQualificationsDataParam = EmployeesService.getEmployeeQualificationsByEmpId(empId);
 		if (empParam == null)
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_employeeDataError");
 
 		if (loginEmpData.getPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() && !(loginEmpData.getPhysicalRegionId().equals(empParam.getPhysicalRegionId()) || loginEmpData.getPhysicalRegionId().equals(empParam.getOfficialRegionId()))) {
 		    employee = null;
 		    employeeQualificationsData = null;
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_employeeDataError");
 		}
 		if (empParam.getCategoryId() == CategoriesEnum.CONTRACTORS.getCode()) {
 		    if (empParam.getCategoryClassificationId() != null && empParam.getCategoryClassificationId() == CategoryClassificationEnum.NON_SAUDI_DOCOTRS_CONTRACTORS.getCode()) {
@@ -137,7 +137,7 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 		    break;
 
 		default:
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_employeeDataError");
 		}
 	    }
 	    employeeMedicalStaffData = EmployeesService.getEmployeeMedicalStaffDataByEmpId(employee.getEmpId());
@@ -166,7 +166,7 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 		categories = CommonService.getPersonsCategories();
 		break;
 	    default:
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 	    }
 
 	    degrees = PayrollsService.getAllDegrees();

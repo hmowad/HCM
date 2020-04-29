@@ -41,12 +41,8 @@ public class RetirementsCollectiveApproval extends BaseBacking implements Serial
 	super();
 	// TODO Auto-generated constructor stub
 	this.setScreenTitle(getMessage("title_retirementsCollectiveApproval"));
-	try {
-	    // Load the Retirements tasks data
-	    searchRetirementTasks();
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	}
+	// Load the Retirements tasks data
+	searchRetirementTasks();
     }
 
     // Load the Retirements tasks data
@@ -120,7 +116,7 @@ public class RetirementsCollectiveApproval extends BaseBacking implements Serial
 	    searchRetirementTasks();
 
 	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
