@@ -35,6 +35,7 @@ import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
 import com.code.services.BaseService;
+import com.code.services.buswfcoop.BusinessWorkflowCooperation;
 import com.code.services.buswfcoop.EmployeesTransactionsConflictValidator;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.integration.PayrollEngineService;
@@ -111,6 +112,7 @@ public class VacationsService extends BaseService {
 	Long adminDecisionId = null;
 	String originalVacationDecisionNumber = null;
 	EmployeeData employee = EmployeesService.getEmployeeData(request.getEmpId());
+	Long unitId = employee.getPhysicalUnitId();
 	if (employee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 	    if (request.getJoiningDate() != null) { // in case of vacation joining
 		originalVacationDecisionNumber = request.getDecisionNumber();
@@ -123,8 +125,10 @@ public class VacationsService extends BaseService {
 		if (request.getStatus() == RequestTypesEnum.NEW.getCode()) {
 		    if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
 			adminDecisionId = AdminDecisionsEnum.OFFICERS_REGULAR_VACATION_REQUEST.getCode();
+			unitId = BusinessWorkflowCooperation.getVacationManager(employee, request.getVacationTypeId()).getPhysicalUnitId();
 		    } else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
 			adminDecisionId = AdminDecisionsEnum.OFFICERS_COMPELLING_VACATION_REQUEST.getCode();
+			unitId = BusinessWorkflowCooperation.getVacationManager(employee, request.getVacationTypeId()).getPhysicalUnitId();
 		    } else if (request.getVacationTypeId().equals(VacationTypesEnum.SICK.getCode())) {
 			if (request.getPaidVacationType().equals(PaidVacationTypesEnum.FULL_PAID.getCode())) {
 			    adminDecisionId = AdminDecisionsEnum.OFFICERS_FULL_PAID_SICK_VACATION_REQUEST.getCode();
@@ -165,8 +169,10 @@ public class VacationsService extends BaseService {
 		if (request.getStatus() == RequestTypesEnum.NEW.getCode()) {
 		    if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
 			adminDecisionId = AdminDecisionsEnum.SOLDIERS_REGULAR_VACATION_REQUEST.getCode();
+			unitId = BusinessWorkflowCooperation.getVacationManager(employee, request.getVacationTypeId()).getPhysicalUnitId();
 		    } else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
 			adminDecisionId = AdminDecisionsEnum.SOLDIERS_COMPELLING_VACATION_REQUEST.getCode();
+			unitId = BusinessWorkflowCooperation.getVacationManager(employee, request.getVacationTypeId()).getPhysicalUnitId();
 		    }
 		}
 	    }
@@ -178,7 +184,7 @@ public class VacationsService extends BaseService {
 	    String requestDecisionNumber = request.getJoiningDate() != null ? System.currentTimeMillis() + "" : request.getDecisionNumber();
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(
 		    Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), request.getVacationId(), null, gregVacationStartDateString, gregVacationEndDateString, requestDecisionNumber, originalVacationDecisionNumber)));
-	    PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(Vacation.class), resendFlag, request.getJoiningDate() != null ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode(), session);
+	    PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(Vacation.class), resendFlag, request.getJoiningDate() != null ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode(), session);
 	}
     }
 

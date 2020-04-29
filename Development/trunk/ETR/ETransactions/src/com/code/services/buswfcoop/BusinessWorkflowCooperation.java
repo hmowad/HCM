@@ -1,6 +1,7 @@
 package com.code.services.buswfcoop;
 
 import com.code.dal.CustomSession;
+import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.enums.TransactionClassesEnum;
 import com.code.enums.WFInstanceStatusEnum;
 import com.code.exceptions.BusinessException;
@@ -9,6 +10,7 @@ import com.code.services.workflow.BaseWorkFlow;
 import com.code.services.workflow.hcm.JobsWorkFlow;
 import com.code.services.workflow.hcm.PromotionsWorkFlow;
 import com.code.services.workflow.hcm.TerminationsWorkflow;
+import com.code.services.workflow.hcm.VacationsWorkFlow;
 
 public class BusinessWorkflowCooperation extends BaseService {
 
@@ -56,5 +58,10 @@ public class BusinessWorkflowCooperation extends BaseService {
 
     public static long countJobsRequestsByBasicJobNameId(Long basicJobNameId) throws BusinessException {
 	return JobsWorkFlow.countJobsRequestsByBasicJobNameId(basicJobNameId);
+    }
+
+    // wrapper to be used in payroll integration with vacation service
+    public static EmployeeData getVacationManager(EmployeeData vacBeneficiary, long vacationTypeId) throws BusinessException {
+	return VacationsWorkFlow.getVacationManager(vacBeneficiary, vacationTypeId);
     }
 }
