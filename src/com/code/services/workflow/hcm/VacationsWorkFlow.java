@@ -1134,7 +1134,7 @@ public class VacationsWorkFlow extends BaseWorkFlow {
 	return vacation;
     }
 
-    private static EmployeeData getVacationManager(EmployeeData vacBeneficiary, long vacationTypeId) throws BusinessException {
+    public static EmployeeData getVacationManager(EmployeeData vacBeneficiary, long vacationTypeId) throws BusinessException {
 	WFPosition position = new WFPosition();
 	long categoryId = vacBeneficiary.getCategoryId();
 	long regionId = vacBeneficiary.getPhysicalRegionId();
