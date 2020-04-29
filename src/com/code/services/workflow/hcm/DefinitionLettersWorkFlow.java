@@ -66,6 +66,7 @@ public class DefinitionLettersWorkFlow extends BaseWorkFlow {
 	    else
 		return result.get(0);
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }
@@ -109,7 +110,7 @@ public class DefinitionLettersWorkFlow extends BaseWorkFlow {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 }

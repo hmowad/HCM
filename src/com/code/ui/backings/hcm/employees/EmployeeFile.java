@@ -98,7 +98,7 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 		    employeeMenuActions = SecurityService.getEmployeeMenuActions(loginEmpData.getEmpId(), MenuCodesEnum.EMPS_CIVILIAN_FILE.getCode());
 		    break;
 		default:
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 		    break;
 		}
 
@@ -125,7 +125,7 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 	    Boolean tempIsModifyAdmin = isModifyAdmin;
 	    Boolean tempIsViewAdmin = isViewAdmin;
 	    if (selectedEmployee == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_UIError");
 	    else if (loginEmpData.getEmpId().equals(selectedEmployee.getEmpId())
 		    || (this.loginEmpData.getIsManager().equals(FlagsEnum.ON.getCode()) && selectedEmployee.getPhysicalUnitHKey() != null && selectedEmployee.getPhysicalUnitHKey().startsWith(UnitsService.getHKeyPrefix(this.loginEmpData.getPhysicalUnitHKey())))
 		    || isRequesterAuthorizedForModifyOnly(selectedEmployee) || isRequesterAuthorizedForViewOnly(selectedEmployee)) {
@@ -310,7 +310,7 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 	    PromotionsService.modifyPromotionJoiningDate(promotion.getId(), promotion.getJoiningDate(), loginEmpData.getEmpId());
 	    employee = EmployeesService.getEmployeeData(employee.getEmpId());
 	    if (employee == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_employeeDataError");
 
 	    promotions = PromotionsService.getPromotionsHistory(employee.getEmpId(), FlagsEnum.ALL.getCode());
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));

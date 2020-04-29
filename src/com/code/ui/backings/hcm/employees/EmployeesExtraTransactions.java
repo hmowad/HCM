@@ -52,7 +52,7 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
 		setScreenTitle(getMessage("title_personsDataExtraTransactions"));
 		break;
 	    default:
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 		break;
 	    }
 	    ranksTitles = CommonService.getAllRanksTitles();

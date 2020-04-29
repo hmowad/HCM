@@ -71,7 +71,7 @@ public class DisclaimerRequest extends WFBaseBacking {
 			isAdmin = true;
 		    break;
 		default:
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 		    break;
 		}
 
@@ -94,7 +94,7 @@ public class DisclaimerRequest extends WFBaseBacking {
 		    position = RetirementsWorkFlow.getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
 		    payrollUnitData = UnitsService.getUnitById(position.getUnitId());
 		    if (this.currentTask.getFlexField3() == null)
-			setServerSideErrorMessages(getMessage("error_general"));
+			setServerSideErrorMessages(getMessage("error_transactionDataError"));
 		    UnitData SmSsmUnitData = UnitsService.getUnitById(Long.parseLong(this.currentTask.getFlexField3()));
 		    isPayrollReviewer = payrollUnitData.getId().equals(SmSsmUnitData.getId());
 		    if (SmSsmUnitData != null) {
@@ -115,7 +115,7 @@ public class DisclaimerRequest extends WFBaseBacking {
 		    position = RetirementsWorkFlow.getRegionPayrollUnitManager(wfDisclaimerData.getEmpPhysicalRegionId());
 		    payrollUnitData = UnitsService.getUnitById(position.getUnitId());
 		    if (this.currentTask.getFlexField3() == null)
-			setServerSideErrorMessages(getMessage("error_general"));
+			setServerSideErrorMessages(getMessage("error_transactionDataError"));
 		    UnitData SmSsmUnitData = UnitsService.getUnitById(Long.parseLong(this.currentTask.getFlexField3()));
 		    isPayrollReviewer = payrollUnitData.getId().equals(SmSsmUnitData.getId());
 		    if (SmSsmUnitData != null) {
@@ -125,7 +125,7 @@ public class DisclaimerRequest extends WFBaseBacking {
 		    sentBackUnitsIdsParam = RetirementsWorkFlow.getManagersUnitsIdsString(wfDisclaimerData.getInstanceId(), wfDisclaimerData.getEmpPhysicalRegionId());
 		}
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -161,7 +161,7 @@ public class DisclaimerRequest extends WFBaseBacking {
 	try {
 	    EmployeeData selectedEmployee = EmployeesService.getEmployeeData(employee.getEmpId());
 	    if (selectedEmployee == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_UIError");
 	    if (this.role.equals(WFTaskRolesEnum.REQUESTER.getCode())) {
 		wfDisclaimerData = RetirementsWorkFlow.constructWFDisclaimerData(selectedEmployee);
 		if (wfDisclaimerData.getTerminationTransactionId() == null)

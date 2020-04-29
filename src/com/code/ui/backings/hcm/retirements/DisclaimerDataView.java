@@ -36,7 +36,7 @@ public class DisclaimerDataView extends BaseBacking {
 	    if (terminationTransactionParam != null && !terminationTransactionParam.isEmpty()) {
 		terminationTransactionId = Long.parseLong(terminationTransactionParam);
 	    } else {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_URLError");
 	    }
 
 	    isEmployeeEligible(terminationTransactionId);
@@ -59,7 +59,7 @@ public class DisclaimerDataView extends BaseBacking {
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage("error_transactionDataError"));
 	}
     }
 
