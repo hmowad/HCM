@@ -52,7 +52,7 @@ public class PromotionsReports extends BaseBacking {
 		else if (mode == CategoryModesEnum.CIVILIANS.getCode())
 		    setScreenTitle(getMessage("title_personsPromotionsReports"));
 		else
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 
 		reportType = 10;
 		ranks = PromotionsService.getPromotionsRanksForReports(mode, reportType);
@@ -60,10 +60,10 @@ public class PromotionsReports extends BaseBacking {
 		resetForm();
 
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
@@ -77,8 +77,8 @@ public class PromotionsReports extends BaseBacking {
 	    decisionDateFrom = null;
 	    decisionDateTo = HijriDateService.getHijriSysDate();
 	    scaleUpFlag = false;
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
@@ -86,8 +86,8 @@ public class PromotionsReports extends BaseBacking {
 	try {
 	    if (mode == CategoryModesEnum.OFFICERS.getCode())
 		ranks = PromotionsService.getPromotionsRanksForReports(mode, reportType);
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 

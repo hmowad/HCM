@@ -131,7 +131,7 @@ public class TerminationsSoldiersRecords extends TerminationsRecordsBase {
 	    }
 	    selectedTerminationRecordDetailData.setServiceTerminationDateString(selectedTerminationRecordDetailData.getDismissApprovalDateString());
 	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
@@ -239,10 +239,6 @@ public class TerminationsSoldiersRecords extends TerminationsRecordsBase {
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    return null;
 	}
     }
 
@@ -264,10 +260,6 @@ public class TerminationsSoldiersRecords extends TerminationsRecordsBase {
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    return null;
 	}
     }
 
@@ -277,10 +269,6 @@ public class TerminationsSoldiersRecords extends TerminationsRecordsBase {
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	    return null;
 	}
     }
@@ -292,10 +280,6 @@ public class TerminationsSoldiersRecords extends TerminationsRecordsBase {
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    return null;
 	}
     }
 
@@ -305,10 +289,6 @@ public class TerminationsSoldiersRecords extends TerminationsRecordsBase {
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	    return null;
 	}
     }

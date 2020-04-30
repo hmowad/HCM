@@ -502,6 +502,9 @@ public class TerminationsService extends BaseService {
 		DataAccess.updateEntity(terminationRecordItr, session);
 	    }
 	} catch (Exception e) {
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
@@ -697,7 +700,7 @@ public class TerminationsService extends BaseService {
     private static void validateTerminationPrerequisiteEmployeesDates(EmployeeData employeeData, Date terminationDueDate) throws BusinessException {
 
 	if (employeeData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	if (terminationDueDate == null)
 	    throw new BusinessException("error_terminationDueDateIsMandatory");
@@ -1084,7 +1087,7 @@ public class TerminationsService extends BaseService {
 	for (TerminationRecordDetailData terminationRecordDetailDataItr : terminationRecordDetailDataList) {
 
 	    if (terminationRecordDetailDataItr.getEmpId() == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    // Employee Validation
 	    if ((errorString.isEmpty() || errorString.equals("error_employeeOfficialUnitNotFound")) && terminationRecordDetailDataItr.getEmpOfficialUnitFullName() == null) {
@@ -1258,7 +1261,7 @@ public class TerminationsService extends BaseService {
 	for (TerminationRecordDetailData terminationRecodDetailDataItr : terminationRecordDetailDataList) {
 
 	    if (terminationRecodDetailDataItr.getEmpId() == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    // Employee Validation
 	    if ((errorString.isEmpty() || errorString.equals("error_employeeOfficialUnitNotFound")) && (terminationRecodDetailDataItr.getEmpOfficialUnitFullName() == null || terminationRecodDetailDataItr.getEmpOfficialUnitFullName().length() == 0)) {
@@ -1521,7 +1524,7 @@ public class TerminationsService extends BaseService {
 
 	for (TerminationRecordDetailData terminationRecodDetailDataItr : terminationRecordDetailDataList) {
 	    if (terminationRecodDetailDataItr.getEmpId() == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    if ((errorString.isEmpty() || errorString.equals("error_employeeOfficialUnitNotFound")) && (terminationRecodDetailDataItr.getEmpOfficialUnitFullName() == null || terminationRecodDetailDataItr.getEmpOfficialUnitFullName().length() == 0)) {
 		errorString = "error_employeeOfficialUnitNotFound";
@@ -2550,7 +2553,7 @@ public class TerminationsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
 
     }
@@ -2585,7 +2588,7 @@ public class TerminationsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -2603,12 +2606,12 @@ public class TerminationsService extends BaseService {
 	    else if (terminationTransaction.getCategoryId().longValue() == CategoriesEnum.PERSONS.getCode() || terminationTransaction.getCategoryId().longValue() == CategoriesEnum.MEDICAL_STAFF.getCode() || terminationTransaction.getCategoryId().longValue() == CategoriesEnum.USERS.getCode() || terminationTransaction.getCategoryId().longValue() == CategoriesEnum.WAGES.getCode() || terminationTransaction.getCategoryId().longValue() == CategoriesEnum.CONTRACTORS.getCode())
 		reportName = ReportNamesEnum.TERMINATIONS_DECISION_CIVILIANS_CANCEL_TRANSACTION.getCode();
 	    else
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_reportPrintingError");
 
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
 
     }
@@ -2637,12 +2640,12 @@ public class TerminationsService extends BaseService {
 		else if (mode == CategoriesEnum.PERSONS.getCode())
 		    reportName = ReportNamesEnum.TERMINATIONS_DECISION_CIVILIANS_CANCEL_TRANSACTION.getCode();
 	    } else
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_reportPrintingError");
 
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
 
     }

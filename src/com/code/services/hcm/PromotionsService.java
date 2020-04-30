@@ -414,7 +414,7 @@ public class PromotionsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -693,7 +693,7 @@ public class PromotionsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
 
     }
@@ -709,7 +709,7 @@ public class PromotionsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -762,7 +762,7 @@ public class PromotionsService extends BaseService {
 		return getRTFReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
 
     }
@@ -791,7 +791,7 @@ public class PromotionsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -883,7 +883,7 @@ public class PromotionsService extends BaseService {
 	    return getReportData(reportName, qParams);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1490,6 +1490,10 @@ public class PromotionsService extends BaseService {
 	    session.commitTransaction();
 	} catch (Exception e) {
 	    session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -1676,6 +1680,10 @@ public class PromotionsService extends BaseService {
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -1923,7 +1931,7 @@ public class PromotionsService extends BaseService {
     private static void validateNewPromotionReportDetail(EmployeeData employee, PromotionReportData promotionReportData, List<PromotionTransactionData> promotionTransactionsData) throws BusinessException {
 
 	if (employee == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	// Check for Status
 	if (employee.getStatusId() < EmployeeStatusEnum.ON_DUTY.getCode() || employee.getStatusId() >= EmployeeStatusEnum.MOVED_EXTERNALLY.getCode())
@@ -3454,7 +3462,7 @@ public class PromotionsService extends BaseService {
     private static void fillPromotionTransaction(PromotionTransactionData promotionTransactionData, EmployeeData employee) throws BusinessException {
 
 	if (employee == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 
 	promotionTransactionData.setEmpId(employee.getEmpId());
 	promotionTransactionData.setName(employee.getName());
@@ -4270,7 +4278,7 @@ public class PromotionsService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
 
     }

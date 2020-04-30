@@ -67,8 +67,6 @@ public class PromotionCiviliansReport extends PromotionsBase {
 
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 
@@ -187,8 +185,6 @@ public class PromotionCiviliansReport extends PromotionsBase {
 		PromotionsService.handlePromotionCiviliansBonus(selectedPromotionReportDetailData);
 	    } catch (BusinessException e) {
 		this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	    } catch (Exception e) {
-		this.setServerSideErrorMessages(getMessage("error_general"));
 	    }
 	}
     }

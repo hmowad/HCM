@@ -42,9 +42,9 @@ public class PromotionsInquiry extends BaseBacking {
 		else if (mode == CategoryModesEnum.CIVILIANS.getCode())
 		    setScreenTitle(getMessage("title_promotionsInquiryEmployees"));
 		else
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	    decisionsPrivileges = SecurityService.getEmployeesDecisionsPrivileges(this.loginEmpData.getEmpId(), WFProcessesGroupsEnum.PROMOTIONS.getCode(), mode);
@@ -73,10 +73,6 @@ public class PromotionsInquiry extends BaseBacking {
 	} catch (BusinessException e) {
 	    promotionTransactionDataList = new ArrayList<PromotionTransactionData>();
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    promotionTransactionDataList = new ArrayList<PromotionTransactionData>();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 

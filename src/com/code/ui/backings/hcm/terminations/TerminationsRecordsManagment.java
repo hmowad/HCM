@@ -88,12 +88,10 @@ public class TerminationsRecordsManagment extends BaseBacking {
 		    terminationContractorsReasons = TerminationsService.getTerminationReasons(CategoriesEnum.CONTRACTORS.getCode());
 		    terminationReasons = terminationCiviliansReasons;
 		} else {
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 		}
 	    } catch (BusinessException e) {
 		this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	    } catch (Exception e) {
-		this.setServerSideErrorMessages(getMessage("error_general"));
 	    }
 	}
 
@@ -159,8 +157,6 @@ public class TerminationsRecordsManagment extends BaseBacking {
 	    this.terminationRecords = TerminationsService.getTerminationRecordsData(recordNumber, recordDateFrom, recordDateTo, retirementDateFrom, retirementDateTo, rankId, status, reasonId, empId, categoryId, regionId);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 
@@ -205,8 +201,6 @@ public class TerminationsRecordsManagment extends BaseBacking {
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 

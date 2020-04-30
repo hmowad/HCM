@@ -62,7 +62,7 @@ public class TerminationReport extends BaseBacking {
 		categories = new ArrayList<Category>();
 
 		if (mode != CategoryModesEnum.OFFICERS.getCode() && mode != CategoryModesEnum.SOLDIERS.getCode() && mode != CategoryModesEnum.CIVILIANS.getCode()) {
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 		} else {
 		    ranks = CommonService.getRanks(null, new Long[] { (long) mode });
 		    if (mode == CategoryModesEnum.OFFICERS.getCode()) {
@@ -79,10 +79,10 @@ public class TerminationReport extends BaseBacking {
 		regions = CommonService.getAllRegions();
 		resetForm();
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
@@ -194,9 +194,6 @@ public class TerminationReport extends BaseBacking {
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 

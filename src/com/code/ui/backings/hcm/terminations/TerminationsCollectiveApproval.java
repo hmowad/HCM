@@ -44,12 +44,8 @@ public class TerminationsCollectiveApproval extends BaseBacking {
     public TerminationsCollectiveApproval() {
 	super();
 	this.setScreenTitle(getMessage("title_terminationsCollectiveApproval"));
-	try {
-	    // Load the promotions tasks data
-	    searchTerminationsTasks();
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	}
+	// Load the promotions tasks data
+	searchTerminationsTasks();
     }
 
     // Load the terminations tasks data
@@ -75,53 +71,48 @@ public class TerminationsCollectiveApproval extends BaseBacking {
     // Loop over the selected tasks for approval
     // called from the xhtml when "Approve" button clicked
     public void doTerminationsCollectiveApprovalSM() {
-	try {
-	    String unsuccessfulTaskIdsIfAny = "";
-	    String comma = "";
-	    int unsuccessfulTasksCount = 0;
+	String unsuccessfulTaskIdsIfAny = "";
+	String comma = "";
+	int unsuccessfulTasksCount = 0;
 
-	    long transactionTypeId = CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.STE_TERMINATION.getCode(), TransactionClassesEnum.TERMINATIONS.getCode()).getId();
-	    for (Object obj : terminationsTasks) {
-		WFTerminationData wfTerminationData = (WFTerminationData) (((Object[]) obj)[0]);
-		WFTask task = null;
-		if (!wfTerminationData.getSelected())
-		    continue;
+	long transactionTypeId = CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.STE_TERMINATION.getCode(), TransactionClassesEnum.TERMINATIONS.getCode()).getId();
+	for (Object obj : terminationsTasks) {
+	    WFTerminationData wfTerminationData = (WFTerminationData) (((Object[]) obj)[0]);
+	    WFTask task = null;
+	    if (!wfTerminationData.getSelected())
+		continue;
 
-		try {
-		    task = (WFTask) (((Object[]) obj)[1]);
-		    WFInstance instance = (WFInstance) (((Object[]) obj)[2]);
-		    EmployeeData requester = (EmployeeData) (((Object[]) obj)[4]);
+	    try {
+		task = (WFTask) (((Object[]) obj)[1]);
+		WFInstance instance = (WFInstance) (((Object[]) obj)[2]);
+		EmployeeData requester = (EmployeeData) (((Object[]) obj)[4]);
 
-		    TerminationRecordData terminationRecordData = new TerminationRecordData();
-		    List<TerminationRecordDetailData> terminationRecordDetailDataList = new ArrayList<TerminationRecordDetailData>();
+		TerminationRecordData terminationRecordData = new TerminationRecordData();
+		List<TerminationRecordDetailData> terminationRecordDetailDataList = new ArrayList<TerminationRecordDetailData>();
 
-		    if (instance.getProcessId() != WFProcessesEnum.OFFICERS_TERMINATION_REQUEST.getCode() && !task.getAssigneeWfRole().equals(WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode())) {
-			terminationRecordData = TerminationsService.getTerminationRecordDataById(wfTerminationData.getRecordId());
-			terminationRecordDetailDataList = TerminationsService.getTerminationRecordDetailsByRecordId(wfTerminationData.getRecordId());
-		    }
-
-		    if (task.getAssigneeWfRole().equals(WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode()))
-			TerminationsWorkflow.doTerminationSSM(requester, instance, wfTerminationData, terminationRecordData, terminationRecordDetailDataList, task, WFActionFlagsEnum.APPROVE.getCode());
-		    else if (task.getAssigneeWfRole().equals(WFTaskRolesEnum.SIGN_MANAGER.getCode()))
-			TerminationsWorkflow.doTerminationSM(requester, instance, wfTerminationData, terminationRecordData, terminationRecordDetailDataList, task, transactionTypeId, WFActionFlagsEnum.APPROVE.getCode());
-		} catch (BusinessException e) {
-		    unsuccessfulTaskIdsIfAny += comma + task.getTaskId();
-		    unsuccessfulTasksCount++;
-		    comma = ", ";
+		if (instance.getProcessId() != WFProcessesEnum.OFFICERS_TERMINATION_REQUEST.getCode() && !task.getAssigneeWfRole().equals(WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode())) {
+		    terminationRecordData = TerminationsService.getTerminationRecordDataById(wfTerminationData.getRecordId());
+		    terminationRecordDetailDataList = TerminationsService.getTerminationRecordDetailsByRecordId(wfTerminationData.getRecordId());
 		}
+
+		if (task.getAssigneeWfRole().equals(WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode()))
+		    TerminationsWorkflow.doTerminationSSM(requester, instance, wfTerminationData, terminationRecordData, terminationRecordDetailDataList, task, WFActionFlagsEnum.APPROVE.getCode());
+		else if (task.getAssigneeWfRole().equals(WFTaskRolesEnum.SIGN_MANAGER.getCode()))
+		    TerminationsWorkflow.doTerminationSM(requester, instance, wfTerminationData, terminationRecordData, terminationRecordDetailDataList, task, transactionTypeId, WFActionFlagsEnum.APPROVE.getCode());
+	    } catch (BusinessException e) {
+		unsuccessfulTaskIdsIfAny += comma + task.getTaskId();
+		unsuccessfulTasksCount++;
+		comma = ", ";
 	    }
-
-	    if (unsuccessfulTasksCount > 0)
-		this.setServerSideErrorMessages(getParameterizedMessage("error_thereAreErrorsForNOfTasks", new Object[] { unsuccessfulTasksCount, unsuccessfulTaskIdsIfAny }));
-	    else
-		this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
-
-	    // Call the search method here to reload the tasks
-	    searchTerminationsTasks();
-
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
+
+	if (unsuccessfulTasksCount > 0)
+	    this.setServerSideErrorMessages(getParameterizedMessage("error_thereAreErrorsForNOfTasks", new Object[] { unsuccessfulTasksCount, unsuccessfulTaskIdsIfAny }));
+	else
+	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
+
+	// Call the search method here to reload the tasks
+	searchTerminationsTasks();
     }
 
     public List<Object> getTerminationsTasks() {

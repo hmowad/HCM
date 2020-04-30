@@ -55,10 +55,10 @@ public class TerminationDecisionCancellation extends WFBaseBacking {
 		setScreenTitle(getMessage("title_civiliansTerminationDecisionCancellation"));
 		this.processId = WFProcessesEnum.CIVILIANS_TERMINATION_CANCELLATION.getCode();
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else {
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
 	}
 
 	this.initialize();
@@ -80,9 +80,6 @@ public class TerminationDecisionCancellation extends WFBaseBacking {
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    e.printStackTrace();
 	}
     }
 
@@ -104,10 +101,6 @@ public class TerminationDecisionCancellation extends WFBaseBacking {
 	} catch (BusinessException e) {
 	    reset();
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    reset();
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 
@@ -139,10 +132,6 @@ public class TerminationDecisionCancellation extends WFBaseBacking {
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    return null;
 	}
     }
 
@@ -154,10 +143,6 @@ public class TerminationDecisionCancellation extends WFBaseBacking {
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    return null;
 	}
     }
 
@@ -167,10 +152,6 @@ public class TerminationDecisionCancellation extends WFBaseBacking {
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	    return null;
 	}
     }
@@ -182,10 +163,6 @@ public class TerminationDecisionCancellation extends WFBaseBacking {
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    return null;
 	}
     }
 
@@ -195,10 +172,6 @@ public class TerminationDecisionCancellation extends WFBaseBacking {
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	    return null;
 	}
     }
@@ -218,10 +191,6 @@ public class TerminationDecisionCancellation extends WFBaseBacking {
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	    return null;
 	}
     }

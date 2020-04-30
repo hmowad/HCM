@@ -58,9 +58,6 @@ public class TerminationCivilianMovement extends WFBaseBacking {
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    e.printStackTrace();
 	}
     }
 
@@ -118,10 +115,6 @@ public class TerminationCivilianMovement extends WFBaseBacking {
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    return null;
 	}
     }
 
@@ -132,10 +125,6 @@ public class TerminationCivilianMovement extends WFBaseBacking {
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	    return null;
 	}
     }
@@ -148,10 +137,6 @@ public class TerminationCivilianMovement extends WFBaseBacking {
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    return null;
 	}
     }
 
@@ -161,10 +146,6 @@ public class TerminationCivilianMovement extends WFBaseBacking {
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	    return null;
 	}
     }
@@ -176,10 +157,6 @@ public class TerminationCivilianMovement extends WFBaseBacking {
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    return null;
 	}
     }
 
@@ -189,10 +166,6 @@ public class TerminationCivilianMovement extends WFBaseBacking {
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-	    return null;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	    return null;
 	}
     }

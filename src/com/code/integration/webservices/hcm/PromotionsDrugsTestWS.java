@@ -25,7 +25,8 @@ public class PromotionsDrugsTestWS {
 	try {
 	    if (drugsTestResults == null || drugsTestResults.trim().isEmpty()) {
 		Log4jService.traceError(PromotionsDrugsTestWS.class, "Empty or null message from infoSys");
-		throw new BusinessException("error_general");
+		// TODO: change error message
+		throw new BusinessException("error_integrationError");
 	    }
 
 	    Log4jService.traceInfo(PromotionsDrugsTestWS.class, "drugTestResults: " + drugsTestResults);
@@ -34,7 +35,7 @@ public class PromotionsDrugsTestWS {
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_general"));
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
 	    if (!(e instanceof BusinessException))
 		e.printStackTrace();
 	}
