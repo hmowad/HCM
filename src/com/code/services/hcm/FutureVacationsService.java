@@ -258,8 +258,6 @@ public class FutureVacationsService extends BaseService {
 
     private static void validateFutureVacationRules(TransientVacationTransaction futureVacationTransaction, EmployeeData vacationBeneficiary) throws BusinessException {
 	validateFutureVacationData(futureVacationTransaction, vacationBeneficiary);
-	if (futureVacationTransaction.getRequestType() != RequestTypesEnum.CANCEL.getCode())
-	    validateFutureVacationDates(futureVacationTransaction);
 
 	Vacation vacation = constructVacation(futureVacationTransaction);
 
@@ -294,11 +292,6 @@ public class FutureVacationsService extends BaseService {
 	if (futureVacationTransaction.getContactAddress() == null || futureVacationTransaction.getContactAddress().trim().equals(""))
 	    throw new BusinessException("error_contactAddressMandatory");
 
-    }
-
-    private static void validateFutureVacationDates(TransientVacationTransaction futureVacationTransaction) throws BusinessException {
-	if (futureVacationTransaction.getStartDate().before(HijriDateService.getHijriSysDate()))
-	    throw new BusinessException("error_vacationBeforeSysDate");
     }
 
     public static void validateOldFutureVacationActivationStatus(Long parentVacationId, Long vacationId) throws BusinessException {
