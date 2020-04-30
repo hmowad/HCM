@@ -69,10 +69,10 @@ public class TerminationRequest extends WFBaseBacking {
 		this.processId = WFProcessesEnum.CONTRACTORS_TERMINATION_REQUEST.getCode();
 		setScreenTitle(getMessage("title_contractorsTerminationRequest"));
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 	} else {
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage("error_URLError"));
 	}
 	init();
     }
@@ -131,10 +131,7 @@ public class TerminationRequest extends WFBaseBacking {
 		}
 	    }
 	} catch (BusinessException e) {
-	    e.printStackTrace();
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 

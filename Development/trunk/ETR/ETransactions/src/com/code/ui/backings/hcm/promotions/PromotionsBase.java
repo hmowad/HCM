@@ -77,9 +77,6 @@ public abstract class PromotionsBase extends WFBaseBacking {
 	} catch (BusinessException e) {
 	    empId = FlagsEnum.ALL.getCode();
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-	} catch (Exception e) {
-	    empId = FlagsEnum.ALL.getCode();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 

@@ -130,9 +130,6 @@ public class PromotionsSoldiersDecisionCancellation extends WFBaseBacking implem
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    e.printStackTrace();
 	}
     }
 
@@ -154,7 +151,6 @@ public class PromotionsSoldiersDecisionCancellation extends WFBaseBacking implem
 	    return NavigationEnum.OUTBOX.toString();
 
 	} catch (BusinessException e) {
-	    e.printStackTrace();
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	    return null;
 	}

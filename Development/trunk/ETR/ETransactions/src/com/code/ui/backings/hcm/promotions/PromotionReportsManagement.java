@@ -49,30 +49,25 @@ public class PromotionReportsManagement extends BaseBacking {
     }
 
     public void init() {
-	try {
-	    resetForm();
-	    if (getRequest().getParameter("mode") != null || getRequest().getAttribute("mode") != null) {
-		mode = getRequest().getParameter("mode") != null ? Integer.parseInt(getRequest().getParameter("mode")) : Integer.parseInt(getRequest().getAttribute("mode").toString());
+	resetForm();
+	if (getRequest().getParameter("mode") != null || getRequest().getAttribute("mode") != null) {
+	    mode = getRequest().getParameter("mode") != null ? Integer.parseInt(getRequest().getParameter("mode")) : Integer.parseInt(getRequest().getAttribute("mode").toString());
 
-		ranks = PromotionsService.getPromotionReportRanksByCategoryId(mode);
-		if (mode == CategoryModesEnum.OFFICERS.getCode())
-		    setScreenTitle(getMessage("label_promotionOfficersReports"));
-		else if (mode == CategoryModesEnum.SOLDIERS.getCode())
-		    setScreenTitle(getMessage("label_promotionSoldiersReports"));
-		else if (mode == CategoryModesEnum.CIVILIANS.getCode())
-		    setScreenTitle(getMessage("label_promotionEmployeeReports"));
-		else
-		    setServerSideErrorMessages(getMessage("error_general"));
-	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
-	    }
-
-	    if (mode == CategoryModesEnum.SOLDIERS.getCode())
-		regions = CommonService.getAllRegions();
-
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    ranks = PromotionsService.getPromotionReportRanksByCategoryId(mode);
+	    if (mode == CategoryModesEnum.OFFICERS.getCode())
+		setScreenTitle(getMessage("label_promotionOfficersReports"));
+	    else if (mode == CategoryModesEnum.SOLDIERS.getCode())
+		setScreenTitle(getMessage("label_promotionSoldiersReports"));
+	    else if (mode == CategoryModesEnum.CIVILIANS.getCode())
+		setScreenTitle(getMessage("label_promotionEmployeeReports"));
+	    else
+		setServerSideErrorMessages(getMessage("error_URLError"));
+	} else {
+	    setServerSideErrorMessages(getMessage("error_URLError"));
 	}
+
+	if (mode == CategoryModesEnum.SOLDIERS.getCode())
+	    regions = CommonService.getAllRegions();
     }
 
     public void resetForm() {
@@ -106,9 +101,6 @@ public class PromotionReportsManagement extends BaseBacking {
 
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    e.printStackTrace();
 	}
     }
 
@@ -121,11 +113,7 @@ public class PromotionReportsManagement extends BaseBacking {
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    e.printStackTrace();
 	}
-
     }
 
     public void printPromotionReport(PromotionReportData promotionReportData) {

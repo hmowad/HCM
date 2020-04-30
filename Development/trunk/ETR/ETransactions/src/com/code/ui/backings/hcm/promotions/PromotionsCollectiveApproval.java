@@ -47,13 +47,9 @@ public class PromotionsCollectiveApproval extends BaseBacking {
 	else if (mode == 2)
 	    this.setScreenTitle(getMessage("title_promotionsCollectiveApproval"));
 	else
-	    setServerSideErrorMessages(getMessage("error_general"));
-	try {
-	    // Load the promotions tasks data
-	    searchPromotionTasks();
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	}
+	    setServerSideErrorMessages(getMessage("error_URLError"));
+	// Load the promotions tasks data
+	searchPromotionTasks();
     }
 
     // Load the promotions tasks data
@@ -79,45 +75,39 @@ public class PromotionsCollectiveApproval extends BaseBacking {
     // Loop over the selected tasks for approval
     // called from the xhtml when "Approve" button clicked
     public void doPromotionsCollective() {
-	try {
+	String unsuccessfulTaskIdsIfAny = "";
+	String comma = "";
+	int unsuccessfulTasksCount = 0;
 
-	    String unsuccessfulTaskIdsIfAny = "";
-	    String comma = "";
-	    int unsuccessfulTasksCount = 0;
+	for (Object obj : promotionsTasks) {
+	    WFPromotion promotionRequest = (WFPromotion) (((Object[]) obj)[0]);
+	    WFTask task = null;
+	    if (!promotionRequest.getSelected())
+		continue;
 
-	    for (Object obj : promotionsTasks) {
-		WFPromotion promotionRequest = (WFPromotion) (((Object[]) obj)[0]);
-		WFTask task = null;
-		if (!promotionRequest.getSelected())
-		    continue;
-
-		try {
-		    task = (WFTask) (((Object[]) obj)[1]);
-		    WFInstance instance = (WFInstance) (((Object[]) obj)[2]);
-		    EmployeeData requester = (EmployeeData) (((Object[]) obj)[4]);
-		    PromotionReportData report = PromotionsService.getPromotionReportDataById(promotionRequest.getReportId());
-		    if (mode == 1)
-			PromotionsWorkFlow.doPromotionAOM(requester, report, instance, task, WFActionFlagsEnum.APPROVE.getCode());
-		    else if (mode == 2)
-			PromotionsWorkFlow.doPromotionSM(requester, report, instance, task, WFActionFlagsEnum.APPROVE.getCode());
-		} catch (BusinessException e) {
-		    unsuccessfulTaskIdsIfAny += comma + task.getTaskId();
-		    unsuccessfulTasksCount++;
-		    comma = ", ";
-		}
+	    try {
+		task = (WFTask) (((Object[]) obj)[1]);
+		WFInstance instance = (WFInstance) (((Object[]) obj)[2]);
+		EmployeeData requester = (EmployeeData) (((Object[]) obj)[4]);
+		PromotionReportData report = PromotionsService.getPromotionReportDataById(promotionRequest.getReportId());
+		if (mode == 1)
+		    PromotionsWorkFlow.doPromotionAOM(requester, report, instance, task, WFActionFlagsEnum.APPROVE.getCode());
+		else if (mode == 2)
+		    PromotionsWorkFlow.doPromotionSM(requester, report, instance, task, WFActionFlagsEnum.APPROVE.getCode());
+	    } catch (BusinessException e) {
+		unsuccessfulTaskIdsIfAny += comma + task.getTaskId();
+		unsuccessfulTasksCount++;
+		comma = ", ";
 	    }
-
-	    if (unsuccessfulTasksCount > 0)
-		this.setServerSideErrorMessages(getParameterizedMessage("error_thereAreErrorsForNOfTasks", new Object[] { unsuccessfulTasksCount, unsuccessfulTaskIdsIfAny }));
-	    else
-		this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
-
-	    // Call the search method here to Reload the tasks
-	    searchPromotionTasks();
-
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
+
+	if (unsuccessfulTasksCount > 0)
+	    this.setServerSideErrorMessages(getParameterizedMessage("error_thereAreErrorsForNOfTasks", new Object[] { unsuccessfulTasksCount, unsuccessfulTaskIdsIfAny }));
+	else
+	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
+
+	// Call the search method here to Reload the tasks
+	searchPromotionTasks();
     }
 
     public List<Object> getPromotionsTasks() {

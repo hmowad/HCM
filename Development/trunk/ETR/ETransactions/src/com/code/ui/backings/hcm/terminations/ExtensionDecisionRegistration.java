@@ -36,16 +36,15 @@ public class ExtensionDecisionRegistration extends BaseBacking {
 	    else if (mode == CategoryModesEnum.CIVILIANS.getCode())
 		setScreenTitle(getMessage("label_extenstionDecisionCivilians"));
 	    else
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 
 	    try {
 		resetForm();
 	    } catch (BusinessException e) {
 		this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	    } catch (Exception e) {
-		this.setServerSideErrorMessages(getMessage("error_general"));
-		e.printStackTrace();
 	    }
+	} else {
+	    setServerSideErrorMessages(getMessage("error_URLError"));
 	}
 
     }

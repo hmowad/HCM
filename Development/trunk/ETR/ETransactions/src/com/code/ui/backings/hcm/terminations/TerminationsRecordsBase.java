@@ -72,7 +72,7 @@ public class TerminationsRecordsBase extends WFBaseBacking {
 	    Long recordId = null;
 	    String modeStr = getRequest().getParameter("mode") == null ? null : getRequest().getParameter("mode").toString();
 	    if (modeStr == null)
-		throw new Exception("error_general");
+		throw new BusinessException("error_URLError");
 
 	    mode = Integer.parseInt(modeStr);
 	    regions = CommonService.getAllRegions();
@@ -134,8 +134,6 @@ public class TerminationsRecordsBase extends WFBaseBacking {
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
 
     }

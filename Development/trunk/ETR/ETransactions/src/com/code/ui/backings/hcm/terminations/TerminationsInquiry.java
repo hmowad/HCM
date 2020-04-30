@@ -51,10 +51,10 @@ public class TerminationsInquiry extends BaseBacking {
 		    setScreenTitle(getMessage("title_civiliansTerminationsInquiry"));
 		    categoryId = FlagsEnum.ALL.getCode();
 		} else {
-		    setServerSideErrorMessages(getMessage("error_general"));
+		    setServerSideErrorMessages(getMessage("error_URLError"));
 		}
 	    } else {
-		setServerSideErrorMessages(getMessage("error_general"));
+		setServerSideErrorMessages(getMessage("error_URLError"));
 	    }
 
 	    decisionsPrivileges = SecurityService.getEmployeesDecisionsPrivileges(this.loginEmpData.getEmpId(), WFProcessesGroupsEnum.TERMINATIONS.getCode(), mode);
@@ -86,10 +86,6 @@ public class TerminationsInquiry extends BaseBacking {
 	} catch (BusinessException e) {
 	    terminationTransactionDataList = new ArrayList<TerminationTransactionData>();
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    terminationTransactionDataList = new ArrayList<TerminationTransactionData>();
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 

@@ -65,9 +65,6 @@ public class SoldiersExceptionalPromotion extends WFBaseBacking {
 	    }
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    e.printStackTrace();
 	}
     }
 
@@ -94,10 +91,6 @@ public class SoldiersExceptionalPromotion extends WFBaseBacking {
 	} catch (BusinessException e) {
 	    reset();
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-	} catch (Exception e) {
-	    reset();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    e.printStackTrace();
 	}
     }
 

@@ -194,8 +194,7 @@ public class TerminationsOfficersRecords extends TerminationsRecordsBase {
 	    TerminationsService.setCollectiveRecordsServiceTerminationDate(selectedTerminationRecordDetailData, terminationRecordData.getReasonId());
 	    return selectedTerminationRecordDetailData.getServiceTerminationDateString();
 	} catch (BusinessException e) {
-	    e.printStackTrace();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	    return null;
 	}
     }
@@ -297,7 +296,7 @@ public class TerminationsOfficersRecords extends TerminationsRecordsBase {
 	    selectedTerminationRecordDetailData.setExtensionPeriodMonths(extensionPeriodMonths);
 	    selectedTerminationRecordDetailData.setExtensionPeriodDays(extensionPeriodDays);
 	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 

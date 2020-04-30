@@ -82,9 +82,6 @@ public class PromotionSoldiersReport extends PromotionsBase {
 	    regions = CommonService.getAllRegions();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    e.printStackTrace();
 	}
     }
 
@@ -114,9 +111,6 @@ public class PromotionSoldiersReport extends PromotionsBase {
 	} catch (BusinessException e) {
 	    empId = FlagsEnum.ALL.getCode();
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-	} catch (Exception e) {
-	    empId = FlagsEnum.ALL.getCode();
-	    this.setServerSideErrorMessages(getMessage("error_general"));
 	}
     }
 
@@ -216,9 +210,6 @@ public class PromotionSoldiersReport extends PromotionsBase {
 
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
-	    e.printStackTrace();
 	}
     }
 
