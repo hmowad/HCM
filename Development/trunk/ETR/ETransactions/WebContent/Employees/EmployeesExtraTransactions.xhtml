@@ -395,7 +395,7 @@
 																		<f:facet name="header">#</f:facet>
 	                                									#{index + 1}
 	                            									</rich:column>
-																	<rich:column style="width:25%">
+																	<rich:column style="width:15%">
 																		<f:facet name="header">
 																			#{msgs.label_decisionNumber}
 																			<h:outputText value=" " />
@@ -404,7 +404,7 @@
 																		<h:inputText value="#{salaryRankElement.decisionNumber}" rendered="#{salaryRankElement.id == null}" />
 																		<h:outputText value="#{salaryRankElement.decisionNumber}" rendered="#{salaryRankElement.id != null}" />
 																	</rich:column>
-																	<rich:column style="width:25%">
+																	<rich:column style="width:15%">
 																		<f:facet name="header">
 																			#{msgs.label_decisionDate}
 																			<h:outputText value=" " />
@@ -433,7 +433,7 @@
 																			<f:selectItems value="#{employeesDataExtraTransactions.salaryDegrees}" var="salaryDegree" itemLabel="#{salaryDegree.description}" itemValue="#{salaryDegree.id}" />
 																		</h:selectOneMenu>
 																	</rich:column>
-																	<rich:column style="width:25%">
+																	<rich:column style="width:15%">
 																		<f:facet name="header">
 																			#{msgs.label_startFromDate}
 																			<h:outputText value=" " />
@@ -442,9 +442,22 @@
 																		<util:hijri value="#{salaryRankElement.effectiveDate}" rendered="#{salaryRankElement.id == null}" nullable="false" />
 																		<h:outputText value="#{salaryRankElement.effectiveDateString}" rendered="#{salaryRankElement.id != null}" />
 																	</rich:column>
-																	<rich:column style="width:25%">
+																	<rich:column style="width:15%">
+																		<f:facet name="header">
+																			#{msgs.label_endDate}
+																		</f:facet>
+																		<util:hijri value="#{salaryRankElement.endDate}" rendered="#{salaryRankElement.id != null and salaryRankElement.endDate == null}" nullable="true" />
+																		<h:outputText value="#{salaryRankElement.endDateString}" rendered="#{salaryRankElement.id == null or salaryRankElement.endDate != null}" />
+																	</rich:column>
+																	<rich:column style="width:5%">
 																		<f:facet name="header">#{msgs.label_save}</f:facet>
 																		<h:commandButton value="#{msgs.fa_floppy_o}" styleClass="btn_icon" action="#{employeesDataExtraTransactions.saveNewEmployeeDataExtraTransaction(40 ,salaryRankElement, index)}" onclick="return handleOnAction('#{msgs.q_checkEmployeesExtraDataSave}', 'true');" disabled="#{salaryRankElement.id != null}">
+																			<f:ajax execute="employeesDataExtraTransactionsFormId:salaryRankPanelId" render="employeesDataExtraTransactionsFormId:salaryRankPanelId employeesDataExtraTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+																		</h:commandButton>
+																	</rich:column>
+																	<rich:column style="width:10%">
+																		<f:facet name="header">#{msgs.label_stop}</f:facet>
+																		<h:commandButton value="#{msgs.label_stop}" styleClass="btn_normal" action="#{employeesDataExtraTransactions.stopSalaryRankTransaction(index)}" onclick="return handleOnAction('#{msgs.q_stopTransaction}', 'true');" disabled="#{salaryRankElement.id == null or salaryRankElement.endDate != null}">
 																			<f:ajax execute="employeesDataExtraTransactionsFormId:salaryRankPanelId" render="employeesDataExtraTransactionsFormId:salaryRankPanelId employeesDataExtraTransactionsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 																		</h:commandButton>
 																	</rich:column>
