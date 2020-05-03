@@ -11,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.code.dal.audit.InsertableAuditEntity;
 import com.code.dal.audit.UpdatableAuditEntity;
@@ -29,6 +31,7 @@ public class EmployeeExtraTransaction extends AuditEntity implements Serializabl
     private Integer socialStatus;
     private Integer generalSpecialization;
     private Date effectiveDate;
+    private Date endDate;
     private String decisionNumber;
     private Date decisionDate;
     private Long medStaffRankId;
@@ -122,6 +125,17 @@ public class EmployeeExtraTransaction extends AuditEntity implements Serializabl
     }
 
     @Basic
+    @Column(name = "END_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getEndDate() {
+	return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+	this.endDate = endDate;
+    }
+
+    @Basic
     @Column(name = "DECISION_NUMBER")
     public String getDecisionNumber() {
 	return decisionNumber;
@@ -195,6 +209,7 @@ public class EmployeeExtraTransaction extends AuditEntity implements Serializabl
 		"socialStatus:" + socialStatus + AUDIT_SEPARATOR +
 		"generalSpecialization:" + generalSpecialization + AUDIT_SEPARATOR +
 		"effectiveDate:" + effectiveDate + AUDIT_SEPARATOR +
+		"endDate:" + endDate + AUDIT_SEPARATOR +
 		"decisionNumber:" + decisionNumber + AUDIT_SEPARATOR +
 		"decisionDate:" + decisionDate + AUDIT_SEPARATOR +
 		"medStaffRankId:" + medStaffRankId + AUDIT_SEPARATOR +

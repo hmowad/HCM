@@ -12,6 +12,7 @@ import com.code.dal.orm.hcm.RankTitle;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.employees.EmployeeExtraTransactionData;
 import com.code.dal.orm.hcm.payroll.Degree;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.TransactionClassesEnum;
 import com.code.enums.TransactionTypesEnum;
 import com.code.exceptions.BusinessException;
@@ -77,7 +78,7 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
 	try {
 	    reset();
 	    employee = EmployeesService.getEmployeeData(employeeId);
-	    salaryRanks = CommonService.getRanks(null, new Long[] { employee.getCategoryId() });
+	    salaryRanks = CommonService.getRanks(null, new Long[] { EmployeesService.getEmployeeMedicalStaffDataByEmpId(employee.getEmpId()) != null ? CategoriesEnum.MEDICAL_STAFF.getCode() : employee.getCategoryId() });
 	    salaryDegrees = PayrollsService.getAllDegrees();
 	    socialStatusList = EmployeesService.getEmployeeDataExtraTransactionByEmpIdAndTransactionType(employeeId, CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
 	    rankTitleList = EmployeesService.getEmployeeDataExtraTransactionByEmpIdAndTransactionType(employeeId, CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_RANK_TITLE.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId());
@@ -108,6 +109,15 @@ public class EmployeesExtraTransactions extends BaseBacking implements Serializa
 		rankTitleList.set(index, employeeExtraTransactionData);
 	    else if (transactionTypeCode == TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS.getCode())
 		socialStatusList.set(index, employeeExtraTransactionData);
+	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	} catch (BusinessException e) {
+	    setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	}
+    }
+
+    public void stopSalaryRankTransaction(int index) {
+	try {
+	    EmployeesService.stopEmployeeDataExtraTransaction(salaryRankList.get(index));
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));

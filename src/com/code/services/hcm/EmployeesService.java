@@ -1802,7 +1802,15 @@ public class EmployeesService extends BaseService {
 	EmployeeExtraTransactionData employeeExtraTransactionDataAfterCurrentDecDate = getAfterEffDateEmployeeExtraTransactionData(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getEffectiveDateString(), employeeExtraTransactionData.getTransactionTypeId());
 	if (checkEmployeeExtraTransactionDataAtBeforeAndAfterDecDates(employeeExtraTransactionData, employeeExtraTransactionDataBeforeCurrentDecDate, employeeExtraTransactionDataAfterCurrentDecDate))
 	    throw new BusinessException("error_dataCantBeChangedAtSameDate", params);
+    }
 
+    private static void validateStopTransaction(EmployeeExtraTransactionData employeeExtraTransactionData) throws BusinessException {
+	if (employeeExtraTransactionData.getEndDate() == null)
+	    throw new BusinessException("error_endDateIsMandatory");
+	if (employeeExtraTransactionData.getEndDate().after(HijriDateService.getHijriSysDate()))
+	    throw new BusinessException("error_endDateAfterSysDate");
+	if (!employeeExtraTransactionData.getEndDate().after(employeeExtraTransactionData.getEffectiveDate()))
+	    throw new BusinessException("error_endDateBeforeEffectiveDate");
     }
 
     public static void validateSelectedEmployeeForExtraTransaction(EmployeeData selectedEmployee) throws BusinessException {
@@ -1862,6 +1870,34 @@ public class EmployeesService extends BaseService {
 
 	    if (e instanceof BusinessException)
 		throw (BusinessException) e;
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
+
+    public static void stopEmployeeDataExtraTransaction(EmployeeExtraTransactionData employeeExtraTransactionData, CustomSession... useSession) throws BusinessException {
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+	try {
+	    validateStopTransaction(employeeExtraTransactionData);
+	    if (!isOpenedSession)
+		session.beginTransaction();
+
+	    DataAccess.updateEntity(employeeExtraTransactionData.getEmployeeExtraTransaction(), session);
+	    EmployeeLog log = new EmployeeLog.Builder().setSalaryRankId(Long.parseLong(FlagsEnum.ALL.getCode() + "")).setSalaryDegreeId(Long.parseLong(FlagsEnum.ALL.getCode() + ""))
+		    .constructCommonFields(employeeExtraTransactionData.getEmpId(), FlagsEnum.ON.getCode(), employeeExtraTransactionData.getDecisionNumber(), employeeExtraTransactionData.getDecisionDate(), employeeExtraTransactionData.getEndDate(), DataAccess.getTableName(EmployeeExtraTransaction.class)).build();
+	    LogService.logEmployeeData(log, session);
+	    if (!isOpenedSession)
+		session.commitTransaction();
+	} catch (Exception e) {
+	    employeeExtraTransactionData.setEndDate(null);
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {

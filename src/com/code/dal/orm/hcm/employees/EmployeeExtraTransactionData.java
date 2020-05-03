@@ -13,6 +13,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import com.code.dal.orm.BaseEntity;
@@ -71,6 +73,8 @@ public class EmployeeExtraTransactionData extends BaseEntity implements Serializ
     private String generalSpecDescription;
     private Date effectiveDate;
     private String effectiveDateString;
+    private Date endDate;
+    private String endDateString;
     private String decisionNumber;
     private Date decisionDate;
     private String decisionDateString;
@@ -248,6 +252,29 @@ public class EmployeeExtraTransactionData extends BaseEntity implements Serializ
 
     public void setEffectiveDateString(String effectiveDateString) {
 	this.effectiveDateString = effectiveDateString;
+    }
+
+    @Basic
+    @Column(name = "END_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getEndDate() {
+	return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+	this.endDate = endDate;
+	this.endDateString = HijriDateService.getHijriDateString(endDate);
+	this.employeeExtraTransaction.setEndDate(endDate);
+    }
+
+    @Transient
+    public String getEndDateString() {
+	return endDateString;
+    }
+
+    public void setEndDateString(String endDateString) {
+	this.endDateString = endDateString;
+	this.endDate = HijriDateService.getHijriDate(endDateString);
     }
 
     @Basic
