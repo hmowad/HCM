@@ -145,8 +145,6 @@ public class TerminationTransactionData extends BaseEntity {
     private Boolean disqualificationDrugsFlagBoolean;
     private String disqualificationReason;
     private String disqualificationDrugsType;
-    private Integer medicalMartyrFlag;
-    private Boolean medicalMartyrFlagBoolean;
     private String medicalCaseDesc;
     private String medicalWorkDisability;
 
@@ -193,6 +191,8 @@ public class TerminationTransactionData extends BaseEntity {
     private Long approvedId;
     private Long decisionApprovedId;
     private Long originalDecisionApprovedId;
+    private Integer injuryInDutyFlag;
+    private Integer injuryType;
 
     private TerminationTransaction terminationTransaction;
 
@@ -1052,36 +1052,6 @@ public class TerminationTransactionData extends BaseEntity {
     }
 
     @Basic
-    @Column(name = "MEDICAL_MARTYR_FLAG")
-    public Integer getMedicalMartyrFlag() {
-	return medicalMartyrFlag;
-    }
-
-    public void setMedicalMartyrFlag(Integer medicalMartyrFlag) {
-	this.medicalMartyrFlag = medicalMartyrFlag;
-	this.terminationTransaction.setMedicalMartyrFlag(medicalMartyrFlag);
-	if (this.medicalMartyrFlag == null || this.medicalMartyrFlag == FlagsEnum.OFF.getCode()) {
-	    this.medicalMartyrFlagBoolean = false;
-	} else {
-	    this.medicalMartyrFlagBoolean = true;
-	}
-    }
-
-    @Transient
-    public Boolean getMedicalMartyrFlagBoolean() {
-	return medicalMartyrFlagBoolean;
-    }
-
-    public void setMedicalMartyrFlagBoolean(Boolean medicalMartyrFlagBoolean) {
-	this.medicalMartyrFlagBoolean = medicalMartyrFlagBoolean;
-	if (this.medicalMartyrFlagBoolean == false) {
-	    setMedicalMartyrFlag(FlagsEnum.OFF.getCode());
-	} else {
-	    setMedicalMartyrFlag(FlagsEnum.ON.getCode());
-	}
-    }
-
-    @Basic
     @Column(name = "MEDICAL_CASE_DESC")
     public String getMedicalCaseDesc() {
 	return medicalCaseDesc;
@@ -1535,6 +1505,28 @@ public class TerminationTransactionData extends BaseEntity {
     public void setOriginalDecisionApprovedId(Long originalDecisionApprovedId) {
 	this.originalDecisionApprovedId = originalDecisionApprovedId;
 	this.terminationTransaction.setOriginalDecisionApprovedId(originalDecisionApprovedId);
+    }
+
+    @Basic
+    @Column(name = "INJURY_IN_DUTY_FLAG")
+    public Integer getInjuryInDutyFlag() {
+	return injuryInDutyFlag;
+    }
+
+    public void setInjuryInDutyFlag(Integer injuryInDutyFlag) {
+	this.injuryInDutyFlag = injuryInDutyFlag;
+	this.terminationTransaction.setInjuryInDutyFlag(injuryInDutyFlag);
+    }
+
+    @Basic
+    @Column(name = "INJURY_TYPE")
+    public Integer getInjuryType() {
+	return injuryType;
+    }
+
+    public void setInjuryType(Integer injuryType) {
+	this.injuryType = injuryType;
+	this.terminationTransaction.setInjuryType(injuryType);
     }
 
     @Transient

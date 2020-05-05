@@ -148,6 +148,12 @@ public class TerminationsSoldiersRecords extends TerminationsRecordsBase {
 	}
     }
 
+    public void changeInjuryInDutyFlag(AjaxBehaviorEvent event) {
+	if (selectedTerminationRecordDetailData.getInjuryInDutyFlag().equals(FlagsEnum.OFF.getCode()) || selectedTerminationRecordDetailData.getInjuryInDutyFlag().equals(FlagsEnum.ON.getCode())) {
+	    selectedTerminationRecordDetailData.setInjuryType(null);
+	}
+    }
+
     public void changeAbsenceType(AjaxBehaviorEvent event) {
 	if (!selectedTerminationRecordDetailData.getAbsenceType().equals(TerminationAbsenceTypeEnum.ATTEND_WITHOUT_EXCUSE.getCode())) {
 	    selectedTerminationRecordDetailData.setAbsencePeriodDays(null);

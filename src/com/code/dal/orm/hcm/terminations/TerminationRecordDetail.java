@@ -83,7 +83,6 @@ public class TerminationRecordDetail extends AuditEntity implements UpdatableAud
     private Integer disqualificationDrugsFlag;
     private String disqualificationReason;
     private String disqualificationDrugsType;
-    private Integer medicalMartyrFlag;
     private String medicalCaseDesc;
     private String medicalWorkDisability;
 
@@ -94,6 +93,8 @@ public class TerminationRecordDetail extends AuditEntity implements UpdatableAud
     private String contractorTerminationReason;
     private Long empRankId;
     private Date empTerminationDueDate;
+    private Integer injuryInDutyFlag;
+    private Integer injuryType;
 
     @SequenceGenerator(name = "HCMServiceTerminationRecordSeq",
 	    sequenceName = "HCM_STE_RECORD_SEQ")
@@ -602,16 +603,6 @@ public class TerminationRecordDetail extends AuditEntity implements UpdatableAud
     }
 
     @Basic
-    @Column(name = "MEDICAL_MARTYR_FLAG")
-    public Integer getMedicalMartyrFlag() {
-	return medicalMartyrFlag;
-    }
-
-    public void setMedicalMartyrFlag(Integer medicalMartyrFlag) {
-	this.medicalMartyrFlag = medicalMartyrFlag;
-    }
-
-    @Basic
     @Column(name = "MEDICAL_CASE_DESC")
     public String getMedicalCaseDesc() {
 	return medicalCaseDesc;
@@ -704,6 +695,26 @@ public class TerminationRecordDetail extends AuditEntity implements UpdatableAud
 
     }
 
+    @Basic
+    @Column(name = "INJURY_IN_DUTY_FLAG")
+    public Integer getInjuryInDutyFlag() {
+	return injuryInDutyFlag;
+    }
+
+    public void setInjuryInDutyFlag(Integer injuryInDutyFlag) {
+	this.injuryInDutyFlag = injuryInDutyFlag;
+    }
+
+    @Basic
+    @Column(name = "INJURY_TYPE")
+    public Integer getInjuryType() {
+	return injuryType;
+    }
+
+    public void setInjuryType(Integer injuryType) {
+	this.injuryType = injuryType;
+    }
+
     @Override
     public Long calculateContentId() {
 	return id;
@@ -736,6 +747,9 @@ public class TerminationRecordDetail extends AuditEntity implements UpdatableAud
 		"specializationPeriodFlag:" + specializationPeriodFlag + AUDIT_SEPARATOR +
 		"foreignerMarriageFlag:" + foreignerMarriageFlag + AUDIT_SEPARATOR +
 
+		"injuryInDutyFlag:" + injuryInDutyFlag + AUDIT_SEPARATOR +
+		"injuryType:" + injuryType + AUDIT_SEPARATOR +
+
 		"dismissType:" + dismissType + AUDIT_SEPARATOR +
 		"dismissDecisionNumber:" + dismissDecisionNumber + AUDIT_SEPARATOR +
 		"dismissDecisionDate:" + dismissDecisionDate + AUDIT_SEPARATOR +
@@ -763,7 +777,6 @@ public class TerminationRecordDetail extends AuditEntity implements UpdatableAud
 		"disqualificationDrugsFlag:" + disqualificationDrugsFlag + AUDIT_SEPARATOR +
 		"disqualificationReason:" + disqualificationReason + AUDIT_SEPARATOR +
 		"disqualificationDrugsType:" + disqualificationDrugsType + AUDIT_SEPARATOR +
-		"medicalMartyrFlag:" + medicalMartyrFlag + AUDIT_SEPARATOR +
 		"medicalCaseDesc:" + medicalCaseDesc + AUDIT_SEPARATOR +
 		"medicalWorkDisability:" + medicalWorkDisability + AUDIT_SEPARATOR +
 

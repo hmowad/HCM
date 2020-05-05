@@ -100,7 +100,6 @@ public class TerminationTransaction extends AuditEntity implements InsertableAud
     private Integer disqualificationDrugsFlag;
     private String disqualificationReason;
     private String disqualificationDrugsType;
-    private Integer medicalMartyrFlag;
     private String medicalCaseDesc;
     private String medicalWorkDisability;
 
@@ -140,6 +139,8 @@ public class TerminationTransaction extends AuditEntity implements InsertableAud
     private Long approvedId;
     private Long decisionApprovedId;
     private Long originalDecisionApprovedId;
+    private Integer injuryInDutyFlag;
+    private Integer injuryType;
 
     @SequenceGenerator(name = "HCMServiceTerminationTransactionsSeq",
 	    sequenceName = "HCM_STE_TRANS_SEQ")
@@ -667,16 +668,6 @@ public class TerminationTransaction extends AuditEntity implements InsertableAud
     }
 
     @Basic
-    @Column(name = "MEDICAL_MARTYR_FLAG")
-    public Integer getMedicalMartyrFlag() {
-	return medicalMartyrFlag;
-    }
-
-    public void setMedicalMartyrFlag(Integer medicalMartyrFlag) {
-	this.medicalMartyrFlag = medicalMartyrFlag;
-    }
-
-    @Basic
     @Column(name = "MEDICAL_CASE_DESC")
     public String getMedicalCaseDesc() {
 	return medicalCaseDesc;
@@ -1020,6 +1011,26 @@ public class TerminationTransaction extends AuditEntity implements InsertableAud
 	this.originalDecisionApprovedId = originalDecisionApprovedId;
     }
 
+    @Basic
+    @Column(name = "INJURY_IN_DUTY_FLAG")
+    public Integer getInjuryInDutyFlag() {
+	return injuryInDutyFlag;
+    }
+
+    public void setInjuryInDutyFlag(Integer injuryInDutyFlag) {
+	this.injuryInDutyFlag = injuryInDutyFlag;
+    }
+
+    @Basic
+    @Column(name = "INJURY_TYPE")
+    public Integer getInjuryType() {
+	return injuryType;
+    }
+
+    public void setInjuryType(Integer injuryType) {
+	this.injuryType = injuryType;
+    }
+
     @Override
     public Long calculateContentId() {
 	return id;
@@ -1039,6 +1050,9 @@ public class TerminationTransaction extends AuditEntity implements InsertableAud
 		"desiredTerminationDate:" + desiredTerminationDate + AUDIT_SEPARATOR +
 		"ministryRequestNumber:" + ministryRequestNumber + AUDIT_SEPARATOR +
 		"ministryRequestDate:" + ministryRequestDate + AUDIT_SEPARATOR +
+
+		"injuryInDutyFlag:" + injuryInDutyFlag + AUDIT_SEPARATOR +
+		"injuryType:" + injuryType + AUDIT_SEPARATOR +
 
 		"ministryRejectionNumber:" + ministryRejectionNumber + AUDIT_SEPARATOR +
 		"ministryRejectionDate:" + ministryRejectionDate + AUDIT_SEPARATOR +
