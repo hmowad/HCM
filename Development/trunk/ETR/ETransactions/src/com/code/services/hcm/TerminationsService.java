@@ -242,7 +242,6 @@ public class TerminationsService extends BaseService {
 	    terminationTransaction.setDisqualificationDrugsFlag(terminationRecordDetailData.getDisqualificationDrugsFlag());
 	    terminationTransaction.setDisqualificationReason(terminationRecordDetailData.getDisqualificationReason());
 	    terminationTransaction.setDisqualificationDrugsType(terminationRecordDetailData.getDisqualificationDrugsType());
-	    terminationTransaction.setMedicalMartyrFlag(terminationRecordDetailData.getMedicalMartyrFlag());
 	    terminationTransaction.setMedicalCaseDesc(terminationRecordDetailData.getMedicalCaseDesc());
 	    terminationTransaction.setMedicalWorkDisability(terminationRecordDetailData.getMedicalWorkDisability());
 
@@ -279,6 +278,8 @@ public class TerminationsService extends BaseService {
 	    terminationTransaction.setApprovedId(terminationRecordData.getApprovedId());
 	    terminationTransaction.setDecisionApprovedId(terminationRecordData.getDecisionApprovedId());
 	    terminationTransaction.setOriginalDecisionApprovedId(terminationRecordData.getOriginalDecisionApprovedId());
+	    terminationTransaction.setInjuryInDutyFlag(terminationRecordDetailData.getInjuryInDutyFlag());
+	    terminationTransaction.setInjuryType(terminationRecordDetailData.getInjuryType());
 
 	    terminationTransactionList.add(terminationTransaction);
 	}
@@ -1476,6 +1477,10 @@ public class TerminationsService extends BaseService {
 
 	    if (!checkDatesYears(terminationRecordData.getRecordDate(), terminationRecodDetailDataItr.getServiceTerminationDate(), ETRConfigurationService.getTerminationsSoldiersLackMedicalServiceTerminationYearsMax(), ETRConfigurationService.getTerminationsSoldiersLackMedicalServiceTerminationYearsMin() * -1))
 		throw new BusinessException("error_medicalServiceTeminationDateForSoldiers", new Object[] { ETRConfigurationService.getTerminationsSoldiersLackMedicalServiceTerminationYearsMax(), ETRConfigurationService.getTerminationsSoldiersLackMedicalServiceTerminationYearsMin() });
+	    if (terminationRecodDetailDataItr.getInjuryInDutyFlag() != null && terminationRecodDetailDataItr.getInjuryInDutyFlag() == FlagsEnum.ON.getCode() && terminationRecodDetailDataItr.getInjuryType() == null)
+		throw new BusinessException("error_injuryReason");
+	    if (terminationRecodDetailDataItr.getInjuryInDutyFlag() == null)
+		throw new BusinessException("error_injuryInOperationflag");
 
 	} else if (reasonId == TerminationReasonsEnum.SOLDIERS_FOREIGNER_MARRIAGE.getCode()) {
 

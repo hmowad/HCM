@@ -142,8 +142,6 @@ public class TerminationRecordDetailData extends BaseEntity {
     private Boolean disqualificationDrugsFlagBoolean;
     private String disqualificationReason;
     private String disqualificationDrugsType;
-    private Integer medicalMartyrFlag;
-    private Boolean medicalMartyrFlagBoolean;
     private String medicalCaseDesc;
     private String medicalWorkDisability;
 
@@ -154,6 +152,8 @@ public class TerminationRecordDetailData extends BaseEntity {
     private String nationalityLossReason;
     private Integer contractorBasedOnType;
     private String contractorTerminationReason;
+    private Integer injuryInDutyFlag;
+    private Integer injuryType;
 
     private TerminationRecordDetail terminationRecordDetail;
 
@@ -1197,36 +1197,6 @@ public class TerminationRecordDetailData extends BaseEntity {
     }
 
     @Basic
-    @Column(name = "MEDICAL_MARTYR_FLAG")
-    public Integer getMedicalMartyrFlag() {
-	return medicalMartyrFlag;
-    }
-
-    public void setMedicalMartyrFlag(Integer medicalMartyrFlag) {
-	this.medicalMartyrFlag = medicalMartyrFlag;
-	this.terminationRecordDetail.setMedicalMartyrFlag(medicalMartyrFlag);
-	if (this.medicalMartyrFlag == null || this.medicalMartyrFlag == FlagsEnum.OFF.getCode()) {
-	    this.medicalMartyrFlagBoolean = false;
-	} else {
-	    this.medicalMartyrFlagBoolean = true;
-	}
-    }
-
-    @Transient
-    public Boolean getMedicalMartyrFlagBoolean() {
-	return medicalMartyrFlagBoolean;
-    }
-
-    public void setMedicalMartyrFlagBoolean(Boolean medicalMartyrFlagBoolean) {
-	this.medicalMartyrFlagBoolean = medicalMartyrFlagBoolean;
-	if (this.medicalMartyrFlagBoolean == false) {
-	    setMedicalMartyrFlag(FlagsEnum.OFF.getCode());
-	} else {
-	    setMedicalMartyrFlag(FlagsEnum.ON.getCode());
-	}
-    }
-
-    @Basic
     @Column(name = "MEDICAL_CASE_DESC")
     public String getMedicalCaseDesc() {
 	return medicalCaseDesc;
@@ -1316,6 +1286,28 @@ public class TerminationRecordDetailData extends BaseEntity {
 	this.terminationRecordDetail.setContractorTerminationReason(contractorTerminationReason);
     }
 
+    @Basic
+    @Column(name = "INJURY_IN_DUTY_FLAG")
+    public Integer getInjuryInDutyFlag() {
+	return injuryInDutyFlag;
+    }
+
+    public void setInjuryInDutyFlag(Integer injuryInDutyFlag) {
+	this.injuryInDutyFlag = injuryInDutyFlag;
+	this.terminationRecordDetail.setInjuryInDutyFlag(injuryInDutyFlag);
+    }
+
+    @Basic
+    @Column(name = "INJURY_TYPE")
+    public Integer getInjuryType() {
+	return injuryType;
+    }
+
+    public void setInjuryType(Integer injuryType) {
+	this.injuryType = injuryType;
+	this.terminationRecordDetail.setInjuryType(injuryType);
+    }
+
     @Transient
     public TerminationRecordDetail getTerminationRecordDetail() {
 	return terminationRecordDetail;
@@ -1324,5 +1316,4 @@ public class TerminationRecordDetailData extends BaseEntity {
     public void setTerminationRecordDetail(TerminationRecordDetail terminationRecordDetail) {
 	this.terminationRecordDetail = terminationRecordDetail;
     }
-
 }

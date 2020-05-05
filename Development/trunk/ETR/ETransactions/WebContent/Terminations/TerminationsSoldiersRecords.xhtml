@@ -289,7 +289,7 @@
     function medicalValidation(){
     	var medicalRefferingTo = document.getElementById('terminationsSoldiersRecordsFormId:medicalRefferingToId').value;
     	var medicalServiceTerminationDate = document.getElementById('terminationsSoldiersRecordsFormId:medicalServiceTerminationDateId:day').value;
-			
+    	var injuryInDutyFlagId = getSelectOneRadioValue('terminationsSoldiersRecordsFormId:injuryInDutyFlagId');
 		if(medicalRefferingTo == null || medicalRefferingTo == ''){
         	alert("#{msgs.error_refferingToIsMandatory}");
             return false;
@@ -297,6 +297,17 @@
 		if(medicalServiceTerminationDate == null || medicalServiceTerminationDate == 0){
         	alert("#{msgs.error_serviceTerminationDateMandatory}");
             return false;
+        }
+        if(injuryInDutyFlagId == null || injuryInDutyFlagId == ''){
+        	alert("#{msgs.error_injuryInOperationflag}");
+            return false;
+        }
+        if (injuryInDutyFlagId == 1) {
+        	var injuryTypeId = getSelectOneRadioValue('terminationsSoldiersRecordsFormId:injuryTypeId');
+        	if(injuryTypeId == null || injuryTypeId == ''){
+            	alert("#{msgs.error_injuryReason}");
+                return false;
+            }
         }
 		return true;
     }
@@ -1036,11 +1047,14 @@
 													<font style="color: red;">*</font>
 												</th>
 												<td width="80%" colspan="3">
-													<h:selectOneRadio id="deathTypeId" value="#{terminationsSoldiersRecords.selectedTerminationRecordDetailData.deathType}" disabled="#{(terminationsSoldiersRecords.terminationRecordData.status == 15) or (terminationsSoldiersRecords.terminationRecordData.status == 10 and terminationsSoldiersRecords.role != 'ReviewerEmp')}">
-														<f:selectItem itemLabel="#{msgs.label_deathDueToWork}" itemValue="1" />
-														<f:selectItem itemLabel="#{msgs.label_deathNotDueToWork}" itemValue="2" />
+													<h:selectOneRadio id="deathTypeId" value="#{terminationsSoldiersRecords.selectedTerminationRecordDetailData.deathType}" disabled="#{(terminationsSoldiersRecords.terminationRecordData.status == 15) or (terminationsSoldiersRecords.terminationRecordData.status == 10 and terminationsSoldiersRecords.role != 'ReviewerEmp')}" layout="pageDirection">
+														<f:selectItem itemLabel="#{msgs.label_inServiceNotDueToService}" itemValue="2" />
+														<f:selectItem itemLabel="#{msgs.label_inServiceDueToService}" itemValue="1" />
 														<f:selectItem itemLabel="#{msgs.label_martyrdom}" itemValue="3" />
-														<f:selectItem itemLabel="#{msgs.label_deathDueToWorkDuringSavingSecurityOperations}" itemValue="4" />
+														<f:selectItem itemLabel="#{msgs.label_inServiceDueToServiceDuringSavingSecurityOperations}" itemValue="4" />
+														<f:selectItem itemLabel="#{msgs.label_inServiceDueToServiceDuringSavingOperationsOnSouthBordersAsMartyr}" itemValue="5" />
+														<f:selectItem itemLabel="#{msgs.label_inServiceDueToServiceDuringTerrorismOperationsAsMartyr}" itemValue="6" />
+														
 														<f:ajax event="change" listener="#{terminationsSoldiersRecords.changeDeathType}" execute="terminationsSoldiersRecordsFormId:terminationServiceDataPanelId" render="terminationsSoldiersRecordsFormId:terminationServiceDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 													</h:selectOneRadio>
 												</td>
@@ -1171,13 +1185,40 @@
 									</tr>
 									<tr>
 										<th width="20%">
-											<h:outputText value="#{msgs.label_asMarytar}" />
+											<h:outputText value="#{msgs.label_injuryAtService}" />
 											<font style="color: red;">*</font>
 										</th>
 										<td width="80%" colspan="3">
-											<h:selectBooleanCheckbox value="#{terminationsSoldiersRecords.selectedTerminationRecordDetailData.medicalMartyrFlagBoolean}" disabled="#{(terminationsSoldiersRecords.terminationRecordData.status == 15) or (terminationsSoldiersRecords.terminationRecordData.status == 10 and terminationsSoldiersRecords.role != 'ReviewerEmp')}" />
+											<h:selectOneRadio id="injuryInDutyFlagId" value="#{terminationsSoldiersRecords.selectedTerminationRecordDetailData.injuryInDutyFlag}" disabled="#{(terminationsSoldiersRecords.terminationRecordData.status == 15) or (terminationsSoldiersRecords.terminationRecordData.status == 10 and terminationsSoldiersRecords.role != 'ReviewerEmp')}">
+												<f:selectItem itemLabel="#{msgs.label_yes}" itemValue="1" />
+												<f:selectItem itemLabel="#{msgs.label_no}" itemValue="0" />
+												<f:ajax event="change" listener="#{terminationsSoldiersRecords.changeInjuryInDutyFlag}" execute="terminationsSoldiersRecordsFormId:terminationServiceDataPanelId" render="terminationsSoldiersRecordsFormId:terminationServiceDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											</h:selectOneRadio>
 										</td>
 									</tr>
+									<h:panelGroup id="terminationServiceDataInjuryTypePanelId">
+										<h:panelGroup rendered="#{terminationsSoldiersRecords.selectedTerminationRecordDetailData.injuryInDutyFlag == 1 }">
+
+											<tr>
+												<th width="20%">
+													<h:outputText value="#{msgs.label_injuryType}" />
+													<font style="color: red;">*</font>
+												</th>
+												<td width="80%" colspan="3">
+													<h:selectOneRadio id="injuryTypeId" value="#{terminationsSoldiersRecords.selectedTerminationRecordDetailData.injuryType}" disabled="#{(terminationsSoldiersRecords.terminationRecordData.status == 15) or (terminationsSoldiersRecords.terminationRecordData.status == 10 and terminationsSoldiersRecords.role != 'ReviewerEmp')}" layout="pageDirection">
+														<f:selectItem itemLabel="#{msgs.label_asMartyr}" itemValue="1" />
+														<f:selectItem itemLabel="#{msgs.label_inServiceDueToService}" itemValue="2" />
+														<f:selectItem itemLabel="#{msgs.label_inServiceNotDueToService}" itemValue="3" />
+														<f:selectItem itemLabel="#{msgs.label_inServiceDueToServiceDuringSavingSecurityOperations}" itemValue="4" />
+														<f:selectItem itemLabel="#{msgs.label_injuryInServiceDueToServiceDuringSavingOperationsOnSouthBorders}" itemValue="5" />
+														<f:selectItem itemLabel="#{msgs.label_injuryInServiceDueToServiceDuringTerrorismOperations}" itemValue="6" />
+														<f:selectItem itemLabel="#{msgs.label_inServiceDueToServiceDuringSavingOperationsOnSouthBordersAsMartyr}" itemValue="7" />
+														<f:selectItem itemLabel="#{msgs.label_inServiceDueToServiceDuringTerrorismOperationsAsMartyr}" itemValue="8" />
+													</h:selectOneRadio>
+												</td>
+											</tr>
+										</h:panelGroup>
+									</h:panelGroup>
 									<tr>
 										<th width="20%">
 											<h:outputText value="#{msgs.label_serviceTerminationDate}" />
