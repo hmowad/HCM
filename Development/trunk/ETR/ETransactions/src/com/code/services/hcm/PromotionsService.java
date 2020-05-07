@@ -3761,6 +3761,8 @@ public class PromotionsService extends BaseService {
 		    }
 
 		    // effect in employee
+		    if (promotionTransactionDataItr.getNewLastPromotionDate() == null)
+			employee.setLastPromotionDate(null);
 		    EmployeesService.updateEmployeePromotionData(employee, promotionTransactionDataItr.getNewJobId(), promotionTransactionDataItr.getNewRankId(), null, promotionTransactionDataItr.getNewDegreeId(), null, promotionTransactionDataItr.getNewDueDate(), promotionTransactionDataItr.getNewLastPromotionDate(), session);
 
 		    if (promotionReportData.getPromotionTypeId().equals(PromotionsTypesEnum.PROMOTION_CANCELLATION.getCode())) {
