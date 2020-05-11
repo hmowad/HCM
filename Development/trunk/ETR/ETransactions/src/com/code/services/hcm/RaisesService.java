@@ -759,7 +759,7 @@ public class RaisesService extends BaseService {
 	unDeservedEmpData = getUnDeservedEmployeesForAnnualRaise(raise.getExecutionDate(), raise.getCategoryId());
 
 	for (EmployeeData emp : allDeservedEmpData) {
-	    if (emp.getDegreeId().equals(rankDegressHashMap.get(emp.getRankId()))) {
+	    if (emp.getDegreeId().equals(rankDegressHashMap.get(emp.getRankId())) || emp.getDegreeId() > rankDegressHashMap.get(emp.getRankId())) {
 		endOfLadderEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseTypesEnum.ANNUAL.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode(), raise.getExecutionDate()));
 	    } else {
 		deservedEmpRaiseData.add(constructRaiseEmployeeData(emp, raise.getId(), RaiseTypesEnum.ANNUAL.getCode(), RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), raise.getExecutionDate()));
