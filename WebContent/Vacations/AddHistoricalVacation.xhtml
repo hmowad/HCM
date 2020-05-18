@@ -9,7 +9,7 @@
 	<script type="text/javascript">
 		//<![CDATA[ 
 		function getEmp(contextPath) {
-			openEmpsMiniSearchForHistorical(contextPath, 'handleEmpMiniSearchResult(ret)',22,'#{historicalVacation.categoriesIds}');
+			openEmpsMiniSearchForHistorical(contextPath, 'handleEmpMiniSearchResult(ret)',22,'#{addHistoricalVacation.categoriesIds}');
 		}
 
 		function handleEmpMiniSearchResult(ret) {
@@ -99,7 +99,7 @@
 				</tr>
 
 				<tr>
-					<td class="screenTitle">#{historicalVacation.screenTitle}</td>
+					<td class="screenTitle">#{addHistoricalVacation.screenTitle}</td>
 				</tr>
 				<tr>
 					<td width="100%" height="5" />
@@ -124,10 +124,10 @@
 											<font style="color: red;"> *</font>
 										</th>
 										<td width="85%" colspan="3">
-											<h:outputText id="empNameId" value="#{historicalVacation.currentEmployee.name}" />
-											<h:commandButton disabled="#{historicalVacation.admin == false}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" rendered="#{historicalVacation.viewMode == 0 and historicalVacation.historicalVacationTransactionData.approvedFlag == 0 }" />
-											<h:inputHidden id="empIdHId" value="#{historicalVacation.currentEmployee.empId}" />
-											<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{historicalVacation.selectEmployee}">
+											<h:outputText id="empNameId" value="#{addHistoricalVacation.currentEmployee.name}" />
+											<h:commandButton disabled="#{addHistoricalVacation.admin == false}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" rendered="#{addHistoricalVacation.viewMode == 0 and addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 }" />
+											<h:inputHidden id="empIdHId" value="#{addHistoricalVacation.currentEmployee.empId}" />
+											<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{addHistoricalVacation.selectEmployee}">
 												<f:ajax execute="historicalVacationFormId:empIdHId" render=" historicalVacationFormId:selectEmpId historicalVacationFormId:currentEmployeeId historicalVacationFormId:HistoricalVacationTitle historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationTitle historicalVacationFormId:joiningVacationId historicalVacationFormId:actionsPanelId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 										</td>
@@ -140,7 +140,7 @@
 				<tr>
 					<td width="100%">
 					<h:panelGroup id="currentEmployeeId">
-						<code:emp  value="#{historicalVacation.currentEmployee}" rendered="#{historicalVacation.currentEmployee.empId != null}" />
+						<code:emp  value="#{addHistoricalVacation.currentEmployee}" rendered="#{addHistoricalVacation.currentEmployee.empId != null}" />
 					</h:panelGroup>
 					</td>
 				</tr>
@@ -151,7 +151,7 @@
 					<td width="100%">
 					<h:panelGroup id="HistoricalVacationTitle"> 
 						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
-							<h:panelGroup rendered="#{historicalVacation.currentEmployee.empId != null}">
+							<h:panelGroup rendered="#{addHistoricalVacation.currentEmployee.empId != null}">
 								<tr>
 									<td>#{msgs.label_vacationData}</td>
 								</tr>
@@ -163,7 +163,7 @@
 				<tr>
 					<td width="100%">
 						<h:panelGroup id="HistoricalVacationId">
-							<h:panelGroup rendered="#{historicalVacation.currentEmployee.empId != null}">
+							<h:panelGroup rendered="#{addHistoricalVacation.currentEmployee.empId != null}">
 								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 									<tr>
 										<th width="15%">
@@ -171,12 +171,12 @@
 											<font style="color: red;"> *</font>
 										</th>
 										<td width="35%">
-											<h:selectOneMenu id="historicalvacTypeId" value="#{historicalVacation.historicalVacationTransactionData.vacationTypeId}" disabled="#{historicalVacation.historicalVacationTransactionData.id != null}">
-												<f:selectItems value="#{historicalVacation.vacTypeList}" var="vacType" itemLabel="#{(historicalVacation.currentEmployee.categoryId == 1 or historicalVacation.currentEmployee.categoryId == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
-												<f:ajax event="change" listener="#{historicalVacation.vacationTypeListener()}" execute="historicalVacationFormId:historicalvacTypeId" render="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											<h:selectOneMenu id="historicalvacTypeId" value="#{addHistoricalVacation.historicalVacationTransactionData.vacationTypeId}" disabled="#{addHistoricalVacation.historicalVacationTransactionData.id != null}">
+												<f:selectItems value="#{addHistoricalVacation.vacTypeList}" var="vacType" itemLabel="#{(addHistoricalVacation.currentEmployee.categoryId == 1 or addHistoricalVacation.currentEmployee.categoryId == 2) ? vacType.vacationTypeDesc : vacType.vacationTypeDescForEmployees}" itemValue="#{vacType.vacationTypeId}" />
+												<f:ajax event="change" listener="#{addHistoricalVacation.vacationTypeListener()}" execute="historicalVacationFormId:historicalvacTypeId" render="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:selectOneMenu>
 										</td>
-										<h:panelGroup rendered="#{(historicalVacation.currentEmployee.categoryId == 2 and historicalVacation.historicalVacationTransactionData.vacationTypeId == 2) or (historicalVacation.currentEmployee.categoryId != 1 and historicalVacation.currentEmployee.categoryId != 2 and historicalVacation.currentEmployee.categoryId != 6 and historicalVacation.historicalVacationTransactionData.vacationTypeId == 3)}" >
+										<h:panelGroup rendered="#{(addHistoricalVacation.currentEmployee.categoryId == 2 and addHistoricalVacation.historicalVacationTransactionData.vacationTypeId == 2) or (addHistoricalVacation.currentEmployee.categoryId != 1 and addHistoricalVacation.currentEmployee.categoryId != 2 and addHistoricalVacation.currentEmployee.categoryId != 6 and addHistoricalVacation.historicalVacationTransactionData.vacationTypeId == 3)}" >
 											<th width="15%" >
 												<h:panelGroup id="subVacationHeaderPanelId">
 													<h:outputText value="#{msgs.label_subVacationType}"  />
@@ -184,16 +184,16 @@
 											</th>
 											<td width="35%">
 												<h:panelGroup id="subVacationPanelId">
-													<h:selectOneMenu value="#{historicalVacation.historicalVacationTransactionData.subVacationType}" rendered="#{(historicalVacation.currentEmployee.categoryId == 2 and historicalVacation.historicalVacationTransactionData.vacationTypeId == 2) }" disabled="#{historicalVacation.historicalVacationTransactionData.id != null or historicalVacation.viewMode == 1}">
+													<h:selectOneMenu value="#{addHistoricalVacation.historicalVacationTransactionData.subVacationType}" rendered="#{(addHistoricalVacation.currentEmployee.categoryId == 2 and addHistoricalVacation.historicalVacationTransactionData.vacationTypeId == 2) }" disabled="#{addHistoricalVacation.historicalVacationTransactionData.id != null or addHistoricalVacation.viewMode == 1}">
 														<f:selectItem itemValue="1" itemLabel="#{msgs.label_sickVacationA}" />
 														<f:selectItem itemValue="2" itemLabel="#{msgs.label_sickVacationB}" />
-														<f:ajax event="change" listener="#{historicalVacation.inquiryBalance()}" execute="@this" render="historicalVacationFormId:vacationBalanceId historicalVacationFormId:notifyMessagesId" />
+														<f:ajax event="change" listener="#{addHistoricalVacation.inquiryBalance()}" execute="@this" render="historicalVacationFormId:vacationBalanceId historicalVacationFormId:notifyMessagesId" />
 													</h:selectOneMenu>
 	
-													<h:selectOneMenu value="#{historicalVacation.historicalVacationTransactionData.subVacationType}" rendered="#{(historicalVacation.currentEmployee.categoryId != 1 and historicalVacation.currentEmployee.categoryId != 2 and historicalVacation.currentEmployee.categoryId != 6 and historicalVacation.historicalVacationTransactionData.vacationTypeId == 3)}" disabled="#{historicalVacation.historicalVacationTransactionData.id != null or historicalVacation.viewMode == 1}">
+													<h:selectOneMenu value="#{addHistoricalVacation.historicalVacationTransactionData.subVacationType}" rendered="#{(addHistoricalVacation.currentEmployee.categoryId != 1 and addHistoricalVacation.currentEmployee.categoryId != 2 and addHistoricalVacation.currentEmployee.categoryId != 6 and addHistoricalVacation.historicalVacationTransactionData.vacationTypeId == 3)}" disabled="#{addHistoricalVacation.historicalVacationTransactionData.id != null or addHistoricalVacation.viewMode == 1}">
 														<f:selectItem itemValue="1" itemLabel="#{msgs.label_forCircumstances}" />
 														<f:selectItem itemValue="2" itemLabel="#{msgs.label_forAccompany}" />
-														<f:ajax event="change" listener="#{historicalVacation.inquiryBalance()}" execute="@this" render="historicalVacationFormId:vacationBalanceId  historicalVacationFormId:notifyMessagesId" />
+														<f:ajax event="change" listener="#{addHistoricalVacation.inquiryBalance()}" execute="@this" render="historicalVacationFormId:vacationBalanceId  historicalVacationFormId:notifyMessagesId" />
 													</h:selectOneMenu>
 												</h:panelGroup>
 											</td>
@@ -205,16 +205,16 @@
 											<font style="color: red;"> *</font>
 										</th>
 										<td width="35%">
-											<h:inputText id="decisionNumberId" value="#{historicalVacation.historicalVacationTransactionData.decisionNumber}" maxlength="50" rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}" />
-											<h:outputText rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1}" value="#{historicalVacation.historicalVacationTransactionData.decisionNumber}" />
+											<h:inputText id="decisionNumberId" value="#{addHistoricalVacation.historicalVacationTransactionData.decisionNumber}" maxlength="50" rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 and addHistoricalVacation.viewMode != 1}" />
+											<h:outputText rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 1 or addHistoricalVacation.viewMode == 1}" value="#{addHistoricalVacation.historicalVacationTransactionData.decisionNumber}" />
 										</td>
 										<th width="15%">
 											#{msgs.label_decisionDate}
 											<font style="color: red;"> *</font>
 										</th>
 										<td width="35%">
-											<h:outputText rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1}" value="#{historicalVacation.historicalVacationTransactionData.decisionDateString}" />
-											<util:hijri id="decisionDateId" rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}" value="#{historicalVacation.historicalVacationTransactionData.decisionDate}" viewOldRange="true" nullable="true" />
+											<h:outputText rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 1 or addHistoricalVacation.viewMode == 1}" value="#{addHistoricalVacation.historicalVacationTransactionData.decisionDateString}" />
+											<util:hijri id="decisionDateId" rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 and addHistoricalVacation.viewMode != 1}" value="#{addHistoricalVacation.historicalVacationTransactionData.decisionDate}" viewOldRange="true" nullable="true" />
 										</td>
 									</tr>
 									<tr>
@@ -223,8 +223,8 @@
 											<font style="color: red;"> *</font>
 										</th>
 										<td width="35%" colspan="3">
-											<h:selectOneMenu value="#{historicalVacation.historicalVacationTransactionData.decisionRegionId}" disabled="#{historicalVacation.viewMode == 1 or historicalVacation.historicalVacationTransactionData.approvedFlag == 1}">
-												<f:selectItems value="#{historicalVacation.decisionRegions}" var="decRegion" itemLabel="#{decRegion.description}" itemValue="#{decRegion.id}" />
+											<h:selectOneMenu value="#{addHistoricalVacation.historicalVacationTransactionData.decisionRegionId}" disabled="#{addHistoricalVacation.viewMode == 1 or addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 1}">
+												<f:selectItems value="#{addHistoricalVacation.decisionRegions}" var="decRegion" itemLabel="#{decRegion.description}" itemValue="#{decRegion.id}" />
 											</h:selectOneMenu>
 										</td>
 									</tr>
@@ -234,17 +234,17 @@
 											<font style="color: red;"> *</font>
 										</th>
 										<td width="35%">
-											<h:inputText id="periodId" value="#{historicalVacation.historicalVacationTransactionData.period}" rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}" maxlength="4" onkeypress="return isDigit(event);">
-												<f:ajax event="blur" execute="historicalVacationFormId:selectedVacationStartDateId historicalVacationFormId:historicalvacTypeId" listener="#{historicalVacation.startDateAndPeriodChangeListener}" render="historicalVacationFormId:selectedVacationEndDateId historicalVacationFormId:joiningVacationId historicalVacationFormId:notifyMessagesId" />
+											<h:inputText id="periodId" value="#{addHistoricalVacation.historicalVacationTransactionData.period}" rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 and addHistoricalVacation.viewMode != 1}" maxlength="4" onkeypress="return isDigit(event);">
+												<f:ajax event="blur" execute="historicalVacationFormId:selectedVacationStartDateId historicalVacationFormId:historicalvacTypeId" listener="#{addHistoricalVacation.startDateAndPeriodChangeListener}" render="historicalVacationFormId:selectedVacationEndDateId historicalVacationFormId:joiningVacationId historicalVacationFormId:notifyMessagesId" />
 											</h:inputText>
-											<h:outputText rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1}" value="#{historicalVacation.historicalVacationTransactionData.period}" />
+											<h:outputText rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 1 or addHistoricalVacation.viewMode == 1}" value="#{addHistoricalVacation.historicalVacationTransactionData.period}" />
 										</td>
-										<h:panelGroup rendered="#{historicalVacation.viewMode != 1}">
+										<h:panelGroup rendered="#{addHistoricalVacation.viewMode != 1}">
 											<th width="15%">
 												<h:outputText value="#{msgs.label_vacationBalance}" />
 											</th>
 											<td width="35%">
-												<h:outputText id="vacationBalanceId" value="#{historicalVacation.balance}" />
+												<h:outputText id="vacationBalanceId" value="#{addHistoricalVacation.balance}" />
 											</td>
 										</h:panelGroup>
 									</tr>
@@ -254,42 +254,42 @@
 											<font style="color: red;"> *</font>
 										</th>
 										<td width="35%">
-											<h:outputText rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1}" value="#{historicalVacation.historicalVacationTransactionData.startDateString}" />
-											<util:hijri rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}" id="selectedVacationStartDateId" value="#{historicalVacation.historicalVacationTransactionData.startDate}" onChangeAjaxSubmit="true" viewOldRange="true" listenerMethod="#{historicalVacation.startDateAndPeriodChangeListener}"
+											<h:outputText rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 1 or addHistoricalVacation.viewMode == 1}" value="#{addHistoricalVacation.historicalVacationTransactionData.startDateString}" />
+											<util:hijri rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 and addHistoricalVacation.viewMode != 1}" id="selectedVacationStartDateId" value="#{addHistoricalVacation.historicalVacationTransactionData.startDate}" onChangeAjaxSubmit="true" viewOldRange="true" listenerMethod="#{addHistoricalVacation.startDateAndPeriodChangeListener}"
 												reRenderIds="historicalVacationFormId:vacationBalanceId historicalVacationFormId:selectedVacationEndDateId historicalVacationFormId:joiningVacationId historicalVacationFormId:notifyMessagesId" />
 										</td>
 										<th width="15%">#{msgs.label_endDate}</th>
 										<td width="35%">
-											<h:outputText id="selectedVacationEndDateId" value="#{historicalVacation.historicalVacationTransactionData.endDateString}" />
+											<h:outputText id="selectedVacationEndDateId" value="#{addHistoricalVacation.historicalVacationTransactionData.endDateString}" />
 										</td>
 									</tr>
 									<h:panelGroup id="LocationRadioPanelId">
-										<h:panelGroup rendered="#{historicalVacation.historicalVacationTransactionData.vacationTypeId == 1 or historicalVacation.historicalVacationTransactionData.vacationTypeId == 2 or historicalVacation.historicalVacationTransactionData.vacationTypeId == 3 or historicalVacation.historicalVacationTransactionData.vacationTypeId == 11}">
+										<h:panelGroup rendered="#{addHistoricalVacation.historicalVacationTransactionData.vacationTypeId == 1 or addHistoricalVacation.historicalVacationTransactionData.vacationTypeId == 2 or addHistoricalVacation.historicalVacationTransactionData.vacationTypeId == 3 or addHistoricalVacation.historicalVacationTransactionData.vacationTypeId == 11}">
 											<tr>
 												<th width="15%">#{msgs.label_location}</th>
 												<td width="35%">
-													<h:selectOneRadio id="locationFlagId" value="#{historicalVacation.historicalVacationTransactionData.locationFlag}" rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}">
+													<h:selectOneRadio id="locationFlagId" value="#{addHistoricalVacation.historicalVacationTransactionData.locationFlag}" rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 and addHistoricalVacation.viewMode != 1}">
 														<f:selectItem itemValue="0" itemLabel="#{msgs.label_locIn}" />
 														<f:selectItem itemValue="1" itemLabel="#{msgs.label_locOut}" />
 
-														<f:ajax event="click" execute="@this" listener="#{historicalVacation.locationFlagChangeListner}" render="countriesNamesId locationId locationBtnId notifyMessagesId locationFlagId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														<f:ajax event="click" execute="@this" listener="#{addHistoricalVacation.locationFlagChangeListner}" render="countriesNamesId locationId locationBtnId notifyMessagesId locationFlagId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 													</h:selectOneRadio>
-													<h:outputText rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1 }" value="#{historicalVacation.historicalVacationTransactionData.locationFlag == 0 ? msgs.label_locIn : msgs.label_locOut}" />
+													<h:outputText rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 1 or addHistoricalVacation.viewMode == 1 }" value="#{addHistoricalVacation.historicalVacationTransactionData.locationFlag == 0 ? msgs.label_locIn : msgs.label_locOut}" />
 												</td>
-												<h:panelGroup rendered="#{historicalVacation.viewMode != 1}">
+												<h:panelGroup rendered="#{addHistoricalVacation.viewMode != 1}">
 													<th width="15%">
-														<h:commandButton id="locationBtnId" value="#{msgs.label_selectCountries}" onclick="getCountries('#{request.contextPath}');return false;" rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 }" disabled="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1 or historicalVacation.historicalVacationTransactionData.locationFlag == 0}" styleClass="btn_normal" />
-														<h:outputText value="*" style="color: red;" rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 }" />
+														<h:commandButton id="locationBtnId" value="#{msgs.label_selectCountries}" onclick="getCountries('#{request.contextPath}');return false;" rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 }" disabled="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 1 or addHistoricalVacation.viewMode == 1 or addHistoricalVacation.historicalVacationTransactionData.locationFlag == 0}" styleClass="btn_normal" />
+														<h:outputText value="*" style="color: red;" rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 }" />
 													</th>
 												</h:panelGroup>
-												<h:panelGroup rendered="#{historicalVacation.viewMode == 1}">
+												<h:panelGroup rendered="#{addHistoricalVacation.viewMode == 1}">
 													<th width="15%">
 														<h:outputText value="#{msgs.label_country}" />
 													</th>
 												</h:panelGroup>
 												<td width="35%">
-													<h:outputText id="locationId" value="#{historicalVacation.historicalVacationTransactionData.location}" />
-													<h:inputHidden id="countriesNamesId" value="#{historicalVacation.historicalVacationTransactionData.location}" />
+													<h:outputText id="locationId" value="#{addHistoricalVacation.historicalVacationTransactionData.location}" />
+													<h:inputHidden id="countriesNamesId" value="#{addHistoricalVacation.historicalVacationTransactionData.location}" />
 												</td>
 											</tr>
 										</h:panelGroup>
@@ -300,8 +300,8 @@
 											<font style="color: red;">*</font>
 										</th>
 										<td width="35%">
-											<h:inputText id="contactNumberId" value="#{historicalVacation.historicalVacationTransactionData.contactNumber}" rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}" maxlength="14" onkeypress="return isDigit(event);" />
-											<h:outputText rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1}" value="#{historicalVacation.historicalVacationTransactionData.contactNumber}" />
+											<h:inputText id="contactNumberId" value="#{addHistoricalVacation.historicalVacationTransactionData.contactNumber}" rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 and addHistoricalVacation.viewMode != 1}" maxlength="14" onkeypress="return isDigit(event);" />
+											<h:outputText rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 1 or addHistoricalVacation.viewMode == 1}" value="#{addHistoricalVacation.historicalVacationTransactionData.contactNumber}" />
 										</td>
 										<td width="50%" colspan="2" />
 									</tr>
@@ -309,25 +309,25 @@
 										<th width="15%">
 											#{msgs.label_contactAddress}
 											<h:panelGroup id="contactAddressPanelGroupId">
-												<h:outputText value="*" style="color: red;" rendered="#{historicalVacation.historicalVacationTransactionData.locationFlag == 0}" />
+												<h:outputText value="*" style="color: red;" rendered="#{addHistoricalVacation.historicalVacationTransactionData.locationFlag == 0}" />
 											</h:panelGroup>
 										</th>
 										<td width="85%" colspan="3">
-											<h:inputText id="contactAddressId" value="#{historicalVacation.historicalVacationTransactionData.contactAddress}" rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}" maxlength="200" styleClass="inputDataLarge" />
-											<h:outputText rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1}" value="#{historicalVacation.historicalVacationTransactionData.contactAddress}" />
+											<h:inputText id="contactAddressId" value="#{addHistoricalVacation.historicalVacationTransactionData.contactAddress}" rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 and addHistoricalVacation.viewMode != 1}" maxlength="200" styleClass="inputDataLarge" />
+											<h:outputText rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 1 or addHistoricalVacation.viewMode == 1}" value="#{addHistoricalVacation.historicalVacationTransactionData.contactAddress}" />
 										</td>
 									</tr>
 									<tr>
 										<th width="15%">#{msgs.label_notes}</th>
 										<td width="85%" colspan="3">
-											<h:inputText value="#{historicalVacation.historicalVacationTransactionData.remarks}" rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}" maxlength="100" styleClass="inputDataLarge" />
-											<h:outputText rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1}" value="#{historicalVacation.historicalVacationTransactionData.remarks}" />
+											<h:inputText value="#{addHistoricalVacation.historicalVacationTransactionData.remarks}" rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 and addHistoricalVacation.viewMode != 1}" maxlength="100" styleClass="inputDataLarge" />
+											<h:outputText rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 1 or addHistoricalVacation.viewMode == 1}" value="#{addHistoricalVacation.historicalVacationTransactionData.remarks}" />
 										</td>
 									</tr>
 									<tr>
 										<th width="15%">#{msgs.label_attachments}</th>
 										<td width="85%" colspan="3">
-											<code:attachments loginEmpId="#{historicalVacation.currentEmployee.empId}" attachmentId="#{historicalVacation.historicalVacationTransactionData.attachments}" addEnableFlag="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}" viewEnableFlag="true" deleteEnableFlag="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0}" />
+											<code:attachments loginEmpId="#{addHistoricalVacation.currentEmployee.empId}" attachmentId="#{addHistoricalVacation.historicalVacationTransactionData.attachments}" addEnableFlag="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 and addHistoricalVacation.viewMode != 1}" viewEnableFlag="true" deleteEnableFlag="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0}" />
 										</td>
 									</tr>
 								</table>
@@ -342,7 +342,7 @@
 					<td width="100%">
 					<h:panelGroup id= "joiningVacationTitle">
 						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
-							<h:panelGroup rendered="#{historicalVacation.currentEmployee.empId != null}">
+							<h:panelGroup rendered="#{addHistoricalVacation.currentEmployee.empId != null}">
 								<tr>
 									<td>#{msgs.title_vacationJoining}</td>
 								</tr>
@@ -354,27 +354,27 @@
 				<tr>
 					<td width="100%">
 						<h:panelGroup id="joiningVacationId">
-							<h:panelGroup rendered="#{historicalVacation.currentEmployee.empId != null}">
+							<h:panelGroup rendered="#{addHistoricalVacation.currentEmployee.empId != null}">
 								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 									<tr>
 										<th width="15%">#{msgs.label_joining}</th>
 										<td width="85%">
-											<h:selectOneRadio id="exceededFlagId" value="#{historicalVacation.exceededFlag}" disabled="#{historicalVacation.historicalVacationTransactionData.approvedFlag==1 or historicalVacation.viewMode == 1}">
+											<h:selectOneRadio id="exceededFlagId" value="#{addHistoricalVacation.exceededFlag}" disabled="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag==1 or addHistoricalVacation.viewMode == 1}">
 												<f:selectItem itemValue="0" itemLabel="#{msgs.label_attendInTime}" />
 												<f:selectItem itemValue="1" itemLabel="#{msgs.label_attendAfterTime}" />
-												<f:ajax event="click" listener="#{historicalVacation.exceededFlagListener()}" execute="@this" render="historicalVacationFormId:joiningVacationId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												<f:ajax event="click" listener="#{addHistoricalVacation.exceededFlagListener()}" execute="@this" render="historicalVacationFormId:joiningVacationId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:selectOneRadio>
 										</td>
 									</tr>
 									<tr>
-										<h:panelGroup rendered="#{historicalVacation.exceededFlag == 1}">
+										<h:panelGroup rendered="#{addHistoricalVacation.exceededFlag == 1}">
 											<th width="15%">
 												#{msgs.label_numberOfExceededDays}
 												<font style="color: red;">*</font>
 											</th>
 											<td width="85%">
-												<h:inputText id="exceededDaysId" value="#{historicalVacation.historicalVacationTransactionData.exceededDays}" disabled="#{historicalVacation.historicalVacationTransactionData.approvedFlag==1 or historicalVacation.viewMode == 1}" maxlength="3" style="font-weight: bold !important; color: red !important;">
-													<f:ajax event="blur" execute="@this" listener="#{historicalVacation.exceededDaysListener}" render="historicalVacationFormId:joiningVacationId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												<h:inputText id="exceededDaysId" value="#{addHistoricalVacation.historicalVacationTransactionData.exceededDays}" disabled="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag==1 or addHistoricalVacation.viewMode == 1}" maxlength="3" style="font-weight: bold !important; color: red !important;">
+													<f:ajax event="blur" execute="@this" listener="#{addHistoricalVacation.exceededDaysListener}" render="historicalVacationFormId:joiningVacationId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 												</h:inputText>
 											</td>
 										</h:panelGroup>
@@ -385,14 +385,14 @@
 											<font style="color: red;"> *</font>
 										</th>
 										<td width="35%">
-											<h:outputText value="#{historicalVacation.historicalVacationTransactionData.joiningDateString}" />
+											<h:outputText value="#{addHistoricalVacation.historicalVacationTransactionData.joiningDateString}" />
 										</td>
 									</tr>
 									<tr>
 										<th width="15%">#{msgs.label_notes}</th>
 										<td width="85%" colspan="3">
-											<h:inputText value="#{historicalVacation.historicalVacationTransactionData.joiningRemarks}" rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}" maxlength="100" styleClass="inputDataLarge" />
-											<h:outputText value="#{historicalVacation.historicalVacationTransactionData.joiningRemarks}" rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 1 or historicalVacation.viewMode == 1}" />
+											<h:inputText value="#{addHistoricalVacation.historicalVacationTransactionData.joiningRemarks}" rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 and addHistoricalVacation.viewMode != 1}" maxlength="100" styleClass="inputDataLarge" />
+											<h:outputText value="#{addHistoricalVacation.historicalVacationTransactionData.joiningRemarks}" rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 1 or addHistoricalVacation.viewMode == 1}" />
 										</td>
 									</tr>
 								</table>
@@ -409,14 +409,14 @@
 							<tr>
 								<td width="100%">
 									<h:panelGroup id="actionsPanelId">
-										<h:panelGroup rendered="#{historicalVacation.currentEmployee.empId != null}">
-											<h:commandButton rendered="#{historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1}" onclick="return handleOnAction('#{msgs.q_save}', 'validateVacationData()');" action="#{historicalVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
+										<h:panelGroup rendered="#{addHistoricalVacation.currentEmployee.empId != null}">
+											<h:commandButton rendered="#{addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 and addHistoricalVacation.viewMode != 1}" onclick="return handleOnAction('#{msgs.q_save}', 'validateVacationData()');" action="#{addHistoricalVacation.saveVacation()}" styleClass="btn_normal_icon" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}">
 												<f:ajax execute="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationId" render="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationId historicalVacationFormId:actionsPanelId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
-											<h:commandButton rendered="#{historicalVacation.signAdmin == true and historicalVacation.historicalVacationTransactionData.approvedFlag == 0 and historicalVacation.viewMode != 1 and historicalVacation.historicalVacationTransactionData.id != null}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{historicalVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<h:commandButton rendered="#{addHistoricalVacation.signAdmin == true and addHistoricalVacation.historicalVacationTransactionData.approvedFlag == 0 and addHistoricalVacation.viewMode != 1 and addHistoricalVacation.historicalVacationTransactionData.id != null}" onclick="return handleOnAction('#{msgs.q_superSign}', 'validateVacationData()');" action="#{addHistoricalVacation.signVacation()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 												<f:ajax execute="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationId" render="historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationId historicalVacationFormId:actionsPanelId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
-											<h:commandButton rendered="#{historicalVacation.viewMode == 0}" action="#{historicalVacation.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+											<h:commandButton rendered="#{addHistoricalVacation.viewMode == 0}" action="#{addHistoricalVacation.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
 												<f:ajax execute="@form" render=" historicalVacationFormId:selectEmpId historicalVacationFormId:currentEmployeeId historicalVacationFormId:HistoricalVacationTitle historicalVacationFormId:HistoricalVacationId historicalVacationFormId:joiningVacationTitle historicalVacationFormId:joiningVacationId historicalVacationFormId:actionsPanelId historicalVacationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 										</h:panelGroup>
