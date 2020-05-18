@@ -9,8 +9,8 @@
 
 	<script type="text/javascript">
     //<![CDATA[ 
-               	function getEmp(contextPath) {
-			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',1, -1, -1, -1, -1, -1, -1);
+          function getEmp(contextPath) {
+			openEmpsMiniSearchForHistorical(contextPath, 'handleEmpMiniSearchResult(ret)',22,'#{historicalVacationsManagement.categoriesIds}');
 		}
 
 		function handleEmpMiniSearchResult(ret) {
@@ -69,7 +69,7 @@
 									</th>
 									<td width="35%" colspan="3">
 										<h:outputText id="empNameId" value="#{historicalVacationsManagement.currentEmployee.name}" />
-										<h:commandButton value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
+										<h:commandButton disabled="#{historicalVacation.admin == false}" value="#{msgs.fa_external_link}" title="#{msgs.label_selectEmp}" onclick="getEmp('#{request.contextPath}'); return false;" styleClass="btn_icon" />
 										<h:inputHidden id="empIdHId" value="#{historicalVacationsManagement.currentEmployee.empId}" />
 										<h:inputHidden id="empNameHId" value="#{historicalVacationsManagement.currentEmployee.name}" />
 										<h:commandButton id="selectEmpBtnHId" style="display: none;" action="#{historicalVacationsManagement.selectEmployee()}">
