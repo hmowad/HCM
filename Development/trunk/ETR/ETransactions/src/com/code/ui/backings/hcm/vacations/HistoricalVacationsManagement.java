@@ -10,11 +10,15 @@ import javax.faces.bean.ViewScoped;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.vacations.HistoricalVacationTransactionData;
 import com.code.dal.orm.hcm.vacations.VacationType;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
+import com.code.enums.MenuActionsEnum;
+import com.code.enums.MenuCodesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.HistoricalVacationsService;
 import com.code.services.hcm.VacationsService;
+import com.code.services.security.SecurityService;
 import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
 
@@ -31,13 +35,49 @@ public class HistoricalVacationsManagement extends BaseBacking {
     private String decisionNumber;
     private Integer locationFlag;
     private Integer approvedFlag;
+    private StringBuilder categoriesIds;
+    private boolean isAdmin;
     private int pageSize = 5;
 
     private List<HistoricalVacationTransactionData> historicalVacationData;
 
     public HistoricalVacationsManagement() {
-	super.init();
-	reset();
+	try {
+	    super.init();
+	    categoriesIds = new StringBuilder();
+	    reset();
+	    validateEmployeesAdmins();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
+    }
+
+    private void validateEmployeesAdmins() throws BusinessException {
+	if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_HISTORICAL_VAC_HISTORICAL_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_HISTORICAL_VACATIONS_OFFICERS.getCode()))
+	    categoriesIds.append(CategoriesEnum.OFFICERS.getCode() + ",");
+
+	if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_HISTORICAL_VAC_HISTORICAL_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_HISTORICAL_VACATIONS_SOLDIERS.getCode()))
+	    categoriesIds.append(CategoriesEnum.SOLDIERS.getCode() + ",");
+
+	if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_HISTORICAL_VAC_HISTORICAL_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_HISTORICAL_VACATIONS_PERSONS.getCode()))
+	    categoriesIds.append(CategoriesEnum.PERSONS.getCode() + ",");
+
+	if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_HISTORICAL_VAC_HISTORICAL_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_HISTORICAL_VACATIONS_USERS.getCode()))
+	    categoriesIds.append(CategoriesEnum.USERS.getCode() + ",");
+
+	if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_HISTORICAL_VAC_HISTORICAL_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_HISTORICAL_VACATIONS_WAGES.getCode()))
+	    categoriesIds.append(CategoriesEnum.WAGES.getCode() + ",");
+
+	if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_HISTORICAL_VAC_HISTORICAL_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_HISTORICAL_VACATIONS_CONTRACTORS.getCode()))
+	    categoriesIds.append(CategoriesEnum.CONTRACTORS.getCode() + ",");
+
+	if (SecurityService.isEmployeeMenuActionGranted(loginEmpData.getEmpId(), MenuCodesEnum.VAC_HISTORICAL_VAC_HISTORICAL_VACATION_MANAGEMENT.getCode(), MenuActionsEnum.VAC_HISTORICAL_VACATIONS_MEDICAL_STAFF.getCode()))
+	    categoriesIds.append(CategoriesEnum.MEDICAL_STAFF.getCode() + ",");
+
+	if (categoriesIds.length() != 0 && categoriesIds.substring(categoriesIds.length() - 1).equals(","))
+	    categoriesIds.delete(categoriesIds.length() - 1, categoriesIds.length());
+
+	this.setAdmin(categoriesIds.length() != 0 ? true : false);
     }
 
     public void searchHistoricalVacations() {
@@ -180,6 +220,22 @@ public class HistoricalVacationsManagement extends BaseBacking {
 
     public void setApprovedFlag(int approvedFlag) {
 	this.approvedFlag = approvedFlag;
+    }
+
+    public StringBuilder getCategoriesIds() {
+	return categoriesIds;
+    }
+
+    public void setCategoriesIds(StringBuilder categoriesIds) {
+	this.categoriesIds = categoriesIds;
+    }
+
+    public boolean isAdmin() {
+	return isAdmin;
+    }
+
+    public void setAdmin(boolean isAdmin) {
+	this.isAdmin = isAdmin;
     }
 
     public int getPageSize() {
