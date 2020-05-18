@@ -27,7 +27,7 @@ import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
 
-@ManagedBean(name = "historicalVacation")
+@ManagedBean(name = "addHistoricalVacation")
 @ViewScoped
 public class AddHistoricalVacation extends BaseBacking {
     private EmployeeData currentEmployee;
@@ -48,7 +48,7 @@ public class AddHistoricalVacation extends BaseBacking {
 
     public AddHistoricalVacation() {
 	super.init();
-	this.setScreenTitle(this.getMessage("title_addNewHistoricalVacation"));
+	this.setScreenTitle(this.getMessage("title_addHistoricalVacation"));
 	try {
 	    if (this.getRequest().getParameter("mode") != null)
 		viewMode = Integer.parseInt(this.getRequest().getParameter("mode").trim());
