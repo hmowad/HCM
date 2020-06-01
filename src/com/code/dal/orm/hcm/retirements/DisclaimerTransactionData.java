@@ -52,6 +52,7 @@ public class DisclaimerTransactionData extends BaseEntity {
     private String transEmpRankDesc;
     private String transEmpJobDesc;
     private String transEmpUnitFullName;
+    private Long transEmpUnitId;
     private String transTerminationReason;
     private Date transServiceTerminationDate;
     private String transServiceTerminationDateString;
@@ -211,6 +212,16 @@ public class DisclaimerTransactionData extends BaseEntity {
 
     public void setTransEmpUnitFullName(String transEmpUnitFullName) {
 	this.transEmpUnitFullName = transEmpUnitFullName;
+    }
+
+    @Basic
+    @Column(name = "TRANS_EMP_UNIT_ID")
+    public Long getTransEmpUnitId() {
+	return transEmpUnitId;
+    }
+
+    public void setTransEmpUnitId(Long transEmpUnitId) {
+	this.transEmpUnitId = transEmpUnitId;
     }
 
     @Basic

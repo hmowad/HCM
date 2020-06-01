@@ -59,7 +59,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
     public static void initDisclaimer(EmployeeData requester,
 	    long processId, String attachments, String taskUrl, WFDisclaimerData wfDisclaimerData) throws BusinessException {
 	validateDisclaimerRequest(wfDisclaimerData);
-	List<UnitData> managersUnits = getManagersUnits(wfDisclaimerData.getEmpOfficialUnitFullName(), wfDisclaimerData.getEmpCategoryId(), wfDisclaimerData.getEmpPhysicalRegionId(), wfDisclaimerData.getTerminationMigFlag());
+	List<UnitData> managersUnits = getManagersUnits(wfDisclaimerData.getEmpOfficialUnitId(), wfDisclaimerData.getEmpCategoryId(), wfDisclaimerData.getEmpPhysicalRegionId(), wfDisclaimerData.getTerminationMigFlag());
 	CustomSession session = DataAccess.getSession();
 	try {
 	    session.beginTransaction();
@@ -577,11 +577,12 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    wfDisclaimerData.setEmpJobDesc(terminationTransaction.getJobName());
 	    wfDisclaimerData.setEmpRankDesc(terminationTransaction.getTransEmpRankDesc());
 	    wfDisclaimerData.setEmpOfficialUnitFullName(terminationTransaction.getTransEmpUnitFullName());
+	    wfDisclaimerData.setEmpOfficialUnitId(terminationTransaction.getTransEmpUnitId());
 	    wfDisclaimerData.setTerminationMigFlag(terminationTransaction.getMigFlag());
 	    wfDisclaimerData.setTerminationReason(terminationTransaction.getReasonDesc());
-	    UnitData empUnitData = UnitsService.getUnitByExactFullName(terminationTransaction.getTransEmpUnitFullName());
+	    UnitData empUnitData = UnitsService.getUnitById(terminationTransaction.getTransEmpUnitId());
 	    if (empUnitData == null)
-		throw new BusinessException("error_steOfficialUnitFullNameMandatory");
+		throw new BusinessException("error_steUnitIdMandatory");
 	    wfDisclaimerData.setEmpPhysicalRegionId(empUnitData.getRegionId());
 	}
 	return wfDisclaimerData;
@@ -704,10 +705,10 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
     }
 
     /*------------------------------------------------ Utilities --------------------------------------------------*/
-    private static List<UnitData> getManagersUnits(String unitName, Long empCategoryId, Long empPhysicalRegionId, Integer isMigratedFlag) throws BusinessException {
+    private static List<UnitData> getManagersUnits(Long unitId, Long empCategoryId, Long empPhysicalRegionId, Integer isMigratedFlag) throws BusinessException {
 	List<UnitData> managersUnits = new ArrayList<>();
 	if (isMigratedFlag == FlagsEnum.OFF.getCode()) {
-	    UnitData associateManagerUnit = getAssociateManagerUnit(unitName);
+	    UnitData associateManagerUnit = getAssociateManagerUnit(unitId);
 	    if (associateManagerUnit != null) {
 		if (associateManagerUnit.getPhysicalManagerId() != null)
 		    managersUnits.add(associateManagerUnit);
@@ -723,15 +724,15 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	return managersUnits;
     }
 
-    private static UnitData getAssociateManagerUnit(String unitName) throws BusinessException {
+    private static UnitData getAssociateManagerUnit(Long unitId) throws BusinessException {
 	try {
-	    UnitData empUnit = UnitsService.getUnitByExactFullName(unitName);
+	    UnitData empUnit = unitId == null ? null : UnitsService.getUnitById(unitId);
 	    if (empUnit == null)
 		throw new BusinessException("error_transactionDataError");
 	    return UnitsService.getAncestorUnderPresidencyByLevel(empUnit.getId(), empUnit.getRegionId() == RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() ? 2 : 3);
 	} catch (BusinessException e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException(e.getMessage());
 	}
     }
 
