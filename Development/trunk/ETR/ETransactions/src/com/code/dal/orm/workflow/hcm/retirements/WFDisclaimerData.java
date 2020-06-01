@@ -62,6 +62,7 @@ public class WFDisclaimerData extends BaseEntity {
     private String empRankDesc;
     private String empJobDesc;
     private String empOfficialUnitFullName;
+    private Long empOfficialUnitId;
     private String terminationReason;
     private Date serviceTerminationDate;
     private String serviceTerminationDateString;
@@ -166,6 +167,16 @@ public class WFDisclaimerData extends BaseEntity {
 
     public void setEmpOfficialUnitFullName(String empOfficialUnitFullName) {
 	this.empOfficialUnitFullName = empOfficialUnitFullName;
+    }
+
+    @Basic
+    @Column(name = "EMP_OFFICIAL_UNIT_ID")
+    public Long getEmpOfficialUnitId() {
+	return empOfficialUnitId;
+    }
+
+    public void setEmpOfficialUnitId(Long empOfficialUnitId) {
+	this.empOfficialUnitId = empOfficialUnitId;
     }
 
     @Basic
