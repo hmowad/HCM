@@ -44,7 +44,7 @@ public class ExternalPartiesManagement extends BaseBacking {
 		resetForm();
 
 	    } else {
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_URLError");
 	    }
 
 	} catch (Exception e) {

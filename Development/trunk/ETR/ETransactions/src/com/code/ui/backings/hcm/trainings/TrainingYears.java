@@ -42,9 +42,9 @@ public class TrainingYears extends BaseBacking {
 
 		disableAddButton = true;
 	    }
-	} catch (Exception e) {
+	} catch (BusinessException e) {
 	    e.printStackTrace();
-	    setServerSideErrorMessages(getMessage("error_general"));
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 

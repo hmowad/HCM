@@ -184,7 +184,7 @@ public class TrainingCoursesService extends BaseService {
      */
     public static void validateTrainingCourse(TrainingCourseData trainingCourseData, String originalCourseName) throws BusinessException {
 	if (trainingCourseData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	validateTrainingCourseMandatoryFields(trainingCourseData);
 	validateTrainingCourseBusinessRules(trainingCourseData, originalCourseName);
@@ -306,12 +306,12 @@ public class TrainingCoursesService extends BaseService {
 
 	    String[] etrCorInfo = null;
 	    if (processName == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    etrCorInfo = ETRCorrespondence.doETRCorOut(processName, session);
 
 	    if (etrCorInfo == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    trainingCourseDecision.setDecisionNumber(etrCorInfo[0]);
 	    trainingCourseDecision.setDecisionDate(HijriDateService.getHijriDate(etrCorInfo[1]));
@@ -387,7 +387,7 @@ public class TrainingCoursesService extends BaseService {
 	// system error
 	if (trainingCourseDecision.getTransactionTypeId() == null || trainingCourseDecision.getDecisionApprovedId() == null ||
 		trainingCourseDecision.getOriginalDecisionApprovedId() == null || trainingCourseDecision.getTransactionCourseName() == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	}
 	// user doesn't enter mandatory fields
 	if (trainingCourseDecision.getCourseId() == null) {
@@ -405,7 +405,7 @@ public class TrainingCoursesService extends BaseService {
 	if (!(trainingCourseDecision.getContentType().equals(TrainingCourseContentTypeEnum.CURRICULUM.getCode()) ||
 		trainingCourseDecision.getContentType().equals(TrainingCourseContentTypeEnum.PROGRAM.getCode()) ||
 		trainingCourseDecision.getContentType().equals(TrainingCourseContentTypeEnum.SYLLABUS.getCode()))) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	}
 	if (trainingCourseDecision.getSyllabusAttachments() == null && trainingCourseDecision.getTransactionTypeId() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_SYLLABUS_ATTACHMENT_CANCEL_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()) {
 	    throw new BusinessException("error_courseSyllabusAttachmentNull");
@@ -482,14 +482,14 @@ public class TrainingCoursesService extends BaseService {
 	    else if (transactionTypeId == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_SYLLABUS_ATTACHMENT_CANCEL_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId())
 		reportName = ReportNamesEnum.TRAINING_DECISION_COURSE_SYLLABUS_CANCELLATION.getCode();
 	    else
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    parameters.put("P_DECISION_ID", courseDecisionId);
 
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 

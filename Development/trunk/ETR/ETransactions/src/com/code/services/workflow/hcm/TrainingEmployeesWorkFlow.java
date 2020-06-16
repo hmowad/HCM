@@ -1178,7 +1178,7 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 	    List<TrainingTransactionData> transactions = TrainingEmployeesService.getTrainingTransactionsDataByIds(new Long[] { wfTraining.getBasedOnTrainingTransactionId() });
 
 	    if (transactions.isEmpty())
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    trainingTransaction = transactions.get(0);
 
@@ -1271,7 +1271,7 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 	    List<TrainingTransactionData> transactions = TrainingEmployeesService.getTrainingTransactionsData(trainingTypeId, statusIds, FlagsEnum.ALL.getCode(), wfTraining.getEmployeeId(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), courseEventId);
 
 	    if (transactions.isEmpty())
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    trainingTransaction = transactions.get(0);
 	    if (processId == WFProcessesEnum.MILITARY_INTERNAL_TRAINING_REPLACEMENT_REQUEST.getCode() || processId == WFProcessesEnum.MILITARY_EXTERNAL_TRAINING_REPLACEMENT_REQUEST.getCode()) {
@@ -1380,7 +1380,7 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 	    if (wfTraining.getTrainingTypeId().longValue() == TrainingTypesEnum.SCHOLARSHIP.getCode()) {
 		JobData jobData = JobsService.getJobById(employee.getJobId());
 		if (jobData == null)
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_transactionDataError");
 
 		UnitData directedToUnit = UnitsService.getAncestorUnderPresidencyByLevel(jobData.getUnitId(), UnitsAncestorsLevelsEnum.LEVEL_TWO.getCode());
 		if (directedToUnit != null && directedToUnit.getOfficialManagerId() != null)
@@ -1455,12 +1455,12 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 	}
 
 	if (position == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_positionNotFound");
 	}
 
 	EmployeeData emp = EmployeesService.getEmployeeByPosition(position.getUnitId(), position.getEmpId());
 	if (emp == null) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_employeeDataError");
 	}
 
 	return emp;
@@ -1508,7 +1508,7 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
     /*---------------------------Validations--------------------------*/
     private static void validateWFTrainings(List<WFTrainingData> wfTrainingList, TrainingCourseEventData courseEventData, long processId) throws BusinessException {
 	if (wfTrainingList == null || wfTrainingList.isEmpty()) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	}
 
 	int trainingTransactionCategory = specifyTrainingTransactionCategory(processId);
@@ -1521,7 +1521,7 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 	// for all claims processes except scholarships and study enrollment
 	if (courseEventData == null && isProcessHasCourseEvent(processId)) {
 	    if (wfTrainingList.get(0).getCourseId() == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    List<TrainingCourseEventData> previousCourseEventsList = TrainingCoursesEventsService.getPreviousCourseEvents(wfTrainingList.get(0).getCourseId(), wfTrainingList.get(0).getTrainingTypeId() == null ? FlagsEnum.ALL.getCode() : wfTrainingList.get(0).getTrainingTypeId(), wfTrainingList.get(0).getSerial(), wfTrainingList.get(0).getTrainingUnitId(), wfTrainingList.get(0).getExternalPartyId(),
 		    wfTrainingList.get(0).getStartDateString(), wfTrainingList.get(0).getEndDateString(), FlagsEnum.OFF.getCode());
@@ -1605,7 +1605,7 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 
     public static void validateTrainingCourseWFBusinessRules(TrainingCourseData trainingCourseData, String originalCourseName, boolean validateDelete) throws BusinessException {
 	if (trainingCourseData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (validateDelete || (trainingCourseData.getId() != null && !trainingCourseData.getName().equals(originalCourseName))) {
 	    List<WFTrainingData> wfTrainingList = getWFTrainingDataByCourseId(trainingCourseData.getId());
@@ -1616,7 +1616,7 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 
     public static void validateExternalPartyWFBusinessRules(TrainingExternalPartyData trainingExternalPartyData, String originalExternalPartyDesc, boolean validateDelete) throws BusinessException {
 	if (trainingExternalPartyData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (validateDelete || (trainingExternalPartyData.getId() != null && !trainingExternalPartyData.getDescription().equals(originalExternalPartyDesc))) {
 	    List<WFTrainingData> wfTrainingData = getWFTrainingDataByExternalPartyId(trainingExternalPartyData.getId());
@@ -1641,7 +1641,7 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 
     public static void validateQualificationMajorSpecWFBusinessRules(QualificationMajorSpec qualMajorSpec) throws BusinessException {
 	if (qualMajorSpec == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (getWFTrainingDataByQualMajorSpecId(qualMajorSpec.getId()).size() > 0)
 	    throw new BusinessException("error_courseQualIsUsedInTheSystem");
@@ -1649,7 +1649,7 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 
     public static void validateQualificationMinorSpecWFBusinessRules(QualificationMinorSpecData qualMinorSpec) throws BusinessException {
 	if (qualMinorSpec == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (getWFTrainingDataByQualMinorSpecId(qualMinorSpec.getId()).size() > 0)
 	    throw new BusinessException("error_courseQualIsUsedInTheSystem");
