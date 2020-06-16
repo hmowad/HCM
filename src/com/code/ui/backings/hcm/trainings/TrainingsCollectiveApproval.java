@@ -43,13 +43,13 @@ public class TrainingsCollectiveApproval extends BaseBacking {
 	    } else if (mode == 2) {
 		this.setScreenTitle(getMessage("title_trainingsCollectiveApproval"));
 	    } else {
-		throw new Exception();
+		throw new BusinessException("error_URLError");
 	    }
 
 	    // Load the training tasks data
 	    searchTrainingsTasks();
-	} catch (Exception e) {
-	    this.setServerSideErrorMessages(getMessage("error_general"));
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 

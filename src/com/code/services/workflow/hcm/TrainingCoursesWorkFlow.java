@@ -365,7 +365,7 @@ public class TrainingCoursesWorkFlow extends BaseWorkFlow {
 
 		List<EmployeeData> commeitteeMembers = EmployeesService.getEmployeesByEmpsIds(commeitteeMembersIds.toArray(new Long[commeitteeMembersIds.size()]));
 		if (commeitteeMembers == null || commeitteeMembers.isEmpty())
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_transactionDataError");
 
 		int subLevel = commeitteeMembers.size() == 1 ? 0 : 1;
 		for (EmployeeData commeitteeMember : commeitteeMembers)// LEVEL
@@ -505,6 +505,7 @@ public class TrainingCoursesWorkFlow extends BaseWorkFlow {
 
 	    return trainingCourseDecision;
 	} catch (BusinessException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
     }

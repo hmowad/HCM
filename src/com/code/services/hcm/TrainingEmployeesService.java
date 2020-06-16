@@ -98,7 +98,7 @@ public class TrainingEmployeesService extends BaseService {
 
 	List<TrainingTransactionData> loadedTrainingTransactions = TrainingEmployeesService.getTrainingTransactionsDataByIds(new Long[] { trainingTransaction.getId() });
 	if (loadedTrainingTransactions.isEmpty())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	TrainingTransactionData loadedTrainingTransaction = loadedTrainingTransactions.get(0);
 
@@ -113,7 +113,7 @@ public class TrainingEmployeesService extends BaseService {
 	    if (trainingTransaction.getTrainingTypeId().longValue() == TrainingTypesEnum.EXTERNAL_MILITARY_COURSE.getCode()) {
 		TrainingCourseEventData loadedCourseEvent = TrainingCoursesEventsService.getCourseEventById(courseEventId);
 		if (loadedCourseEvent == null)
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_transactionDataError");
 
 		if (loadedCourseEvent.getStatus().longValue() != TrainingCourseEventStatusEnum.COURSE_EVENT_HELD.getCode()) {
 
@@ -303,7 +303,7 @@ public class TrainingEmployeesService extends BaseService {
     /*---------------------------Validations--------------------------*/
     public static void validateTrainingTransactionsForResultRegistration(List<TrainingTransactionData> trainingTransactionsList, Long courseEventId) throws BusinessException {
 	if (trainingTransactionsList == null || trainingTransactionsList.isEmpty())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	for (TrainingTransactionData trainingTransaction : trainingTransactionsList) {
 
@@ -325,7 +325,7 @@ public class TrainingEmployeesService extends BaseService {
 	    // Validate business rules
 	    TrainingCourseEventData loadedCourseEvent = courseEventId == null ? null : TrainingCoursesEventsService.getCourseEventById(courseEventId);
 	    if (courseEventId != null && loadedCourseEvent == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    if (trainingTransaction.getTrainingTypeId() == TrainingTypesEnum.INTERNAL_MILITARY_COURSE.getCode()) {
 
@@ -361,7 +361,7 @@ public class TrainingEmployeesService extends BaseService {
 
     public static void validateTrainingTransactions(List<TrainingTransactionData> trainingTransactionsList, TrainingCourseEventData courseEventData, int trainingTransactionCategory) throws BusinessException {
 	if (trainingTransactionsList == null || trainingTransactionsList.isEmpty())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	for (TrainingTransactionData transactionData : trainingTransactionsList) {
 	    validateTransactionMandatoryFields(transactionData, trainingTransactionCategory);
@@ -371,7 +371,7 @@ public class TrainingEmployeesService extends BaseService {
 
     private static void validateTransactionMandatoryFields(TrainingTransactionData trainingTransaction, int trainingTransactionCategory) throws BusinessException {
 	if (trainingTransaction == null || trainingTransaction.getTrainingTypeId() == null || trainingTransaction.getStatus() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (trainingTransaction.getEmployeeId() == null)
 	    throw new BusinessException("error_employeeMandatory");
@@ -681,7 +681,7 @@ public class TrainingEmployeesService extends BaseService {
 	    if (transaction.getStatus() != TraineeStatusEnum.NOMINATION_ACCEPTED.getCode() && transaction.getStatus() != TraineeStatusEnum.JOINED.getCode())
 		throw new BusinessException("error_employeeStatusInNotSuitable");
 	    if (newStatus != TraineeStatusEnum.NOMINATION_ACCEPTED.getCode() && newStatus != TraineeStatusEnum.JOINED.getCode())
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 	    if (newStatus == TraineeStatusEnum.JOINED.getCode() && (trainingJoiningDate == null || !HijriDateService.isValidHijriDate(trainingJoiningDate)))
 		throw new BusinessException("error_invalidHijriDate");
 	    if (newStatus == TraineeStatusEnum.JOINED.getCode() && (trainingJoiningDate.before(transaction.getActualStartDate()) || trainingJoiningDate.after(transaction.getActualEndDate())))
@@ -694,7 +694,7 @@ public class TrainingEmployeesService extends BaseService {
 
     private static void validateExternalMilitaryTrainingTransactionForAcceptanceRegistration(TrainingTransactionData transaction, int newStatus) throws BusinessException {
 	if (transaction.getTrainingTypeId() != TrainingTypesEnum.EXTERNAL_MILITARY_COURSE.getCode())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (transaction.getStatus() != TraineeStatusEnum.NOMINATION_ACCEPTED.getCode() && transaction.getStatus() != TraineeStatusEnum.NOMINATION_REJECTED_FROM_PARTY.getCode() && transaction.getStatus() != TraineeStatusEnum.NOMINATION_ACCEPTED_FROM_FRONTIER_GAURDS.getCode())
 	    throw new BusinessException("error_employeeStatusInNotSuitable");
 	if (newStatus != TraineeStatusEnum.NOMINATION_ACCEPTED.getCode() && newStatus != TraineeStatusEnum.NOMINATION_REJECTED_FROM_PARTY.getCode())
@@ -703,7 +703,7 @@ public class TrainingEmployeesService extends BaseService {
 
     private static void validateTraineeStatusForTraineeExtCourseEventCancellation(TrainingTransactionData transaction, Integer reasonType) throws BusinessException {
 	if (transaction.getTrainingTypeId() != TrainingTypesEnum.EXTERNAL_MILITARY_COURSE.getCode())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (transaction.getStatus() != TraineeStatusEnum.NOMINATION_ACCEPTED.getCode() && transaction.getStatus() != TraineeStatusEnum.JOINED.getCode() && transaction.getStatus() != TraineeStatusEnum.NOMINATION_ACCEPTED_FROM_FRONTIER_GAURDS.getCode())
 	    throw new BusinessException("error_employeeStatusInNotSuitable");
 	if (reasonType == null)
@@ -964,12 +964,12 @@ public class TrainingEmployeesService extends BaseService {
 
 	    String[] etrCorInfo = null;
 	    if (processName == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    etrCorInfo = ETRCorrespondence.doETRCorOut(processName, session);
 
 	    if (etrCorInfo == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 
 	    trainingTransactionDetailData.setDecisionNumber(etrCorInfo[0]);
 	    trainingTransactionDetailData.setDecisionDateString(etrCorInfo[1]);
@@ -1005,7 +1005,7 @@ public class TrainingEmployeesService extends BaseService {
 		trainingTransactionDetail.getTransEmpJobName().trim().isEmpty() ||
 		trainingTransactionDetail.getTransEmpRankDesc().trim().isEmpty() ||
 		trainingTransactionDetail.getTransEmpUnitFullName().trim().isEmpty())
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (trainingTransactionDetail.getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_NEW_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()
 		|| trainingTransactionDetail.getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_EXTENSION_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()
@@ -1046,7 +1046,7 @@ public class TrainingEmployeesService extends BaseService {
 	    if (trainingTransactionDetail.getTransactionTypeId().longValue() != CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_NEW_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()) {
 		List<TrainingTransactionDetailData> trainingTransactionsDetails = TrainingEmployeesService.getTrainingTransactionDetailDataByTrainingTransactionId(trainingTransactionDetail.getTrainingTransactionId());
 		if (trainingTransactionsDetails.isEmpty())
-		    throw new BusinessException("error_general");
+		    throw new BusinessException("error_transactionDataError");
 
 		Date lastTrainingTransactionMinistryDecisionDate = trainingTransactionsDetails.get(trainingTransactionsDetails.size() - 1).getMinistryDecisionDate();
 		if (!trainingTransactionDetail.getMinistryDecisionDate().after(lastTrainingTransactionMinistryDecisionDate))
@@ -1174,7 +1174,7 @@ public class TrainingEmployeesService extends BaseService {
 	    if (e instanceof BusinessException)
 		throw (BusinessException) e;
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1186,7 +1186,7 @@ public class TrainingEmployeesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1206,7 +1206,7 @@ public class TrainingEmployeesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1241,7 +1241,7 @@ public class TrainingEmployeesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1261,7 +1261,7 @@ public class TrainingEmployeesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1274,7 +1274,7 @@ public class TrainingEmployeesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1293,7 +1293,7 @@ public class TrainingEmployeesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1309,7 +1309,7 @@ public class TrainingEmployeesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -1339,7 +1339,7 @@ public class TrainingEmployeesService extends BaseService {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 

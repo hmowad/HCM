@@ -227,7 +227,7 @@ public class TrainingSetupService extends BaseService {
      */
     private static void validateTrainingYear(TrainingYear trainingYear, long trainingYearType) throws BusinessException {
 	if (trainingYear == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (trainingYear.getId() == null) {
 	    if (TrainingSetupService.getUnApprovedTrainingYear() != null)
@@ -518,7 +518,7 @@ public class TrainingSetupService extends BaseService {
      */
     private static void validateAddUpdateTrainingExternalParty(TrainingExternalPartyData trainingExternalPartyData, String originalExternalPartyDesc) throws BusinessException {
 	if (trainingExternalPartyData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	// validate Training External Party mandatory fields
 	if (trainingExternalPartyData.getDescription() == null || trainingExternalPartyData.getDescription().isEmpty())
@@ -546,7 +546,7 @@ public class TrainingSetupService extends BaseService {
 
     private static void validateDeleteTrainingExternalParty(TrainingExternalPartyData trainingExternalPartyData) throws BusinessException {
 	if (trainingExternalPartyData == null || trainingExternalPartyData.getId() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	// validate Training External Party Business Rules
 	// check for civilian and military external parties
@@ -661,6 +661,7 @@ public class TrainingSetupService extends BaseService {
 		}
 	    }
 	} catch (BusinessException e) {
+	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	}
 
@@ -697,7 +698,7 @@ public class TrainingSetupService extends BaseService {
     /*---------------------------Validations--------------------------*/
     private static void validateTrainingUnit(TrainingUnitData trainingUnitData) throws BusinessException {
 	if (trainingUnitData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	Map<Long, Boolean> regionsTrainingConfigMap = getRegionsTrainingConfigMapForTrainingUnit(trainingUnitData);
 
@@ -937,11 +938,11 @@ public class TrainingSetupService extends BaseService {
     /*---------------------------Validations--------------------------*/
     private static void validateAddUpdateQualificationMajorSpec(QualificationMajorSpec qualMajorSpec) throws BusinessException {
 	if (qualMajorSpec == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	// check mandatory fields
 	if (qualMajorSpec.getMilitaryClassificationFlag() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (qualMajorSpec.getDescription() == null || qualMajorSpec.getDescription().trim().isEmpty())
 	    throw new BusinessException("error_qualificationSpecNameIsMandatory");
@@ -957,7 +958,7 @@ public class TrainingSetupService extends BaseService {
 
     private static void validateDeleteQualificationMajorSpec(QualificationMajorSpec qualMajorSpec) throws BusinessException {
 	if (qualMajorSpec == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	// prevent deletion if majorSpec has minorSpecs
 	if (!getQualificationMinorSpecsByMajorId(qualMajorSpec.getId()).isEmpty())
@@ -1130,11 +1131,11 @@ public class TrainingSetupService extends BaseService {
     /*---------------------------Validations--------------------------*/
     private static void validateAddUpdateQualificationMinorSpec(QualificationMinorSpecData qualMinorSpec) throws BusinessException {
 	if (qualMinorSpec == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	// check mandatory fields
 	if (qualMinorSpec.getQualificationMajorSpecId() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (qualMinorSpec.getDescription() == null || qualMinorSpec.getDescription().trim().isEmpty())
 	    throw new BusinessException("error_qualificationSpecNameIsMandatory");
@@ -1149,7 +1150,7 @@ public class TrainingSetupService extends BaseService {
 
     private static void validateDeleteQualificationMinorSpec(QualificationMinorSpecData qualMinorSpec) throws BusinessException {
 	if (qualMinorSpec == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	// prevent deletion if minorSpec is used in the system
 	checkUsageOfQualificationMinorSpec(qualMinorSpec);
@@ -1263,7 +1264,7 @@ public class TrainingSetupService extends BaseService {
 
     public static void deleteGraduationPlace(GraduationPlaceData graduationPlace, CustomSession... useSession) throws BusinessException {
 	if (graduationPlace == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	// prevent deletion if graduation place has details attached to it
 	if (getGraduationPlacesDetailsByGraduationPlaceId(graduationPlace.getId()).size() > 0)
 	    throw new BusinessException("error_graduationPlaceHasDetails");
@@ -1353,7 +1354,7 @@ public class TrainingSetupService extends BaseService {
 
     public static void deleteGraduationPlaceDetail(GraduationPlaceDetailData graduationPlaceDetail, CustomSession... useSession) throws BusinessException {
 	if (graduationPlaceDetail == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	// prevent deletion in case of usage in the system
 	validateUsageOfGraduationPlaceDetail(graduationPlaceDetail);
 
@@ -1385,13 +1386,13 @@ public class TrainingSetupService extends BaseService {
     /*---------------------------Validation------------------------------*/
     private static void validateGraduationPlace(GraduationPlaceData graduationPlace, String originalGraduationPlaceDesc) throws BusinessException {
 	if (graduationPlace == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	// check mandatory
 	if (graduationPlace.getType() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (graduationPlace.getCountryId() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (graduationPlace.getDescription() == null || graduationPlace.getDescription().trim().isEmpty())
 	    throw new BusinessException("error_graduationPlaceDescIsMandatory");
 
@@ -1414,11 +1415,11 @@ public class TrainingSetupService extends BaseService {
 
     private static void validateGraduationPlaceDetail(GraduationPlaceDetailData graduationPlaceDetail, String originalGraduationPlaceDetailDesc) throws BusinessException {
 	if (graduationPlaceDetail == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	// check mandatory
 	if (graduationPlaceDetail.getGraduationPlaceId() == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	if (graduationPlaceDetail.getDescription() == null || graduationPlaceDetail.getDescription().trim().isEmpty())
 	    throw new BusinessException("error_graduationPlaceDescIsMandatory");
 	if (graduationPlaceDetail.getAddress() == null || graduationPlaceDetail.getAddress().trim().isEmpty())
@@ -1527,7 +1528,7 @@ public class TrainingSetupService extends BaseService {
     /*---------------------------Operations---------------------------*/
     public static void addAnnualParty(TrainingAnnualPartyData trainingAnnualPartyData, CustomSession... useSession) throws BusinessException {
 	if (trainingAnnualPartyData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	if (checkExistingExternalAnnualParty(trainingAnnualPartyData.getTrainingUnitId(), trainingAnnualPartyData.getExternalPartyId())) {
 	    throw new BusinessException("error_annualPartyAlreadyExists");
@@ -1562,7 +1563,7 @@ public class TrainingSetupService extends BaseService {
 
     public static void deleteAnnualParty(TrainingAnnualPartyData trainingAnnualPartyData, CustomSession... useSession) throws BusinessException {
 	if (trainingAnnualPartyData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -1620,7 +1621,7 @@ public class TrainingSetupService extends BaseService {
     /*---------------------------Operations---------------------------*/
     public static void addAnnualMilitaryCourseData(TrainingAnnualCourseData annualMilitaryCourseData, CustomSession... useSession) throws BusinessException {
 	if (annualMilitaryCourseData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -1653,7 +1654,7 @@ public class TrainingSetupService extends BaseService {
 
     public static void deleteAnnualMilitaryCourseData(TrainingAnnualCourseData annualMilitaryCourseData, CustomSession... useSession) throws BusinessException {
 	if (annualMilitaryCourseData == null)
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();

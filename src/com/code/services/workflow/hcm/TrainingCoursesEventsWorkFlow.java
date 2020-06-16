@@ -611,7 +611,7 @@ public class TrainingCoursesEventsWorkFlow extends BaseWorkFlow {
 	// check for null values in needs count for each added course event
 	for (WFTrainingPlanNeedData needData : trainingPlanNeedsData) {
 	    if (needData.getCourseEventId() == null)
-		throw new BusinessException("error_general");
+		throw new BusinessException("error_transactionDataError");
 	    if (needData.getNeedsCount() == null || !(needData.getNeedsCount() > 0 && needData.getNeedsCount() <= NEEDS_COUNT_LIMIT))
 		throw new BusinessException("error_invalidTrainingPlanNeed", new String[] { needData.getCourseName() });
 	}
@@ -697,7 +697,7 @@ public class TrainingCoursesEventsWorkFlow extends BaseWorkFlow {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -718,7 +718,7 @@ public class TrainingCoursesEventsWorkFlow extends BaseWorkFlow {
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_reportPrintingError");
 	}
     }
 
@@ -914,7 +914,7 @@ public class TrainingCoursesEventsWorkFlow extends BaseWorkFlow {
 	} else if (processId == WFProcessesEnum.MILITARY_INTERNAL_COURSE_EVENT_CANCEL_REQUEST.getCode()) {
 	    return TrainingTransactionCategoryEnum.COURSE_EVENT_CANCEL_DECISION_REQUEST.getCode();
 	} else {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	}
 
     }
@@ -967,7 +967,7 @@ public class TrainingCoursesEventsWorkFlow extends BaseWorkFlow {
 	else if (processId == WFProcessesEnum.MILITARY_INTERNAL_COURSE_EVENT_RESULTS.getCode())
 	    courseEventDecision.setTransactionTypeId(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_COURSE_EVENT_RESULTS.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId());
 	else {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	}
 
 	courseEventDecision.setTransStartDate(courseEvent.getActualStartDate());
@@ -1111,7 +1111,7 @@ public class TrainingCoursesEventsWorkFlow extends BaseWorkFlow {
 
     private static void doWFTrainingCourseEventsIntegration(List<WFTrainingCourseEventData> wfTrainingCourseEventsList, TrainingCourseEventData courseEvent, WFInstance instance, long decisionRegionId, long decisionApprovedId, CustomSession session) throws BusinessException {
 	if (wfTrainingCourseEventsList == null || wfTrainingCourseEventsList.isEmpty()) {
-	    throw new BusinessException("error_general");
+	    throw new BusinessException("error_transactionDataError");
 	}
 
 	if (instance.getProcessId().longValue() == WFProcessesEnum.MILITARY_INTERNAL_COURSE_EVENT_RESULTS.getCode()) {
