@@ -270,6 +270,10 @@ public class ETRConfigurationService extends BaseService {
     public static String getTempNoLdapPassKey() {
 	return configurationMap.get("TEMP_NO_LDAP_PASS_KEY");
     }
+
+    public static String getTasksNotToInvalidateIncludedProcessesIds() {
+	return configurationMap.get("TASKS_NOT_TO_INVALIDATE_INCLUDED_PROCESSES_IDS");
+    }
     /*------------------------------------------------------General Notifications Configurations------------------------------------------------------*/
 
     public static String getGeneralMessagesUrl() {

@@ -24,6 +24,7 @@ import com.code.ui.backings.base.BaseBacking;
 public class InstanceTasks extends BaseBacking {
     private WFInstanceData instance;
     private JSONArray nodes;
+    private boolean onHoldProcessWarningFlag;
 
     @SuppressWarnings("unchecked")
     public InstanceTasks() {
@@ -35,6 +36,7 @@ public class InstanceTasks extends BaseBacking {
 	    if (instancesIds != null && instancesIds.contains(instanceId)) {
 		instance = BaseWorkFlow.getWFInstanceDataById(instanceId);
 		List<WFTaskData> tasks = BaseWorkFlow.getWFInstanceTasksData(instanceId);
+		onHoldProcessWarningFlag = BaseWorkFlow.getUnassignedWFTasksByInstanceId(instanceId).size() > 0 ? true : false;
 
 		nodes = new JSONArray();
 		JSONObject node;
@@ -156,5 +158,13 @@ public class InstanceTasks extends BaseBacking {
 
     public JSONArray getNodes() {
 	return nodes;
+    }
+
+    public boolean isOnHoldProcessWarningFlag() {
+	return onHoldProcessWarningFlag;
+    }
+
+    public void setOnHoldProcessWarningFlag(boolean onHoldProcessWarningFlag) {
+	this.onHoldProcessWarningFlag = onHoldProcessWarningFlag;
     }
 }

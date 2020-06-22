@@ -33,6 +33,9 @@ import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.integration.webservicesclients.pushclient.PushNotificationRestClient;
 import com.code.services.BaseService;
+import com.code.services.config.ETRConfigurationService;
+import com.code.services.hcm.EmployeesService;
+import com.code.services.hcm.UnitsService;
 import com.code.services.util.HijriDateService;
 
 public abstract class BaseWorkFlow extends BaseService {
@@ -423,21 +426,26 @@ public abstract class BaseWorkFlow extends BaseService {
 
     /********************************************** Task Methods ****************************************************/
     protected static WFTask addWFTask(long instanceId, long assigneeId, long originalId, Date assignDate, Date hijriAssignDate, String taskUrl, String assigneeWfRole, String level, CustomSession session) throws DatabaseException {
-	WFTask task = new WFTask();
-	task.setInstanceId(instanceId);
-	task.setAssigneeId(assigneeId);
-	task.setOriginalId(originalId);
-	task.setAssignDate(assignDate);
-	task.setHijriAssignDate(hijriAssignDate);
-	task.setTaskUrl(taskUrl);
-	task.setAssigneeWfRole(assigneeWfRole);
-	task.setLevel(level);
+	try {
+	    WFTask task = new WFTask();
+	    task.setInstanceId(instanceId);
+	    task.setAssigneeId(assigneeId);
+	    task.setOriginalId(originalId);
+	    task.setAssignDate(assignDate);
+	    task.setHijriAssignDate(hijriAssignDate);
+	    task.setTaskUrl(taskUrl);
+	    task.setAssigneeWfRole(assigneeWfRole);
+	    task.setLevel(level);
+	    task.setOriginalUnitId(EmployeesService.getEmployeeData(originalId).getPhysicalUnitId());
 
-	DataAccess.addEntity(task, session);
+	    DataAccess.addEntity(task, session);
 
-	PushNotificationRestClient.pushNotification(assigneeId, assigneeWfRole);
+	    PushNotificationRestClient.pushNotification(assigneeId, assigneeWfRole);
 
-	return task;
+	    return task;
+	} catch (BusinessException e) {
+	    throw new DatabaseException(e.getMessage());
+	}
     }
 
     protected static WFTask setWFTaskAction(WFTask task, String action, Date actionDate, Date hijriActionDate, CustomSession... useSession) throws DatabaseException {
@@ -513,15 +521,23 @@ public abstract class BaseWorkFlow extends BaseService {
 		WFTask task = (WFTask) (((Object[]) taskAndInstance)[0]);
 		WFInstance instance = (WFInstance) (((Object[]) taskAndInstance)[1]);
 
-		instancesIds.add(instance.getInstanceId());
-		task.setRefuseReasons(refuseReasons);
-
-		if (instance.getInstanceId() == lastInstanceId) {
-		    // just reject this task as that means this task's instance has been closed (This happens at the parallel tasks).
-		    setWFTaskAction(task, WFTaskActionsEnum.REJECT.getCode(), curDate, curHijriDate, session);
+		List<String> tasksNotToInvalidateIncludedProcessesIds = new ArrayList<String>(Arrays.asList(ETRConfigurationService.getTasksNotToInvalidateIncludedProcessesIds().split(",")));
+		if (tasksNotToInvalidateIncludedProcessesIds.contains(instance.getProcessId() + "")) {
+		    Long originalUnitManagerId = task.getOriginalUnitId() == null ? null : UnitsService.getUnitById(task.getOriginalUnitId()).getPhysicalManagerId();
+		    task.setAssigneeId(originalUnitManagerId.equals(task.getOriginalId()) ? null : originalUnitManagerId);
+		    task.setOriginalId(originalUnitManagerId.equals(task.getOriginalId()) ? null : originalUnitManagerId);
+		    DataAccess.updateEntity(task, session);
 		} else {
-		    closeWFInstanceByAction(null, instance, task, WFTaskActionsEnum.REJECT.getCode(), null, session);
-		    lastInstanceId = instance.getInstanceId();
+		    instancesIds.add(instance.getInstanceId());
+		    task.setRefuseReasons(refuseReasons);
+
+		    if (instance.getInstanceId() == lastInstanceId) {
+			// just reject this task as that means this task's instance has been closed (This happens at the parallel tasks).
+			setWFTaskAction(task, WFTaskActionsEnum.REJECT.getCode(), curDate, curHijriDate, session);
+		    } else {
+			closeWFInstanceByAction(null, instance, task, WFTaskActionsEnum.REJECT.getCode(), null, session);
+			lastInstanceId = instance.getInstanceId();
+		    }
 		}
 	    }
 
@@ -837,6 +853,17 @@ public abstract class BaseWorkFlow extends BaseService {
 	    qParams.put("P_TASK_ID", taskId);
 	    qParams.put("P_RUNNING", isRunning ? FlagsEnum.ON.getCode() : FlagsEnum.ALL.getCode());
 	    return DataAccess.executeNamedQuery(String.class, QueryNamesEnum.WF_TASK_SECURITY.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static List<WFTask> getUnassignedWFTasksByInstanceId(Long instanceId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_INSTANCE_ID", instanceId == null ? FlagsEnum.ALL.getCode() : instanceId);
+	    return DataAccess.executeNamedQuery(WFTask.class, QueryNamesEnum.WF_GET_UNASSIGNED_WF_TASKS.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
@@ -1369,6 +1396,23 @@ public abstract class BaseWorkFlow extends BaseService {
 	    notificationsEmployeesIdsSet.addAll(additionalIds);
 
 	return notificationsEmployeesIdsSet.toArray(new Long[notificationsEmployeesIdsSet.size()]);
+    }
+
+    /******************************************* Scheduler methods ***************************************************/
+    public static void handleUnassignedTasks() throws BusinessException {
+	try {
+	    List<WFTask> unassignedWFTasks = getUnassignedWFTasksByInstanceId(null);
+	    for (WFTask wfTask : unassignedWFTasks) {
+		Long originalUnitManagerId = wfTask.getOriginalUnitId() == null ? null : UnitsService.getUnitById(wfTask.getOriginalUnitId()).getPhysicalManagerId();
+		if (originalUnitManagerId != null) {
+		    wfTask.setAssigneeId(originalUnitManagerId);
+		    wfTask.setOriginalId(originalUnitManagerId);
+		    DataAccess.updateEntity(wfTask);
+		}
+	    }
+	} catch (Exception e) {
+	    throw new BusinessException("error_general");
+	}
     }
 
     /****************************************************************************************************************/

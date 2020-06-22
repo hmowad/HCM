@@ -25,37 +25,42 @@ import com.code.services.util.HijriDateService;
  * 
  */
 @NamedQueries({
-	@NamedQuery(name = "wf_taskData_searchWFTasksData", query = " select t from WFTaskData t, WFInstanceBeneficiary b" +
-		" where t.instanceId = b.instanceId " +
-		"   and b.beneficiaryId = (select max(ib.beneficiaryId) from WFInstanceBeneficiary ib where ib.instanceId = t.instanceId and (:P_BENEFICIRY_ID = -1 OR ib.beneficiaryId = :P_BENEFICIRY_ID)) " +
-		"   and t.assigneeId = :P_ASSIGNEE_ID " +
-		"   and t.taskOwnerName like :P_TASK_OWNER_NAME " +
-		"   and (:P_PROCESS_GROUP_ID = 0 OR t.processGroupId = :P_PROCESS_GROUP_ID) " +
-		"   and (:P_PROCESS_ID = 0 OR t.processId = :P_PROCESS_ID) " +
-		"   and ((:P_RUNNING = 1 and t.action is null) OR (:P_RUNNING = 0 and t.action is not null))" +
-		"   and (:P_TASK_ROLE = -1 or (:P_TASK_ROLE = 1 and t.assigneeWfRole <> 'Notification') or (:P_TASK_ROLE = 2 and t.assigneeWfRole = 'Notification') ) " +
-		" order by t.assignDate "),
+	@NamedQuery(name = "wf_taskData_searchWFTasksData",
+		query = " select t from WFTaskData t, WFInstanceBeneficiary b" +
+			" where t.instanceId = b.instanceId " +
+			"   and b.beneficiaryId = (select max(ib.beneficiaryId) from WFInstanceBeneficiary ib where ib.instanceId = t.instanceId and (:P_BENEFICIRY_ID = -1 OR ib.beneficiaryId = :P_BENEFICIRY_ID)) " +
+			"   and t.assigneeId = :P_ASSIGNEE_ID " +
+			"   and t.taskOwnerName like :P_TASK_OWNER_NAME " +
+			"   and (:P_PROCESS_GROUP_ID = 0 OR t.processGroupId = :P_PROCESS_GROUP_ID) " +
+			"   and (:P_PROCESS_ID = 0 OR t.processId = :P_PROCESS_ID) " +
+			"   and ((:P_RUNNING = 1 and t.action is null) OR (:P_RUNNING = 0 and t.action is not null))" +
+			"   and (:P_TASK_ROLE = -1 or (:P_TASK_ROLE = 1 and t.assigneeWfRole <> 'Notification') or (:P_TASK_ROLE = 2 and t.assigneeWfRole = 'Notification') ) " +
+			" order by t.assignDate "),
 
-	@NamedQuery(name = "wf_taskData_getWFInstanceTasksData", query = " select t from WFTaskData t " +
-		" where t.instanceId = :P_INSTANCE_ID " +
-		" and (:P_TASK_ROLE = -1 or (:P_TASK_ROLE = 1 and t.assigneeWfRole <> 'Notification') ) " +
-		" order by t.level, t.assignDate "),
+	@NamedQuery(name = "wf_taskData_getWFInstanceTasksData",
+		query = " select t from WFTaskData t " +
+			" where t.instanceId = :P_INSTANCE_ID " +
+			" and (:P_TASK_ROLE = -1 or (:P_TASK_ROLE = 1 and t.assigneeWfRole <> 'Notification') ) " +
+			" order by t.level, t.assignDate "),
 
-	@NamedQuery(name = "wf_taskData_getWFInstanceCompletedTasksData", query = " select t from WFTaskData t " +
-		" where t.instanceId = :P_INSTANCE_ID" +
-		"   and t.action is not null " +
-		"   and t.taskId < :P_TASK_ID " +
-		"   and (:P_LEVELS_FLAG = -1 or (:P_LEVELS_FLAG = 1 and t.level in (:P_LEVELS))) " +
-		" order by t.level, t.assignDate "),
+	@NamedQuery(name = "wf_taskData_getWFInstanceCompletedTasksData",
+		query = " select t from WFTaskData t " +
+			" where t.instanceId = :P_INSTANCE_ID" +
+			"   and t.action is not null " +
+			"   and t.taskId < :P_TASK_ID " +
+			"   and (:P_LEVELS_FLAG = -1 or (:P_LEVELS_FLAG = 1 and t.level in (:P_LEVELS))) " +
+			" order by t.level, t.assignDate "),
 
-	@NamedQuery(name = "wf_taskData_getWFInstanceCompletedTasksDataOrderedByLevelLength", query = " select t from WFTaskData t " +
-		" where t.instanceId = :P_INSTANCE_ID" +
-		"   and t.action is not null " +
-		"   and t.taskId < :P_TASK_ID " +
-		" order by LENGTH(t.level), t.level, t.assignDate "),
+	@NamedQuery(name = "wf_taskData_getWFInstanceCompletedTasksDataOrderedByLevelLength",
+		query = " select t from WFTaskData t " +
+			" where t.instanceId = :P_INSTANCE_ID" +
+			"   and t.action is not null " +
+			"   and t.taskId < :P_TASK_ID " +
+			" order by LENGTH(t.level), t.level, t.assignDate "),
 
-	@NamedQuery(name = "wf_taskData_getWFTaskDataById", query = " select t from WFTaskData t " +
-		" where t.taskId = :P_TASK_ID ")
+	@NamedQuery(name = "wf_taskData_getWFTaskDataById",
+		query = " select t from WFTaskData t " +
+			" where t.taskId = :P_TASK_ID ")
 })
 @Entity
 @Table(name = "ETR_VW_TASKS")
@@ -94,6 +99,7 @@ public class WFTaskData extends BaseEntity {
     private String flexField2;
     private String flexField3;
     private String level;
+    private Long originalUnitId;
 
     private Long externalLocationId;
     private Boolean emailNotified;
@@ -480,6 +486,16 @@ public class WFTaskData extends BaseEntity {
 	return level;
     }
 
+    @Basic
+    @Column(name = "ORIGINAL_UNIT_ID")
+    public Long getOriginalUnitId() {
+	return originalUnitId;
+    }
+
+    public void setOriginalUnitId(Long originalUnitId) {
+	this.originalUnitId = originalUnitId;
+    }
+
     public void setHijriAssignDateString(String hijriAssignDateString) {
 	this.hijriAssignDateString = hijriAssignDateString;
     }
@@ -583,10 +599,10 @@ public class WFTaskData extends BaseEntity {
     @Transient
     @XmlTransient
     public Long getStoppingPoint() {
-        return stoppingPoint;
+	return stoppingPoint;
     }
 
     public void setStoppingPoint(Long stoppingPoint) {
-        this.stoppingPoint = stoppingPoint;
+	this.stoppingPoint = stoppingPoint;
     }
 }
