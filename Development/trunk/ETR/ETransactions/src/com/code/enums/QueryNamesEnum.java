@@ -297,6 +297,7 @@ public enum QueryNamesEnum {
     WF_GET_RUNNING_WFTASK_FOR_INVALIDATION_BY_ASSIGNEES_OR_ORIGINALS("wf_task_getRunningWFTasksForInvalidationByAssigneesOrOriginals"),
     WF_GET_RUNNING_WFTASK_FOR_INVALIDATION_BY_PROCESSES("wf_task_getRunningWFTasksForInvalidationByProcesses"),
     WF_GET_WFINSTANCE_COMPLETED_TASKS_BY_LEVEL_AND_ORIGINAL_ID("wf_task_getWFInstanceCompletedTasksByLevelAndOriginalId"),
+    WF_GET_UNASSIGNED_WF_TASKS("wf_task_getUnassignedWFTasks"),
 
     WF_GET_WFTASK_DATA_BY_ID("wf_taskData_getWFTaskDataById"),
     WF_SEARCH_WFTASK_DATA("wf_taskData_searchWFTasksData"),

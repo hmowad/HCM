@@ -9,6 +9,7 @@ import com.code.services.hcm.MovementsService;
 import com.code.services.hcm.MovementsWishesService;
 import com.code.services.hcm.RaisesService;
 import com.code.services.hcm.TerminationsService;
+import com.code.services.workflow.BaseWorkFlow;
 
 @WebService(targetNamespace = "http://integration.code.com/HCMScheduler",
 	portName = "HCMSchedulerWSHttpPort")
@@ -41,6 +42,13 @@ public class HCMSchedulerWS {
 	try {
 	    System.out.println("Calling executeScheduledRaiseTransactions()" + new Date());
 	    RaisesService.executeScheduledRaiseTransactions(this.getClass().getCanonicalName());
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+
+	try {
+	    System.out.println("Calling handleUnassignedTasks()" + new Date());
+	    BaseWorkFlow.handleUnassignedTasks();
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}

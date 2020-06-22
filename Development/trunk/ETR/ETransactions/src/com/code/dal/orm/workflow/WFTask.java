@@ -27,65 +27,81 @@ import com.code.dal.orm.AuditEntity;
  * 
  */
 @NamedQueries({
-	@NamedQuery(name = "wf_task_getWFTaskById", query = " select t from WFTask t " +
-		" where t.taskId = :P_TASK_ID "),
+	@NamedQuery(name = "wf_task_getWFTaskById",
+		query = " select t from WFTask t " +
+			" where t.taskId = :P_TASK_ID "),
 
-	@NamedQuery(name = "wf_task_getWFTasksByIds", query = " select t from WFTask t " +
-		" where t.taskId in (:P_TASKS_IDS) " +
-		" order by t.instanceId "),
+	@NamedQuery(name = "wf_task_getWFTasksByIds",
+		query = " select t from WFTask t " +
+			" where t.taskId in (:P_TASKS_IDS) " +
+			" order by t.instanceId "),
 
-	@NamedQuery(name = "wf_task_getWFInstanceTasks", query = " select t from WFTask t " +
-		" where t.instanceId = :P_INSTANCE_ID " +
-		" order by t.assignDate "),
+	@NamedQuery(name = "wf_task_getWFInstanceTasks",
+		query = " select t from WFTask t " +
+			" where t.instanceId = :P_INSTANCE_ID " +
+			" order by t.assignDate "),
 
-	@NamedQuery(name = "wf_task_getWFInstanceTasksByRole", query = " select t from WFTask t " +
-		" where t.instanceId = :P_INSTANCE_ID " +
-		"   and t.assigneeWfRole = :P_ROLE " +
-		" order by t.assignDate "),
+	@NamedQuery(name = "wf_task_getWFInstanceTasksByRole",
+		query = " select t from WFTask t " +
+			" where t.instanceId = :P_INSTANCE_ID " +
+			"   and t.assigneeWfRole = :P_ROLE " +
+			" order by t.assignDate "),
 
-	@NamedQuery(name = "wf_task_canChangeWFInstanceStatusToDone", query = " select count(t.id) from WFTask t " +
-		" where t.instanceId = :P_INSTANCE_ID " +
-		"   and t.action is NULL " +
-		"   and t.assigneeWfRole <> 'Notification' "),
+	@NamedQuery(name = "wf_task_canChangeWFInstanceStatusToDone",
+		query = " select count(t.id) from WFTask t " +
+			" where t.instanceId = :P_INSTANCE_ID " +
+			"   and t.action is NULL " +
+			"   and t.assigneeWfRole <> 'Notification' "),
 
-	@NamedQuery(name = "wf_task_canChangeWFInstanceStatusToComplete", query = " select count(t.id) from WFTask t " +
-		" where t.instanceId = :P_INSTANCE_ID " +
-		"   and t.action is NULL "),
+	@NamedQuery(name = "wf_task_canChangeWFInstanceStatusToComplete",
+		query = " select count(t.id) from WFTask t " +
+			" where t.instanceId = :P_INSTANCE_ID " +
+			"   and t.action is NULL "),
 
-	@NamedQuery(name = "wf_task_countTasks", query = " select count(t.taskId) from WFTask t " +
-		" where t.assigneeId = :P_ASSIGNEE_ID" +
-		" and((:P_NOTIFICATION_FLAG = -1 ) or (:P_NOTIFICATION_FLAG = 1 and t.assigneeWfRole = :P_NOTIFICATION_ROLE ) or (:P_NOTIFICATION_FLAG = 0 and t.assigneeWfRole <> :P_NOTIFICATION_ROLE ) )" +
-		" and t.action is null"),
+	@NamedQuery(name = "wf_task_countTasks",
+		query = " select count(t.taskId) from WFTask t " +
+			" where t.assigneeId = :P_ASSIGNEE_ID" +
+			" and((:P_NOTIFICATION_FLAG = -1 ) or (:P_NOTIFICATION_FLAG = 1 and t.assigneeWfRole = :P_NOTIFICATION_ROLE ) or (:P_NOTIFICATION_FLAG = 0 and t.assigneeWfRole <> :P_NOTIFICATION_ROLE ) )" +
+			" and t.action is null"),
 
-	@NamedQuery(name = "wf_task_taskSecurity", query = " select distinct t.taskUrl from WFTask t " +
-		" where t.assigneeId = :P_ASSIGNEE_ID " +
-		" and t.taskUrl like :P_TASK_URL " +
-		" and (:P_TASK_ID = -1 or t.taskId = :P_TASK_ID) " +
-		" and (:P_RUNNING = -1 or t.action is null) "),
+	@NamedQuery(name = "wf_task_taskSecurity",
+		query = " select distinct t.taskUrl from WFTask t " +
+			" where t.assigneeId = :P_ASSIGNEE_ID " +
+			" and t.taskUrl like :P_TASK_URL " +
+			" and (:P_TASK_ID = -1 or t.taskId = :P_TASK_ID) " +
+			" and (:P_RUNNING = -1 or t.action is null) "),
 
-	@NamedQuery(name = "wf_task_getRunningWFTasksForInvalidationByAssigneesOrOriginals", query = " select t2, i from WFTask t1, WFInstance i, WFTask t2 " +
-		" where (t1.assigneeId in (:P_ASSIGNEES_IDS_ORIGINALS_IDS) or t1.originalId in (:P_ASSIGNEES_IDS_ORIGINALS_IDS)) " +
-		" and t1.instanceId = i.instanceId " +
-		" and t2.instanceId = i.instanceId " +
-		" and t1.action is null " +
-		" and t1.assigneeWfRole <> 'Notification' " +
-		" and t2.action is null " +
-		" and t2.assigneeWfRole <> 'Notification' " +
-		" order by i.instanceId "),
+	@NamedQuery(name = "wf_task_getRunningWFTasksForInvalidationByAssigneesOrOriginals",
+		query = " select t2, i from WFTask t1, WFInstance i, WFTask t2 " +
+			" where (t1.assigneeId in (:P_ASSIGNEES_IDS_ORIGINALS_IDS) or t1.originalId in (:P_ASSIGNEES_IDS_ORIGINALS_IDS)) " +
+			" and t1.instanceId = i.instanceId " +
+			" and t2.instanceId = i.instanceId " +
+			" and t1.action is null " +
+			" and t1.assigneeWfRole <> 'Notification' " +
+			" and t2.action is null " +
+			" and t2.assigneeWfRole <> 'Notification' " +
+			" order by i.instanceId "),
 
-	@NamedQuery(name = "wf_task_getRunningWFTasksForInvalidationByProcesses", query = " select t, i from WFTask t, WFInstance i " +
-		" where t.instanceId = i.instanceId  " +
-		" and i.status = 1 " +
-		" and i.processId in (:P_PROCESSES_IDS) " +
-		" and t.action is null " +
-		" order by i.instanceId "),
+	@NamedQuery(name = "wf_task_getRunningWFTasksForInvalidationByProcesses",
+		query = " select t, i from WFTask t, WFInstance i " +
+			" where t.instanceId = i.instanceId  " +
+			" and i.status = 1 " +
+			" and i.processId in (:P_PROCESSES_IDS) " +
+			" and t.action is null " +
+			" order by i.instanceId "),
 
-	@NamedQuery(name = "wf_task_getWFInstanceCompletedTasksByLevelAndOriginalId", query = "select t from WFTask t "
-		+ " where t.instanceId = :P_INSTANCE_ID "
-		+ " and t.level = :P_LEVEL "
-		+ " and t.originalId = :P_ORIGINAL_ID "
-		+ " and t.action is not null "
-		+ " order by t.assignDate desc")
+	@NamedQuery(name = "wf_task_getWFInstanceCompletedTasksByLevelAndOriginalId",
+		query = "select t from WFTask t "
+			+ " where t.instanceId = :P_INSTANCE_ID "
+			+ " and t.level = :P_LEVEL "
+			+ " and t.originalId = :P_ORIGINAL_ID "
+			+ " and t.action is not null "
+			+ " order by t.assignDate desc"),
+
+	@NamedQuery(name = "wf_task_getUnassignedWFTasks",
+		query = "select t from WFTask t "
+			+ " where t.originalId is null "
+			+ " AND (:P_INSTANCE_ID = -1 OR t.instanceId = :P_INSTANCE_ID) ")
 })
 @Entity
 @Table(name = "WF_TASKS")
@@ -109,6 +125,7 @@ public class WFTask extends AuditEntity implements Serializable, UpdatableAuditE
     private String flexField3;
     private String level;
     private Long version;
+    private Long originalUnitId;
 
     // For mapping to wftask table for eservices
     private String hijriAssignDateString;
@@ -125,7 +142,8 @@ public class WFTask extends AuditEntity implements Serializable, UpdatableAuditE
 	this.taskId = taskId;
     }
 
-    @SequenceGenerator(name = "WFTasksSeq", sequenceName = "WF_TASKS_SEQ")
+    @SequenceGenerator(name = "WFTasksSeq",
+	    sequenceName = "WF_TASKS_SEQ")
     @Id
     @GeneratedValue(generator = "WFTasksSeq")
     @Column(name = "ID")
@@ -320,6 +338,16 @@ public class WFTask extends AuditEntity implements Serializable, UpdatableAuditE
 	return version;
     }
 
+    @Basic
+    @Column(name = "ORIGINAL_UNIT_ID")
+    public Long getOriginalUnitId() {
+	return originalUnitId;
+    }
+
+    public void setOriginalUnitId(Long originalUnitId) {
+	this.originalUnitId = originalUnitId;
+    }
+
     @Override
     public Long calculateContentId() {
 	return taskId;
@@ -413,12 +441,11 @@ public class WFTask extends AuditEntity implements Serializable, UpdatableAuditE
     @Transient
     @XmlTransient
     public Long getStoppingPoint() {
-        return stoppingPoint;
+	return stoppingPoint;
     }
 
     public void setStoppingPoint(Long stoppingPoint) {
-        this.stoppingPoint = stoppingPoint;
+	this.stoppingPoint = stoppingPoint;
     }
-    
-    
+
 }
