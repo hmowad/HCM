@@ -1,5 +1,6 @@
 package com.code.services.hcm;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,10 +12,13 @@ import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.trainings.TrainingCourseData;
 import com.code.dal.orm.hcm.trainings.TrainingCourseEventData;
+import com.code.dal.orm.hcm.trainings.TrainingTransaction;
 import com.code.dal.orm.hcm.trainings.TrainingTransactionData;
 import com.code.dal.orm.hcm.trainings.TrainingTransactionDetailData;
 import com.code.dal.orm.hcm.trainings.TrainingUnitData;
+import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoriesEnum;
+import com.code.enums.CountriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.enums.RegionsEnum;
@@ -26,11 +30,15 @@ import com.code.enums.TrainingTypesEnum;
 import com.code.enums.TrainingYearStatusEnum;
 import com.code.enums.TransactionClassesEnum;
 import com.code.enums.TransactionTypesEnum;
+import com.code.enums.UnitTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
 import com.code.services.BaseService;
 import com.code.services.cor.ETRCorrespondence;
+import com.code.services.integration.PayrollEngineService;
 import com.code.services.util.CommonService;
+import com.code.services.util.CountryService;
 import com.code.services.util.HijriDateService;
 
 /**
@@ -82,6 +90,8 @@ public class TrainingEmployeesService extends BaseService {
 		    addTrainingTransactionDetail(trainingTransactionDetails.get(i), processName, session);
 		}
 	    }
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		doTrainingRequestsPayrollIntegration(trainingTransactionsList, session);
 	    if (!isOpenedSession)
 		session.commitTransaction();
 	} catch (BusinessException e) {
@@ -153,7 +163,8 @@ public class TrainingEmployeesService extends BaseService {
 	    }
 
 	    updateTrainingTransaction(loadedTrainingTransaction, session);
-
+	    if (trainingTransaction.getTrainingTypeId().longValue() != TrainingTypesEnum.INTERNAL_MILITARY_COURSE.getCode() && PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		doTrainingTransactionResultPayrollIntegration(loadedTrainingTransactions, session);
 	    if (!isOpenedSession)
 		session.commitTransaction();
 	} catch (Exception e) {
@@ -188,6 +199,7 @@ public class TrainingEmployeesService extends BaseService {
 	transaction.setTrainingJoiningDate(trainingJoiningDate);
 	transaction.getTrainingTransaction().setSystemUser(loginEmpId + "");// for auditing
 	updateTrainingTransaction(transaction, useSession);
+	doJoiningPayrollIntegration(transaction, isSessionOpened(useSession) ? useSession[0] : DataAccess.getSession());
     }
 
     public static void updateExternalMilitaryTraniningTransactionAcceptance(long transactionId, long loginEmpId, int newStatus, CustomSession... useSession) throws BusinessException {
@@ -208,6 +220,175 @@ public class TrainingEmployeesService extends BaseService {
 	transaction.setReasonType(reasonType);
 	transaction.setReasons(reasons);
 	updateTrainingTransaction(transaction, useSession);
+    }
+
+    public static void payrollIntegrationFailureHandle(Long transactionId, Long adminDecisionId, CustomSession session) throws BusinessException {
+	List<TrainingTransactionData> trainingTransactionDataList = getTrainingTransactionsDataByIds(new Long[] { transactionId });
+	if (trainingTransactionDataList == null || trainingTransactionDataList.size() == 0)
+	    throw new BusinessException("error_transactionDataRetrievingError");
+	TrainingTransactionData trainingTransactionData = trainingTransactionDataList.get(0);
+
+	List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
+	String gregStartDateString = null, gregEndDateString = null, originalDecisionNumber = null, decisionNumber = null, gregDecisionDateString = null;
+	List<TrainingTransactionDetailData> trainingTransactionDetailDataList = getTrainingTransactionDetailDataByTrainingTransactionId(trainingTransactionData.getId());
+	TrainingTransactionDetailData lastTransactionDetail = trainingTransactionDetailDataList == null || trainingTransactionDetailDataList.size() == 0 ? null : trainingTransactionDetailDataList.get(0);
+	TrainingTransactionDetailData firstTransactionDetail = trainingTransactionDetailDataList == null || trainingTransactionDetailDataList.size() == 0 ? null : trainingTransactionDetailDataList.get(trainingTransactionDetailDataList.size() - 1);
+	EmployeeData employee = EmployeesService.getEmployeeData(trainingTransactionData.getEmployeeId());
+
+	if (adminDecisionId == AdminDecisionsEnum.TRAINING_COURSE_WITHOUT_RANKING_RESULTS_REGISTERATION.getCode() || adminDecisionId == AdminDecisionsEnum.TRAINING_COURSE_WITH_RANKING_RESULTS_REGISTERATION.getCode()) {
+	    if (trainingTransactionData.getTrainingTypeId().equals(TrainingTypesEnum.INTERNAL_MILITARY_COURSE.getCode())) {
+		decisionNumber = firstTransactionDetail.getDecisionNumber();
+		gregDecisionDateString = HijriDateService.hijriToGregDateString(firstTransactionDetail.getDecisionDateString());
+	    } else {
+		decisionNumber = System.currentTimeMillis() + "";
+		gregDecisionDateString = HijriDateService.hijriToGregDateString(HijriDateService.getHijriSysDateString());
+	    }
+	    gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getActualStartDateString());
+	    gregEndDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getActualEndDateString());
+	} else if (adminDecisionId == AdminDecisionsEnum.SCHOLARSHIP_RESULTS_REGISTERATION.getCode()) {
+	    decisionNumber = System.currentTimeMillis() + "";
+	    originalDecisionNumber = firstTransactionDetail.getDecisionNumber();
+	    gregDecisionDateString = HijriDateService.hijriToGregDateString(firstTransactionDetail.getDecisionDateString());
+	    gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyStartDateString());
+	    gregEndDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyEndDateString());
+	} else if (adminDecisionId == AdminDecisionsEnum.SCHOLARSHIP_JOINING_REGISTERATION.getCode()) {
+	    decisionNumber = System.currentTimeMillis() + "";
+	    originalDecisionNumber = firstTransactionDetail.getDecisionNumber();
+	    gregDecisionDateString = HijriDateService.hijriToGregDateString(firstTransactionDetail.getDecisionDateString());
+	    gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getTrainingJoiningDateString());
+	} else if (adminDecisionId == AdminDecisionsEnum.INTERNAL_SCHOLARSHIP_DECISION_REQUEST.getCode() || adminDecisionId == AdminDecisionsEnum.INTERNAL_SCHOLARSHIP_EXTENSION_DECISION_REQUEST.getCode()
+		|| adminDecisionId == AdminDecisionsEnum.INTERNAL_SCHOLARSHIP_TERMINATION_DECISION_REQUEST.getCode() || adminDecisionId == AdminDecisionsEnum.INTERNAL_SCHOLARSHIP_CANCELLATION_DECISION_REQUEST.getCode()
+		||
+		adminDecisionId == AdminDecisionsEnum.EXTERNAL_SCHOLARSHIP_DECISION_REQUEST.getCode() || adminDecisionId == AdminDecisionsEnum.EXTERNAL_SCHOLARSHIP_EXTENSION_DECISION_REQUEST.getCode()
+		|| adminDecisionId == AdminDecisionsEnum.EXTERNAL_SCHOLARSHIP_TERMINATION_DECISION_REQUEST.getCode() || adminDecisionId == AdminDecisionsEnum.EXTERNAL_SCHOLARSHIP_CANCELLATION_DECISION_REQUEST.getCode()) {
+	    decisionNumber = lastTransactionDetail.getDecisionNumber();
+	    originalDecisionNumber = (adminDecisionId == AdminDecisionsEnum.INTERNAL_SCHOLARSHIP_DECISION_REQUEST.getCode() || adminDecisionId == AdminDecisionsEnum.EXTERNAL_SCHOLARSHIP_DECISION_REQUEST.getCode()) ? null : firstTransactionDetail.getDecisionNumber();
+	    gregDecisionDateString = HijriDateService.hijriToGregDateString(lastTransactionDetail.getDecisionDateString());
+	    gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyStartDateString());
+	    gregEndDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyEndDateString());
+	}
+	adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(trainingTransactionData.getEmployeeId(), trainingTransactionData.getEmployeeName(), trainingTransactionData.getId(), null, gregStartDateString, gregEndDateString, decisionNumber, originalDecisionNumber));
+	Long unitId = employee.getPhysicalUnitId() != null ? employee.getPhysicalUnitId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId();
+	PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(TrainingTransaction.class), FlagsEnum.ON.getCode(), FlagsEnum.OFF.getCode(), session);
+    }
+
+    private static void doTrainingRequestsPayrollIntegration(List<TrainingTransactionData> trainingTransactionDataList, CustomSession session) throws BusinessException {
+	session.flushTransaction();
+	for (TrainingTransactionData trainingTransactionData : trainingTransactionDataList) {
+	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
+	    Long adminDecision = null;
+	    String gregStartDateString = null, gregEndDateString = null, originalDecisionNumber = null, decisionNumber = null, gregDecisionDateString = null;
+	    List<TrainingTransactionDetailData> trainingTransactionDetailDataList = getTrainingTransactionDetailDataByTrainingTransactionId(trainingTransactionData.getId());
+	    TrainingTransactionDetailData lastTransactionDetail = trainingTransactionDetailDataList == null || trainingTransactionDetailDataList.size() == 0 ? null : trainingTransactionDetailDataList.get(0);
+	    TrainingTransactionDetailData firstTransactionDetail = trainingTransactionDetailDataList == null || trainingTransactionDetailDataList.size() == 0 ? null : trainingTransactionDetailDataList.get(trainingTransactionDetailDataList.size() - 1);
+	    EmployeeData employee = EmployeesService.getEmployeeData(trainingTransactionData.getEmployeeId());
+	    if (employee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+		if (trainingTransactionData.getTrainingTypeId().equals(TrainingTypesEnum.SCHOLARSHIP.getCode())) {
+		    decisionNumber = lastTransactionDetail.getDecisionNumber();
+		    originalDecisionNumber = firstTransactionDetail.getDecisionNumber();
+		    gregDecisionDateString = HijriDateService.hijriToGregDateString(lastTransactionDetail.getDecisionDateString());
+		    if (CountryService.getCountryByCode(CountriesEnum.SAUDI_ARABIA.getCode()).getId().equals(TrainingSetupService.getGraduationPlaceDetailDataById(trainingTransactionData.getGraduationPlaceDetailId()).getGraduationPlaceCountryId())) {
+			if (lastTransactionDetail.getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_NEW_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()) {
+			    adminDecision = AdminDecisionsEnum.INTERNAL_SCHOLARSHIP_DECISION_REQUEST.getCode();
+			    originalDecisionNumber = null;
+			    gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyStartDateString());
+			    gregEndDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyEndDateString());
+			} else if (lastTransactionDetail.getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_EXTENSION_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()) {
+			    adminDecision = AdminDecisionsEnum.INTERNAL_SCHOLARSHIP_EXTENSION_DECISION_REQUEST.getCode();
+			    gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyStartDateString());
+			    gregEndDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyEndDateString());
+			} else if (lastTransactionDetail.getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_TERMINATION_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()) {
+			    adminDecision = AdminDecisionsEnum.INTERNAL_SCHOLARSHIP_TERMINATION_DECISION_REQUEST.getCode();
+			    gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyEndDateString());
+			} else if (lastTransactionDetail.getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_CANCELLATION_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()) {
+			    adminDecision = AdminDecisionsEnum.INTERNAL_SCHOLARSHIP_CANCELLATION_DECISION_REQUEST.getCode();
+			    gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyEndDateString());
+			}
+		    } else {
+			if (lastTransactionDetail.getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_NEW_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()) {
+			    adminDecision = AdminDecisionsEnum.EXTERNAL_SCHOLARSHIP_DECISION_REQUEST.getCode();
+			    originalDecisionNumber = null;
+			    gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyStartDateString());
+			    gregEndDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyEndDateString());
+			} else if (lastTransactionDetail.getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_EXTENSION_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()) {
+			    adminDecision = AdminDecisionsEnum.EXTERNAL_SCHOLARSHIP_EXTENSION_DECISION_REQUEST.getCode();
+			    gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyStartDateString());
+			    gregEndDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyEndDateString());
+			} else if (lastTransactionDetail.getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_TERMINATION_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()) {
+			    adminDecision = AdminDecisionsEnum.EXTERNAL_SCHOLARSHIP_TERMINATION_DECISION_REQUEST.getCode();
+			    gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyEndDateString());
+			} else if (lastTransactionDetail.getTransactionTypeId().longValue() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_CANCELLATION_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId()) {
+			    adminDecision = AdminDecisionsEnum.EXTERNAL_SCHOLARSHIP_CANCELLATION_DECISION_REQUEST.getCode();
+			    gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyEndDateString());
+			}
+		    }
+		}
+	    }
+	    if (adminDecision != null) {
+		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(trainingTransactionData.getEmployeeId(), employee.getName(), trainingTransactionData.getId(), null, gregStartDateString, gregEndDateString, decisionNumber, originalDecisionNumber));
+		Long unitId = employee.getPhysicalUnitId() != null ? employee.getPhysicalUnitId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId();
+		Integer originalDecisionFlag = trainingTransactionData.getTrainingJoiningDate() != null ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode();
+		PayrollEngineService.doPayrollIntegration(adminDecision, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(TrainingTransaction.class), FlagsEnum.OFF.getCode(), originalDecisionFlag, session);
+	    }
+	}
+    }
+
+    private static void doTrainingTransactionResultPayrollIntegration(List<TrainingTransactionData> trainingTransactionDataList, CustomSession session) throws BusinessException {
+	session.flushTransaction();
+	for (TrainingTransactionData trainingTransactionData : trainingTransactionDataList) {
+	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
+	    Long adminDecision = null;
+	    String gregStartDateString = null, gregEndDateString = null, originalDecisionNumber = null, gregDecisionDateString = null;
+	    List<TrainingTransactionDetailData> trainingTransactionDetailDataList = getTrainingTransactionDetailDataByTrainingTransactionId(trainingTransactionData.getId());
+	    TrainingTransactionDetailData firstTransactionDetail = trainingTransactionDetailDataList == null || trainingTransactionDetailDataList.size() == 0 ? null : trainingTransactionDetailDataList.get(trainingTransactionDetailDataList.size() - 1);
+	    EmployeeData employee = EmployeesService.getEmployeeData(trainingTransactionData.getEmployeeId());
+	    if (employee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+		if (trainingTransactionData.getTrainingTypeId().equals(TrainingTypesEnum.EXTERNAL_MILITARY_COURSE.getCode()) || trainingTransactionData.getTrainingTypeId().equals(TrainingTypesEnum.MORNING_COURSE.getCode())
+			|| trainingTransactionData.getTrainingTypeId().equals(TrainingTypesEnum.EVENING_COURSE.getCode())) {
+		    TrainingCourseEventData courseEvent = TrainingCoursesEventsService.getCourseEventById(trainingTransactionData.getCourseEventId());
+		    if (courseEvent.getRankingFlag() == null || courseEvent.getRankingFlag().equals(FlagsEnum.OFF.getCode()))
+			adminDecision = AdminDecisionsEnum.TRAINING_COURSE_WITHOUT_RANKING_RESULTS_REGISTERATION.getCode();
+		    else
+			adminDecision = AdminDecisionsEnum.TRAINING_COURSE_WITH_RANKING_RESULTS_REGISTERATION.getCode();
+		    gregDecisionDateString = HijriDateService.hijriToGregDateString(HijriDateService.getHijriSysDateString());
+		    gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getActualStartDateString());
+		    gregEndDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getActualEndDateString());
+		} else if (trainingTransactionData.getTrainingTypeId().equals(TrainingTypesEnum.SCHOLARSHIP.getCode())) {
+		    if (trainingTransactionData.getSuccessFlag() != null && trainingTransactionData.getQualificationGrade() != null) {
+			adminDecision = AdminDecisionsEnum.SCHOLARSHIP_RESULTS_REGISTERATION.getCode();
+			originalDecisionNumber = firstTransactionDetail.getDecisionNumber();
+			gregDecisionDateString = HijriDateService.hijriToGregDateString(firstTransactionDetail.getDecisionDateString());
+			gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getStudyGraduationDateString());
+		    }
+		}
+	    }
+	    if (adminDecision != null) {
+		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(trainingTransactionData.getEmployeeId(), employee.getName(), trainingTransactionData.getId(), null, gregStartDateString, gregEndDateString, System.currentTimeMillis() + "", originalDecisionNumber));
+		Long unitId = employee.getPhysicalUnitId() != null ? employee.getPhysicalUnitId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId();
+		PayrollEngineService.doPayrollIntegration(adminDecision, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(TrainingTransaction.class), FlagsEnum.OFF.getCode(), FlagsEnum.OFF.getCode(), session);
+	    }
+	}
+    }
+
+    private static void doJoiningPayrollIntegration(TrainingTransactionData trainingTransactionData, CustomSession session) throws BusinessException {
+	session.flushTransaction();
+	List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
+	Long adminDecision = null;
+	List<TrainingTransactionDetailData> trainingTransactionDetailDataList = getTrainingTransactionDetailDataByTrainingTransactionId(trainingTransactionData.getId());
+	TrainingTransactionDetailData firstTransactionDetail = trainingTransactionDetailDataList == null || trainingTransactionDetailDataList.size() == 0 ? null : trainingTransactionDetailDataList.get(trainingTransactionDetailDataList.size() - 1);
+	EmployeeData employee = EmployeesService.getEmployeeData(trainingTransactionData.getEmployeeId());
+	if (employee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+	    if (trainingTransactionData.getTrainingJoiningDate() != null)
+		adminDecision = AdminDecisionsEnum.SCHOLARSHIP_JOINING_REGISTERATION.getCode();
+	}
+	if (adminDecision != null) {
+	    String originalDecisionNumber = firstTransactionDetail.getDecisionNumber();
+	    String gregDecisionDateString = HijriDateService.hijriToGregDateString(firstTransactionDetail.getDecisionDateString());
+	    String gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getTrainingJoiningDateString());
+	    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(trainingTransactionData.getEmployeeId(), employee.getName(), trainingTransactionData.getId(), null, gregStartDateString, null, System.currentTimeMillis() + "", originalDecisionNumber));
+	    Long unitId = employee.getPhysicalUnitId() != null ? employee.getPhysicalUnitId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId();
+	    PayrollEngineService.doPayrollIntegration(adminDecision, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(TrainingTransaction.class), FlagsEnum.OFF.getCode(), FlagsEnum.ON.getCode(), session);
+	}
     }
 
     private static void addTrainingTransaction(TrainingTransactionData trainingTransaction, CustomSession... useSession) throws BusinessException {

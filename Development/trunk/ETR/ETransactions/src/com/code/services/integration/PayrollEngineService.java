@@ -23,6 +23,7 @@ import com.code.dal.orm.hcm.raises.RaiseTransaction;
 import com.code.dal.orm.hcm.recruitments.RecruitmentTransaction;
 import com.code.dal.orm.hcm.retirements.DisclaimerTransaction;
 import com.code.dal.orm.hcm.terminations.TerminationTransaction;
+import com.code.dal.orm.hcm.trainings.TrainingTransaction;
 import com.code.dal.orm.hcm.vacations.TransientVacationTransaction;
 import com.code.dal.orm.hcm.vacations.Vacation;
 import com.code.dal.orm.integration.payroll.AdminDecisionVariablesMapping;
@@ -52,6 +53,7 @@ import com.code.services.hcm.RaisesService;
 import com.code.services.hcm.RecruitmentsService;
 import com.code.services.hcm.RetirementsService;
 import com.code.services.hcm.TerminationsService;
+import com.code.services.hcm.TrainingEmployeesService;
 import com.code.services.hcm.VacationsService;
 import com.code.services.util.HijriDateService;
 import com.code.services.util.Log4jService;
@@ -264,6 +266,8 @@ public class PayrollEngineService extends BaseService {
 		DutyExtensionService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getRowId(), session);
 	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(IncentiveTransaction.class))) {
 		IncentivesService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getRowId(), session);
+	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(TrainingTransaction.class))) {
+		TrainingEmployeesService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getRowId(), payrollIntegrationFailureLogData.getAdminDecisionId(), session);
 	    }
 
 	    payrollIntegrationFailureLogData.setExecutedFlag(FlagsEnum.ON.getCode());

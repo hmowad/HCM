@@ -5,6 +5,7 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
+import com.code.dal.orm.hcm.trainings.TrainingCourseData;
 import com.code.dal.orm.hcm.trainings.TrainingCourseEventData;
 import com.code.dal.orm.hcm.trainings.TrainingTransactionData;
 import com.code.enums.FlagsEnum;
@@ -14,6 +15,7 @@ import com.code.enums.TraineeStatusEnum;
 import com.code.enums.TrainingTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.TrainingCoursesEventsService;
+import com.code.services.hcm.TrainingCoursesService;
 import com.code.services.hcm.TrainingEmployeesService;
 import com.code.ui.backings.base.BaseBacking;
 
@@ -23,6 +25,7 @@ public class MorningTrainingResultsRegisteration extends BaseBacking {
     int pageSize = 10;
     private TrainingTransactionData selectedTrainingTransaction;
     private TrainingCourseEventData selectedCourseEvent;
+    private TrainingCourseData selectedCourseData;
     private long selectedCourseEventId;
     private List<TrainingTransactionData> trainingTransactions;
 
@@ -56,6 +59,7 @@ public class MorningTrainingResultsRegisteration extends BaseBacking {
     public void selectCourse() {
 	try {
 	    selectedCourseEvent = TrainingCoursesEventsService.getCourseEventById(selectedCourseEventId);
+	    setSelectedCourseData(TrainingCoursesService.getTrainingCoursesById(selectedCourseEvent.getCourseId()));
 	    trainingTransactions = TrainingEmployeesService.getTrainingTransactionsDataByPhysicalRegionId(new Long[] { trainingTypeId }, statusIds, FlagsEnum.ALL.getCode(), selectedCourseEventId, loginEmpData.getPhysicalRegionId() == RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() ? FlagsEnum.ALL.getCode() : loginEmpData.getPhysicalRegionId());
 	    selectedTrainingTransaction = null;
 	    if (trainingTransactions.isEmpty())
@@ -81,6 +85,14 @@ public class MorningTrainingResultsRegisteration extends BaseBacking {
 
     public void setSelectedCourseEvent(TrainingCourseEventData selectedCourseEvent) {
 	this.selectedCourseEvent = selectedCourseEvent;
+    }
+
+    public TrainingCourseData getSelectedCourseData() {
+	return selectedCourseData;
+    }
+
+    public void setSelectedCourseData(TrainingCourseData selectedCourseData) {
+	this.selectedCourseData = selectedCourseData;
     }
 
     public long getSelectedCourseEventId() {

@@ -102,6 +102,20 @@
 													<h:outputText value="#{militaryExtCourseEventResultsRegistration.selectedCourseEvent.actualEndDateString}" />
 												</td>
 											</tr>
+											<tr>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_trainingQualificationMajorSpec}" />
+												</th>
+												<td width="35%">
+													<h:outputText value="#{militaryExtCourseEventResultsRegistration.selectedCourseData.qualificationMajorSpecDesc}" />
+												</td>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_trainingQualificationMinorSpec}" />
+												</th>
+												<td width="35%">
+													<h:outputText value="#{militaryExtCourseEventResultsRegistration.selectedCourseData.qualificationMinorSpecDesc}" />
+												</td>
+											</tr>
 										</table>
 									</td>
 								</tr>
@@ -207,7 +221,8 @@
 															<h:outputText value="#{militaryExtCourseEventResultsRegistration.selectedTrainingTransaction.employeeName}" />
 														</td>
 													</tr>
-													<code:courseResults trainingObject="#{militaryExtCourseEventResultsRegistration.selectedTrainingTransaction}" loginEmpId="#{militaryExtCourseEventResultsRegistration.loginEmpData.empId}" viewOnly="#{false}" military="true" claim="false" successFlagChangeListener="#{militaryExtCourseEventResultsRegistration.successFlagChangeListener()}" successRankingDesc ="#{militaryExtCourseEventResultsRegistration.calculateRankingDesc()}" successRankingMandatoryFlag="#{militaryExtCourseEventResultsRegistration.selectedCourseEvent.rankingFlagBoolean}"></code:courseResults>
+													<code:courseResults trainingObject="#{militaryExtCourseEventResultsRegistration.selectedTrainingTransaction}" loginEmpId="#{militaryExtCourseEventResultsRegistration.loginEmpData.empId}" viewOnly="#{false}" military="true" claim="false" successFlagChangeListener="#{militaryExtCourseEventResultsRegistration.successFlagChangeListener()}" successRankingDesc="#{militaryExtCourseEventResultsRegistration.calculateRankingDesc()}"
+														successRankingMandatoryFlag="#{militaryExtCourseEventResultsRegistration.selectedCourseEvent.rankingFlagBoolean}"></code:courseResults>
 
 													<tr>
 														<td width="100%" colspan="4">

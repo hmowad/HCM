@@ -6,12 +6,14 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.Rankings;
+import com.code.dal.orm.hcm.trainings.TrainingCourseData;
 import com.code.dal.orm.hcm.trainings.TrainingCourseEventData;
 import com.code.dal.orm.hcm.trainings.TrainingTransactionData;
 import com.code.enums.FlagsEnum;
 import com.code.enums.GradesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.TrainingCoursesEventsService;
+import com.code.services.hcm.TrainingCoursesService;
 import com.code.services.hcm.TrainingEmployeesService;
 import com.code.services.hcm.TrainingSetupService;
 import com.code.ui.backings.base.BaseBacking;
@@ -21,6 +23,7 @@ import com.code.ui.backings.base.BaseBacking;
 public class MilitaryExtCourseEventResultsRegistration extends BaseBacking {
 
     private TrainingCourseEventData selectedCourseEvent;
+    private TrainingCourseData selectedCourseData;
     private long selectedCourseEventId;
     private List<TrainingTransactionData> trainingTransactionsList;
     private TrainingTransactionData selectedTrainingTransaction;
@@ -39,11 +42,13 @@ public class MilitaryExtCourseEventResultsRegistration extends BaseBacking {
     public void selectCourseEvent() {
 	try {
 	    selectedCourseEvent = TrainingCoursesEventsService.getCourseEventById(selectedCourseEventId);
+	    selectedCourseData = TrainingCoursesService.getTrainingCoursesById(selectedCourseEvent.getCourseId());
 	    trainingTransactionsList = TrainingEmployeesService.getJoinedAndFininshedEmployeesInCourseEventTransactionsList(selectedCourseEventId);
 	    selectedTrainingTransaction = null;
 
 	    if (trainingTransactionsList.isEmpty()) {
 		selectedCourseEvent = null;
+		selectedCourseData = null;
 		throw new BusinessException("error_noEmployeesJoinedInCourseEvent");
 	    }
 	} catch (BusinessException e) {
@@ -99,6 +104,14 @@ public class MilitaryExtCourseEventResultsRegistration extends BaseBacking {
 
     public void setSelectedCourseEvent(TrainingCourseEventData selectedCourseEvent) {
 	this.selectedCourseEvent = selectedCourseEvent;
+    }
+
+    public TrainingCourseData getSelectedCourseData() {
+	return selectedCourseData;
+    }
+
+    public void setSelectedCourseData(TrainingCourseData selectedCourseData) {
+	this.selectedCourseData = selectedCourseData;
     }
 
     public long getSelectedCourseEventId() {
