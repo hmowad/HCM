@@ -145,6 +145,20 @@
 														<h:outputText value="#{militaryIntCourseEventResults.selectedCourseEvent.actualEndDateString}" />
 													</td>
 												</tr>
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_trainingQualificationMajorSpec}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{militaryIntCourseEventResults.selectedCourseData.qualificationMajorSpecDesc}" />
+													</td>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_trainingQualificationMinorSpec}" />
+													</th>
+													<td width="35%">
+														<h:outputText value="#{militaryIntCourseEventResults.selectedCourseData.qualificationMinorSpecDesc}" />
+													</td>
+												</tr>
 											</table>
 										</td>
 									</tr>
@@ -250,7 +264,8 @@
 																<h:outputText value="#{militaryIntCourseEventResults.selectedTrainingTransaction.employeeName}" />
 															</td>
 														</tr>
-														<code:courseResults trainingObject="#{militaryIntCourseEventResults.selectedTrainingTransaction}" loginEmpId="#{militaryIntCourseEventResults.loginEmpData.empId}" viewOnly="#{militaryIntCourseEventResults.role != 'Requester' and militaryIntCourseEventResults.role  != 'ReviewerEmp'}" military="true" claim="false" successFlagChangeListener="#{militaryIntCourseEventResults.successFlagChangeListener()}" successRankingDesc ="#{militaryIntCourseEventResults.calculateRankingDesc()}" successRankingMandatoryFlag="#{militaryIntCourseEventResults.selectedCourseEvent.rankingFlagBoolean}"></code:courseResults>
+														<code:courseResults trainingObject="#{militaryIntCourseEventResults.selectedTrainingTransaction}" loginEmpId="#{militaryIntCourseEventResults.loginEmpData.empId}" viewOnly="#{militaryIntCourseEventResults.role != 'Requester' and militaryIntCourseEventResults.role  != 'ReviewerEmp'}" military="true" claim="false" successFlagChangeListener="#{militaryIntCourseEventResults.successFlagChangeListener()}" successRankingDesc="#{militaryIntCourseEventResults.calculateRankingDesc()}"
+															successRankingMandatoryFlag="#{militaryIntCourseEventResults.selectedCourseEvent.rankingFlagBoolean}"></code:courseResults>
 
 														<tr>
 															<td width="100%" colspan="4">
@@ -312,44 +327,44 @@
 					</tr>
 					<tr>
 						<td width="100%">
-						<h:panelGroup id="actionSectionPanelId">
-						<h:panelGroup rendered="#{militaryIntCourseEventResults.selectedCourseEvent != null}">
-							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
-								<tr>
-									<td>
-										<!-- Requester -->
-										<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()', null);" action="#{militaryIntCourseEventResults.initWFTrainingCourseEvent()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'Requester'}">
-											<f:ajax execute="@form" render="notifyMessagesId" />
-										</h:commandButton>
+							<h:panelGroup id="actionSectionPanelId">
+								<h:panelGroup rendered="#{militaryIntCourseEventResults.selectedCourseEvent != null}">
+									<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<td>
+												<!-- Requester -->
+												<h:commandButton id="rBtnId" onclick="return handleOnAction('#{msgs.q_send}','validateRequest()', null);" action="#{militaryIntCourseEventResults.initWFTrainingCourseEvent()}" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'Requester'}">
+													<f:ajax execute="@form" render="notifyMessagesId" />
+												</h:commandButton>
 
-										<!-- Reviewer  -->
-										<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRequest()',null);" action="#{militaryIntCourseEventResults.approveWFTrainingCourseEventRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'ReviewerEmp'}">
-											<f:ajax execute="@form" render="notifyMessagesId" />
-										</h:commandButton>
-										<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryIntCourseEventResultsFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{militaryIntCourseEventResults.rejectWFTrainingCourseEventRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'ReviewerEmp'}">
-											<f:ajax execute="@form" render="notifyMessagesId" />
-										</h:commandButton>
+												<!-- Reviewer  -->
+												<h:commandButton id="approveReBtnId" onclick="return handleOnAction('#{msgs.q_review}','validateRequest()',null);" action="#{militaryIntCourseEventResults.approveWFTrainingCourseEventRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'ReviewerEmp'}">
+													<f:ajax execute="@form" render="notifyMessagesId" />
+												</h:commandButton>
+												<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryIntCourseEventResultsFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{militaryIntCourseEventResults.rejectWFTrainingCourseEventRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'ReviewerEmp'}">
+													<f:ajax execute="@form" render="notifyMessagesId" />
+												</h:commandButton>
 
-										<!-- Sign manager -->
-										<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;militaryIntCourseEventResultsFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{militaryIntCourseEventResults.approveWFTrainingCourseEventSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'SignManager'}">
-											<f:ajax execute="@form" render="notifyMessagesId" />
-										</h:commandButton>
-										<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;militaryIntCourseEventResultsFormId:curTaskId:refuseReasonsId&quot;, &quot;militaryIntCourseEventResultsFormId:curTaskId:notesId&quot;)',null);" action="#{militaryIntCourseEventResults.returnWFTrainingCourseEventSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon"
-											rendered="#{militaryIntCourseEventResults.role == 'SignManager'}">
-											<f:ajax execute="@form" render="notifyMessagesId" />
-										</h:commandButton>
-										<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryIntCourseEventResultsFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{militaryIntCourseEventResults.rejectWFTrainingCourseEventSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'SignManager'}">
-											<f:ajax execute="@form" render="notifyMessagesId" />
-										</h:commandButton>
+												<!-- Sign manager -->
+												<h:commandButton id="approveSmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;militaryIntCourseEventResultsFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{militaryIntCourseEventResults.approveWFTrainingCourseEventSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'SignManager'}">
+													<f:ajax execute="@form" render="notifyMessagesId" />
+												</h:commandButton>
+												<h:commandButton id="retSmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2,&quot;militaryIntCourseEventResultsFormId:curTaskId:refuseReasonsId&quot;, &quot;militaryIntCourseEventResultsFormId:curTaskId:notesId&quot;)',null);" action="#{militaryIntCourseEventResults.returnWFTrainingCourseEventSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon"
+													rendered="#{militaryIntCourseEventResults.role == 'SignManager'}">
+													<f:ajax execute="@form" render="notifyMessagesId" />
+												</h:commandButton>
+												<h:commandButton id="rejectSmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;militaryIntCourseEventResultsFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{militaryIntCourseEventResults.rejectWFTrainingCourseEventSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'SignManager'}">
+													<f:ajax execute="@form" render="notifyMessagesId" />
+												</h:commandButton>
 
-										<!-- Notification -->
-										<h:commandButton id="nBtnId" action="#{militaryIntCourseEventResults.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'Notification'}">
-											<f:ajax execute="@form" render="notifyMessagesId" />
-										</h:commandButton>
-									</td>
-								</tr>
-							</table>
-							</h:panelGroup>
+												<!-- Notification -->
+												<h:commandButton id="nBtnId" action="#{militaryIntCourseEventResults.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{militaryIntCourseEventResults.role == 'Notification'}">
+													<f:ajax execute="@form" render="notifyMessagesId" />
+												</h:commandButton>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
 							</h:panelGroup>
 						</td>
 					</tr>

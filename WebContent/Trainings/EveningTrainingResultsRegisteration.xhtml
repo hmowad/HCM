@@ -199,6 +199,20 @@
 											<code:attachments loginEmpId="#{eveningTrainingResultsRegisteration.loginEmpData.empId}" attachmentId="#{eveningTrainingResultsRegisteration.selectedCourseEvent.attachments}" viewEnableFlag="true" />
 										</td>
 									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_trainingQualificationMajorSpec}" />
+										</th>
+										<td width="35%">
+											<h:outputText value="#{eveningTrainingResultsRegisteration.selectedCourseData.qualificationMajorSpecDesc}" />
+										</td>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_trainingQualificationMinorSpec}" />
+										</th>
+										<td width="35%">
+											<h:outputText value="#{eveningTrainingResultsRegisteration.selectedCourseData.qualificationMinorSpecDesc}" />
+										</td>
+									</tr>
 								</table>
 							</h:panelGroup>
 						</h:panelGroup>

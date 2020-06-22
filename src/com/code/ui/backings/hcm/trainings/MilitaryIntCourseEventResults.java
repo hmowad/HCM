@@ -7,6 +7,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.Rankings;
+import com.code.dal.orm.hcm.trainings.TrainingCourseData;
 import com.code.dal.orm.hcm.trainings.TrainingTransactionData;
 import com.code.dal.orm.hcm.trainings.TrainingUnitData;
 import com.code.dal.orm.workflow.hcm.trainings.WFTrainingCourseEventData;
@@ -16,6 +17,7 @@ import com.code.enums.WFProcessesEnum;
 import com.code.enums.WFTaskRolesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.TrainingCoursesEventsService;
+import com.code.services.hcm.TrainingCoursesService;
 import com.code.services.hcm.TrainingEmployeesService;
 import com.code.services.hcm.TrainingSetupService;
 import com.code.services.workflow.hcm.TrainingCoursesEventsWorkFlow;
@@ -26,6 +28,7 @@ public class MilitaryIntCourseEventResults extends TrainingCoursesBase {
 
     private List<TrainingTransactionData> trainingTransactionsList;
     private TrainingTransactionData selectedTrainingTransaction;
+    private TrainingCourseData selectedCourseData;
     private TrainingUnitData trainingUnit;
     private List<Rankings> rankings;
 
@@ -47,6 +50,7 @@ public class MilitaryIntCourseEventResults extends TrainingCoursesBase {
 		wfTrainingCourseEvent = TrainingCoursesEventsWorkFlow.getWFTrainingCourseEventsByInstanceId(this.instance.getInstanceId()).get(0);
 		selectedCourseEventId = wfTrainingCourseEvent.getCourseEventId();
 		selectedCourseEvent = TrainingCoursesEventsService.getCourseEventById(selectedCourseEventId);
+		selectedCourseData = TrainingCoursesService.getTrainingCoursesById(selectedCourseEvent.getCourseId());
 
 		trainingTransactionsList = TrainingEmployeesService.getJoinedAndFininshedEmployeesInCourseEventTransactionsList(selectedCourseEventId);
 	    }
@@ -58,11 +62,13 @@ public class MilitaryIntCourseEventResults extends TrainingCoursesBase {
     public void selectCourseEvent() {
 	try {
 	    selectedCourseEvent = TrainingCoursesEventsService.getCourseEventById(selectedCourseEventId);
+	    selectedCourseData = TrainingCoursesService.getTrainingCoursesById(selectedCourseEvent.getCourseId());
 	    trainingTransactionsList = TrainingEmployeesService.getJoinedAndFininshedEmployeesInCourseEventTransactionsList(selectedCourseEventId);
 	    selectedTrainingTransaction = null;
 
 	    if (trainingTransactionsList.isEmpty()) {
 		selectedCourseEvent = null;
+		selectedCourseData = null;
 		throw new BusinessException("error_noEmployeesJoinedInCourseEvent");
 	    }
 
@@ -130,6 +136,14 @@ public class MilitaryIntCourseEventResults extends TrainingCoursesBase {
 
     public void setSelectedTrainingTransaction(TrainingTransactionData selectedTrainingTransaction) {
 	this.selectedTrainingTransaction = selectedTrainingTransaction;
+    }
+
+    public TrainingCourseData getSelectedCourseData() {
+	return selectedCourseData;
+    }
+
+    public void setSelectedCourseData(TrainingCourseData selectedCourseData) {
+	this.selectedCourseData = selectedCourseData;
     }
 
     public TrainingUnitData getTrainingUnit() {
