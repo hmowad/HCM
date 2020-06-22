@@ -11,6 +11,7 @@ import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.incentives.IncentivePort;
 import com.code.dal.orm.hcm.incentives.IncentiveTransaction;
+import com.code.dal.orm.hcm.missions.MissionData;
 import com.code.dal.orm.setup.GovernmentalCommitteeCategory;
 import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.FlagsEnum;
@@ -81,9 +82,10 @@ public class IncentivesService extends BaseService {
 	    String gregStartDateString = HijriDateService.hijriToGregDateString(HijriDateService.getHijriDateString(incentiveTransaction.getStartDate()));
 	    String gregTransactionDateString = HijriDateService.hijriToGregDateString(HijriDateService.getHijriDateString(incentiveTransaction.getTransactionDate()));
 	    EmployeeData employee = EmployeesService.getEmployeeData(incentiveTransaction.getEmployeeId());
+	    MissionData missionData = incentiveTransaction.getMissionTransactionId() == null ? null : MissionsService.getMissionsById(MissionsService.getMissionsDetailById(incentiveTransaction.getMissionTransactionId()).getMissionId());
 	    if (employee == null)
 		throw new BusinessException("error_employeeDataError");
-	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), incentiveTransaction.getId(), null, gregStartDateString, null, System.currentTimeMillis() + "", null)));
+	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), incentiveTransaction.getId(), incentiveTransaction.getMissionTransactionId(), gregStartDateString, null, System.currentTimeMillis() + "", missionData == null ? null : missionData.getDecisionNumber())));
 	    session.flushTransaction();
 	    PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregTransactionDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregTransactionDateString, DataAccess.getTableName(IncentiveTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
 	}
