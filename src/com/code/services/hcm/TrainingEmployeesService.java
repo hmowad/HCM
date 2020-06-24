@@ -105,7 +105,6 @@ public class TrainingEmployeesService extends BaseService {
     }
 
     public static void saveTrainingTransactionResult(TrainingTransactionData trainingTransaction, long courseEventId, CustomSession... useSession) throws BusinessException {
-
 	List<TrainingTransactionData> loadedTrainingTransactions = TrainingEmployeesService.getTrainingTransactionsDataByIds(new Long[] { trainingTransaction.getId() });
 	if (loadedTrainingTransactions.isEmpty())
 	    throw new BusinessException("error_transactionDataError");
