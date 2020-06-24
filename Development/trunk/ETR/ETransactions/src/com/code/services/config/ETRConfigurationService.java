@@ -271,8 +271,8 @@ public class ETRConfigurationService extends BaseService {
 	return configurationMap.get("TEMP_NO_LDAP_PASS_KEY");
     }
 
-    public static String getTasksNotToInvalidateIncludedProcessesIds() {
-	return configurationMap.get("TASKS_NOT_TO_INVALIDATE_INCLUDED_PROCESSES_IDS");
+    public static String getProcessesIdsExcludedFromInvalidation() {
+	return configurationMap.get("PROCESSES_IDS_EXCLUDED_FROM_INVALIDATION");
     }
     /*------------------------------------------------------General Notifications Configurations------------------------------------------------------*/
 
