@@ -443,7 +443,7 @@ public abstract class BaseWorkFlow extends BaseService {
 	    PushNotificationRestClient.pushNotification(assigneeId, assigneeWfRole);
 
 	    return task;
-	} catch (BusinessException e) {
+	} catch (Exception e) {
 	    throw new DatabaseException(e.getMessage());
 	}
     }
@@ -524,7 +524,7 @@ public abstract class BaseWorkFlow extends BaseService {
 		List<String> processesIdsExcludedFromInvalidation = new ArrayList<String>(Arrays.asList(ETRConfigurationService.getProcessesIdsExcludedFromInvalidation().split(",")));
 		if (processesIdsExcludedFromInvalidation.contains(instance.getProcessId() + "")) {
 		    Long originalUnitManagerId = task.getOriginalUnitId() == null ? null : UnitsService.getUnitById(task.getOriginalUnitId()).getPhysicalManagerId();
-		    task.setAssigneeId(originalUnitManagerId.equals(task.getOriginalId()) ? null : originalUnitManagerId);
+		    task.setAssigneeId(originalUnitManagerId.equals(task.getOriginalId()) ? null : originalUnitManagerId); // TODO: to be revised later
 		    task.setOriginalId(originalUnitManagerId.equals(task.getOriginalId()) ? null : originalUnitManagerId);
 		    DataAccess.updateEntity(task, session);
 		} else {
@@ -860,6 +860,14 @@ public abstract class BaseWorkFlow extends BaseService {
     }
 
     public static List<WFTask> getUnassignedWFTasksByInstanceId(Long instanceId) throws BusinessException {
+	return searchUnassignedWFTasks(instanceId);
+    }
+
+    public static List<WFTask> getAllUnassignedWFTasks() throws BusinessException {
+	return searchUnassignedWFTasks(null);
+    }
+
+    private static List<WFTask> searchUnassignedWFTasks(Long instanceId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_INSTANCE_ID", instanceId == null ? FlagsEnum.ALL.getCode() : instanceId);
@@ -1401,7 +1409,7 @@ public abstract class BaseWorkFlow extends BaseService {
     /******************************************* Scheduler methods ***************************************************/
     public static void handleUnassignedTasks() throws BusinessException {
 	try {
-	    List<WFTask> unassignedWFTasks = getUnassignedWFTasksByInstanceId(null);
+	    List<WFTask> unassignedWFTasks = getAllUnassignedWFTasks();
 	    for (WFTask wfTask : unassignedWFTasks) {
 		Long originalUnitManagerId = wfTask.getOriginalUnitId() == null ? null : UnitsService.getUnitById(wfTask.getOriginalUnitId()).getPhysicalManagerId();
 		if (originalUnitManagerId != null) {
