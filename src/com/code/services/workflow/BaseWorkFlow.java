@@ -521,8 +521,8 @@ public abstract class BaseWorkFlow extends BaseService {
 		WFTask task = (WFTask) (((Object[]) taskAndInstance)[0]);
 		WFInstance instance = (WFInstance) (((Object[]) taskAndInstance)[1]);
 
-		List<String> tasksNotToInvalidateIncludedProcessesIds = new ArrayList<String>(Arrays.asList(ETRConfigurationService.getTasksNotToInvalidateIncludedProcessesIds().split(",")));
-		if (tasksNotToInvalidateIncludedProcessesIds.contains(instance.getProcessId() + "")) {
+		List<String> processesIdsExcludedFromInvalidation = new ArrayList<String>(Arrays.asList(ETRConfigurationService.getProcessesIdsExcludedFromInvalidation().split(",")));
+		if (processesIdsExcludedFromInvalidation.contains(instance.getProcessId() + "")) {
 		    Long originalUnitManagerId = task.getOriginalUnitId() == null ? null : UnitsService.getUnitById(task.getOriginalUnitId()).getPhysicalManagerId();
 		    task.setAssigneeId(originalUnitManagerId.equals(task.getOriginalId()) ? null : originalUnitManagerId);
 		    task.setOriginalId(originalUnitManagerId.equals(task.getOriginalId()) ? null : originalUnitManagerId);
