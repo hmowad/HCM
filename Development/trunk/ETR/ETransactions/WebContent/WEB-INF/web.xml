@@ -7,6 +7,10 @@
 		<param-value>org.jboss.el.ExpressionFactoryImpl</param-value>
 	</context-param>
 
+	<welcome-file-list>
+		<welcome-file>Login.jsf</welcome-file>
+	</welcome-file-list>
+	
 	<listener>
 		<listener-class>com.code.ui.config.AppContextListener</listener-class>
 	</listener>
