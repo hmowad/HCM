@@ -33,6 +33,8 @@ public class PromotionsReports extends BaseBacking {
     private Date decisionDateTo;
     private Date promotionDate;
     private Boolean scaleUpFlag;
+    private Long unitId;
+    private Long minorSpecsId;
 
     public PromotionsReports() {
 	init();
@@ -72,6 +74,8 @@ public class PromotionsReports extends BaseBacking {
 	try {
 	    rankId = (long) FlagsEnum.ALL.getCode();
 	    regionId = getLoginEmpPhysicalRegionFlag(true);
+	    unitId = null;
+	    minorSpecsId = null;
 	    promotionDueDateFrom = null;
 	    promotionDueDateTo = HijriDateService.getHijriSysDate();
 	    decisionDateFrom = null;
@@ -106,7 +110,7 @@ public class PromotionsReports extends BaseBacking {
 		setServerSideErrorMessages(getMessage("error_fromDecisionDateViolation"));
 		return;
 	    }
-	    byte[] bytes = PromotionsService.getPromotionsReport(reportType, (long) mode, rankId, regionId, promotionDueDateFrom, promotionDueDateTo, decisionDateFrom, decisionDateTo, scaleUpFlag, promotionDate);
+	    byte[] bytes = PromotionsService.getPromotionsReport(reportType, (long) mode, rankId, regionId, promotionDueDateFrom, promotionDueDateTo, decisionDateFrom, decisionDateTo, scaleUpFlag, promotionDate, unitId == null ? FlagsEnum.ALL.getCode() : unitId, minorSpecsId == null ? FlagsEnum.ALL.getCode() : minorSpecsId);
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -210,6 +214,22 @@ public class PromotionsReports extends BaseBacking {
 
     public void setScaleUpFlag(Boolean scaleUpFlag) {
 	this.scaleUpFlag = scaleUpFlag;
+    }
+
+    public Long getUnitId() {
+	return unitId;
+    }
+
+    public void setUnitId(Long unitId) {
+	this.unitId = unitId;
+    }
+
+    public Long getMinorSpecsId() {
+	return minorSpecsId;
+    }
+
+    public void setMinorSpecsId(Long minorSpecsId) {
+	this.minorSpecsId = minorSpecsId;
     }
 
 }

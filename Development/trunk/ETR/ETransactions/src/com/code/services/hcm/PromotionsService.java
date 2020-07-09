@@ -821,7 +821,7 @@ public class PromotionsService extends BaseService {
      * @throws BusinessException
      * @see {@link RegionsEnum}
      */
-    public static byte[] getPromotionsReport(int reportType, long categoryId, long rankId, long regionId, Date promotionDueDateFrom, Date promotionDueDateTo, Date decisionDateFrom, Date decisionDateTo, Boolean scaleUpFlag, Date promotionDate) throws BusinessException {
+    public static byte[] getPromotionsReport(int reportType, long categoryId, long rankId, long regionId, Date promotionDueDateFrom, Date promotionDueDateTo, Date decisionDateFrom, Date decisionDateTo, Boolean scaleUpFlag, Date promotionDate, Long unitId, Long minorSpecsId) throws BusinessException {
 
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
@@ -830,6 +830,8 @@ public class PromotionsService extends BaseService {
 	    qParams.put("P_CATEGORY_ID", categoryId);
 	    qParams.put("P_RANK_ID", rankId);
 	    qParams.put("P_PRINT_DATE", HijriDateService.getHijriSysDateString());
+	    qParams.put("P_UNIT_ID", unitId);
+	    qParams.put("P_MINOR_SPECS_ID", minorSpecsId);
 	    if (reportType == 10 || reportType == 40 || reportType == 50) {
 		if (promotionDueDateFrom != null) {
 		    qParams.put("P_FROM_DATE_FLAG", FlagsEnum.ON.getCode());
@@ -848,6 +850,9 @@ public class PromotionsService extends BaseService {
 		    qParams.put("P_OFFICIAL_REGION_SHORT_DESC", regionId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : CommonService.getRegionById(regionId).getShortDescription());
 		    qParams.put("P_RANK_DESC", rankId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : CommonService.getRankById(rankId).getDescription());
 		    qParams.put("P_OFFICIAL_REGION_ID", regionId);
+		    qParams.put("P_UNIT_DESC", unitId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : UnitsService.getUnitById(unitId).getFullName());
+		    qParams.put("P_MINOR_SPECS_DESC", minorSpecsId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : SpecializationsService.getMinorSpecializationsByIdsString(minorSpecsId + "").get(0).getDescription());
+
 		}
 	    } else if (reportType == 20 || reportType == 30) {
 		qParams.put("P_OFFICIAL_REGION_ID", regionId);
@@ -877,6 +882,8 @@ public class PromotionsService extends BaseService {
 			qParams.put("P_SCALE_UP_FLAG", FlagsEnum.ON.getCode());
 		    else
 			qParams.put("P_SCALE_UP_FLAG", FlagsEnum.OFF.getCode());
+		    qParams.put("P_UNIT_DESC", unitId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : UnitsService.getUnitById(unitId).getFullName());
+		    qParams.put("P_MINOR_SPECS_DESC", minorSpecsId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : SpecializationsService.getMinorSpecializationsByIdsString(minorSpecsId + "").get(0).getDescription());
 		    reportName = ReportNamesEnum.PROMOTIONS_PROMOTED_STATISTICAL_INQUIRY.getCode();
 		}
 	    }

@@ -6,6 +6,32 @@
 	<h:outputStylesheet library="css" name="styles.css" />
 	<h:outputStylesheet library="css" name="grid.css" />
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript">
+	//<![CDATA[
+		function getMinorSpecialization() {
+			openMinorSpecializationsMiniSearch('#{request.contextPath}', 'handleMinorSpecializationMiniSearchResult(ret)', 0);
+		}
+
+		function handleMinorSpecializationMiniSearchResult(ret) {
+			if (ret != null) {
+				document.getElementById('promotionsReportsFormId:minorSpecializationIdHId').value = ret[0];
+				document.getElementById('promotionsReportsFormId:minorSpecializationDescId').innerHTML = ret[2];
+			}
+		}
+
+		function getUnit() {
+			regionIdValue = document.getElementById('promotionsReportsFormId:regionIDId').value
+			openUnitsMiniSearch(2, '#{request.contextPath}', 'handleUnitMiniSearchResult(ret)', -1, regionIdValue, -1);
+		}
+		
+		function handleUnitMiniSearchResult(ret){
+			if (ret != null) {
+				document.getElementById('promotionsReportsFormId:unitIDId').value = ret[0];
+				document.getElementById('promotionsReportsFormId:unitFullNameId').innerHTML = ret[1];
+			}
+		}
+	//]]>
+	</script>
 </h:head>
 <h:body styleClass="screenBg">
 	<h:form id="promotionsReportsFormId" dir="#{msgs.dir}">
@@ -73,9 +99,10 @@
 													<h:outputText value="#{(promotionsReports.reportType == 20 || promotionsReports.reportType == 30) ? msgs.label_employeeRegionDuringDecisionIssuing : msgs.label_region}" />
 												</th>
 												<td width="35%">
-													<h:selectOneMenu value="#{promotionsReports.regionId}" disabled="#{promotionsReports.loginEmpData.physicalRegionId != 1}">
+													<h:selectOneMenu id="regionIDId" value="#{promotionsReports.regionId}" disabled="#{promotionsReports.loginEmpData.physicalRegionId != 1}">
 														<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
 														<f:selectItems value="#{promotionsReports.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+														<f:ajax event="change" execute="@this"/>
 													</h:selectOneMenu>
 												</td>
 												<th width="15%">
@@ -88,6 +115,24 @@
 													</h:selectOneMenu>
 												</td>
 											</tr>
+											<h:panelGroup rendered="#{promotionsReports.mode == 2}">
+												<tr>
+													<th width="10%">#{msgs.label_unit}</th>
+													<td width="40%">
+														<h:outputText id="unitFullNameId" />
+														<h:inputHidden id="unitIDId" value="#{promotionsReports.unitId}" />
+														<h:outputText value=" " />
+														<h:commandButton value="#{msgs.fa_external_link}" onclick="getUnit(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+													</td>
+													<th width="15%">#{msgs.title_minorSpec}</th>
+													<td width="35%">
+														<h:outputText id="minorSpecializationDescId" value="#{(promotionsReports.minorSpecsId == null or promotionsReports.minorSpecsId == '') ? msgs.label_all : ''}" />
+														<h:inputHidden id="minorSpecializationIdHId" value="#{promotionsReports.minorSpecsId}" />
+														<h:outputText value=" " />
+														<h:commandButton value="#{msgs.fa_external_link}" onclick="getMinorSpecialization(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" />
+													</td>
+												</tr>
+											</h:panelGroup>
 											<h:panelGroup rendered="#{promotionsReports.reportType == 10 || promotionsReports.reportType == 40 || promotionsReports.reportType == 50}">
 												<tr>
 													<th width="15%">
