@@ -1886,6 +1886,15 @@ public class EmployeesService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
+	    List<EmployeeExtraTransactionData> employeeExtraTransactions = getEmployeeDataExtraTransactionByEmpIdAndTransactionType(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getTransactionTypeId());
+	    if (employeeExtraTransactions.get(0).getId().longValue() == employeeExtraTransactionData.getId().longValue()) {
+		EmployeeData employee = getEmployeeData(employeeExtraTransactionData.getEmpId());
+		if (employeeExtraTransactionData.getSalaryRankId() != null) {
+		    employee.setSalaryRankId(null);
+		    employee.setSalaryDegreeId(null);
+		    updateEmployee(employee, session);
+		}
+	    }
 	    DataAccess.updateEntity(employeeExtraTransactionData.getEmployeeExtraTransaction(), session);
 	    EmployeeLog log = new EmployeeLog.Builder().setSalaryRankId(Long.parseLong(FlagsEnum.ALL.getCode() + "")).setSalaryDegreeId(Long.parseLong(FlagsEnum.ALL.getCode() + ""))
 		    .constructCommonFields(employeeExtraTransactionData.getEmpId(), FlagsEnum.ON.getCode(), employeeExtraTransactionData.getDecisionNumber(), employeeExtraTransactionData.getDecisionDate(), employeeExtraTransactionData.getEndDate(), DataAccess.getTableName(EmployeeExtraTransaction.class)).build();
