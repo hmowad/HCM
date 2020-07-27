@@ -931,7 +931,8 @@ public class MissionsWorkFlow extends BaseWorkFlow {
 
 	    if (missionDetailData.getExceptionalApprovalDate() == null && (missionDetailData.getExceptionalApprovalNumber() != null && !missionDetailData.getExceptionalApprovalNumber().equals("")))
 		throw new BusinessException("error_exceptionalApprovalDateMandatory", new Object[] { missionDetailData.getEmpName() });
-
+	    if (!(missionDetailData.getEndDateString().equals(MissionsService.calculateMissionEndDate(missionDetailData.getStartDateString(), missionDetailData.getPeriod(), missionDetailData.getRoadPeriod()))))
+		throw new BusinessException("error_endDateIncompitableWithPeriodAndStartDate");
 	    if (missionPeriodAndDateUsedFlag == false && missionDetailData.getPeriod().equals(mission.getPeriod()) && missionDetailData.getStartDateString().equals(mission.getStartDateString()))
 		missionPeriodAndDateUsedFlag = true;
 
@@ -961,7 +962,9 @@ public class MissionsWorkFlow extends BaseWorkFlow {
 	    if (missionDetailData.getStartDate().before(HijriDateService.getHijriDate(ETRConfigurationService.getMissionActivationStartDate())))
 		throw new BusinessException("error_missionStartDateInvalid", new Object[] { missionDetailData.getEmpName(), ETRConfigurationService.getMissionActivationStartDate() });
 	}
-
+	// check end date compatibility with start date and period
+	if (!(mission.getStartDateString().equals(MissionsService.calculateMissionEndDate(mission.getStartDateString(), mission.getPeriod(), mission.getRoadPeriod()))))
+	    throw new BusinessException("error_endDateIncompitableWithPeriodAndStartDate");
 	if (missionPeriodAndDateUsedFlag == false)
 	    throw new BusinessException("error_missionPeriodAndDateNotUsed");
 
