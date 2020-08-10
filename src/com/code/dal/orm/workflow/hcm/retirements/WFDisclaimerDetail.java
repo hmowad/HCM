@@ -18,6 +18,7 @@ import com.code.dal.orm.BaseEntity;
 		query = "select dd from WFDisclaimerDetail dd "
 			+ " where "
 			+ " (:P_INSTANCE_ID = -1 or dd.instanceId = :P_INSTANCE_ID) "
+			+ " and (:P_MANAGER_UNIT_ID = -1 or dd.managerUnitId = :P_MANAGER_UNIT_ID) "
 			+ " and (:P_MANAGER_ID = -1 or dd.managerId = :P_MANAGER_ID) "
 			+ "order by dd.id ")
 })
