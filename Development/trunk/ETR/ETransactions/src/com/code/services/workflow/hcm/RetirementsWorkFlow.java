@@ -158,7 +158,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 			    if (wfDisclaimerData.getSentBackUnitsString() == null || wfDisclaimerData.getSentBackUnitsString().equals(""))
 				managerWFDisclaimerDetail = RetirementsWorkFlow.constructWFDisclaimerDetail(instance.getInstanceId(), unitManagerData);
 			    else {
-				List<WFDisclaimerDetail> managerWFDisclaimerDetailList = getWFDisclaimerDetailsByManagerIdAndInstanceId(unitManagerId, instance.getInstanceId());
+				List<WFDisclaimerDetail> managerWFDisclaimerDetailList = getWFDisclaimerDetailsByManagerUnitIdAndInstanceId(EmployeesService.getEmployeeData(unitManagerId).getPhysicalUnitId(), instance.getInstanceId());
 				managerWFDisclaimerDetail = (managerWFDisclaimerDetailList != null && managerWFDisclaimerDetailList.size() != 0) ? managerWFDisclaimerDetailList.get(0) : null;
 				if (managerWFDisclaimerDetail != null)
 				    managerWFDisclaimerDetail.setClaimedFlag(FlagsEnum.OFF.getCode());
@@ -472,7 +472,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 
     public static String getManagersUnitsIdsString(Long instanceId, Long empUnitRegionId) throws BusinessException {
 	String unitsIdsString = "";
-	List<WFDisclaimerDetail> wfDisclaiamerDetails = getWFDisclaimerDetailsByManagerIdAndInstanceId(null, instanceId);
+	List<WFDisclaimerDetail> wfDisclaiamerDetails = getWFDisclaimerDetailsByManagerUnitIdAndInstanceId(null, instanceId);
 
 	for (WFDisclaimerDetail wfDisclaimerDetail : wfDisclaiamerDetails) {
 	    UnitData unitData = UnitsService.getUnitByExactFullName(wfDisclaimerDetail.getManagerUnitFullName());
@@ -498,7 +498,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	    wfDisclaimerData.setDecisionApprovedId(esmTask.getOriginalId());
 	    wfDisclaimerData.setOriginalDecisionApprovedId(esmTask.getOriginalId());
 	    DataAccess.updateEntity(wfDisclaimerData.getWFDisclaimer(), session);
-	    doDisclaimerIntegration(wfDisclaimerData, searchWFDisclaimerDetails(null, instance.getInstanceId()), getWFProcess(instance.getProcessId()).getProcessName(), requester.getEmpId(), session);
+	    doDisclaimerIntegration(wfDisclaimerData, searchWFDisclaimerDetails(null, null, instance.getInstanceId()), getWFProcess(instance.getProcessId()).getProcessName(), requester.getEmpId(), session);
 
 	    Long[] allCopies = computeInstanceNotifications(new ArrayList<Long>(Arrays.asList(wfDisclaimerData.getEmpCategoryId())), wfDisclaimerData.getEmpPhysicalRegionId(), instance.getProcessId(), new ArrayList<Long>(Arrays.asList(wfDisclaimerData.getEmpId())), new ArrayList<Long>(Arrays.asList(wfDisclaimerData.getEmpId())));
 	    closeWFInstanceByAction(requester.getEmpId(), instance, esmTask, WFTaskActionsEnum.SUPER_SIGN.getCode(), allCopies, session);
@@ -549,7 +549,7 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	for (WFDisclaimerDetail wfDisclaimerDetail : wfDisclaimerDetails) {
 	    DisclaimerTransactionDetail disclaimerTransactionDetail = new DisclaimerTransactionDetail();
 
-	    disclaimerTransactionDetail.setManagerId(wfDisclaimerDetail.getManagerId());
+	    disclaimerTransactionDetail.setManagerId(UnitsService.getUnitById(wfDisclaimerDetail.getManagerUnitId()).getPhysicalManagerId());
 	    disclaimerTransactionDetail.setTransManagerUnitId(wfDisclaimerDetail.getManagerUnitId());
 	    disclaimerTransactionDetail.setTransManagerJobDesc(wfDisclaimerDetail.getManagerJobDesc());
 	    disclaimerTransactionDetail.setTransManagerName(wfDisclaimerDetail.getManagerName());
@@ -798,14 +798,15 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 	}
     }
 
-    public static List<WFDisclaimerDetail> getWFDisclaimerDetailsByManagerIdAndInstanceId(Long managerId, Long instanceId) throws BusinessException {
-	return searchWFDisclaimerDetails(managerId, instanceId);
+    public static List<WFDisclaimerDetail> getWFDisclaimerDetailsByManagerUnitIdAndInstanceId(Long managerUnitId, Long instanceId) throws BusinessException {
+	return searchWFDisclaimerDetails(null, managerUnitId, instanceId);
     }
 
-    private static List<WFDisclaimerDetail> searchWFDisclaimerDetails(Long managerId, Long instanceId) throws BusinessException {
+    private static List<WFDisclaimerDetail> searchWFDisclaimerDetails(Long managerId, Long managerUnitId, Long instanceId) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_MANAGER_ID", managerId == null ? FlagsEnum.ALL.getCode() : managerId);
+	    qParams.put("P_MANAGER_UNIT_ID", managerUnitId == null ? FlagsEnum.ALL.getCode() : managerUnitId);
 	    qParams.put("P_INSTANCE_ID", instanceId == null ? FlagsEnum.ALL.getCode() : instanceId);
 	    return DataAccess.executeNamedQuery(WFDisclaimerDetail.class, QueryNamesEnum.WF_GET_DISCLAIMER_DETAILS.getCode(), qParams);
 	} catch (DatabaseException e) {

@@ -192,7 +192,7 @@ public class DisclaimerRequest extends WFBaseBacking {
     public String doRetirementClaimSM() throws BusinessException {
 	try {
 	    wfDisclaimerData.getWFDisclaimer().setSystemUser(loginEmpData.getEmpId() + ""); // For auditing.
-	    wfDisclaimerDetail = RetirementsWorkFlow.getWFDisclaimerDetailsByManagerIdAndInstanceId(currentTask.getOriginalId(), instance.getInstanceId()).get(0);
+	    wfDisclaimerDetail = RetirementsWorkFlow.getWFDisclaimerDetailsByManagerUnitIdAndInstanceId(EmployeesService.getEmployeeData(currentTask.getOriginalId()).getPhysicalUnitId(), instance.getInstanceId()).get(0);
 	    wfDisclaimerDetail.setClaimedFlag(FlagsEnum.ON.getCode());
 	    if (this.role.equals(WFTaskRolesEnum.SIGN_MANAGER.getCode()))
 		RetirementsWorkFlow.doSM(requester, instance, wfDisclaimerData, wfDisclaimerDetail, currentTask, WFActionFlagsEnum.CLAIM.getCode(), null);
@@ -208,7 +208,7 @@ public class DisclaimerRequest extends WFBaseBacking {
     public String doRetirementDisclaimSM() throws BusinessException {
 	try {
 	    wfDisclaimerData.getWFDisclaimer().setSystemUser(loginEmpData.getEmpId() + ""); // For auditing.
-	    wfDisclaimerDetail = RetirementsWorkFlow.getWFDisclaimerDetailsByManagerIdAndInstanceId(currentTask.getOriginalId(), instance.getInstanceId()).get(0);
+	    wfDisclaimerDetail = RetirementsWorkFlow.getWFDisclaimerDetailsByManagerUnitIdAndInstanceId(EmployeesService.getEmployeeData(currentTask.getOriginalId()).getPhysicalUnitId(), instance.getInstanceId()).get(0);
 	    wfDisclaimerDetail.setClaimedFlag(FlagsEnum.OFF.getCode());
 	    if (this.role.equals(WFTaskRolesEnum.SIGN_MANAGER.getCode()))
 		RetirementsWorkFlow.doSM(requester, instance, wfDisclaimerData, wfDisclaimerDetail, currentTask, WFActionFlagsEnum.DISCLAIM.getCode(), null);
