@@ -23,15 +23,17 @@ import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.JobStatusEnum;
 import com.code.enums.LocationFlagsEnum;
+import com.code.enums.MenuActionsEnum;
+import com.code.enums.MenuCodesEnum;
 import com.code.enums.MovementTransactionViewsEnum;
 import com.code.enums.MovementTypesEnum;
 import com.code.enums.MovementsReasonTypesEnum;
 import com.code.enums.QueryNamesEnum;
-import com.code.enums.RegionsEnum;
 import com.code.enums.ReportNamesEnum;
 import com.code.enums.TransactionClassesEnum;
 import com.code.enums.TransactionTypesEnum;
 import com.code.enums.UnitTypesEnum;
+import com.code.enums.WFProcessesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
 import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
@@ -42,6 +44,7 @@ import com.code.services.config.ETRConfigurationService;
 import com.code.services.cor.ETRCorrespondence;
 import com.code.services.integration.PayrollEngineService;
 import com.code.services.log.LogService;
+import com.code.services.security.SecurityService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
 
@@ -441,7 +444,7 @@ public class MovementsService extends BaseService {
 	// validate
 	int replacementIndex = 1;
 	for (MovementTransactionData movementTransaction : movementTransactions) {
-	    validateMoveRules(movementTransaction, isReplacementMovement ? movementTransactions.get(replacementIndex).getEmployeeId() : null, requestId, transactionSourceView);
+	    validateMoveRules(movementTransaction, isReplacementMovement ? movementTransactions.get(replacementIndex).getEmployeeId() : null, requestId, transactionSourceView, null, null);
 	    if (isReplacementMovement)
 		replacementIndex = replacementIndex - 1;
 	}
@@ -477,7 +480,7 @@ public class MovementsService extends BaseService {
     private static void handleSubjoinTransactions(List<MovementTransactionData> movementTransactions, String processName, Long requestId, int transactionSourceView, CustomSession session) throws BusinessException {
 	// Validate
 	for (MovementTransactionData movementTransaction : movementTransactions) {
-	    validateSubjoinRules(movementTransaction, requestId, transactionSourceView);
+	    validateSubjoinRules(movementTransaction, requestId, transactionSourceView, null, null);
 	}
 
 	// add transactions
@@ -1412,11 +1415,11 @@ public class MovementsService extends BaseService {
      * @throws BusinessException
      *             if any error occurs
      */
-    public static void validateBusinessRules(MovementTransactionData movementTransaction, Long replacementEmployeeId, Long requestId, int transactionSourceView) throws BusinessException {
+    public static void validateBusinessRules(MovementTransactionData movementTransaction, Long replacementEmployeeId, Long requestId, int transactionSourceView, EmployeeData requester, Long processId) throws BusinessException {
 	if (movementTransaction.getMovementTypeId() == MovementTypesEnum.MOVE.getCode())
-	    validateMoveRules(movementTransaction, replacementEmployeeId, requestId, transactionSourceView);
+	    validateMoveRules(movementTransaction, replacementEmployeeId, requestId, transactionSourceView, requester, processId);
 	if (movementTransaction.getMovementTypeId() == MovementTypesEnum.SUBJOIN.getCode())
-	    validateSubjoinRules(movementTransaction, requestId, transactionSourceView);
+	    validateSubjoinRules(movementTransaction, requestId, transactionSourceView, requester, processId);
 	if (movementTransaction.getMovementTypeId() == MovementTypesEnum.ASSIGNMENT.getCode())
 	    validateAssignmentRules(movementTransaction, requestId, transactionSourceView);
 	if (movementTransaction.getMovementTypeId() == MovementTypesEnum.MANDATE.getCode())
@@ -1828,7 +1831,7 @@ public class MovementsService extends BaseService {
      *             if any error occurs
      */
 
-    public static boolean checkSoldiersFourteenMonthRule(Date executionDate, Date empServiceTerminationDueDate) throws BusinessException {
+    public static boolean checkMonthsRule(Date executionDate, Date empServiceTerminationDueDate) throws BusinessException {
 	if (executionDate.after(empServiceTerminationDueDate)) {
 	    return false;
 	}
@@ -1854,7 +1857,7 @@ public class MovementsService extends BaseService {
      * @throws BusinessException
      *             if any error occurs
      */
-    private static void validateMoveRules(MovementTransactionData movementTransaction, Long replacementEmployeeId, Long requestId, int transactionSourceView) throws BusinessException {
+    private static void validateMoveRules(MovementTransactionData movementTransaction, Long replacementEmployeeId, Long requestId, int transactionSourceView, EmployeeData requester, Long processId) throws BusinessException {
 	// Load necessary data
 	EmployeeData replacementEmp = null;
 	if (replacementEmployeeId != null) {
@@ -1887,11 +1890,14 @@ public class MovementsService extends BaseService {
 		throw new BusinessException("error_cannotDoRequestAsReplacementEmpOficialRegionNotEqualPhysicalRegion");
 	    }
 
-	    if (job != null && emp.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() && (movementTransaction.getLocationFlag().equals(LocationFlagsEnum.EXTERNAL.getCode()) || (emp.getOfficialRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) || emp.getOfficialRegionId() != UnitsService.getUnitById(movementTransaction.getUnitId()).getRegionId()))) {
-		if (!checkSoldiersFourteenMonthRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate()))
-		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanfourteen", new String[] { emp.getName() });
-		if (replacementEmp != null && !checkSoldiersFourteenMonthRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), replacementEmp.getServiceTerminationDueDate())) {
-		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanfourteen", new String[] { replacementEmp.getName() });
+	}
+
+	if (requester != null && !isRequesterAuthorizedToBybassMinMounthsRule(requester, processId)) {
+	    if (emp.getCategoryId() == CategoriesEnum.OFFICERS.getCode() || emp.getCategoryId() == CategoriesEnum.SOLDIERS.getCode()) {
+		if (!checkMonthsRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate()))
+		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanMinMonths", new String[] { emp.getName(), ETRConfigurationService.getMovementPeriodBetweenMovementAndServiceTerminationDueDate() + "" });
+		if (replacementEmp != null && !checkMonthsRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), replacementEmp.getServiceTerminationDueDate())) {
+		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanMinMonths", new String[] { replacementEmp.getName(), ETRConfigurationService.getMovementPeriodBetweenMovementAndServiceTerminationDueDate() + "" });
 		}
 	    }
 	}
@@ -1960,7 +1966,7 @@ public class MovementsService extends BaseService {
      * @throws BusinessException
      *             if any error occurs
      */
-    private static void validateSubjoinRules(MovementTransactionData movementTransaction, Long requestId, int transactionSourceView) throws BusinessException {
+    private static void validateSubjoinRules(MovementTransactionData movementTransaction, Long requestId, int transactionSourceView, EmployeeData requester, Long processId) throws BusinessException {
 	// Load necessary data
 	EmployeeData emp = null;
 	emp = EmployeesService.getEmployeeData(movementTransaction.getEmployeeId());
@@ -1985,13 +1991,14 @@ public class MovementsService extends BaseService {
 		    throw new BusinessException("error_cannotDoRequestAsOficialRegionNotEqualPhysicalRegion");
 	    }
 
-	    if (movementTransaction.getExecutionDate() != null && movementTransaction.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() &&
-		    (CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId().equals(movementTransaction.getTransactionTypeId()) || CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId().equals(movementTransaction.getTransactionTypeId()))
-		    && (movementTransaction.getLocationFlag().equals(LocationFlagsEnum.EXTERNAL.getCode()) || (emp.getOfficialRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) || emp.getOfficialRegionId() != UnitsService.getUnitById(movementTransaction.getUnitId()).getRegionId()))
-		    && !checkSoldiersFourteenMonthRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate())) {
-		throw new BusinessException("error_cannotDoSubjoinRequestAsEmployeeTerminationDueDateLessThanfourteen", new String[] { emp.getName() });
-	    }
+	}
 
+	if (requester != null && !isRequesterAuthorizedToBybassMinMounthsRule(requester, processId)) {
+	    if ((movementTransaction.getCategoryId() == CategoriesEnum.OFFICERS.getCode() || movementTransaction.getCategoryId() == CategoriesEnum.SOLDIERS.getCode()) &&
+		    (CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId().equals(movementTransaction.getTransactionTypeId()) || CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId().equals(movementTransaction.getTransactionTypeId()))
+		    && !checkMonthsRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate())) {
+		throw new BusinessException("error_cannotDoSubjoinRequestAsEmployeeTerminationDueDateLessThanMinMonths", new String[] { emp.getName(), ETRConfigurationService.getMovementPeriodBetweenMovementAndServiceTerminationDueDate() + "" });
+	    }
 	}
 
 	Long empRegionId = UnitsService.getUnitById(emp.getOfficialUnitId()).getRegionId();
@@ -2022,6 +2029,20 @@ public class MovementsService extends BaseService {
 	    if (movementTransaction.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() && movementTransaction.getReasonType() != null && movementTransaction.getReasonType().intValue() == MovementsReasonTypesEnum.FOR_PUBLIC_INTEREST.getCode() && movementTransaction.getLocationFlag() == FlagsEnum.ON.getCode())
 		throw new BusinessException("error_externalSubJoinForPublicInterest");
 	}
+    }
+
+    private static boolean isRequesterAuthorizedToBybassMinMounthsRule(EmployeeData requester, long processId) throws BusinessException {
+	if (processId == WFProcessesEnum.OFFICERS_MOVE.getCode()) {
+	    return SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_MOVE_OFFICERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode());
+	} else if (processId == WFProcessesEnum.OFFICERS_SUBJOIN.getCode()) {
+	    return SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_SUBJOIN_OFFICERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode());
+	} else if (processId == WFProcessesEnum.SOLDIERS_MOVE.getCode()) {
+	    return SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_MOVE_SOLDIERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode());
+	} else if (processId == WFProcessesEnum.SOLDIERS_SUBJOIN.getCode()) {
+	    return SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_SUBJOIN_SOLDIERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode());
+	}
+
+	return false;
     }
 
     /**

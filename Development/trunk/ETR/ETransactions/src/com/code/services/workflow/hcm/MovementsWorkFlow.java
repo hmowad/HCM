@@ -2030,10 +2030,10 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 
 	long extensionDecisionTransactionTypeId = CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId();
 	long newDecisionTransactionTypeId = CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId();
-	if (!isRequestProcess(processId, movementRequest.getCategoryId()) && movementRequest.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())
+	if (!isRequestProcess(processId, movementRequest.getCategoryId()) && (movementRequest.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) || movementRequest.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()))
 		&& (movementRequest.getTransactionTypeId() == newDecisionTransactionTypeId || movementRequest.getTransactionTypeId() == extensionDecisionTransactionTypeId)
-		&& (!MovementsService.checkSoldiersFourteenMonthRule(movementRequest.getExecutionDate() != null ? movementRequest.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate()))) {
-	    movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_serviceTerminationDueDateIsInLessThanFourteenMonth" + ",");
+		&& (!MovementsService.checkMonthsRule(movementRequest.getExecutionDate() != null ? movementRequest.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate()))) {
+	    movementRequest.setWarningMessages(movementRequest.getWarningMessages() + "error_serviceTerminationDueDateIsInLessThan" + ",");
 
 	}
 	if (isRequestProcess(processId, movementRequest.getCategoryId()) || movementRequest.getTransactionTypeId() != extensionDecisionTransactionTypeId) {
@@ -2256,7 +2256,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		    throw new BusinessException("error_ministryApprovalNumberMandatory");
 	    }
 
-	    validateBusinessRules(movementRequest, instanceId, processId, bypassJobValidation, transactionSourceView);
+	    validateBusinessRules(movementRequest, instanceId, processId, bypassJobValidation, transactionSourceView, requester);
 	}
 
 	if (freezeJobsIds.size() != 0) {
@@ -2315,16 +2315,16 @@ public class MovementsWorkFlow extends BaseWorkFlow {
      * @throws BusinessException
      *             if any error occurs
      */
-    private static void validateBusinessRules(WFMovementData movementRequest, Long instanceId, Long processId, boolean bypassJobValidation, int transactionSourceView) throws BusinessException {
+    private static void validateBusinessRules(WFMovementData movementRequest, Long instanceId, Long processId, boolean bypassJobValidation, int transactionSourceView, EmployeeData requester) throws BusinessException {
 	List<WFMovementData> list = new ArrayList<WFMovementData>();
 	list.add(movementRequest);
 	List<MovementTransactionData> movementsTransactionsData = constructMovementTransactions(list, processId, bypassJobValidation, null, null);
 
-	MovementsService.validateBusinessRules(movementsTransactionsData.get(0), movementRequest.getReplacementEmployeeId(), instanceId, transactionSourceView);
+	MovementsService.validateBusinessRules(movementsTransactionsData.get(0), movementRequest.getReplacementEmployeeId(), instanceId, transactionSourceView, requester, processId);
 
 	// For the case of replacement movements which one requests transfers to two transactions
 	if (movementsTransactionsData.size() > 1)
-	    MovementsService.validateBusinessRules(movementsTransactionsData.get(1), movementRequest.getEmployeeId(), instanceId, transactionSourceView);
+	    MovementsService.validateBusinessRules(movementsTransactionsData.get(1), movementRequest.getEmployeeId(), instanceId, transactionSourceView, requester, processId);
     }
 
     /**
