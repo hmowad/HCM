@@ -94,20 +94,20 @@ public class MovementsWorkFlow extends BaseWorkFlow {
      * @see #addWFTask(long, long, long, Date, Date, String, String, String, CustomSession)
      * 
      */
-    public static void initMovement(EmployeeData requester, List<WFMovementData> movementRequests, long processId, String attachments, String taskUrl, List<EmployeeData> internalCopiesEmployees, String externalCopies) throws BusinessException {
+    public static void initMovement(EmployeeData requester, List<WFMovementData> movementRequests, long processId, String attachments, String taskUrl, List<EmployeeData> internalCopiesEmployees, String externalCopies, Map<String, Object> extraParams) throws BusinessException {
 	if (movementRequests != null && movementRequests.size() > 0) {
 
 	    boolean isRequest = isRequestProcess(processId, movementRequests.get(0).getCategoryId());
 	    if (isRequest) {
 		if ((!movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !movementRequests.get(0).getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && movementRequests.get(0).getMovementTypeId().equals(MovementTypesEnum.SUBJOIN.getCode()) && movementRequests.get(0).getTransactionTypeId().equals(CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId()))
 			|| movementRequests.get(0).getMovementTypeId().equals(MovementTypesEnum.MOVE.getCode()))
-		    validateMovementRequests(movementRequests, requester, null, processId, null, true, isRequest ? MovementTransactionViewsEnum.REQUEST.getCode() : MovementTransactionViewsEnum.DECISION.getCode());
+		    validateMovementRequests(movementRequests, requester, null, processId, null, true, isRequest ? MovementTransactionViewsEnum.REQUEST.getCode() : MovementTransactionViewsEnum.DECISION.getCode(), extraParams);
 		else
-		    validateMovementRequests(movementRequests, requester, null, processId, null, false, isRequest ? MovementTransactionViewsEnum.REQUEST.getCode() : MovementTransactionViewsEnum.DECISION.getCode());
+		    validateMovementRequests(movementRequests, requester, null, processId, null, false, isRequest ? MovementTransactionViewsEnum.REQUEST.getCode() : MovementTransactionViewsEnum.DECISION.getCode(), extraParams);
 	    } else {
 		if (!movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !movementRequests.get(0).getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && !checkIfEmployeeExistsInWFPositionUnit(movementRequests.get(0).getCategoryId(), requester, movementRequests.get(0).getMovementTypeId()))
 		    throw new BusinessException("error_unAuthorizedRequester");
-		validateMovementRequests(movementRequests, requester, null, processId, null, false, isRequest ? MovementTransactionViewsEnum.REQUEST.getCode() : MovementTransactionViewsEnum.DECISION.getCode());
+		validateMovementRequests(movementRequests, requester, null, processId, null, false, isRequest ? MovementTransactionViewsEnum.REQUEST.getCode() : MovementTransactionViewsEnum.DECISION.getCode(), extraParams);
 	    }
 
 	    CustomSession session = DataAccess.getSession();
@@ -961,7 +961,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
      *             if any error occurs
      * @see WFTaskActionsEnum
      */
-    public static void doMovementRE(EmployeeData requester, WFInstance instance, List<WFMovementData> movementRequests, WFTask reTask, String attachments, List<EmployeeData> internalCopiesEmployees, String externalCopies, boolean isApproved) throws BusinessException {
+    public static void doMovementRE(EmployeeData requester, WFInstance instance, List<WFMovementData> movementRequests, WFTask reTask, String attachments, List<EmployeeData> internalCopiesEmployees, String externalCopies, boolean isApproved, Map<String, Object> extraParams) throws BusinessException {
 	CustomSession session = DataAccess.getSession();
 	try {
 	    session.beginTransaction();
@@ -977,7 +977,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		    if (!isRequest && !movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !movementRequests.get(0).getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && !checkIfEmployeeExistsInWFPositionUnit(movementRequests.get(0).getCategoryId(), requester, movementRequests.get(0).getMovementTypeId()))
 			throw new BusinessException("error_unAuthorizedRequester");
 
-		    validateMovementRequests(movementRequests, requester, instance.getInstanceId(), instance.getProcessId(), reTask, false, isRequest ? MovementTransactionViewsEnum.REQUEST.getCode() : MovementTransactionViewsEnum.DECISION.getCode());
+		    validateMovementRequests(movementRequests, requester, instance.getInstanceId(), instance.getProcessId(), reTask, false, isRequest ? MovementTransactionViewsEnum.REQUEST.getCode() : MovementTransactionViewsEnum.DECISION.getCode(), extraParams);
 
 		    List<WFMovementData> movementRequestsToAdd = new ArrayList<WFMovementData>();
 		    List<WFMovementData> movementRequestsToUpdate = new ArrayList<WFMovementData>();
@@ -2122,7 +2122,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
      * @throws BusinessException
      *             if any error occurs
      */
-    private static void validateMovementRequests(List<WFMovementData> movementRequests, EmployeeData requester, Long instanceId, long processId, WFTask wfTask, boolean bypassJobValidation, int transactionSourceView) throws BusinessException {
+    private static void validateMovementRequests(List<WFMovementData> movementRequests, EmployeeData requester, Long instanceId, long processId, WFTask wfTask, boolean bypassJobValidation, int transactionSourceView, Map<String, Object> extraParams) throws BusinessException {
 	HashSet<Long> empsIds = new HashSet<Long>();
 	HashSet<Long> jobsIds = new HashSet<Long>();
 	HashSet<Long> freezeJobsIds = new HashSet<Long>();
@@ -2256,7 +2256,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		    throw new BusinessException("error_ministryApprovalNumberMandatory");
 	    }
 
-	    validateBusinessRules(movementRequest, instanceId, processId, bypassJobValidation, transactionSourceView, requester);
+	    validateBusinessRules(movementRequest, instanceId, processId, bypassJobValidation, transactionSourceView, extraParams);
 	}
 
 	if (freezeJobsIds.size() != 0) {
@@ -2315,16 +2315,16 @@ public class MovementsWorkFlow extends BaseWorkFlow {
      * @throws BusinessException
      *             if any error occurs
      */
-    private static void validateBusinessRules(WFMovementData movementRequest, Long instanceId, Long processId, boolean bypassJobValidation, int transactionSourceView, EmployeeData requester) throws BusinessException {
+    private static void validateBusinessRules(WFMovementData movementRequest, Long instanceId, Long processId, boolean bypassJobValidation, int transactionSourceView, Map<String, Object> extraParams) throws BusinessException {
 	List<WFMovementData> list = new ArrayList<WFMovementData>();
 	list.add(movementRequest);
 	List<MovementTransactionData> movementsTransactionsData = constructMovementTransactions(list, processId, bypassJobValidation, null, null);
 
-	MovementsService.validateBusinessRules(movementsTransactionsData.get(0), movementRequest.getReplacementEmployeeId(), instanceId, transactionSourceView, requester, processId);
+	MovementsService.validateBusinessRules(movementsTransactionsData.get(0), movementRequest.getReplacementEmployeeId(), instanceId, transactionSourceView, extraParams);
 
 	// For the case of replacement movements which one requests transfers to two transactions
 	if (movementsTransactionsData.size() > 1)
-	    MovementsService.validateBusinessRules(movementsTransactionsData.get(1), movementRequest.getEmployeeId(), instanceId, transactionSourceView, requester, processId);
+	    MovementsService.validateBusinessRules(movementsTransactionsData.get(1), movementRequest.getEmployeeId(), instanceId, transactionSourceView, extraParams);
     }
 
     /**

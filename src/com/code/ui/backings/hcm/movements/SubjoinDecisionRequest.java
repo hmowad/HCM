@@ -11,6 +11,8 @@ import com.code.dal.orm.workflow.hcm.movements.WFMovementData;
 import com.code.enums.CategoryModesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.LocationFlagsEnum;
+import com.code.enums.MenuActionsEnum;
+import com.code.enums.MenuCodesEnum;
 import com.code.enums.MovementTypesEnum;
 import com.code.enums.MovementsReasonTypesEnum;
 import com.code.enums.TransactionTypesEnum;
@@ -18,6 +20,7 @@ import com.code.enums.WFProcessesEnum;
 import com.code.enums.WFTaskRolesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
+import com.code.services.security.SecurityService;
 import com.code.services.util.HijriDateService;
 import com.code.services.workflow.hcm.MovementsWorkFlow;
 
@@ -33,24 +36,30 @@ public class SubjoinDecisionRequest extends MovementsBase implements Serializabl
     public SubjoinDecisionRequest() {
 	super.init();
 	if (getRequest().getParameter("mode") != null) {
-	    mode = Integer.parseInt(getRequest().getParameter("mode"));
-	    this.init();
-	    regionId = getLoginEmpPhysicalRegionFlag(true);
-	    switch (mode) {
-	    case 1:
-		setScreenTitle(getMessage("title_officersSubjoinDecisionRequest"));
-		this.processId = WFProcessesEnum.OFFICERS_SUBJOIN.getCode();
-		break;
-	    case 2:
-		setScreenTitle(getMessage("title_soldiersSubjoinDecisionRequest"));
-		this.processId = WFProcessesEnum.SOLDIERS_SUBJOIN.getCode();
-		break;
-	    case 3:
-		setScreenTitle(getMessage("title_personsInternalAssignmentDecisionRequest"));
-		this.processId = WFProcessesEnum.PERSONS_ASSIGNMENT.getCode();
-		break;
-	    default:
-		setServerSideErrorMessages(getMessage("error_URLError"));
+	    try {
+		mode = Integer.parseInt(getRequest().getParameter("mode"));
+		this.init();
+		regionId = getLoginEmpPhysicalRegionFlag(true);
+		switch (mode) {
+		case 1:
+		    setScreenTitle(getMessage("title_officersSubjoinDecisionRequest"));
+		    this.processId = WFProcessesEnum.OFFICERS_SUBJOIN.getCode();
+		    extraParams.put("skipMonthsRuleValidation", SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_SUBJOIN_OFFICERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode()));
+		    break;
+		case 2:
+		    setScreenTitle(getMessage("title_soldiersSubjoinDecisionRequest"));
+		    this.processId = WFProcessesEnum.SOLDIERS_SUBJOIN.getCode();
+		    extraParams.put("skipMonthsRuleValidation", SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_SUBJOIN_SOLDIERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode()));
+		    break;
+		case 3:
+		    setScreenTitle(getMessage("title_personsInternalAssignmentDecisionRequest"));
+		    this.processId = WFProcessesEnum.PERSONS_ASSIGNMENT.getCode();
+		    break;
+		default:
+		    setServerSideErrorMessages(getMessage("error_URLError"));
+		}
+	    } catch (BusinessException e) {
+		setServerSideErrorMessages(getMessage(e.getMessage()));
 	    }
 	} else
 	    setServerSideErrorMessages(getMessage("error_URLError"));
