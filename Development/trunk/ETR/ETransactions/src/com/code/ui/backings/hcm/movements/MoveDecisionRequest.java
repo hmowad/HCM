@@ -12,6 +12,8 @@ import com.code.dal.orm.hcm.organization.jobs.JobData;
 import com.code.dal.orm.workflow.hcm.movements.WFMovementData;
 import com.code.enums.FlagsEnum;
 import com.code.enums.LocationFlagsEnum;
+import com.code.enums.MenuActionsEnum;
+import com.code.enums.MenuCodesEnum;
 import com.code.enums.MovementTypesEnum;
 import com.code.enums.MovementsReasonTypesEnum;
 import com.code.enums.TransactionTypesEnum;
@@ -20,6 +22,7 @@ import com.code.enums.WFTaskRolesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.JobsService;
+import com.code.services.security.SecurityService;
 import com.code.services.util.HijriDateService;
 import com.code.services.workflow.hcm.MovementsWorkFlow;
 
@@ -33,27 +36,30 @@ public class MoveDecisionRequest extends MovementsBase implements Serializable {
 
     public MoveDecisionRequest() {
 	if (getRequest().getParameter("mode") != null) {
-	    mode = Integer.parseInt(getRequest().getParameter("mode"));
-	    switch (mode) {
-	    case 1:
-		this.processId = WFProcessesEnum.OFFICERS_MOVE.getCode();
-		setScreenTitle(getMessage("title_officersMoveDecisionRequest"));
-		break;
-	    case 2:
-		this.processId = WFProcessesEnum.SOLDIERS_MOVE.getCode();
-		setScreenTitle(getMessage("title_soldiersMoveDecisionRequest"));
-		break;
-	    case 3:
-		this.processId = WFProcessesEnum.PERSONS_MOVE.getCode();
-		setScreenTitle(getMessage("title_personsMoveDecisionRequest"));
-		break;
-	    default:
-		setServerSideErrorMessages(getMessage("error_URLError"));
-		break;
-
-	    }
-	    init();
 	    try {
+		init();
+		mode = Integer.parseInt(getRequest().getParameter("mode"));
+		switch (mode) {
+		case 1:
+		    this.processId = WFProcessesEnum.OFFICERS_MOVE.getCode();
+		    setScreenTitle(getMessage("title_officersMoveDecisionRequest"));
+		    extraParams.put("skipMonthsRuleValidation", SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_MOVE_OFFICERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode()));
+		    break;
+		case 2:
+		    this.processId = WFProcessesEnum.SOLDIERS_MOVE.getCode();
+		    setScreenTitle(getMessage("title_soldiersMoveDecisionRequest"));
+		    extraParams.put("skipMonthsRuleValidation", SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_MOVE_SOLDIERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode()));
+		    break;
+		case 3:
+		    this.processId = WFProcessesEnum.PERSONS_MOVE.getCode();
+		    setScreenTitle(getMessage("title_personsMoveDecisionRequest"));
+		    break;
+		default:
+		    setServerSideErrorMessages(getMessage("error_URLError"));
+		    break;
+
+		}
+
 		regionId = getLoginEmpPhysicalRegionFlag(true);
 
 		jobsData = new ArrayList<JobData>();
