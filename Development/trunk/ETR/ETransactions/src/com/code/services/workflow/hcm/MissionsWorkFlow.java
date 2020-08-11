@@ -963,7 +963,7 @@ public class MissionsWorkFlow extends BaseWorkFlow {
 		throw new BusinessException("error_missionStartDateInvalid", new Object[] { missionDetailData.getEmpName(), ETRConfigurationService.getMissionActivationStartDate() });
 	}
 	// check end date compatibility with start date and period
-	if (!(mission.getStartDateString().equals(MissionsService.calculateMissionEndDate(mission.getStartDateString(), mission.getPeriod(), mission.getRoadPeriod()))))
+	if (!(mission.getEndDateString().equals(MissionsService.calculateMissionEndDate(mission.getStartDateString(), mission.getPeriod(), mission.getRoadPeriod()))))
 	    throw new BusinessException("error_endDateIncompitableWithPeriodAndStartDate");
 	if (missionPeriodAndDateUsedFlag == false)
 	    throw new BusinessException("error_missionPeriodAndDateNotUsed");
