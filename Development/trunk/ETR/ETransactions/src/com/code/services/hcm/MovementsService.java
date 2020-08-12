@@ -3191,6 +3191,56 @@ public class MovementsService extends BaseService {
     }
 
     /**
+     * Gets report bytes for assignment move transaction reports by sending report parameters
+     * 
+     * @param categoryId
+     *            category id of the transactions
+     * @param moveUnitFullName
+     *            employee movement transaction unit full name
+     * @param moveRegionDesc
+     *            employee movement transaction official region description
+     * @param employeeUnitFullName
+     *            employee official unit full name during the movement transaction
+     * @param employeeRegionDesc
+     *            employee official region description during the movement transaction
+     * @param employeeRankDesc
+     *            employee rank description during the movement transaction
+     * @param employeeMinorSpecDesc
+     *            employee minor specialization description during the movement transaction
+     * @param fromDate
+     *            start date period of the transactions
+     * @param toDate
+     *            end date period of the transactions
+     * @param verbalOrderFlag
+     *            flag to indicate whether the assignment based on verbal order
+     * @return array of report bytes
+     * @throws BusinessException
+     *             if any error occurs
+     */
+    public static byte[] getAssignmentReportsBytes(long categoryId, String moveUnitFullName, String moveRegionDesc, String employeeUnitFullName, String employeeRegionDesc, String employeeRankDesc, String employeeMinorSpecDesc, Date fromDate, Date toDate, int verbalOrderFlag) throws BusinessException {
+	try {
+	    String reportName = "";
+	    Map<String, Object> parameters = new HashMap<String, Object>();
+	    reportName = ReportNamesEnum.MOVEMENTS_OFFICERS_ASSIGNMENT_TRANSACTIONS.getCode();
+	    parameters.put("P_CATEGORY_ID", categoryId);
+	    parameters.put("P_MOVE_UNIT_FULL_NAME", (moveUnitFullName == null || moveUnitFullName.trim().isEmpty()) ? FlagsEnum.ALL.getCode() + "" : moveUnitFullName);
+	    parameters.put("P_MOVE_REGION_DESC", (moveRegionDesc == null || moveRegionDesc.trim().isEmpty()) ? FlagsEnum.ALL.getCode() + "" : moveRegionDesc);
+	    parameters.put("P_EMPLOYEE_UNIT_FULL_NAME", (employeeUnitFullName == null || employeeUnitFullName.trim().isEmpty()) ? FlagsEnum.ALL.getCode() + "" : employeeUnitFullName);
+	    parameters.put("P_EMPLOYEE_REGION_DESC", (employeeRegionDesc == null || employeeRegionDesc.trim().isEmpty()) ? FlagsEnum.ALL.getCode() + "" : employeeRegionDesc);
+	    parameters.put("P_EMPLOYEE_RANK_DESC", (employeeRankDesc == null || employeeRankDesc.trim().isEmpty()) ? FlagsEnum.ALL.getCode() + "" : employeeRankDesc);
+	    parameters.put("P_EMPLOYEE_MINOR_SPEC_DESC", (employeeMinorSpecDesc == null || employeeMinorSpecDesc.trim().isEmpty()) ? FlagsEnum.ALL.getCode() + "" : employeeMinorSpecDesc);
+	    parameters.put("P_FROM_DATE", HijriDateService.getHijriDateString(fromDate));
+	    parameters.put("P_TO_DATE", HijriDateService.getHijriDateString(toDate));
+	    parameters.put("P_VERBAL_ORDER_FLAG", verbalOrderFlag);
+	    parameters.put("P_SYS_DATE", HijriDateService.getHijriSysDateString());
+	    return getReportData(reportName, parameters);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_reportPrintingError");
+	}
+    }
+
+    /**
      * Gets report bytes for external movements reports by sending report parameters
      * 
      * @param categoryId
