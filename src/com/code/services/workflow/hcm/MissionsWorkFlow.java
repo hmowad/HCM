@@ -781,7 +781,7 @@ public class MissionsWorkFlow extends BaseWorkFlow {
 	    if (categoryId == CategoriesEnum.OFFICERS.getCode())
 		return getMessage("label_presidencyAssistant");
 	    else if (categoryId == CategoriesEnum.SOLDIERS.getCode())
-		return getMessage("label_generalMangerForSoldiersDirector");
+		return getMessage("label_generalMangerDirector");
 	    else
 		return null;
 	}
