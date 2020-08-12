@@ -43,6 +43,7 @@ public class MovementsDataReports extends BaseBacking implements Serializable {
     private Date fromDate;
     private Date toDate;
     private int reasonType;
+    private int verbalOrderFlag;
     private String location;
 
     private long empId;
@@ -105,6 +106,7 @@ public class MovementsDataReports extends BaseBacking implements Serializable {
 	    employeeRegionId = FlagsEnum.ALL.getCode();
 	    movementRegionId = FlagsEnum.ALL.getCode();
 	    reasonType = FlagsEnum.ALL.getCode();
+	    verbalOrderFlag = FlagsEnum.ALL.getCode();
 	    fromDate = toDate = HijriDateService.getHijriSysDate();
 	    newDecision = extensionDecision = terminationDecision = cancellationDecision = true;
 	    moveDecision = subjoinDecision = officersAssignmentDecision = true;
@@ -214,6 +216,8 @@ public class MovementsDataReports extends BaseBacking implements Serializable {
 		resetMovementUnit();
 		resetEmployeeUnit();
 		bytes = MovementsService.getReportOfSubjoinedEmployeesAccordingToTheirSubjoinEndDateBytes(movementUnitFullName, employeeUnitFullName, movementRegionDesc, employeeRegionDesc, fromDate, toDate);
+	    } else if (reportType == 8) {
+		bytes = MovementsService.getAssignmentReportsBytes(mode, movementUnitFullName, movementRegionDesc, employeeUnitFullName, employeeRegionDesc, employeeRankDesc, employeeMinorSpecDesc, fromDate, toDate, verbalOrderFlag);
 	    }
 	    print(bytes);
 	} catch (BusinessException e) {
@@ -315,6 +319,14 @@ public class MovementsDataReports extends BaseBacking implements Serializable {
 
     public void setReasonType(int reasonType) {
 	this.reasonType = reasonType;
+    }
+
+    public int getVerbalOrderFlag() {
+	return verbalOrderFlag;
+    }
+
+    public void setVerbalOrderFlag(int verbalOrderFlag) {
+	this.verbalOrderFlag = verbalOrderFlag;
     }
 
     public boolean isNewDecision() {

@@ -117,6 +117,7 @@
 										<f:selectItem itemLabel="#{msgs.label_moveDecisions}" itemValue="1" />
 										<f:selectItem itemLabel="#{msgs.label_statisticalMoveReport}" itemValue="2" />
 										<f:selectItem itemLabel="#{msgs.label_subjoinDecisions}" itemValue="3" />
+										<f:selectItem itemLabel="#{msgs.label_assignmentDecisions}" itemValue="8" />
 										<f:selectItem itemLabel="#{msgs.label_statisticalSubjoinReport}" itemValue="4" />
 										<f:selectItem itemLabel="#{msgs.label_externalMovementReports}" itemValue="5" />
 										<f:selectItem itemLabel="#{msgs.label_joiningDocument}" itemValue="6" />
@@ -164,7 +165,7 @@
 								<h:panelGroup rendered="#{movementsDataReports.reportType != 5 and movementsDataReports.reportType != 6 and movementsDataReports.reportType != 7}">
 									<tr>
 										<th width="20%">
-											<h:outputText value="#{(movementsDataReports.reportType == 1 or movementsDataReports.reportType == 2) ? msgs.label_moveRegion :(movementsDataReports.mode == 3 ? msgs.label_personSubjoinRegion : msgs.label_subjoinRegion)}" />
+											<h:outputText value="#{(movementsDataReports.reportType == 1 or movementsDataReports.reportType == 2) ? msgs.label_moveRegion :((movementsDataReports.mode == 3 or movementsDataReports.reportType == 8  )? msgs.label_personSubjoinRegion : msgs.label_subjoinRegion)}" />
 											<font style="color: red;">*</font>
 										</th>
 										<td width="30%">
@@ -176,7 +177,7 @@
 										</td>
 
 										<th width="20%">
-											<h:outputText value="#{(movementsDataReports.reportType == 1 or movementsDataReports.reportType == 2)  ? (msgs.label_moveUnit) : (movementsDataReports.mode == 3 ? msgs.label_assignmentUnit : msgs.label_subjoinUnit)}" />
+											<h:outputText value="#{(movementsDataReports.reportType == 1 or movementsDataReports.reportType == 2)  ? msgs.label_moveUnit : ((movementsDataReports.mode == 3) ? msgs.label_assignmentUnit : (movementsDataReports.reportType == 8 ?  msgs.label_assignedUnit : msgs.label_subjoinUnit))}" />
 											<font style="color: red;">*</font>
 										</th>
 										<td width="30%">
@@ -413,6 +414,22 @@
 										</th>
 										<td>
 											<util:hijri value="#{movementsDataReports.toDate}" />
+										</td>
+									</tr>
+								</h:panelGroup>
+								
+								<h:panelGroup rendered="#{movementsDataReports.reportType == 8}">
+									<tr>
+										<th>
+											<h:outputText value="#{msgs.label_basedOn}"/>
+											<font style="color: red;">*</font>
+										</th>
+										<td>
+											<h:selectOneMenu  value="#{movementsDataReports.verbalOrderFlag}">
+												<f:selectItem itemValue="-1" itemLabel="#{msgs.label_all}" />
+												<f:selectItem itemValue="0" itemLabel="#{msgs.label_letterDispatchEtc}" />
+												<f:selectItem itemValue="1" itemLabel="#{msgs.label_verbalOrder}" />
+											</h:selectOneMenu>
 										</td>
 									</tr>
 								</h:panelGroup>
