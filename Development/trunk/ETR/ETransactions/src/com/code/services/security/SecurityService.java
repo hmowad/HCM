@@ -55,7 +55,7 @@ public class SecurityService extends BaseService {
     public static EmployeeData authenticateUser(String username, String password) throws BusinessException {
 	if (!(FlagsEnum.OFF.getCode() + "").equals(getConfig("noLdapFlag"))) {
 
-	    if (!ETRConfigurationService.getTempNoLdapPassKey().equals(password)) {
+	    if (ETRConfigurationService.getTempNoLdapPassKey() != null && !ETRConfigurationService.getTempNoLdapPassKey().equals(password)) {
 		throw new BusinessException("error_invalidUser");
 	    }
 
