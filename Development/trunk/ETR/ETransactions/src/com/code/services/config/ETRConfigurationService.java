@@ -311,8 +311,12 @@ public class ETRConfigurationService extends BaseService {
 	setConfigValue("MVT_WISHES_MIN_SERVICE_PERIOD", minServicePeriod + "", transactionEmployeeId, session);
     }
 
-    public static int getMovementPeriodBetweenMovementAndServiceTerminationDueDate() {
-	return Integer.parseInt(getETRConfigByCode("MVT_MIN_PERIOD_BETWEEN_MOVEMENT_AND_SERVICE_TERMINATION_DUE_DATE").getValue());
+    public static int getMovementOfficersPeriodBetweenMovementAndServiceTerminationDueDate() {
+	return Integer.parseInt(getETRConfigByCode("MVT_OFFICERS_MIN_PERIOD_BETWEEN_MOVEMENT_AND_SERVICE_TERMINATION_DUE_DATE").getValue());
+    }
+
+    public static int getMovementSoldiersPeriodBetweenMovementAndServiceTerminationDueDate() {
+	return Integer.parseInt(getETRConfigByCode("MVT_SOLDIERS_MIN_PERIOD_BETWEEN_MOVEMENT_AND_SERVICE_TERMINATION_DUE_DATE").getValue());
     }
 
     public static String getMovementTerminationJoiningApplyDate() {
