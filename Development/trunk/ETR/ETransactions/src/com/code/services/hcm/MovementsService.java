@@ -1894,7 +1894,7 @@ public class MovementsService extends BaseService {
 
 	}
 
-	if (extraParams != null && extraParams.containsKey("skipMonthsRuleValidation") && !(Boolean) extraParams.get("skipMonthsRuleValidation")) {
+	if (extraParams == null || !extraParams.containsKey("skipMonthsRuleValidation") || !(Boolean) extraParams.get("skipMonthsRuleValidation")) {
 	    if (emp.getCategoryId() == CategoriesEnum.OFFICERS.getCode() || emp.getCategoryId() == CategoriesEnum.SOLDIERS.getCode()) {
 		if (!checkMonthsRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate(), emp.getCategoryId()))
 		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanMinMonths", new String[] { emp.getName(), emp.getCategoryId() == CategoriesEnum.OFFICERS.getCode() ? ETRConfigurationService.getMovementOfficersPeriodBetweenMovementAndServiceTerminationDueDate() + "" : ETRConfigurationService.getMovementSoldiersPeriodBetweenMovementAndServiceTerminationDueDate() + "" });
@@ -1995,7 +1995,7 @@ public class MovementsService extends BaseService {
 
 	}
 
-	if (extraParams != null && !(Boolean) extraParams.get("skipMonthsRuleValidation")) {
+	if (extraParams == null || !extraParams.containsKey("skipMonthsRuleValidation") || !(Boolean) extraParams.get("skipMonthsRuleValidation")) {
 	    if ((movementTransaction.getCategoryId() == CategoriesEnum.OFFICERS.getCode() || movementTransaction.getCategoryId() == CategoriesEnum.SOLDIERS.getCode()) &&
 		    (CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId().equals(movementTransaction.getTransactionTypeId()) || CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId().equals(movementTransaction.getTransactionTypeId()))
 		    && !checkMonthsRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate(), emp.getCategoryId())) {
