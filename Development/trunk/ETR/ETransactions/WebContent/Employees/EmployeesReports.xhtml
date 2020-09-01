@@ -11,7 +11,7 @@
 			if (#{employeesReports.admin}){
 				var reportType = document.getElementById('employeesReportsFormId:reportTypeId').value;
 				var regionIdValue;
-				if (reportType == 1 || reportType == 5 || reportType == 8 || reportType == 9) {
+				if (reportType == 1 || reportType == 5 || reportType == 8 || reportType == 9 || reportType == 10) {
 					regionIdValue = document
 							.getElementById('employeesReportsFormId:regionIDId').value
 				} else if (reportType == 7) {
@@ -32,7 +32,7 @@
 			if (ret != null) {
 				var reportType = document
 						.getElementById('employeesReportsFormId:reportTypeId').value;
-				if (reportType == 1 || reportType == 5 || reportType == 8 || reportType == 9) {
+				if (reportType == 1 || reportType == 5 || reportType == 8 || reportType == 9 || reportType == 10) {
 					document.getElementById('employeesReportsFormId:unitIDId').value = ret[0];
 					document
 							.getElementById('employeesReportsFormId:unitFullNameHId').value = ret[1];
@@ -163,6 +163,30 @@
 				}
 			}
 		}
+
+		function validateData(){
+			if(#{employeesReports.mode == 1}){
+	    	var officersPhotoStatus = getSelectOneRadioValue('employeesReportsFormId:officersReportId'); 
+			}else if(#{employeesReports.mode == 2}){
+	    	var soldiersPhotoStatus = getSelectOneRadioValue('employeesReportsFormId:soldiersReportId'); 
+			}else{
+	    	var employeesPhotoStatus = getSelectOneRadioValue('employeesReportsFormId:employeesReportId'); 
+				}
+			if(officersPhotoStatus == 8 || soldiersPhotoStatus == 8 || employeesPhotoStatus == 8  ){
+				checkServiceYearsBeginEnd();
+				}
+			else if(officersPhotoStatus == 10 || soldiersPhotoStatus == 10 || employeesPhotoStatus == 10  ){
+
+	        var notFoundPhotoChecked = document.getElementById('employeesReportsFormId:photoStatusId:0').checked;
+	        var notUpdatedPhotoChecked = document.getElementById('employeesReportsFormId:photoStatusId:1').checked;
+			if(!notFoundPhotoChecked &amp;&amp; !notUpdatedPhotoChecked){
+				alert("#{msgs.error_statusMandatory}");
+		        return false;
+				}
+			}
+			 return true;
+		}
+	
 	</script>
 </h:head>
 <h:body styleClass="screenBg">
@@ -209,29 +233,32 @@
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="100%">
-										<h:selectOneRadio value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 1}" layout="pageDirection">
+										<h:selectOneRadio id="officersReportId" value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 1}" layout="pageDirection">
 											<f:selectItem itemLabel="#{msgs.label_officersData}" itemValue="1" />
 											<f:selectItem itemLabel="#{msgs.label_officersStatisticalReport}" itemValue="5" />
 											<f:selectItem itemLabel="#{msgs.label_officersQualificationsReport}" itemValue="7" />
 											<f:selectItem itemLabel="#{msgs.label_officersWorkYears}" itemValue="8" />
 											<f:selectItem itemLabel="#{msgs.label_officersJobModification}" itemValue="9" />
+											<f:selectItem itemLabel="#{msgs.label_uploadOfficersPhotos}" itemValue="10"/>
 											<f:ajax event="change" execute="@this" listener="#{employeesReports.resetForm()}" render="employeesReportsFormId:searchPanelId" />
 										</h:selectOneRadio>
 
-										<h:selectOneRadio value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 2}" layout="pageDirection">
+										<h:selectOneRadio  id="soldiersReportId" value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 2}" layout="pageDirection">
 											<f:selectItem itemLabel="#{msgs.label_soldiersData}" itemValue="1" />
 											<f:selectItem itemLabel="#{msgs.label_soldiersStatisticalReport}" itemValue="5" />
 											<f:selectItem itemLabel="#{msgs.label_soldiersQualificationsReport}" itemValue="7" />
 											<f:selectItem itemLabel="#{msgs.label_soldiersWorkYears}" itemValue="8" />
 											<f:selectItem itemLabel="#{msgs.label_soldiersJobModification}" itemValue="9" />
+											<f:selectItem itemLabel="#{msgs.label_uploadSoldiersPhotos}" itemValue="10"/>
 											<f:ajax event="change" execute="@this" listener="#{employeesReports.resetForm()}" render="employeesReportsFormId:searchPanelId" />
 										</h:selectOneRadio>
 
-										<h:selectOneRadio value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 3}" layout="pageDirection">
+										<h:selectOneRadio id="employeesReportId" value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 3}" layout="pageDirection">
 											<f:selectItem itemLabel="#{msgs.label_personsData}" itemValue="1" />
 											<f:selectItem itemLabel="#{msgs.lablel_personsStatisticalReport}" itemValue="5" />
 											<f:selectItem itemLabel="#{msgs.label_personsQualificationsReport}" itemValue="7" />
 											<f:selectItem itemLabel="#{msgs.label_personsWorkYears}" itemValue="8" />
+											<f:selectItem itemLabel="#{msgs.label_uploadEmployeesPhotos}" itemValue="10"/>
 											<f:ajax event="change" execute="@this" listener="#{employeesReports.resetForm()}" render="employeesReportsFormId:searchPanelId" />
 										</h:selectOneRadio>
 									</td>
@@ -257,9 +284,9 @@
 						<td width="100%">
 							<h:panelGroup id="searchPanelId">
 								<h:inputHidden id="reportTypeId" value="#{employeesReports.reportType}" />
-								<h:panelGroup id="recruitedPanelId" rendered="#{employeesReports.reportType == 1 || employeesReports.reportType == 5 || employeesReports.reportType == 8 || employeesReports.reportType == 9 }">
+								<h:panelGroup id="recruitedPanelId" rendered="#{employeesReports.reportType == 1 || employeesReports.reportType == 5 || employeesReports.reportType == 8 || employeesReports.reportType == 9 || employeesReports.reportType == 10 }">
 									<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-										<h:panelGroup rendered="#{employeesReports.reportType != 8 and employeesReports.reportType != 9}">
+										<h:panelGroup rendered="#{employeesReports.reportType != 8 and employeesReports.reportType != 9 and employeesReports.reportType != 10}">
 											<tr>
 												<th width="10%">#{msgs.label_officialOrPhysical}</th>
 												<td colspan="3" width="90%">
@@ -296,9 +323,9 @@
 										</tr>
 										<h:panelGroup rendered="#{employeesReports.reportType == 9}">
 											<tr>
-												<th width="15%"> 
-													<h:outputText value="#{msgs.label_isModifiedJob}" rendered="#{employeesReports.mode == 2}"/>
-													<h:outputText value="#{msgs.label_isModifiedJobOfficers}" rendered="#{employeesReports.mode == 1}"/>
+												<th width="15%">
+													<h:outputText value="#{msgs.label_isModifiedJob}" rendered="#{employeesReports.mode == 2}" />
+													<h:outputText value="#{msgs.label_isModifiedJobOfficers}" rendered="#{employeesReports.mode == 1}" />
 												</th>
 												<td width="40%">
 													<h:selectOneMenu value="#{employeesReports.jobModifiedFlag}">
@@ -306,6 +333,17 @@
 														<f:selectItem itemLabel="#{msgs.label_yes}" itemValue="1" />
 														<f:selectItem itemLabel="#{msgs.label_no}" itemValue="0" />
 													</h:selectOneMenu>
+												</td>
+											</tr>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{employeesReports.reportType == 10}">
+											<tr>
+												<th width="10%">#{msgs.label_status}</th>
+												<td width="90%" colspan="3">
+													<h:selectManyCheckbox id="photoStatusId" value="#{employeesReports.statusIds}" layout="pageDirection">
+														<f:selectItem  itemLabel="#{msgs.label_photoNotFoundInSystem}" itemValue="1" />
+														<f:selectItem  itemLabel="#{msgs.label_photoNotUpdateAfterLastPromotion}" itemValue="2" />
+													</h:selectManyCheckbox>
 												</td>
 											</tr>
 										</h:panelGroup>
@@ -329,7 +367,7 @@
 												</td>
 											</tr>
 										</h:panelGroup>
-										<h:panelGroup rendered="#{employeesReports.reportType != 8 and employeesReports.reportType != 9}">
+										<h:panelGroup rendered="#{employeesReports.reportType != 8 and employeesReports.reportType != 9  and employeesReports.reportType != 10}">
 											<tr>
 												<th width="10%">#{msgs.label_status}</th>
 												<td width="90%" colspan="3">
@@ -390,7 +428,7 @@
 											</h:panelGroup>
 										</h:panelGroup>
 										<h:panelGroup rendered="#{employeesReports.mode == 3}">
-											<h:panelGroup rendered="#{employeesReports.reportType != 8}">
+											<h:panelGroup rendered="#{employeesReports.reportType == 1 || employeesReports.reportType == 5 ||employeesReports.reportType == 7}">
 												<tr>
 													<th width="10%">#{msgs.label_category}</th>
 													<td width="40%">
@@ -416,7 +454,7 @@
 											</h:panelGroup>
 										</h:panelGroup>
 										<h:panelGroup rendered="#{employeesReports.mode != 3}">
-											<h:panelGroup rendered="#{employeesReports.reportType != 8 and employeesReports.reportType != 9}">
+											<h:panelGroup rendered="#{employeesReports.reportType != 8 and employeesReports.reportType != 9 and employeesReports.reportType != 10}">
 												<tr>
 													<th width="10%">#{msgs.label_rank}</th>
 													<td width="40%">
@@ -441,7 +479,7 @@
 										</h:panelGroup>
 
 										<h:panelGroup rendered="#{employeesReports.mode == 1}">
-											<h:panelGroup rendered="#{employeesReports.reportType != 7 and employeesReports.reportType != 8 and employeesReports.reportType != 9}">
+											<h:panelGroup rendered="#{employeesReports.reportType != 7 and employeesReports.reportType != 8 and employeesReports.reportType != 9 and employeesReports.reportType != 10}">
 												<tr>
 													<th width="15%">#{msgs.label_recruitmentDateFrom}</th>
 													<td width="35%">
@@ -454,7 +492,7 @@
 												</tr>
 											</h:panelGroup>
 
-											<h:panelGroup rendered="#{employeesReports.reportType != 8 and employeesReports.reportType != 9}">
+											<h:panelGroup rendered="#{employeesReports.reportType != 8 and employeesReports.reportType != 9 and employeesReports.reportType != 10}">
 												<tr>
 													<th width="10%">#{msgs.label_groupNumber}</th>
 													<td width="40%">
@@ -570,7 +608,7 @@
 							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="100%">
-										<h:commandButton onclick="return checkServiceYearsBeginEnd()" action="#{employeesReports.print()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+										<h:commandButton onclick="return validateData()" action="#{employeesReports.print()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
 										<h:commandButton action="#{employeesReports.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
 											<f:ajax render="employeesReportsFormId:searchPanelId" />
 										</h:commandButton>

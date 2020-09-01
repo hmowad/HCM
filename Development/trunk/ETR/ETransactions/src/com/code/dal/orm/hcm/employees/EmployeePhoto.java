@@ -1,5 +1,7 @@
 package com.code.dal.orm.hcm.employees;
 
+import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +10,8 @@ import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElement;
 
 import com.code.dal.audit.InsertableAuditEntity;
@@ -26,6 +30,8 @@ public class EmployeePhoto extends AuditEntity implements InsertableAuditEntity,
 
     private Long id;
     private byte[] photo;
+    private Date createdDate;
+    private Date updatedDate;
 
     @Id
     @Column(name = "ID")
@@ -47,6 +53,28 @@ public class EmployeePhoto extends AuditEntity implements InsertableAuditEntity,
 
     public void setPhoto(byte[] photo) {
 	this.photo = photo;
+    }
+
+    @Basic
+    @Column(name = "CREATED_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getCreatedDate() {
+	return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+	this.createdDate = createdDate;
+    }
+
+    @Basic
+    @Column(name = "UPDATED_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getUpdatedDate() {
+	return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+	this.updatedDate = updatedDate;
     }
 
     @Override

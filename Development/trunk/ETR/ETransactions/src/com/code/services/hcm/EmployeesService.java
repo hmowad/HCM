@@ -33,6 +33,7 @@ import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.CountriesEnum;
 import com.code.enums.DegreesEnum;
+import com.code.enums.EmployeePhotoStatusEnum;
 import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
@@ -1424,6 +1425,33 @@ public class EmployeesService extends BaseService {
 	    parameters.put("P_PHYSICAL_UNIT_HKEY", physicalUnitHKey == null || physicalUnitHKey.isEmpty() ? FlagsEnum.ALL.getCode() + "" : UnitsService.getHKeyPrefix(physicalUnitHKey));
 	    parameters.put("P_JOB_MODIFIED_FLAG", jobModfiedFlag);
 	    parameters.put("P_PRINT_DATE", HijriDateService.getHijriSysDateString());
+	    return getReportData(reportName, parameters);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException(getMessage("error_reportPrintingError"));
+	}
+
+    }
+
+    public static byte[] getEmployeesNotFoundOrNotUpdatedPhotosBytes(long physicalRegionId, String physicalUnitHKey, long categoryId, List<Long> statusIds) throws BusinessException {
+	try {
+	    String reportName = ReportNamesEnum.EMPLOYEES_NOT_FOUND_OR_UPDATED_PHOTO.getCode();
+	    Map<String, Object> parameters = new HashMap<String, Object>();
+	    StringBuilder statusDescs = new StringBuilder();
+	    if (statusIds.contains(EmployeePhotoStatusEnum.NOT_FOUND.getCode()))
+		statusDescs.append(getMessage("label_photoNotFoundInSystem")).append("/ ");
+	    if (statusIds.contains(EmployeePhotoStatusEnum.NOT_UPDATED.getCode()))
+		statusDescs.append(getMessage("label_photoNotUpdateAfterLastPromotion")).append("/ ");
+	    if (statusDescs.length() != 0 && statusDescs.substring(statusDescs.length() - 2).equals("/ ")) {
+		statusDescs.delete(statusDescs.length() - 2, statusDescs.length());
+	    }
+	    parameters.put("P_CATEGORY_ID", categoryId);
+	    parameters.put("P_STATUS_IDS", statusIds.size() > 1 ? FlagsEnum.ALL.getCode() : statusIds.get(0));
+	    parameters.put("P_STATUS_DESCS", statusDescs.toString());
+	    parameters.put("P_PHYSICAL_REGION_ID", physicalRegionId);
+	    parameters.put("P_PHYSICAL_REGION_DESC", physicalRegionId == FlagsEnum.ALL.getCode() ? getMessage("label_all") : CommonService.getRegionById(physicalRegionId).getDescription());
+	    parameters.put("P_PHYSICAL_UNIT_HKEY", physicalUnitHKey == null || physicalUnitHKey.isEmpty() ? FlagsEnum.ALL.getCode() + "" : UnitsService.getHKeyPrefix(physicalUnitHKey));
+	    parameters.put("P_SYS_DATE", HijriDateService.getHijriSysDateString());
 	    return getReportData(reportName, parameters);
 	} catch (Exception e) {
 	    e.printStackTrace();

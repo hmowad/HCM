@@ -14,6 +14,7 @@ import com.code.dal.orm.signatures.Signature;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.signatures.SignaturesService;
+import com.code.services.util.HijriDateService;
 import com.code.ui.backings.base.BaseBacking;
 
 @SuppressWarnings("serial")
@@ -55,11 +56,13 @@ public class ImageUpload extends BaseBacking implements Serializable {
 		EmployeePhoto photo = new EmployeePhoto();
 		photo.setPhoto(content);
 		photo.setId(objectId);
+		photo.setCreatedDate(HijriDateService.getHijriSysDate());
 		photo.setSystemUser(this.loginEmpData.getEmpId() + "");// For Auditing.
 		EmployeesService.addEmployeePhoto(photo);
 	    } else {
 		EmployeePhoto photo = EmployeesService.getEmployeePhotoByEmpId(objectId);
 		photo.setPhoto(content);
+		photo.setUpdatedDate(HijriDateService.getHijriSysDate());
 		photo.setSystemUser(this.loginEmpData.getEmpId() + "");// For Auditing.
 		EmployeesService.updateEmployeePhoto(photo);
 	    }
