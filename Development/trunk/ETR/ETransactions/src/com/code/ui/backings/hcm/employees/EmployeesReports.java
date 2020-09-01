@@ -144,7 +144,7 @@ public class EmployeesReports extends BaseBacking implements Serializable {
 	    } else if (reportType == 10) {
 
 		if (statusIds == null || statusIds.length == 0) {
-		    this.setServerSideErrorMessages(getMessage("error_statusMandatory"));
+		    this.setServerSideErrorMessages(getMessage("error_photoStatusIsMandatory"));
 		    return;
 		}
 
