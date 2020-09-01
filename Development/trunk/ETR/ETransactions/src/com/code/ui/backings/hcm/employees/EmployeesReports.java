@@ -142,6 +142,12 @@ public class EmployeesReports extends BaseBacking implements Serializable {
 	    } else if (reportType == 9) {
 		bytes = EmployeesService.getJobModifiedFlagDataBytes(categoryId, regionId, unitHKey, jobModifiedFlag);
 	    } else if (reportType == 10) {
+
+		if (statusIds == null || statusIds.length == 0) {
+		    this.setServerSideErrorMessages(getMessage("error_statusMandatory"));
+		    return;
+		}
+
 		bytes = EmployeesService.getEmployeesNotFoundOrNotUpdatedPhotosBytes(regionId, unitHKey, categoryId, Arrays.asList(statusIds));
 	    } else {
 		bytes = EmployeesService.getEmployeesQualificationsBytes(countryFlag, currentQualFlag, curRecSimilarityFlag, onDutyFlag, categoryId, regionId, unitId, unitFullName, qualMajorSpecId, qualMajorSpecDesc, qualMinorSpecId, qualMinorSpecDesc, qualLevelId, graduationPlaceDetailsIds, graduationPlaceDetailsDescs);

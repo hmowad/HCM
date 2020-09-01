@@ -33,7 +33,6 @@ import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.CountriesEnum;
 import com.code.enums.DegreesEnum;
-import com.code.enums.EmployeePhotoStatusEnum;
 import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
@@ -1435,12 +1434,13 @@ public class EmployeesService extends BaseService {
 
     public static byte[] getEmployeesNotFoundOrNotUpdatedPhotosBytes(long physicalRegionId, String physicalUnitHKey, long categoryId, List<Long> statusIds) throws BusinessException {
 	try {
+
 	    String reportName = ReportNamesEnum.EMPLOYEES_PHOTO_NOT_FOUND_OR_UPDATED.getCode();
 	    Map<String, Object> parameters = new HashMap<String, Object>();
 	    StringBuilder statusDescs = new StringBuilder();
-	    if (statusIds.contains(EmployeePhotoStatusEnum.NOT_FOUND.getCode()))
+	    if (statusIds.contains((long) FlagsEnum.OFF.getCode()))
 		statusDescs.append(getMessage("label_photoNotFoundInSystem")).append("/ ");
-	    if (statusIds.contains(EmployeePhotoStatusEnum.NOT_UPDATED.getCode()))
+	    if (statusIds.contains((long) FlagsEnum.ON.getCode()))
 		statusDescs.append(getMessage("label_photoNotUpdateAfterLastPromotion")).append("/ ");
 	    if (statusDescs.length() != 0 && statusDescs.substring(statusDescs.length() - 2).equals("/ ")) {
 		statusDescs.delete(statusDescs.length() - 2, statusDescs.length());
