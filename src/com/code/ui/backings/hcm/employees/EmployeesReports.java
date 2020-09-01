@@ -141,6 +141,8 @@ public class EmployeesReports extends BaseBacking implements Serializable {
 		bytes = EmployeesService.getEmployeesServiceYearsDataBytes(categoryId, regionId, unitHKey, onDutyFlag, serviceYearsBegin, serviceYearsEnd);
 	    } else if (reportType == 9) {
 		bytes = EmployeesService.getJobModifiedFlagDataBytes(categoryId, regionId, unitHKey, jobModifiedFlag);
+	    } else if (reportType == 10) {
+		bytes = EmployeesService.getEmployeesNotFoundOrNotUpdatedPhotosBytes(regionId, unitHKey, categoryId, Arrays.asList(statusIds));
 	    } else {
 		bytes = EmployeesService.getEmployeesQualificationsBytes(countryFlag, currentQualFlag, curRecSimilarityFlag, onDutyFlag, categoryId, regionId, unitId, unitFullName, qualMajorSpecId, qualMajorSpecDesc, qualMinorSpecId, qualMinorSpecDesc, qualLevelId, graduationPlaceDetailsIds, graduationPlaceDetailsDescs);
 	    }
@@ -211,6 +213,11 @@ public class EmployeesReports extends BaseBacking implements Serializable {
 	    regionId = FlagsEnum.ALL.getCode();
 	    unitHKey = "";
 	    jobModifiedFlag = FlagsEnum.ALL.getCode();
+	}
+	if (reportType == 10) {
+	    regionId = FlagsEnum.ALL.getCode();
+	    unitHKey = "";
+	    statusIds = null;
 	}
 	regionId = getLoginEmpPhysicalRegionFlag(isAdmin);
 	regionChangeListener();
