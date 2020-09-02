@@ -149,7 +149,7 @@ public class EmployeesReports extends BaseBacking implements Serializable {
 		    return;
 		}
 
-		bytes = EmployeesService.getEmployeesNotFoundOrNotUpdatedPhotosBytes(regionId, unitHKey, categoryId, Arrays.asList(photosStatuses));
+		bytes = EmployeesService.getEmployeesNotFoundOrNotUpdatedPhotosBytes(categoryId, regionId, unitHKey, Arrays.asList(photosStatuses));
 	    } else {
 		bytes = EmployeesService.getEmployeesQualificationsBytes(countryFlag, currentQualFlag, curRecSimilarityFlag, onDutyFlag, categoryId, regionId, unitId, unitFullName, qualMajorSpecId, qualMajorSpecDesc, qualMinorSpecId, qualMinorSpecDesc, qualLevelId, graduationPlaceDetailsIds, graduationPlaceDetailsDescs);
 	    }

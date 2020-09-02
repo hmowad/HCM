@@ -1432,10 +1432,10 @@ public class EmployeesService extends BaseService {
 
     }
 
-    public static byte[] getEmployeesNotFoundOrNotUpdatedPhotosBytes(long physicalRegionId, String physicalUnitHKey, long categoryId, List<Integer> photosStatuses) throws BusinessException {
+    public static byte[] getEmployeesNotFoundOrNotUpdatedPhotosBytes(long categoryId, long physicalRegionId, String physicalUnitHKey, List<Integer> photosStatuses) throws BusinessException {
 	try {
 
-	    String reportName = ReportNamesEnum.EMPLOYEES_PHOTO_NOT_FOUND_OR_UPDATED.getCode();
+	    String reportName = ReportNamesEnum.EMPLOYEES_PHOTOS_STATUSES.getCode();
 	    Map<String, Object> parameters = new HashMap<String, Object>();
 
 	    StringBuilder statusDescs = new StringBuilder();
