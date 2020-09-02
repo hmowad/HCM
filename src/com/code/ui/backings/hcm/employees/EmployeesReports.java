@@ -53,6 +53,7 @@ public class EmployeesReports extends BaseBacking implements Serializable {
     private long minorSpecializationId = -1;
     private Long[] statusIds;
     private String groupNumber; // First two digits from military number
+    private Integer[] photosStatuses;
 
     private List<Category> personsCategorieslist;
 
@@ -143,12 +144,12 @@ public class EmployeesReports extends BaseBacking implements Serializable {
 		bytes = EmployeesService.getJobModifiedFlagDataBytes(categoryId, regionId, unitHKey, jobModifiedFlag);
 	    } else if (reportType == 10) {
 
-		if (statusIds == null || statusIds.length == 0) {
+		if (photosStatuses == null || photosStatuses.length == 0) {
 		    this.setServerSideErrorMessages(getMessage("error_photoStatusIsMandatory"));
 		    return;
 		}
 
-		bytes = EmployeesService.getEmployeesNotFoundOrNotUpdatedPhotosBytes(regionId, unitHKey, categoryId, Arrays.asList(statusIds));
+		bytes = EmployeesService.getEmployeesNotFoundOrNotUpdatedPhotosBytes(regionId, unitHKey, categoryId, Arrays.asList(photosStatuses));
 	    } else {
 		bytes = EmployeesService.getEmployeesQualificationsBytes(countryFlag, currentQualFlag, curRecSimilarityFlag, onDutyFlag, categoryId, regionId, unitId, unitFullName, qualMajorSpecId, qualMajorSpecDesc, qualMinorSpecId, qualMinorSpecDesc, qualLevelId, graduationPlaceDetailsIds, graduationPlaceDetailsDescs);
 	    }
@@ -223,7 +224,7 @@ public class EmployeesReports extends BaseBacking implements Serializable {
 	if (reportType == 10) {
 	    regionId = FlagsEnum.ALL.getCode();
 	    unitHKey = "";
-	    statusIds = null;
+	    photosStatuses = null;
 	}
 	regionId = getLoginEmpPhysicalRegionFlag(isAdmin);
 	regionChangeListener();
@@ -417,6 +418,14 @@ public class EmployeesReports extends BaseBacking implements Serializable {
 
     public void setGroupNumber(String groupNumber) {
 	this.groupNumber = groupNumber;
+    }
+
+    public Integer[] getPhotosStatuses() {
+	return photosStatuses;
+    }
+
+    public void setPhotosStatuses(Integer[] photosStatuses) {
+	this.photosStatuses = photosStatuses;
     }
 
     public int getReportType() {
