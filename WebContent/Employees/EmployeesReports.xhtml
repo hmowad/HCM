@@ -13,100 +13,75 @@
 				var reportType = document.getElementById('employeesReportsFormId:reportTypeId').value;
 				var regionIdValue;
 				if (reportType == 1 || reportType == 5 || reportType == 8 || reportType == 9 || reportType == 10) {
-					regionIdValue = document
-							.getElementById('employeesReportsFormId:regionIDId').value
+					regionIdValue = document.getElementById('employeesReportsFormId:regionIDId').value
 				} else if (reportType == 7) {
-					regionIdValue = document
-							.getElementById('employeesReportsFormId:qualRegionIDId').value
+					regionIdValue = document.getElementById('employeesReportsFormId:qualRegionIDId').value
 				}
-				openUnitsMiniSearch(2, '#{request.contextPath}',
-						'handleUnitMiniSearchResult(ret)', -1, regionIdValue, -1);
+				openUnitsMiniSearch(2, '#{request.contextPath}', 'handleUnitMiniSearchResult(ret)', -1, regionIdValue, -1);
 			}
 			else if (#{employeesReports.manager}){
 				unitsMiniSearch(7, '#{request.contextPath}','handleUnitMiniSearchResult(ret)', -1, -1, -1,'#{employeesReports.managerUnitHKeyPrefix}',0);
 			}
-																												  
-																																														  
 		}
 
 		function handleUnitMiniSearchResult(ret) {
 			if (ret != null) {
-				var reportType = document
-						.getElementById('employeesReportsFormId:reportTypeId').value;
+				var reportType = document.getElementById('employeesReportsFormId:reportTypeId').value;
 				if (reportType == 1 || reportType == 5 || reportType == 8 || reportType == 9 || reportType == 10) {
 					document.getElementById('employeesReportsFormId:unitIDId').value = ret[0];
-					document
-							.getElementById('employeesReportsFormId:unitFullNameHId').value = ret[1];
-					document
-							.getElementById('employeesReportsFormId:unitFullNameId').innerHTML = ret[1];
-					document
-							.getElementById('employeesReportsFormId:unitHKeyId').value = ret[3];
+					document.getElementById('employeesReportsFormId:unitFullNameHId').value = ret[1];
+					document.getElementById('employeesReportsFormId:unitFullNameId').innerHTML = ret[1];
+					document.getElementById('employeesReportsFormId:unitHKeyId').value = ret[3];
 				} else if (reportType == 7 ) {
-					document
-							.getElementById('employeesReportsFormId:qualUnitIDId').value = ret[0];
-					document
-							.getElementById('employeesReportsFormId:qualUnitFullNameHId').value = ret[1];
-					document
-							.getElementById('employeesReportsFormId:qualUnitFullNameId').innerHTML = ret[1];
+					document.getElementById('employeesReportsFormId:qualUnitIDId').value = ret[0];
+					document.getElementById('employeesReportsFormId:qualUnitFullNameHId').value = ret[1];
+					document.getElementById('employeesReportsFormId:qualUnitFullNameId').innerHTML = ret[1];
 				}
 			}
 		}
 
 		function getTrainingUnit() {
-			openUnitsMiniSearch(6, '#{request.contextPath}',
-					'handleTrainingUnitMiniSearchResult(ret)', -1, -1, -1);
+			openUnitsMiniSearch(6, '#{request.contextPath}', 'handleTrainingUnitMiniSearchResult(ret)', -1, -1, -1);
 		}
 
 		function handleTrainingUnitMiniSearchResult(ret) {
 			if (ret != null) {
-				document
-						.getElementById('employeesReportsFormId:trainingUnitIDId').value = ret[0];
-				document
-						.getElementById('employeesReportsFormId:trainingUnitFullNameId').innerHTML = ret[1];
+				document.getElementById('employeesReportsFormId:trainingUnitIDId').value = ret[0];
+				document.getElementById('employeesReportsFormId:trainingUnitFullNameId').innerHTML = ret[1];
 			}
 		}
 
 		function getMinorSpecialization() {
-			openMinorSpecializationsMiniSearch('#{request.contextPath}',
-					'handleMinorSpecializationMiniSearchResult(ret)');
+			openMinorSpecializationsMiniSearch('#{request.contextPath}', 'handleMinorSpecializationMiniSearchResult(ret)');
 		}
 
 		function handleMinorSpecializationMiniSearchResult(ret) {
 			if (ret != null) {
-				var reportType = document
-						.getElementById('employeesReportsFormId:reportTypeId').value;
+				var reportType = document.getElementById('employeesReportsFormId:reportTypeId').value;
 				if (reportType == 1 || reportType == 5) {
-					document
-							.getElementById('employeesReportsFormId:minorSpecilizationIDId').value = ret[0];
-					document
-							.getElementById('employeesReportsFormId:minorSpecilizationDescId').innerHTML = ret[2];
+					document.getElementById('employeesReportsFormId:minorSpecilizationIDId').value = ret[0];
+					document.getElementById('employeesReportsFormId:minorSpecilizationDescId').innerHTML = ret[2];
 				} 
 			}
 		}
 
 		function getDistributionMinorSpecialization() {
-			openMinorSpecializationsMiniSearch('#{request.contextPath}',
-					'handleDistributionMinorSpecializationMiniSearchResult(ret)');
+			openMinorSpecializationsMiniSearch('#{request.contextPath}', 'handleDistributionMinorSpecializationMiniSearchResult(ret)');
 		}
 
 		function handleDistributionMinorSpecializationMiniSearchResult(ret) {
 			if (ret != null) {
-				document
-						.getElementById('employeesReportsFormId:distributionMinorSpecilizationIDId').value = ret[0];
-				document
-						.getElementById('employeesReportsFormId:distributionMinorSpecilizationDescId').innerHTML = ret[2];
+				document.getElementById('employeesReportsFormId:distributionMinorSpecilizationIDId').value = ret[0];
+				document.getElementById('employeesReportsFormId:distributionMinorSpecilizationDescId').innerHTML = ret[2];
 			}
 		}
 		function getQualLevelSpec() {
-			openQualificationLevelsMiniSearch('#{request.contextPath}',
-					'handleQualLevelMiniSearchResult(ret)');
+			openQualificationLevelsMiniSearch('#{request.contextPath}', 'handleQualLevelMiniSearchResult(ret)');
 		}
 		function handleQualLevelMiniSearchResult(ret) {
 			if (ret != null) {
-				document
-						.getElementById('employeesReportsFormId:distributionMinorSpecilizationIDId').value = ret[0];
-				document
-						.getElementById('employeesReportsFormId:distributionMinorSpecilizationDescId').innerHTML = ret[2];
+				document.getElementById('employeesReportsFormId:distributionMinorSpecilizationIDId').value = ret[0];
+				document.getElementById('employeesReportsFormId:distributionMinorSpecilizationDescId').innerHTML = ret[2];
 			}
 		}
 
@@ -122,34 +97,26 @@
 			}
 		}
 		function getQualificationMajorSpec() {
-			openQualificationMajorSpecsMiniSearch('#{request.contextPath}',
-					'handleQualificationMajorSpecMiniSearchResult(ret)', 0);
+			openQualificationMajorSpecsMiniSearch('#{request.contextPath}', 'handleQualificationMajorSpecMiniSearchResult(ret)', 0);
 		}
 
 		function handleQualificationMajorSpecMiniSearchResult(ret) {
 			if (ret != null) {
-				document
-						.getElementById('employeesReportsFormId:qualificationMajorSpecIdHId').value = ret[0];
-				document
-						.getElementById('employeesReportsFormId:qualificationMajorSpecId').innerHTML = ret[1];
-				document
-						.getElementById('employeesReportsFormId:qualificationMajorSpecDescHId').value = ret[1];
+				document.getElementById('employeesReportsFormId:qualificationMajorSpecIdHId').value = ret[0];
+				document.getElementById('employeesReportsFormId:qualificationMajorSpecId').innerHTML = ret[1];
+				document.getElementById('employeesReportsFormId:qualificationMajorSpecDescHId').value = ret[1];
 			}
 		}
 
 		function getQualificationMinorSpecs() {
-			openQualificationMinorSpecsMiniSearch('#{request.contextPath}',
-					'handleQualificationMiniSearchResult(ret)', 0);
+			openQualificationMinorSpecsMiniSearch('#{request.contextPath}', 'handleQualificationMiniSearchResult(ret)', 0);
 		}
 
 		function handleQualificationMiniSearchResult(ret) {
 			if (ret != null) {
-				document
-						.getElementById('employeesReportsFormId:qualificationMinorSpecIDId').value = ret[0];
-				document
-						.getElementById('employeesReportsFormId:qualificationMinorSpecDescId').innerHTML = ret[1];
-				document
-						.getElementById('employeesReportsFormId:qualificationMinorSpecDescHId').value = ret[1];
+				document.getElementById('employeesReportsFormId:qualificationMinorSpecIDId').value = ret[0];
+				document.getElementById('employeesReportsFormId:qualificationMinorSpecDescId').innerHTML = ret[1];
+				document.getElementById('employeesReportsFormId:qualificationMinorSpecDescHId').value = ret[1];
 			}
 		}
 
@@ -166,8 +133,8 @@
 		}
 
 		function checkPhotosStatuses(){
-			var notFoundPhotoChecked = document.getElementById('employeesReportsFormId:photoStatusId:0').checked;
-	        var notUpdatedPhotoChecked = document.getElementById('employeesReportsFormId:photoStatusId:1').checked;
+			var notFoundPhotoChecked = document.getElementById('employeesReportsFormId:photosStatusesId:0').checked;
+	        var notUpdatedPhotoChecked = document.getElementById('employeesReportsFormId:photosStatusesId:1').checked;
 	        
 			if(!notFoundPhotoChecked && !notUpdatedPhotoChecked){
 				alert("#{msgs.error_photoStatusIsMandatory}");
@@ -176,15 +143,7 @@
 		}
 
 		function validateData(){
-			var reportType;
-			if(#{employeesReports.mode == 1}) {
-				reportType = getSelectOneRadioValue('employeesReportsFormId:officersReportTypeId'); 
-			} else if(#{employeesReports.mode == 2}) {
-				reportType = getSelectOneRadioValue('employeesReportsFormId:soldiersReportTypeId'); 
-			} else {
-				reportType = getSelectOneRadioValue('employeesReportsFormId:civiliansReportTypeId'); 
-			}
-			
+			var reportType = document.getElementById('employeesReportsFormId:reportTypeId').value;
 			if(reportType == 8){
 				return checkServiceYearsBeginEnd();
 			} else if(reportType == 10) {
@@ -192,6 +151,7 @@
 			}
 			 return true;
 		}
+		
 	// ]]>
 	</script>
 </h:head>
@@ -239,7 +199,7 @@
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="100%">
-										<h:selectOneRadio id="officersReportTypeId" value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 1}" layout="pageDirection">
+										<h:selectOneRadio value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 1}" layout="pageDirection">
 											<f:selectItem itemLabel="#{msgs.label_officersData}" itemValue="1" />
 											<f:selectItem itemLabel="#{msgs.label_officersStatisticalReport}" itemValue="5" />
 											<f:selectItem itemLabel="#{msgs.label_officersQualificationsReport}" itemValue="7" />
@@ -249,7 +209,7 @@
 											<f:ajax event="change" execute="@this" listener="#{employeesReports.resetForm()}" render="employeesReportsFormId:searchPanelId" />
 										</h:selectOneRadio>
 
-										<h:selectOneRadio  id="soldiersReportTypeId" value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 2}" layout="pageDirection">
+										<h:selectOneRadio value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 2}" layout="pageDirection">
 											<f:selectItem itemLabel="#{msgs.label_soldiersData}" itemValue="1" />
 											<f:selectItem itemLabel="#{msgs.label_soldiersStatisticalReport}" itemValue="5" />
 											<f:selectItem itemLabel="#{msgs.label_soldiersQualificationsReport}" itemValue="7" />
@@ -259,7 +219,7 @@
 											<f:ajax event="change" execute="@this" listener="#{employeesReports.resetForm()}" render="employeesReportsFormId:searchPanelId" />
 										</h:selectOneRadio>
 
-										<h:selectOneRadio id="civiliansReportTypeId" value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 3}" layout="pageDirection">
+										<h:selectOneRadio value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 3}" layout="pageDirection">
 											<f:selectItem itemLabel="#{msgs.label_personsData}" itemValue="1" />
 											<f:selectItem itemLabel="#{msgs.lablel_personsStatisticalReport}" itemValue="5" />
 											<f:selectItem itemLabel="#{msgs.label_personsQualificationsReport}" itemValue="7" />
@@ -346,9 +306,9 @@
 											<tr>
 												<th width="10%">#{msgs.label_status}</th>
 												<td width="90%" colspan="3">
-													<h:selectManyCheckbox id="photoStatusId" value="#{employeesReports.photosStatuses}" layout="pageDirection">
-														<f:selectItem  itemLabel="#{msgs.label_photoNotFoundInSystem}" itemValue="0" />
-														<f:selectItem  itemLabel="#{msgs.label_photoNotUpdateAfterLastPromotion}" itemValue="1" />
+													<h:selectManyCheckbox id="photosStatusesId" value="#{employeesReports.photosStatuses}" layout="pageDirection">
+														<f:selectItem itemLabel="#{msgs.label_photoNotFoundInSystem}" itemValue="0" />
+														<f:selectItem itemLabel="#{msgs.label_photoNotUpdateAfterLastPromotion}" itemValue="1" />
 													</h:selectManyCheckbox>
 												</td>
 											</tr>
