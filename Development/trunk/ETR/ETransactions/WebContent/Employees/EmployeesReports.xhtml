@@ -7,6 +7,7 @@
 	<h:outputStylesheet library="css" name="grid.css" />
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
 	<script type="text/javascript">
+	//<![CDATA[
 		function getUnit() {
 			if (#{employeesReports.admin}){
 				var reportType = document.getElementById('employeesReportsFormId:reportTypeId').value;
@@ -156,7 +157,7 @@
 			var serviceYearsBeginValue = document.getElementById('employeesReportsFormId:serviceYearsBeginId').value ;
 			var serviceYearsEndValue = document.getElementById('employeesReportsFormId:serviceYearsEndId').value ;
 
-			if(serviceYearsBeginValue != null &amp;&amp; serviceYearsBeginValue != '' &amp;&amp; serviceYearsEndValue != null &amp;&amp; serviceYearsEndValue != ''){
+			if(serviceYearsBeginValue != null && serviceYearsBeginValue != '' && serviceYearsEndValue != null && serviceYearsEndValue != ''){
 				if(parseInt(serviceYearsBeginValue) > parseInt(serviceYearsEndValue)){
 					alert("#{msgs.error_serviceYearNumber}");
 			        return false;
@@ -164,29 +165,34 @@
 			}
 		}
 
-		function validateData(){
-			if(#{employeesReports.mode == 1}){
-	    	var officersPhotoStatus = getSelectOneRadioValue('employeesReportsFormId:officersReportId'); 
-			}else if(#{employeesReports.mode == 2}){
-	    	var soldiersPhotoStatus = getSelectOneRadioValue('employeesReportsFormId:soldiersReportId'); 
-			}else{
-	    	var employeesPhotoStatus = getSelectOneRadioValue('employeesReportsFormId:employeesReportId'); 
-				}
-			if(officersPhotoStatus == 8 || soldiersPhotoStatus == 8 || employeesPhotoStatus == 8  ){
-				checkServiceYearsBeginEnd();
-				}
-			else if(officersPhotoStatus == 10 || soldiersPhotoStatus == 10 || employeesPhotoStatus == 10  ){
-
-	        var notFoundPhotoChecked = document.getElementById('employeesReportsFormId:photoStatusId:0').checked;
+		function checkPhotosStatuses(){
+			var notFoundPhotoChecked = document.getElementById('employeesReportsFormId:photoStatusId:0').checked;
 	        var notUpdatedPhotoChecked = document.getElementById('employeesReportsFormId:photoStatusId:1').checked;
-			if(!notFoundPhotoChecked &amp;&amp; !notUpdatedPhotoChecked){
+	        
+			if(!notFoundPhotoChecked && !notUpdatedPhotoChecked){
 				alert("#{msgs.error_photoStatusIsMandatory}");
 		        return false;
-				}
+			}
+		}
+
+		function validateData(){
+			var reportType;
+			if(#{employeesReports.mode == 1}) {
+				reportType = getSelectOneRadioValue('employeesReportsFormId:officersReportTypeId'); 
+			} else if(#{employeesReports.mode == 2}) {
+				reportType = getSelectOneRadioValue('employeesReportsFormId:soldiersReportTypeId'); 
+			} else {
+				reportType = getSelectOneRadioValue('employeesReportsFormId:civiliansReportTypeId'); 
+			}
+			
+			if(reportType == 8){
+				return checkServiceYearsBeginEnd();
+			} else if(reportType == 10) {
+				return checkPhotosStatuses();
 			}
 			 return true;
 		}
-	
+	// ]]>
 	</script>
 </h:head>
 <h:body styleClass="screenBg">
@@ -233,7 +239,7 @@
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="100%">
-										<h:selectOneRadio id="officersReportId" value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 1}" layout="pageDirection">
+										<h:selectOneRadio id="officersReportTypeId" value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 1}" layout="pageDirection">
 											<f:selectItem itemLabel="#{msgs.label_officersData}" itemValue="1" />
 											<f:selectItem itemLabel="#{msgs.label_officersStatisticalReport}" itemValue="5" />
 											<f:selectItem itemLabel="#{msgs.label_officersQualificationsReport}" itemValue="7" />
@@ -243,7 +249,7 @@
 											<f:ajax event="change" execute="@this" listener="#{employeesReports.resetForm()}" render="employeesReportsFormId:searchPanelId" />
 										</h:selectOneRadio>
 
-										<h:selectOneRadio  id="soldiersReportId" value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 2}" layout="pageDirection">
+										<h:selectOneRadio  id="soldiersReportTypeId" value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 2}" layout="pageDirection">
 											<f:selectItem itemLabel="#{msgs.label_soldiersData}" itemValue="1" />
 											<f:selectItem itemLabel="#{msgs.label_soldiersStatisticalReport}" itemValue="5" />
 											<f:selectItem itemLabel="#{msgs.label_soldiersQualificationsReport}" itemValue="7" />
@@ -253,7 +259,7 @@
 											<f:ajax event="change" execute="@this" listener="#{employeesReports.resetForm()}" render="employeesReportsFormId:searchPanelId" />
 										</h:selectOneRadio>
 
-										<h:selectOneRadio id="employeesReportId" value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 3}" layout="pageDirection">
+										<h:selectOneRadio id="civiliansReportTypeId" value="#{employeesReports.reportType}" rendered="#{employeesReports.mode == 3}" layout="pageDirection">
 											<f:selectItem itemLabel="#{msgs.label_personsData}" itemValue="1" />
 											<f:selectItem itemLabel="#{msgs.lablel_personsStatisticalReport}" itemValue="5" />
 											<f:selectItem itemLabel="#{msgs.label_personsQualificationsReport}" itemValue="7" />
@@ -340,7 +346,7 @@
 											<tr>
 												<th width="10%">#{msgs.label_status}</th>
 												<td width="90%" colspan="3">
-													<h:selectManyCheckbox id="photoStatusId" value="#{employeesReports.statusIds}" layout="pageDirection">
+													<h:selectManyCheckbox id="photoStatusId" value="#{employeesReports.photosStatuses}" layout="pageDirection">
 														<f:selectItem  itemLabel="#{msgs.label_photoNotFoundInSystem}" itemValue="0" />
 														<f:selectItem  itemLabel="#{msgs.label_photoNotUpdateAfterLastPromotion}" itemValue="1" />
 													</h:selectManyCheckbox>

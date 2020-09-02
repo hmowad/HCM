@@ -1432,22 +1432,25 @@ public class EmployeesService extends BaseService {
 
     }
 
-    public static byte[] getEmployeesNotFoundOrNotUpdatedPhotosBytes(long physicalRegionId, String physicalUnitHKey, long categoryId, List<Long> statusIds) throws BusinessException {
+    public static byte[] getEmployeesNotFoundOrNotUpdatedPhotosBytes(long physicalRegionId, String physicalUnitHKey, long categoryId, List<Integer> photosStatuses) throws BusinessException {
 	try {
 
 	    String reportName = ReportNamesEnum.EMPLOYEES_PHOTO_NOT_FOUND_OR_UPDATED.getCode();
 	    Map<String, Object> parameters = new HashMap<String, Object>();
+
 	    StringBuilder statusDescs = new StringBuilder();
-	    if (statusIds.contains((long) FlagsEnum.OFF.getCode()))
+	    if (photosStatuses.contains(FlagsEnum.OFF.getCode()))
 		statusDescs.append(getMessage("label_photoNotFoundInSystem")).append("/ ");
-	    if (statusIds.contains((long) FlagsEnum.ON.getCode()))
-		statusDescs.append(getMessage("label_photoNotUpdateAfterLastPromotion")).append("/ ");
+	    if (photosStatuses.contains(FlagsEnum.ON.getCode()))
+		statusDescs.append(getMessage("label_photoNotUpdateAfterLastPromotion"));
+
 	    if (statusDescs.length() != 0 && statusDescs.substring(statusDescs.length() - 2).equals("/ ")) {
 		statusDescs.delete(statusDescs.length() - 2, statusDescs.length());
 	    }
+
 	    parameters.put("P_CATEGORY_ID", categoryId);
-	    parameters.put("P_STATUS_IDS", statusIds.size() > 1 ? FlagsEnum.ALL.getCode() : statusIds.get(0));
-	    parameters.put("P_STATUS_DESCS", statusDescs.toString());
+	    parameters.put("P_PHOTOS_STATUS_ID", photosStatuses.size() > 1 ? FlagsEnum.ALL.getCode() : photosStatuses.get(0));
+	    parameters.put("P_PHOTOS_STATUS_DESC", statusDescs.toString());
 	    parameters.put("P_PHYSICAL_REGION_ID", physicalRegionId);
 	    parameters.put("P_PHYSICAL_REGION_DESC", physicalRegionId == FlagsEnum.ALL.getCode() ? getMessage("label_all") : CommonService.getRegionById(physicalRegionId).getDescription());
 	    parameters.put("P_PHYSICAL_UNIT_HKEY", physicalUnitHKey == null || physicalUnitHKey.isEmpty() ? FlagsEnum.ALL.getCode() + "" : UnitsService.getHKeyPrefix(physicalUnitHKey));
