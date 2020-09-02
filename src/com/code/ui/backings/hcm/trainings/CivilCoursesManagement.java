@@ -45,6 +45,7 @@ public class CivilCoursesManagement extends BaseBacking {
     public void addNewCivilCourse() {
 	trainingCourseData.setType(MilitaryCivillianEnum.Civillian.getCode());
 	trainingCourseData.setRankingFlagBoolean(false);
+	trainingCourseData.setElectronicCertificateBoolean(false);
 	civilCourses.add(0, trainingCourseData);
 	trainingCourseData = new TrainingCourseData();
 	pageNum = 1;
