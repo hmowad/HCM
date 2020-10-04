@@ -443,7 +443,10 @@ public class TrainingCourseData extends BaseEntity {
     @Transient
     @XmlTransient
     public boolean isElectronicCertificateBoolean() {
-	return electronicCertificateBoolean;
+	if (electronicCertificateBoolean == null)
+	    return false;
+	else
+	    return electronicCertificateBoolean;
     }
 
     public void setElectronicCertificateBoolean(boolean electronicCertificateBoolean) {
