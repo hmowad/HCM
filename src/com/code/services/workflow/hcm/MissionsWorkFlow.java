@@ -1348,8 +1348,10 @@ public class MissionsWorkFlow extends BaseWorkFlow {
 	    if (checkMaxRank && mdd.getEmpRankId().longValue() <= maxRankId)
 		return true;
 
-	    if (checkPresidencyAsDM && EmployeesService.getEmployeeDirectManager(mdd.getEmpId()).getUnitTypeCode().intValue() >= UnitTypesEnum.PRESIDENCY.getCode())
-		return true;
+	    // TODO:Was Disabled Due To Issue 0014342
+
+	    // if (checkPresidencyAsDM && EmployeesService.getEmployeeDirectManager(mdd.getEmpId()).getUnitTypeCode().intValue() >= UnitTypesEnum.PRESIDENCY.getCode())
+	    // return true;
 	}
 
 	return false;
