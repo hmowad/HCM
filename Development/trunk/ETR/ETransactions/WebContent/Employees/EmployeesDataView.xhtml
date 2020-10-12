@@ -142,6 +142,7 @@
 			privateMobileNumberValue = document.getElementById('employeesDataViewFormId:privateMobileNumberId').value;
 			officialMobileNumberValue = document.getElementById('employeesDataViewFormId:officialMobileNumberId').value;
 			shieldMobileNumberValue = document.getElementById('employeesDataViewFormId:shieldMobileNumberId').value;
+			directPhoneNumberValue = document.getElementById('employeesDataViewFormId:directPhoneNumberId').value;
 			emailValue = document.getElementById('employeesDataViewFormId:emailId').value;
 			recQualificationPercentageValue = document.getElementById('employeesDataViewFormId:recQualificationPercentageId').value;
 			curQualificationPercentageValue = document.getElementById('employeesDataViewFormId:curQualificationPercentageId').value;
@@ -181,7 +182,12 @@
 					return false;
 				}
 			}
-
+			if (!(directPhoneNumberValue == null || directPhoneNumberValue == '')) {
+				if(!mobileRe.test(directPhoneNumberValue)) {
+					alert("#{msgs.error_directPhoneNumberNotValid}");
+					return false;
+				}
+			}
 
 			if (!(officialMobileNumberValue == null || officialMobileNumberValue == '')) {
 				if(!mobileRe.test(officialMobileNumberValue)) {
@@ -189,7 +195,7 @@
 					return false;
 				}
 			}
-
+			
 			if (!(shieldMobileNumberValue == null || shieldMobileNumberValue == '')) {
 				if(!mobileRe.test(shieldMobileNumberValue)) {
 					alert("#{msgs.error_shieldMobileNumberNotValid}");
@@ -822,27 +828,27 @@
 									<tr>
 										<th width="15%">#{msgs.label_phoneExt}</th>
 										<td width="20%">
-											<h:inputText value="#{employeesDataView.employee.phoneExt}" readonly="#{employeesDataView.viewOnly}" maxlength="8" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
+											<h:inputText value="#{employeesDataView.employee.phoneExt}" maxlength="4" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
 										</td>
 										<th width="15%">#{msgs.label_ipPhoneExt}</th>
 										<td width="20%">
-											<h:inputText value="#{employeesDataView.employee.ipPhoneExt}" readonly="#{employeesDataView.viewOnly}" maxlength="8" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
+											<h:inputText value="#{employeesDataView.employee.ipPhoneExt}"  maxlength="6" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
 										</td>
 									</tr>
 									<tr>
 										<th width="15%">#{msgs.label_privateMobileNumber}</th>
 										<td width="20%">
-											<h:inputText id="privateMobileNumberId" value="#{employeesDataView.employee.privateMobileNumber}" readonly="#{employeesDataView.viewOnly}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
+											<h:inputText id="privateMobileNumberId" value="#{employeesDataView.employee.privateMobileNumber}"  styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
 										</td>
 										<th width="15%">#{msgs.label_directPhoneNumber}</th>
 										<td width="50%" colspan="2">
-											<h:inputText value="#{employeesDataView.employee.directPhoneNumber}" readonly="#{employeesDataView.viewOnly}" maxlength="12" styleClass="inputDataLarge" />
+											<h:inputText id="directPhoneNumberId" value="#{employeesDataView.employee.directPhoneNumber}" maxlength="10" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
 										</td>
 									</tr>
 									<tr>
 										<th width="15%">#{msgs.label_officialMobileNumber}</th>
 										<td width="25%">
-											<h:inputText id="officialMobileNumberId" value="#{employeesDataView.employee.officialMobileNumber}" readonly="#{employeesDataView.viewOnly}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
+											<h:inputText id="officialMobileNumberId" value="#{employeesDataView.employee.officialMobileNumber}"  styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
 										</td>
 										<th width="15%">#{msgs.label_shieldMobileNumber}</th>
 										<td width="25%">
