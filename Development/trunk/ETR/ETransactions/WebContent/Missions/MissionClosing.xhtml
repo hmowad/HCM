@@ -57,6 +57,42 @@
  		 }
 		return true;
 	}
+	
+	function validateEditData() {
+		var period = document.getElementById('missionClosingFormId:editActualPeriodId').value;
+		if (period == null || period == '' || period == 0) {
+			alert("#{msgs.error_periodRequired}");
+			return false;
+		}
+		return true;
+	}
+
+
+	function validateCancelData() {
+		var absenceReasons = document.getElementById('missionClosingFormId:cancelAbsenceReasonsId').value;
+		if (absenceReasons == null || absenceReasons == '') {
+			alert("#{msgs.error_absenceReasonsRequired}");
+			return false;
+		}
+		return true;
+	}
+
+
+	function validatePaymentData() {
+		var paymentDecisionNumberId = document.getElementById('missionClosingFormId:savePaymentDecisionNumberId').value;
+		var paymentDecisionDay  =  document.getElementById('missionClosingFormId:savePaymentDecisionDateId:day').value;
+		if(paymentDecisionNumberId == null || paymentDecisionNumberId == ''){
+			alert("#{msgs.error_paymentDecisionNumberRequired}");
+			return false;
+		}
+		if(paymentDecisionDay == 0){
+			alert("#{msgs.error_paymentDecisionDateRequired}");
+			return false;
+		}
+ 		 
+		return true;
+	}
+	
 	              
 	</script>
 </h:head>
@@ -213,7 +249,7 @@
 									<h:outputText value="" />
 								</f:facet>
 								<h:commandButton value="#{msgs.fa_check_square}" title="#{msgs.label_view}" action="#{missionClosing.showMissionDetail(missionDetail)}" styleClass="btn_icon">
-									<f:ajax render="missionClosingFormId:actualClosingMissionId" />
+									<f:ajax render="missionClosingFormId:actualClosingMissionId missionClosingFormId:extraButtonsPanelId" />
 								</h:commandButton>
 							</rich:column>
 							<rich:column style="width : 3%">
@@ -279,7 +315,7 @@
 				<tr>
 					<td width="100%">
 						<h:panelGroup id="actualClosingMissionId">
-							<h:panelGroup rendered="#{missionClosing.missionDetailList.size() != 0 and missionClosing.selectedMissionDetail.id != null}">
+							<h:panelGroup rendered="#{missionClosing.missionDetailList.size() != 0 and missionClosing.selectedMissionDetail.id != null and ((missionClosing.mode == 1 and !missionClosing.selectedMissionDetail.savedFlagBoolean) || missionClosing.mode == 2 || missionClosing.mode == 3)}">
 								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
 									<tr>
 										<td>
@@ -399,6 +435,311 @@
 									</tr>
 								</table>
 							</h:panelGroup>
+
+
+							<h:panelGroup rendered="#{missionClosing.missionDetailList.size() != 0 and missionClosing.selectedMissionDetail.id != null and missionClosing.mode == 1 and missionClosing.selectedMissionDetail.savedFlagBoolean}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:outputText rendered="#{missionClosing.mode==1}" value="#{msgs.label_missionOfficers}" />
+										</td>
+									</tr>
+								</table>
+
+								<table class="sectionContent" border="0" width="100%">
+									<tr>
+										<th width="15%">#{msgs.label_name}</th>
+										<td width="85%" colspan="3">
+											<h:outputText value="#{missionClosing.selectedMissionDetail.empName}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_missionActualPeriod}</th>
+										<td width="35%">
+											<h:outputText value="#{missionClosing.selectedMissionDetail.actualPeriod}" />
+										</td>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionDistanceRoad}" rendered="#{missionClosing.mission.locationFlag==1}" />
+										</th>
+										<td width="35%">
+											<h:outputText value="#{missionClosing.selectedMissionDetail.roadPeriod}" rendered="#{missionClosing.mission.locationFlag==1}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_actualStartDateString}</th>
+										<td width="35%">
+											<h:outputText value="#{missionClosing.selectedMissionDetail.actualStartDateString}" />
+										</td>
+										<th width="15%">#{msgs.label_actualEndDateString}</th>
+										<td width="35%">
+											<h:outputText value="#{missionClosing.selectedMissionDetail.actualEndDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_paymentDecisionIssued}" />
+										</th>
+										<td width="35%" colspan="3">
+											<h:selectBooleanCheckbox value="#{missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean}" disabled="#{true}">
+											</h:selectBooleanCheckbox>
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_paymentDecisionIssuedNumber}" />
+											<h:outputText value="*" style="color: red;" rendered="#{missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean == true}" />
+										</th>
+										<td width="35%">
+											<h:outputText value="#{missionClosing.selectedMissionDetail.paymentDecisionNumber}" />
+										</td>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_paymentDecisionIssuedDate}" />
+											<h:outputText value="*" style="color: red;" rendered="#{missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean == true}" />
+										</th>
+										<td width="35%">
+											<h:outputText value="#{missionClosing.selectedMissionDetail.paymentDecisionDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">
+											<h:outputText value="#{msgs.label_missionAbsence}" />
+										</th>
+										<td width="35%">
+											<h:selectBooleanCheckbox value="#{missionClosing.selectedMissionDetail.absenceFlagBoolean}" disabled="#{true}">
+											</h:selectBooleanCheckbox>
+										</td>
+										<th width="15%">
+											<h:outputText value="" />
+										</th>
+										<td width="35%">
+											<h:outputText value="" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_missionAbsenceReasonsId}" />
+											<h:outputText value="*" style="color: red;" rendered="#{missionClosing.selectedMissionDetail.absenceFlagBoolean == true}" />
+										</th>
+										<td width="80%" colspan="3">
+											<h:outputText value="#{missionClosing.selectedMissionDetail.absenceReasons}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">#{msgs.label_notes}</th>
+										<td width="80%" colspan="3">
+											<h:outputText value="#{missionClosing.selectedMissionDetail.remarks}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_missionPerformanceDocumentArchiving}</th>
+										<td width="85%" colspan="3">
+											<code:attachments loginEmpId="#{missionClosing.loginEmpData.empId}" attachmentId="#{missionClosing.selectedMissionDetail.closingAttachments}" addEnableFlag="false" viewEnableFlag="true" deleteEnableFlag="false" />
+										</td>
+									</tr>
+								</table>
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:commandButton action="#{missionClosing.setEditPanelFlag(true)}" styleClass="btn_normal_icon" value="#{msgs.label_edit} &nbsp; #{msgs.fa_edit}" rendered="#{missionClosing.selectedMissionDetail.actualPeriod != null and missionClosing.selectedMissionDetail.actualPeriod != 0 and !missionClosing.selectedMissionDetail.absenceFlagBoolean and !missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean}">
+												<f:ajax render="missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+											</h:commandButton>
+											<h:outputText value=" " />
+											<h:commandButton action="#{missionClosing.setSavePanelFlag(true)}" styleClass="btn_normal_icon" value="#{msgs.label_saveMissionData} &nbsp; #{msgs.fa_floppy_o}" rendered="#{missionClosing.selectedMissionDetail.absenceFlagBoolean and !missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean}">
+												<f:ajax render="missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+											</h:commandButton>
+											<h:outputText value=" " />
+											<h:commandButton action="#{missionClosing.setCancelMissionFlag(true)}" styleClass="btn_normal_icon" value="#{msgs.label_cancelMission} &nbsp; #{msgs.fa_close}" rendered="#{missionClosing.selectedMissionDetail.actualPeriod != null and missionClosing.selectedMissionDetail.actualPeriod != 0 and !missionClosing.selectedMissionDetail.absenceFlagBoolean and !missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean}">
+												<f:ajax render="missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+											</h:commandButton>
+											<h:commandButton action="#{missionClosing.setSavePaymentFlag(true)}" styleClass="btn_normal_icon" value="#{msgs.label_savePaymentData} &nbsp; #{msgs.fa_floppy_o}" rendered="#{missionClosing.selectedMissionDetail.actualPeriod != null and missionClosing.selectedMissionDetail.actualPeriod != 0 and !missionClosing.selectedMissionDetail.absenceFlagBoolean}">
+												<f:ajax render="missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+											</h:commandButton>
+											<h:outputText value=" " />
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+
+
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<h:panelGroup id="extraButtonsPanelId">
+							<h:panelGroup id="editPanelId" rendered="#{missionClosing.editPanelFlag or missionClosing.savePanelFlag}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:outputText rendered="#{missionClosing.editPanelFlag}" value="#{msgs.label_actualOfficersMissionDataModify}" />
+											<h:outputText rendered="#{missionClosing.savePanelFlag}" value="#{msgs.label_actualOfficersMissionDataSave}" />
+										</td>
+									</tr>
+								</table>
+
+								<table class="sectionContent" border="0" width="100%">
+									<tr>
+										<th width="30%">
+											#{msgs.label_missionActualPeriod}
+											<h:outputText value="*" style="color: red;" />
+										</th>
+										<td width="70%">
+											<h:inputText id="editActualPeriodId" value="#{missionClosing.selectedMissionDetail.actualPeriod}" onkeypress="return isDigit(event);" maxlength="3">
+												<f:ajax event="blur" listener="#{missionClosing.adjustMissionDetailEndDate()}" execute="@this" render="missionClosingFormId:empEditEndDateStringId notifyMessagesId" />
+											</h:inputText>
+										</td>
+									</tr>
+									<tr>
+										<th width="30%">
+											#{msgs.label_actualStartDateString}
+											<h:outputText value="*" style="color: red;" />
+										</th>
+										<td width="70%">
+											<util:hijri id="editActualStartDateId" value="#{missionClosing.selectedMissionDetail.actualStartDate}" nullable="false" onChangeAjaxSubmit="true" listenerMethod="#{missionClosing.adjustMissionDetailEndDate()}" reRenderIds="missionClosingFormId:empEditEndDateStringId" />
+										</td>
+									</tr>
+									<tr>
+										<th width="30%">#{msgs.label_actualEndDateString}</th>
+										<td width="70%">
+											<h:outputText id="empEditEndDateStringId" value="#{missionClosing.selectedMissionDetail.actualEndDateString}" />
+										</td>
+									</tr>
+									<tr>
+										<th width="20%">#{msgs.label_notes}</th>
+										<td width="80%" colspan="3">
+											<h:inputText id="editRemarksId" value="#{missionClosing.selectedMissionDetail.remarks}" styleClass="inputDataLarge" maxlength="350" />
+										</td>
+									</tr>
+									<tr>
+										<th width="15%">#{msgs.label_missionPerformanceDocumentArchiving}</th>
+										<td width="85%" colspan="3">
+											<code:attachments id="editAttachments" loginEmpId="#{missionClosing.loginEmpData.empId}" attachmentId="#{missionClosing.selectedMissionDetail.closingAttachments}" addEnableFlag="true" viewEnableFlag="true" deleteEnableFlag="true" />
+										</td>
+									</tr>
+								</table>
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:panelGroup rendered="#{missionClosing.editPanelFlag}">
+												<h:commandButton action="#{missionClosing.setEditPanelFlag(false)}" styleClass="btn_normal_icon" value="#{msgs.label_close}">
+													<f:ajax render="missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+												</h:commandButton>
+												<h:outputText value=" " />
+												<h:commandButton action="#{missionClosing.editMissionDetail()}" styleClass="btn_normal_icon" value="#{msgs.label_edit}" onclick="return validateEditData();">
+													<f:ajax execute="missionClosingFormId:editActualPeriodId missionClosingFormId:editActualStartDateId missionClosingFormId:editAttachments missionClosingFormId:editRemarksId" render="missionClosingFormId:actualClosingMissionId missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+												</h:commandButton>
+											</h:panelGroup>
+											<h:panelGroup rendered="#{missionClosing.savePanelFlag}">
+												<h:commandButton action="#{missionClosing.setSavePanelFlag(false)}" styleClass="btn_normal_icon" value="#{msgs.label_close}">
+													<f:ajax render="missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+												</h:commandButton>
+												<h:outputText value=" " />
+												<h:commandButton action="#{missionClosing.saveMissionDetail()}" styleClass="btn_normal_icon" value="#{msgs.label_save}" onclick="return validateEditData();">
+													<f:ajax execute="missionClosingFormId:editActualPeriodId missionClosingFormId:editActualStartDateId missionClosingFormId:editAttachments missionClosingFormId:editRemarksId" render="missionClosingFormId:actualClosingMissionId missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+												</h:commandButton>
+											</h:panelGroup>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+
+							<h:panelGroup id="cancelPanelId" rendered="#{missionClosing.cancelMissionFlag}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.label_actualOfficersMissionDataCancel}" />
+										</td>
+									</tr>
+								</table>
+								<table class="sectionContent" border="0" width="100%">
+									<tr>
+										<td width="100%" height="5">
+											<h:outputText value="#{msgs.q_cancelOfficerMission}" />
+										</td>
+									</tr>
+								</table>
+								<table class="sectionContent" border="0" width="100%">
+									<tr>
+										<th width="20%">
+											<h:outputText value="#{msgs.label_missionAbsenceReasonsId}" />
+											<h:outputText value="*" style="color: red;" />
+										</th>
+										<td width="80%" colspan="3">
+											<h:inputText id="cancelAbsenceReasonsId" value="#{missionClosing.selectedMissionDetail.absenceReasons}" styleClass="inputDataLarge" maxlength="350" />
+										</td>
+									</tr>
+								</table>
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:commandButton action="#{missionClosing.setCancelMissionFlag(false)}" styleClass="btn_normal_icon" value="#{msgs.label_close}">
+												<f:ajax render="missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+											</h:commandButton>
+											<h:outputText value=" " />
+											<h:commandButton action="#{missionClosing.cancelMissionDetail()}" styleClass="btn_normal_icon" value="#{msgs.label_cancel}" onclick="return validateCancelData();">
+												<f:ajax execute="missionClosingFormId:cancelAbsenceReasonsId" render="missionClosingFormId:actualClosingMissionId missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+
+
+							<h:panelGroup id="paymentPanelId" rendered="#{missionClosing.savePaymentFlag}">
+								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<h:outputText value="#{msgs.label_officersMissionPaymentDataSave}" />
+										</td>
+									</tr>
+								</table>
+								<table class="sectionContent" border="0" width="100%">
+									<tr>
+										<th width="30%">
+											<h:outputText value="#{msgs.label_paymentDecisionIssuedNumber}" />
+											<h:outputText value="*" style="color: red;" />
+										</th>
+										<td width="70%">
+											<h:inputText id="savePaymentDecisionNumberId" value="#{missionClosing.selectedMissionDetail.paymentDecisionNumber}" maxlength="25" />
+										</td>
+									</tr>
+									<tr>
+										<th width="30%">
+											<h:outputText value="#{msgs.label_paymentDecisionIssuedDate}" />
+											<h:outputText value="*" style="color: red;" />
+										</th>
+										<td width="70%">
+											<util:hijri id="savePaymentDecisionDateId" nullable="true" value="#{missionClosing.selectedMissionDetail.paymentDecisionDate}" />
+										</td>
+									</tr>
+								</table>
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%" height="5" />
+									</tr>
+									<tr>
+										<td width="100%">
+											<h:commandButton action="#{missionClosing.setSavePaymentFlag(false)}" styleClass="btn_normal_icon" value="#{msgs.label_close}">
+												<f:ajax render="missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+											</h:commandButton>
+											<h:outputText value=" " />
+											<h:commandButton action="#{missionClosing.savePaymentData()}" styleClass="btn_normal_icon" value="#{msgs.label_save}" onclick="return validatePaymentData();">
+												<f:ajax execute="missionClosingFormId:savePaymentDecisionNumberId missionClosingFormId:savePaymentDecisionDateId" render="missionClosingFormId:actualClosingMissionId missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+											</h:commandButton>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+
 						</h:panelGroup>
 					</td>
 				</tr>
