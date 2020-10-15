@@ -10,7 +10,9 @@ import javax.faces.event.AjaxBehaviorEvent;
 
 import com.code.dal.orm.hcm.missions.MissionData;
 import com.code.dal.orm.hcm.missions.MissionDetailData;
+import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoryModesEnum;
+import com.code.enums.FlagsEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.MissionsService;
 import com.code.services.util.HijriDateService;
@@ -31,6 +33,10 @@ public class MissionClosing extends BaseBacking {
     private MissionData mission;
     private MissionDetailData selectedMissionDetail;
     private List<MissionDetailData> missionDetailList = new ArrayList<MissionDetailData>();
+    private Boolean editPanelFlag;
+    private Boolean savePanelFlag;
+    private Boolean cancelMissionFlag;
+    private Boolean savePaymentFlag;
 
     private int pageSize = 10;
 
@@ -100,6 +106,7 @@ public class MissionClosing extends BaseBacking {
 
     public void showMissionDetail(MissionDetailData missionDetail) {
 	selectedMissionDetail = missionDetail;
+	hideAllExtraPanels();
     }
 
     public void adjustMissionDetailEndDate() {
@@ -112,12 +119,74 @@ public class MissionClosing extends BaseBacking {
     public void modifyMissionDetail() {
 	try {
 	    selectedMissionDetail.getMissionDetail().setSystemUser(this.loginEmpData.getEmpId() + "");
-	    MissionsService.modifyActualMissionDetails(mission, selectedMissionDetail);
+	    selectedMissionDetail.setSavedFlag(FlagsEnum.ON.getCode());
+	    MissionsService.modifyActualMissionDetails(mission, selectedMissionDetail, selectedMissionDetail.getAbsenceFlagBoolean() ? null : AdminDecisionsEnum.OFFICERS_MISSION_DECISION.getCode());
+	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	} catch (BusinessException e) {
+	    selectedMissionDetail.setSavedFlag(FlagsEnum.OFF.getCode());
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	}
+
+    }
+
+    public void editMissionDetail() {
+	try {
+	    selectedMissionDetail.getMissionDetail().setSystemUser(this.loginEmpData.getEmpId() + "");
+	    MissionsService.modifyActualMissionDetails(mission, selectedMissionDetail, AdminDecisionsEnum.OFFICERS_MISSION_DIFFERENCES_DECISION.getCode());
+	    editPanelFlag = false;
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
 
+    }
+
+    public void saveMissionDetail() {
+	try {
+	    selectedMissionDetail.getMissionDetail().setSystemUser(this.loginEmpData.getEmpId() + "");
+	    selectedMissionDetail.setAbsenceFlagBoolean(false);
+	    selectedMissionDetail.setAbsenceReasons("");
+	    MissionsService.modifyActualMissionDetails(mission, selectedMissionDetail, AdminDecisionsEnum.OFFICERS_MISSION_DECISION.getCode());
+	    savePanelFlag = false;
+	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	}
+
+    }
+
+    public void cancelMissionDetail() {
+	try {
+	    selectedMissionDetail.setActualPeriod(mission.getPeriod());
+	    selectedMissionDetail.setActualStartDate(mission.getStartDate());
+	    selectedMissionDetail.setActualEndDate(mission.getEndDate());
+	    selectedMissionDetail.setAbsenceFlagBoolean(true);
+	    MissionsService.modifyActualMissionDetails(mission, selectedMissionDetail, AdminDecisionsEnum.OFFICERS_MISSION_CANCELLATION_DECISION.getCode());
+	    cancelMissionFlag = false;
+	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	} catch (BusinessException e) {
+	    selectedMissionDetail.setSavedFlag(FlagsEnum.OFF.getCode());
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	}
+    }
+
+    public void savePaymentData() {
+	try {
+	    selectedMissionDetail.setPaymentDecisionIssuedFlagBoolean(true);
+	    MissionsService.modifyActualMissionDetails(mission, selectedMissionDetail, null);
+	    savePaymentFlag = false;
+	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	} catch (BusinessException e) {
+	    selectedMissionDetail.setSavedFlag(FlagsEnum.OFF.getCode());
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	}
+    }
+
+    public void hideAllExtraPanels() {
+	savePanelFlag = false;
+	editPanelFlag = false;
+	cancelMissionFlag = false;
+	savePaymentFlag = false;
     }
 
     public int getMode() {
@@ -174,6 +243,42 @@ public class MissionClosing extends BaseBacking {
 
     public void setSelectedMissionDetail(MissionDetailData selectedMissionDetail) {
 	this.selectedMissionDetail = selectedMissionDetail;
+    }
+
+    public Boolean getEditPanelFlag() {
+	return editPanelFlag;
+    }
+
+    public void setEditPanelFlag(Boolean editPanelFlag) {
+	hideAllExtraPanels();
+	this.editPanelFlag = editPanelFlag;
+    }
+
+    public Boolean getSavePanelFlag() {
+	return savePanelFlag;
+    }
+
+    public void setSavePanelFlag(Boolean savePanelFlag) {
+	hideAllExtraPanels();
+	this.savePanelFlag = savePanelFlag;
+    }
+
+    public Boolean getCancelMissionFlag() {
+	return cancelMissionFlag;
+    }
+
+    public void setCancelMissionFlag(Boolean cancelMissionFlag) {
+	hideAllExtraPanels();
+	this.cancelMissionFlag = cancelMissionFlag;
+    }
+
+    public Boolean getSavePaymentFlag() {
+	return savePaymentFlag;
+    }
+
+    public void setSavePaymentFlag(Boolean savePaymentFlag) {
+	hideAllExtraPanels();
+	this.savePaymentFlag = savePaymentFlag;
     }
 
 }

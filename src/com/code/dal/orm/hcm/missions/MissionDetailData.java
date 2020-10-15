@@ -119,6 +119,8 @@ public class MissionDetailData extends BaseEntity {
     private String paymentDecisionNumber;
     private Date paymentDecisionDate;
     private String paymentDecisionDateString;
+    private Integer savedFlag;
+    private Boolean savedFlagBoolean;
 
     private MissionDetail missionDetail;
 
@@ -712,5 +714,38 @@ public class MissionDetailData extends BaseEntity {
     public void setPaymentDecisionDateString(String paymentDecisionDateString) {
 	this.paymentDecisionDateString = paymentDecisionDateString;
 	this.setPaymentDecisionDate(HijriDateService.getHijriDate(paymentDecisionDateString));
+    }
+
+    @Basic
+    @Column(name = "SAVED_FLAG")
+    @XmlTransient
+    public Integer getSavedFlag() {
+	return savedFlag;
+    }
+
+    public void setSavedFlag(Integer savedFlag) {
+	this.savedFlag = savedFlag;
+	this.missionDetail.setSavedFlag(savedFlag);
+	if (this.savedFlag == null || this.savedFlag == FlagsEnum.OFF.getCode()) {
+	    this.savedFlagBoolean = false;
+	} else {
+	    this.savedFlagBoolean = true;
+	}
+
+    }
+
+    @Transient
+    @XmlTransient
+    public Boolean getSavedFlagBoolean() {
+	return savedFlagBoolean;
+    }
+
+    public void setSavedFlagBoolean(Boolean savedFlagBoolean) {
+	this.savedFlagBoolean = savedFlagBoolean;
+	if (this.savedFlagBoolean == false) {
+	    this.savedFlag = FlagsEnum.OFF.getCode();
+	} else {
+	    this.savedFlag = FlagsEnum.ON.getCode();
+	}
     }
 }

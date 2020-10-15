@@ -1,6 +1,7 @@
 package com.code.services.hcm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.missions.MissionData;
 import com.code.dal.orm.hcm.missions.MissionDetailData;
+import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.CategoryModesEnum;
 import com.code.enums.FlagsEnum;
@@ -19,12 +21,15 @@ import com.code.enums.QueryNamesEnum;
 import com.code.enums.ReportNamesEnum;
 import com.code.enums.TransactionClassesEnum;
 import com.code.enums.TransactionTypesEnum;
+import com.code.enums.UnitTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
 import com.code.services.BaseService;
 import com.code.services.buswfcoop.EmployeesTransactionsConflictValidator;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.cor.ETRCorrespondence;
+import com.code.services.integration.PayrollEngineService;
 import com.code.services.util.HijriDateService;
 
 /**
@@ -399,7 +404,7 @@ public class MissionsService extends BaseService {
      *             if any exceptions or errors occurs
      */
 
-    public static void modifyActualMissionDetails(MissionData missionData, MissionDetailData missionDetailsData, CustomSession... useSession) throws BusinessException {
+    public static void modifyActualMissionDetails(MissionData missionData, MissionDetailData missionDetailsData, Long adminDecisionId, CustomSession... useSession) throws BusinessException {
 
 	if (missionDetailsData.getActualPeriod().intValue() > missionDetailsData.getPeriod().intValue())
 	    throw new BusinessException("error_empMissionPeriod");
@@ -434,6 +439,8 @@ public class MissionsService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 	    DataAccess.updateEntity(missionDetailsData.getMissionDetail(), session);
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		doPayrollIntegration(missionDetailsData, adminDecisionId, FlagsEnum.OFF.getCode(), session);
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -445,6 +452,35 @@ public class MissionsService extends BaseService {
 	} finally {
 	    if (!isOpenedSession)
 		session.close();
+	}
+    }
+
+    private static void doPayrollIntegration(MissionDetailData missionDetailsData, Long adminDecisionId, Integer resendFlag, CustomSession session) throws BusinessException {
+	if (adminDecisionId != null) {
+	    EmployeeData employee = EmployeesService.getEmployeeData(missionDetailsData.getEmpId());
+	    if (employee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+		session.flushTransaction();
+		String gregDecisionDateString = HijriDateService.hijriToGregDateString(missionDetailsData.getMissionDecisionDateString());
+		String gregStartDateString = HijriDateService.hijriToGregDateString(missionDetailsData.getActualStartDateString());
+		String gregEndDateString = HijriDateService.hijriToGregDateString(missionDetailsData.getActualEndDateString());
+		String requestDecisionNumber = System.currentTimeMillis() + "";
+		List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(
+			Arrays.asList(new AdminDecisionEmployeeData(missionDetailsData.getEmpId(), missionDetailsData.getEmpName(), missionDetailsData.getId(), null, gregStartDateString, gregEndDateString, requestDecisionNumber, null)));
+		UnitData empUnit = UnitsService.getUnitByExactFullName(missionDetailsData.getTransEmpUnitDesc());
+		Long unitId = empUnit != null ? empUnit.getId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId();
+
+		PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(MissionData.class), resendFlag, FlagsEnum.ON.getCode(), session);
+	    }
+	}
+    }
+
+    public static void payrollIntegrationFailureHandle(Long missionDetailId, Long adminDecisionId, CustomSession session) throws BusinessException {
+	MissionDetailData missionDetailData = getMissionsDetailById(missionDetailId);
+	if (missionDetailData != null) {
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
+		doPayrollIntegration(missionDetailData, adminDecisionId, FlagsEnum.ON.getCode(), session);
+	} else {
+	    throw new BusinessException("error_transactionDataRetrievingError");
 	}
     }
 
