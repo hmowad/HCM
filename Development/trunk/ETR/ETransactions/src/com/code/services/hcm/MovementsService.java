@@ -440,7 +440,7 @@ public class MovementsService extends BaseService {
 	// validate
 	int replacementIndex = 1;
 	for (MovementTransactionData movementTransaction : movementTransactions) {
-	    validateMoveRules(movementTransaction, isReplacementMovement ? movementTransactions.get(replacementIndex).getEmployeeId() : null, requestId, transactionSourceView, null);
+	    validateMoveRules(movementTransaction, isReplacementMovement ? movementTransactions.get(replacementIndex).getEmployeeId() : null, requestId, transactionSourceView);
 	    if (isReplacementMovement)
 		replacementIndex = replacementIndex - 1;
 	}
@@ -476,7 +476,7 @@ public class MovementsService extends BaseService {
     private static void handleSubjoinTransactions(List<MovementTransactionData> movementTransactions, String processName, Long requestId, int transactionSourceView, CustomSession session) throws BusinessException {
 	// Validate
 	for (MovementTransactionData movementTransaction : movementTransactions) {
-	    validateSubjoinRules(movementTransaction, requestId, transactionSourceView, null);
+	    validateSubjoinRules(movementTransaction, requestId, transactionSourceView);
 	}
 
 	// add transactions
@@ -1411,11 +1411,11 @@ public class MovementsService extends BaseService {
      * @throws BusinessException
      *             if any error occurs
      */
-    public static void validateBusinessRules(MovementTransactionData movementTransaction, Long replacementEmployeeId, Long requestId, int transactionSourceView, Map<String, Object> extraParams) throws BusinessException {
+    public static void validateBusinessRules(MovementTransactionData movementTransaction, Long replacementEmployeeId, Long requestId, int transactionSourceView) throws BusinessException {
 	if (movementTransaction.getMovementTypeId() == MovementTypesEnum.MOVE.getCode())
-	    validateMoveRules(movementTransaction, replacementEmployeeId, requestId, transactionSourceView, extraParams);
+	    validateMoveRules(movementTransaction, replacementEmployeeId, requestId, transactionSourceView);
 	if (movementTransaction.getMovementTypeId() == MovementTypesEnum.SUBJOIN.getCode())
-	    validateSubjoinRules(movementTransaction, requestId, transactionSourceView, extraParams);
+	    validateSubjoinRules(movementTransaction, requestId, transactionSourceView);
 	if (movementTransaction.getMovementTypeId() == MovementTypesEnum.ASSIGNMENT.getCode())
 	    validateAssignmentRules(movementTransaction, requestId, transactionSourceView);
 	if (movementTransaction.getMovementTypeId() == MovementTypesEnum.MANDATE.getCode())
@@ -1859,7 +1859,7 @@ public class MovementsService extends BaseService {
      * @throws BusinessException
      *             if any error occurs
      */
-    private static void validateMoveRules(MovementTransactionData movementTransaction, Long replacementEmployeeId, Long requestId, int transactionSourceView, Map<String, Object> extraParams) throws BusinessException {
+    private static void validateMoveRules(MovementTransactionData movementTransaction, Long replacementEmployeeId, Long requestId, int transactionSourceView) throws BusinessException {
 	// Load necessary data
 	EmployeeData replacementEmp = null;
 	if (replacementEmployeeId != null) {
@@ -1894,7 +1894,7 @@ public class MovementsService extends BaseService {
 
 	}
 
-	if (extraParams == null || !extraParams.containsKey("skipMonthsRuleValidation") || !(Boolean) extraParams.get("skipMonthsRuleValidation")) {
+	if (!skipMonthsRuleValidation(movementTransaction.getExtraParams())) {
 	    if (emp.getCategoryId() == CategoriesEnum.OFFICERS.getCode() || emp.getCategoryId() == CategoriesEnum.SOLDIERS.getCode()) {
 		if (!checkMonthsRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate(), emp.getCategoryId()))
 		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanMinMonths", new String[] { emp.getName(), emp.getCategoryId() == CategoriesEnum.OFFICERS.getCode() ? ETRConfigurationService.getMovementOfficersPeriodBetweenMovementAndServiceTerminationDueDate() + "" : ETRConfigurationService.getMovementSoldiersPeriodBetweenMovementAndServiceTerminationDueDate() + "" });
@@ -1968,7 +1968,7 @@ public class MovementsService extends BaseService {
      * @throws BusinessException
      *             if any error occurs
      */
-    private static void validateSubjoinRules(MovementTransactionData movementTransaction, Long requestId, int transactionSourceView, Map<String, Object> extraParams) throws BusinessException {
+    private static void validateSubjoinRules(MovementTransactionData movementTransaction, Long requestId, int transactionSourceView) throws BusinessException {
 	// Load necessary data
 	EmployeeData emp = null;
 	emp = EmployeesService.getEmployeeData(movementTransaction.getEmployeeId());
@@ -1995,7 +1995,7 @@ public class MovementsService extends BaseService {
 
 	}
 
-	if (extraParams == null || !extraParams.containsKey("skipMonthsRuleValidation") || !(Boolean) extraParams.get("skipMonthsRuleValidation")) {
+	if (!skipMonthsRuleValidation(movementTransaction.getExtraParams())) {
 	    if ((movementTransaction.getCategoryId() == CategoriesEnum.OFFICERS.getCode() || movementTransaction.getCategoryId() == CategoriesEnum.SOLDIERS.getCode()) &&
 		    (CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId().equals(movementTransaction.getTransactionTypeId()) || CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId().equals(movementTransaction.getTransactionTypeId()))
 		    && !checkMonthsRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate(), emp.getCategoryId())) {
@@ -2185,6 +2185,21 @@ public class MovementsService extends BaseService {
     public static boolean checkIfMovementOperationOnCertainPositions(long unitId, int asManager) throws BusinessException {
 	UnitData unit = UnitsService.getUnitById(unitId);
 	return checkForCertainPositions(unit, asManager);
+    }
+
+    private static boolean skipMonthsRuleValidation(String extraParams) {
+	if (extraParams != null && extraParams.length() > 0) {
+	    String[] seperatedParams = extraParams.split(",");
+	    if (seperatedParams != null && seperatedParams.length > 0) {
+		for (String params : seperatedParams) {
+		    String[] tokens = params.split("=");
+		    if (tokens != null && tokens.length > 1 && tokens[0].equals("skipMonthsRuleValidation") && tokens[1].equals(FlagsEnum.ON.getCode() + "")) {
+			return true;
+		    }
+		}
+	    }
+	}
+	return false;
     }
 
     /**

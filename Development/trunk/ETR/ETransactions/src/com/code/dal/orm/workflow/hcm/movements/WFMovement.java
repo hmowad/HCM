@@ -97,6 +97,7 @@ public class WFMovement extends AuditEntity implements Serializable, InsertableA
     private Date joiningDate;
     private Date returnJoiningDate;
     private Long transactionId;
+    private String extraParams;
 
     @Id
     @Column(name = "INSTANCE_ID")
@@ -608,6 +609,16 @@ public class WFMovement extends AuditEntity implements Serializable, InsertableA
 
     public void setTransactionId(Long transactionId) {
 	this.transactionId = transactionId;
+    }
+
+    @Basic
+    @Column(name = "EXTRA_PARAMS")
+    public String getExtraParams() {
+	return extraParams;
+    }
+
+    public void setExtraParams(String extraParams) {
+	this.extraParams = extraParams;
     }
 
     @Override

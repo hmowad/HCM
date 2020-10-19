@@ -257,6 +257,7 @@ public class MovementTransactionData extends BaseEntity implements Serializable 
     private Integer transferAllowanceFlag;
     private Boolean transferAllowanceFlagBoolean;
     private String transJoiningApprovedJobName;
+    private String extraParams;
     private MovementTransaction movementTransaction;
 
     public MovementTransactionData() {
@@ -1436,6 +1437,16 @@ public class MovementTransactionData extends BaseEntity implements Serializable 
     public void setTransJoiningApprovedJobName(String transJoiningApprovedJobName) {
 	this.transJoiningApprovedJobName = transJoiningApprovedJobName;
 	movementTransaction.setTransJoiningApprovedJobName(transJoiningApprovedJobName);
+    }
+
+    @Transient
+    @XmlTransient
+    public String getExtraParams() {
+	return extraParams;
+    }
+
+    public void setExtraParams(String extraParams) {
+	this.extraParams = extraParams;
     }
 
     @Transient

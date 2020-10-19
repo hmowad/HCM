@@ -44,12 +44,12 @@ public class SubjoinDecisionRequest extends MovementsBase implements Serializabl
 		case 1:
 		    setScreenTitle(getMessage("title_officersSubjoinDecisionRequest"));
 		    this.processId = WFProcessesEnum.OFFICERS_SUBJOIN.getCode();
-		    extraParams.put("skipMonthsRuleValidation", SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_SUBJOIN_OFFICERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode()));
+		    decisionData.setExtraParams("skipMonthsRuleValidation=" + (SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_SUBJOIN_OFFICERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode()) ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode()));
 		    break;
 		case 2:
 		    setScreenTitle(getMessage("title_soldiersSubjoinDecisionRequest"));
 		    this.processId = WFProcessesEnum.SOLDIERS_SUBJOIN.getCode();
-		    extraParams.put("skipMonthsRuleValidation", SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_SUBJOIN_SOLDIERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode()));
+		    decisionData.setExtraParams("skipMonthsRuleValidation=" + (SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_SUBJOIN_SOLDIERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode()) ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode()));
 		    break;
 		case 3:
 		    setScreenTitle(getMessage("title_personsInternalAssignmentDecisionRequest"));
@@ -97,7 +97,7 @@ public class SubjoinDecisionRequest extends MovementsBase implements Serializabl
 
     public void addNewSubjoinDecisionRequest() {
 	try {
-	    WFMovementData temp = MovementsWorkFlow.constructWFMovement(processId, selectedEmpId.longValue(), null, FlagsEnum.OFF.getCode(), HijriDateService.getHijriSysDate(), null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, decisionData.getReasonType(), null, null, null, MovementTypesEnum.SUBJOIN.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
+	    WFMovementData temp = MovementsWorkFlow.constructWFMovement(processId, selectedEmpId.longValue(), null, FlagsEnum.OFF.getCode(), HijriDateService.getHijriSysDate(), null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, decisionData.getReasonType(), null, null, null, MovementTypesEnum.SUBJOIN.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode(), decisionData.getExtraParams());
 	    wfMovementsList.add(temp);
 	    if (temp.getWarningMessages() != null && !temp.getWarningMessages().isEmpty())
 		warningsCount++;
