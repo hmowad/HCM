@@ -43,12 +43,10 @@ public class MoveDecisionRequest extends MovementsBase implements Serializable {
 		case 1:
 		    this.processId = WFProcessesEnum.OFFICERS_MOVE.getCode();
 		    setScreenTitle(getMessage("title_officersMoveDecisionRequest"));
-		    extraParams.put("skipMonthsRuleValidation", SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_MOVE_OFFICERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode()));
 		    break;
 		case 2:
 		    this.processId = WFProcessesEnum.SOLDIERS_MOVE.getCode();
 		    setScreenTitle(getMessage("title_soldiersMoveDecisionRequest"));
-		    extraParams.put("skipMonthsRuleValidation", SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_MOVE_SOLDIERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode()));
 		    break;
 		case 3:
 		    this.processId = WFProcessesEnum.PERSONS_MOVE.getCode();
@@ -74,6 +72,10 @@ public class MoveDecisionRequest extends MovementsBase implements Serializable {
 		    decisionData.setBasedOnOrderDate(HijriDateService.getHijriSysDate());
 		    decisionData.setVacationGrantFlagBoolean(false);
 		    decisionData.setVerbalOrderFlag(FlagsEnum.OFF.getCode());
+		    if (mode == 1)
+			decisionData.setExtraParams("skipMonthsRuleValidation=" + (SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_MOVE_OFFICERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode()) ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode()));
+		    else if (mode == 2)
+			decisionData.setExtraParams("skipMonthsRuleValidation=" + (SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_MOVE_SOLDIERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode()) ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode()));
 		} else {
 		    wfMovementsList = MovementsWorkFlow.getWFMovementDataByInstanceId(this.instance.getInstanceId());
 		    decisionData = wfMovementsList.get(0);
@@ -108,7 +110,7 @@ public class MoveDecisionRequest extends MovementsBase implements Serializable {
 
     public void addWfMovement() {
 	try {
-	    WFMovementData wfMovement = MovementsWorkFlow.constructWFMovement(processId, selectedEmpId.longValue(), null, decisionData.getExecutionDateFlag(), decisionData.getExecutionDate(), null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, decisionData.getReasonType(), null, null, null, MovementTypesEnum.MOVE.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode());
+	    WFMovementData wfMovement = MovementsWorkFlow.constructWFMovement(processId, selectedEmpId.longValue(), null, decisionData.getExecutionDateFlag(), decisionData.getExecutionDate(), null, null, null, null, null, LocationFlagsEnum.INTERNAL.getCode(), null, null, null, decisionData.getReasonType(), null, null, null, MovementTypesEnum.MOVE.getCode(), TransactionTypesEnum.MVT_NEW_DECISION.getCode(), decisionData.getExtraParams());
 	    jobsData.add(JobsService.getJobById(EmployeesService.getEmployeeData(wfMovement.getEmployeeId()).getJobId()));
 	    wfMovementsList.add(wfMovement);
 	    if (wfMovement.getWarningMessages() != null && !wfMovement.getWarningMessages().isEmpty())

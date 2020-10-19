@@ -124,6 +124,7 @@ public class WFMovementData extends BaseEntity implements Serializable {
     private Date returnJoiningDate;
     private String returnJoiningDateString;
     private Long transactionId;
+    private String extraParams;
     private WFMovement wfMovement;
 
     public WFMovementData() {
@@ -1111,5 +1112,17 @@ public class WFMovementData extends BaseEntity implements Serializable {
     public void setTransactionId(Long transactionId) {
 	this.transactionId = transactionId;
 	wfMovement.setTransactionId(transactionId);
+    }
+
+    @Basic
+    @Column(name = "EXTRA_PARAMS")
+    @XmlTransient
+    public String getExtraParams() {
+	return extraParams;
+    }
+
+    public void setExtraParams(String extraParams) {
+	this.extraParams = extraParams;
+	wfMovement.setExtraParams(extraParams);
     }
 }

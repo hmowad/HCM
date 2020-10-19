@@ -87,7 +87,7 @@ public class MovementsWorkFlowWS {
 	    List<WFMovementData> movementRequests = new ArrayList<WFMovementData>();
 	    movementRequests.add(movementRequest);
 
-	    MovementsWorkFlow.initMovement(requester, movementRequests, Long.parseLong(proceeeIdAndTaskURL[0]), null, proceeeIdAndTaskURL[1], null, null, null);
+	    MovementsWorkFlow.initMovement(requester, movementRequests, Long.parseLong(proceeeIdAndTaskURL[0]), null, proceeeIdAndTaskURL[1], null, null);
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());

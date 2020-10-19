@@ -2,9 +2,7 @@ package com.code.ui.backings.hcm.movements;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.movements.MovementTransactionData;
@@ -38,10 +36,8 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
     protected WFMovementData decisionData;
     protected List<WFMovementData> wfMovementsList;
 
-    protected Map<String, Object> extraParams; // Map containing any extra parameters needed in below functions
-
     public MovementsBase() {
-	extraParams = new HashMap<>();
+	wfMovement = new WFMovementData();
     }
 
     public String initMovement() {
@@ -65,7 +61,7 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
 		updateWFMovementDecisionData(wfm, decisionData);
 	    }
 
-	    MovementsWorkFlow.initMovement(requester, wfMovementsList, processId, attachments, taskUrl, internalCopies, externalCopies, extraParams);
+	    MovementsWorkFlow.initMovement(requester, wfMovementsList, processId, attachments, taskUrl, internalCopies, externalCopies);
 	    return NavigationEnum.OUTBOX.toString();
 	} catch (BusinessException e1) {
 	    setServerSideErrorMessages(getParameterizedMessage(e1.getMessage(), e1.getParams()));
@@ -281,7 +277,7 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
 		updateWFMovementDecisionData(wfm, decisionData);
 	    }
 
-	    MovementsWorkFlow.doMovementRE(requester, instance, wfMovementsList, currentTask, attachments, internalCopies, externalCopies, true, extraParams);
+	    MovementsWorkFlow.doMovementRE(requester, instance, wfMovementsList, currentTask, attachments, internalCopies, externalCopies, true);
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e1) {
 	    setServerSideErrorMessages(getParameterizedMessage(e1.getMessage(), e1.getParams()));
@@ -296,7 +292,7 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
 		wfMovementsList.add(wfMovement);
 	    }
 
-	    MovementsWorkFlow.doMovementRE(requester, instance, wfMovementsList, currentTask, attachments, internalCopies, externalCopies, false, extraParams);
+	    MovementsWorkFlow.doMovementRE(requester, instance, wfMovementsList, currentTask, attachments, internalCopies, externalCopies, false);
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e1) {
 	    setServerSideErrorMessages(getParameterizedMessage(e1.getMessage(), e1.getParams()));
