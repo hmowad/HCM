@@ -315,7 +315,7 @@
 				<tr>
 					<td width="100%">
 						<h:panelGroup id="actualClosingMissionId">
-							<h:panelGroup rendered="#{missionClosing.missionDetailList.size() != 0 and missionClosing.selectedMissionDetail.id != null and ((missionClosing.mode == 1 and !missionClosing.selectedMissionDetail.savedFlagBoolean) || missionClosing.mode == 2 || missionClosing.mode == 3)}">
+							<h:panelGroup rendered="#{missionClosing.missionDetailList.size() != 0 and missionClosing.selectedMissionDetail.id != null and (missionClosing.mode == 2 || missionClosing.mode == 3)}">
 								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
 									<tr>
 										<td>
@@ -437,7 +437,7 @@
 							</h:panelGroup>
 
 
-							<h:panelGroup rendered="#{missionClosing.missionDetailList.size() != 0 and missionClosing.selectedMissionDetail.id != null and missionClosing.mode == 1 and missionClosing.selectedMissionDetail.savedFlagBoolean}">
+							<h:panelGroup rendered="#{missionClosing.missionDetailList.size() != 0 and missionClosing.selectedMissionDetail.id != null and missionClosing.mode == 1}">
 								<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
 									<tr>
 										<td>
@@ -543,18 +543,18 @@
 									</tr>
 									<tr>
 										<td width="100%">
-											<h:commandButton action="#{missionClosing.setEditPanelFlag(true)}" styleClass="btn_normal_icon" value="#{msgs.label_edit} &nbsp; #{msgs.fa_edit}" rendered="#{missionClosing.selectedMissionDetail.actualPeriod != null and missionClosing.selectedMissionDetail.actualPeriod != 0 and !missionClosing.selectedMissionDetail.absenceFlagBoolean and !missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean}">
+											<h:commandButton action="#{missionClosing.setEditPanelFlag(true)}" styleClass="btn_normal_icon" value="#{msgs.label_edit} &nbsp; #{msgs.fa_edit}" rendered="#{missionClosing.selectedMissionDetail.actualPeriod != null and missionClosing.selectedMissionDetail.actualPeriod != 0 and !missionClosing.selectedMissionDetail.absenceFlagBoolean and !missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean and missionClosing.selectedMissionDetail.actualDataSavedFlagBoolean}">
 												<f:ajax render="missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
 											</h:commandButton>
 											<h:outputText value=" " />
-											<h:commandButton action="#{missionClosing.setSavePanelFlag(true)}" styleClass="btn_normal_icon" value="#{msgs.label_saveMissionData} &nbsp; #{msgs.fa_floppy_o}" rendered="#{missionClosing.selectedMissionDetail.absenceFlagBoolean and !missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean}">
+											<h:commandButton action="#{missionClosing.setSavePanelFlag(true)}" styleClass="btn_normal_icon" value="#{msgs.label_saveMissionData} &nbsp; #{msgs.fa_floppy_o}" rendered="#{!missionClosing.selectedMissionDetail.actualDataSavedFlagBoolean}">
 												<f:ajax render="missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
 											</h:commandButton>
 											<h:outputText value=" " />
 											<h:commandButton action="#{missionClosing.setCancelMissionFlag(true)}" styleClass="btn_normal_icon" value="#{msgs.label_cancelMission} &nbsp; #{msgs.fa_close}" rendered="#{missionClosing.selectedMissionDetail.actualPeriod != null and missionClosing.selectedMissionDetail.actualPeriod != 0 and !missionClosing.selectedMissionDetail.absenceFlagBoolean and !missionClosing.selectedMissionDetail.paymentDecisionIssuedFlagBoolean}">
 												<f:ajax render="missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
 											</h:commandButton>
-											<h:commandButton action="#{missionClosing.setSavePaymentFlag(true)}" styleClass="btn_normal_icon" value="#{msgs.label_savePaymentData} &nbsp; #{msgs.fa_floppy_o}" rendered="#{missionClosing.selectedMissionDetail.actualPeriod != null and missionClosing.selectedMissionDetail.actualPeriod != 0 and !missionClosing.selectedMissionDetail.absenceFlagBoolean}">
+											<h:commandButton action="#{missionClosing.setSavePaymentFlag(true)}" styleClass="btn_normal_icon" value="#{msgs.label_savePaymentData} &nbsp; #{msgs.fa_floppy_o}" rendered="#{missionClosing.selectedMissionDetail.actualPeriod != null and missionClosing.selectedMissionDetail.actualPeriod != 0 and !missionClosing.selectedMissionDetail.absenceFlagBoolean and missionClosing.selectedMissionDetail.actualDataSavedFlagBoolean}">
 												<f:ajax render="missionClosingFormId:extraButtonsPanelId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
 											</h:commandButton>
 											<h:outputText value=" " />

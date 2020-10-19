@@ -69,7 +69,7 @@ public class MissionDetail extends AuditEntity implements UpdatableAuditEntity {
     private Integer paymentDecisionIssuedFlag;
     private String paymentDecisionNumber;
     private Date paymentDecisionDate;
-    private Integer savedFlag;
+    private Integer actualDataSavedFlag;
 
     @SequenceGenerator(name = "HCMMissionsSeq",
 	    sequenceName = "HCM_MSN_SEQ")
@@ -342,13 +342,13 @@ public class MissionDetail extends AuditEntity implements UpdatableAuditEntity {
     }
 
     @Basic
-    @Column(name = "SAVED_FLAG")
-    public Integer getSavedFlag() {
-	return savedFlag;
+    @Column(name = "ACTUAL_DATA_SAVED_FLAG")
+    public Integer getActualDataSavedFlag() {
+	return actualDataSavedFlag;
     }
 
-    public void setSavedFlag(Integer savedFlag) {
-	this.savedFlag = savedFlag;
+    public void setActualDataSavedFlag(Integer actualDataSavedFlag) {
+	this.actualDataSavedFlag = actualDataSavedFlag;
     }
 
     @Override
@@ -370,6 +370,6 @@ public class MissionDetail extends AuditEntity implements UpdatableAuditEntity {
 		"paymentDecisionIssuedFlag:" + paymentDecisionIssuedFlag + AUDIT_SEPARATOR +
 		"paymentDecisionNumber:" + paymentDecisionNumber + AUDIT_SEPARATOR +
 		"paymentDecisionDate:" + paymentDecisionDate + AUDIT_SEPARATOR +
-		"savedFlag:" + savedFlag + AUDIT_SEPARATOR;
+		"actualDataSavedFlag:" + actualDataSavedFlag + AUDIT_SEPARATOR;
     }
 }

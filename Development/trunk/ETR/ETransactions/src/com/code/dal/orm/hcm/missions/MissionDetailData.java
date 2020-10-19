@@ -119,8 +119,8 @@ public class MissionDetailData extends BaseEntity {
     private String paymentDecisionNumber;
     private Date paymentDecisionDate;
     private String paymentDecisionDateString;
-    private Integer savedFlag;
-    private Boolean savedFlagBoolean;
+    private Integer actualDataSavedFlag;
+    private Boolean actualDataSavedFlagBoolean;
 
     private MissionDetail missionDetail;
 
@@ -717,35 +717,35 @@ public class MissionDetailData extends BaseEntity {
     }
 
     @Basic
-    @Column(name = "SAVED_FLAG")
+    @Column(name = "ACTUAL_DATA_SAVED_FLAG")
     @XmlTransient
-    public Integer getSavedFlag() {
-	return savedFlag;
+    public Integer getActualDataSavedFlag() {
+	return actualDataSavedFlag;
     }
 
-    public void setSavedFlag(Integer savedFlag) {
-	this.savedFlag = savedFlag;
-	this.missionDetail.setSavedFlag(savedFlag);
-	if (this.savedFlag == null || this.savedFlag == FlagsEnum.OFF.getCode()) {
-	    this.savedFlagBoolean = false;
+    public void setActualDataSavedFlag(Integer actualDataSavedFlag) {
+	this.actualDataSavedFlag = actualDataSavedFlag;
+	this.missionDetail.setActualDataSavedFlag(actualDataSavedFlag);
+	if (this.actualDataSavedFlag == null || this.actualDataSavedFlag == FlagsEnum.OFF.getCode()) {
+	    this.actualDataSavedFlagBoolean = false;
 	} else {
-	    this.savedFlagBoolean = true;
+	    this.actualDataSavedFlagBoolean = true;
 	}
 
     }
 
     @Transient
     @XmlTransient
-    public Boolean getSavedFlagBoolean() {
-	return savedFlagBoolean;
+    public Boolean getActualDataSavedFlagBoolean() {
+	return actualDataSavedFlagBoolean;
     }
 
-    public void setSavedFlagBoolean(Boolean savedFlagBoolean) {
-	this.savedFlagBoolean = savedFlagBoolean;
-	if (this.savedFlagBoolean == false) {
-	    this.savedFlag = FlagsEnum.OFF.getCode();
+    public void setActualDataSavedFlagBoolean(Boolean savedFlagBoolean) {
+	this.actualDataSavedFlagBoolean = savedFlagBoolean;
+	if (this.actualDataSavedFlagBoolean == false) {
+	    this.actualDataSavedFlag = FlagsEnum.OFF.getCode();
 	} else {
-	    this.savedFlag = FlagsEnum.ON.getCode();
+	    this.actualDataSavedFlag = FlagsEnum.ON.getCode();
 	}
     }
 }
