@@ -119,11 +119,10 @@ public class MissionClosing extends BaseBacking {
     public void modifyMissionDetail() {
 	try {
 	    selectedMissionDetail.getMissionDetail().setSystemUser(this.loginEmpData.getEmpId() + "");
-	    selectedMissionDetail.setSavedFlag(FlagsEnum.ON.getCode());
 	    MissionsService.modifyActualMissionDetails(mission, selectedMissionDetail, selectedMissionDetail.getAbsenceFlagBoolean() ? null : AdminDecisionsEnum.OFFICERS_MISSION_DECISION.getCode());
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
-	    selectedMissionDetail.setSavedFlag(FlagsEnum.OFF.getCode());
+	    selectedMissionDetail.setActualDataSavedFlag(FlagsEnum.OFF.getCode());
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
 
@@ -146,6 +145,7 @@ public class MissionClosing extends BaseBacking {
 	    selectedMissionDetail.getMissionDetail().setSystemUser(this.loginEmpData.getEmpId() + "");
 	    selectedMissionDetail.setAbsenceFlagBoolean(false);
 	    selectedMissionDetail.setAbsenceReasons("");
+	    selectedMissionDetail.setActualDataSavedFlag(FlagsEnum.ON.getCode());
 	    MissionsService.modifyActualMissionDetails(mission, selectedMissionDetail, AdminDecisionsEnum.OFFICERS_MISSION_DECISION.getCode());
 	    savePanelFlag = false;
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
@@ -165,7 +165,7 @@ public class MissionClosing extends BaseBacking {
 	    cancelMissionFlag = false;
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
-	    selectedMissionDetail.setSavedFlag(FlagsEnum.OFF.getCode());
+	    selectedMissionDetail.setActualDataSavedFlag(FlagsEnum.OFF.getCode());
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
     }
@@ -177,7 +177,7 @@ public class MissionClosing extends BaseBacking {
 	    savePaymentFlag = false;
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
-	    selectedMissionDetail.setSavedFlag(FlagsEnum.OFF.getCode());
+	    selectedMissionDetail.setActualDataSavedFlag(FlagsEnum.OFF.getCode());
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
 	}
     }
