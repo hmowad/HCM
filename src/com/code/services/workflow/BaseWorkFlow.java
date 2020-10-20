@@ -524,8 +524,8 @@ public abstract class BaseWorkFlow extends BaseService {
 		List<String> processesIdsExcludedFromInvalidation = new ArrayList<String>(Arrays.asList(ETRConfigurationService.getProcessesIdsExcludedFromInvalidation().split(",")));
 		if (processesIdsExcludedFromInvalidation.contains(instance.getProcessId() + "")) {
 		    Long originalUnitManagerId = task.getOriginalUnitId() == null ? null : UnitsService.getUnitById(task.getOriginalUnitId()).getPhysicalManagerId();
-		    task.setAssigneeId(originalUnitManagerId.equals(task.getOriginalId()) ? null : originalUnitManagerId); // TODO: to be revised later
-		    task.setOriginalId(originalUnitManagerId.equals(task.getOriginalId()) ? null : originalUnitManagerId);
+		    task.setAssigneeId((originalUnitManagerId == null || originalUnitManagerId.equals(task.getOriginalId())) ? null : originalUnitManagerId); // TODO: to be revised later
+		    task.setOriginalId((originalUnitManagerId == null || originalUnitManagerId.equals(task.getOriginalId())) ? null : originalUnitManagerId);
 		    DataAccess.updateEntity(task, session);
 		} else {
 		    instancesIds.add(instance.getInstanceId());
