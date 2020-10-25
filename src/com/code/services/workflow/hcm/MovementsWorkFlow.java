@@ -1670,14 +1670,14 @@ public class MovementsWorkFlow extends BaseWorkFlow {
      * @see TransactionTypesEnum , MovementTypesEnum
      * 
      */
-    public static List<WFMovementData> constructWFMovementByDecisionInfo(long processId, String decisionNumber, Date decisionDate, Long[] categoriesIds, long movementTypeId, int transactionTypeCode, long regionId) throws BusinessException {
+    public static List<WFMovementData> constructWFMovementByDecisionInfo(long processId, String decisionNumber, Date decisionDate, Long[] categoriesIds, long movementTypeId, int transactionTypeCode, long regionId, String... extraParams) throws BusinessException {
 	List<MovementTransactionData> movementTransactions = MovementsService.getValidDecisionMembers(decisionNumber, decisionDate, categoriesIds, movementTypeId, regionId, FlagsEnum.ON.getCode());
 	List<WFMovementData> movementRequests = new ArrayList<WFMovementData>();
 	if (movementTransactions != null && movementTransactions.size() > 0) {
 	    for (MovementTransactionData movementTransaction : movementTransactions) {
 		movementRequests.add(constructWFMovement(processId, movementTransaction.getEmployeeId(), null, movementTransaction.getExecutionDateFlag(), movementTransaction.getExecutionDate(), transactionTypeCode == TransactionTypesEnum.MVT_TERMINATION_DECISION.getCode() ? HijriDateService.getHijriSysDate() : movementTransaction.getEndDate(), movementTransaction.getUnitId(), movementTransaction.getUnitFullName(), movementTransaction.getPeriodDays(), movementTransaction.getPeriodMonths(),
 			movementTransaction.getLocationFlag(), movementTransaction.getLocation(), movementTransaction.getDecisionNumber(),
-			movementTransaction.getDecisionDate(), movementTransaction.getReasonType(), movementTransaction.getJobId(), movementTransaction.getJobCode(), movementTransaction.getJobName(), movementTransaction.getMovementTypeId(), transactionTypeCode));
+			movementTransaction.getDecisionDate(), movementTransaction.getReasonType(), movementTransaction.getJobId(), movementTransaction.getJobCode(), movementTransaction.getJobName(), movementTransaction.getMovementTypeId(), transactionTypeCode, extraParams));
 	    }
 	}
 	return movementRequests;

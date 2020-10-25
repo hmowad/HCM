@@ -37,7 +37,6 @@ public abstract class MovementsBase extends WFBaseBacking implements Serializabl
     protected List<WFMovementData> wfMovementsList;
 
     public MovementsBase() {
-	wfMovement = new WFMovementData();
     }
 
     public String initMovement() {
