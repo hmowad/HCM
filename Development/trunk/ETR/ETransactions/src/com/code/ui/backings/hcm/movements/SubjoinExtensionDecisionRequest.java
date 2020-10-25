@@ -11,12 +11,15 @@ import com.code.dal.orm.workflow.hcm.movements.WFMovementData;
 import com.code.enums.CategoryModesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.LocationFlagsEnum;
+import com.code.enums.MenuActionsEnum;
+import com.code.enums.MenuCodesEnum;
 import com.code.enums.MovementTypesEnum;
 import com.code.enums.TransactionTypesEnum;
 import com.code.enums.WFProcessesEnum;
 import com.code.enums.WFTaskRolesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.EmployeesService;
+import com.code.services.security.SecurityService;
 import com.code.services.util.HijriDateService;
 import com.code.services.workflow.hcm.MovementsWorkFlow;
 
@@ -33,23 +36,29 @@ public class SubjoinExtensionDecisionRequest extends MovementsBase implements Se
     public SubjoinExtensionDecisionRequest() {
 	super.init();
 	if (getRequest().getParameter("mode") != null) {
-	    mode = Integer.parseInt(getRequest().getParameter("mode"));
-	    this.init();
-	    switch (mode) {
-	    case 1:
-		setScreenTitle(getMessage("title_officersSubjoinExtensionDecisionRequest"));
-		this.processId = WFProcessesEnum.OFFICERS_SUBJOIN_EXTENSION.getCode();
-		break;
-	    case 2:
-		setScreenTitle(getMessage("title_soldiersSubjoinExtensionDecisionRequest"));
-		this.processId = WFProcessesEnum.SOLDIERS_SUBJOIN_EXTENSION.getCode();
-		break;
-	    case 3:
-		setScreenTitle(getMessage("title_personsInternalAssignmentExtensionDecisionRequest"));
-		this.processId = WFProcessesEnum.PERSONS_ASSIGNMENT_EXTENSION.getCode();
-		break;
-	    default:
-		setServerSideErrorMessages(getMessage("error_URLError"));
+	    try {
+		mode = Integer.parseInt(getRequest().getParameter("mode"));
+		this.init();
+		switch (mode) {
+		case 1:
+		    setScreenTitle(getMessage("title_officersSubjoinExtensionDecisionRequest"));
+		    this.processId = WFProcessesEnum.OFFICERS_SUBJOIN_EXTENSION.getCode();
+		    decisionData.setExtraParams("skipMonthsRuleValidation=" + (SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_SUBJOIN_EXTENSION_OFFICERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode()) ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode()));
+		    break;
+		case 2:
+		    setScreenTitle(getMessage("title_soldiersSubjoinExtensionDecisionRequest"));
+		    this.processId = WFProcessesEnum.SOLDIERS_SUBJOIN_EXTENSION.getCode();
+		    decisionData.setExtraParams("skipMonthsRuleValidation=" + (SecurityService.isEmployeeMenuActionGranted(requester.getEmpId(), MenuCodesEnum.MVT_SUBJOIN_EXTENSION_SOLDIERS_DECISION_REQUEST.getCode(), MenuActionsEnum.MVT_BYPASS_MIN_MONTHS_RULE.getCode()) ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode()));
+		    break;
+		case 3:
+		    setScreenTitle(getMessage("title_personsInternalAssignmentExtensionDecisionRequest"));
+		    this.processId = WFProcessesEnum.PERSONS_ASSIGNMENT_EXTENSION.getCode();
+		    break;
+		default:
+		    setServerSideErrorMessages(getMessage("error_URLError"));
+		}
+	    } catch (BusinessException e) {
+		setServerSideErrorMessages(getMessage(e.getMessage()));
 	    }
 	} else
 	    setServerSideErrorMessages(getMessage("error_URLError"));
@@ -135,7 +144,7 @@ public class SubjoinExtensionDecisionRequest extends MovementsBase implements Se
 
     public void getSubjoinByDecisionInfo() {
 	try {
-	    wfMovementsList = MovementsWorkFlow.constructWFMovementByDecisionInfo(processId, decisionData.getBasedOnDecisionNumber(), decisionData.getBasedOnDecisionDate(), getCategoriesIdsArrayByMode(mode), MovementTypesEnum.SUBJOIN.getCode(), TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), getLoginEmpPhysicalRegionFlag(true));
+	    wfMovementsList = MovementsWorkFlow.constructWFMovementByDecisionInfo(processId, decisionData.getBasedOnDecisionNumber(), decisionData.getBasedOnDecisionDate(), getCategoriesIdsArrayByMode(mode), MovementTypesEnum.SUBJOIN.getCode(), TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), getLoginEmpPhysicalRegionFlag(true), decisionData.getExtraParams());
 	    if (wfMovementsList != null && wfMovementsList.size() > 0) {
 		decisionData = wfMovementsList.get(0);
 		decisionData.setBasedOnOrderDate(HijriDateService.getHijriSysDate());
