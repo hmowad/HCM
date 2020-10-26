@@ -149,11 +149,6 @@
 
 			var emailRe = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 			var mobileRe = /05\d{8}$/;	
-
-			if(expiryDateIdValue == null || expiryDateIdValue == '') {
-				alert("#{msgs.error_retrieveDataFromYaqeen}");
-				return false;
-			}
 			
 			if ((birthPlaceValue == null || birthPlaceValue == '')
 					|| (recQualificationLevelId != null && !recQualificationLevelId.value)
@@ -393,12 +388,10 @@
 
 										<h:panelGroup rendered="#{employeesDataView.employee.empId == employeesDataView.loginEmpData.empId}">
 											<td width="45%">
-												<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 													<tr>
 														<td width="100%" style="text-align: left;">
-															<h:commandButton id="saveSocialIdBtn" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validate(#{employeesDataView.mode})');">
-																<f:ajax execute="employeesDataViewFormId:basicDataPanelId employeesDataViewFormId:jobDataPanelId employeesDataViewFormId:recQualificationDataPanelId employeesDataViewFormId:curQualificationDataPanelId employeesDataViewFormId:communicationDataPanelId employeesDataViewFormId:socialIdArchivingPanelId" render="employeesDataViewFormId:notifyMessagesId" listener="#{employeesDataView.save()}" />
-															</h:commandButton>
+															<h:outputText value="#{msgs.label_toSaveAttachmentsPressSave}" />
 														</td>
 													</tr>
 												</table>
@@ -872,12 +865,15 @@
 					</td>
 				</tr>
 				<tr>
+					<td width="100%" height="15" />
+				</tr>
+				<tr>
 					<td width="100%">
 						<h:panelGroup id="saveButtonPanelGroupId">
 							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="100%">
-										<h:commandButton id="saveBtn" action="#{employeesDataView.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validate(#{employeesDataView.mode})');" rendered="#{not employeesDataView.viewOnly or employeesDataView.viewSaveBtnForYaqeen}">
+										<h:commandButton id="saveBtn" action="#{employeesDataView.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" onclick="return handleOnAction('#{msgs.q_save}', 'validate(#{employeesDataView.mode})');">
 											<f:ajax execute="@form" render="employeesDataViewFormId:saveButtonPanelGroupId employeesDataViewFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</td>
