@@ -353,7 +353,7 @@
 												<h:commandButton action="#{terminationCivilianMovement.printForNotification()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
 											</h:panelGroup>
 
-											<h:panelGroup rendered="#{terminationsCiviliansRecords.role == 'Notification'}">
+											<h:panelGroup rendered="#{terminationCivilianMovement.role == 'Notification'}">
 												<h:commandButton id="nBtnId" action="#{terminationCivilianMovement.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 													<f:ajax render="notifyMessagesId" execute="@form" />
 												</h:commandButton>
