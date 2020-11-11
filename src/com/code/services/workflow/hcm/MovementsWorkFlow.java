@@ -2211,7 +2211,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 			&& movementRequest.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 
 		    if ((MovementsService.checkIfEmployeeExistsInCertainPositions(employee)
-			    || movementRequest.getEmployeeRankId().longValue() < RanksEnum.COLONEL.getCode())) {
+			    || movementRequest.getEmployeeRankId().longValue() < RanksEnum.MAJOR.getCode())) {
 
 			if (movementRequest.getMovementTypeId().longValue() == MovementTypesEnum.MOVE.getCode())
 			    throw new BusinessException("error_cannotDoMoveOnThisEmployee");
