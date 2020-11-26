@@ -14,6 +14,7 @@ import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.missions.MissionData;
 import com.code.dal.orm.hcm.missions.MissionDetailData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
+import com.code.enums.AdminDecisionsEnum;
 import com.code.enums.CategoriesEnum;
 import com.code.enums.CategoryModesEnum;
 import com.code.enums.FlagsEnum;
@@ -457,6 +458,8 @@ public class MissionsService extends BaseService {
 
     private static void doPayrollIntegration(MissionDetailData missionDetailsData, Long adminDecisionId, Integer resendFlag, CustomSession session) throws BusinessException {
 	if (adminDecisionId != null) {
+	    if (adminDecisionId.equals(AdminDecisionsEnum.OFFICERS_MISSION_CANCELLATION_DECISION.getCode()) && !missionDetailsData.getActualDataSavedFlagBoolean())
+		return;
 	    EmployeeData employee = EmployeesService.getEmployeeData(missionDetailsData.getEmpId());
 	    if (employee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
 		session.flushTransaction();
@@ -472,6 +475,7 @@ public class MissionsService extends BaseService {
 		PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(MissionData.class), resendFlag, FlagsEnum.ON.getCode(), session);
 	    }
 	}
+
     }
 
     public static void payrollIntegrationFailureHandle(Long missionDetailId, Long adminDecisionId, CustomSession session) throws BusinessException {
