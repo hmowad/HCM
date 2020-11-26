@@ -17,7 +17,6 @@ import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.dutyextension.DutyExtensionTransaction;
 import com.code.dal.orm.hcm.employees.Employee;
 import com.code.dal.orm.hcm.incentives.IncentiveTransaction;
-import com.code.dal.orm.hcm.missions.MissionData;
 import com.code.dal.orm.hcm.movements.MovementTransaction;
 import com.code.dal.orm.hcm.promotions.PromotionTransaction;
 import com.code.dal.orm.hcm.raises.RaiseTransaction;
@@ -48,7 +47,6 @@ import com.code.services.hcm.DutyExtensionService;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.FutureVacationsService;
 import com.code.services.hcm.IncentivesService;
-import com.code.services.hcm.MissionsService;
 import com.code.services.hcm.MovementsService;
 import com.code.services.hcm.PromotionsService;
 import com.code.services.hcm.RaisesService;
@@ -270,8 +268,6 @@ public class PayrollEngineService extends BaseService {
 		IncentivesService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getRowId(), session);
 	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(TrainingTransaction.class))) {
 		TrainingEmployeesService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getRowId(), payrollIntegrationFailureLogData.getAdminDecisionId(), session);
-	    } else if (payrollIntegrationFailureLogData.getTableName().equals(DataAccess.getTableName(MissionData.class))) {
-		MissionsService.payrollIntegrationFailureHandle(payrollIntegrationFailureLogData.getRowId(), payrollIntegrationFailureLogData.getAdminDecisionId(), session);
 	    }
 
 	    payrollIntegrationFailureLogData.setExecutedFlag(FlagsEnum.ON.getCode());

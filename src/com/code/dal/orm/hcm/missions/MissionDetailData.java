@@ -121,6 +121,7 @@ public class MissionDetailData extends BaseEntity {
     private String paymentDecisionDateString;
     private Integer actualDataSavedFlag;
     private Boolean actualDataSavedFlagBoolean;
+    private String payrollDecisionNumber;
 
     private MissionDetail missionDetail;
 
@@ -747,5 +748,17 @@ public class MissionDetailData extends BaseEntity {
 	} else {
 	    this.actualDataSavedFlag = FlagsEnum.ON.getCode();
 	}
+    }
+
+    @Basic
+    @Column(name = "PAYROLL_DECISION_NUMBER")
+    @XmlTransient
+    public String getPayrollDecisionNumber() {
+	return payrollDecisionNumber;
+    }
+
+    public void setPayrollDecisionNumber(String payrollDecisionNumber) {
+	this.payrollDecisionNumber = payrollDecisionNumber;
+	this.missionDetail.setPayrollDecisionNumber(payrollDecisionNumber);
     }
 }
