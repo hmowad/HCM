@@ -439,15 +439,17 @@ public class MissionsService extends BaseService {
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
-	    DataAccess.updateEntity(missionDetailsData.getMissionDetail(), session);
 	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
-		doPayrollIntegration(missionDetailsData, adminDecisionId, FlagsEnum.OFF.getCode(), session);
+		doPayrollIntegration(missionDetailsData, adminDecisionId, FlagsEnum.ON.getCode(), session);
+	    DataAccess.updateEntity(missionDetailsData.getMissionDetail(), session);
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
 	} catch (Exception e) {
 	    if (!isOpenedSession)
 		session.rollbackTransaction();
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -467,25 +469,17 @@ public class MissionsService extends BaseService {
 		String gregStartDateString = HijriDateService.hijriToGregDateString(missionDetailsData.getActualStartDateString());
 		String gregEndDateString = HijriDateService.hijriToGregDateString(missionDetailsData.getActualEndDateString());
 		String requestDecisionNumber = System.currentTimeMillis() + "";
+		String requestOriginalDecisionNumber = missionDetailsData.getPayrollDecisionNumber();
 		List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(
-			Arrays.asList(new AdminDecisionEmployeeData(missionDetailsData.getEmpId(), missionDetailsData.getEmpName(), missionDetailsData.getId(), null, gregStartDateString, gregEndDateString, requestDecisionNumber, null)));
+			Arrays.asList(new AdminDecisionEmployeeData(missionDetailsData.getEmpId(), missionDetailsData.getEmpName(), missionDetailsData.getId(), null, gregStartDateString, gregEndDateString, requestDecisionNumber, requestOriginalDecisionNumber)));
 		UnitData empUnit = UnitsService.getUnitByExactFullName(missionDetailsData.getTransEmpUnitDesc());
 		Long unitId = empUnit != null ? empUnit.getId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId();
 
 		PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(MissionData.class), resendFlag, FlagsEnum.ON.getCode(), session);
+		missionDetailsData.setPayrollDecisionNumber(requestDecisionNumber);
 	    }
 	}
 
-    }
-
-    public static void payrollIntegrationFailureHandle(Long missionDetailId, Long adminDecisionId, CustomSession session) throws BusinessException {
-	MissionDetailData missionDetailData = getMissionsDetailById(missionDetailId);
-	if (missionDetailData != null) {
-	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
-		doPayrollIntegration(missionDetailData, adminDecisionId, FlagsEnum.ON.getCode(), session);
-	} else {
-	    throw new BusinessException("error_transactionDataRetrievingError");
-	}
     }
 
     // *********************** Integration with employee files (mission) ************************************

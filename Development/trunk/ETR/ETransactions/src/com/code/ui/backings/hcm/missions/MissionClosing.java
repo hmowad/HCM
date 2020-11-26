@@ -123,7 +123,11 @@ public class MissionClosing extends BaseBacking {
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    selectedMissionDetail.setActualDataSavedFlag(FlagsEnum.OFF.getCode());
-	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    try {
+		this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    } catch (Exception e1) {
+		this.setServerSideErrorMessages(e.getMessage());
+	    }
 	}
 
     }
@@ -135,7 +139,11 @@ public class MissionClosing extends BaseBacking {
 	    editPanelFlag = false;
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    try {
+		this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    } catch (Exception e1) {
+		this.setServerSideErrorMessages(e.getMessage());
+	    }
 	}
 
     }
@@ -150,7 +158,11 @@ public class MissionClosing extends BaseBacking {
 	    savePanelFlag = false;
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
-	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    try {
+		this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    } catch (Exception e1) {
+		this.setServerSideErrorMessages(e.getMessage());
+	    }
 	}
 
     }
@@ -166,7 +178,11 @@ public class MissionClosing extends BaseBacking {
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    selectedMissionDetail.setActualDataSavedFlag(FlagsEnum.OFF.getCode());
-	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    try {
+		this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    } catch (Exception e1) {
+		this.setServerSideErrorMessages(e.getMessage());
+	    }
 	}
     }
 
@@ -178,7 +194,11 @@ public class MissionClosing extends BaseBacking {
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    selectedMissionDetail.setActualDataSavedFlag(FlagsEnum.OFF.getCode());
-	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    try {
+		this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    } catch (Exception e1) {
+		this.setServerSideErrorMessages(e.getMessage());
+	    }
 	}
     }
 

@@ -70,6 +70,7 @@ public class MissionDetail extends AuditEntity implements UpdatableAuditEntity {
     private String paymentDecisionNumber;
     private Date paymentDecisionDate;
     private Integer actualDataSavedFlag;
+    private String payrollDecisionNumber;
 
     @SequenceGenerator(name = "HCMMissionsSeq",
 	    sequenceName = "HCM_MSN_SEQ")
@@ -349,6 +350,16 @@ public class MissionDetail extends AuditEntity implements UpdatableAuditEntity {
 
     public void setActualDataSavedFlag(Integer actualDataSavedFlag) {
 	this.actualDataSavedFlag = actualDataSavedFlag;
+    }
+
+    @Basic
+    @Column(name = "PAYROLL_DECISION_NUMBER")
+    public String getPayrollDecisionNumber() {
+	return payrollDecisionNumber;
+    }
+
+    public void setPayrollDecisionNumber(String payrollDecisionNumber) {
+	this.payrollDecisionNumber = payrollDecisionNumber;
     }
 
     @Override
