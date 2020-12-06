@@ -14,12 +14,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.code.dal.orm.hcm.incentives.IncentivePort;
-import com.code.dal.orm.hcm.incentives.IncentiveTransaction;
 import com.code.dal.orm.hcm.missions.MissionDetailData;
 import com.code.dal.orm.setup.GovernmentalCommitteeCategory;
 import com.code.enums.FlagsEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.requests.eservices.IncentiveRequest;
 import com.code.integration.responses.hcm.WSMissionDetailDataResponse;
 import com.code.services.BaseService;
 import com.code.services.hcm.IncentivesService;
@@ -32,11 +32,11 @@ public class IncentivesWS {
     @POST
     @Path("/addIncentiveTransaction")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addIncentiveTransaction(String incentiveTransactionString) {
+    public Response addIncentiveTransaction(String incentiveRequestString) {
 	Gson gson = new GsonBuilder().setDateFormat("mm/MM/yyyy").create();
 	try {
-	    IncentiveTransaction incentiveTransaction = gson.fromJson(incentiveTransactionString, IncentiveTransaction.class);
-	    IncentivesService.addIncentiveTransaction(incentiveTransaction);
+	    IncentiveRequest incentiveRequest = gson.fromJson(incentiveRequestString, IncentiveRequest.class);
+	    IncentivesService.addIncentiveTransaction(incentiveRequest);
 	} catch (Exception e) {
 	    if (e instanceof BusinessException)
 		return Response.status(Status.EXPECTATION_FAILED).entity(BaseService.getMessage(e.getMessage())).build();

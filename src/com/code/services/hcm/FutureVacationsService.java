@@ -239,7 +239,7 @@ public class FutureVacationsService extends BaseService {
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(
 		    Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), request.getVacationId(), null, gregVacationStartDateString, gregVacationEndDateString, requestDecisionNumber, originalDecisionNumber)));
 	    session.flushTransaction();
-	    PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(TransientVacationTransaction.class), resendFlag, request.getJoiningDate() != null ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode(), session);
+	    PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, request.getAttachments(), employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(TransientVacationTransaction.class), resendFlag, request.getJoiningDate() != null ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode(), session);
 	}
     }
 

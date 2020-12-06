@@ -184,7 +184,7 @@ public class VacationsService extends BaseService {
 	    String requestDecisionNumber = request.getJoiningDate() != null ? System.currentTimeMillis() + "" : request.getDecisionNumber();
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(
 		    Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), request.getVacationId(), null, gregVacationStartDateString, gregVacationEndDateString, requestDecisionNumber, originalVacationDecisionNumber)));
-	    PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(Vacation.class), resendFlag, request.getJoiningDate() != null ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode(), session);
+	    PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregVacationStartDateString, adminDecisionEmployeeDataList, request.getAttachments(), unitId, gregDecisionDateString, DataAccess.getTableName(Vacation.class), resendFlag, request.getJoiningDate() != null ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode(), session);
 	}
     }
 

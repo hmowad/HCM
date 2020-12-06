@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
+import com.code.dal.orm.hcm.attachments.ExternalAttachment;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.incentives.IncentivePort;
 import com.code.dal.orm.hcm.incentives.IncentiveTransaction;
@@ -19,6 +20,7 @@ import com.code.enums.IncentiveTypesEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.requests.eservices.IncentiveRequest;
 import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
 import com.code.services.BaseService;
 import com.code.services.integration.PayrollEngineService;
@@ -29,17 +31,22 @@ public class IncentivesService extends BaseService {
     private IncentivesService() {
     }
 
-    public static void addIncentiveTransaction(IncentiveTransaction incentiveTransaction) throws Exception {
-	validateIncentiveTransaction(incentiveTransaction);
+    public static void addIncentiveTransaction(IncentiveRequest incentiveRequest) throws Exception {
+	validateIncentiveTransaction(incentiveRequest.getIncentiveTransaction());
 	CustomSession session = DataAccess.getSession();
 
 	try {
 	    session.beginTransaction();
 
-	    incentiveTransaction.setTransactionDate(HijriDateService.getHijriSysDate());
-	    DataAccess.addEntity(incentiveTransaction, session);
+	    incentiveRequest.getIncentiveTransaction().setTransactionDate(HijriDateService.getHijriSysDate());
+	    DataAccess.addEntity(incentiveRequest.getIncentiveTransaction(), session);
+	    for (ExternalAttachment attachment : incentiveRequest.getAttachmentList()) {
+		attachment.setTransactionId(incentiveRequest.getIncentiveTransaction().getId());
+		attachment.setTransactionTableName(DataAccess.getTableName(IncentiveTransaction.class));
+		DataAccess.addEntity(attachment, session);
+	    }
 	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
-		doPayrollIntegration(incentiveTransaction, FlagsEnum.OFF.getCode(), session);
+		doPayrollIntegration(incentiveRequest.getIncentiveTransaction(), incentiveRequest.getAttachmentList(), FlagsEnum.OFF.getCode(), session);
 	    session.commitTransaction();
 	} catch (Exception e) {
 	    session.rollbackTransaction();
@@ -51,12 +58,13 @@ public class IncentivesService extends BaseService {
 
     public static void payrollIntegrationFailureHandle(Long transactionId, CustomSession session) throws DatabaseException, BusinessException {
 	IncentiveTransaction incentiveTransaction = getIncentiveTransactionById(transactionId);
+	List<ExternalAttachment> externalAttachments = ExternalAttachmentsService.getExternalAttachmentByTransactionIdAndTableName(transactionId, DataAccess.getTableName(IncentiveTransaction.class));
 	if (incentiveTransaction == null)
 	    throw new BusinessException("error_transactionDataRetrievingError");
-	doPayrollIntegration(incentiveTransaction, FlagsEnum.ON.getCode(), session);
+	doPayrollIntegration(incentiveTransaction, externalAttachments, FlagsEnum.ON.getCode(), session);
     }
 
-    private static void doPayrollIntegration(IncentiveTransaction incentiveTransaction, int resendFlag, CustomSession session) throws BusinessException {
+    private static void doPayrollIntegration(IncentiveTransaction incentiveTransaction, List<ExternalAttachment> externalAttachments, int resendFlag, CustomSession session) throws BusinessException {
 
 	Long adminDecisionId = null;
 	if (incentiveTransaction.getIncentiveTypeId().equals(IncentiveTypesEnum.FINANCIAL_LOSS_COMPENSATION.getCode()))
@@ -87,7 +95,7 @@ public class IncentivesService extends BaseService {
 		throw new BusinessException("error_employeeDataError");
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), incentiveTransaction.getId(), incentiveTransaction.getMissionTransactionId(), gregStartDateString, null, System.currentTimeMillis() + "", missionData == null ? null : missionData.getDecisionNumber())));
 	    session.flushTransaction();
-	    PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregTransactionDateString, adminDecisionEmployeeDataList, employee.getPhysicalUnitId(), gregTransactionDateString, DataAccess.getTableName(IncentiveTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
+	    PayrollEngineService.doPayrollIntegrationWithAttachmentList(adminDecisionId, employee.getCategoryId(), gregTransactionDateString, adminDecisionEmployeeDataList, externalAttachments, employee.getPhysicalUnitId(), gregTransactionDateString, DataAccess.getTableName(IncentiveTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
 	}
     }
 

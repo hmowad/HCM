@@ -2005,7 +2005,8 @@ public class TerminationsService extends BaseService {
 		    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(terminationTransactionData.getEmpId(), employee.getName(), terminationTransactionData.getId(), terminationTransactionData.getCancelTransactionId(), gregTerminationDateString, null, terminationTransactionData.getDecisionNumber(), cancelledTerminationTransaction != null && cancelledTerminationTransaction.getDecisionNumber() != null ? cancelledTerminationTransaction.getDecisionNumber() : null));
 		}
 		gregDecisionDateString = HijriDateService.hijriToGregDateString(terminationTransactionsList.get(0).getDecisionDateString());
-		PayrollEngineService.doPayrollIntegration(adminDecisionId, terminationTransactionsList.get(0).getCategoryId(), gregTerminationDateString, adminDecisionEmployeeDataList, employee != null && employee.getPhysicalUnitId() != null ? employee.getPhysicalUnitId() : terminationTransactionsList.get(0).getTransEmpUnitId(), gregDecisionDateString, DataAccess.getTableName(TerminationTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
+		PayrollEngineService.doPayrollIntegration(adminDecisionId, terminationTransactionsList.get(0).getCategoryId(), gregTerminationDateString, adminDecisionEmployeeDataList, terminationTransactionsList.get(0).getAttachments(), employee != null && employee.getPhysicalUnitId() != null ? employee.getPhysicalUnitId() : terminationTransactionsList.get(0).getTransEmpUnitId(), gregDecisionDateString, DataAccess.getTableName(TerminationTransaction.class), resendFlag, FlagsEnum.OFF.getCode(),
+			session);
 	    }
 	} catch (BusinessException e) {
 	    throw e;
