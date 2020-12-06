@@ -316,6 +316,8 @@
 		<mapping class="com.code.dal.orm.hcm.incentives.IncentiveType"/>
 		<mapping class="com.code.dal.orm.hcm.incentives.IncentivePort"/>
 		
+		<mapping class="com.code.dal.orm.hcm.attachments.ExternalAttachment"/>
+		
 		
 	</session-factory>
 </hibernate-configuration>

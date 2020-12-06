@@ -100,7 +100,7 @@ public class PayrollRestClient {
 	}
     }
 
-    public static void applyAdminDecision(Integer integrationTypeFlag, JsonObject body, PayrollIntegrationFailureLog payrollIntegrationFailureLog, Integer resendFlag, CustomSession... useSession) throws BusinessException {
+    public static void applyAdminDecision(Integer integrationTypeFlag, String body, PayrollIntegrationFailureLog payrollIntegrationFailureLog, Integer resendFlag, CustomSession... useSession) throws BusinessException {
 	Response response = null;
 	WebTarget webTarget = null;
 	String responseString = "";

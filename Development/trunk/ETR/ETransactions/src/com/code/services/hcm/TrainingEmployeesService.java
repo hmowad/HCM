@@ -268,7 +268,7 @@ public class TrainingEmployeesService extends BaseService {
 	}
 	adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(trainingTransactionData.getEmployeeId(), trainingTransactionData.getEmployeeName(), trainingTransactionData.getId(), null, gregStartDateString, gregEndDateString, decisionNumber, originalDecisionNumber));
 	Long unitId = employee.getPhysicalUnitId() != null ? employee.getPhysicalUnitId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId();
-	PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(TrainingTransaction.class), FlagsEnum.ON.getCode(), FlagsEnum.OFF.getCode(), session);
+	PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, trainingTransactionData.getAttachments(), unitId, gregDecisionDateString, DataAccess.getTableName(TrainingTransaction.class), FlagsEnum.ON.getCode(), FlagsEnum.OFF.getCode(), session);
     }
 
     private static void doTrainingRequestsPayrollIntegration(List<TrainingTransactionData> trainingTransactionDataList, CustomSession session) throws BusinessException {
@@ -327,7 +327,7 @@ public class TrainingEmployeesService extends BaseService {
 		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(trainingTransactionData.getEmployeeId(), employee.getName(), trainingTransactionData.getId(), null, gregStartDateString, gregEndDateString, decisionNumber, originalDecisionNumber));
 		Long unitId = employee.getPhysicalUnitId() != null ? employee.getPhysicalUnitId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId();
 		Integer originalDecisionFlag = trainingTransactionData.getTrainingJoiningDate() != null ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode();
-		PayrollEngineService.doPayrollIntegration(adminDecision, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(TrainingTransaction.class), FlagsEnum.OFF.getCode(), originalDecisionFlag, session);
+		PayrollEngineService.doPayrollIntegration(adminDecision, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, trainingTransactionData.getAttachments(), unitId, gregDecisionDateString, DataAccess.getTableName(TrainingTransaction.class), FlagsEnum.OFF.getCode(), originalDecisionFlag, session);
 	    }
 	}
     }
@@ -364,7 +364,7 @@ public class TrainingEmployeesService extends BaseService {
 	    if (adminDecision != null) {
 		adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(trainingTransactionData.getEmployeeId(), employee.getName(), trainingTransactionData.getId(), null, gregStartDateString, gregEndDateString, System.currentTimeMillis() + "", originalDecisionNumber));
 		Long unitId = employee.getPhysicalUnitId() != null ? employee.getPhysicalUnitId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId();
-		PayrollEngineService.doPayrollIntegration(adminDecision, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(TrainingTransaction.class), FlagsEnum.OFF.getCode(), FlagsEnum.OFF.getCode(), session);
+		PayrollEngineService.doPayrollIntegration(adminDecision, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, trainingTransactionData.getAttachments(), unitId, gregDecisionDateString, DataAccess.getTableName(TrainingTransaction.class), FlagsEnum.OFF.getCode(), FlagsEnum.OFF.getCode(), session);
 	    }
 	}
     }
@@ -386,7 +386,7 @@ public class TrainingEmployeesService extends BaseService {
 	    String gregStartDateString = HijriDateService.hijriToGregDateString(trainingTransactionData.getTrainingJoiningDateString());
 	    adminDecisionEmployeeDataList.add(new AdminDecisionEmployeeData(trainingTransactionData.getEmployeeId(), employee.getName(), trainingTransactionData.getId(), null, gregStartDateString, null, System.currentTimeMillis() + "", originalDecisionNumber));
 	    Long unitId = employee.getPhysicalUnitId() != null ? employee.getPhysicalUnitId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId();
-	    PayrollEngineService.doPayrollIntegration(adminDecision, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(TrainingTransaction.class), FlagsEnum.OFF.getCode(), FlagsEnum.ON.getCode(), session);
+	    PayrollEngineService.doPayrollIntegration(adminDecision, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, trainingTransactionData.getAttachments(), unitId, gregDecisionDateString, DataAccess.getTableName(TrainingTransaction.class), FlagsEnum.OFF.getCode(), FlagsEnum.ON.getCode(), session);
 	}
     }
 

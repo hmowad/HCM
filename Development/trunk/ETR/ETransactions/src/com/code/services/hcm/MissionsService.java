@@ -475,7 +475,7 @@ public class MissionsService extends BaseService {
 		UnitData empUnit = UnitsService.getUnitByExactFullName(missionDetailsData.getTransEmpUnitDesc());
 		Long unitId = empUnit != null ? empUnit.getId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId();
 
-		PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(MissionData.class), resendFlag, FlagsEnum.ON.getCode(), session);
+		PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregStartDateString, adminDecisionEmployeeDataList, missionDetailsData.getMissionAttachments(), unitId, gregDecisionDateString, DataAccess.getTableName(MissionData.class), resendFlag, FlagsEnum.ON.getCode(), session);
 		missionDetailsData.setPayrollDecisionNumber(requestDecisionNumber);
 	    }
 	}

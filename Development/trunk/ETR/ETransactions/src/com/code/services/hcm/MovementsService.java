@@ -405,7 +405,7 @@ public class MovementsService extends BaseService {
 		Integer originalDecisionFlag = (movementTransactions.get(0).getJoiningDate() != null || movementTransactions.get(0).getReturnJoiningDate() != null) ? FlagsEnum.ON.getCode() : FlagsEnum.OFF.getCode();
 		if (session != null)
 		    session.flushTransaction();
-		PayrollEngineService.doPayrollIntegration(adminDecision, movementTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, unitId, gregDecisionDateString, DataAccess.getTableName(MovementTransaction.class), resendFlag, originalDecisionFlag, session);
+		PayrollEngineService.doPayrollIntegration(adminDecision, movementTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, movementTransactions.get(0).getAttachments(), unitId, gregDecisionDateString, DataAccess.getTableName(MovementTransaction.class), resendFlag, originalDecisionFlag, session);
 	    }
 	}
     }

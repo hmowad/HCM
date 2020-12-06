@@ -848,6 +848,22 @@ public class ETRConfigurationService extends BaseService {
 	return getETRConfigByCode("YAKEEN_FOR_BORDER_GUARD_WSDL_LOCATION").getValue();
     }
 
+    public static String getFileNetDocumentClass() {
+	return getETRConfigByCode("FILE_NET_ATTACHMENTS_DOC_CLASS").getValue();
+    }
+
+    public static String getFileNetUsername() {
+	return getETRConfigByCode("FILE_NET_ATTACHMENTS_USERNAME").getValue();
+    }
+
+    public static String getFileNetPassword() {
+	return getETRConfigByCode("FILE_NET_ATTACHMENTS_PASSWORD").getValue();
+    }
+
+    public static String getFileNetWsdlLocation() {
+	return getETRConfigByCode("FILE_NET_WSDL_LOCATION").getValue();
+    }
+
     public static Integer getIntegrationWithAllowanceAndDeductionFlag() {
 	return Integer.parseInt(configurationMap.get("INTEGRATION_WITH_ALLOWANCE_AND_DEDUCTION_FLAG"));
     }

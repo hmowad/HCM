@@ -3859,7 +3859,7 @@ public class PromotionsService extends BaseService {
 	    }
 	    String gregDecisionDateString = HijriDateService.hijriToGregDateString(promotionTransactionDataList.get(0).getDecisionDateString());
 	    session.flushTransaction();
-	    PayrollEngineService.doPayrollIntegration(adminDecisionId, promotionTransactionDataList.get(0).getCategoryId(), gregNewLastPromotionDateString, adminDecisionEmployeeDataList, promotionTransactionDataList.get(0).getNewUnitId(), gregDecisionDateString, DataAccess.getTableName(PromotionTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
+	    PayrollEngineService.doPayrollIntegration(adminDecisionId, promotionTransactionDataList.get(0).getCategoryId(), gregNewLastPromotionDateString, adminDecisionEmployeeDataList, promotionTransactionDataList.get(0).getAttachments(), promotionTransactionDataList.get(0).getNewUnitId(), gregDecisionDateString, DataAccess.getTableName(PromotionTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
 	}
 
     }

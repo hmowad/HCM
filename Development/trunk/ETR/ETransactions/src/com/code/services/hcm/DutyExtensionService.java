@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
+import com.code.dal.orm.hcm.attachments.ExternalAttachment;
 import com.code.dal.orm.hcm.dutyextension.DutyExtensionTransaction;
 import com.code.dal.orm.hcm.dutyextension.DutyExtensionTransactionData;
 import com.code.dal.orm.hcm.employees.EmployeeData;
@@ -20,6 +21,7 @@ import com.code.enums.TransactionTypesEnum;
 import com.code.enums.UnitTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.requests.eservices.ExtentionRequest;
 import com.code.integration.responses.hcm.WSTerminatedEmployeesResponse;
 import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
 import com.code.services.BaseService;
@@ -58,14 +60,19 @@ public class DutyExtensionService extends BaseService {
 	return (result == null || result.size() == 0) ? null : result.get(0);
     }
 
-    public static void addExtensionTransaction(DutyExtensionTransaction dutyExtensionTransaction) throws DatabaseException, BusinessException {
+    public static void addExtensionTransaction(ExtentionRequest extentionRequest) throws DatabaseException, BusinessException {
 	CustomSession session = DataAccess.getSession();
 	try {
 	    session.beginTransaction();
-	    validateExtensionTransaction(dutyExtensionTransaction);
-	    DataAccess.addEntity(dutyExtensionTransaction, session);
+	    validateExtensionTransaction(extentionRequest.getDutyExtensionTransaction());
+	    DataAccess.addEntity(extentionRequest.getDutyExtensionTransaction(), session);
+	    for (ExternalAttachment attachment : extentionRequest.getAttachmentList()) {
+		attachment.setTransactionId(extentionRequest.getDutyExtensionTransaction().getId());
+		attachment.setTransactionTableName(DataAccess.getTableName(DutyExtensionTransaction.class));
+		DataAccess.addEntity(attachment, session);
+	    }
 	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()))
-		doPayrollIntegration(dutyExtensionTransaction, FlagsEnum.OFF.getCode(), session);
+		doPayrollIntegration(extentionRequest.getDutyExtensionTransaction(), extentionRequest.getAttachmentList(), FlagsEnum.OFF.getCode(), session);
 	    session.commitTransaction();
 	} catch (Exception e) {
 	    session.rollbackTransaction();
@@ -80,12 +87,13 @@ public class DutyExtensionService extends BaseService {
 
     public static void payrollIntegrationFailureHandle(Long transactionId, CustomSession session) throws DatabaseException, BusinessException {
 	DutyExtensionTransactionData dutyExtensionTransactionData = getDutyExtensionTransactionDataById(transactionId);
+	List<ExternalAttachment> externalAttachments = ExternalAttachmentsService.getExternalAttachmentByTransactionIdAndTableName(transactionId, DataAccess.getTableName(DutyExtensionTransaction.class));
 	if (dutyExtensionTransactionData == null)
 	    throw new BusinessException("error_transactionDataRetrievingError");
-	doPayrollIntegration(dutyExtensionTransactionData.getDutyExtensionTransaction(), FlagsEnum.ON.getCode(), session);
+	doPayrollIntegration(dutyExtensionTransactionData.getDutyExtensionTransaction(), externalAttachments, FlagsEnum.ON.getCode(), session);
     }
 
-    private static void doPayrollIntegration(DutyExtensionTransaction dutyExtensionTransaction, int resendFlag, CustomSession session) throws BusinessException {
+    private static void doPayrollIntegration(DutyExtensionTransaction dutyExtensionTransaction, List<ExternalAttachment> externalAttachments, int resendFlag, CustomSession session) throws BusinessException {
 	Long adminDecisionId = null;
 	if (dutyExtensionTransaction.getTransactionType().equals(TransactionTypesEnum.DUTY_EXTENSION_TRANSACTION.getCode()))
 	    adminDecisionId = AdminDecisionsEnum.DUTY_EXTENSION.getCode();
@@ -102,7 +110,7 @@ public class DutyExtensionService extends BaseService {
 	    String gregServiceTerminationDateString = HijriDateService.hijriToGregDateString(employee.getServiceTerminationDateString());
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), dutyExtensionTransaction.getId(), dutyExtensionTransaction.getBasedOnExtensionId(), gregServiceTerminationDateString, null, System.currentTimeMillis() + "", null)));
 	    session.flushTransaction();
-	    PayrollEngineService.doPayrollIntegration(adminDecisionId, employee.getCategoryId(), gregTransactionDateString, adminDecisionEmployeeDataList, UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId(), gregTransactionDateString, DataAccess.getTableName(DutyExtensionTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
+	    PayrollEngineService.doPayrollIntegrationWithAttachmentList(adminDecisionId, employee.getCategoryId(), gregTransactionDateString, adminDecisionEmployeeDataList, externalAttachments, UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId(), gregTransactionDateString, DataAccess.getTableName(DutyExtensionTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
 	}
     }
 

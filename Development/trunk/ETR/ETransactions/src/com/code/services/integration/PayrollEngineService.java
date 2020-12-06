@@ -1,19 +1,19 @@
 package com.code.services.integration;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
+import com.code.dal.orm.hcm.attachments.ExternalAttachment;
 import com.code.dal.orm.hcm.dutyextension.DutyExtensionTransaction;
 import com.code.dal.orm.hcm.employees.Employee;
 import com.code.dal.orm.hcm.incentives.IncentiveTransaction;
@@ -37,6 +37,11 @@ import com.code.enums.databasecolumnamemappings.EmployeeIdMappingEnum;
 import com.code.enums.databasecolumnamemappings.TransactionIdMappingEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.integration.requests.payroll.ApplyAdminDecisionRequestDto;
+import com.code.integration.requests.payroll.AttachmentDto;
+import com.code.integration.requests.payroll.DecisionTypeDto;
+import com.code.integration.requests.payroll.EmployeeDto;
+import com.code.integration.requests.payroll.VariableDto;
 import com.code.integration.responses.payroll.AdminDecisionEmployeeData;
 import com.code.integration.responses.payroll.AdminDecisionResponse;
 import com.code.integration.responses.payroll.AdminDecisionVariable;
@@ -45,6 +50,7 @@ import com.code.services.BaseService;
 import com.code.services.config.ETRConfigurationService;
 import com.code.services.hcm.DutyExtensionService;
 import com.code.services.hcm.EmployeesService;
+import com.code.services.hcm.ExternalAttachmentsService;
 import com.code.services.hcm.FutureVacationsService;
 import com.code.services.hcm.IncentivesService;
 import com.code.services.hcm.MovementsService;
@@ -78,7 +84,11 @@ public class PayrollEngineService extends BaseService {
 	integrationFlag = ETRConfigurationService.getIntegrationWithAllowanceAndDeductionFlag();
     }
 
-    public static void doPayrollIntegration(Long adminDecisionId, Long categoryId, String executionDateString, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, String tableName, Integer resendFlag, Integer originalDecisionFlag, CustomSession... useSession) throws BusinessException {
+    public static void doPayrollIntegration(Long adminDecisionId, Long categoryId, String executionDateString, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, String attachmentsId, Long unitId, String decisionDateString, String tableName, Integer resendFlag, Integer originalDecisionFlag, CustomSession... useSession) throws BusinessException {
+	doPayrollIntegrationWithAttachmentList(adminDecisionId, categoryId, executionDateString, adminDecisionEmployeeDataList, ExternalAttachmentsService.getAttachmentPropsFromFileNet(attachmentsId), unitId, decisionDateString, tableName, resendFlag, originalDecisionFlag, useSession);
+    }
+
+    public static void doPayrollIntegrationWithAttachmentList(Long adminDecisionId, Long categoryId, String executionDateString, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, List<ExternalAttachment> externalAttachments, Long unitId, String decisionDateString, String tableName, Integer resendFlag, Integer originalDecisionFlag, CustomSession... useSession) throws BusinessException {
 	try {
 	    Log4jService.traceInfo(PayrollEngineService.class, "Start of doPayrollIntegration() method");
 	    PayrollIntegrationFailureLog payrollIntegrationFailureLog = new PayrollIntegrationFailureLog();
@@ -106,8 +116,8 @@ public class PayrollEngineService extends BaseService {
 	    if (adminDecisionList == null)
 		return;
 	    Log4jService.traceInfo(PayrollEngineService.class, "adminDecisionList successfully created");
-	    JsonObject applyAdminDecisionBody = getApplyAdminDecisionBody(adminDecisionList, adminDecisionEmployeeDataList, unitId, decisionDateString, adminDecision.getId(), categoryId, payrollIntegrationFailureLog, resendFlag, useSession);
-	    if (applyAdminDecisionBody == null)
+	    String applyAdminDecisionBody = getApplyAdminDecisionBody(adminDecisionList, adminDecisionEmployeeDataList, unitId, decisionDateString, adminDecision.getId(), categoryId, externalAttachments, payrollIntegrationFailureLog, resendFlag, useSession);
+	    if (applyAdminDecisionBody == null || applyAdminDecisionBody.length() == 0)
 		return;
 	    Log4jService.traceInfo(PayrollEngineService.class, "applyAdminDecisionBody: " + applyAdminDecisionBody.toString());
 	    PayrollRestClient.applyAdminDecision(adminDecision.getIntegrationTypeFlag(), applyAdminDecisionBody, payrollIntegrationFailureLog, resendFlag);
@@ -138,96 +148,65 @@ public class PayrollEngineService extends BaseService {
 	}
     }
 
-    private static JsonObject getApplyAdminDecisionBody(AdminDecisionResponse[] adminDecisionList, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, Long adminDecisionId, Long categoryId, PayrollIntegrationFailureLog payrollIntegrationFailureLog, Integer resendFlag, CustomSession... useSession) throws BusinessException {
+    private static String getApplyAdminDecisionBody(AdminDecisionResponse[] adminDecisionList, List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList, Long unitId, String decisionDateString, Long adminDecisionId, Long categoryId, List<ExternalAttachment> externalAttachments, PayrollIntegrationFailureLog payrollIntegrationFailureLog, Integer resendFlag, CustomSession... useSession) throws BusinessException {
 	try {
 	    Log4jService.traceInfo(PayrollEngineService.class, "start of getApplyAdminDecisionBody() method");
 	    if (adminDecisionEmployeeDataList == null || adminDecisionEmployeeDataList.size() == 0) {
 		Log4jService.traceInfo(PayrollEngineService.class, "Employees list is empty!!");
 		throw new BusinessException("error_integrationError");
 	    }
-	    JsonArrayBuilder decisionTypesList = Json.createArrayBuilder();
+	    List<DecisionTypeDto> decisionTypeDtoList = new ArrayList<>();
 	    for (int i = 0; i < adminDecisionList.length; i++) {
-		JsonArrayBuilder employeeArray = Json.createArrayBuilder();
-		JsonArray variableList = null;
+		List<EmployeeDto> employeeList = new ArrayList<EmployeeDto>();
+		List<VariableDto> variableList = new ArrayList<VariableDto>();
+		List<AttachmentDto> attachmentList = new ArrayList<>();
 		AdminDecisionVariable[] adminDecisionVariableArray = adminDecisionList[i].getVariableArray();
 		for (AdminDecisionEmployeeData employeeData : adminDecisionEmployeeDataList) {
-		    JsonArrayBuilder employeeListVariablesArray = Json.createArrayBuilder();
+		    variableList = new ArrayList<VariableDto>();
 		    for (AdminDecisionVariable adminDecisionVariable : adminDecisionVariableArray) {
-			String tableName, columnName, queryTransactionId;
-			String[] variablesMappingData = adminDecisionVariable.getVariableMapping().split(",");
-			if (variablesMappingData.length > 1) {
-			    if (employeeData.getOriginalTransactionId() == null) {
-				Log4jService.traceInfo(PayrollEngineService.class, "Exception: originalTransactionId is null!!");
-				throw new BusinessException("error_integrationError");
-			    }
-			    queryTransactionId = employeeData.getOriginalTransactionId() + "";
-			    tableName = variablesMappingData[1].substring(0, variablesMappingData[1].indexOf("."));
-			    columnName = variablesMappingData[1].substring(variablesMappingData[1].indexOf(".") + 1, variablesMappingData[1].length());
-			} else {
-			    queryTransactionId = employeeData.getTransactionId() + "";
-			    tableName = variablesMappingData[0].substring(0, variablesMappingData[0].indexOf("."));
-			    columnName = variablesMappingData[0].substring(variablesMappingData[0].indexOf(".") + 1, variablesMappingData[0].length());
-			}
-			Log4jService.traceInfo(PayrollEngineService.class, "tableName: " + tableName);
-			Log4jService.traceInfo(PayrollEngineService.class, "columnName: " + columnName);
-			if (employeeIdMapping.get(tableName) == null) {
-			    throw new BusinessException("error_tableIsNotDefined");
-			}
-			StringBuffer mappingQuery = new StringBuffer("select to_char(" + columnName
-				+ ") from " + tableName + " where "
-				+ employeeIdMapping.get(tableName) + " = " + employeeData.getEmpId());
-			mappingQuery.append(employeeData.getTransactionId() != null && transactionIdMapping.get(tableName) != null ? " and "
-				+ transactionIdMapping.get(tableName) + " = " + queryTransactionId : "");
-			Log4jService.traceInfo(PayrollEngineService.class, "mappingQuery: " + mappingQuery.toString());
-			List<String> result = DataAccess.executeNativeQuery(String.class, mappingQuery, new HashMap<String, Object>(), useSession);
-			String mappingValue = result == null || result.size() == 0 ? null : result.get(0);
-			Log4jService.traceInfo(PayrollEngineService.class, "HCM value: " + mappingValue);
-			if (adminDecisionVariable.getIsLOV() != null && adminDecisionVariable.getIsLOV().equals(FlagsEnum.ON.getCode())) {
-			    AdminDecisionVariablesMapping adminDecisionVariablesMapping = getAdminDecisionVariablesMappingByVariableNameAndHCMValue(adminDecisionVariable.getVariableMapping(), mappingValue);
-			    if (adminDecisionVariablesMapping == null) {
-				Log4jService.traceInfo(PayrollEngineService.class, "Error: adminDecisionVariablesMapping is null");
-				throw new BusinessException("error_adminDecisionVariablesMappingNotFound");
-			    }
-			    mappingValue = adminDecisionVariablesMapping.getPrlValue();
-			    Log4jService.traceInfo(PayrollEngineService.class, "PRL Value: " + mappingValue);
-			}
-			JsonObject variable = Json.createObjectBuilder()
-				.add("id", adminDecisionVariable.getVariableId() + "")
-				.add("value", mappingValue == null ? "" : mappingValue)
-				.add("variableMapping", adminDecisionVariable.getVariableMapping())
-				.build();
+			String mappingValue = getMappingValue(adminDecisionVariable, employeeData, useSession);
+			VariableDto variable = new VariableDto();
+			variable.setId(adminDecisionVariable.getVariableId() + "");
+			variable.setValue(mappingValue == null ? "" : mappingValue);
+			variable.setVariableMapping(adminDecisionVariable.getVariableMapping());
 			if (mappingValue != null)
-			    employeeListVariablesArray.add(variable);
+			    variableList.add(variable);
 		    }
-
-		    variableList = employeeListVariablesArray.build();
-		    JsonObject employeeObject = Json.createObjectBuilder()
-			    .add("id", employeeData.getEmpId() + "")
-			    .add("name", employeeData.getEmpName())
-			    .add("startDate", employeeData.getGregStartDateString())
-			    .add("endDate", employeeData.getGregEndDateString() == null ? "" : employeeData.getGregEndDateString())
-			    .add("variablesList", variableList)
-			    .build();
-		    employeeArray.add(employeeObject);
+		    EmployeeDto employeeDto = new EmployeeDto();
+		    employeeDto.setId(employeeData.getEmpId() + "");
+		    employeeDto.setName(employeeData.getEmpName());
+		    employeeDto.setStartDate(employeeData.getGregStartDateString());
+		    employeeDto.setEndDate(employeeData.getGregEndDateString() == null ? "" : employeeData.getGregEndDateString());
+		    employeeDto.setVariablesList(variableList);
+		    employeeList.add(employeeDto);
 		}
-
-		JsonObject decisionTypeObject = Json.createObjectBuilder()
-			.add("decisionTypeId", adminDecisionList[i].getId() + "")
-			.add("name", adminDecisionList[i].getName())
-			.add("departmentId", unitId + "")
-			.add("decisionDate", decisionDateString)
-			.add("decisionStartDate", adminDecisionEmployeeDataList.get(0).getGregStartDateString())
-			.add("decisionEndDate", adminDecisionEmployeeDataList.get(0).getGregEndDateString() == null ? "" : adminDecisionEmployeeDataList.get(0).getGregEndDateString())
-			.add("categoryId", categoryId + "")
-			.add("adminDecisionId", adminDecisionId + "")
-			.add("adminDecisionNumber", adminDecisionEmployeeDataList.get(0).getDecisionNumber())
-			.add("originalAdminDecisionNumber", adminDecisionEmployeeDataList.get(0).getOriginalAdminDecisionNumber() == null ? "" : adminDecisionEmployeeDataList.get(0).getOriginalAdminDecisionNumber())
-			.add("employeesList", employeeArray.build())
-			.add("variablesList", variableList)
-			.build();
-		decisionTypesList.add(decisionTypeObject);
+		for (ExternalAttachment externalAttachment : externalAttachments) {
+		    AttachmentDto attachment = new AttachmentDto();
+		    attachment.setAttachmentId(externalAttachment.getAttachmentId());
+		    attachment.setDocumentClass(externalAttachment.getDocumentClass());
+		    attachment.setFilename(externalAttachment.getFilename());
+		    attachmentList.add(attachment);
+		}
+		DecisionTypeDto decisionTypeDto = new DecisionTypeDto();
+		decisionTypeDto.setDecisionTypeId(adminDecisionList[i].getId() + "");
+		decisionTypeDto.setName(adminDecisionList[i].getName());
+		decisionTypeDto.setDepartmentId(unitId + "");
+		decisionTypeDto.setDecisionDate(decisionDateString);
+		decisionTypeDto.setDecisionStartDate(adminDecisionEmployeeDataList.get(0).getGregStartDateString());
+		decisionTypeDto.setDecisionEndDate(adminDecisionEmployeeDataList.get(0).getGregEndDateString() == null ? "" : adminDecisionEmployeeDataList.get(0).getGregEndDateString());
+		decisionTypeDto.setCategoryId(categoryId + "");
+		decisionTypeDto.setAdminDecisionId(adminDecisionId + "");
+		decisionTypeDto.setAdminDecisionNumber(adminDecisionEmployeeDataList.get(0).getDecisionNumber());
+		decisionTypeDto.setOriginalAdminDecisionNumber(adminDecisionEmployeeDataList.get(0).getOriginalAdminDecisionNumber() == null ? "" : adminDecisionEmployeeDataList.get(0).getOriginalAdminDecisionNumber());
+		decisionTypeDto.setEmployeesList(employeeList);
+		decisionTypeDto.setVariablesList(variableList);
+		decisionTypeDto.setAttachmentList(attachmentList);
+		decisionTypeDtoList.add(decisionTypeDto);
 	    }
-	    return Json.createObjectBuilder().add("DecisionTypesList", decisionTypesList.build()).build();
+	    ApplyAdminDecisionRequestDto adminDecisionRequestDto = new ApplyAdminDecisionRequestDto();
+	    adminDecisionRequestDto.setDecisionTypesList(decisionTypeDtoList);
+	    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	    return gson.toJson(adminDecisionRequestDto, ApplyAdminDecisionRequestDto.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    Log4jService.traceInfo(PayrollEngineService.class, "Exception: " + e.getMessage());
@@ -316,6 +295,48 @@ public class PayrollEngineService extends BaseService {
 	    if (!isOpenedSession)
 		session.close();
 	}
+    }
+
+    private static String getMappingValue(AdminDecisionVariable adminDecisionVariable, AdminDecisionEmployeeData employeeData, CustomSession... useSession) throws Exception {
+	String tableName, columnName, queryTransactionId;
+	String[] variablesMappingData = adminDecisionVariable.getVariableMapping().split(",");
+	if (variablesMappingData.length > 1) {
+	    if (employeeData.getOriginalTransactionId() == null) {
+		Log4jService.traceInfo(PayrollEngineService.class, "Exception: originalTransactionId is null!!");
+		throw new BusinessException("error_integrationError");
+	    }
+	    queryTransactionId = employeeData.getOriginalTransactionId() + "";
+	    tableName = variablesMappingData[1].substring(0, variablesMappingData[1].indexOf("."));
+	    columnName = variablesMappingData[1].substring(variablesMappingData[1].indexOf(".") + 1, variablesMappingData[1].length());
+	} else {
+	    queryTransactionId = employeeData.getTransactionId() + "";
+	    tableName = variablesMappingData[0].substring(0, variablesMappingData[0].indexOf("."));
+	    columnName = variablesMappingData[0].substring(variablesMappingData[0].indexOf(".") + 1, variablesMappingData[0].length());
+	}
+	Log4jService.traceInfo(PayrollEngineService.class, "tableName: " + tableName);
+	Log4jService.traceInfo(PayrollEngineService.class, "columnName: " + columnName);
+	if (employeeIdMapping.get(tableName) == null) {
+	    throw new BusinessException("error_tableIsNotDefined");
+	}
+	StringBuffer mappingQuery = new StringBuffer("select to_char(" + columnName
+		+ ") from " + tableName + " where "
+		+ employeeIdMapping.get(tableName) + " = " + employeeData.getEmpId());
+	mappingQuery.append(employeeData.getTransactionId() != null && transactionIdMapping.get(tableName) != null ? " and "
+		+ transactionIdMapping.get(tableName) + " = " + queryTransactionId : "");
+	Log4jService.traceInfo(PayrollEngineService.class, "mappingQuery: " + mappingQuery.toString());
+	List<String> result = DataAccess.executeNativeQuery(String.class, mappingQuery, new HashMap<String, Object>(), useSession);
+	String mappingValue = result == null || result.size() == 0 ? null : result.get(0);
+	Log4jService.traceInfo(PayrollEngineService.class, "HCM value: " + mappingValue);
+	if (adminDecisionVariable.getIsLOV() != null && adminDecisionVariable.getIsLOV().equals(FlagsEnum.ON.getCode())) {
+	    AdminDecisionVariablesMapping adminDecisionVariablesMapping = getAdminDecisionVariablesMappingByVariableNameAndHCMValue(adminDecisionVariable.getVariableMapping(), mappingValue);
+	    if (adminDecisionVariablesMapping == null) {
+		Log4jService.traceInfo(PayrollEngineService.class, "Error: adminDecisionVariablesMapping is null");
+		throw new BusinessException("error_adminDecisionVariablesMappingNotFound");
+	    }
+	    mappingValue = adminDecisionVariablesMapping.getPrlValue();
+	    Log4jService.traceInfo(PayrollEngineService.class, "PRL Value: " + mappingValue);
+	}
+	return mappingValue;
     }
 
     private static List<AdminDecision> searchAdminDecision(Long adminDecisionId, String adminDecisionName) throws BusinessException {

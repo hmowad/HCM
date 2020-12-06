@@ -321,7 +321,7 @@ public class RaisesService extends BaseService {
 		if (adminDecisionEmployeeDataList == null || adminDecisionEmployeeDataList.size() == 0)
 		    return;
 		session.flushTransaction();
-		PayrollEngineService.doPayrollIntegration(adminDecisionId, raiseTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, employee == null || employee.getPhysicalUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(RaiseTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
+		PayrollEngineService.doPayrollIntegration(adminDecisionId, raiseTransactions.get(0).getCategoryId(), gregExecutionDateString, adminDecisionEmployeeDataList, null, employee == null || employee.getPhysicalUnitId() == null ? UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId() : employee.getPhysicalUnitId(), gregDecisionDateString, DataAccess.getTableName(RaiseTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
 	    }
 	}
     }
