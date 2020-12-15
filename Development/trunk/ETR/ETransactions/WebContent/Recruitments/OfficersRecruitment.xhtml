@@ -218,6 +218,15 @@
 										<h:outputText value="#{msgs.label_addOfficersMessage}" style="color: red; font-weight: bold;" />
 									</td>
 								</tr>
+								<tr>
+									<th width="15">
+										#{msgs.label_attachments}
+										<font style="color: red;">*</font>
+									</th>
+									<td width="50%" colspan="3">
+										<code:attachments loginEmpId="#{officersRecruitment.loginEmpData.empId}" attachmentId="#{officersRecruitment.attachments}" viewEnableFlag="true" deleteEnableFlag="#{officersRecruitment.role == 'Requester' or officersRecruitment.role == 'ReviewerEmp'}" addEnableFlag="#{officersRecruitment.role == 'Requester' or officersRecruitment.role == 'ReviewerEmp'}" />
+									</td>
+								</tr>
 							</table>
 						</h:panelGroup>
 					</td>
