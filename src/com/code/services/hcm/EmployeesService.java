@@ -1759,6 +1759,7 @@ public class EmployeesService extends BaseService {
 	Country country = CountryService.getCountryByYaqeenName(personInfoDetailedResult.getNationalityDesc());
 	emp.setCountryId(country.getId());
 	emp.setNationality(country.getNationality());
+	emp.setOccupationDescription(personInfoDetailedResult.getOccupationDesc());
     }
 
     private static void validateYaqeenMandatoryFields(String socialId, String birthDate) throws BusinessException {

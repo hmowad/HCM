@@ -365,6 +365,10 @@
 										<h:outputText value="#{msgs.label_divorcee}" rendered="#{employeesDataView.employee.socialStatus == 3}" />
 										<h:outputText value="#{msgs.label_widowed}" rendered="#{employeesDataView.employee.socialStatus == 4}" />
 									</td>
+									<th>#{msgs.label_profession}</th>
+									<td>
+										<h:outputText value="#{employeesDataView.employee.occupationDescription}"/>
+									</td>
 								</tr>
 							</table>
 						</h:panelGroup>

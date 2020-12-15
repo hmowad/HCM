@@ -406,6 +406,7 @@ public class EmployeeData extends BaseEntity implements Serializable {
     private String socialIdCopy;
     private Date lastAnnualRaiseDate;
     private String lastAnnualRaiseDateString;
+    private String occupationDescription;
 
     private Employee employee;
 
@@ -1813,6 +1814,17 @@ public class EmployeeData extends BaseEntity implements Serializable {
 	this.lastAnnualRaiseDateString = lastAnnualRaiseDateString;
 	this.lastAnnualRaiseDate = HijriDateService.getHijriDate(lastAnnualRaiseDateString);
 	employee.setLastAnnualRaiseDate(lastAnnualRaiseDate);
+    }
+
+    @Basic
+    @Column(name = "OCCUPATION_DESC")
+    @XmlTransient
+    public String getOccupationDescription() {
+	return occupationDescription;
+    }
+
+    public void setOccupationDescription(String occupationDescription) {
+	this.occupationDescription = occupationDescription;
     }
 
     @Transient
