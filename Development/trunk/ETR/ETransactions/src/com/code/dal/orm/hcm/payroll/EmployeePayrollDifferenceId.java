@@ -1,64 +1,65 @@
 package com.code.dal.orm.hcm.payroll;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class EmployeePayrollDifferenceId implements Serializable {
 
-	private Long transactionType;
-	private String regionCode;
-	private Long transactionYear;
-	private Long TransactionNo;
+	private Long employeedId;
+	private Long elementId;
+	private String decesionNumber;
+	private Date decesionDate;
 
 	public EmployeePayrollDifferenceId() {
 	}
 
-	public EmployeePayrollDifferenceId(Long transactionType, String regionCode,	Long transactionYear, Long TransactionNo) {
-		this.transactionType = transactionType;
-		this.regionCode = regionCode;
-		this.transactionYear = transactionYear;
-		this.TransactionNo = TransactionNo;
+	public EmployeePayrollDifferenceId(Long employeedId, Long elementId, String decesionNumber, Date decesionDate, Long summarySerial) {
+		this.employeedId = employeedId;
+		this.elementId = elementId;
+		this.decesionNumber = decesionNumber;
+		this.decesionDate = decesionDate;
 	}
 
-	public Long getTransactionType() {
-		return transactionType;
+	public Long getEmployeedId() {
+	    return employeedId;
 	}
 
-	public void setTransactionType(Long transactionType) {
-		this.transactionType = transactionType;
+	public void setEmployeedId(Long employeedId) {
+	    this.employeedId = employeedId;
 	}
 
-	public String getRegionCode() {
-		return regionCode;
+	public Long getElementId() {
+	    return elementId;
 	}
 
-	public void setRegionCode(String regionCode) {
-		this.regionCode = regionCode;
+	public void setElementId(Long elementId) {
+	    this.elementId = elementId;
 	}
 
-	public Long getTransactionYear() {
-		return transactionYear;
+	public String getDecesionNumber() {
+	    return decesionNumber;
 	}
 
-	public void setTransactionYear(Long transactionYear) {
-		this.transactionYear = transactionYear;
+	public void setDecesionNumber(String decesionNumber) {
+	    this.decesionNumber = decesionNumber;
 	}
 
-	public Long getTransactionNo() {
-		return TransactionNo;
+	public Date getDecesionDate() {
+	    return decesionDate;
 	}
 
-	public void setTransactionNo(Long transactionNo) {
-		TransactionNo = transactionNo;
+	public void setDecesionDate(Date decesionDate) {
+	    this.decesionDate = decesionDate;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((TransactionNo == null) ? 0 : TransactionNo.hashCode());
-		result = prime * result + ((regionCode == null) ? 0 : regionCode.hashCode());
-		result = prime * result	+ ((transactionType == null) ? 0 : transactionType.hashCode());
-		result = prime * result	+ ((transactionYear == null) ? 0 : transactionYear.hashCode());
+		result = prime * result + ((employeedId == null) ? 0 : employeedId.hashCode());
+		result = prime * result + ((elementId == null) ? 0 : elementId.hashCode());
+		result = prime * result	+ ((decesionNumber == null) ? 0 : decesionNumber.hashCode());
+		result = prime * result	+ ((decesionDate == null) ? 0 : decesionDate.hashCode());
 		return result;
 	}
 
@@ -71,26 +72,30 @@ public class EmployeePayrollDifferenceId implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		EmployeePayrollDifferenceId other = (EmployeePayrollDifferenceId) obj;
-		if (TransactionNo == null) {
-			if (other.TransactionNo != null)
+		if (employeedId == null) {
+			if (other.employeedId != null)
 				return false;
-		} else if (!TransactionNo.equals(other.TransactionNo))
+		} else if (!employeedId.equals(other.employeedId))
 			return false;
-		if (regionCode == null) {
-			if (other.regionCode != null)
+		
+		if (elementId == null) {
+			if (other.elementId != null)
 				return false;
-		} else if (!regionCode.equals(other.regionCode))
+		} else if (!elementId.equals(other.elementId))
 			return false;
-		if (transactionType == null) {
-			if (other.transactionType != null)
+		
+		if (decesionNumber == null) {
+			if (other.decesionNumber != null)
 				return false;
-		} else if (!transactionType.equals(other.transactionType))
+		} else if (!decesionNumber.equals(other.decesionNumber))
 			return false;
-		if (transactionYear == null) {
-			if (other.transactionYear != null)
+		
+		if (decesionDate == null) {
+			if (other.decesionDate != null)
 				return false;
-		} else if (!transactionYear.equals(other.transactionYear))
+		} else if (!decesionDate.equals(other.decesionDate))
 			return false;
+		
 		return true;
 	}
 }

@@ -22,32 +22,41 @@ import com.code.services.util.HijriDateService;
 @NamedQueries({
 	@NamedQuery(name = "hcm_EmployeePayrollDifferenceData_getPayrollDiffByTrnsStatus",
 		query = " select d from EmployeePayrollDifferenceData d" +
-			" where d.personId = :P_PERSON_ID " +
+			" where d.personId = :P_PER_ID " +
 			" and (:P_TRANSACTION_STATUS = -1 or d.transactionStatus = :P_TRANSACTION_STATUS) " +
 			" and (:P_ELEMENT_DESC = '-1' or d.elementDescription like :P_ELEMENT_DESC) " +
-			" order by d.transactionDate desc")
+			" order by d.decesionDate desc")
 })
 
 @Entity
 @Table(name = "BG_VW_EMPLOYEES_DIFF")
 @IdClass(EmployeePayrollDifferenceId.class)
 public class EmployeePayrollDifferenceData implements Serializable {
+    private Long employeedId;
     private String personId;
     private Date transactionDate;
     private String transactionDateString;
     private String transactionNumber;
+    private Long elementId;
     private String elementDescription;
     private String decesionNumber;
     private Date decesionDate;
     private String decesionDateString;
     private Double totalAmount;
     private Integer transactionStatus;
-    private Long transactionType;
-    private String regionCode;
-    private Long transactionYear;
-    private Long TransactionNo;
     private Long summarySerial;
 
+    @Id
+    @Column(name = "EMP_ID")
+    @XmlTransient
+    public Long getEmployeedId() {
+        return employeedId;
+    }
+
+    public void setEmployeedId(Long employeedId) {
+        this.employeedId = employeedId;
+    }
+    
     @Basic
     @Column(name = "PER_ID")
     @XmlTransient
@@ -92,6 +101,17 @@ public class EmployeePayrollDifferenceData implements Serializable {
 	this.transactionNumber = transactionNumber;
     }
 
+    @Id
+    @Column(name = "ELEMENT_ID")
+    @XmlTransient
+    public Long getElementId() {
+        return elementId;
+    }
+
+    public void setElementId(Long elementId) {
+        this.elementId = elementId;
+    }
+    
     @Basic
     @Column(name = "ELEMENT_DESCRIPTION")
     public String getElementDescription() {
@@ -102,7 +122,7 @@ public class EmployeePayrollDifferenceData implements Serializable {
 	this.elementDescription = elementDescription;
     }
 
-    @Basic
+    @Id
     @Column(name = "DECESION_NO")
     @XmlElement(nillable = true)
     public String getDecesionNumber() {
@@ -113,7 +133,7 @@ public class EmployeePayrollDifferenceData implements Serializable {
 	this.decesionNumber = decesionNumber;
     }
 
-    @Basic
+    @Id
     @Column(name = "DECESION_DATE")
     @Temporal(TemporalType.TIMESTAMP)
     @XmlTransient
@@ -156,50 +176,6 @@ public class EmployeePayrollDifferenceData implements Serializable {
 
     public void setTransactionStatus(Integer transactionStatus) {
 	this.transactionStatus = transactionStatus;
-    }
-
-    @Id
-    @Column(name = "TRANSTYPE")
-    @XmlTransient
-    public Long getTransactionType() {
-	return transactionType;
-    }
-
-    public void setTransactionType(Long transactionType) {
-	this.transactionType = transactionType;
-    }
-
-    @Id
-    @Column(name = "REGIONCODE")
-    @XmlTransient
-    public String getRegionCode() {
-	return regionCode;
-    }
-
-    public void setRegionCode(String regionCode) {
-	this.regionCode = regionCode;
-    }
-
-    @Id
-    @Column(name = "TRANSYEAR")
-    @XmlTransient
-    public Long getTransactionYear() {
-	return transactionYear;
-    }
-
-    public void setTransactionYear(Long transactionYear) {
-	this.transactionYear = transactionYear;
-    }
-
-    @Id
-    @Column(name = "TRANSNO")
-    @XmlTransient
-    public Long getTransactionNo() {
-	return TransactionNo;
-    }
-
-    public void setTransactionNo(Long transactionNo) {
-	TransactionNo = transactionNo;
     }
 
     @Basic
