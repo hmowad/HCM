@@ -69,6 +69,7 @@
 										<f:selectItem itemLabel="#{msgs.label_PromotionPromotedInquiryStatistical}" itemValue="30" />
 										<c:if test="#{promotionsReports.mode == 2}">
 											<f:selectItem itemLabel="#{msgs.label_PromotionSoldiersEligibleInquiryStatistical}" itemValue="40" />
+											<f:selectItem itemLabel="#{msgs.label_PromotionSoldiersInquiryStatisticalWithTasksUnderProcessing}" itemValue="60" />
 										</c:if>
 										<f:ajax event="change" listener="#{promotionsReports.changeReportType()}" execute="@this" render="promotionsReportsFormId:promotionsReportsDataId" />
 									</h:selectOneRadio>
@@ -115,7 +116,7 @@
 													</h:selectOneMenu>
 												</td>
 											</tr>
-											<h:panelGroup rendered="#{promotionsReports.mode == 2}">
+											<h:panelGroup rendered="#{promotionsReports.mode == 2 and promotionsReports.reportType == 40}">
 												<tr>
 													<th width="10%">#{msgs.label_unit}</th>
 													<td width="40%">
@@ -133,7 +134,7 @@
 													</td>
 												</tr>
 											</h:panelGroup>
-											<h:panelGroup rendered="#{promotionsReports.reportType == 10 || promotionsReports.reportType == 40 || promotionsReports.reportType == 50}">
+											<h:panelGroup rendered="#{promotionsReports.reportType == 10 || promotionsReports.reportType == 40 || promotionsReports.reportType == 50 || promotionsReports.reportType == 60}">
 												<tr>
 													<th width="15%">
 														<h:outputText value="#{msgs.label_promotionDueDateFrom}" />

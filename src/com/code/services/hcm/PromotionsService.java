@@ -830,9 +830,11 @@ public class PromotionsService extends BaseService {
 	    qParams.put("P_CATEGORY_ID", categoryId);
 	    qParams.put("P_RANK_ID", rankId);
 	    qParams.put("P_PRINT_DATE", HijriDateService.getHijriSysDateString());
-	    qParams.put("P_UNIT_ID", unitId);
-	    qParams.put("P_MINOR_SPECS_ID", minorSpecsId);
-	    if (reportType == 10 || reportType == 40 || reportType == 50) {
+	    if (reportType != 60) {
+		qParams.put("P_UNIT_ID", unitId);
+		qParams.put("P_MINOR_SPECS_ID", minorSpecsId);
+	    }
+	    if (reportType == 10 || reportType == 40 || reportType == 50 || reportType == 60) {
 		if (promotionDueDateFrom != null) {
 		    qParams.put("P_FROM_DATE_FLAG", FlagsEnum.ON.getCode());
 		    qParams.put("P_FROM_DATE", HijriDateService.getHijriDateString(promotionDueDateFrom));
@@ -852,7 +854,9 @@ public class PromotionsService extends BaseService {
 		    qParams.put("P_OFFICIAL_REGION_ID", regionId);
 		    qParams.put("P_UNIT_DESC", unitId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : UnitsService.getUnitById(unitId).getFullName());
 		    qParams.put("P_MINOR_SPECS_DESC", minorSpecsId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : SpecializationsService.getMinorSpecializationsByIdsString(minorSpecsId + "").get(0).getDescription());
-
+		} else if (reportType == 60) {
+		    reportName = ReportNamesEnum.PROMOTIONS_ELIGIBLE_WITH_TASKS_UNDER_PROCESSING.getCode();
+		    qParams.put("P_REGION_ID", regionId);
 		}
 	    } else if (reportType == 20 || reportType == 30) {
 		qParams.put("P_OFFICIAL_REGION_ID", regionId);
