@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class EmployeePayrollDifferenceId implements Serializable {
 
-	private Long employeedId;
+	private Long employeeId;
 	private Long elementId;
 	private String decesionNumber;
 	private Date decesionDate;
@@ -13,19 +13,19 @@ public class EmployeePayrollDifferenceId implements Serializable {
 	public EmployeePayrollDifferenceId() {
 	}
 
-	public EmployeePayrollDifferenceId(Long employeedId, Long elementId, String decesionNumber, Date decesionDate, Long summarySerial) {
-		this.employeedId = employeedId;
+	public EmployeePayrollDifferenceId(Long employeeId, Long elementId, String decesionNumber, Date decesionDate, Long summarySerial) {
+		this.employeeId = employeeId;
 		this.elementId = elementId;
 		this.decesionNumber = decesionNumber;
 		this.decesionDate = decesionDate;
 	}
 
-	public Long getEmployeedId() {
-	    return employeedId;
+	public Long getEmployeeId() {
+	    return employeeId;
 	}
 
-	public void setEmployeedId(Long employeedId) {
-	    this.employeedId = employeedId;
+	public void setEmployeeId(Long employeeId) {
+	    this.employeeId = employeeId;
 	}
 
 	public Long getElementId() {
@@ -56,7 +56,7 @@ public class EmployeePayrollDifferenceId implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((employeedId == null) ? 0 : employeedId.hashCode());
+		result = prime * result + ((employeeId == null) ? 0 : employeeId.hashCode());
 		result = prime * result + ((elementId == null) ? 0 : elementId.hashCode());
 		result = prime * result	+ ((decesionNumber == null) ? 0 : decesionNumber.hashCode());
 		result = prime * result	+ ((decesionDate == null) ? 0 : decesionDate.hashCode());
@@ -71,11 +71,13 @@ public class EmployeePayrollDifferenceId implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
+		
 		EmployeePayrollDifferenceId other = (EmployeePayrollDifferenceId) obj;
-		if (employeedId == null) {
-			if (other.employeedId != null)
+		
+		if (employeeId == null) {
+			if (other.employeeId != null)
 				return false;
-		} else if (!employeedId.equals(other.employeedId))
+		} else if (!employeeId.equals(other.employeeId))
 			return false;
 		
 		if (elementId == null) {

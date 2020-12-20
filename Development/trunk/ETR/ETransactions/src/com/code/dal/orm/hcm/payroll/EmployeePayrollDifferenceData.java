@@ -32,7 +32,7 @@ import com.code.services.util.HijriDateService;
 @Table(name = "BG_VW_EMPLOYEES_DIFF")
 @IdClass(EmployeePayrollDifferenceId.class)
 public class EmployeePayrollDifferenceData implements Serializable {
-    private Long employeedId;
+    private Long employeeId;
     private String personId;
     private Date transactionDate;
     private String transactionDateString;
@@ -44,17 +44,17 @@ public class EmployeePayrollDifferenceData implements Serializable {
     private String decesionDateString;
     private Double totalAmount;
     private Integer transactionStatus;
-    private Long summarySerial;
+    private String summarySerial;
 
     @Id
     @Column(name = "EMP_ID")
     @XmlTransient
     public Long getEmployeedId() {
-        return employeedId;
+        return employeeId;
     }
 
-    public void setEmployeedId(Long employeedId) {
-        this.employeedId = employeedId;
+    public void setEmployeedId(Long employeeId) {
+        this.employeeId = employeeId;
     }
     
     @Basic
@@ -181,11 +181,11 @@ public class EmployeePayrollDifferenceData implements Serializable {
     @Basic
     @Column(name = "SUMMARY_SERIAL")
     @XmlElement(nillable = true)
-    public Long getSummarySerial() {
+    public String getSummarySerial() {
 	return summarySerial;
     }
 
-    public void setSummarySerial(Long summarySerial) {
+    public void setSummarySerial(String summarySerial) {
 	this.summarySerial = summarySerial;
     }
 }

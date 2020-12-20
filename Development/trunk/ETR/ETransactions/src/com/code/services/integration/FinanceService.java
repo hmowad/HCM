@@ -19,7 +19,7 @@ public class FinanceService extends BaseService {
     }
 
     /*---------------------------------- PaidIssueOrderData -----------------------------------*/
-    public static PaidIssueOrderData getPaidIssueOrder(Long summarySerial) throws BusinessException {
+    public static PaidIssueOrderData getPaidIssueOrder(String summarySerial) throws BusinessException {
 	String requestNumber = PAID_ISSUE_ORDER_REQUEST_NUMBER_PREFIX + summarySerial.toString();
 
 	List<PaidIssueOrderData> issueOrderDataList = searchPaidIssueOrders(requestNumber);
