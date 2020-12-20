@@ -66,7 +66,7 @@ public class PayrollDifferencesWS {
     @WebMethod(operationName = "getPaidIssueOrder")
     @WebResult(name = "paidIssueOrderResponse")
     public WSPaidIssueOrderResponse getPaidIssueOrder(@WebParam(name = "sessionId") String sessionId, @WebParam(name = "employeeId") long employeeId,
-	    @WebParam(name = "summarySerial") Long summarySerial) {
+	    @WebParam(name = "summarySerial") String summarySerial) {
 
 	WSPaidIssueOrderResponse response = new WSPaidIssueOrderResponse();
 	if (!WSSessionsManagementService.maintainSession(sessionId, employeeId, response))
@@ -74,7 +74,7 @@ public class PayrollDifferencesWS {
 
 	try {
 	    PaidIssueOrderData paidIssueOrder = new PaidIssueOrderData();
-	    if (summarySerial != null && summarySerial != 0)
+	    if (summarySerial != null && !summarySerial.isEmpty())
 		paidIssueOrder = FinanceService.getPaidIssueOrder(summarySerial);
 
 	    response.setPaidIssueOrder(paidIssueOrder);
