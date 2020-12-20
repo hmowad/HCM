@@ -1825,6 +1825,7 @@ public class EmployeeData extends BaseEntity implements Serializable {
 
     public void setOccupationDescription(String occupationDescription) {
 	this.occupationDescription = occupationDescription;
+	employee.setOccupationDescription(occupationDescription);
     }
 
     @Transient
