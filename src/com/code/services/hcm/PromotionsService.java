@@ -855,7 +855,7 @@ public class PromotionsService extends BaseService {
 		    qParams.put("P_UNIT_DESC", unitId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : UnitsService.getUnitById(unitId).getFullName());
 		    qParams.put("P_MINOR_SPECS_DESC", minorSpecsId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : SpecializationsService.getMinorSpecializationsByIdsString(minorSpecsId + "").get(0).getDescription());
 		} else if (reportType == 60) {
-		    reportName = ReportNamesEnum.PROMOTIONS_ELIGIBLE_WITH_TASKS_UNDER_PROCESSING.getCode();
+		    reportName = ReportNamesEnum.PROMOTIONS_SOLDIERS_ELIGIBLE_WITH_MOVEMENTS_UNDER_PROCESSING.getCode();
 		    qParams.put("P_REGION_ID", regionId);
 		}
 	    } else if (reportType == 20 || reportType == 30) {
