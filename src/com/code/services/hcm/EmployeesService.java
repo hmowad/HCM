@@ -1751,6 +1751,7 @@ public class EmployeesService extends BaseService {
 	emp.setSocialIDIssueDate(HijriDateService.getHijriDate(personInfoDetailedResult.getIdIssueDateH().replace('-', '/')));
 	emp.setSocialIDExpiryDate(HijriDateService.getHijriDate(personInfoDetailedResult.getIdExpiryDateH().replace('-', '/')));
 	emp.setGender(personInfoDetailedResult.getGender().toString());
+	emp.setOccupationDescription(personInfoDetailedResult.getOccupationDesc());
 
 	List<SocialIdIssuePlace> socialIdIssuePlace = CommonService.getSocialIdIssuePlacesByExactDescription(personInfoDetailedResult.getIdIssuePlace().getValue());
 	emp.setSocialIDIssuePlaceDesc(socialIdIssuePlace == null || socialIdIssuePlace.isEmpty() ? null : socialIdIssuePlace.get(0).getDescription());
@@ -1759,7 +1760,6 @@ public class EmployeesService extends BaseService {
 	Country country = CountryService.getCountryByYaqeenName(personInfoDetailedResult.getNationalityDesc());
 	emp.setCountryId(country.getId());
 	emp.setNationality(country.getNationality());
-	emp.setOccupationDescription(personInfoDetailedResult.getOccupationDesc());
     }
 
     private static void validateYaqeenMandatoryFields(String socialId, String birthDate) throws BusinessException {
