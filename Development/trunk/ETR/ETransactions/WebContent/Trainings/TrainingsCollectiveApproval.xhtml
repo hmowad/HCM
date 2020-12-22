@@ -8,33 +8,62 @@
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
 	
 	<script type="text/javascript">
-		var selectedTasksCount = 0;
-	    function updateSelectedTasksCount(checked, allFlag) {
+		var selectedTrainingTasksCount = 0;
+		var selectedTrainingCourseTasksCount = 0;
+		
+	    function updateSelectedTrainingTasksCount(checked, allFlag) {
 	        var totalNumberOfTasks = document.getElementById('trainingsCollectiveApprovalForm:trainingTasksListSizeId').value;
 			if (allFlag) {
 				if (checked)
-	                selectedTasksCount = totalNumberOfTasks;
+	                selectedTrainingTasksCount = totalNumberOfTasks;
 	            else 
-	                selectedTasksCount = 0;
+	                selectedTrainingTasksCount = 0;
 			} else {
 				if (checked) {
-	                selectedTasksCount++;
-	                if (totalNumberOfTasks == selectedTasksCount)
-	                	document.getElementById('trainingsCollectiveApprovalForm:tasksId:selectAllCheckboxId').checked=true;
+	                selectedTrainingTasksCount++;
+	                if (totalNumberOfTasks == selectedTrainingTasksCount)
+	                	document.getElementById('trainingsCollectiveApprovalForm:trainingTasksId:selectAllTrainingCheckboxId').checked=true;
 				} else {
-	                selectedTasksCount--;
-	                document.getElementById('trainingsCollectiveApprovalForm:tasksId:selectAllCheckboxId').checked=false;
+	                selectedTrainingTasksCount--;
+	                document.getElementById('trainingsCollectiveApprovalForm:trainingTasksId:selectAllTrainingCheckboxId').checked=false;
 				}
 			}
 	    }
 
-	    function validateApproval(){
-            if(selectedTasksCount == 0){
+	    function updateSelectedTrainingCourseTasksCount(checked, allFlag) {
+	        var totalNumberOfTasks = document.getElementById('trainingsCollectiveApprovalForm:trainingCourseTasksListSizeId').value;
+			if (allFlag) {
+				if (checked)
+	                selectedTrainingCourseTasksCount = totalNumberOfTasks;
+	            else 
+	                selectedTrainingCourseTasksCount = 0;
+			} else {
+				if (checked) {
+	                selectedTrainingCourseTasksCount++;
+	                if (totalNumberOfTasks == selectedTrainingCourseTasksCount)
+	                	document.getElementById('trainingsCollectiveApprovalForm:trainingCourseTasksId:selectAllTrainingCourseCheckboxId').checked=true;
+				} else {
+	                selectedTrainingCourseTasksCount--;
+	                document.getElementById('trainingsCollectiveApprovalForm:trainingCourseTasksId:selectAllTrainingCourseCheckboxId').checked=false;
+				}
+			}
+	    }  
+
+	    function validateTrainingApproval(){
+            if(selectedTrainingTasksCount == 0){
                 alert('#{msgs.error_selectTasksForApproval}');
                 return false;
             }
+            selectedTrainingTasksCount = 0;
+			return true;
+        }
 
-            selectedTasksCount = 0;
+	    function validateTrainingCourseApproval(){
+            if(selectedTrainingCourseTasksCount == 0){
+                alert('#{msgs.error_selectTasksForApproval}');
+                return false;
+            }
+            selectedTrainingCourseTasksCount = 0;
 			return true;
         }
 
@@ -60,24 +89,30 @@
 				<tr>
 					<td width="100%" height="25" />
 				</tr>
-				
-				<!-- The Data Grid -->
+				<h:panelGroup rendered="#{trainingsCollectiveApproval.mode == 2}">
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_employeeTrainingTasks}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<!-- WFTrainingData Grid -->
 				<tr>
 					<td align="center" width="100%">
-						<rich:dataTable id="tasksId" rowKeyVar="index" var="obj" value="#{trainingsCollectiveApproval.trainingsTasks}" rows="#{trainingsCollectiveApproval.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+						<rich:dataTable id="trainingTasksId" rowKeyVar="index" var="obj" value="#{trainingsCollectiveApproval.trainingsTasks}" rows="#{trainingsCollectiveApproval.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
 
 							<!-- CheckBoxes Selection Column -->
 							<rich:column>
 								<f:facet name="header">
-									<h:selectBooleanCheckbox id="selectAllCheckboxId" value="#{trainingsCollectiveApproval.selectAll}" 
-										onchange="updateSelectedTasksCount(this.checked, true)">
-										<a4j:ajax event="change" listener="#{trainingsCollectiveApproval.selectUnselectAllRows()}" render="trainingsCollectiveApprovalForm:tasksId" oncomplete="#{rich:component('reload')}.hide()"/>
+									<h:selectBooleanCheckbox id="selectAllTrainingCheckboxId" value="#{trainingsCollectiveApproval.selectAllTraining}" onchange="updateSelectedTrainingTasksCount(this.checked, true)">
+										<a4j:ajax event="change" listener="#{trainingsCollectiveApproval.selectUnselectAllRows()}" render="trainingsCollectiveApprovalForm:trainingTasksId" oncomplete="#{rich:component('reload')}.hide()" />
 									</h:selectBooleanCheckbox>
 								</f:facet>
-								
-								<h:selectBooleanCheckbox value="#{obj[0].selected}" 
-									onchange="updateSelectedTasksCount(this.checked, false)" />
-								
+								<h:selectBooleanCheckbox value="#{obj[0].selected}" onchange="updateSelectedTrainingTasksCount(this.checked, false)" />
 							</rich:column>
 
 							<!-- Task ID Column-->
@@ -93,7 +128,7 @@
 								<f:facet name="header">
 									<h:outputText value="#{msgs.label_processName}" />
 								</f:facet>
-								<h:outputLink value="#{request.contextPath}#{obj[1].taskUrl}#{trainingsCollectiveApproval.taskUrlParam}#{obj[1].taskId}" target="_blank" >#{obj[3]}</h:outputLink>
+								<h:outputLink value="#{request.contextPath}#{obj[1].taskUrl}#{trainingsCollectiveApproval.taskUrlParam}#{obj[1].taskId}" target="_blank">#{obj[3]}</h:outputLink>
 							</rich:column>
 
 							<!-- Task Requester - Task Owner Name Column-->
@@ -111,7 +146,7 @@
 								</f:facet>
 								<h:outputText value="#{obj[5]}" />
 							</rich:column>
-							
+
 							<!-- Training info Columns -->
 							<rich:column>
 								<f:facet name="header">
@@ -119,14 +154,14 @@
 								</f:facet>
 								<h:outputText value="#{obj[0].courseName} #{obj[0].eventCourseName}" />
 							</rich:column>
-							
+
 							<rich:column>
 								<f:facet name="header">
 									<h:outputText value="#{msgs.label_trainingUnit}" />
 								</f:facet>
 								<h:outputText value="#{obj[0].trainingUnitName} #{obj[0].externalPartyDesc} #{obj[0].eventTrainingUnitName} #{obj[0].eventExternalPartyDesc}" />
 							</rich:column>
-							
+
 							<rich:column>
 								<f:facet name="header">
 									<h:outputText value="#{msgs.label_studySubjectForScholarshipOrEnrollment}" />
@@ -136,7 +171,7 @@
 
 							<!-- The Footer-->
 							<f:facet name="footer">
-								<rich:dataScroller id="tasksScrollerId" execute="tasksId" oncomplete="unMaskScreen()" fastControls="hide">
+								<rich:dataScroller id="tasksScrollerId" execute="trainingTasksId" oncomplete="unMaskScreen()" fastControls="hide">
 									<f:facet name="first"> #{msgs.label_first} </f:facet>
 									<f:facet name="last"> #{msgs.label_last} </f:facet>
 									<f:facet name="next"> #{msgs.label_next} </f:facet>
@@ -146,26 +181,127 @@
 						</rich:dataTable>
 					</td>
 				</tr>
-				
+
 				<tr>
 					<td width="100%" height="5" />
 				</tr>
-				
+
 				<tr>
 					<td width="100%">
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-								    <h:inputHidden id="trainingTasksListSizeId" value="#{trainingsCollectiveApproval.trainingsTasksListSize}" />
-									<h:commandButton onclick="return handleOnAction('#{trainingsCollectiveApproval.mode == 1 ? msgs.q_acceptNOfTasks : msgs.q_superSignToNOfTasks}'.format(selectedTasksCount), 'validateApproval()');" action="#{trainingsCollectiveApproval.doTrainingCollectiveAction()}" value="#{trainingsCollectiveApproval.mode == 1 ? msgs.label_approve : msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
-										<f:ajax render="trainingsCollectiveApprovalForm:notifyMessagesId trainingsCollectiveApprovalForm:headerInboxProceduresCountId trainingsCollectiveApprovalForm:tasksId trainingsCollectiveApprovalForm:trainingTasksListSizeId" execute="trainingsCollectiveApprovalForm:tasksId" />
+									<h:inputHidden id="trainingTasksListSizeId" value="#{trainingsCollectiveApproval.trainingsTasksListSize}" />
+									<h:commandButton onclick="return handleOnAction('#{trainingsCollectiveApproval.mode == 1 ? msgs.q_acceptNOfTasks : msgs.q_superSignToNOfTasks}'.format(selectedTrainingTasksCount), 'validateTrainingApproval()');" action="#{trainingsCollectiveApproval.doTrainingCollectiveAction()}" value="#{trainingsCollectiveApproval.mode == 1 ? msgs.label_approve : msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+										<f:ajax render="trainingsCollectiveApprovalForm:notifyMessagesId trainingsCollectiveApprovalForm:headerInboxProceduresCountId trainingsCollectiveApprovalForm:trainingTasksId trainingsCollectiveApprovalForm:trainingTasksListSizeId" execute="trainingsCollectiveApprovalForm:trainingTasksId" />
 									</h:commandButton>
 								</td>
 							</tr>
 						</table>
 					</td>
 				</tr>
-				
+				<h:panelGroup rendered="#{trainingsCollectiveApproval.mode == 2}">
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+					<tr>
+						<td width="100%">
+							<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td>#{msgs.label_trainingCoursesTasks}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<!-- WFTrainingCourseEventData Grid -->
+					<tr>
+						<td align="center" width="100%">
+							<rich:dataTable id="trainingCourseTasksId" rowKeyVar="index" var="obj" value="#{trainingsCollectiveApproval.trainingCoursesTasks}" rows="#{trainingsCollectiveApproval.pageSize}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+
+								<!-- CheckBoxes Selection Column -->
+								<rich:column>
+									<f:facet name="header">
+										<h:selectBooleanCheckbox id="selectAllTrainingCourseCheckboxId" value="#{trainingsCollectiveApproval.selectAllTrainingCourse}" onchange="updateSelectedTrainingCourseTasksCount(this.checked, true)">
+											<a4j:ajax event="change" listener="#{trainingsCollectiveApproval.selectUnselectAllTrainingCourseRows()}" render="trainingsCollectiveApprovalForm:trainingCourseTasksId" oncomplete="#{rich:component('reload')}.hide()" />
+										</h:selectBooleanCheckbox>
+									</f:facet>
+
+									<h:selectBooleanCheckbox value="#{obj[0].selected}" onchange="updateSelectedTrainingCourseTasksCount(this.checked, false)" />
+
+								</rich:column>
+
+								<!-- Task ID Column-->
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_taskId}" />
+									</f:facet>
+									<h:outputText value="#{obj[1].taskId}" />
+								</rich:column>
+
+								<!-- Task Process Name Column-->
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_processName}" />
+									</f:facet>
+									<h:outputLink value="#{request.contextPath}#{obj[1].taskUrl}#{trainingsCollectiveApproval.taskUrlParam}#{obj[1].taskId}" target="_blank">#{obj[3]}</h:outputLink>
+								</rich:column>
+
+								<!-- Task Requester - Task Owner Name Column-->
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_processRequester}" />
+									</f:facet>
+									<h:outputText value="#{obj[4].name}" />
+								</rich:column>
+
+								<!-- Task Delegating Name Column-->
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_delegatingName}" />
+									</f:facet>
+									<h:outputText value="#{obj[5]}" />
+								</rich:column>
+
+								<!-- Training info Columns -->
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{msgs.label_trainingCourseName}" />
+									</f:facet>
+									<h:outputText value="#{obj[0].eventCourseName}" />
+								</rich:column>
+
+								<!-- The Footer-->
+								<f:facet name="footer">
+									<rich:dataScroller id="tasksScrollerId" execute="trainingCourseTasksId" oncomplete="unMaskScreen()" fastControls="hide">
+										<f:facet name="first"> #{msgs.label_first} </f:facet>
+										<f:facet name="last"> #{msgs.label_last} </f:facet>
+										<f:facet name="next"> #{msgs.label_next} </f:facet>
+										<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+									</rich:dataScroller>
+								</f:facet>
+							</rich:dataTable>
+						</td>
+					</tr>
+
+					<tr>
+						<td width="100%" height="5" />
+					</tr>
+
+					<tr>
+						<td width="100%">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:inputHidden id="trainingCourseTasksListSizeId" value="#{trainingsCollectiveApproval.trainingCoursesTasksListSize}" />
+										<h:commandButton onclick="return handleOnAction('#{trainingsCollectiveApproval.mode == 1 ? msgs.q_acceptNOfTasks : msgs.q_superSignToNOfTasks}'.format(selectedTrainingCourseTasksCount), 'validateTrainingCourseApproval()');" action="#{trainingsCollectiveApproval.doTrainingCourseEventCollectiveAction()}" value="#{trainingsCollectiveApproval.mode == 1 ? msgs.label_approve : msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+											<f:ajax render="trainingsCollectiveApprovalForm:notifyMessagesId trainingsCollectiveApprovalForm:headerInboxProceduresCountId trainingsCollectiveApprovalForm:trainingCourseTasksId trainingsCollectiveApprovalForm:trainingCourseTasksListSizeId" execute="trainingsCollectiveApprovalForm:trainingCourseTasksId" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</h:panelGroup>
 			</table>
 		</ui:decorate>
 	</h:form>

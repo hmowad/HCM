@@ -24,7 +24,23 @@ import com.code.services.util.HijriDateService;
 			" and (:P_INSTANCE_ID = -1 or t.instanceId = :P_INSTANCE_ID)" +
 			" and (:P_STATUS = -1 or i.status = :P_STATUS)" +
 			" and (:P_COURSE_EVENT_ID =-1 or t.courseEventId = :P_COURSE_EVENT_ID)" +
-			" and (:P_EXCLUDED_INSTANCE_ID = -1 or t.instanceId <> :P_EXCLUDED_INSTANCE_ID)")
+			" and (:P_EXCLUDED_INSTANCE_ID = -1 or t.instanceId <> :P_EXCLUDED_INSTANCE_ID)"),
+
+	@NamedQuery(name = "wf_trainingCourseEventData_searchWFTrainingCourseEventTasks",
+		query = " select trn, t, i, p.processName, requester, " +
+			" case when t.originalId <> t.assigneeId then " +
+			" (delegator.firstName || ' ' || delegator.secondName || ' ' || delegator.thirdName || case when delegator.thirdName is null then '' else ' ' end || delegator.lastName) " +
+			" else null end " +
+			" from WFTrainingCourseEventData trn , WFTask t, WFInstance i, WFProcess p, EmployeeData requester, Employee delegator " +
+			" where trn.instanceId = t.instanceId " +
+			"   and trn.instanceId = i.id " +
+			"   and i.processId = p.id " +
+			"   and i.requesterId = requester.id " +
+			"   and t.originalId = delegator.id " +
+			"   and t.action is null " +
+			"   and t.assigneeId = :P_ASSIGNEE_ID " +
+			"   and t.assigneeWfRole in (:P_ASSIGNEE_WF_ROLES) " +
+			"   order by t.taskId ")
 })
 
 @Entity
@@ -33,6 +49,7 @@ public class WFTrainingCourseEventData extends BaseEntity {
     private Long id;
     private Long instanceId;
     private Long courseEventId;
+    private String eventCourseName;
     private Date newStartDate;
     private String newStartDateString;
     private Date newEndDate;
@@ -91,6 +108,16 @@ public class WFTrainingCourseEventData extends BaseEntity {
     public void setCourseEventId(Long courseEventId) {
 	this.courseEventId = courseEventId;
 	this.wfTrainingCourseEvent.setCourseEventId(courseEventId);
+    }
+
+    @Basic
+    @Column(name = "EVENT_COURSE_NAME")
+    public String getEventCourseName() {
+	return eventCourseName;
+    }
+
+    public void setEventCourseName(String eventCourseName) {
+	this.eventCourseName = eventCourseName;
     }
 
     @Basic
