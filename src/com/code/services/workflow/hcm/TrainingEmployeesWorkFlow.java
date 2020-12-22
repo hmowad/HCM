@@ -1668,6 +1668,17 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 	}
     }
 
+    public static List<Object> getWFTrainingCourseEventTasks(Long assigneeId, String[] assigneeWfRoles) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_ASSIGNEE_ID", assigneeId);
+	    qParams.put("P_ASSIGNEE_WF_ROLES", assigneeWfRoles);
+	    return DataAccess.executeNamedQuery(Object.class, QueryNamesEnum.WF_GET_WF_TRAINING_COURSE_EVENT_TASKS.getCode(), qParams);
+	} catch (Exception e) {
+	    throw new BusinessException("error_general");
+	}
+    }
+
     public static List<WFTrainingData> getWFTrainingDataByCourseEventId(long courseEventId) throws BusinessException {
 	return searchWFTrainingData(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, FlagsEnum.ALL.getCode(), courseEventId);
     }

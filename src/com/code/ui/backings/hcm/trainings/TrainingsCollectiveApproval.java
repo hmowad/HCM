@@ -7,9 +7,11 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.workflow.WFTask;
+import com.code.dal.orm.workflow.hcm.trainings.WFTrainingCourseEventData;
 import com.code.dal.orm.workflow.hcm.trainings.WFTrainingData;
 import com.code.enums.WFTaskRolesEnum;
 import com.code.exceptions.BusinessException;
+import com.code.services.workflow.hcm.TrainingCoursesEventsWorkFlow;
 import com.code.services.workflow.hcm.TrainingEmployeesWorkFlow;
 import com.code.ui.backings.base.BaseBacking;
 
@@ -23,10 +25,13 @@ public class TrainingsCollectiveApproval extends BaseBacking {
     // object[4] - requester
     // object[5] - delegatingName
     private List<Object> trainingsTasks;
+    private List<Object> trainingCoursesTasks;
     private List<Object> tasksAndTrainingsObjects;
-
-    private boolean selectAll;
+    private List<Object> tasksAndTrainingCoursesObjects;
+    private boolean selectAllTraining;
+    private boolean selectAllTrainingCourse;
     private int trainingsTasksListSize;
+    private int trainingCoursesTasksListSize;
 
     private final static String taskUrlParam = "&taskId=";
     private final static int pageSize = 10;
@@ -55,9 +60,10 @@ public class TrainingsCollectiveApproval extends BaseBacking {
 
     public void searchTrainingsTasks() {
 	try {
-	    selectAll = false;
+	    selectAllTraining = false;
+	    selectAllTrainingCourse = false;
+	    // EmployeeTrainingTasks
 	    tasksAndTrainingsObjects = TrainingEmployeesWorkFlow.getWFTrainingTasks(this.loginEmpData.getEmpId(), mode == 1 ? new String[] { WFTaskRolesEnum.DIRECT_MANAGER.getCode() } : new String[] { WFTaskRolesEnum.SIGN_MANAGER.getCode(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), WFTaskRolesEnum.EXTRA_SECONDARY_SIGN_MANAGER.getCode() });
-
 	    trainingsTasks = new ArrayList<>();
 	    for (int i = 0; i < tasksAndTrainingsObjects.size(); i++) {
 		WFTask currentTask = (WFTask) (((Object[]) tasksAndTrainingsObjects.get(i))[1]);
@@ -66,20 +72,40 @@ public class TrainingsCollectiveApproval extends BaseBacking {
 		    trainingsTasks.add(tasksAndTrainingsObjects.get(i));
 		}
 	    }
-
 	    trainingsTasksListSize = trainingsTasks.size();
+	    // TrainingCoursesTasks
+
+	    tasksAndTrainingCoursesObjects = TrainingEmployeesWorkFlow.getWFTrainingCourseEventTasks(this.loginEmpData.getEmpId(), mode == 1 ? new String[] { WFTaskRolesEnum.DIRECT_MANAGER.getCode() } : new String[] { WFTaskRolesEnum.SIGN_MANAGER.getCode(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), WFTaskRolesEnum.EXTRA_SECONDARY_SIGN_MANAGER.getCode() });
+	    trainingCoursesTasks = new ArrayList<>();
+	    for (int i = 0; i < tasksAndTrainingCoursesObjects.size(); i++) {
+		WFTask currentTask = (WFTask) (((Object[]) tasksAndTrainingCoursesObjects.get(i))[1]);
+		WFTask previousTask = i == 0 ? null : (WFTask) (((Object[]) tasksAndTrainingCoursesObjects.get(i - 1))[1]);
+		if (previousTask == null || currentTask.getTaskId().longValue() != previousTask.getTaskId().longValue()) {
+		    trainingCoursesTasks.add(tasksAndTrainingCoursesObjects.get(i));
+		}
+	    }
+	    trainingCoursesTasksListSize = trainingCoursesTasks.size();
 	} catch (BusinessException e) {
 	    trainingsTasks = new ArrayList<Object>();
+	    trainingCoursesTasks = new ArrayList<Object>();
 	    tasksAndTrainingsObjects = new ArrayList<Object>();
+	    tasksAndTrainingCoursesObjects = new ArrayList<Object>();
 	    trainingsTasksListSize = 0;
+	    trainingCoursesTasksListSize = 0;
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
-    // called from the xhtml on change of the selectAll check box
+    // called from the xhtml on change of the selectAllTraining check box
     public void selectUnselectAllRows() {
 	for (int i = 0; i < trainingsTasks.size(); i++) {
-	    ((WFTrainingData) (((Object[]) trainingsTasks.get(i))[0])).setSelected(selectAll);
+	    ((WFTrainingData) (((Object[]) trainingsTasks.get(i))[0])).setSelected(selectAllTraining);
+	}
+    }
+
+    public void selectUnselectAllTrainingCourseRows() {
+	for (int i = 0; i < trainingCoursesTasks.size(); i++) {
+	    ((WFTrainingCourseEventData) (((Object[]) trainingCoursesTasks.get(i))[0])).setSelected(selectAllTrainingCourse);
 	}
     }
 
@@ -110,40 +136,93 @@ public class TrainingsCollectiveApproval extends BaseBacking {
 	searchTrainingsTasks();
     }
 
-    public List<Object> getTrainingsTasks() {
-	return trainingsTasks;
-    }
+    public void doTrainingCourseEventCollectiveAction() {
+	String unsuccessfulTaskIdsIfAny = "";
+	String comma = "";
+	int unsuccessfulTasksCount = 0;
+	for (Object obj : trainingCoursesTasks) {
+	    try {
+		WFTrainingCourseEventData trainingCourseRequest = ((WFTrainingCourseEventData) ((Object[]) obj)[0]);
+		if (trainingCourseRequest.getSelected())
+		    TrainingCoursesEventsWorkFlow.doTrainingCourseEventsCollectiveAction(obj, tasksAndTrainingCoursesObjects);
+	    } catch (BusinessException e) {
+		unsuccessfulTaskIdsIfAny += comma + ((WFTask) ((Object[]) obj)[1]).getTaskId();
+		unsuccessfulTasksCount++;
+		comma = ", ";
+	    }
+	}
 
-    public boolean isSelectAll() {
-	return selectAll;
-    }
+	if (unsuccessfulTasksCount > 0)
+	    this.setServerSideErrorMessages(getParameterizedMessage("error_thereAreErrorsForNOfTasks", new Object[] { unsuccessfulTasksCount, unsuccessfulTaskIdsIfAny }));
+	else
+	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 
-    public int getTrainingsTasksListSize() {
-	return trainingsTasksListSize;
-    }
-
-    public String getTaskUrlParam() {
-	return taskUrlParam;
-    }
-
-    public int getPageSize() {
-	return pageSize;
-    }
-
-    public int getMode() {
-	return mode;
+	// Call the search method here to Reload the tasks
+	searchTrainingsTasks();
     }
 
     public void setTrainingsTasks(List<Object> trainingsTasks) {
 	this.trainingsTasks = trainingsTasks;
     }
 
-    public void setSelectAll(boolean selectAll) {
-	this.selectAll = selectAll;
+    public List<Object> getTrainingsTasks() {
+	return trainingsTasks;
+    }
+
+    public List<Object> getTrainingCoursesTasks() {
+	return trainingCoursesTasks;
+    }
+
+    public void setTrainingCoursesTasks(List<Object> trainingCoursesTasks) {
+	this.trainingCoursesTasks = trainingCoursesTasks;
     }
 
     public void setTrainingsTasksListSize(int trainingsTasksListSize) {
 	this.trainingsTasksListSize = trainingsTasksListSize;
+    }
+
+    public int getTrainingsTasksListSize() {
+	return trainingsTasksListSize;
+    }
+
+    public int getTrainingCoursesTasksListSize() {
+	return trainingCoursesTasksListSize;
+    }
+
+    public void setTrainingCoursesTasksListSize(int trainingCoursesTasksListSize) {
+	this.trainingCoursesTasksListSize = trainingCoursesTasksListSize;
+    }
+
+    public String getTaskUrlParam() {
+	return taskUrlParam;
+    }
+
+    public boolean isSelectAllTraining() {
+	return selectAllTraining;
+    }
+
+    public void setSelectAllTraining(boolean selectAllTraining) {
+	this.selectAllTraining = selectAllTraining;
+    }
+
+    public boolean isSelectAllTrainingCourse() {
+	return selectAllTrainingCourse;
+    }
+
+    public void setSelectAllTrainingCourse(boolean selectAllTrainingCourse) {
+	this.selectAllTrainingCourse = selectAllTrainingCourse;
+    }
+
+    public int getPageSize() {
+	return pageSize;
+    }
+
+    public static int getPagesize() {
+	return pageSize;
+    }
+
+    public int getMode() {
+	return mode;
     }
 
     public void setMode(int mode) {

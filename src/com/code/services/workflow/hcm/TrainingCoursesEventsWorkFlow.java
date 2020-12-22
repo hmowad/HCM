@@ -724,6 +724,34 @@ public class TrainingCoursesEventsWorkFlow extends BaseWorkFlow {
 
     /******************************************************** WFTrainingCourseEvents ***********************************************************************************/
     /*---------------------------Work Flow Steps----------------------*/
+    /*---------------------------CollectiveApproval----------------------*/
+    public static void doTrainingCourseEventsCollectiveAction(Object trainingCourseTaskObject, List<Object> tasksAndTrainingCourseObjects) throws BusinessException {
+	// object[0] - WFTrainingCourseEvents
+	// object[1] - WFTask
+	// object[2] - WFInstance
+	// object[3] - processName
+	// object[4] - requester
+	// object[5] - delegatingName
+	WFTrainingCourseEventData trainingCourseRequest = (WFTrainingCourseEventData) (((Object[]) trainingCourseTaskObject)[0]);
+	WFTask task = (WFTask) (((Object[]) trainingCourseTaskObject)[1]);
+	WFInstance instance = (WFInstance) (((Object[]) trainingCourseTaskObject)[2]);
+	EmployeeData requester = (EmployeeData) (((Object[]) trainingCourseTaskObject)[4]);
+	List<WFTrainingCourseEventData> trainingCourseEventList = new ArrayList<WFTrainingCourseEventData>();
+	for (int i = 0; i < tasksAndTrainingCourseObjects.size(); i++) {
+	    WFTrainingCourseEventData currentWFTrainingCourseEventData = (WFTrainingCourseEventData) (((Object[]) tasksAndTrainingCourseObjects.get(i))[0]);
+	    if (task.getInstanceId().longValue() == currentWFTrainingCourseEventData.getInstanceId().longValue()) {
+		trainingCourseEventList.add(currentWFTrainingCourseEventData);
+	    }
+	}
+	TrainingCourseEventData courseEvent = TrainingCoursesEventsService.getCourseEventById(trainingCourseRequest.getCourseEventId());
+
+	if (task.getAssigneeWfRole().equals(WFTaskRolesEnum.SIGN_MANAGER.getCode())) {
+	    TrainingCoursesEventsWorkFlow.doWFTrainingCourseEventsSM(requester, instance, trainingCourseEventList, courseEvent, task, WFActionFlagsEnum.APPROVE.getCode());
+
+	}
+    }
+
+    /*---------------------------Work Flow Steps Claims----------------------*/
     public static void initWFTrainingCourseEvents(EmployeeData requester, List<WFTrainingCourseEventData> wfTrainingCourseEventsList, TrainingCourseEventData courseEvent, long processId, String taskUrl, List<EmployeeData> internalCopiesEmployees, String externalCopies, String attachments) throws BusinessException {
 	validateWFTrainingCourseEvents(wfTrainingCourseEventsList, courseEvent, null, processId, attachments);
 

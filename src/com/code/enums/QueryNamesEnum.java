@@ -478,6 +478,7 @@ public enum QueryNamesEnum {
     /* ****************************************** Training And Scholarship ******************************************* */
     WF_GET_WFTRAINING("wf_trainingData_searchWFTrainingData"),
     WF_GET_WFTRAINING_TASKS("wf_trainingData_searchWFTrainingTasks"),
+    WF_GET_WF_TRAINING_COURSE_EVENT_TASKS("wf_trainingCourseEventData_searchWFTrainingCourseEventTasks"),
     WF_GET_WFTRAINING_PLAN("wf_trainingPlanData_searchWFTrainingPlanData"),
     WF_SEARCH_WF_TRAINING_COURSE_DATA("wf_wfTrainingCourseData_searchWFTrainingCoursesData"),
     WF_GET_RUNNING_WF_TRAINING_COURSES("wf_wfTrainingCourse_getRunningWFTrainingCourses"),
