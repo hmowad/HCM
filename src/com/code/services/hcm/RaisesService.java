@@ -975,10 +975,10 @@ public class RaisesService extends BaseService {
 		throw new BusinessException("error_annualRaiseMustHaveAtLeastOneDeservedEmployee");
 	    }
 	    for (EmployeeData emp : allDeservedEmployees) {
-		if (!emp.getDegreeId().equals(rankDegreesHashMap.get(emp.getRankId()))) {
-		    currDeservedEmps.put(emp.getEmpId(), emp);
-		} else {
+		if (emp.getDegreeId().equals(rankDegreesHashMap.get(emp.getRankId())) || emp.getDegreeId() > rankDegreesHashMap.get(emp.getRankId())) {
 		    currExculeddedForEndOfLadder.put(emp.getEmpId(), emp);
+		} else {
+		    currDeservedEmps.put(emp.getEmpId(), emp);
 		}
 	    }
 	    if (!areEqualRaiseEmployeeMaps(currExculeddedForEndOfLadder, prevExcludedforEndOfLadder) || !areEqualRaiseEmployeeMaps(currDeservedEmps, prevDeservedEmps)) {
