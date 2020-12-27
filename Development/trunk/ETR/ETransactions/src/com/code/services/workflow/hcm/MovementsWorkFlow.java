@@ -287,8 +287,8 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 			if (!requester.getOfficialRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode())
 				// the following condition works for Exchange Move also.
 				&& UnitsService.getUnitById(movementRequests.get(0).getEmployeeUnitId()).getRegionId().equals(UnitsService.getUnitById(movementRequests.get(0).getUnitId()).getRegionId())
-				&& requester.getRankId() >= RanksEnum.COLONEL.getCode()
-				&& EmployeesService.getEmployeeData(movementRequests.get(0).getReplacementEmployeeId()).getRankId() >= RanksEnum.COLONEL.getCode()) {
+				&& requester.getRankId() >= RanksEnum.MAJOR.getCode()
+				&& EmployeesService.getEmployeeData(movementRequests.get(0).getReplacementEmployeeId()).getRankId() >= RanksEnum.MAJOR.getCode()) {
 
 			    generalDirectorateDecision = false;
 
@@ -307,7 +307,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 
 			if (!requester.getOfficialRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) && movementRequests.get(0).getLocationFlag().equals(LocationFlagsEnum.INTERNAL.getCode())
 				&& UnitsService.getUnitById(movementRequests.get(0).getEmployeeUnitId()).getRegionId().equals(UnitsService.getUnitById(movementRequests.get(0).getUnitId()).getRegionId())
-				&& requester.getRankId() >= RanksEnum.COLONEL.getCode()
+				&& requester.getRankId() >= RanksEnum.MAJOR.getCode()
 				&& !MovementsService.checkIfEmployeeExistsInCertainPositions(requester)) {
 
 			    generalDirectorateDecision = false;
@@ -579,8 +579,8 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		    if (!requester.getOfficialRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode())
 			    // the following condition works for Exchange Move also.
 			    && UnitsService.getUnitById(movementRequests.get(0).getEmployeeUnitId()).getRegionId().equals(UnitsService.getUnitById(movementRequests.get(0).getUnitId()).getRegionId())
-			    && requester.getRankId() >= RanksEnum.COLONEL.getCode()
-			    && EmployeesService.getEmployeeData(movementRequests.get(0).getReplacementEmployeeId()).getRankId() >= RanksEnum.COLONEL.getCode()) {
+			    && requester.getRankId() >= RanksEnum.MAJOR.getCode()
+			    && EmployeesService.getEmployeeData(movementRequests.get(0).getReplacementEmployeeId()).getRankId() >= RanksEnum.MAJOR.getCode()) {
 
 			generalDirectorateDecision = false;
 
