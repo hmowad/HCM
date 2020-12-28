@@ -1235,7 +1235,7 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    public static byte[] getEmployeesFileReportDataBytes(long empId, long categoryId, boolean printRecruitments, boolean printSeniortiy, boolean printPromotions, boolean printVacations, boolean printMovements, boolean printPenalities, boolean printBonuses, boolean printServiceTermination, boolean printTraining, boolean printEducations, boolean printAllowances, boolean printServiceExtension, boolean printExercises, boolean printRaises, boolean printStatus) throws BusinessException {
+    public static byte[] getEmployeesFileReportDataBytes(Long empId, long categoryId, boolean printRecruitments, boolean printSeniortiy, boolean printPromotions, boolean printVacations, boolean printMovements, boolean printPenalities, boolean printBonuses, boolean printServiceTermination, boolean printTraining, boolean printEducations, boolean printAllowances, boolean printServiceExtension, boolean printExercises, boolean printRaises, boolean printStatus) throws BusinessException {
 	try {
 	    String reportName;
 	    if (categoryId == CategoriesEnum.OFFICERS.getCode())

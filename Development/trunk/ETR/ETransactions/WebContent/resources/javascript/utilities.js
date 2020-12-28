@@ -335,6 +335,10 @@ function openEmployeesMiniSearch(contextPath, miniSearchReturnHandler, mode, cat
 	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, categoryMode, -1, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankId, managerPhysicalUnitHKey, -1, -1, -1, physicalRegionId, -1, -1, -1, -1, 0,-1);
 }
 
+function openEmployeesMiniSearchByCategoriesIds(contextPath, miniSearchReturnHandler, mode, categoryIds, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankId, managerPhysicalUnitHKey, physicalRegionId){
+	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, -1, categoryIds, recruitmentRegionId, graduationGroupNumber , graduationGroupPlace, recruitmentRankId, managerPhysicalUnitHKey, -1, -1, -1, physicalRegionId, -1, -1, -1, -1, 0,-1);
+}
+
 function openEmpsMiniSearchForHistorical(contextPath, miniSearchReturnHandler, mode, categoryIds){
 	empsMiniSearch(contextPath, miniSearchReturnHandler, mode, -1,categoryIds, -1, -1 , -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,-1);
 }

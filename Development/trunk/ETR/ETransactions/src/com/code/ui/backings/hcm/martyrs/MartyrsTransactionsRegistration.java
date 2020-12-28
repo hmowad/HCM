@@ -27,8 +27,11 @@ import com.code.ui.backings.base.BaseBacking;
 public class MartyrsTransactionsRegistration extends BaseBacking {
     private int mode;
     private boolean modifyDeleteAdmin = false;
-
+    private boolean martyrContentFlag = false;
+    private boolean martyrsListFlag = false;
+    private boolean martyrdomTypeFlag = false;
     private EmployeeData employee;
+    private List<MartyrTransactionData> martyrTransactionDataList;
     private MartyrTransactionData martyrTransactionData;
     private List<MartyrdomReason> martyrdomReasons;
     private List<MartyrHonor> financialMartyrHonors;
@@ -38,8 +41,6 @@ public class MartyrsTransactionsRegistration extends BaseBacking {
     private boolean viewOnlyFlag = false;
 
     private int pageSize = 5;
-    private int financialHonorTablePageNum = 1;
-    private int moralHonorTablePageNum = 1;
 
     public MartyrsTransactionsRegistration() {
 	try {
@@ -62,24 +63,54 @@ public class MartyrsTransactionsRegistration extends BaseBacking {
 		martyrdomReasons = MartyrsService.getMartyrdomReasons();
 		regions = CommonService.getAllRegions();
 
-		reset();
+		resetForm();
 	    }
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
-    public void reset() {
-	martyrTransactionData = new MartyrTransactionData();
-	employee = new EmployeeData();
-	employee.setCategoryId(new Long(mode));
-	financialMartyrHonors = new ArrayList<MartyrHonor>();
-	moralMartyrHonors = new ArrayList<MartyrHonor>();
-	martyrTransactionData.setMartyrdomRegionId(getLoginEmpPhysicalRegionFlag(true));
-	financialHonorTablePageNum = 1;
-	moralHonorTablePageNum = 1;
+    public void getEmployeeMartyrdomData() {
+	try {
+	    if (employee.getEmpId() != null) {
+		martyrsListFlag = true;
+		martyrContentFlag = false;
+		employee = EmployeesService.getEmployeeData(employee.getEmpId());
+		martyrTransactionDataList = MartyrsService.getMartyrTransactionByEmployeeId(employee.getEmpId());
 
+	    } else {
+		throw new BusinessException("error_UIError");
+	    }
+	} catch (BusinessException e) {
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
+    }
+
+    public void addMartyr() {
+	reset();
 	viewOnlyFlag = false;
+	martyrContentFlag = true;
+	martyrTransactionData.setEmployeeId(employee.getEmpId());
+	for (MartyrTransactionData martyrTransaction : martyrTransactionDataList) {
+	    if (martyrTransaction.getMartyrdomType() != MartyrdomTypesEnum.INJURED.getCode())
+		martyrdomTypeFlag = true;
+	    martyrTransactionData.setMartyrdomType(MartyrdomTypesEnum.INJURED.getCode());
+	    break;
+	}
+
+    }
+
+    public void selectMartyr(MartyrTransactionData martyrTransaction) {
+	try {
+	    viewOnlyFlag = false;
+	    martyrContentFlag = true;
+	    martyrTransactionData = martyrTransaction;
+	    financialMartyrHonors = MartyrsService.getMartyrHonors(martyrTransactionData.getId(), MartyrsHonorsTypesEnum.FINANCIAL.getCode());
+	    moralMartyrHonors = MartyrsService.getMartyrHonors(martyrTransactionData.getId(), MartyrsHonorsTypesEnum.MORAL.getCode());
+
+	} catch (BusinessException e) {
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
     }
 
     public void martyrdomTypeChangeListener() {
@@ -90,6 +121,16 @@ public class MartyrsTransactionsRegistration extends BaseBacking {
 	    martyrTransactionData.setFirstContactNumber(employee.getOfficialMobileNumber());
 	    martyrTransactionData.setSecondContactNumber(employee.getPrivateMobileNumber());
 	}
+    }
+
+    public void addMartyrHonor(int honorType) {
+	MartyrHonor martyrHonor = new MartyrHonor();
+	martyrHonor.setHonorType(honorType);
+
+	if (honorType == MartyrsHonorsTypesEnum.FINANCIAL.getCode())
+	    financialMartyrHonors.add(martyrHonor);
+	else
+	    moralMartyrHonors.add(martyrHonor);
     }
 
     public void deleteMartyrHonor(MartyrHonor martyrHonor, int honorType) {
@@ -108,40 +149,7 @@ public class MartyrsTransactionsRegistration extends BaseBacking {
 	}
     }
 
-    public void addMartyrHonor(int honorType) {
-	MartyrHonor martyrHonor = new MartyrHonor();
-	martyrHonor.setHonorType(honorType);
-
-	if (honorType == MartyrsHonorsTypesEnum.FINANCIAL.getCode())
-	    financialMartyrHonors.add(martyrHonor);
-	else
-	    moralMartyrHonors.add(martyrHonor);
-    }
-
-    public void getEmployeeMartyrdomData() {
-	try {
-	    if (employee.getEmpId() != null) {
-		employee = EmployeesService.getEmployeeData(employee.getEmpId());
-		martyrTransactionData = MartyrsService.getMartyrTransactionByEmployeeId(employee.getEmpId());
-		if (martyrTransactionData == null) {
-		    martyrTransactionData = new MartyrTransactionData();
-		    martyrTransactionData.setMartyrdomRegionId(getLoginEmpPhysicalRegionFlag(true));
-		    martyrTransactionData.setEmployeeId(employee.getEmpId());
-		    financialMartyrHonors = new ArrayList<MartyrHonor>();
-		    moralMartyrHonors = new ArrayList<MartyrHonor>();
-		} else {
-		    financialMartyrHonors = MartyrsService.getMartyrHonors(martyrTransactionData.getId(), MartyrsHonorsTypesEnum.FINANCIAL.getCode());
-		    moralMartyrHonors = MartyrsService.getMartyrHonors(martyrTransactionData.getId(), MartyrsHonorsTypesEnum.MORAL.getCode());
-		}
-	    } else {
-		throw new BusinessException("error_UIError");
-	    }
-	} catch (BusinessException e) {
-	    setServerSideErrorMessages(getMessage(e.getMessage()));
-	}
-    }
-
-    public void saveMartyrTransactionData() {
+    public void saveMartyrTransactionData() throws BusinessException {
 	try {
 	    List<MartyrHonor> martyrsHonorList = new ArrayList<>();
 	    martyrsHonorList.addAll(financialMartyrHonors);
@@ -163,14 +171,16 @@ public class MartyrsTransactionsRegistration extends BaseBacking {
 	    }
 
 	    if (martyrTransactionData.getId() == null)
-		MartyrsService.addMartyrTransactionAndHonors(martyrTransactionData, martyrsHonorList);
+		MartyrsService.addMartyrTransactionAndHonors(martyrTransactionData, martyrTransactionDataList, martyrsHonorList);
 	    else
-		MartyrsService.updateMartyrTransactionAndHonors(martyrTransactionData, martyrsHonorList);
+		MartyrsService.updateMartyrTransactionAndHonors(martyrTransactionData, martyrTransactionDataList, martyrsHonorList);
 
 	    viewOnlyFlag = true;
+	    martyrTransactionDataList = MartyrsService.getMartyrTransactionByEmployeeId(employee.getEmpId());
 
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
+	    martyrTransactionDataList = MartyrsService.getMartyrTransactionByEmployeeId(employee.getEmpId());
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
@@ -179,7 +189,9 @@ public class MartyrsTransactionsRegistration extends BaseBacking {
 	try {
 	    martyrTransactionData.getMartyrTransaction().setSystemUser(this.loginEmpData.getEmpId() + ""); // For Auditing.
 	    MartyrsService.deleteMartyrTransactionAndHonors(martyrTransactionData);
+	    martyrContentFlag = false;
 	    reset();
+	    martyrTransactionDataList = MartyrsService.getMartyrTransactionByEmployeeId(employee.getEmpId());
 
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
@@ -196,12 +208,62 @@ public class MartyrsTransactionsRegistration extends BaseBacking {
 	}
     }
 
+    public void resetForm() {
+	reset();
+	employee = new EmployeeData();
+	employee.setCategoryId(new Long(mode));
+	martyrContentFlag = false;
+	martyrsListFlag = false;
+	viewOnlyFlag = false;
+    }
+
+    public void reset() {
+	martyrTransactionData = new MartyrTransactionData();
+	financialMartyrHonors = new ArrayList<MartyrHonor>();
+	moralMartyrHonors = new ArrayList<MartyrHonor>();
+	martyrTransactionData.setMartyrdomRegionId(getLoginEmpPhysicalRegionFlag(true));
+	martyrdomTypeFlag = false;
+
+    }
+
+    public List<MartyrTransactionData> getMartyrTransactionDataList() {
+	return martyrTransactionDataList;
+    }
+
+    public void setMartyrTransactionDataList(List<MartyrTransactionData> martyrTransactionDataList) {
+	this.martyrTransactionDataList = martyrTransactionDataList;
+    }
+
+    public boolean isMartyrsListFlag() {
+	return martyrsListFlag;
+    }
+
+    public void setMartyrsListFlag(boolean martyrsListFlag) {
+	this.martyrsListFlag = martyrsListFlag;
+    }
+
+    public boolean isMartyrdomTypeFlag() {
+	return martyrdomTypeFlag;
+    }
+
+    public void setMartyrdomTypeFlag(boolean martyrdomTypeFlag) {
+	this.martyrdomTypeFlag = martyrdomTypeFlag;
+    }
+
     public boolean editFieldsEnabled() {
 	return !viewOnlyFlag && (martyrTransactionData.getId() == null || (martyrTransactionData.getId() != null && modifyDeleteAdmin));
     }
 
     public boolean viewFieldsEnabled() {
 	return viewOnlyFlag || (martyrTransactionData.getId() != null && !modifyDeleteAdmin);
+    }
+
+    public boolean isMartyrContentFlag() {
+	return martyrContentFlag;
+    }
+
+    public void setMartyrContentFlag(boolean martyrContentFlag) {
+	this.martyrContentFlag = martyrContentFlag;
     }
 
     public EmployeeData getEmployee() {
@@ -274,22 +336,6 @@ public class MartyrsTransactionsRegistration extends BaseBacking {
 
     public void setPageSize(int pageSize) {
 	this.pageSize = pageSize;
-    }
-
-    public int getFinancialHonorTablePageNum() {
-	return financialHonorTablePageNum;
-    }
-
-    public void setFinancialHonorTablePageNum(int financialHonorTablePageNum) {
-	this.financialHonorTablePageNum = financialHonorTablePageNum;
-    }
-
-    public int getMoralHonorTablePageNum() {
-	return moralHonorTablePageNum;
-    }
-
-    public void setMoralHonorTablePageNum(int moralHonorTablePageNum) {
-	this.moralHonorTablePageNum = moralHonorTablePageNum;
     }
 
     public boolean isViewOnlyFlag() {

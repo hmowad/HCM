@@ -268,8 +268,22 @@ public class EmpsMiniSearch extends BaseBacking implements Serializable {
 		searchEmployeeList = EmployeesService.searchEmployeesForFutureVacation(searchEmpName, categoryIds, employeeIds, militaryNumber, searchSocialId, statusIds, searchJobDesc, searchUnitFullName, sequenceNumber);
 		break;
 
+	    case 23:
+		if (unitHKey == null || unitHKey.equals("-1") || unitHKey.isEmpty())
+		    unitHKey = null;
+		statusIds = new Long[] { EmployeeStatusEnum.ON_DUTY_UNDER_RECRUITMENT.getCode(),
+			EmployeeStatusEnum.ON_DUTY.getCode(), EmployeeStatusEnum.SUBJOINED.getCode(),
+			EmployeeStatusEnum.PERSONS_SUBJOINED.getCode(),
+			EmployeeStatusEnum.ASSIGNED.getCode(),
+			EmployeeStatusEnum.MANDATED.getCode(),
+			EmployeeStatusEnum.SECONDMENTED.getCode(),
+			EmployeeStatusEnum.ASSIGNED_EXTERNALLY.getCode(),
+			EmployeeStatusEnum.PERSONS_SUBJOINED_EXTERNALLY.getCode(),
+			EmployeeStatusEnum.SUBJOINED_EXTERNALLY.getCode(),
+			EmployeeStatusEnum.SERVICE_TERMINATED.getCode() };
+		searchEmployeeList = EmployeesService.getEmployeesByPhysicalUnitHkeyNameAndStatusesID(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, unitHKey, statusIds, categoryIds, physicalRegionId, militaryNumber, officialRegionId, sequenceNumber, FlagsEnum.ALL.getCode());
+		break;
 	    }
-
 	    if (searchEmployeeList == null || searchEmployeeList.isEmpty()) {
 		super.setServerSideErrorMessages(getMessage("error_noEmpFound"));
 	    }

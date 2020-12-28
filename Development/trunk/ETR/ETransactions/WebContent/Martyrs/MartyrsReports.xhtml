@@ -6,7 +6,20 @@
 	<h:outputStylesheet library="css" name="styles.css" />
 	<h:outputStylesheet library="css" name="grid.css" />
 	<h:outputScript name="utilities.js" library="javascript" target="head" />
-
+	<script type="text/javascript">
+	
+	function getEmployee(contextPath) {
+		openEmployeesMiniSearchByCategoriesIds(contextPath, 'handleEmpMiniSearchResult(ret)', 23, '#{martyrsReports.categoriesIds}', -1, -1, -1, -1, -1, #{martyrsTransactionsRegistration.getLoginEmpPhysicalRegionFlag(true)});
+	}
+	
+	function handleEmpMiniSearchResult(ret) {
+		if(ret!=null) { 
+	         document.getElementById('martyrsReportsFormId:employeeIDId').value=ret[0];
+	         document.getElementById('martyrsReportsFormId:employeeName').value=ret[1];
+	         document.getElementById('martyrsReportsFormId:searchEmpBtnId').click();
+		}
+	}
+	</script>
 </h:head>
 <h:body styleClass="screenBg">
 	<h:form id="martyrsReportsFormId" dir="#{msgs.dir}">
@@ -89,6 +102,17 @@
 								</tr>
 
 								<tr>
+									<th width="15%">#{msgs.label_emp}</th>
+									<td width="35%">
+										<h:outputText id="employeeName" value="#{martyrsReports.employee.name}" />
+										<h:outputText value=" " />
+										<h:inputHidden id="employeeIDId" value="#{martyrsReports.employee.empId}" />
+										<h:commandButton id="selectEmployeeBtnId" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+										<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{martyrsReports.selectEmployee()}">
+											<f:ajax execute="martyrsReportsFormId:employeeIDId" render="martyrsReportsFormId:employeeName" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+											<h:outputText value=" " />
+										</h:commandButton>
+									</td>
 									<th width="15%">#{msgs.label_martyrdomRegion}</th>
 									<td width="35%">
 										<h:selectOneMenu value="#{martyrsReports.martyrRegionId}" disabled="#{martyrsReports.getLoginEmpPhysicalRegionFlag(true) != -1}">
