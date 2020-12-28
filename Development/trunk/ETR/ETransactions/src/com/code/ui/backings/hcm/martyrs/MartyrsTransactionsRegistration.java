@@ -201,7 +201,7 @@ public class MartyrsTransactionsRegistration extends BaseBacking {
 
     public void print() {
 	try {
-	    byte[] bytes = MartyrsService.getMartyrFileBytes(martyrTransactionData.getEmployeeId());
+	    byte[] bytes = MartyrsService.getMartyrFileBytes(martyrTransactionData.getId(), martyrTransactionData.getEmployeeId());
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));

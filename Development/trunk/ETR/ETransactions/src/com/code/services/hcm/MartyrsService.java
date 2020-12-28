@@ -533,9 +533,10 @@ public class MartyrsService extends BaseService {
 	}
     }
 
-    public static byte[] getMartyrFileBytes(long employeeId) throws BusinessException {
+    public static byte[] getMartyrFileBytes(long martyrId, long employeeId) throws BusinessException {
 	try {
 	    Map<String, Object> parameters = new HashMap<String, Object>();
+	    parameters.put("P_MARTYR_ID", martyrId);
 	    parameters.put("P_EMP_ID", employeeId);
 	    parameters.put("P_PRINT_DATE", HijriDateService.getHijriSysDateString());
 
