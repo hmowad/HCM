@@ -31,7 +31,7 @@ public class MartyrsService extends BaseService {
 
     /*-----------------------------------------------------Martyrs Transactions operations---------------------------------------------*/
 
-    public static void addMartyrTransactionAndHonors(MartyrTransactionData martyrTransactionData, List<MartyrHonor> martyrHonorsData, CustomSession... useSession) throws BusinessException {
+    public static void addMartyrTransactionAndHonors(MartyrTransactionData martyrTransactionData, List<MartyrTransactionData> martyrTransactionDataList, List<MartyrHonor> martyrHonorsData, CustomSession... useSession) throws BusinessException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 
@@ -39,7 +39,7 @@ public class MartyrsService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
-	    addMartyrTransaction(martyrTransactionData, session);
+	    addMartyrTransaction(martyrTransactionData, martyrTransactionDataList, session);
 
 	    for (MartyrHonor martyrHonor : martyrHonorsData) {
 		martyrHonor.setMartyrTransactionId(martyrTransactionData.getId());
@@ -64,7 +64,7 @@ public class MartyrsService extends BaseService {
 	}
     }
 
-    public static void updateMartyrTransactionAndHonors(MartyrTransactionData martyrTransactionData, List<MartyrHonor> martyrHonorsData, CustomSession... useSession) throws BusinessException {
+    public static void updateMartyrTransactionAndHonors(MartyrTransactionData martyrTransactionData, List<MartyrTransactionData> martyrTransactionDataList, List<MartyrHonor> martyrHonorsData, CustomSession... useSession) throws BusinessException {
 	List<MartyrHonor> newHonorsList = new ArrayList<MartyrHonor>();
 
 	boolean isOpenedSession = isSessionOpened(useSession);
@@ -74,7 +74,7 @@ public class MartyrsService extends BaseService {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
-	    updateMartyrTransaction(martyrTransactionData, session);
+	    updateMartyrTransaction(martyrTransactionData, martyrTransactionDataList, session);
 
 	    for (MartyrHonor martyrHonor : martyrHonorsData)
 		if (martyrHonor.getId() == null) {
@@ -99,8 +99,8 @@ public class MartyrsService extends BaseService {
 	}
     }
 
-    private static void addMartyrTransaction(MartyrTransactionData martyrTransactionData, CustomSession... useSession) throws BusinessException {
-	validateMartyrTransaction(martyrTransactionData);
+    private static void addMartyrTransaction(MartyrTransactionData martyrTransactionData, List<MartyrTransactionData> martyrTransactionDataList, CustomSession... useSession) throws BusinessException {
+	validateMartyrTransaction(martyrTransactionData, martyrTransactionDataList);
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -125,8 +125,8 @@ public class MartyrsService extends BaseService {
 	}
     }
 
-    private static void updateMartyrTransaction(MartyrTransactionData martyrTransactionData, CustomSession... useSession) throws BusinessException {
-	validateMartyrTransaction(martyrTransactionData);
+    private static void updateMartyrTransaction(MartyrTransactionData martyrTransactionData, List<MartyrTransactionData> martyrTransactionDataList, CustomSession... useSession) throws BusinessException {
+	validateMartyrTransaction(martyrTransactionData, martyrTransactionDataList);
 
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
@@ -183,8 +183,7 @@ public class MartyrsService extends BaseService {
 	}
     }
 
-    private static void validateMartyrTransaction(MartyrTransactionData martyrTransactionData) throws BusinessException {
-
+    private static void validateMartyrTransaction(MartyrTransactionData martyrTransactionData, List<MartyrTransactionData> martyrTransactionDataList) throws BusinessException {
 	if (martyrTransactionData == null || martyrTransactionData.getMedicalDecisionFlag() == null)
 	    throw new BusinessException("error_transactionDataError");
 	if (martyrTransactionData.getEmployeeId() == null)
@@ -249,13 +248,27 @@ public class MartyrsService extends BaseService {
 	    throw new BusinessException("error_martyrInjuryCompansationDataMandatory");
 	if (martyrTransactionData.getMartyrdomType() != MartyrdomTypesEnum.INJURED.getCode() && (martyrTransactionData.getInjuryCompensation() != null || martyrTransactionData.getInjuryCompensationNumber() != null || martyrTransactionData.getInjuryCompensationDate() != null))
 	    throw new BusinessException("error_martyrDeathCompansationDataMandatory");
+
+	for (MartyrTransactionData martyrTransaction : martyrTransactionDataList) {
+	    if (!martyrTransaction.getId().equals(martyrTransactionData.getId()) &&
+		    HijriDateService.hijriDateDiff(martyrTransaction.getMartyrdomDate(), martyrTransactionData.getMartyrdomDate()) == 0) {
+		throw new BusinessException("error_dublictInjuryDate");
+	    }
+	    if (martyrTransaction.getMartyrdomType() != MartyrdomTypesEnum.INJURED.getCode() && !martyrTransaction.getId().equals(martyrTransactionData.getId())
+		    && HijriDateService.hijriDateDiff(martyrTransaction.getMartyrdomDate(), martyrTransactionData.getMartyrdomDate()) >= 0) {
+		throw new BusinessException("error_injuryDateGreaterThanMartyrDate");
+	    }
+	    if (martyrTransactionData.getMartyrdomType() != MartyrdomTypesEnum.INJURED.getCode()) {
+		if (martyrTransaction.getMartyrdomType() == MartyrdomTypesEnum.INJURED.getCode() && !martyrTransaction.getId().equals(martyrTransactionData.getId())
+			&& HijriDateService.hijriDateDiff(martyrTransaction.getMartyrdomDate(), martyrTransactionData.getMartyrdomDate()) <= 0) {
+		    throw new BusinessException("error_martyrDateLessThanInjuredDate");
+		}
+	    }
+	}
     }
 
-    public static MartyrTransactionData getMartyrTransactionByEmployeeId(long empId) throws BusinessException {
-	List<MartyrTransactionData> martyrTransactions = searchMartyrTransactions(empId, FlagsEnum.ALL.getCode());
-	if (martyrTransactions.size() != 0)
-	    return martyrTransactions.get(0);
-	return null;
+    public static List<MartyrTransactionData> getMartyrTransactionByEmployeeId(long empId) throws BusinessException {
+	return searchMartyrTransactions(empId, FlagsEnum.ALL.getCode());
     }
 
     private static List<MartyrTransactionData> searchMartyrTransactions(long empId, long reasonId) throws BusinessException {
@@ -473,11 +486,12 @@ public class MartyrsService extends BaseService {
     }
 
     /*-----------------------------------------------------Martyrs Reports---------------------------------------------*/
-    public static byte[] getMartyrsDataBytes(int martyrdomTypeFlag, long martyrReasonId, long martyrRegionId, long categoryId, long martyrRankId, Date martyrDateFrom, Date martyrDateTo, int medicalDecisionFlag, int terminationDecisionFlag, int retirementCompensationFlag, int vacationsCompensationFlag, int terminationCompensationFlag, int housingCompensationFlag, int deathCompensationFlag, int injuryCompensationFlag, int heirsCompensationFlag, Long injuryCompensationFrom,
+    public static byte[] getMartyrsDataBytes(Long employeeId, int martyrdomTypeFlag, long martyrReasonId, long martyrRegionId, long categoryId, long martyrRankId, Date martyrDateFrom, Date martyrDateTo, int medicalDecisionFlag, int terminationDecisionFlag, int retirementCompensationFlag, int vacationsCompensationFlag, int terminationCompensationFlag, int housingCompensationFlag, int deathCompensationFlag, int injuryCompensationFlag, int heirsCompensationFlag, Long injuryCompensationFrom,
 	    Long injuryCompensationTo) throws BusinessException {
 	try {
 	    String reportName = ReportNamesEnum.MARTYRS_DATA.getCode();
 	    Map<String, Object> parameters = new HashMap<String, Object>();
+	    parameters.put("P_EMPLOYEE_ID", employeeId == null ? FlagsEnum.ALL.getCode() : employeeId);
 	    parameters.put("P_MARTYRDOM_TYPE", martyrdomTypeFlag);
 	    parameters.put("P_MARTYRDOM_REGION_ID", martyrRegionId);
 	    parameters.put("P_MARTYRDOM_REASON_ID", martyrReasonId);

@@ -8,10 +8,13 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.Rank;
+import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.martyrs.MartyrdomReason;
 import com.code.dal.orm.hcm.organization.Region;
+import com.code.enums.CategoriesEnum;
 import com.code.enums.FlagsEnum;
 import com.code.exceptions.BusinessException;
+import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.MartyrsService;
 import com.code.services.util.CommonService;
 import com.code.ui.backings.base.BaseBacking;
@@ -21,10 +24,11 @@ import com.code.ui.backings.base.BaseBacking;
 public class MartyrsReports extends BaseBacking {
 
     private int reportType; // 1 for Martyrs data
-
+    private String categoriesIds;
     private int martyrdomTypeFlag;
     private long martyrReasonId;
     private List<MartyrdomReason> reasonsList;
+    private EmployeeData employee;
     private long martyrRegionId;
     private List<Region> regionsList;
     private long categoryId;
@@ -54,12 +58,16 @@ public class MartyrsReports extends BaseBacking {
 	    regionsList = CommonService.getAllRegions();
 	    ranksOfficersList = CommonService.getRanks(null, new Long[] { (long) 1 });
 	    ranksSolidersList = CommonService.getRanks(null, new Long[] { (long) 2 });
-
+	    categoriesIds = CategoriesEnum.OFFICERS.getCode() + "," + CategoriesEnum.SOLDIERS.getCode();
 	    resetForm();
 
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
+    }
+
+    public void selectEmployee() throws BusinessException {
+	employee = EmployeesService.getEmployeeData(employee.getEmpId());
     }
 
     // category changed method
@@ -80,7 +88,7 @@ public class MartyrsReports extends BaseBacking {
     public void print() {
 	try {
 	    byte[] bytes = null;
-	    bytes = MartyrsService.getMartyrsDataBytes(martyrdomTypeFlag, martyrReasonId, martyrRegionId, categoryId, martyrRankId, martyrDateFrom, martyrDateTo, medicalDecisionFlag, terminationDecisionFlag, retirementCompensationFlag, vacationsCompensationFlag, terminationCompensationFlag, housingCompensationFlag, deathCompensationFlag, injuryCompensationFlag, heirsCompensationFlag,
+	    bytes = MartyrsService.getMartyrsDataBytes(employee.getEmpId(), martyrdomTypeFlag, martyrReasonId, martyrRegionId, categoryId, martyrRankId, martyrDateFrom, martyrDateTo, medicalDecisionFlag, terminationDecisionFlag, retirementCompensationFlag, vacationsCompensationFlag, terminationCompensationFlag, housingCompensationFlag, deathCompensationFlag, injuryCompensationFlag, heirsCompensationFlag,
 		    injuryCompensationFrom == null ? FlagsEnum.ALL.getCode() : injuryCompensationFrom, injuryCompensationTo == null ? FlagsEnum.ALL.getCode() : injuryCompensationTo);
 	    super.print(bytes);
 	} catch (BusinessException e) {
@@ -92,6 +100,7 @@ public class MartyrsReports extends BaseBacking {
     // reset form
     public void resetForm() throws BusinessException {
 	martyrReasonId = FlagsEnum.ALL.getCode();
+	employee = new EmployeeData();
 	martyrRegionId = getLoginEmpPhysicalRegionFlag(true);
 	martyrRankId = FlagsEnum.ALL.getCode();
 	martyrDateFrom = martyrDateTo = null;
@@ -121,6 +130,14 @@ public class MartyrsReports extends BaseBacking {
 	this.reportType = reportType;
     }
 
+    public String getCategoriesIds() {
+	return categoriesIds;
+    }
+
+    public void setCategoriesIds(String categoriesIds) {
+	this.categoriesIds = categoriesIds;
+    }
+
     // setters and getters for martyrs type attribute
     public int getMartyrdomTypeFlag() {
 	return martyrdomTypeFlag;
@@ -146,6 +163,14 @@ public class MartyrsReports extends BaseBacking {
 
     public void setReasonsList(List<MartyrdomReason> reasonsList) {
 	this.reasonsList = reasonsList;
+    }
+
+    public EmployeeData getEmployee() {
+	return employee;
+    }
+
+    public void setEmployee(EmployeeData employee) {
+	this.employee = employee;
     }
 
     // setters and getters for martyrs region attribute

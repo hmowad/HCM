@@ -28,7 +28,9 @@ import com.code.services.util.HijriDateService;
 		query = " select m" +
 			" from MartyrTransactionData m where"
 			+ " (:P_EMP_ID = -1 or m.employeeId = :P_EMP_ID) "
-			+ " and (:P_REASON_ID = -1 or m.martyrdomReasonId = :P_REASON_ID)")
+			+ " and (:P_REASON_ID = -1 or m.martyrdomReasonId = :P_REASON_ID) "
+			+ " order by m.martyrdomDate DESC")
+
 })
 
 @Entity
@@ -37,10 +39,12 @@ public class MartyrTransactionData extends BaseEntity {
     private Long id;
     private Long employeeId;
     private Long martyrdomReasonId;
+    private String martyrdomReasonName;
     private Long martyrdomType;
     private Date martyrdomDate;
     private String martyrdomDateString;
     private Long martyrdomRegionId;
+    private String martyrdomRegionName;
     private String firstContactNumber;
     private String secondContactNumber;
     private Integer injuryCompensation;
@@ -107,6 +111,16 @@ public class MartyrTransactionData extends BaseEntity {
     }
 
     @Basic
+    @Column(name = "MARTYRDOM_REASON_NAME")
+    public String getMartyrdomReasonName() {
+	return martyrdomReasonName;
+    }
+
+    public void setMartyrdomReasonName(String martyrdomReasonName) {
+	this.martyrdomReasonName = martyrdomReasonName;
+    }
+
+    @Basic
     @Column(name = "MARTYRDOM_TYPE")
     public Long getMartyrdomType() {
 	return martyrdomType;
@@ -149,6 +163,16 @@ public class MartyrTransactionData extends BaseEntity {
     public void setMartyrdomRegionId(Long martyrdomRegionId) {
 	this.martyrdomRegionId = martyrdomRegionId;
 	martyrTransaction.setMartyrdomRegionId(martyrdomRegionId);
+    }
+
+    @Basic
+    @Column(name = "MARTYRDOM_REGION_NAME")
+    public String getMartyrdomRegionName() {
+	return martyrdomRegionName;
+    }
+
+    public void setMartyrdomRegionName(String martyrdomRegionName) {
+	this.martyrdomRegionName = martyrdomRegionName;
     }
 
     @Basic

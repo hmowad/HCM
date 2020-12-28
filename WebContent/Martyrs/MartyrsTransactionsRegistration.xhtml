@@ -81,9 +81,9 @@
 									<h:outputText id="employeeName" value="#{martyrsTransactionsRegistration.employee.name}" />
 									<h:outputText value=" " />
 									<h:inputHidden id="employeeIDId" value="#{martyrsTransactionsRegistration.employee.empId}" />
-									<h:commandButton id="selectEmployeeBtnId" value="#{msgs.fa_external_link}" disabled="#{martyrsTransactionsRegistration.martyrTransactionData.employeeId != null}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
+									<h:commandButton id="selectEmployeeBtnId" value="#{msgs.fa_external_link}" styleClass="btn_icon" onclick="getEmployee('#{request.contextPath}');return false;" />
 									<h:commandButton id="searchEmpBtnId" style="display:none;" action="#{martyrsTransactionsRegistration.getEmployeeMartyrdomData()}">
-										<f:ajax execute="martyrsTransactionsRegistrationFormId:employeeIDId" render="@form" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+										<f:ajax execute="martyrsTransactionsRegistrationFormId:employeeIDId" render="martyrsTransactionsRegistrationFormId:employeeDataPanelId martyrsTransactionsRegistrationFormId:martyrsListId martyrsTransactionsRegistrationFormId:martyrContentId martyrsTransactionsRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										<h:outputText value=" " />
 									</h:commandButton>
 								</td>
@@ -106,340 +106,436 @@
 				</tr>
 				<tr>
 					<td width="100%">
-						<h:panelGroup id="martyrTransactionDataPanelId">
-							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+						<h:panelGroup id="martyrsListId">
+							<h:panelGroup rendered="#{martyrsTransactionsRegistration.martyrsListFlag}">
 								<tr>
-									<th width="10%">
-										#{msgs.label_martyrdomType}
-										<font style="color: red;">*</font>
-									</th>
-									<td width="40%">
-										<h:selectOneMenu id="martyrdomTypeId" value="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomType}" disabled="#{martyrsTransactionsRegistration.martyrTransactionData.id != null}">
-											<f:selectItem itemLabel=" " itemValue="-1" />
-											<f:selectItem itemLabel="#{msgs.label_martyrdom}" itemValue="1" />
-											<f:selectItem itemLabel="#{msgs.label_death}" itemValue="2" />
-											<f:selectItem itemLabel="#{msgs.label_missing}" itemValue="3" />
-											<f:selectItem itemLabel="#{msgs.label_injured}" itemValue="4" />
-											<f:ajax event="change" listener="#{martyrsTransactionsRegistration.martyrdomTypeChangeListener()}" execute="martyrsTransactionsRegistrationFormId:martyrTransactionDataPanelId martyrsTransactionsRegistrationFormId:compensationsTableId" render="martyrsTransactionsRegistrationFormId:martyrTransactionDataPanelId martyrsTransactionsRegistrationFormId:compensationsTableId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
-										</h:selectOneMenu>
-									</td>
-									<th width="10%">
-										#{msgs.label_martyrdomReason}
-										<font style="color: red;">*</font>
-									</th>
-									<td width="40%">
-										<h:selectOneMenu id="martyrdomReasonId" value="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomReasonId}" disabled="#{martyrsTransactionsRegistration.viewFieldsEnabled()}">
-											<f:selectItem itemLabel=" " itemValue="-1" />
-											<f:selectItems value="#{martyrsTransactionsRegistration.martyrdomReasons}" var="martrydomReason" itemLabel="#{martrydomReason.description}" itemValue="#{martrydomReason.id}" />
-										</h:selectOneMenu>
+									<td>
+										<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%">
+													<h:outputText value="#{msgs.label_doneProcesses}" />
+													<h:commandButton id="addMartyrsButtonId" action="#{martyrsTransactionsRegistration.addMartyr()}" value="#{msgs.label_add}" styleClass="btn_normal">
+														<f:ajax render="martyrsTransactionsRegistrationFormId:martyrContentId martyrsTransactionsRegistrationFormId:employeeDataPanelId martyrsTransactionsRegistrationFormId:notifyMessagesId" />
+													</h:commandButton>
+												</td>
+											</tr>
+										</table>
 									</td>
 								</tr>
-								<tr>
-									<th width="10%">
-										#{msgs.label_martyrdomDate}
-										<font style="color: red;">*</font>
-									</th>
-									<td width="40%">
-										<util:hijri id="martyrdomDateId" nullable="true" value="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomDate}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" />
-										<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomDateString}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-									</td>
-									<th width="10%">
-										#{msgs.label_martyrdomRegion}
-										<font style="color: red;">*</font>
-									</th>
-									<td width="40%">
-										<h:selectOneMenu id="martyrdomRegionId" value="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomRegionId}" disabled="#{martyrsTransactionsRegistration.viewFieldsEnabled() or martyrsTransactionsRegistration.loginEmpData.physicalRegionId != 1}">
-											<f:selectItem itemLabel=" " itemValue="-1" />
-											<f:selectItems value="#{martyrsTransactionsRegistration.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
-										</h:selectOneMenu>
-									</td>
-								</tr>
-								<tr>
-									<th width="10%">#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomType == 4 ? msgs.label_martyrsFirstContactNumber : msgs.label_martyrsLegalAttorneyContactNumber}</th>
-									<td width="40%">
-										<h:inputText id="firstContactNumberId" value="#{martyrsTransactionsRegistration.martyrTransactionData.firstContactNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" onkeypress="return isDigit(event);" styleClass="inputDataLarge" maxlength="20" />
-										<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.firstContactNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-									</td>
-									<th width="10%">#{msgs.label_martyrsSecondContactNumber}</th>
-									<td width="40%">
-										<h:inputText id="secondContactNumberId" value="#{martyrsTransactionsRegistration.martyrTransactionData.secondContactNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" onkeypress="return isDigit(event);" styleClass="inputDataLarge" maxlength="20" />
-										<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.secondContactNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-									</td>
-								</tr>
-								<tr>
-									<th width="10%">#{msgs.label_medicalDecisionFlag}</th>
-									<td width="40%">
-										<h:selectBooleanCheckbox id="medicalDecisionFlagId" disabled="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" value="#{martyrsTransactionsRegistration.martyrTransactionData.medicalDecisionFlagBoolean}" />
-									</td>
-									<h:panelGroup id="compensationRateId" rendered="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomType==4}">
-										<th width="10%">#{msgs.label_injuryCompensationRate}</th>
-										<td width="40%">
-											<h:inputText value="#{martyrsTransactionsRegistration.martyrTransactionData.injuryCompensation}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" maxlength="3" onkeypress="return isDigit(event);" styleClass="inputDataLarge" />
-											<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.injuryCompensation}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-										</td>
-									</h:panelGroup>
-								</tr>
-								<tr>
-									<th width="10%">#{msgs.label_remarks}</th>
-									<td width="90%" colspan="3">
-										<h:inputTextarea id="remarksId" rows="2" styleClass="inputDataSuperLarge" value="#{martyrsTransactionsRegistration.martyrTransactionData.remarks}" disabled="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" />
-									</td>
-								</tr>
-								<tr>
-									<th width="10%">#{msgs.label_attachments}</th>
-									<td width="90%" colspan="3">
-										<code:attachments loginEmpId="#{martyrsTransactionsRegistration.loginEmpData.empId}" attachmentId="#{martyrsTransactionsRegistration.martyrTransactionData.attachments}" viewEnableFlag="true" addEnableFlag="#{martyrsTransactionsRegistration.editFieldsEnabled()}" deleteEnableFlag="#{martyrsTransactionsRegistration.editFieldsEnabled()}" />
-									</td>
-								</tr>
-							</table>
-						</h:panelGroup>
-					</td>
-				</tr>
-				<tr>
-					<td width="100%" height="5" />
-				</tr>
-				<tr>
-					<td>
-						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
-							<tr>
-								<td width="100%">
-									<h:outputText value="#{msgs.label_moralHonor}" />
-									<h:commandButton id="addMoralHonorButtonId" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" action="#{martyrsTransactionsRegistration.addMartyrHonor(2)}" value="#{msgs.label_add}" styleClass="btn_normal">
-										<f:ajax execute="martyrsTransactionsRegistrationFormId:martyrMoralHonorsTableId" render="martyrsTransactionsRegistrationFormId:martyrMoralHonorsTableId martyrsTransactionsRegistrationFormId:notifyMessagesId" />
-									</h:commandButton>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-				<tr>
-					<td width="100%">
-						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-							<tr>
-								<td width="100%">
-									<rich:dataTable id="martyrMoralHonorsTableId" rowKeyVar="index" var="martyrMoralHonor" value="#{martyrsTransactionsRegistration.moralMartyrHonors}" rows="#{martyrsTransactionsRegistration.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
-										<rich:column style="width : 5%">
-											<f:facet name="header">#</f:facet>
-				                                #{index + 1}
-				                            </rich:column>
-										<rich:column style="width : 15%">
-											<f:facet name="header">#{msgs.label_honorNumber}<font style="color: red;">*</font>
-											</f:facet>
-											<h:inputText rendered="#{martyrMoralHonor.id == null}" maxlength="50" value="#{martyrMoralHonor.honorNumber}" styleClass="inputDataLarge"/>
-											<h:outputText rendered="#{martyrMoralHonor.id != null}" value="#{martyrMoralHonor.honorNumber}" />
-										</rich:column>
-
-										<rich:column style="width : 15%">
-											<f:facet name="header">#{msgs.label_honorDate}<font style="color: red;">*</font>
-											</f:facet>
-											<util:hijri value="#{martyrMoralHonor.honorDate}" nullable="true" rendered="#{martyrMoralHonor.id == null}" />
-											<h:outputText value="#{martyrMoralHonor.honorDateString}" rendered="#{martyrMoralHonor.id != null}" />
-										</rich:column>
-										<rich:column style="width : #{martyrsTransactionsRegistration.editFieldsEnabled() ? '60%' : '65%'}">
-											<f:facet name="header">#{msgs.label_honorDescription}<font style="color: red;">*</font>
-											</f:facet>
-											<h:inputText rendered="#{martyrMoralHonor.id == null}" maxlength="500" value="#{martyrMoralHonor.honorDescription}" styleClass="inputDataLarge"/>
-											<h:outputText rendered="#{martyrMoralHonor.id != null}" value="#{martyrMoralHonor.honorDescription}" />
-										</rich:column>
-										<rich:column style="width : 5%" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled()}">
-											<f:facet name="header">#{msgs.label_delete}</f:facet>
-											<h:commandButton value="#{msgs.fa_times}" styleClass="btn_icon" title="#{msgs.label_delete}" action="#{martyrsTransactionsRegistration.deleteMartyrHonor(martyrMoralHonor, 2)}" onclick="return confirm('#{msgs.q_delete}');">
-												<f:ajax execute="martyrsTransactionsRegistrationFormId:martyrMoralHonorsTableId" render="martyrsTransactionsRegistrationFormId:martyrMoralHonorsTableId martyrsTransactionsRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
-											</h:commandButton>
-										</rich:column>
-										<f:facet name="footer">
-											<rich:dataScroller execute="martyrsTransactionsRegistrationFormId:martyrMoralHonorsTableId" fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
-												<f:facet name="first">#{msgs.label_first}</f:facet>
-												<f:facet name="last">#{msgs.label_last}</f:facet>
-												<f:facet name="next">#{msgs.label_next}</f:facet>
-												<f:facet name="previous">#{msgs.label_previous}</f:facet>
-											</rich:dataScroller>
-										</f:facet>
-									</rich:dataTable>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
-							<tr>
-								<td width="100%">
-									<h:outputText value="#{msgs.label_financialHonor}" />
-									<h:commandButton id="addFinancialHonorButtonId" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" action="#{martyrsTransactionsRegistration.addMartyrHonor(1)}" value="#{msgs.label_add}" styleClass="btn_normal">
-										<f:ajax execute="martyrsTransactionsRegistrationFormId:martyrFinancialHonorsTableId" render="martyrsTransactionsRegistrationFormId:martyrFinancialHonorsTableId martyrsTransactionsRegistrationFormId:notifyMessagesId" />
-									</h:commandButton>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-				<tr>
-					<td width="100%">
-						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-							<tr>
-								<td width="100%">
-									<rich:dataTable id="martyrFinancialHonorsTableId" rowKeyVar="index" var="martyrFinancialHonor" value="#{martyrsTransactionsRegistration.financialMartyrHonors}" rows="#{martyrsTransactionsRegistration.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
-										<rich:column style="width : 5%">
-											<f:facet name="header">#</f:facet>
-				                                #{index + 1}
-				                            </rich:column>
-										<rich:column style="width : 15%">
-											<f:facet name="header">#{msgs.label_honorNumber}<font style="color: red;">*</font>
-											</f:facet>
-											<h:inputText rendered="#{martyrFinancialHonor.id == null}" value="#{martyrFinancialHonor.honorNumber}" maxlength="50" styleClass="inputDataLarge"/>
-											<h:outputText rendered="#{martyrFinancialHonor.id != null}" value="#{martyrFinancialHonor.honorNumber}" />
-										</rich:column>
-
-										<rich:column style="width : 15%">
-											<f:facet name="header">#{msgs.label_honorDate}<font style="color: red;">*</font>
-											</f:facet>
-											<util:hijri value="#{martyrFinancialHonor.honorDate}" nullable="true" rendered="#{martyrFinancialHonor.id == null}" />
-											<h:outputText value="#{martyrFinancialHonor.honorDateString}" rendered="#{martyrFinancialHonor.id != null}" />
-										</rich:column>
-										<rich:column style="width : #{martyrsTransactionsRegistration.editFieldsEnabled() ? '60%' : '65%'}">
-											<f:facet name="header">#{msgs.label_honorDescription}<font style="color: red;">*</font>
-											</f:facet>
-											<h:inputText rendered="#{martyrFinancialHonor.id == null}" value="#{martyrFinancialHonor.honorDescription}" maxlength="500" styleClass="inputDataLarge"/>
-											<h:outputText rendered="#{martyrFinancialHonor.id != null}" value="#{martyrFinancialHonor.honorDescription}" />
-										</rich:column>
-										<rich:column style="width : 50%" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled()}">
-											<f:facet name="header">#{msgs.label_delete}</f:facet>
-											<h:commandButton value="#{msgs.fa_times}" styleClass="btn_icon" title="#{msgs.label_delete}" action="#{martyrsTransactionsRegistration.deleteMartyrHonor(martyrFinancialHonor, 1)}" onclick="return confirm('#{msgs.q_delete}');">
-												<f:ajax execute="martyrsTransactionsRegistrationFormId:martyrFinancialHonorsTableId" render="martyrsTransactionsRegistrationFormId:martyrFinancialHonorsTableId martyrsTransactionsRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
-											</h:commandButton>
-										</rich:column>
-										<f:facet name="footer">
-											<rich:dataScroller execute="martyrsTransactionsRegistrationFormId:martyrFinancialHonorsTableId" fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
-												<f:facet name="first">#{msgs.label_first}</f:facet>
-												<f:facet name="last">#{msgs.label_last}</f:facet>
-												<f:facet name="next">#{msgs.label_next}</f:facet>
-												<f:facet name="previous">#{msgs.label_previous}</f:facet>
-											</rich:dataScroller>
-										</f:facet>
-									</rich:dataTable>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
-							<tr>
-								<td width="100%">
-									<h:outputText value="#{msgs.label_compensations}" />
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-				<tr>
-					<td width="100%">
-						<h:panelGroup id="compensationsTableId">
-							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-								<tr>
-									<th width="40%" style="text-align: center;">#{msgs.label_compensationType}</th>
-									<th width="30%" style="text-align: center;">#{msgs.label_theNumber}</th>
-									<th width="30%" style="text-align: center;">#{msgs.label_date}</th>
-								</tr>
-								<tr>
-									<th width="40%">#{msgs.label_retirementCompensation}</th>
-									<td width="30%" style="text-align: center; vertical-align: middle;">
-										<h:inputText value="#{martyrsTransactionsRegistration.martyrTransactionData.retirementCompensationNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" maxlength="20" />
-										<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.retirementCompensationNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-									</td>
-									<td width="30%" style="text-align: center; vertical-align: middle;">
-										<util:hijri nullable="true" value="#{martyrsTransactionsRegistration.martyrTransactionData.retirementCompensationDate}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled()}" />
-										<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.retirementCompensationDateString}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-									</td>
-								</tr>
-								<tr>
-									<th width="40%">#{msgs.label_vacationsCompensation}</th>
-									<td width="30%" style="text-align: center; vertical-align: middle;">
-										<h:inputText value="#{martyrsTransactionsRegistration.martyrTransactionData.vacationsCompensationNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" maxlength="20" />
-										<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.vacationsCompensationNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-									</td>
-									<td width="30%" style="text-align: center; vertical-align: middle;">
-										<util:hijri nullable="true" value="#{martyrsTransactionsRegistration.martyrTransactionData.vacationsCompensationDate}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" />
-										<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.vacationsCompensationDateString}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-									</td>
-								</tr>
-								<tr>
-									<th width="40%">#{msgs.label_terminationCompensation}</th>
-									<td width="30%" style="text-align: center; vertical-align: middle;">
-										<h:inputText value="#{martyrsTransactionsRegistration.martyrTransactionData.terminationCompensationNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" maxlength="20" />
-										<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.terminationCompensationNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-									</td>
-									<td width="30%" style="text-align: center; vertical-align: middle;">
-										<util:hijri nullable="true" value="#{martyrsTransactionsRegistration.martyrTransactionData.terminationCompensationDate}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" />
-										<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.terminationCompensationDateString}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-									</td>
-								</tr>
-								<h:panelGroup rendered="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomType == 4}">
-									<tr>
-										<th width="40%">#{msgs.label_injuryCompensation}</th>
-										<td width="30%" style="text-align: center; vertical-align: middle;">
-											<h:inputText value="#{martyrsTransactionsRegistration.martyrTransactionData.injuryCompensationNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" maxlength="20" />
-											<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.injuryCompensationNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-										</td>
-										<td width="30%" style="text-align: center; vertical-align: middle;">
-											<util:hijri nullable="true" value="#{martyrsTransactionsRegistration.martyrTransactionData.injuryCompensationDate}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" />
-											<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.injuryCompensationDateString}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-										</td>
-									</tr>
-								</h:panelGroup>
-								<h:panelGroup rendered="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomType != 4}">
-									<tr>
-										<th width="40%">#{msgs.label_deathCompensation}</th>
-										<td width="30%" style="text-align: center; vertical-align: middle;">
-											<h:inputText value="#{martyrsTransactionsRegistration.martyrTransactionData.deathCompensationNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" maxlength="20" />
-											<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.deathCompensationNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-										</td>
-										<td width="30%" style="text-align: center; vertical-align: middle;">
-											<util:hijri nullable="true" value="#{martyrsTransactionsRegistration.martyrTransactionData.deathCompensationDate}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" />
-											<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.deathCompensationDateString}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-										</td>
-									</tr>
-								</h:panelGroup>
-								<tr>
-									<th width="40%">#{msgs.label_housingCompensation}</th>
-									<td width="30%" style="text-align: center; vertical-align: middle;">
-										<h:inputText value="#{martyrsTransactionsRegistration.martyrTransactionData.housingCompensationNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" maxlength="20" />
-										<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.housingCompensationNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-									</td>
-									<td width="30%" style="text-align: center; vertical-align: middle;">
-										<util:hijri nullable="true" value="#{martyrsTransactionsRegistration.martyrTransactionData.housingCompensationDate}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" />
-										<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.housingCompensationDateString}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
-									</td>
-								</tr>
-							</table>
-						</h:panelGroup>
-					</td>
-				</tr>
-				<tr>
-					<td width="100%" height="5" />
-				</tr>
-				<tr>
-					<td>
-						<h:panelGroup id="actionsPanelId">
-							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="100%">
-										<h:commandButton rendered="#{martyrsTransactionsRegistration.martyrTransactionData.id != null}" action="#{martyrsTransactionsRegistration.print()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
-										<h:commandButton id="saveBtnId" action="#{martyrsTransactionsRegistration.saveMartyrTransactionData()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled()}" onclick="return handleOnAction('#{msgs.q_save}', 'validateSave()');">
-											<f:ajax execute="@form" render="@form martyrsTransactionsRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
-										</h:commandButton>
-										<h:commandButton id="deleteBtnId" action="#{martyrsTransactionsRegistration.deleteMartyrTransactionData()}" value="#{msgs.label_delete} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{!martyrsTransactionsRegistration.viewOnlyFlag and (martyrsTransactionsRegistration.martyrTransactionData.id != null and martyrsTransactionsRegistration.modifyDeleteAdmin)}" onclick="return handleOnAction('#{msgs.q_delete}');">
-											<f:ajax execute="martyrsTransactionsRegistrationFormId:martyrTransactionDataPanelId martyrsTransactionsRegistrationFormId:compensationsTableId martyrsTransactionsRegistrationFormId:martyrFinancialHonorsTableId martyrsTransactionsRegistrationFormId:martyrMoralHonorsTableId" render="@form martyrsTransactionsRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
-										</h:commandButton>
-										<h:commandButton action="#{martyrsTransactionsRegistration.reset()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
-											<f:ajax render="@form martyrsTransactionsRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
-										</h:commandButton>
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%">
+													<rich:dataTable id="martyrTableId" rowKeyVar="index" var="martyr" value="#{martyrsTransactionsRegistration.martyrTransactionDataList}" rows="#{martyrsTransactionsRegistration.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+														<rich:column style="width : 5%;">
+															<h:commandButton action="#{martyrsTransactionsRegistration.selectMartyr(martyr)}" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon">
+																<f:ajax render="martyrsTransactionsRegistrationFormId:martyrContentId martyrsTransactionsRegistrationFormId:notifyMessagesId" />
+															</h:commandButton>
+														</rich:column>
+
+														<rich:column style="width : 10%">
+															<f:facet name="header">#{msgs.label_martyrdomType}</f:facet>
+															<h:outputText rendered="#{martyr.martyrdomType == 1}" value="#{msgs.label_martyrdom}" />
+															<h:outputText rendered="#{martyr.martyrdomType == 2}" value="#{msgs.label_death}" />
+															<h:outputText rendered="#{martyr.martyrdomType == 3}" value="#{msgs.label_missing}" />
+															<h:outputText rendered="#{martyr.martyrdomType == 4}" value="#{msgs.label_injured}" />
+														</rich:column>
+
+														<rich:column style="width : 25%">
+															<f:facet name="header">#{msgs.label_martyrdomReason}</f:facet>
+															<h:outputText value="#{martyr.martyrdomReasonName}" />
+														</rich:column>
+
+														<rich:column style="width : 10% ">
+															<f:facet name="header">#{msgs.label_martyrdomDate}</f:facet>
+															<h:outputText value="#{martyr.martyrdomDateString}" />
+														</rich:column>
+
+														<rich:column style="width : 30%">
+															<f:facet name="header">#{msgs.label_martyrdomRegion}</f:facet>
+															<h:outputText value="#{martyr.martyrdomRegionName}" />
+														</rich:column>
+
+														<rich:column style="width : 20%">
+															<f:facet name="header">#{msgs.label_injuryCompensationRate}</f:facet>
+															<h:outputText value="#{martyr.injuryCompensation}" />
+														</rich:column>
+
+														<f:facet name="footer">
+															<rich:dataScroller execute="martyrsTransactionsRegistrationFormId:martyrMoralHonorsTableId" fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+																<f:facet name="first">#{msgs.label_first}</f:facet>
+																<f:facet name="last">#{msgs.label_last}</f:facet>
+																<f:facet name="next">#{msgs.label_next}</f:facet>
+																<f:facet name="previous">#{msgs.label_previous}</f:facet>
+															</rich:dataScroller>
+														</f:facet>
+													</rich:dataTable>
+												</td>
+											</tr>
+										</table>
 									</td>
 								</tr>
-							</table>
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="martyrContentId">
+							<h:panelGroup rendered="#{martyrsTransactionsRegistration.martyrContentFlag}">
+								<tr>
+									<td width="100%">
+										<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td>#{msgs.label_requestInfo}</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="martyrTransactionDataPanelId">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="10%">
+														#{msgs.label_martyrdomType}
+														<font style="color: red;">*</font>
+													</th>
+													<td width="40%">
+														<h:selectOneMenu id="martyrdomTypeId" value="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomType}" disabled="#{martyrsTransactionsRegistration.martyrTransactionData.id != null || martyrsTransactionsRegistration.martyrdomTypeFlag}">
+															<f:selectItem itemLabel="#{msgs.label_injured}" itemValue="4" />
+															<f:selectItem itemLabel="#{msgs.label_martyrdom}" itemValue="1" />
+															<f:selectItem itemLabel="#{msgs.label_death}" itemValue="2" />
+															<f:selectItem itemLabel="#{msgs.label_missing}" itemValue="3" />
+															<f:ajax event="change" listener="#{martyrsTransactionsRegistration.martyrdomTypeChangeListener()}" execute="martyrsTransactionsRegistrationFormId:martyrTransactionDataPanelId martyrsTransactionsRegistrationFormId:compensationsTableId" render="martyrsTransactionsRegistrationFormId:martyrTransactionDataPanelId martyrsTransactionsRegistrationFormId:compensationsTableId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:selectOneMenu>
+													</td>
+													<th width="10%">
+														#{msgs.label_martyrdomReason}
+														<font style="color: red;">*</font>
+													</th>
+													<td width="40%">
+														<h:selectOneMenu id="martyrdomReasonId" value="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomReasonId}" disabled="#{martyrsTransactionsRegistration.viewFieldsEnabled()}">
+															<f:selectItem itemLabel=" " itemValue="-1" />
+															<f:selectItems value="#{martyrsTransactionsRegistration.martyrdomReasons}" var="martrydomReason" itemLabel="#{martrydomReason.description}" itemValue="#{martrydomReason.id}" />
+														</h:selectOneMenu>
+													</td>
+												</tr>
+												<tr>
+													<th width="10%">
+														#{msgs.label_martyrdomDate}
+														<font style="color: red;">*</font>
+													</th>
+													<td width="40%">
+														<util:hijri id="martyrdomDateId" nullable="true" value="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomDate}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" />
+														<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomDateString}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+													</td>
+													<th width="10%">
+														#{msgs.label_martyrdomRegion}
+														<font style="color: red;">*</font>
+													</th>
+													<td width="40%">
+														<h:selectOneMenu id="martyrdomRegionId" value="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomRegionId}" disabled="#{martyrsTransactionsRegistration.viewFieldsEnabled() or martyrsTransactionsRegistration.loginEmpData.physicalRegionId != 1}">
+															<f:selectItem itemLabel=" " itemValue="-1" />
+															<f:selectItems value="#{martyrsTransactionsRegistration.regions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
+														</h:selectOneMenu>
+													</td>
+												</tr>
+												<tr>
+													<th width="10%">#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomType == 4 ? msgs.label_martyrsFirstContactNumber : msgs.label_martyrsLegalAttorneyContactNumber}</th>
+													<td width="40%">
+														<h:inputText id="firstContactNumberId" value="#{martyrsTransactionsRegistration.martyrTransactionData.firstContactNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" onkeypress="return isDigit(event);" styleClass="inputDataLarge" maxlength="20" />
+														<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.firstContactNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+													</td>
+													<th width="10%">#{msgs.label_martyrsSecondContactNumber}</th>
+													<td width="40%">
+														<h:inputText id="secondContactNumberId" value="#{martyrsTransactionsRegistration.martyrTransactionData.secondContactNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" onkeypress="return isDigit(event);" styleClass="inputDataLarge" maxlength="20" />
+														<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.secondContactNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="10%">#{msgs.label_medicalDecisionFlag}</th>
+													<td width="40%">
+														<h:selectBooleanCheckbox id="medicalDecisionFlagId" disabled="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" value="#{martyrsTransactionsRegistration.martyrTransactionData.medicalDecisionFlagBoolean}" />
+													</td>
+													<h:panelGroup id="compensationRateId" rendered="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomType==4}">
+														<th width="10%">#{msgs.label_injuryCompensationRate}</th>
+														<td width="40%">
+															<h:inputText value="#{martyrsTransactionsRegistration.martyrTransactionData.injuryCompensation}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" maxlength="3" onkeypress="return isDigit(event);" styleClass="inputDataLarge" />
+															<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.injuryCompensation}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+														</td>
+													</h:panelGroup>
+												</tr>
+												<tr>
+													<th width="10%">#{msgs.label_remarks}</th>
+													<td width="90%" colspan="3">
+														<h:inputTextarea id="remarksId" rows="2" styleClass="inputDataSuperLarge" value="#{martyrsTransactionsRegistration.martyrTransactionData.remarks}" disabled="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" onchange="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" onkeyup="limitMaxLength(this,'#{msgs.error_maxNumberOfCharacters}',500);" />
+													</td>
+												</tr>
+												<tr>
+													<th width="10%">#{msgs.label_attachments}</th>
+													<td width="90%" colspan="3">
+														<code:attachments loginEmpId="#{martyrsTransactionsRegistration.loginEmpData.empId}" attachmentId="#{martyrsTransactionsRegistration.martyrTransactionData.attachments}" viewEnableFlag="true" addEnableFlag="#{martyrsTransactionsRegistration.editFieldsEnabled()}" deleteEnableFlag="#{martyrsTransactionsRegistration.editFieldsEnabled()}" />
+													</td>
+												</tr>
+											</table>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td>
+										<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%">
+													<h:outputText value="#{msgs.label_moralHonor}" />
+													<h:commandButton id="addMoralHonorButtonId" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" action="#{martyrsTransactionsRegistration.addMartyrHonor(2)}" value="#{msgs.label_add}" styleClass="btn_normal">
+														<f:ajax execute="martyrsTransactionsRegistrationFormId:martyrMoralHonorsTableId" render="martyrsTransactionsRegistrationFormId:martyrMoralHonorsTableId martyrsTransactionsRegistrationFormId:notifyMessagesId" />
+													</h:commandButton>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%">
+													<rich:dataTable id="martyrMoralHonorsTableId" rowKeyVar="index" var="martyrMoralHonor" value="#{martyrsTransactionsRegistration.moralMartyrHonors}" rows="#{martyrsTransactionsRegistration.pageSize}" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+														<rich:column style="width : 5%">
+															<f:facet name="header">#</f:facet>
+				                                #{index + 1}
+				                            </rich:column>
+														<rich:column style="width : 15%">
+															<f:facet name="header">#{msgs.label_honorNumber}<font style="color: red;">*</font>
+															</f:facet>
+															<h:inputText rendered="#{martyrMoralHonor.id == null}" maxlength="50" value="#{martyrMoralHonor.honorNumber}" styleClass="inputDataLarge" />
+															<h:outputText rendered="#{martyrMoralHonor.id != null}" value="#{martyrMoralHonor.honorNumber}" />
+														</rich:column>
+
+														<rich:column style="width : 15%">
+															<f:facet name="header">#{msgs.label_honorDate}<font style="color: red;">*</font>
+															</f:facet>
+															<util:hijri value="#{martyrMoralHonor.honorDate}" nullable="true" rendered="#{martyrMoralHonor.id == null}" />
+															<h:outputText value="#{martyrMoralHonor.honorDateString}" rendered="#{martyrMoralHonor.id != null}" />
+														</rich:column>
+														<rich:column style="width : #{martyrsTransactionsRegistration.editFieldsEnabled() ? '60%' : '65%'}">
+															<f:facet name="header">#{msgs.label_honorDescription}<font style="color: red;">*</font>
+															</f:facet>
+															<h:inputText rendered="#{martyrMoralHonor.id == null}" maxlength="500" value="#{martyrMoralHonor.honorDescription}" styleClass="inputDataLarge" />
+															<h:outputText rendered="#{martyrMoralHonor.id != null}" value="#{martyrMoralHonor.honorDescription}" />
+														</rich:column>
+														<rich:column style="width : 5%" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled()}">
+															<f:facet name="header">#{msgs.label_delete}</f:facet>
+															<h:commandButton value="#{msgs.fa_times}" styleClass="btn_icon" title="#{msgs.label_delete}" action="#{martyrsTransactionsRegistration.deleteMartyrHonor(martyrMoralHonor, 2)}" onclick="return confirm('#{msgs.q_delete}');">
+																<f:ajax execute="martyrsTransactionsRegistrationFormId:martyrMoralHonorsTableId" render="martyrsTransactionsRegistrationFormId:martyrMoralHonorsTableId martyrsTransactionsRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															</h:commandButton>
+														</rich:column>
+														<f:facet name="footer">
+															<rich:dataScroller execute="martyrsTransactionsRegistrationFormId:martyrMoralHonorsTableId" fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+																<f:facet name="first">#{msgs.label_first}</f:facet>
+																<f:facet name="last">#{msgs.label_last}</f:facet>
+																<f:facet name="next">#{msgs.label_next}</f:facet>
+																<f:facet name="previous">#{msgs.label_previous}</f:facet>
+															</rich:dataScroller>
+														</f:facet>
+													</rich:dataTable>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%">
+													<h:outputText value="#{msgs.label_financialHonor}" />
+													<h:commandButton id="addFinancialHonorButtonId" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" action="#{martyrsTransactionsRegistration.addMartyrHonor(1)}" value="#{msgs.label_add}" styleClass="btn_normal">
+														<f:ajax execute="martyrsTransactionsRegistrationFormId:martyrFinancialHonorsTableId" render="martyrsTransactionsRegistrationFormId:martyrFinancialHonorsTableId martyrsTransactionsRegistrationFormId:notifyMessagesId" />
+													</h:commandButton>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%">
+													<rich:dataTable id="martyrFinancialHonorsTableId" rowKeyVar="index" var="martyrFinancialHonor" value="#{martyrsTransactionsRegistration.financialMartyrHonors}" rows="#{martyrsTransactionsRegistration.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+														<rich:column style="width : 5%">
+															<f:facet name="header">#</f:facet>
+				                                #{index + 1}
+				                            </rich:column>
+														<rich:column style="width : 15%">
+															<f:facet name="header">#{msgs.label_honorNumber}<font style="color: red;">*</font>
+															</f:facet>
+															<h:inputText rendered="#{martyrFinancialHonor.id == null}" value="#{martyrFinancialHonor.honorNumber}" maxlength="50" styleClass="inputDataLarge" />
+															<h:outputText rendered="#{martyrFinancialHonor.id != null}" value="#{martyrFinancialHonor.honorNumber}" />
+														</rich:column>
+
+														<rich:column style="width : 15%">
+															<f:facet name="header">#{msgs.label_honorDate}<font style="color: red;">*</font>
+															</f:facet>
+															<util:hijri value="#{martyrFinancialHonor.honorDate}" nullable="true" rendered="#{martyrFinancialHonor.id == null}" />
+															<h:outputText value="#{martyrFinancialHonor.honorDateString}" rendered="#{martyrFinancialHonor.id != null}" />
+														</rich:column>
+														<rich:column style="width : #{martyrsTransactionsRegistration.editFieldsEnabled() ? '60%' : '65%'}">
+															<f:facet name="header">#{msgs.label_honorDescription}<font style="color: red;">*</font>
+															</f:facet>
+															<h:inputText rendered="#{martyrFinancialHonor.id == null}" value="#{martyrFinancialHonor.honorDescription}" maxlength="500" styleClass="inputDataLarge" />
+															<h:outputText rendered="#{martyrFinancialHonor.id != null}" value="#{martyrFinancialHonor.honorDescription}" />
+														</rich:column>
+														<rich:column style="width : 50%" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled()}">
+															<f:facet name="header">#{msgs.label_delete}</f:facet>
+															<h:commandButton value="#{msgs.fa_times}" styleClass="btn_icon" title="#{msgs.label_delete}" action="#{martyrsTransactionsRegistration.deleteMartyrHonor(martyrFinancialHonor, 1)}" onclick="return confirm('#{msgs.q_delete}');">
+																<f:ajax execute="martyrsTransactionsRegistrationFormId:martyrFinancialHonorsTableId" render="martyrsTransactionsRegistrationFormId:martyrFinancialHonorsTableId martyrsTransactionsRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+															</h:commandButton>
+														</rich:column>
+														<f:facet name="footer">
+															<rich:dataScroller execute="martyrsTransactionsRegistrationFormId:martyrFinancialHonorsTableId" fastControls="hide" oncomplete="#{rich:component('reload')}.hide()">
+																<f:facet name="first">#{msgs.label_first}</f:facet>
+																<f:facet name="last">#{msgs.label_last}</f:facet>
+																<f:facet name="next">#{msgs.label_next}</f:facet>
+																<f:facet name="previous">#{msgs.label_previous}</f:facet>
+															</rich:dataScroller>
+														</f:facet>
+													</rich:dataTable>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="100%">
+													<h:outputText value="#{msgs.label_compensations}" />
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="compensationsTableId">
+											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<th width="40%" style="text-align: center;">#{msgs.label_compensationType}</th>
+													<th width="30%" style="text-align: center;">#{msgs.label_theNumber}</th>
+													<th width="30%" style="text-align: center;">#{msgs.label_date}</th>
+												</tr>
+												<tr>
+													<th width="40%">#{msgs.label_retirementCompensation}</th>
+													<td width="30%" style="text-align: center; vertical-align: middle;">
+														<h:inputText value="#{martyrsTransactionsRegistration.martyrTransactionData.retirementCompensationNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" maxlength="20" />
+														<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.retirementCompensationNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+													</td>
+													<td width="30%" style="text-align: center; vertical-align: middle;">
+														<util:hijri nullable="true" value="#{martyrsTransactionsRegistration.martyrTransactionData.retirementCompensationDate}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled()}" />
+														<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.retirementCompensationDateString}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="40%">#{msgs.label_vacationsCompensation}</th>
+													<td width="30%" style="text-align: center; vertical-align: middle;">
+														<h:inputText value="#{martyrsTransactionsRegistration.martyrTransactionData.vacationsCompensationNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" maxlength="20" />
+														<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.vacationsCompensationNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+													</td>
+													<td width="30%" style="text-align: center; vertical-align: middle;">
+														<util:hijri nullable="true" value="#{martyrsTransactionsRegistration.martyrTransactionData.vacationsCompensationDate}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" />
+														<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.vacationsCompensationDateString}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+													</td>
+												</tr>
+												<tr>
+													<th width="40%">#{msgs.label_terminationCompensation}</th>
+													<td width="30%" style="text-align: center; vertical-align: middle;">
+														<h:inputText value="#{martyrsTransactionsRegistration.martyrTransactionData.terminationCompensationNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" maxlength="20" />
+														<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.terminationCompensationNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+													</td>
+													<td width="30%" style="text-align: center; vertical-align: middle;">
+														<util:hijri nullable="true" value="#{martyrsTransactionsRegistration.martyrTransactionData.terminationCompensationDate}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" />
+														<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.terminationCompensationDateString}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+													</td>
+												</tr>
+												<h:panelGroup rendered="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomType == 4}">
+													<tr>
+														<th width="40%">#{msgs.label_injuryCompensation}</th>
+														<td width="30%" style="text-align: center; vertical-align: middle;">
+															<h:inputText value="#{martyrsTransactionsRegistration.martyrTransactionData.injuryCompensationNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" maxlength="20" />
+															<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.injuryCompensationNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+														</td>
+														<td width="30%" style="text-align: center; vertical-align: middle;">
+															<util:hijri nullable="true" value="#{martyrsTransactionsRegistration.martyrTransactionData.injuryCompensationDate}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" />
+															<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.injuryCompensationDateString}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+														</td>
+													</tr>
+												</h:panelGroup>
+												<h:panelGroup rendered="#{martyrsTransactionsRegistration.martyrTransactionData.martyrdomType != 4}">
+													<tr>
+														<th width="40%">#{msgs.label_deathCompensation}</th>
+														<td width="30%" style="text-align: center; vertical-align: middle;">
+															<h:inputText value="#{martyrsTransactionsRegistration.martyrTransactionData.deathCompensationNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" maxlength="20" />
+															<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.deathCompensationNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+														</td>
+														<td width="30%" style="text-align: center; vertical-align: middle;">
+															<util:hijri nullable="true" value="#{martyrsTransactionsRegistration.martyrTransactionData.deathCompensationDate}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" />
+															<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.deathCompensationDateString}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+														</td>
+													</tr>
+												</h:panelGroup>
+												<tr>
+													<th width="40%">#{msgs.label_housingCompensation}</th>
+													<td width="30%" style="text-align: center; vertical-align: middle;">
+														<h:inputText value="#{martyrsTransactionsRegistration.martyrTransactionData.housingCompensationNumber}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" maxlength="20" />
+														<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.housingCompensationNumber}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+													</td>
+													<td width="30%" style="text-align: center; vertical-align: middle;">
+														<util:hijri nullable="true" value="#{martyrsTransactionsRegistration.martyrTransactionData.housingCompensationDate}" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled() }" />
+														<h:outputText value="#{martyrsTransactionsRegistration.martyrTransactionData.housingCompensationDateString}" rendered="#{martyrsTransactionsRegistration.viewFieldsEnabled()}" />
+													</td>
+												</tr>
+											</table>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td>
+										<h:panelGroup id="actionsPanelId">
+											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+												<tr>
+													<td width="100%">
+														<h:commandButton rendered="#{martyrsTransactionsRegistration.martyrTransactionData.id != null}" action="#{martyrsTransactionsRegistration.print()}" value="#{msgs.label_print} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" />
+														<h:commandButton id="saveBtnId" action="#{martyrsTransactionsRegistration.saveMartyrTransactionData()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{martyrsTransactionsRegistration.editFieldsEnabled()}" onclick="return handleOnAction('#{msgs.q_save}', 'validateSave()');">
+															<f:ajax execute="@form" render="martyrsTransactionsRegistrationFormId:martyrsListId martyrsTransactionsRegistrationFormId:martyrContentId martyrsTransactionsRegistrationFormId:actionsPanelId martyrsTransactionsRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:commandButton id="deleteBtnId" action="#{martyrsTransactionsRegistration.deleteMartyrTransactionData()}" value="#{msgs.label_delete} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{!martyrsTransactionsRegistration.viewOnlyFlag and (martyrsTransactionsRegistration.martyrTransactionData.id != null and martyrsTransactionsRegistration.modifyDeleteAdmin)}" onclick="return handleOnAction('#{msgs.q_delete}');">
+															<f:ajax execute="martyrsTransactionsRegistrationFormId:martyrTransactionDataPanelId martyrsTransactionsRegistrationFormId:compensationsTableId martyrsTransactionsRegistrationFormId:martyrFinancialHonorsTableId martyrsTransactionsRegistrationFormId:martyrMoralHonorsTableId" 
+															render="martyrsTransactionsRegistrationFormId:martyrsListId martyrsTransactionsRegistrationFormId:martyrContentId martyrsTransactionsRegistrationFormId:actionsPanelId martyrsTransactionsRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:commandButton action="#{martyrsTransactionsRegistration.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon">
+															<f:ajax render="@form martyrsTransactionsRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+													</td>
+												</tr>
+											</table>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</h:panelGroup>
 						</h:panelGroup>
 					</td>
 				</tr>
