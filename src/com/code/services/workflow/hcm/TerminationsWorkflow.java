@@ -148,9 +148,9 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 			}
 		    } else {
 			if (EmployeesService.getEmployeeDirectManager(curDM.getEmpId()).getUnitTypeCode().intValue() >= UnitTypesEnum.REGION_COMMANDER.getCode()) {
-			    // send to SMR
+			    constructTerminationRequestRecordAndDetail(requester, instance, wfTermination, terminationRecordData, terminationRecordDetailDataList, dmTask, session);
 			    long soldiersRegionUnitManagerId = getTerminationManagerId(CategoriesEnum.SOLDIERS.getCode(), requester.getPhysicalRegionId());
-			    completeWFTask(dmTask, WFTaskActionsEnum.APPROVE.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(soldiersRegionUnitManagerId, instance.getProcessId(), requester.getEmpId()), soldiersRegionUnitManagerId, dmTask.getTaskUrl(), WFTaskRolesEnum.SECONDARY_MANAGER_REDIRECT.getCode(), "1", session);
+			    completeWFTask(dmTask, WFTaskActionsEnum.APPROVE.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(soldiersRegionUnitManagerId, instance.getProcessId(), requester.getEmpId()), soldiersRegionUnitManagerId, dmTask.getTaskUrl(), WFTaskRolesEnum.MANAGER_REDIRECT.getCode(), "1", session);
 			} else {
 			    completeWFTask(dmTask, WFTaskActionsEnum.APPROVE.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(curDM.getManagerId(), instance.getProcessId(), requester.getEmpId()), curDM.getManagerId(), dmTask.getTaskUrl(), WFTaskRolesEnum.DIRECT_MANAGER.getCode(), "1", session);
 			}
@@ -349,13 +349,27 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 
 	    if (approvalFlag == WFActionFlagsEnum.APPROVE.getCode()) {
 		long unitTypeCode = currentDirectManager.getUnitTypeCode();
+		long requesterRegionId = requester.getPhysicalRegionId();
 
 		// 1- case of request
 		if (instance.getProcessId() == WFProcessesEnum.OFFICERS_TERMINATION_REQUEST.getCode()) {
 		    constructTerminationRequestRecordAndDetail(requester, instance, wfTermination, terminationRecordData, terminationRecordDetailDataList, smTask, session);
 		    saveTerminationWorkflow(wfTermination, instance.getInstanceId(), session);
 		    closeOfficersTerminationRequestWorkFlow(requester, instance, wfTermination, terminationRecordData, terminationRecordDetailDataList, smTask, session);
-		} else if (instance.getProcessId() == WFProcessesEnum.SOLDIERS_TERMINATION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.CONTRACTORS_TERMINATION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.CIVILIANS_TERMINATION_REQUEST.getCode()) {
+		} else if (terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_TERMINATION_REQUEST.getCode()) {
+		    if (RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() == requesterRegionId) {
+			// cases that stop at vice president
+			if (EmployeesService.getEmployeeDirectManager(currentDirectManager.getEmpId()).getUnitTypeCode().intValue() >= UnitTypesEnum.PRESIDENCY.getCode())
+			    closeTerminationWorkFlow(requester, instance, wfTermination, terminationRecordData, terminationRecordDetailDataList, smTask, transactionTypeId, session);
+			else
+			    completeWFTask(smTask, WFTaskActionsEnum.SUPER_SIGN.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(currentDirectManager.getManagerId(), instance.getProcessId(), requester.getEmpId()), currentDirectManager.getManagerId(), smTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), "1", session);
+		    } else {
+			if (unitTypeCode >= UnitTypesEnum.REGION_COMMANDER.getCode())
+			    closeTerminationWorkFlow(requester, instance, wfTermination, terminationRecordData, terminationRecordDetailDataList, smTask, transactionTypeId, session);
+			else
+			    completeWFTask(smTask, WFTaskActionsEnum.SUPER_SIGN.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(currentDirectManager.getManagerId(), instance.getProcessId(), requester.getEmpId()), currentDirectManager.getManagerId(), smTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), "1", session);
+		    }
+		} else if (instance.getProcessId() == WFProcessesEnum.CONTRACTORS_TERMINATION_REQUEST.getCode() || instance.getProcessId() == WFProcessesEnum.CIVILIANS_TERMINATION_REQUEST.getCode()) {
 		    // For all cases, it should reach presidency to complete this workFlow
 		    if (unitTypeCode >= UnitTypesEnum.PRESIDENCY.getCode())
 			closeTerminationWorkFlow(requester, instance, wfTermination, terminationRecordData, terminationRecordDetailDataList, smTask, transactionTypeId, session);
@@ -364,7 +378,6 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 		}
 		// 2- case of record
 		else {
-		    long requesterRegionId = requester.getPhysicalRegionId();
 		    long categoryId = terminationRecordData.getCategoryId();
 		    if (CategoriesEnum.SOLDIERS.getCode() == categoryId) { // Soldiers
 			if (RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() == requesterRegionId) { // General directorate of border guards

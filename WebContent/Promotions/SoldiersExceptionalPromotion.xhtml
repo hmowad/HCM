@@ -389,6 +389,15 @@
 													<f:ajax render="notifyMessagesId" execute="@form" />
 												</h:commandButton>
 											</h:panelGroup>
+											
+											<h:panelGroup rendered="#{soldiersExceptionalPromotion.role == 'PromotionDepartmentManager'}">
+												<h:commandButton id="approvePdmBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;soldiersExceptionalPromotionFormId:curTaskId:refuseReasonsId&quot;)');" action="#{soldiersExceptionalPromotion.approvePDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="modifyPdmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;soldiersExceptionalPromotionFormId:curTaskId:refuseReasonsId&quot;, &quot;soldiersExceptionalPromotionFormId:curTaskId:notesId&quot;)');" action="#{soldiersExceptionalPromotion.modifyPDM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
 
 											<h:panelGroup rendered="#{soldiersExceptionalPromotion.role == 'AdminstrativeOrganizationManger'}">
 												<h:commandButton id="approveAomBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;soldiersExceptionalPromotionFormId:curTaskId:refuseReasonsId&quot;)');" action="#{soldiersExceptionalPromotion.approveAOM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">

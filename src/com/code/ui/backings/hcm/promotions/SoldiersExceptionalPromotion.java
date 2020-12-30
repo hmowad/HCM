@@ -112,6 +112,26 @@ public class SoldiersExceptionalPromotion extends WFBaseBacking {
 	}
     }
 
+    public String approvePDM() {
+	try {
+	    PromotionsWorkFlow.doPromotionPDM(requester, instance, currentTask, WFActionFlagsEnum.APPROVE.getCode());
+	    return NavigationEnum.INBOX.toString();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    return null;
+	}
+    }
+
+    public String modifyPDM() {
+	try {
+	    PromotionsWorkFlow.doPromotionPDM(requester, instance, currentTask, WFActionFlagsEnum.RETURN_REVIEWER.getCode());
+	    return NavigationEnum.INBOX.toString();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    return null;
+	}
+    }
+
     public String approveAOM() {
 	try {
 	    PromotionsWorkFlow.doPromotionAOM(requester, promotionReportData, instance, currentTask, WFActionFlagsEnum.APPROVE.getCode());

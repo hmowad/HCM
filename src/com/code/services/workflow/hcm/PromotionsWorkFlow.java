@@ -97,9 +97,7 @@ public class PromotionsWorkFlow extends BaseWorkFlow {
 	    WFInstance instance = addWFInstance(processId, requester.getEmpId(), curDate, curHijriDate, WFInstanceStatusEnum.RUNNING.getCode(), null, getPromotionsReportsInstanceBeneficiariesIds(promotionReportDetails), session);
 
 	    if (promotionReportData.getCategoryId().longValue() == CategoriesEnum.SOLDIERS.getCode() && promotionReportData.getScaleUpFlagBoolean()) {
-		WFPosition position = getWFPosition(WFPositionsEnum.HUMAN_RESOURCES_ORGANIZATION_UNIT_MANAGER.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
-		EmployeeData adminOrganizationManager = EmployeesService.getEmployeeByPosition(position.getUnitId(), position.getEmpId());
-		addWFTask(instance.getInstanceId(), getDelegate(adminOrganizationManager.getEmpId(), processId, requester.getEmpId()), adminOrganizationManager.getEmpId(), curDate, curHijriDate, taskUrl, WFTaskRolesEnum.ADMINISTRATIVE_ORGANIZATION_MANAGER.getCode(), "1", session);
+		addWFTask(instance.getInstanceId(), getDelegate(requester.getManagerId(), processId, requester.getEmpId()), requester.getManagerId(), curDate, curHijriDate, taskUrl, WFTaskRolesEnum.PROMOTION_DEPARTMENT_MANAGER.getCode(), "1", session);
 	    } else
 		addWFTask(instance.getInstanceId(), getDelegate(requester.getManagerId(), processId, requester.getEmpId()), requester.getManagerId(), curDate, curHijriDate, taskUrl, WFTaskRolesEnum.SIGN_MANAGER.getCode(), "1", session);
 
@@ -167,9 +165,7 @@ public class PromotionsWorkFlow extends BaseWorkFlow {
 		Date curHijriDate = HijriDateService.getHijriSysDate();
 
 		if (report.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() && report.getScaleUpFlagBoolean()) {
-		    WFPosition position = getWFPosition(WFPositionsEnum.HUMAN_RESOURCES_ORGANIZATION_UNIT_MANAGER.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
-		    EmployeeData adminOrganizationManager = EmployeesService.getEmployeeByPosition(position.getUnitId(), position.getEmpId());
-		    completeWFTask(reTask, WFTaskActionsEnum.REVIEW.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(adminOrganizationManager.getEmpId(), instance.getProcessId(), requester.getEmpId()), adminOrganizationManager.getEmpId(), reTask.getTaskUrl(), WFTaskRolesEnum.ADMINISTRATIVE_ORGANIZATION_MANAGER.getCode(), "1", session);
+		    completeWFTask(reTask, WFTaskActionsEnum.REVIEW.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(requester.getManagerId(), instance.getProcessId(), requester.getEmpId()), requester.getManagerId(), reTask.getTaskUrl(), WFTaskRolesEnum.PROMOTION_DEPARTMENT_MANAGER.getCode(), "1", session);
 		} else
 		    completeWFTask(reTask, WFTaskActionsEnum.REVIEW.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(requester.getManagerId(), instance.getProcessId(), requester.getEmpId()), requester.getManagerId(), reTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), "1", session);
 
@@ -192,6 +188,53 @@ public class PromotionsWorkFlow extends BaseWorkFlow {
 	    throw e;
 	} catch (Exception e) {
 	    session.rollbackTransaction();
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    session.close();
+	}
+    }
+
+    /**
+     * This method is used to review soldiers promotion only by promotion department.
+     * 
+     * It is exclusively used for scalup promotion.
+     * 
+     * @param requester
+     *            Employee that started the promotion process
+     * @param instance
+     *            Current promotion instance
+     * @param pdmTask
+     *            Promotion department manager task data
+     * @param approvalFlag
+     *            Flag to determine if request is approved, rejected, or returned to reviewer
+     * @throws BusinessException
+     *             If any exceptions or errors occurs
+     * 
+     * @see WFInstanceStatusEnum
+     */
+    public static void doPromotionPDM(EmployeeData requester, WFInstance instance, WFTask pdmTask, int approvalFlag) throws BusinessException {
+
+	CustomSession session = DataAccess.getSession();
+	try {
+	    session.beginTransaction();
+
+	    Date curDate = new Date();
+	    Date curHijriDate = HijriDateService.getHijriSysDate();
+	    if (approvalFlag == WFActionFlagsEnum.APPROVE.getCode()) {
+		WFPosition position = getWFPosition(WFPositionsEnum.HUMAN_RESOURCES_ORGANIZATION_UNIT_MANAGER.getCode(), RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode());
+		EmployeeData adminOrganizationManager = EmployeesService.getEmployeeByPosition(position.getUnitId(), position.getEmpId());
+		completeWFTask(pdmTask, WFTaskActionsEnum.APPROVE.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(adminOrganizationManager.getEmpId(), instance.getProcessId(), requester.getEmpId()), adminOrganizationManager.getEmpId(), pdmTask.getTaskUrl(), WFTaskRolesEnum.ADMINISTRATIVE_ORGANIZATION_MANAGER.getCode(), "1", session);
+	    } else if (approvalFlag == WFActionFlagsEnum.RETURN_REVIEWER.getCode()) {
+		completeWFTask(pdmTask, WFTaskActionsEnum.RETURN_REVIEWER.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(requester.getEmpId(), instance.getProcessId(), requester.getEmpId()), requester.getEmpId(), pdmTask.getTaskUrl(), WFTaskRolesEnum.REVIEWER_EMP.getCode(), "1");
+	    }
+	    session.commitTransaction();
+	} catch (Exception e) {
+	    session.rollbackTransaction();
+
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");
 	} finally {
@@ -232,7 +275,8 @@ public class PromotionsWorkFlow extends BaseWorkFlow {
 	    if (approvalFlag == WFActionFlagsEnum.APPROVE.getCode()) {
 		EmployeeData curDM = EmployeesService.getEmployeeData(aomTask.getOriginalId());
 		if (curDM.getUnitTypeCode().intValue() == UnitTypesEnum.GENERAL_DEPARTMENT.getCode()) {
-		    completeWFTask(aomTask, WFTaskActionsEnum.APPROVE.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(requester.getManagerId(), instance.getProcessId(), requester.getEmpId()), requester.getManagerId(), aomTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), "1", session);
+		    EmployeeData requesterManager = EmployeesService.getEmployeeData(requester.getManagerId());
+		    completeWFTask(aomTask, WFTaskActionsEnum.APPROVE.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(requesterManager.getManagerId(), instance.getProcessId(), requester.getEmpId()), requesterManager.getManagerId(), aomTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), "1", session);
 		} else {
 		    completeWFTask(aomTask, WFTaskActionsEnum.APPROVE.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(curDM.getManagerId(), instance.getProcessId(), requester.getEmpId()), curDM.getManagerId(), aomTask.getTaskUrl(), WFTaskRolesEnum.ADMINISTRATIVE_ORGANIZATION_MANAGER.getCode(), "1", session);
 		}
