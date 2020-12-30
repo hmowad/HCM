@@ -874,6 +874,16 @@
 													<f:ajax execute="@form" render="notifyMessagesId" />
 												</h:commandButton>
 											</h:panelGroup>
+											
+											<h:panelGroup rendered="#{promotionSoldiersReport.role == 'PromotionDepartmentManager'}">
+												<h:commandButton id="approvePdmBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;promotionSoldiersReportsFormId:curTaskId:refuseReasonsId&quot;)');" action="#{promotionSoldiersReport.approvePDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="modifyPdmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;promotionSoldiersReportsFormId:curTaskId:refuseReasonsId&quot;, &quot;promotionSoldiersReportsFormId:curTaskId:notesId&quot;)');" action="#{promotionSoldiersReport.modifyPDM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+											
 											<h:panelGroup rendered="#{promotionSoldiersReport.role == 'AdminstrativeOrganizationManger'}">
 												<h:commandButton id="approveAomBtnId" onclick="return handleOnAction('#{msgs.q_approve}', 'validateRefuseAndNotes(1, &quot;promotionSoldiersReportsFormId:curTaskId:refuseReasonsId&quot;)');" action="#{promotionSoldiersReport.approveAOM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
 													<f:ajax render="notifyMessagesId" execute="@form" />

@@ -27,6 +27,7 @@ public enum WFTaskRolesEnum {
 
     PLANNING_ORGANIZATION_MANAGER("PlanningOrganizationManager"),
     ADMINISTRATIVE_ORGANIZATION_MANAGER("AdminstrativeOrganizationManger"),
+    PROMOTION_DEPARTMENT_MANAGER("PromotionDepartmentManager"),
     SECURITY_EMP("SecurityEmp"),
     MEDICAL_EMP("MedicalEmp"),
 

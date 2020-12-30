@@ -91,7 +91,7 @@ public class PromotionsCollectiveApproval extends BaseBacking {
 		EmployeeData requester = (EmployeeData) (((Object[]) obj)[4]);
 		PromotionReportData report = PromotionsService.getPromotionReportDataById(promotionRequest.getReportId());
 		if (mode == 1)
-		    PromotionsWorkFlow.doPromotionAOM(requester, report, instance, task, WFActionFlagsEnum.APPROVE.getCode());
+		    PromotionsWorkFlow.doPromotionPDM(requester, instance, task, WFActionFlagsEnum.APPROVE.getCode());
 		else if (mode == 2)
 		    PromotionsWorkFlow.doPromotionSM(requester, report, instance, task, WFActionFlagsEnum.APPROVE.getCode());
 	    } catch (BusinessException e) {
