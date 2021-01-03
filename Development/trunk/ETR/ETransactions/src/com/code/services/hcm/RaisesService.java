@@ -1450,7 +1450,7 @@ public class RaisesService extends BaseService {
 	}
     }
 
-    public static void executeScheduledRaiseTransactions(String systemUser) throws BusinessException {
+    public static void executeScheduledRaiseTransactions() throws BusinessException {
 	List<RaiseTransactionData> list = getNotExecutedRaisesTransactions();
 	for (RaiseTransactionData transaction : list) {
 	    CustomSession session = DataAccess.getSession();
@@ -1459,7 +1459,7 @@ public class RaisesService extends BaseService {
 
 		transaction.setEffectFlag(FlagsEnum.ON.getCode());
 		updateRaiseTransaction(transaction, session);
-		doRaiseEffect(transaction, systemUser, session);
+		doRaiseEffect(transaction, null, session);
 
 		session.commitTransaction();
 	    } catch (Exception e) {

@@ -41,7 +41,7 @@ public class HCMSchedulerWS {
 
 	try {
 	    System.out.println("Calling executeScheduledRaiseTransactions()" + new Date());
-	    RaisesService.executeScheduledRaiseTransactions(this.getClass().getCanonicalName());
+	    RaisesService.executeScheduledRaiseTransactions();
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
