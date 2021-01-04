@@ -75,7 +75,7 @@ public class TrainingsCollectiveApproval extends BaseBacking {
 	    trainingsTasksListSize = trainingsTasks.size();
 	    // TrainingCoursesTasks
 
-	    tasksAndTrainingCoursesObjects = TrainingEmployeesWorkFlow.getWFTrainingCourseEventTasks(this.loginEmpData.getEmpId(), mode == 1 ? new String[] { WFTaskRolesEnum.DIRECT_MANAGER.getCode() } : new String[] { WFTaskRolesEnum.SIGN_MANAGER.getCode(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), WFTaskRolesEnum.EXTRA_SECONDARY_SIGN_MANAGER.getCode() });
+	    tasksAndTrainingCoursesObjects = TrainingCoursesEventsWorkFlow.getWFTrainingCourseEventTasks(this.loginEmpData.getEmpId(), mode == 1 ? new String[] { WFTaskRolesEnum.DIRECT_MANAGER.getCode() } : new String[] { WFTaskRolesEnum.SIGN_MANAGER.getCode(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), WFTaskRolesEnum.EXTRA_SECONDARY_SIGN_MANAGER.getCode() });
 	    trainingCoursesTasks = new ArrayList<>();
 	    for (int i = 0; i < tasksAndTrainingCoursesObjects.size(); i++) {
 		WFTask currentTask = (WFTask) (((Object[]) tasksAndTrainingCoursesObjects.get(i))[1]);
