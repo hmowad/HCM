@@ -1573,6 +1573,14 @@ public class RaisesService extends BaseService {
 			}
 			lastEmpId = transactions.get(i).getEmpId();
 		    }
+		    for (RaiseTransaction raiseTransaction : updatedTransactionList) {
+			for (EmployeeData employeeData : employees) {
+			    if (employeeData.getEmpId().equals(raiseTransaction.getEmpId())) {
+				employeeData.setDegreeId(raiseTransaction.getNewDegreeId());
+				break;
+			    }
+			}
+		    }
 		    DataAccess.addMultipleEntities(addedTransactionLogList, session);
 		    DataAccess.updateMultipleEntities(updatedTransactionList, session);
 		}
