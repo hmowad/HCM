@@ -45,7 +45,7 @@ import com.code.services.util.HijriDateService;
 			" ELSE max(rt.executionDate) END " +
 			" from RaiseTransaction rt" +
 			" where rt.empId = ed.empId and rt.type = 2) )" +
-			" and ((ed.lastAnnualRaiseDate is null) or (to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY') > ed.lastAnnualRaiseDate))" +
+			" and ((ed.lastAnnualRaiseDate is null) or (to_date(:P_EXECUTION_DATE, 'MI/MM/YYYY') >= ed.lastAnnualRaiseDate))" +
 			" and ((ed.lastPromotionDate is null) or (to_date(:P_ACTUAL_EXECUTION_DATE, 'MI/MM/YYYY') > ed.lastPromotionDate))" +
 			" order by ed.empId"),
 
