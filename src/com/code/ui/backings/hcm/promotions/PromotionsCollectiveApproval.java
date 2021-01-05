@@ -57,6 +57,8 @@ public class PromotionsCollectiveApproval extends BaseBacking {
 	try {
 	    selectAll = false;
 	    promotionsTasks = (ArrayList<Object>) PromotionsWorkFlow.getWFpromotionsTasks(this.loginEmpData.getEmpId(), mode == 1 ? WFTaskRolesEnum.ADMINISTRATIVE_ORGANIZATION_MANAGER.getCode() : WFTaskRolesEnum.SIGN_MANAGER.getCode());
+	    if (mode == 1)
+		promotionsTasks.addAll((ArrayList<Object>) PromotionsWorkFlow.getWFpromotionsTasks(this.loginEmpData.getEmpId(), WFTaskRolesEnum.PROMOTION_DEPARTMENT_MANAGER.getCode()));
 	    promotionsTasksListSize = promotionsTasks.size();
 	} catch (BusinessException e) {
 	    promotionsTasks = new ArrayList<Object>();
@@ -90,9 +92,12 @@ public class PromotionsCollectiveApproval extends BaseBacking {
 		WFInstance instance = (WFInstance) (((Object[]) obj)[2]);
 		EmployeeData requester = (EmployeeData) (((Object[]) obj)[4]);
 		PromotionReportData report = PromotionsService.getPromotionReportDataById(promotionRequest.getReportId());
-		if (mode == 1)
-		    PromotionsWorkFlow.doPromotionPDM(requester, instance, task, WFActionFlagsEnum.APPROVE.getCode());
-		else if (mode == 2)
+		if (mode == 1) {
+		    if (task.getAssigneeWfRole().equals(WFTaskRolesEnum.PROMOTION_DEPARTMENT_MANAGER.getCode()))
+			PromotionsWorkFlow.doPromotionPDM(requester, report, instance, task, WFActionFlagsEnum.APPROVE.getCode());
+		    else if (task.getAssigneeWfRole().equals(WFTaskRolesEnum.ADMINISTRATIVE_ORGANIZATION_MANAGER.getCode()))
+			PromotionsWorkFlow.doPromotionAOM(requester, report, instance, task, WFActionFlagsEnum.APPROVE.getCode());
+		} else if (mode == 2)
 		    PromotionsWorkFlow.doPromotionSM(requester, report, instance, task, WFActionFlagsEnum.APPROVE.getCode());
 	    } catch (BusinessException e) {
 		unsuccessfulTaskIdsIfAny += comma + task.getTaskId();

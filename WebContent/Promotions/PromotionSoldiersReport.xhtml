@@ -842,7 +842,7 @@
 								</td>
 							</tr>
 
-							<h:panelGroup rendered="#{promotionSoldiersReport.role == 'SignManager' or promotionSoldiersReport.role == 'ReviewerEmp'}">
+							<h:panelGroup rendered="#{promotionSoldiersReport.role == 'SignManager' or promotionSoldiersReport.role == 'PromotionDepartmentManager' or promotionSoldiersReport.role == 'ReviewerEmp'}">
 								<tr>
 									<th width="15%">#{msgs.label_refuseReasons}</th>
 									<td width="85%" colspan="3">
@@ -880,6 +880,9 @@
 													<f:ajax render="notifyMessagesId" execute="@form" />
 												</h:commandButton>
 												<h:commandButton id="modifyPdmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;promotionSoldiersReportsFormId:curTaskId:refuseReasonsId&quot;, &quot;promotionSoldiersReportsFormId:curTaskId:notesId&quot;)');" action="#{promotionSoldiersReport.modifyPDM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="rejectPdmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;promotionSoldiersReportsFormId:curTaskId:refuseReasonsId&quot;)');" action="#{promotionSoldiersReport.rejectPDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
 													<f:ajax render="notifyMessagesId" execute="@form" />
 												</h:commandButton>
 											</h:panelGroup>

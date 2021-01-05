@@ -356,7 +356,7 @@
 									<h:inputText id="notesId" value="#{soldiersExceptionalPromotion.currentTask.notes}" styleClass="inputDataLarge" />
 								</td>
 							</tr>
-							<h:panelGroup rendered="#{soldiersExceptionalPromotion.role == 'SignManager' or soldiersExceptionalPromotion.role == 'ReviewerEmp'}">
+							<h:panelGroup rendered="#{soldiersExceptionalPromotion.role == 'SignManager' or soldiersExceptionalPromotion.role == 'PromotionDepartmentManager' or soldiersExceptionalPromotion.role == 'ReviewerEmp'}">
 								<tr>
 									<th width="15%">#{msgs.label_refuseReasons}</th>
 									<td width="85%" colspan="3">
@@ -395,6 +395,9 @@
 													<f:ajax render="notifyMessagesId" execute="@form" />
 												</h:commandButton>
 												<h:commandButton id="modifyPdmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}', 'validateRefuseAndNotes(2, &quot;soldiersExceptionalPromotionFormId:curTaskId:refuseReasonsId&quot;, &quot;soldiersExceptionalPromotionFormId:curTaskId:notesId&quot;)');" action="#{soldiersExceptionalPromotion.modifyPDM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+												<h:commandButton id="rejectPdmBtnId" onclick="return handleOnAction('#{msgs.q_reject}', 'validateRefuseAndNotes(0, &quot;soldiersExceptionalPromotionFormId:curTaskId:refuseReasonsId&quot;)');" action="#{soldiersExceptionalPromotion.rejectPDM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon">
 													<f:ajax render="notifyMessagesId" execute="@form" />
 												</h:commandButton>
 											</h:panelGroup>

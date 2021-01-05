@@ -213,7 +213,7 @@ public class PromotionsWorkFlow extends BaseWorkFlow {
      * 
      * @see WFInstanceStatusEnum
      */
-    public static void doPromotionPDM(EmployeeData requester, WFInstance instance, WFTask pdmTask, int approvalFlag) throws BusinessException {
+    public static void doPromotionPDM(EmployeeData requester, PromotionReportData report, WFInstance instance, WFTask pdmTask, int approvalFlag) throws BusinessException {
 
 	CustomSession session = DataAccess.getSession();
 	try {
@@ -227,6 +227,9 @@ public class PromotionsWorkFlow extends BaseWorkFlow {
 		completeWFTask(pdmTask, WFTaskActionsEnum.APPROVE.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(adminOrganizationManager.getEmpId(), instance.getProcessId(), requester.getEmpId()), adminOrganizationManager.getEmpId(), pdmTask.getTaskUrl(), WFTaskRolesEnum.ADMINISTRATIVE_ORGANIZATION_MANAGER.getCode(), "1", session);
 	    } else if (approvalFlag == WFActionFlagsEnum.RETURN_REVIEWER.getCode()) {
 		completeWFTask(pdmTask, WFTaskActionsEnum.RETURN_REVIEWER.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(requester.getEmpId(), instance.getProcessId(), requester.getEmpId()), requester.getEmpId(), pdmTask.getTaskUrl(), WFTaskRolesEnum.REVIEWER_EMP.getCode(), "1");
+	    } else {
+		closeWFInstanceByAction(requester.getEmpId(), instance, pdmTask, WFTaskActionsEnum.REJECT.getCode(), null, session);
+		PromotionsService.updatePromotionReportStatus(report, PromotionReportStatusEnum.CLOSED.getCode(), session);
 	    }
 	    session.commitTransaction();
 	} catch (Exception e) {
