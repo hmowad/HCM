@@ -14,7 +14,8 @@ public class DashBoardWorkFlow extends BaseWorkFlow {
 
     private final static String[] ACCEPTANCE_ASSIGNEE_WF_ROLES = new String[] {
 	    WFTaskRolesEnum.DIRECT_MANAGER.getCode(),
-	    WFTaskRolesEnum.ADMINISTRATIVE_ORGANIZATION_MANAGER.getCode()
+	    WFTaskRolesEnum.ADMINISTRATIVE_ORGANIZATION_MANAGER.getCode(),
+	    WFTaskRolesEnum.PROMOTION_DEPARTMENT_MANAGER.getCode()
     };
 
     private final static String[] APPROVAL_ASSIGNEE_WF_ROLES = new String[] {

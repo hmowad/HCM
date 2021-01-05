@@ -358,7 +358,7 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 		    closeOfficersTerminationRequestWorkFlow(requester, instance, wfTermination, terminationRecordData, terminationRecordDetailDataList, smTask, session);
 		} else if (terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_TERMINATION_REQUEST.getCode()) {
 		    if (RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() == requesterRegionId) {
-			// cases that stop at vice president
+			// cases that stop at president assistant
 			if (EmployeesService.getEmployeeDirectManager(currentDirectManager.getEmpId()).getUnitTypeCode().intValue() >= UnitTypesEnum.PRESIDENCY.getCode())
 			    closeTerminationWorkFlow(requester, instance, wfTermination, terminationRecordData, terminationRecordDetailDataList, smTask, transactionTypeId, session);
 			else

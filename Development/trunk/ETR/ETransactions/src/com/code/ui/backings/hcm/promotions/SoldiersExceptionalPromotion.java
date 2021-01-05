@@ -114,7 +114,7 @@ public class SoldiersExceptionalPromotion extends WFBaseBacking {
 
     public String approvePDM() {
 	try {
-	    PromotionsWorkFlow.doPromotionPDM(requester, instance, currentTask, WFActionFlagsEnum.APPROVE.getCode());
+	    PromotionsWorkFlow.doPromotionPDM(requester, promotionReportData, instance, currentTask, WFActionFlagsEnum.APPROVE.getCode());
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
@@ -124,7 +124,17 @@ public class SoldiersExceptionalPromotion extends WFBaseBacking {
 
     public String modifyPDM() {
 	try {
-	    PromotionsWorkFlow.doPromotionPDM(requester, instance, currentTask, WFActionFlagsEnum.RETURN_REVIEWER.getCode());
+	    PromotionsWorkFlow.doPromotionPDM(requester, promotionReportData, instance, currentTask, WFActionFlagsEnum.RETURN_REVIEWER.getCode());
+	    return NavigationEnum.INBOX.toString();
+	} catch (BusinessException e) {
+	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
+	    return null;
+	}
+    }
+
+    public String rejectPDM() {
+	try {
+	    PromotionsWorkFlow.doPromotionPDM(requester, promotionReportData, instance, currentTask, WFActionFlagsEnum.REJECT.getCode());
 	    return NavigationEnum.INBOX.toString();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));
