@@ -25,6 +25,12 @@ import com.code.services.util.HijriDateService;
 		query = " select v from VacationData v " +
 			" where v.id = :P_VACATION_ID "),
 
+	@NamedQuery(name = "hcm_vacationData_getExternalVacation",
+		query = " select v from VacationData v " +
+			" where v.empId = :P_EMP_ID " +
+			" and v.status <> 4 " +
+			" and (to_date(:P_TRAVEL_DATE, 'MI/MM/YYYY') >= v.startDate and to_date(:P_TRAVEL_DATE, 'MI/MM/YYYY') <= v.endDate) "),
+
 	@NamedQuery(name = "hcm_vacationData_getLastVacation",
 		query = " select v from VacationData v " +
 			" where v.empId = :P_EMP_ID " +

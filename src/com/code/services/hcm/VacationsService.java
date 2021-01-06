@@ -479,6 +479,21 @@ public class VacationsService extends BaseService {
 	}
     }
 
+    public static VacationData getExternalVacationData(long empId, Date travelDate) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_EMP_ID", empId);
+	    qParams.put("P_TRAVEL_DATE", travelDate == null ? HijriDateService.getHijriSysDateString() : HijriDateService.getHijriDateString(travelDate));
+
+	    List<VacationData> result = DataAccess.executeNamedQuery(VacationData.class, QueryNamesEnum.HCM_GET_EXTERNAL_VACATION_DATA.getCode(), qParams);
+	    return result.isEmpty() ? null : result.get(0);
+
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
     public static Vacation getVacationByDecisionDateAndDecisionNumber(Date decisionDate, String decisionNumber) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
