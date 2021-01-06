@@ -108,6 +108,7 @@ public enum QueryNamesEnum {
 
     HCM_GET_VACATION_DATA_BY_ID("hcm_vacationData_getVacationDataById"),
     HCM_GET_LAST_VACATION_DATA("hcm_vacationData_getLastVacation"),
+    HCM_GET_EXTERNAL_VACATION_DATA("hcm_vacationData_getExternalVacation"),
     HCM_GET_LAST_VACATION_DATA_BEFORE_SPECIFIC_DATE("hcm_vacationData_getLastVacationBeforeSpecificDate"),
     HCM_GET_UNIT_CURRENT_VACACTIONS_DATA("hcm_vacationData_getUnitCurrentVacationsData"),
     HCM_COUNT_UNIT_CURRENT_VACACTIONS_DATA("hcm_vacationData_countUnitCurrentVacationsData"),
