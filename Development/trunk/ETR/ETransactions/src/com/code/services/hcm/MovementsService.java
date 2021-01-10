@@ -1827,12 +1827,14 @@ public class MovementsService extends BaseService {
      *             if any error occurs
      */
 
-    public static boolean checkMonthsRule(Date executionDate, Date empServiceTerminationDueDate, Long categoryId) throws BusinessException {
-	if (executionDate.after(empServiceTerminationDueDate)) {
+    public static boolean checkMonthsRule(Date executionDate, Date empServiceTerminationDueDate, Date empLastExtentionEndDate, Long categoryId) throws BusinessException {
+	Date empTerminationDueDate = (empLastExtentionEndDate == null || (empServiceTerminationDueDate != null && empServiceTerminationDueDate.after(empLastExtentionEndDate))) ? empServiceTerminationDueDate : empLastExtentionEndDate;
+
+	if (executionDate.after(empTerminationDueDate)) {
 	    return false;
 	}
 
-	Integer[] dateDiff = HijriDateService.hijriDateDiffInMonthsAndDays(HijriDateService.getHijriDateString(executionDate), HijriDateService.getHijriDateString(empServiceTerminationDueDate));
+	Integer[] dateDiff = HijriDateService.hijriDateDiffInMonthsAndDays(HijriDateService.getHijriDateString(executionDate), HijriDateService.getHijriDateString(empTerminationDueDate));
 	if (categoryId != null && categoryId.equals(CategoriesEnum.OFFICERS.getCode())) {
 	    if (dateDiff[1] < ETRConfigurationService.getMovementOfficersPeriodBetweenMovementAndServiceTerminationDueDate() || (dateDiff[1] == ETRConfigurationService.getMovementOfficersPeriodBetweenMovementAndServiceTerminationDueDate() && dateDiff[0] == 0)) {
 		return false;
@@ -1896,9 +1898,9 @@ public class MovementsService extends BaseService {
 
 	if (!skipMonthsRuleValidation(movementTransaction.getExtraParams())) {
 	    if (emp.getCategoryId() == CategoriesEnum.OFFICERS.getCode() || emp.getCategoryId() == CategoriesEnum.SOLDIERS.getCode()) {
-		if (!checkMonthsRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate(), emp.getCategoryId()))
+		if (!checkMonthsRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate(), emp.getLastExtensionEndDate(), emp.getCategoryId()))
 		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanMinMonths", new String[] { emp.getName(), emp.getCategoryId() == CategoriesEnum.OFFICERS.getCode() ? ETRConfigurationService.getMovementOfficersPeriodBetweenMovementAndServiceTerminationDueDate() + "" : ETRConfigurationService.getMovementSoldiersPeriodBetweenMovementAndServiceTerminationDueDate() + "" });
-		if (replacementEmp != null && !checkMonthsRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), replacementEmp.getServiceTerminationDueDate(), emp.getCategoryId())) {
+		if (replacementEmp != null && !checkMonthsRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), replacementEmp.getServiceTerminationDueDate(), replacementEmp.getLastExtensionEndDate(), emp.getCategoryId())) {
 		    throw new BusinessException("error_cannotDoMoveRequestAsEmployeeTerminationDueDateLessThanMinMonths", new String[] { replacementEmp.getName(), emp.getCategoryId() == CategoriesEnum.OFFICERS.getCode() ? ETRConfigurationService.getMovementOfficersPeriodBetweenMovementAndServiceTerminationDueDate() + "" : ETRConfigurationService.getMovementSoldiersPeriodBetweenMovementAndServiceTerminationDueDate() + "" });
 		}
 	    }
@@ -1998,7 +2000,7 @@ public class MovementsService extends BaseService {
 	if (!skipMonthsRuleValidation(movementTransaction.getExtraParams())) {
 	    if ((movementTransaction.getCategoryId() == CategoriesEnum.OFFICERS.getCode() || movementTransaction.getCategoryId() == CategoriesEnum.SOLDIERS.getCode()) &&
 		    (CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_NEW_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId().equals(movementTransaction.getTransactionTypeId()) || CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.MVT_EXTENSION_DECISION.getCode(), TransactionClassesEnum.MOVEMENTS.getCode()).getId().equals(movementTransaction.getTransactionTypeId()))
-		    && !checkMonthsRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate(), emp.getCategoryId())) {
+		    && !checkMonthsRule(movementTransaction.getExecutionDate() != null ? movementTransaction.getExecutionDate() : HijriDateService.getHijriSysDate(), emp.getServiceTerminationDueDate(), emp.getLastExtensionEndDate(), emp.getCategoryId())) {
 		throw new BusinessException("error_cannotDoSubjoinRequestAsEmployeeTerminationDueDateLessThanMinMonths", new String[] { emp.getName(), emp.getCategoryId() == CategoriesEnum.OFFICERS.getCode() ? ETRConfigurationService.getMovementOfficersPeriodBetweenMovementAndServiceTerminationDueDate() + "" : ETRConfigurationService.getMovementSoldiersPeriodBetweenMovementAndServiceTerminationDueDate() + "" });
 	    }
 	}
