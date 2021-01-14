@@ -29,8 +29,6 @@ public class ExternalVacationsWS {
 	    EmployeeData employee = EmployeesService.getEmployeeBySocialID(socialId);
 
 	    VacationData externalVacationData = VacationsService.getExternalVacationData(employee.getEmpId(), HijriDateService.getHijriDate(travelDateString));
-	    if (externalVacationData == null)
-		throw new BusinessException("error_noVacationMatchThisCriteria");
 
 	    response.setEmployeeName(employee.getName());
 	    response.setSocialId(employee.getSocialID());
