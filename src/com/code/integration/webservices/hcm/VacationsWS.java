@@ -14,7 +14,6 @@ import com.code.enums.FlagsEnum;
 import com.code.enums.VacationTypesEnum;
 import com.code.enums.WSResponseStatusEnum;
 import com.code.exceptions.BusinessException;
-import com.code.integration.responses.hcm.WSExternalVacationResponse;
 import com.code.integration.responses.hcm.WSVacationBalanceInquiryResponse;
 import com.code.integration.responses.hcm.WSVacationResponse;
 import com.code.integration.responses.hcm.WSVacationsResponse;
@@ -44,43 +43,6 @@ public class VacationsWS {
 
 	    List<Vacation> vacations = VacationsService.searchVacations(employeeId, FlagsEnum.ALL.getCode(), vacationTypeId, FlagsEnum.OFF.getCode());
 	    response.setVacations(vacations);
-	    response.setMessage(BaseService.getMessage("notify_successOperation"));
-	} catch (Exception e) {
-	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
-	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
-	    if (!(e instanceof BusinessException))
-		e.printStackTrace();
-	}
-	return response;
-    }
-
-    @WebMethod(operationName = "getExternalVacation")
-    @WebResult(name = "externalVacationResponse")
-    public WSExternalVacationResponse getExternalVacation(@WebParam(name = "sessionId") String sessionId,
-	    @WebParam(name = "socialId") String socialId, @WebParam(name = "travelDateString") String travelDateString) {
-	WSExternalVacationResponse response = new WSExternalVacationResponse();
-	try {
-	    if (socialId == null || socialId.isEmpty())
-		throw new BusinessException("error_socialIdNotFound");
-	    EmployeeData employee = EmployeesService.getEmployeeBySocialID(socialId);
-	    if (!WSSessionsManagementService.maintainSession(sessionId, employee.getEmpId(), response))
-		return response;
-
-	    VacationData externalVacationData = VacationsService.getExternalVacationData(employee.getEmpId(), HijriDateService.getHijriDate(travelDateString));
-	    if (externalVacationData == null)
-		throw new BusinessException("error_noVacationMatchThisCriteria");
-
-	    response.setEmployeeName(employee.getName());
-	    response.setSocialId(employee.getSocialID());
-	    response.setRankDescription(employee.getRankDesc());
-	    response.setMilitaryNumber(employee.getMilitaryNumber());
-	    response.setDecisionNumber(externalVacationData.getDecisionNumber());
-	    response.setDecisionDateString(externalVacationData.getDecisionDateString());
-	    response.setPeriod(externalVacationData.getPeriod());
-	    response.setStartDateString(externalVacationData.getStartDateString());
-	    response.setEndDateString(externalVacationData.getEndDateString());
-	    response.setLocation(externalVacationData.getLocation());
-
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
