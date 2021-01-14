@@ -194,6 +194,16 @@
 		<url-pattern>/VacationsWorkFlowWS</url-pattern>
 	</servlet-mapping>
 	
+		<servlet>
+		<servlet-name>ExternalVacationsWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.hcm.ExternalVacationsWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ExternalVacationsWSHttpPort</servlet-name>
+		<url-pattern>/ExternalVacationsWS</url-pattern>
+	</servlet-mapping>
+	
 	<servlet>
 		<servlet-name>VacationsWSHttpPort</servlet-name>
 		<servlet-class>com.code.integration.webservices.hcm.VacationsWS</servlet-class>
