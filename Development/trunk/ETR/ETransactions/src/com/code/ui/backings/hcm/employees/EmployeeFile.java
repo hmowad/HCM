@@ -8,6 +8,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.additionalspecializations.EmployeeAdditionalSpecializationData;
+import com.code.dal.orm.hcm.attachments.EmployeeFileAttachment;
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.missions.MissionData;
 import com.code.dal.orm.hcm.missions.MissionDetailData;
@@ -31,6 +32,7 @@ import com.code.enums.PromotionsTypesEnum;
 import com.code.enums.RecruitmentTypeEnum;
 import com.code.enums.RegionsEnum;
 import com.code.exceptions.BusinessException;
+import com.code.services.config.ETRConfigurationService;
 import com.code.services.hcm.AdditionalSpecializationsService;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.MissionsService;
@@ -44,6 +46,7 @@ import com.code.services.hcm.TerminationsService;
 import com.code.services.hcm.UnitsService;
 import com.code.services.hcm.VacationsService;
 import com.code.services.security.SecurityService;
+import com.code.services.util.EmployeeFileAttachmentService;
 import com.code.ui.backings.base.BaseBacking;
 
 @ManagedBean(name = "employeeFile")
@@ -54,6 +57,11 @@ public class EmployeeFile extends BaseBacking implements Serializable {
     private boolean isModifyAdmin;
     private boolean isViewAdmin;
     private long regionId;
+
+    private boolean attachmentContentFlag;
+    private EmployeeFileAttachment attachment;
+    private String uploadURL;
+    private String fileUploadParams;
 
     private List<RecruitmentTransactionData> recruitments;
     private List<RecruitmentTransactionData> graduationLetters;
@@ -77,6 +85,7 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 	    if (getRequest().getParameter("mode") != null) {
 		mode = Integer.parseInt(getRequest().getParameter("mode"));
 		employee = new EmployeeData();
+		attachment = new EmployeeFileAttachment();
 		employee.setCategoryId(new Long(mode));
 		if (mode == loginEmpData.getCategoryId().intValue() || (mode == 3 && (loginEmpData.getCategoryId().longValue() == CategoriesEnum.USERS.getCode() || loginEmpData.getCategoryId().longValue() == CategoriesEnum.WAGES.getCode() || loginEmpData.getCategoryId().longValue() == CategoriesEnum.CONTRACTORS.getCode() || loginEmpData.getCategoryId().longValue() == CategoriesEnum.MEDICAL_STAFF.getCode()))) {
 		    employee.setEmpId(this.loginEmpData.getEmpId());
@@ -84,6 +93,7 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 		}
 		isModifyAdmin = false;
 		isViewAdmin = false;
+		attachmentContentFlag = false;
 		switch (mode) {
 		case 1:
 		    setScreenTitle(getMessage("title_officerFile"));
@@ -113,10 +123,43 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 		    isViewAdmin = true;
 
 		regionId = getLoginEmpPhysicalRegionFlag(isModifyAdmin || isViewAdmin);
+		uploadURL = ETRConfigurationService.getAttachmentUploadURL();
 	    }
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
+    }
+
+    public void addAttachment() {
+	attachment = new EmployeeFileAttachment();
+	attachmentContentFlag = true;
+    }
+
+    public void saveEmployeeFileAttachment(Integer transactionClass) {
+	try {
+	    attachment.setTransactionClass(transactionClass);
+	    attachment.setEmpId(employee.getEmpId());
+
+	    EmployeeFileAttachmentService.addEmployeeFileAttachment(attachment, loginEmpData.getEmpId());
+	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
+	} catch (BusinessException e) {
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
+    }
+
+    public void cancelAttachment() {
+	try {
+	    if (!attachment.equals(null) && attachment.getId() != null)
+		EmployeeFileAttachmentService.deleteEmployeeFileAttachment(attachment);
+	    resetAttachment();
+	} catch (BusinessException e) {
+	    setServerSideErrorMessages(getMessage(e.getMessage()));
+	}
+    }
+
+    public void resetAttachment() {
+	attachmentContentFlag = false;
+	attachment = new EmployeeFileAttachment();
     }
 
     public void getEmployeeFileData() {
@@ -565,6 +608,34 @@ public class EmployeeFile extends BaseBacking implements Serializable {
 
     public void setRaises(List<RaiseTransactionData> raises) {
 	this.raises = raises;
+    }
+
+    public EmployeeFileAttachment getAttachment() {
+	return attachment;
+    }
+
+    public void setAttachment(EmployeeFileAttachment attachment) {
+	this.attachment = attachment;
+    }
+
+    public boolean isAttachmentContentFlag() {
+	return attachmentContentFlag;
+    }
+
+    public void setAttachmentContentFlag(boolean attachmentContentFlag) {
+	this.attachmentContentFlag = attachmentContentFlag;
+    }
+
+    public String getFileUploadParams() {
+	return fileUploadParams;
+    }
+
+    public void setFileUploadParams(String fileUploadParams) {
+	this.fileUploadParams = fileUploadParams;
+    }
+
+    public String getUploadURL() {
+	return uploadURL;
     }
 
 }

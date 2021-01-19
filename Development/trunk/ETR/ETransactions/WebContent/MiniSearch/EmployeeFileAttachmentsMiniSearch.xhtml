@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:code="http://java.sun.com/jsf/composite/code" xmlns:f="http://java.sun.com/jsf/core" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:a4j="http://richfaces.org/a4j">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+
+	<script type="text/javascript"> 
+		  window.onkeypress = function(e) {
+			// window.event for IE and Chrome - e.which for net escape, Firefox and opera.
+			var keyCode = window.event ? e.keyCode : (e.which ? e.which : '');
+		    if (keyCode == '13'){
+		    	document.getElementById('searchEmpFileAttachmentsFormId:searchBtnID').click();
+		    	return false;
+		    }
+		  };
+  
+          function selectHistoricalVacation(index){
+            var historicalVacIdValue = document.getElementById('searchEmpFileAttachmentsFormId:empFileAttachmentsListId:'+index).value;
+            
+            ret = new Array();
+            ret[0] = historicalVacIdValue;
+            window.close();
+     		eval('(' + window.opener.#{param['miniSearchReturnHandler']} + ')');
+
+          }
+  			
+  </script>
+</h:head>
+<h:body onload="document.getElementById('searchEmpFileAttachmentsFormId:decisionNumberId').focus();" onunload="window.opener.unMaskOpenerScreen();">
+	<h:form id="searchEmpFileAttachmentsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/PlainTemplate.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td class="screenTitle">
+						<h:outputText value="#{msgs.label_showAttachment}" />
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="attachmentSearchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_decisionNumber}</th>
+									<td width="35%">
+										<h:inputText id="decisionNumberId" value="#{employeeFileAttachmentsMiniSearch.decisionNumber}" maxlength="50" />
+									</td>
+									<th width="15%">#{msgs.label_description}</th>
+									<td width="35%">
+										<h:inputText id="descriptionId" value="#{employeeFileAttachmentsMiniSearch.description}" maxlength="50" />
+									</td>
+								</tr>
+
+								<tr>
+									<th width="15%">#{msgs.label_decisionDateFrom}</th>
+									<td width="35%">
+										<util:hijri id="fromDateId" value="#{employeeFileAttachmentsMiniSearch.fromDate}" nullable="true" viewOldRange="true" />
+									</td>
+									<th width="15%">#{msgs.label_decisionDateTo}</th>
+
+									<td width="35%">
+										<util:hijri id="toDateId" value="#{employeeFileAttachmentsMiniSearch.toDate}" nullable="true" viewOldRange="true" />
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td>
+						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="100%">
+									<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" styleClass="btn_normal_icon" action="#{employeeFileAttachmentsMiniSearch.searchEmpFileAttachments()}" title="#{msgs.label_searchByRoot}">
+										<f:ajax render="searchEmpFileAttachmentsFormId:empFileAttachmentsListId notifyMessagesId" execute="searchEmpFileAttachmentsFormId:attachmentSearchPanelId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+									</h:commandButton>
+									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" action="#{employeeFileAttachmentsMiniSearch.reset()}">
+										<f:ajax render="searchEmpFileAttachmentsFormId:attachmentSearchPanelId searchEmpFileAttachmentsFormId:empFileAttachmentsListId notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+									</h:commandButton>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_attachmentsDetails}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td align="center" width="100%">
+						<rich:dataTable id="empFileAttachmentsListId" rows="#{employeeFileAttachmentsMiniSearch.rowsCount}" rowKeyVar="index" var="row" value="#{employeeFileAttachmentsMiniSearch.empFileAttachmentsDetailList}" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+							<rich:column style="width:5%">
+								<f:facet name="header">#</f:facet> #{index + 1}
+                             </rich:column>
+							<rich:column style="width : 25%">
+								<f:facet name="header">#{msgs.label_fileName}</f:facet>
+								<h:commandLink rendered="#{employeeFileAttachmentsMiniSearch.isModifyAdmin}" value="#{row.fileName}" actionListener="#{employeeFileAttachmentsMiniSearch.getDownloadParam(row)}">
+									<f:ajax render="searchEmpFileAttachmentsFormId:fileDownloadParamId" onevent="function(e){if(e.status == 'success') openDownloadFile('#{employeeFileAttachmentsMiniSearch.downloadURL}', document.getElementById('searchEmpFileAttachmentsFormId:fileDownloadParamId').value); return false;}" />
+								</h:commandLink>
+								<h:outputText value="#{row.fileName}" rendered="#{!employeeFileAttachmentsMiniSearch.isModifyAdmin}"/>
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_decisionNumber}</f:facet>
+								<h:outputText value="#{row.decisionNumber}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_decisionDate}</f:facet>
+								<h:outputText value="#{row.decisionDateString}" />
+							</rich:column>
+							<rich:column style="width : 25%">
+								<f:facet name="header">#{msgs.label_description}</f:facet>
+								<h:outputText value="#{row.description}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_creationDate}</f:facet>
+								<h:outputText value="#{row.creationDateString}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_creationTime}</f:facet>
+								<h:outputText value="#{row.creationTime}" />
+							</rich:column>
+							<rich:column style="width : 5%">
+								<f:facet name="header">#{msgs.label_delete}</f:facet>
+								<h:commandButton action="#{employeeFileAttachmentsMiniSearch.deleteEmpFileAttachment(row)}" disabled="#{!employeeFileAttachmentsMiniSearch.isModifyAdmin}" onclick="return confirm('#{msgs.q_delete}');" value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon">
+									<f:ajax execute="searchEmpFileAttachmentsFormId:empFileAttachmentsListId" render="searchEmpFileAttachmentsFormId:empFileAttachmentsListId searchEmpFileAttachmentsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+								</h:commandButton>
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller fastControls="hide" oncomplete="unMaskScreen()" maxPages="5">
+									<f:facet name="first"> #{msgs.label_first} </f:facet>
+									<f:facet name="last"> #{msgs.label_last} </f:facet>
+									<f:facet name="next"> #{msgs.label_next} </f:facet>
+									<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<h:inputHidden id="fileDownloadParamId" value="#{employeeFileAttachmentsMiniSearch.fileDownloadParams}" />
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

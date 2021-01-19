@@ -19,7 +19,8 @@ public class AttachmentsService extends BaseService {
     // Generate the next attachment identifier.
     public static String getNextAttachmentsId() throws BusinessException {
 
-	if (ETRConfigurationService.getAttachmentsAddURL() == null || ETRConfigurationService.getAttachmentsAddURL().isEmpty())
+	if (ETRConfigurationService.getAttachmentUploadURL() == null || ETRConfigurationService.getAttachmentUploadURL().isEmpty()
+		|| ETRConfigurationService.getAttachmentsAddURL() == null || ETRConfigurationService.getAttachmentsAddURL().isEmpty())
 	    throw new BusinessException("error_attachmentsIntegrationDisabled");
 
 	try {
