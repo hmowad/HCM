@@ -47,7 +47,7 @@ public class PayrollDifferences extends BaseBacking implements Serializable {
 
     public void search() {
 	try {
-	    payrollDifferencesList = PayrollsService.getEmployeePayrollDifferences(this.loginEmpData.getSocialID(), mode, elementDescription);
+	    payrollDifferencesList = PayrollsService.getEmployeePayrollDifferences(this.loginEmpData.getEmpId(), mode, elementDescription);
 	    calculateAmountSum();
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));

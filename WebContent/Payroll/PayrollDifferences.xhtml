@@ -124,11 +124,23 @@
 								<f:facet name="header">
 									<h:outputText value="#{msgs.label_decisionDate}" />
 								</f:facet>
-								<h:outputText value="#{payrollDiff.decesionDateString}" />
+								<h:outputText value="#{payrollDiff.decesionDate}" />
 							</rich:column>
 							<rich:column>
 								<f:facet name="header">
-									<h:outputText value="#{msgs.label_totalAmount}" />
+									<h:outputText value="#{msgs.label_elementStartDate}" />
+								</f:facet>
+								<h:outputText value="#{payrollDiff.elementStartDate}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_elementEndDate}" />
+								</f:facet>
+								<h:outputText value="#{payrollDiff.elementEndDate}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{msgs.label_amount}" />
 								</f:facet>
 								<h:outputText value="#{payrollDiff.totalAmount}" />
 							</rich:column>
@@ -178,7 +190,7 @@
 										<td width="100%">
 											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
 												<tr>
-													<td>#{msgs.label_issueOrderData} - #{msgs.label_transactionNumber}: #{payrollDifferences.selectedPayrollDiff.transactionNumber}</td>
+													<td>#{msgs.label_issueOrderData} - #{msgs.label_transactionNumber}: #{payrollDifferences.selectedPayrollDiff.decesionNumber}</td>
 												</tr>
 											</table>
 										</td>

@@ -22,14 +22,14 @@ public class PayrollsService extends BaseService {
     private PayrollsService() {
     }
 
-    public static List<EmployeePayrollDifferenceData> getEmployeePayrollDifferences(String socialId, int transactionStatus, String elementDescription) throws BusinessException {
-	return searchEmployeePayrollDifferences(socialId, transactionStatus, elementDescription);
+    public static List<EmployeePayrollDifferenceData> getEmployeePayrollDifferences(Long empId, int transactionStatus, String elementDescription) throws BusinessException {
+	return searchEmployeePayrollDifferences(empId, transactionStatus, elementDescription);
     }
 
-    private static List<EmployeePayrollDifferenceData> searchEmployeePayrollDifferences(String socialId, int transactionStatus, String elementDescription) throws BusinessException {
+    private static List<EmployeePayrollDifferenceData> searchEmployeePayrollDifferences(Long empId, int transactionStatus, String elementDescription) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
-	    qParams.put("P_PER_ID", socialId);
+	    qParams.put("P_EMP_ID", empId);
 	    qParams.put("P_TRANSACTION_STATUS", transactionStatus);
 	    qParams.put("P_ELEMENT_DESC", (elementDescription == null || elementDescription.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + elementDescription + "%");
 	    return DataAccess.executeNamedQuery(EmployeePayrollDifferenceData.class, QueryNamesEnum.HCM_GET_PAYROLL_DIFF_BY_TRANS_STATUS.getCode(), qParams);
