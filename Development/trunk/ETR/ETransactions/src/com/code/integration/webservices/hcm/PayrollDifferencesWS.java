@@ -51,7 +51,7 @@ public class PayrollDifferencesWS {
 	    if (employeeData == null)
 		throw new BusinessException("error_employeeDataError");
 
-	    List<EmployeePayrollDifferenceData> payrollDifferences = PayrollsService.getEmployeePayrollDifferences(employeeData.getSocialID(), mode, elementDescription);
+	    List<EmployeePayrollDifferenceData> payrollDifferences = PayrollsService.getEmployeePayrollDifferences(employeeData.getEmpId(), mode, elementDescription);
 	    response.setPayrollDifferences(payrollDifferences);
 	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
