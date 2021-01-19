@@ -871,15 +871,15 @@ public class ETRConfigurationService extends BaseService {
     /*--------------------------------------------- Attachment URLS ---------------------------------------------------------------------*/
 
     public static String getAttachmentUploadURL() {
-	return configurationMap.get("BOOL_SERVER_UPLOAD_PATH");
+	return configurationMap.get("BOOLE_SERVER_UPLOAD_PATH");
     }
 
     public static String getAttachmentDownloadURL() {
-	return configurationMap.get("BOOL_SERVER_DOWNLOAD_PATH");
+	return configurationMap.get("BOOLE_SERVER_DOWNLOAD_PATH");
     }
 
     public static String getAttachmentDeleteURL() {
-	return configurationMap.get("BOOL_SERVER_DELETE_PATH");
+	return configurationMap.get("BOOLE_SERVER_DELETE_PATH");
     }
 
     /*--------------------------------------------- End of Attachment URLS --------------------------------------------------------------*/
