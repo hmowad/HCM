@@ -43,6 +43,10 @@
 		<mapping class="com.code.dal.orm.cor.ETRCorOut" />
 		
 		<mapping class="com.code.dal.orm.signatures.Signature" />
+	
+		<mapping class="com.code.dal.orm.hcm.attachments.EmployeeFileAttachment" />
+		<mapping class="com.code.dal.orm.hcm.attachments.EmployeeFileAttachmentDetail" />
+		<mapping class="com.code.dal.orm.hcm.attachments.EmployeeFileAttachmentDetailData" />
 		
 		<mapping class="com.code.dal.orm.audit.AuditLog" />
 		<mapping class="com.code.dal.orm.security.Menu" />

@@ -565,8 +565,15 @@ public enum QueryNamesEnum {
     HCM_INCENTIVE_PORT_GET_INCENTIVE_PORTS("hcm_incentivePort_getIncentivePorts"),
     HCM_GOVERNMENTAL_COMMITTEE_CATEGORY_GET_GOVERNMENTAL_COMMITTEES_CATEGORIES("hcm_governmentalCommitteeCategory_getGovernmentalCommitteesCategories"),
 
+    /* ******************************************* Employee File Attachment ****************************************************** */
+    ETR_COUNT_EMPLOYEE_FILE_ATTACHMENT_BY_DECISION_NUMBER("etr_employeeFileAttachment_countEmployeeFileAttachmentsByDecisionNumber"),
+    ETR_EMPLOYEE_FILE_ATTACHMENT_GET_EMPLOYEE_FILE_ATTACHMENT_BY_ATTACHMENT_ID("etr_employeeFileAttachment_getEmployeeFileAttachmentById"),
+    ETR_EMPLOYEE_FILE_ATTACHMENT_DETAILS_GET_EMPLOYEE_FILE_ATTACHMENTS("etr_employeeFileAttachmentDetailData_searchEmployeeFileAttachmentDetails"),
+    ETR_COUNT_EMPLOYEE_FILE_ATTACHMENT_DETAILS_BY_ATTACHMENT_ID("etr_employeeFileAttachmentDetailData_countEmployeeFileAttachmentDetailsByAttachmentId"),
+
     /* ******************************************* External Attachment ****************************************************** */
     HCM_EXTERNAL_ATTACHMENT_GET_EXTERNAL_ATTACHMENT_BY_TRANSACTION_ID_AND_TABLE_NAME("hcm_externalAttachment_getExternalAttachmentByTransactionIdAndTableName");
+
     private String code;
 
     private QueryNamesEnum(String code) {

@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:f="http://java.sun.com/jsf/core" xmlns:composite="http://java.sun.com/jsf/composite" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+
+<composite:interface componentType="com.code.ui.components.util.UIEmployeeFileAttachment">
+	<composite:attribute name="attachment" required="true" />
+	<composite:attribute name="resetAttachment" required="true" />
+	<composite:attribute name="saveAttachment" required="true" />
+	<composite:attribute name="cancelAttachment" required="true" />
+	<composite:attribute name="attachmentRender" required="true" />
+</composite:interface>
+
+<composite:implementation>
+	<script type="text/javascript">
+	//<![CDATA[
+		function validateData () {
+		
+		var decisionNumber = document.getElementById('#{cc.clientId}' +':decNumId').value;
+		if (decisionNumber == null || decisionNumber == '') {
+			alert('#{msgs.error_decisionNumberMandatory}');
+			return false;
+		}
+
+		var decisionDateDay = document.getElementById('#{cc.clientId}' +':decDateId:day').value;
+		if (decisionDateDay == null || decisionDateDay == 0) {
+			alert('#{msgs.error_decDateMandatory}');
+			return false;
+		}
+
+		return true;		
+	}
+		function attachmentAction () {
+			document.getElementById('#{cc.clientId}:resetBtnId').click();
+		}
+	// ]]>
+	</script>
+	<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<th width="15%">
+				#{msgs.label_decisionNumber}
+				<h:outputText value=" " />
+				<font style="color: red;">*</font>
+			</th>
+			<td width="35%">
+				<h:inputText id="decNumId" value="#{cc.attrs.attachment.decisionNumber}" rendered="#{cc.attrs.attachment.id == null}" />
+				<h:outputText rendered="#{cc.attrs.attachment.id != null}" value="#{cc.attrs.attachment.decisionNumber}" />
+			</td>
+			<td width="50%" colspan="2"></td>
+		</tr>
+		<tr>
+			<th width="15%">
+				#{msgs.label_decisionDate}
+				<font style="color: red;"> *</font>
+			</th>
+			<td width="35%">
+				<util:hijri id="decDateId" value="#{cc.attrs.attachment.decisionDate}" rendered="#{cc.attrs.attachment.id == null}" nullable="true" />
+				<h:outputText rendered="#{cc.attrs.attachment.id != null}" value="#{cc.attrs.attachment.decisionDateString}" />
+			</td>
+			<td width="50%" colspan="2"></td>
+		</tr>
+
+		<tr>
+			<th width="15%">#{msgs.label_description}</th>
+			<td width="35%">
+				<h:inputText id="descId" value="#{cc.attrs.attachment.description}" rendered="#{cc.attrs.attachment.id == null}" />
+				<h:outputText rendered="#{cc.attrs.attachment.id != null}" value="#{cc.attrs.attachment.description}" />
+			</td>
+			<td width="50%" colspan="2"></td>
+		</tr>
+		<tr>
+			<th width="15%">#{msgs.label_attachment}</th>
+			<td width="35%">
+				<h:commandButton id="attachmentsssAddButtonId" disabled="#{cc.attrs.attachment.id == null}" value="#{msgs.label_addAttachment}" styleClass="btn_normal">
+					<f:ajax render="#{cc.attrs.attachmentRender} fileUploadParamId" listener="#{cc.getUploadParam(cc.attrs.attachment.id)}" onevent="function(e){if(e.status == 'success'){ attachmentAction(); openUploadFile('#{cc.uploadURL}', document.getElementById('#{cc.clientId}:fileUploadParamId').value); return false;}}" />
+				</h:commandButton>
+				<h:commandButton id="resetBtnId" action="#{cc.attrs.resetAttachment}" style="display: none;">
+					<f:ajax render="#{cc.attrs.attachmentRender}" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+				</h:commandButton>
+			</td>
+			<td width="50%" colspan="2"></td>
+		</tr>
+		<tr>
+			<td width="100%" colspan="4">
+				<h:outputText rendered="#{cc.attrs.attachment.id == null}" value="#{msgs.label_saveDataBeforeAddAttachment}" style="color: red; font-weight: bold;" />
+			</td>
+		</tr>
+		<tr>
+			<td width="100%" colspan="4" align="center">
+				<h:panelGroup id="actionsPanelId">
+					<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+						<tr>
+							<td width="100%" style="text-align: center">
+
+								<h:commandButton id="saveBtnId" disabled="#{cc.attrs.attachment.id != null}" action="#{cc.attrs.saveAttachment}" onclick="return handleOnAction('#{msgs.q_save}', 'validateData()');" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" style="width:8%">
+									<f:ajax execute="#{cc.clientId}" render="#{cc.attrs.attachmentRender} #{cc.clientId.split(':')[0].concat(':notifyMessagesId')}" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+								</h:commandButton>
+								<h:commandButton id="cancelBtnId" action="#{cc.attrs.cancelAttachment}" styleClass="btn_normal_icon" value="#{msgs.label_cancel} &nbsp; #{msgs.fa_times}" style="width:8%">
+									<f:ajax render="#{cc.attrs.attachmentRender}" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+								</h:commandButton>
+								<h:inputHidden id="fileUploadParamId" value="#{cc.fileUploadParams}" />
+							</td>
+						</tr>
+					</table>
+				</h:panelGroup>
+			</td>
+		</tr>
+	</table>
+</composite:implementation>
+</html>

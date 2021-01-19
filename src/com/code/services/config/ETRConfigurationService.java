@@ -867,4 +867,20 @@ public class ETRConfigurationService extends BaseService {
     public static Integer getIntegrationWithAllowanceAndDeductionFlag() {
 	return Integer.parseInt(configurationMap.get("INTEGRATION_WITH_ALLOWANCE_AND_DEDUCTION_FLAG"));
     }
+
+    /*--------------------------------------------- Attachment URLS ---------------------------------------------------------------------*/
+
+    public static String getAttachmentUploadURL() {
+	return configurationMap.get("BOOL_SERVER_UPLOAD_PATH");
+    }
+
+    public static String getAttachmentDownloadURL() {
+	return configurationMap.get("BOOL_SERVER_DOWNLOAD_PATH");
+    }
+
+    public static String getAttachmentDeleteURL() {
+	return configurationMap.get("BOOL_SERVER_DELETE_PATH");
+    }
+
+    /*--------------------------------------------- End of Attachment URLS --------------------------------------------------------------*/
 }

@@ -428,6 +428,13 @@ function openSocialIdIssuePlacesMiniSearch(contextPath, miniSearchReturnHandler)
     unMaskOnPopupClose(childWindow);
 }
 
+function openEmpFileAttachmentsMiniSearch(contextPath, miniSearchReturnHandler, empId, transClass, isModifyAdmin){
+	var specsStr = getPopupWindowSpecsString(0.75, 0.75, 'no', 'yes');
+	maskOpenerScreen();
+	var childWindow = window.open(contextPath+'/MiniSearch/EmployeeFileAttachmentsMiniSearch.jsf?miniSearchReturnHandler='+miniSearchReturnHandler+'&empId='+empId+'&transClass='+transClass+'&isModifyAdmin='+isModifyAdmin, null, specsStr);
+    unMaskOnPopupClose(childWindow);
+}
+
 function openMinorSpecializationsMiniSearch(contextPath, miniSearchReturnHandler){
 	minorSpecializationsMiniSearch(contextPath, miniSearchReturnHandler, 1, 0);
 }
@@ -626,6 +633,15 @@ function addAttachments(attachmentsAddURL){
 function viewAttachments(attachmentsViewURL){
 	var specsStr = getPopupWindowSpecsString(0.85, 0.85, 'no', 'yes');
 	window.open(attachmentsViewURL.replace(/&amp;/g, '&'), null, specsStr);
+}
+
+function openUploadFile(url, param) {
+	var specsStr = getPopupWindowSpecsString(0.85, 0.85, 'no', 'yes');
+	window.open(url + param , null, specsStr);
+}
+
+function openDownloadFile(url, param) {
+	window.open(url + param , '_blank' );
 }
 
 /********************************************** historical vacations mini search *****************************************************/

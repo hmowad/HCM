@@ -17,6 +17,10 @@
 	         document.getElementById('employeeFileFormId:searchEmpBtnId').click();
 		}
 	}
+
+	function getEmpFileAttachments(contextPath, empId, transClass, isModifyAdmin){
+		openEmpFileAttachmentsMiniSearch(contextPath,'handleVacationMiniSearchResult(ret)',empId,transClass, #{employeeFile.isModifyAdmin});
+    }
 	</script>
 </h:head>
 <h:body styleClass="screenBg">
@@ -61,6 +65,42 @@
 				<tr>
 					<td width="100%">
 						<rich:collapsiblePanel id="employeeDataPanelId" switchType="client" expanded="true" header="#{employeeFile.mode == 1 ? msgs.title_officerData : (employeeFile.mode == 2 ? msgs.label_soldierData : msgs.title_personData) }">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="empAttachmentPanelId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag == false}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<h:commandButton rendered="#{employeeFile.isModifyAdmin}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{employeeFile.addAttachment()}">
+															<f:ajax render="employeeFileFormId:empAttachmentContentId employeeFileFormId:empAttachmentPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:commandButton value="#{msgs.label_showAttachment}" styleClass="btn_normal" onclick="getEmpFileAttachments('#{request.contextPath}','#{employeeFile.employee.empId}','10');return false;" />
+													</tr>
+												</table>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="empAttachmentContentId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag}">
+												<tr>
+													<td width="100%">
+														<h:panelGroup id="empAttachmentDataPanelId">
+															<code:employeeFileAttachment id="employeeFilesAttachmentId" attachment="#{employeeFile.attachment}" saveAttachment="#{employeeFile.saveEmployeeFileAttachment(10)}" resetAttachment="#{employeeFile.resetAttachment()}" cancelAttachment="#{employeeFile.cancelAttachment()}" attachmentRender="employeeFileFormId:empAttachmentContentId employeeFileFormId:empAttachmentPanelId" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
 							<code:emp value="#{employeeFile.employee}" />
 						</rich:collapsiblePanel>
 					</td>
@@ -71,6 +111,42 @@
 				<tr>
 					<td width="100%">
 						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.title_Recruitments}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="recAttachmentPanelId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag == false}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<h:commandButton rendered="#{employeeFile.isModifyAdmin}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{employeeFile.addAttachment()}">
+															<f:ajax render="employeeFileFormId:recAttachmentContentId employeeFileFormId:recAttachmentPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:commandButton value="#{msgs.label_showAttachment}" styleClass="btn_normal" onclick="getEmpFileAttachments('#{request.contextPath}','#{employeeFile.employee.empId}','20');return false;" />
+													</tr>
+												</table>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="recAttachmentContentId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag}">
+												<tr>
+													<td width="100%">
+														<h:panelGroup id="recAttachmentDataPanelId">
+															<code:employeeFileAttachment id="employeeRecFilesAttachmentId" attachment="#{employeeFile.attachment}" saveAttachment="#{employeeFile.saveEmployeeFileAttachment(20)}" resetAttachment="#{employeeFile.resetAttachment()}" cancelAttachment="#{employeeFile.cancelAttachment()}" attachmentRender="employeeFileFormId:recAttachmentContentId employeeFileFormId:recAttachmentPanelId" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="100%">
@@ -224,6 +300,42 @@
 
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="movAttachmentPanelId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag == false}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<h:commandButton rendered="#{employeeFile.isModifyAdmin}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{employeeFile.addAttachment()}">
+															<f:ajax render="employeeFileFormId:movAttachmentContentId employeeFileFormId:movAttachmentPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+														</h:commandButton>
+														<h:commandButton value="#{msgs.label_showAttachment}" styleClass="btn_normal" onclick="getEmpFileAttachments('#{request.contextPath}','#{employeeFile.employee.empId}','30');return false;" />
+													</tr>
+												</table>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="movAttachmentContentId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag}">
+												<tr>
+													<td width="100%">
+														<h:panelGroup id="movementsAttachmentDataPanelId">
+															<code:employeeFileAttachment id="empMovFilesAttachmentId" attachment="#{employeeFile.attachment}" saveAttachment="#{employeeFile.saveEmployeeFileAttachment(30)}" resetAttachment="#{employeeFile.resetAttachment()}" cancelAttachment="#{employeeFile.cancelAttachment()}" attachmentRender="employeeFileFormId:movAttachmentContentId employeeFileFormId:movAttachmentPanelId" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
 									<td width="100%" colspan="1">
 										<rich:dataTable id="movementsTableId" value="#{employeeFile.movements}" var="movement" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
 											<f:facet name="header">
@@ -337,6 +449,42 @@
 						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.title_vacations}">
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="vacAttachmentPanelId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag == false}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<h:commandButton rendered="#{employeeFile.isModifyAdmin}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{employeeFile.addAttachment()}">
+															<f:ajax render="employeeFileFormId:vacAttachmentContentId employeeFileFormId:vacAttachmentPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+														</h:commandButton>
+														<h:commandButton value="#{msgs.label_showAttachment}" styleClass="btn_normal" onclick="getEmpFileAttachments('#{request.contextPath}','#{employeeFile.employee.empId}','40');return false;" />
+													</tr>
+												</table>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="vacAttachmentContentId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag}">
+												<tr>
+													<td width="100%">
+														<h:panelGroup id="vacationsAttachmentDataPanelId">
+															<code:employeeFileAttachment id="employeeVacFilesAttachmentId" attachment="#{employeeFile.attachment}" saveAttachment="#{employeeFile.saveEmployeeFileAttachment(40)}" resetAttachment="#{employeeFile.resetAttachment()}" cancelAttachment="#{employeeFile.cancelAttachment()}" attachmentRender="employeeFileFormId:vacAttachmentContentId employeeFileFormId:vacAttachmentPanelId" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
 									<td width="100%">
 										<rich:dataTable id="vacationsTableId" value="#{employeeFile.vacations}" var="vacation" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
 											<rich:column style="width:5%">
@@ -429,6 +577,42 @@
 						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.title_missions}">
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="missionsAttachmentPanelId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag == false}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<h:commandButton rendered="#{employeeFile.isModifyAdmin}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{employeeFile.addAttachment()}">
+															<f:ajax render="employeeFileFormId:missionsAttachmentContentId employeeFileFormId:missionsAttachmentPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+														</h:commandButton>
+														<h:commandButton value="#{msgs.label_showAttachment}" styleClass="btn_normal" onclick="getEmpFileAttachments('#{request.contextPath}','#{employeeFile.employee.empId}','50');return false;" />
+													</tr>
+												</table>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="missionsAttachmentContentId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag}">
+												<tr>
+													<td width="100%">
+														<h:panelGroup id="missionsAttachmentDataPanelId">
+															<code:employeeFileAttachment id="employeeMissionsFilesAttachmentId" attachment="#{employeeFile.attachment}" saveAttachment="#{employeeFile.saveEmployeeFileAttachment(50)}" resetAttachment="#{employeeFile.resetAttachment()}" cancelAttachment="#{employeeFile.cancelAttachment()}" attachmentRender="employeeFileFormId:missionsAttachmentContentId employeeFileFormId:missionsAttachmentPanelId" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
 									<td width="100%">
 										<rich:dataTable id="missionsTableId" value="#{employeeFile.missions}" var="mission" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
 											<rich:column style="width:10%">
@@ -514,12 +698,49 @@
 						<rich:collapsiblePanel id="promotionsCollapsiblePanelId" switchType="client" expanded="true" header="#{msgs.title_promotions}">
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="promotionsAttachmentPanelId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag == false}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<h:commandButton rendered="#{employeeFile.isModifyAdmin}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{employeeFile.addAttachment()}">
+															<f:ajax render="employeeFileFormId:promotionsAttachmentContentId employeeFileFormId:promotionsAttachmentPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+														</h:commandButton>
+														<h:commandButton value="#{msgs.label_showAttachment}" styleClass="btn_normal" onclick="getEmpFileAttachments('#{request.contextPath}','#{employeeFile.employee.empId}','60');return false;" />
+													</tr>
+												</table>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="promotionsAttachmentContentId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag}">
+												<tr>
+													<td width="100%">
+														<h:panelGroup id="promotionsAttachmentDataPanelId">
+															<code:employeeFileAttachment id="employeePromotionsFilesAttachmentId" attachment="#{employeeFile.attachment}" saveAttachment="#{employeeFile.saveEmployeeFileAttachment(60)}" resetAttachment="#{employeeFile.resetAttachment()}" cancelAttachment="#{employeeFile.cancelAttachment()}" attachmentRender="employeeFileFormId:promotionsAttachmentContentId employeeFileFormId:promotionsAttachmentPanelId" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
+
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
 									<th width="15%">#{msgs.label_lastPromotionDate}</th>
-									<td width="15%">
+									<td width="35%">
 										<h:outputText value="#{employeeFile.employee.lastPromotionDateString}" />
 									</td>
 									<th width="15%">#{msgs.label_nextPromotionDueDate}</th>
-									<td width="55%">
+									<td width="35%">
 										<h:outputText value="#{employeeFile.employee.promotionDueDateString}" />
 									</td>
 								</tr>
@@ -624,6 +845,42 @@
 						<rich:collapsiblePanel id="terminationsCollapsiblePanelId" switchType="client" expanded="true" header="#{employeeFile.employee.categoryId == 2 ? msgs.title_terminationsForSolders : msgs.title_terminations}">
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="terminationAttachmentPanelId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag == false}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<h:commandButton rendered="#{employeeFile.isModifyAdmin}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{employeeFile.addAttachment()}">
+															<f:ajax render="employeeFileFormId:terminationAttachmentContentId employeeFileFormId:terminationAttachmentPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+														</h:commandButton>
+														<h:commandButton value="#{msgs.label_showAttachment}" styleClass="btn_normal" onclick="getEmpFileAttachments('#{request.contextPath}','#{employeeFile.employee.empId}','70');return false;" />
+													</tr>
+												</table>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="terminationAttachmentContentId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag}">
+												<tr>
+													<td width="100%">
+														<h:panelGroup id="terminationAttachmentDataPanelId">
+															<code:employeeFileAttachment id="employeeTerminationFilesAttachmentId" attachment="#{employeeFile.attachment}" saveAttachment="#{employeeFile.saveEmployeeFileAttachment(70)}" resetAttachment="#{employeeFile.resetAttachment()}" cancelAttachment="#{employeeFile.cancelAttachment()}" attachmentRender="employeeFileFormId:terminationAttachmentContentId employeeFileFormId:terminationAttachmentPanelId" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
 									<th width="10%">#{msgs.label_serviceTerminationDueDate}</th>
 									<td width="15%">
 										<h:outputText value="#{employeeFile.employee.serviceTerminationDueDateString}" />
@@ -722,6 +979,42 @@
 						<rich:collapsiblePanel id="disclaimersCollapsiblePanelId" switchType="client" expanded="true" header="#{msgs.label_disclaimer}">
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="disclaimersAttachmentPanelId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag == false}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<h:commandButton rendered="#{employeeFile.isModifyAdmin}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{employeeFile.addAttachment()}">
+															<f:ajax render="employeeFileFormId:disclaimersAttachmentContentId employeeFileFormId:disclaimersAttachmentPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:commandButton value="#{msgs.label_showAttachment}" styleClass="btn_normal" onclick="getEmpFileAttachments('#{request.contextPath}','#{employeeFile.employee.empId}','80');return false;" />
+													</tr>
+												</table>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="disclaimersAttachmentContentId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag}">
+												<tr>
+													<td width="100%">
+														<h:panelGroup id="disclaimersAttachmentDataPanelId">
+															<code:employeeFileAttachment id="employeeDisclaimersFilesAttachmentId" attachment="#{employeeFile.attachment}" saveAttachment="#{employeeFile.saveEmployeeFileAttachment(80)}" resetAttachment="#{employeeFile.resetAttachment()}" cancelAttachment="#{employeeFile.cancelAttachment()}" attachmentRender="employeeFileFormId:disclaimersAttachmentContentId employeeFileFormId:disclaimersAttachmentPanelId" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
 									<td width="100%" colspan="6">
 										<rich:dataTable id="disclaimersTableId" value="#{employeeFile.disclaimerTransactions}" var="disclaimerTransaction" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
 											<f:facet name="header">
@@ -802,6 +1095,42 @@
 						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_penalities}">
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="penalitiesAttachmentPanelId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag == false}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<h:commandButton rendered="#{employeeFile.isModifyAdmin}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{employeeFile.addAttachment()}">
+															<f:ajax render="employeeFileFormId:penalitiesAttachmentContentId employeeFileFormId:penalitiesAttachmentPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:commandButton value="#{msgs.label_showAttachment}" styleClass="btn_normal" onclick="getEmpFileAttachments('#{request.contextPath}','#{employeeFile.employee.empId}','90');return false;" />
+													</tr>
+												</table>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="penalitiesAttachmentContentId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag}">
+												<tr>
+													<td width="100%">
+														<h:panelGroup id="penalitiesAttachmentDataPanelId">
+															<code:employeeFileAttachment id="employeePenalitiesFilesAttachmentId" attachment="#{employeeFile.attachment}" saveAttachment="#{employeeFile.saveEmployeeFileAttachment(90)}" resetAttachment="#{employeeFile.resetAttachment()}" cancelAttachment="#{employeeFile.cancelAttachment()}" attachmentRender="employeeFileFormId:penalitiesAttachmentContentId employeeFileFormId:penalitiesAttachmentPanelId" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
 									<td width="100%" colspan="4">
 										<rich:dataTable id="penalitiesTableId" value="#{employeeFile.penalities}" var="penality" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
 											<rich:column style="width:23%">
@@ -859,6 +1188,42 @@
 						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_bounses}">
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="bonusAttachmentPanelId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag == false}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<h:commandButton rendered="#{employeeFile.isModifyAdmin}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{employeeFile.addAttachment()}">
+															<f:ajax render="employeeFileFormId:bonusAttachmentContentId employeeFileFormId:bonusAttachmentPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:commandButton value="#{msgs.label_showAttachment}" styleClass="btn_normal" onclick="getEmpFileAttachments('#{request.contextPath}','#{employeeFile.employee.empId}','100');return false;" />
+													</tr>
+												</table>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="bonusAttachmentContentId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag}">
+												<tr>
+													<td width="100%">
+														<h:panelGroup id="bonusAttachmentDataPanelId">
+															<code:employeeFileAttachment id="employeeBonusFilesAttachmentId" attachment="#{employeeFile.attachment}" saveAttachment="#{employeeFile.saveEmployeeFileAttachment(100)}" resetAttachment="#{employeeFile.resetAttachment()}" cancelAttachment="#{employeeFile.cancelAttachment()}" attachmentRender="employeeFileFormId:bonusAttachmentContentId employeeFileFormId:bonusAttachmentPanelId" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
 									<td width="100%" colspan="4">
 										<rich:dataTable id="bonusesTableId" value="#{employeeFile.bonuses}" var="bonus" rows="#{employeeFile.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
 											<rich:column style="width:30%">
@@ -906,6 +1271,42 @@
 				<tr>
 					<td width="100%">
 						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_allowances}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="allowanceAttachmentPanelId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag == false}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<h:commandButton rendered="#{employeeFile.isModifyAdmin}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{employeeFile.addAttachment()}">
+															<f:ajax render="employeeFileFormId:allowanceAttachmentContentId employeeFileFormId:allowanceAttachmentPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:commandButton value="#{msgs.label_showAttachment}" styleClass="btn_normal" onclick="getEmpFileAttachments('#{request.contextPath}','#{employeeFile.employee.empId}','110');return false;" />
+													</tr>
+												</table>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="allowanceAttachmentContentId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag}">
+												<tr>
+													<td width="100%">
+														<h:panelGroup id="allowanceAttachmentDataPanelId">
+															<code:employeeFileAttachment id="employeeAllowanceFilesAttachmentId" attachment="#{employeeFile.attachment}" saveAttachment="#{employeeFile.saveEmployeeFileAttachment(110)}" resetAttachment="#{employeeFile.resetAttachment()}" cancelAttachment="#{employeeFile.cancelAttachment()}" attachmentRender="employeeFileFormId:allowanceAttachmentContentId employeeFileFormId:allowanceAttachmentPanelId" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="100%" colspan="4">
@@ -961,6 +1362,42 @@
 				<tr>
 					<td width="100%">
 						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_annualAndAdditionalRaises}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="additionalRaisesAttachmentPanelId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag == false}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<h:commandButton rendered="#{employeeFile.isModifyAdmin}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{employeeFile.addAttachment()}">
+															<f:ajax render="employeeFileFormId:additionalRaisesAttachmentContentId employeeFileFormId:additionalRaisesAttachmentPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:commandButton value="#{msgs.label_showAttachment}" styleClass="btn_normal" onclick="getEmpFileAttachments('#{request.contextPath}','#{employeeFile.employee.empId}','120');return false;" />
+													</tr>
+												</table>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="additionalRaisesAttachmentContentId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag}">
+												<tr>
+													<td width="100%">
+														<h:panelGroup id="additionalRaisesAttachmentDataPanelId">
+															<code:employeeFileAttachment id="employeeadditionalRaisesFilesAttachmentId" attachment="#{employeeFile.attachment}" saveAttachment="#{employeeFile.saveEmployeeFileAttachment(120)}" resetAttachment="#{employeeFile.resetAttachment()}" cancelAttachment="#{employeeFile.cancelAttachment()}" attachmentRender="employeeFileFormId:additionalRaisesAttachmentContentId employeeFileFormId:additionalRaisesAttachmentPanelId" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="100%" colspan="4">
@@ -1020,6 +1457,42 @@
 				<tr>
 					<td width="100%">
 						<rich:collapsiblePanel switchType="client" expanded="true" header="#{msgs.label_additionalSpecializations}">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%" height="5" />
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="additionalSpecializeAttachmentPanelId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag == false}">
+												<table class="sectionContent" border="0" cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<h:commandButton rendered="#{employeeFile.isModifyAdmin}" value="#{msgs.label_addAttachment}" styleClass="btn_normal" action="#{employeeFile.addAttachment()}">
+															<f:ajax render="employeeFileFormId:additionalSpecializeAttachmentContentId employeeFileFormId:additionalSpecializeAttachmentPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+														</h:commandButton>
+														<h:commandButton value="#{msgs.label_showAttachment}" styleClass="btn_normal" onclick="getEmpFileAttachments('#{request.contextPath}','#{employeeFile.employee.empId}','130');return false;" />
+													</tr>
+												</table>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+								<tr>
+									<td width="100%">
+										<h:panelGroup id="additionalSpecializeAttachmentContentId">
+											<h:panelGroup rendered="#{employeeFile.attachmentContentFlag}">
+												<tr>
+													<td width="100%">
+														<h:panelGroup id="additionalSpecializeAttachmentDataPanelId">
+															<code:employeeFileAttachment id="employeeAdditionalSpecializeFilesAttachmentId" attachment="#{employeeFile.attachment}" saveAttachment="#{employeeFile.saveEmployeeFileAttachment(130)}" resetAttachment="#{employeeFile.resetAttachment()}" cancelAttachment="#{employeeFile.cancelAttachment()}" attachmentRender="employeeFileFormId:additionalSpecializeAttachmentContentId employeeFileFormId:additionalSpecializeAttachmentPanelId" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</h:panelGroup>
+									</td>
+								</tr>
+							</table>
 							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="100%" colspan="4">
