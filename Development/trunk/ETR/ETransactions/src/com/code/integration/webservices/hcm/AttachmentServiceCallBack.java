@@ -1,4 +1,4 @@
-package com.code.services.util;
+package com.code.integration.webservices.hcm;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -12,6 +12,7 @@ import org.richfaces.json.JSONObject;
 
 import com.code.dal.orm.hcm.attachments.EmployeeFileAttachmentDetail;
 import com.code.enums.FlagsEnum;
+import com.code.services.util.EmployeeFileAttachmentService;
 
 @Path("/AttachmentServiceCallBack")
 public class AttachmentServiceCallBack {

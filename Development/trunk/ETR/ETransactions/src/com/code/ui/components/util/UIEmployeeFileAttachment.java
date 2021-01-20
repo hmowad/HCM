@@ -7,8 +7,8 @@ import javax.faces.component.UINamingContainer;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import com.code.integration.webservices.hcm.AttachmentServiceCallBack;
 import com.code.services.config.ETRConfigurationService;
-import com.code.services.util.AttachmentServiceCallBack;
 import com.code.services.util.EmployeeFileAttachmentService;
 import com.code.services.util.EncryptionUtil;
 
