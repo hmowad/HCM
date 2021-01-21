@@ -486,7 +486,7 @@ public class VacationsService extends BaseService {
 	    qParams.put("P_TRAVEL_DATE", travelDate == null ? HijriDateService.getHijriSysDateString() : HijriDateService.getHijriDateString(travelDate));
 
 	    List<VacationData> result = DataAccess.executeNamedQuery(VacationData.class, QueryNamesEnum.HCM_GET_EXTERNAL_VACATION_DATA.getCode(), qParams);
-	    return result.isEmpty() ? new VacationData() : result.get(0);
+	    return result.isEmpty() ? null : result.get(0);
 
 	} catch (DatabaseException e) {
 	    e.printStackTrace();

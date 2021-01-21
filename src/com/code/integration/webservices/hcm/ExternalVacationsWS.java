@@ -1,5 +1,7 @@
 package com.code.integration.webservices.hcm;
 
+import java.util.Date;
+
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
@@ -23,25 +25,36 @@ public class ExternalVacationsWS {
     @WebResult(name = "externalVacationResponse")
     public WSExternalVacationResponse getExternalVacation(@WebParam(name = "socialId") String socialId, @WebParam(name = "travelDateString") String travelDateString) {
 	WSExternalVacationResponse response = new WSExternalVacationResponse();
+	Date travelDate = null;
 	try {
-	    if (socialId == null || socialId.isEmpty())
-		throw new BusinessException("error_socialIdNotFound");
-	    EmployeeData employee = EmployeesService.getEmployeeBySocialID(socialId);
+	    if (socialId == null || socialId.trim().isEmpty())
+		throw new BusinessException("error_socialIDMandatory");
 
-	    VacationData externalVacationData = VacationsService.getExternalVacationData(employee.getEmpId(), HijriDateService.getHijriDate(travelDateString));
+	    travelDate = HijriDateService.getHijriDate(travelDateString);
+	    if (travelDate == null && travelDateString != null && !travelDateString.isEmpty()) {
+		throw new BusinessException("error_dateFormat");
+	    }
+	    EmployeeData employee = EmployeesService.getEmployeeBySocialID(socialId.trim());
+	    if (employee == null)
+		throw new BusinessException("error_socialIdNotFound");
+
+	    VacationData externalVacationData = VacationsService.getExternalVacationData(employee.getEmpId(), travelDate);
 
 	    response.setEmployeeName(employee.getName());
 	    response.setSocialId(employee.getSocialID());
 	    response.setRankDescription(employee.getRankDesc());
 	    response.setMilitaryNumber(employee.getMilitaryNumber());
-	    response.setDecisionNumber(externalVacationData.getDecisionNumber());
-	    response.setDecisionDateString(externalVacationData.getDecisionDateString());
-	    response.setPeriod(externalVacationData.getPeriod());
-	    response.setStartDateString(externalVacationData.getStartDateString());
-	    response.setEndDateString(externalVacationData.getEndDateString());
-	    response.setLocation(externalVacationData.getLocation());
+	    if (externalVacationData != null) {
+		response.setDecisionNumber(externalVacationData.getDecisionNumber());
+		response.setDecisionDateString(externalVacationData.getDecisionDateString());
+		response.setPeriod(externalVacationData.getPeriod());
+		response.setStartDateString(externalVacationData.getStartDateString());
+		response.setEndDateString(externalVacationData.getEndDateString());
+		response.setLocation(externalVacationData.getLocation());
+		response.setMessage(BaseService.getMessage("notify_successOperation"));
+	    } else
+		response.setMessage(BaseService.getMessage("error_noMatchingVacationInThisDate"));
 
-	    response.setMessage(BaseService.getMessage("notify_successOperation"));
 	} catch (Exception e) {
 	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
 	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_integrationError"));
