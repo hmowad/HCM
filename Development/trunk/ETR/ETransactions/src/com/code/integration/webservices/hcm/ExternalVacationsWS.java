@@ -30,10 +30,14 @@ public class ExternalVacationsWS {
 	    if (socialId == null || socialId.trim().isEmpty())
 		throw new BusinessException("error_socialIDMandatory");
 
+	    if(travelDateString != null && travelDateString.length() != 10)
+		throw new BusinessException("error_dateFormat");
+	    
 	    travelDate = HijriDateService.getHijriDate(travelDateString);
 	    if (travelDate == null && travelDateString != null && !travelDateString.isEmpty()) {
 		throw new BusinessException("error_dateFormat");
 	    }
+	    
 	    EmployeeData employee = EmployeesService.getEmployeeBySocialID(socialId.trim());
 	    if (employee == null)
 		throw new BusinessException("error_socialIdNotFound");
