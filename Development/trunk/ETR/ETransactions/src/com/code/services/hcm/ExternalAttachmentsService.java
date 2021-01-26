@@ -44,7 +44,7 @@ public class ExternalAttachmentsService {
 	    for (DocumentVersion documentVersion : responseFnAttachment.getDocVersions()) {
 		ExternalAttachment externalAttachment = new ExternalAttachment();
 		externalAttachment.setDocumentClass(requestFnAttachment.getDocumentClass());
-		externalAttachment.setFilename(documentVersion.getDocumentTitle());
+		externalAttachment.setFilename((documentVersion.getDocumentTitle() == null || documentVersion.getDocumentTitle().isEmpty()) ? ("HCM" + System.currentTimeMillis()) : documentVersion.getDocumentTitle());
 		externalAttachment.setAttachmentId(documentVersion.getVerSId());
 		result.add(externalAttachment);
 	    }
