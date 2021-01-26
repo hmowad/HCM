@@ -9,6 +9,7 @@ import javax.jws.WebService;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
 import com.code.dal.orm.hcm.vacations.VacationData;
+import com.code.enums.FlagsEnum;
 import com.code.enums.WSResponseStatusEnum;
 import com.code.exceptions.BusinessException;
 import com.code.integration.responses.hcm.WSExternalVacationResponse;
@@ -27,8 +28,14 @@ public class ExternalVacationsWS {
 	WSExternalVacationResponse response = new WSExternalVacationResponse();
 	Date travelDate = null;
 	try {
+	    if((FlagsEnum.OFF.getCode() + "").equals(VacationsService.getConfig("internalFlag")))
+		throw new Exception();
+	    
 	    if (socialId == null || socialId.trim().isEmpty())
 		throw new BusinessException("error_socialIDMandatory");
+	    
+	    if (socialId.length() != 10 || socialId.matches("[0-9]+"))
+		throw new BusinessException("error_invalidSocialID");
 
 	    if(travelDateString != null && travelDateString.length() != 10)
 		throw new BusinessException("error_dateFormat");
