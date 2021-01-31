@@ -6,6 +6,7 @@ import javax.faces.bean.ViewScoped;
 import com.code.dal.orm.hcm.movements.MovementTransactionData;
 import com.code.dal.orm.workflow.hcm.movements.WFMovementData;
 import com.code.enums.CategoriesEnum;
+import com.code.enums.FlagsEnum;
 import com.code.enums.MovementTypesEnum;
 import com.code.enums.NavigationEnum;
 import com.code.enums.WFProcessesEnum;
@@ -22,26 +23,29 @@ public class SubjoinJoiningDateRequest extends MovementsBase {
      * 1 for Officers subjoin joining, 2 for Soldiers subjoin joining and 3 for Officers subjoin return joining
      **/
     private MovementTransactionData lastValidTran;
+    private Integer returnJoining;
 
     public SubjoinJoiningDateRequest() {
 	try {
 	    super.init();
 	    if (getRequest().getParameter("mode") != null) {
 		mode = Integer.parseInt(getRequest().getParameter("mode"));
+		if (getRequest().getParameter("returnJoining") != null)
+		    returnJoining = Integer.parseInt(getRequest().getParameter("returnJoining"));
 		switch (mode) {
 		case 1:
-		    setScreenTitle(getMessage("title_officersSubjoinJoiningDateRequest"));
-		    this.processId = WFProcessesEnum.OFFICERS_SUBJOIN_JOINING_DATE_REQUEST.getCode();
+		    if (returnJoining == null || returnJoining.equals(FlagsEnum.OFF.getCode())) {
+			setScreenTitle(getMessage("title_officersSubjoinJoiningDateRequest"));
+			this.processId = WFProcessesEnum.OFFICERS_SUBJOIN_JOINING_DATE_REQUEST.getCode();
+		    } else {
+			setScreenTitle(getMessage("title_officersSubjoinTerminationJoiningDateRequest"));
+			this.processId = WFProcessesEnum.OFFICERS_SUBJOIN_RETURN_JOINING_DATE_REQUEST.getCode();
+		    }
 		    break;
 		case 2:
 		    setScreenTitle(getMessage("title_soldiersSubjoinJoiningDateRequest"));
 		    this.processId = WFProcessesEnum.SOLDIERS_SUBJOIN_JOINING_DATE_REQUEST.getCode();
 		    break;
-		case 3:
-		    setScreenTitle(getMessage("title_officersSubjoinTerminationJoiningDateRequest"));
-		    this.processId = WFProcessesEnum.OFFICERS_SUBJOIN_RETURN_JOINING_DATE_REQUEST.getCode();
-		    break;
-
 		default:
 		    setServerSideErrorMessages(getMessage("error_URLError"));
 		}
@@ -69,16 +73,16 @@ public class SubjoinJoiningDateRequest extends MovementsBase {
 	    if (mode == 2 && beneficiary.getCategoryId() == CategoriesEnum.OFFICERS.getCode())
 		return;
 
-	    if (mode == 3 && beneficiary.getCategoryId() != CategoriesEnum.OFFICERS.getCode())
+	    if (returnJoining != null && returnJoining.equals(FlagsEnum.ON.getCode()) && beneficiary.getCategoryId() != CategoriesEnum.OFFICERS.getCode())
 		return;
 
-	    if (mode == 3)
+	    if (returnJoining != null && returnJoining.equals(FlagsEnum.ON.getCode()))
 		lastValidTran = MovementsService.getLastValidMovementTransactionForReturnJoiningDate(wfMovement.getEmployeeId(), MovementTypesEnum.SUBJOIN.getCode(), null);
 	    else
 		lastValidTran = MovementsService.getLastValidMovementTransactionForJoiningDate(wfMovement.getEmployeeId(), MovementTypesEnum.SUBJOIN.getCode());
 
 	    if (lastValidTran == null) {
-		if (mode == 3)
+		if (returnJoining != null && returnJoining.equals(FlagsEnum.ON.getCode()))
 		    throw new BusinessException("error_thereIsNoLastValidTrans");
 		else
 		    throw new BusinessException("error_noValidMovementTransactionForEmployee");
@@ -127,4 +131,13 @@ public class SubjoinJoiningDateRequest extends MovementsBase {
 	    return null;
 	}
     }
+
+    public Integer getReturnJoining() {
+	return returnJoining;
+    }
+
+    public void setReturnJoining(Integer returnJoining) {
+	this.returnJoining = returnJoining;
+    }
+
 }

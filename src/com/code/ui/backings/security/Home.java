@@ -180,8 +180,10 @@ public class Home extends BaseBacking {
 		lastVacation = null;
 	    }
 	    lastValidMovTrans = MovementsService.getLastValidMovementTransactionForJoiningDate(loginEmpData.getEmpId(), MovementTypesEnum.MOVE.getCode());
-	    lastValidSubjoinTran = MovementsService.getLastValidMovementTransactionForJoiningDate(loginEmpData.getEmpId(), MovementTypesEnum.SUBJOIN.getCode());
-	    lastValidSubjoinTranForTerminationJoining = MovementsService.getLastValidMovementTransactionForReturnJoiningDate(loginEmpData.getEmpId(), MovementTypesEnum.SUBJOIN.getCode(), ETRConfigurationService.getMovementTerminationJoiningApplyDate());
+	    if (loginEmpData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) || loginEmpData.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()))
+		lastValidSubjoinTran = MovementsService.getLastValidMovementTransactionForJoiningDate(loginEmpData.getEmpId(), MovementTypesEnum.SUBJOIN.getCode());
+	    if (loginEmpData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()))
+		lastValidSubjoinTranForTerminationJoining = MovementsService.getLastValidMovementTransactionForReturnJoiningDate(loginEmpData.getEmpId(), MovementTypesEnum.SUBJOIN.getCode(), ETRConfigurationService.getMovementTerminationJoiningApplyDate());
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}

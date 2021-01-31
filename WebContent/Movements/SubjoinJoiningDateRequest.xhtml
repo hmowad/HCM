@@ -9,7 +9,7 @@
 	<script type="text/javascript">
 		function getEmployee(contextPath) {
 			openEmpsMiniSearch(contextPath, 'handleEmpMiniSearchResult(ret)',
-					9, #{subjoinJoiningDateRequest.mode} == 3 ? 1 : #{subjoinJoiningDateRequest.mode}, -1, -1, -1, -1,
+					9, #{subjoinJoiningDateRequest.mode}, -1, -1, -1, -1,
 					'#{subjoinJoiningDateRequest.loginEmpData.physicalUnitHKey}');
 
 		}
@@ -23,9 +23,9 @@
 						.click();
 			}
 		}
-		function validateRequest(mode) {
+		function validateRequest(mode, returnJoining) {
 			var joiningDateValue;
-			if(mode != 3)
+			if(returnJoining == null || returnJoining == 0)
 				var joiningDateValue =  document.getElementById('subjoinJoiningDateRequestFormId:mvtJoiningDateId:day').value;
 			else
 				var joiningDateValue =  document.getElementById('subjoinJoiningDateRequestFormId:mvtReturnJoiningDateId:day').value;
@@ -143,8 +143,8 @@
 												</tr>
 												<tr>
 													<th width="15%">
-														<h:outputText value="#{msgs.label_subjoinUnit}" rendered="#{subjoinJoiningDateRequest.mode != 3}"/>
-														<h:outputText value="#{msgs.label_unitSubjoinedTo}" rendered="#{subjoinJoiningDateRequest.mode == 3}"/>
+														<h:outputText value="#{msgs.label_subjoinUnit}" rendered="#{subjoinJoiningDateRequest.returnJoining == null}"/>
+														<h:outputText value="#{msgs.label_unitSubjoinedTo}" rendered="#{subjoinJoiningDateRequest.returnJoining != null}"/>
 													</th>
 													<td width="85%" colspan="3">
 														<h:outputText value="#{subjoinJoiningDateRequest.lastValidTran.unitFullName}" />
@@ -197,10 +197,10 @@
 														<font style="color: red;">*</font>
 													</th>
 													<td width="85%">
-														<util:hijri id="mvtJoiningDateId" value="#{subjoinJoiningDateRequest.wfMovement.joiningDate}" nullable="true" rendered="#{subjoinJoiningDateRequest.role == 'Requester' and subjoinJoiningDateRequest.mode != 3}" />
-														<h:outputText value="#{subjoinJoiningDateRequest.wfMovement.joiningDateString}" rendered="#{subjoinJoiningDateRequest.role != 'Requester' and subjoinJoiningDateRequest.mode != 3}" />
-														<util:hijri id="mvtReturnJoiningDateId" value="#{subjoinJoiningDateRequest.wfMovement.returnJoiningDate}" nullable="true" rendered="#{subjoinJoiningDateRequest.role == 'Requester' and subjoinJoiningDateRequest.mode == 3}" />
-														<h:outputText value="#{subjoinJoiningDateRequest.wfMovement.returnJoiningDateString}" rendered="#{subjoinJoiningDateRequest.role != 'Requester' and subjoinJoiningDateRequest.mode == 3}" />
+														<util:hijri id="mvtJoiningDateId" value="#{subjoinJoiningDateRequest.wfMovement.joiningDate}" nullable="true" rendered="#{subjoinJoiningDateRequest.role == 'Requester' and subjoinJoiningDateRequest.returnJoining == null}" />
+														<h:outputText value="#{subjoinJoiningDateRequest.wfMovement.joiningDateString}" rendered="#{subjoinJoiningDateRequest.role != 'Requester' and subjoinJoiningDateRequest.returnJoining == null}" />
+														<util:hijri id="mvtReturnJoiningDateId" value="#{subjoinJoiningDateRequest.wfMovement.returnJoiningDate}" nullable="true" rendered="#{subjoinJoiningDateRequest.role == 'Requester' and subjoinJoiningDateRequest.returnJoining != null}" />
+														<h:outputText value="#{subjoinJoiningDateRequest.wfMovement.returnJoiningDateString}" rendered="#{subjoinJoiningDateRequest.role != 'Requester' and subjoinJoiningDateRequest.returnJoining != null}" />
 													</td>
 												</tr>
 											</table>
@@ -254,7 +254,7 @@
 											<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 												<tr>
 													<td>
-														<h:commandButton id="rBtnId" action="#{subjoinJoiningDateRequest.initMovement()}" onclick="return handleOnAction('#{msgs.q_send}', 'validateRequest(#{subjoinJoiningDateRequest.mode})');" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{subjoinJoiningDateRequest.role == 'Requester'}">
+														<h:commandButton id="rBtnId" action="#{subjoinJoiningDateRequest.initMovement()}" onclick="return handleOnAction('#{msgs.q_send}', 'validateRequest(#{subjoinJoiningDateRequest.mode}, #{subjoinJoiningDateRequest.returnJoining})');" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" styleClass="btn_normal_icon" rendered="#{subjoinJoiningDateRequest.role == 'Requester'}">
 															<f:ajax execute="@form" render="subjoinJoiningDateRequestFormId:notifyMessagesId" />
 														</h:commandButton>
 														<h:commandButton id="approveDmBtnId" onclick="return handleOnAction('#{msgs.q_approve}','validateRefuseAndNotes(1, &quot;subjoinJoiningDateRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{subjoinJoiningDateRequest.approveMovementDM()}" value="#{msgs.label_approve} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{subjoinJoiningDateRequest.role == 'DirectManager'}">

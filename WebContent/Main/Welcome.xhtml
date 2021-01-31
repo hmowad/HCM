@@ -380,7 +380,7 @@
 											<th width="10%">#{msgs.label_subjoinTerminationJoiningDate}</th>
 											<td>
 												<h:outputText value="#{msgs.notify_pleaseProvideSubjoinTerminationJoining}" styleClass="remarkMessage" />
-												<a target="_blank" href="#{request.contextPath}/Movements/SubjoinJoiningDateRequest.jsf?mode=3" style="text-decoration: none;">
+												<a target="_blank" href="#{request.contextPath}/Movements/SubjoinJoiningDateRequest.jsf?mode=#{home.loginEmpData.categoryId}&amp;returnJoining=1" style="text-decoration: none;">
 													<i class="fa fa-list-alt fa-3x link-icon" title="#{msgs.label_details}"></i>
 												</a>
 											</td>
