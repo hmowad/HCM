@@ -23,15 +23,17 @@ public class SubjoinJoiningDateRequest extends MovementsBase {
      * 1 for Officers subjoin joining, 2 for Soldiers subjoin joining and 3 for Officers subjoin return joining
      **/
     private MovementTransactionData lastValidTran;
-    private Integer returnJoining;
+    private Boolean returnJoining;
 
     public SubjoinJoiningDateRequest() {
 	try {
 	    super.init();
 	    if (getRequest().getParameter("mode") != null) {
 		mode = Integer.parseInt(getRequest().getParameter("mode"));
-		if (getRequest().getParameter("returnJoining") != null)
-		    returnJoining = Integer.parseInt(getRequest().getParameter("returnJoining"));
+		if (getRequest().getParameter("returnJoining") == null)
+		    returnJoining = false;
+		else
+		    returnJoining = getRequest().getParameter("returnJoining").toString().equals(FlagsEnum.ON.getCode() + "") ? true : false;
 		switch (mode) {
 		case 1:
 		    if (returnJoining == null || returnJoining.equals(FlagsEnum.OFF.getCode())) {
@@ -73,16 +75,16 @@ public class SubjoinJoiningDateRequest extends MovementsBase {
 	    if (mode == 2 && beneficiary.getCategoryId() == CategoriesEnum.OFFICERS.getCode())
 		return;
 
-	    if (returnJoining != null && returnJoining.equals(FlagsEnum.ON.getCode()) && beneficiary.getCategoryId() != CategoriesEnum.OFFICERS.getCode())
+	    if (returnJoining && beneficiary.getCategoryId() != CategoriesEnum.OFFICERS.getCode())
 		return;
 
-	    if (returnJoining != null && returnJoining.equals(FlagsEnum.ON.getCode()))
+	    if (returnJoining)
 		lastValidTran = MovementsService.getLastValidMovementTransactionForReturnJoiningDate(wfMovement.getEmployeeId(), MovementTypesEnum.SUBJOIN.getCode(), null);
 	    else
 		lastValidTran = MovementsService.getLastValidMovementTransactionForJoiningDate(wfMovement.getEmployeeId(), MovementTypesEnum.SUBJOIN.getCode());
 
 	    if (lastValidTran == null) {
-		if (returnJoining != null && returnJoining.equals(FlagsEnum.ON.getCode()))
+		if (returnJoining)
 		    throw new BusinessException("error_thereIsNoLastValidTrans");
 		else
 		    throw new BusinessException("error_noValidMovementTransactionForEmployee");
@@ -132,11 +134,11 @@ public class SubjoinJoiningDateRequest extends MovementsBase {
 	}
     }
 
-    public Integer getReturnJoining() {
+    public Boolean getReturnJoining() {
 	return returnJoining;
     }
 
-    public void setReturnJoining(Integer returnJoining) {
+    public void setReturnJoining(Boolean returnJoining) {
 	this.returnJoining = returnJoining;
     }
 
