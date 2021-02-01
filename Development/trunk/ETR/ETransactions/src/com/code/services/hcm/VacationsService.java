@@ -28,6 +28,8 @@ import com.code.enums.ReportNamesEnum;
 import com.code.enums.RequestTypesEnum;
 import com.code.enums.SubVacationTypesEnum;
 import com.code.enums.TransactionClassesEnum;
+import com.code.enums.UnitTypesEnum;
+import com.code.enums.UnitsAncestorsLevelsEnum;
 import com.code.enums.VacationTypesEnum;
 import com.code.enums.WFPositionsEnum;
 import com.code.enums.WFProcessesEnum;
@@ -167,12 +169,14 @@ public class VacationsService extends BaseService {
 	} else if (employee.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
 	    if (request.getJoiningDate() == null) {
 		if (request.getStatus() == RequestTypesEnum.NEW.getCode()) {
+		    if (employee.getPhysicalRegionId() == RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode())
+			unitId = UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId();
+		    else
+			unitId = UnitsService.getAncestorUnderPresidencyByLevel(employee.getPhysicalUnitId(), UnitsAncestorsLevelsEnum.LEVEL_TWO.getCode()).getId();
 		    if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
 			adminDecisionId = AdminDecisionsEnum.SOLDIERS_REGULAR_VACATION_REQUEST.getCode();
-			unitId = BusinessWorkflowCooperation.getVacationManager(employee, request.getVacationTypeId()).getPhysicalUnitId();
 		    } else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
 			adminDecisionId = AdminDecisionsEnum.SOLDIERS_COMPELLING_VACATION_REQUEST.getCode();
-			unitId = BusinessWorkflowCooperation.getVacationManager(employee, request.getVacationTypeId()).getPhysicalUnitId();
 		    }
 		}
 	    }
