@@ -40,7 +40,7 @@ public class TransactionsTimelineService extends BaseService {
 
 	List<MovementTransactionData> movementsTransactions = MovementsService.getMovementTransactionsHistory(employeeId);
 	List<TransactionTimeline> returnList = new ArrayList<>();
-	MovementTransactionData lastValidTrnForTerminationJoining = MovementsService.getLastValidMovementTransactionForReturnJoiningDate(employeeId, MovementTypesEnum.SUBJOIN.getCode(), ETRConfigurationService.getMovementTerminationJoiningApplyDate());
+	MovementTransactionData lastValidTrnForTerminationJoining = EmployeesService.getEmployeeData(employeeId).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) ? MovementsService.getLastValidMovementTransactionForReturnJoiningDate(employeeId, MovementTypesEnum.SUBJOIN.getCode(), ETRConfigurationService.getMovementTerminationJoiningApplyDate()) : null;
 	if (lastValidTrnForTerminationJoining != null) {
 	    returnList.add(constructSubjoinTerminationJoiningDateTransactionTimeline(lastValidTrnForTerminationJoining));
 	}
