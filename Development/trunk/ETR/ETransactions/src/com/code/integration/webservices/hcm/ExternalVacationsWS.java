@@ -34,7 +34,7 @@ public class ExternalVacationsWS {
 	    if (socialId == null || socialId.trim().isEmpty())
 		throw new BusinessException("error_socialIDMandatory");
 	    
-	    if (socialId.length() != 10 || socialId.matches("[0-9]+"))
+	    if (socialId.length() != 10 || !socialId.matches("[0-9]+"))
 		throw new BusinessException("error_invalidSocialID");
 
 	    if(travelDateString != null && travelDateString.length() != 10)
