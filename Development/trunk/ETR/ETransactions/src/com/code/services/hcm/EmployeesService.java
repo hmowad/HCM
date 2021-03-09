@@ -1790,7 +1790,7 @@ public class EmployeesService extends BaseService {
     }
 
     // --------------------------------------- Employees Data Extra Transaction -------------------------------------------//
-    private static void validateEmployeeDataExtraTransaction(EmployeeExtraTransactionData employeeExtraTransactionData) throws BusinessException {
+    private static void validateEmployeeDataExtraTransaction(EmployeeExtraTransactionData employeeExtraTransactionData, EmployeeData employee) throws BusinessException {
 	Object[] params = new Object[] {};
 	if (employeeExtraTransactionData.getTransactionTypeId() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_SOCIAL_STATUS.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId()) {
 	    params = new Object[] { getMessage("label_socialStatus") };
@@ -1801,6 +1801,13 @@ public class EmployeesService extends BaseService {
 	    params = new Object[] { getMessage("label_salaryRank") };
 	    if (employeeExtraTransactionData.getSalaryRankId() == null || employeeExtraTransactionData.getSalaryDegreeId() == null)
 		throw new BusinessException("error_salaryRankMandatory");
+
+	    if (employeeExtraTransactionData.getSalaryRankId() < employee.getSalaryRankId())
+		throw new BusinessException("error_cantIncreaseSalaryRank");
+	    else if (employeeExtraTransactionData.getSalaryRankId().equals(employee.getSalaryRankId())) {
+		if (employeeExtraTransactionData.getSalaryDegreeId() > employee.getSalaryDegreeId())
+		    throw new BusinessException("error_cantIncreaseSalaryDegree");
+	    }
 	}
 	if (employeeExtraTransactionData.getTransactionTypeId() == CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.EMPLOYEES_EXTRA_DATA_RANK_TITLE.getCode(), TransactionClassesEnum.EMPLOYEES.getCode()).getId()) {
 	    params = new Object[] { getMessage("label_rankTitle") };
@@ -1859,7 +1866,7 @@ public class EmployeesService extends BaseService {
     }
 
     public static void addEmployeeDataExtraTransaction(EmployeeData employee, EmployeeExtraTransactionData employeeExtraTransactionData, EmployeeMedicalStaffData employeeMedicalStaffData, CustomSession... useSession) throws BusinessException {
-	validateEmployeeDataExtraTransaction(employeeExtraTransactionData);
+	validateEmployeeDataExtraTransaction(employeeExtraTransactionData, employee);
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
