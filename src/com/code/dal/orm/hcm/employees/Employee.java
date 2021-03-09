@@ -792,14 +792,20 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
 		"secondName:" + secondName + AUDIT_SEPARATOR +
 		"thirdName:" + thirdName + AUDIT_SEPARATOR +
 		"lastName:" + lastName + AUDIT_SEPARATOR +
+		"firstNameEn:" + firstNameEn + AUDIT_SEPARATOR +
+		"secondNameEn:" + secondNameEn + AUDIT_SEPARATOR +
+		"thirdNameEn:" + thirdNameEn + AUDIT_SEPARATOR +
+		"lastNameEn:" + lastNameEn + AUDIT_SEPARATOR +
 		"categoryId:" + categoryId + AUDIT_SEPARATOR +
 		"rankId:" + rankId + AUDIT_SEPARATOR +
+		"salaryRankId:" + salaryRankId + AUDIT_SEPARATOR +
 		"salaryDegreeId:" + salaryDegreeId + AUDIT_SEPARATOR +
 		"countryId:" + countryId + AUDIT_SEPARATOR +
 		"birthDate:" + birthDate + AUDIT_SEPARATOR +
 		"birthPlace:" + birthPlace + AUDIT_SEPARATOR +
 		"socialID:" + socialID + AUDIT_SEPARATOR +
 		"socialIDIssueDate:" + socialIDIssueDate + AUDIT_SEPARATOR +
+		"socialIDExpiryDate:" + socialIDExpiryDate + AUDIT_SEPARATOR +
 		"socialIDIssuePlaceID:" + socialIDIssuePlaceID + AUDIT_SEPARATOR +
 		"bloodGroup:" + bloodGroup + AUDIT_SEPARATOR +
 		"gender:" + gender + AUDIT_SEPARATOR +
@@ -831,16 +837,20 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
 		"directPhoneNumber:" + directPhoneNumber + AUDIT_SEPARATOR +
 		"jobModifiedFlag:" + jobModifiedFlag + AUDIT_SEPARATOR +
 		"movementBlacklistFlag:" + movementBlacklistFlag + AUDIT_SEPARATOR +
+		"oldEmpId:" + oldEmpId + AUDIT_SEPARATOR +
 		"recruitmentRegionId:" + recruitmentRegionId + AUDIT_SEPARATOR +
 		"recruitmentMinorSpecId:" + recruitmentMinorSpecId + AUDIT_SEPARATOR +
 		"recTrainingUnitId:" + recTrainingUnitId + AUDIT_SEPARATOR +
 		"recTrainingJoiningDate:" + recTrainingJoiningDate + AUDIT_SEPARATOR +
-		"exceptionalRecruitmentFlag:" + exceptionalRecruitmentFlag + AUDIT_SEPARATOR +
 		"serviceTerminationDate:" + serviceTerminationDate + AUDIT_SEPARATOR +
+		"serviceTerminationDueDate:" + serviceTerminationDueDate + AUDIT_SEPARATOR +
+		"lastExtensionEndDate:" + lastExtensionEndDate + AUDIT_SEPARATOR +
+		"exceptionalRecruitmentFlag:" + exceptionalRecruitmentFlag + AUDIT_SEPARATOR +
 		"sequenceNumber:" + sequenceNumber + AUDIT_SEPARATOR +
 		"userAccount:" + userAccount + AUDIT_SEPARATOR +
 		"categoryClassificationId:" + categoryClassificationId + AUDIT_SEPARATOR +
 		"navyFormation:" + navyFormation + AUDIT_SEPARATOR +
+		"socialIdCopy:" + socialIdCopy + AUDIT_SEPARATOR +
 		"lastAnnualRaiseDate" + lastAnnualRaiseDate + AUDIT_SEPARATOR +
 		"occupationDescription" + occupationDescription + AUDIT_SEPARATOR;
 
