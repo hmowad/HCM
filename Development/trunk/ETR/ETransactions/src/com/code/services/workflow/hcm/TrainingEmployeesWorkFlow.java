@@ -67,6 +67,8 @@ import com.code.services.workflow.BaseWorkFlow;
  */
 public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 
+    private static final int MIN_EVENING_COURSE_NOMINATION_BETWEEN_REQUEST_AND_START_DAYS = 30;
+
     /**
      * Private constructor to prevent instantiation
      */
@@ -304,6 +306,7 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
     /*---------------------------Work Flow Steps Nomination----------------------*/
     public static void initNomination(EmployeeData requester, List<WFTrainingData> wfTrainingList, TrainingCourseEventData trainingCourseEvent, long processId, String taskUrl, List<EmployeeData> internalCopiesEmployees) throws BusinessException {
 	validateWFTrainings(wfTrainingList, trainingCourseEvent, processId);
+	initialValidationWFTrainings(wfTrainingList, processId);
 
 	CustomSession session = DataAccess.getSession();
 	try {
@@ -1506,6 +1509,16 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
     }
 
     /*---------------------------Validations--------------------------*/
+    private static void initialValidationWFTrainings(List<WFTrainingData> wfTrainingList, long processId) throws BusinessException {
+	for (WFTrainingData wfTraining : wfTrainingList) {
+	    if (wfTraining.getTrainingTypeId() == TrainingTypesEnum.EVENING_COURSE.getCode() && specifyTrainingTransactionCategory(processId) == TrainingTransactionCategoryEnum.NOMINATION.getCode()) {
+		if (HijriDateService.hijriDateDiff(HijriDateService.getHijriSysDate(), wfTraining.getStartDate()) < MIN_EVENING_COURSE_NOMINATION_BETWEEN_REQUEST_AND_START_DAYS) {
+		    throw new BusinessException("error_eveningCourseStartdateAndRequestDateMinPeriod");
+		}
+	    }
+	}
+    }
+
     private static void validateWFTrainings(List<WFTrainingData> wfTrainingList, TrainingCourseEventData courseEventData, long processId) throws BusinessException {
 	if (wfTrainingList == null || wfTrainingList.isEmpty()) {
 	    throw new BusinessException("error_transactionDataError");
