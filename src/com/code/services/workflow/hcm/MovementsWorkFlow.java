@@ -129,7 +129,13 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		    else
 			addWFTask(instance.getInstanceId(), getDelegate(replacementEmployeeId, processId, requester.getEmpId()), replacementEmployeeId, curDate, curHijriDate, taskUrl, WFTaskRolesEnum.EXCHANGE_EMP.getCode(), "1", session);
 		} else {
-		    addWFTask(instance.getInstanceId(), getDelegate(requester.getManagerId(), processId, requester.getEmpId()), requester.getManagerId(), curDate, curHijriDate, taskUrl, WFTaskRolesEnum.SIGN_MANAGER.getCode(), "1", session);
+
+		    if (movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !requester.getOfficialRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) &&
+			    movementRequests.get(0).getLocationFlag().equals(LocationFlagsEnum.INTERNAL.getCode()) && checkIfEmployeesInHighRanks(movementRequests))
+			addWFTask(instance.getInstanceId(), getDelegate(requester.getManagerId(), processId, requester.getEmpId()), requester.getManagerId(), curDate, curHijriDate, taskUrl, WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), "1", session);
+		    else
+			addWFTask(instance.getInstanceId(), getDelegate(requester.getManagerId(), processId, requester.getEmpId()), requester.getManagerId(), curDate, curHijriDate, taskUrl, WFTaskRolesEnum.SIGN_MANAGER.getCode(), "1", session);
+
 		}
 
 		String internalCopies = EmployeesService.getEmployeesIdsString(internalCopiesEmployees);
@@ -147,6 +153,15 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		session.close();
 	    }
 	}
+    }
+
+    private static Boolean checkIfEmployeesInHighRanks(List<WFMovementData> movementRequests) throws BusinessException {
+	for (WFMovementData wfMovementData : movementRequests) {
+	    EmployeeData employee = EmployeesService.getEmployeeData(wfMovementData.getEmployeeId());
+	    if (employee.getRankId() < RanksEnum.MAJOR.getCode())
+		return true;
+	}
+	return false;
     }
 
     /**
@@ -1265,11 +1280,17 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 
 	    } else if (approvalFlag == WFActionFlagsEnum.RETURN_REVIEWER.getCode()) {
 		long originalId = requester.getEmpId();
+		String wfRole = WFTaskRolesEnum.REVIEWER_EMP.getCode();
 		if (isRequestProcess(instance.getProcessId(), movementRequests.get(0).getCategoryId().longValue())) {
 		    WFTask reviewerTask = getWFInstanceTasksByRole(instance.getInstanceId(), WFTaskRolesEnum.REVIEWER_EMP.getCode()).get(0);
 		    originalId = reviewerTask.getOriginalId();
+		} else {
+		    if (movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !requester.getOfficialRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) &&
+			    movementRequests.get(0).getLocationFlag().equals(LocationFlagsEnum.INTERNAL.getCode()) && checkIfEmployeesInHighRanks(movementRequests)) {
+			wfRole = WFTaskRolesEnum.SECONDARY_REVIEWER_EMP.getCode();
+		    }
 		}
-		completeWFTask(smTask, WFTaskActionsEnum.RETURN_REVIEWER.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(originalId, instance.getProcessId(), requester.getEmpId()), originalId, smTask.getTaskUrl(), WFTaskRolesEnum.REVIEWER_EMP.getCode(), smTask.getLevel(), session);
+		completeWFTask(smTask, WFTaskActionsEnum.RETURN_REVIEWER.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(originalId, instance.getProcessId(), requester.getEmpId()), originalId, smTask.getTaskUrl(), wfRole, smTask.getLevel(), session);
 
 		updateWFMovements(movementRequests, movementRequests.get(0).getInternalCopies(), movementRequests.get(0).getExternalCopies(), session);
 	    } else {
@@ -2209,19 +2230,6 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		if (!requester.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode())
 			&& (!isRequestProcess(processId, categoryId) || (wfTask != null && wfTask.getAssigneeWfRole().equals(WFTaskRolesEnum.REVIEWER_EMP.getCode()) && !EmployeesService.getEmployeeData(wfTask.getOriginalId()).getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode())))
 			&& movementRequest.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
-
-		    if ((MovementsService.checkIfEmployeeExistsInCertainPositions(employee)
-			    || movementRequest.getEmployeeRankId().longValue() < RanksEnum.MAJOR.getCode())) {
-
-			if (movementRequest.getMovementTypeId().longValue() == MovementTypesEnum.MOVE.getCode())
-			    throw new BusinessException("error_cannotDoMoveOnThisEmployee");
-			else {
-			    if (movementRequest.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) || movementRequest.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()))
-				throw new BusinessException("error_cannotDoSubjoinOnThisEmployee");
-			    else // TODO Dead code
-				throw new BusinessException("error_cannotDoEmployeesSubjoinOnThisEmployee");
-			}
-		    }
 
 		    Long unitId = null;
 		    if (movementRequest.getMovementTypeId().longValue() == MovementTypesEnum.MOVE.getCode()) {

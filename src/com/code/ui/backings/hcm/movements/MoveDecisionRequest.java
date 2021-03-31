@@ -96,6 +96,13 @@ public class MoveDecisionRequest extends MovementsBase implements Serializable {
 			internalCopies = new ArrayList<EmployeeData>();
 		    externalCopies = decisionData.getExternalCopies();
 		}
+
+		if (this.role.equals(WFTaskRolesEnum.MANAGER_REDIRECT.getCode()) || this.role.equals(WFTaskRolesEnum.SECONDARY_MANAGER_REDIRECT.getCode())) {
+		    selectedReviewerEmpId = 0L;
+		    reviewerEmps = EmployeesService.getManagerEmployees(currentEmployee.getEmpId());
+		    if (mode == 1)
+			reviewerEmps.add(loginEmpData);
+		}
 	    } catch (BusinessException e1) {
 		setServerSideErrorMessages(getMessage(e1.getMessage()));
 	    }

@@ -475,14 +475,26 @@
 				</tr>
 				<tr>
 					<td width="100%">
-						<code:curTask id="curTaskId" value="#{moveDecisionRequest.currentEmployee}" rendered="#{moveDecisionRequest.role == 'SignManager' or moveDecisionRequest.role == 'ReviewerEmp'}">
+						<code:curTask id="curTaskId" value="#{moveDecisionRequest.currentEmployee}" rendered="#{moveDecisionRequest.role == 'SignManager' or moveDecisionRequest.role == 'SecondarySignManager' or moveDecisionRequest.role == 'ReviewerEmp' or moveDecisionRequest.role == 'ManagerRedirect' or moveDecisionRequest.role == 'SecondaryManagerRedirect'}">
+							<h:panelGroup rendered="#{moveDecisionRequest.role == 'ManagerRedirect' or moveDecisionRequest.role == 'SecondaryManagerRedirect'}">
+								<tr>
+									<th width="15%">#{msgs.label_selectEmp}</th>
+									<td width="40%" colspan="2">
+										<h:selectOneMenu id="reviewersId" value="#{moveDecisionRequest.selectedReviewerEmpId}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{moveDecisionRequest.reviewerEmps}" var="emp" itemLabel="#{emp.name}" itemValue="#{emp.empId}" />
+										</h:selectOneMenu>
+									</td>
+									<td width="45%" />
+								</tr>
+							</h:panelGroup>
 							<tr>
 								<th width="15%">#{msgs.label_notes}</th>
 								<td width="85%" colspan="3">
 									<h:inputText id="notesId" value="#{moveDecisionRequest.currentTask.notes}" styleClass="inputDataSuperLarge" maxlength="500" />
 								</td>
 							</tr>
-							<h:panelGroup rendered="#{moveDecisionRequest.role == 'SignManager' or moveDecisionRequest.role == 'ReviewerEmp'}">
+							<h:panelGroup rendered="#{moveDecisionRequest.role == 'SignManager' or moveDecisionRequest.role == 'SecondarySignManager' or moveDecisionRequest.role == 'ReviewerEmp'}">
 								<tr>
 									<th width="15%">#{msgs.label_refuseReasons}</th>
 									<td width="85%" colspan="3">
@@ -551,6 +563,31 @@
 									<h:commandButton id="rejectReBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)');" action="#{moveDecisionRequest.rejectMovementRE()}" value="#{msgs.label_reject}  &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'ReviewerEmp'}">
 										<f:ajax execute="@form" render="moveDecisionRequestFormId:notifyMessagesId" />
 									</h:commandButton>
+									
+
+									<h:commandButton id="approveSsmBtnId" onclick="return handleOnAction('#{msgs.q_superSign}','validateRefuseAndNotes(1, &quot;moveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)', null);" action="#{moveDecisionRequest.approveMovementSSM()}" value="#{msgs.label_superSign} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="moveDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="retSsmBtnId" onclick="return handleOnAction('#{msgs.q_modifyReviewer}','validateRefuseAndNotes(2, &quot;moveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;,&quot;moveDecisionRequestFormId:curTaskId:notesId&quot;)',null);" action="#{moveDecisionRequest.returnMovementSSM()}" value="#{msgs.label_returnReviewer} &nbsp; #{msgs.fa_undo}" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="moveDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSsmBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveDecisionRequest.rejectMovementSSM()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'SecondarySignManager'}">
+										<f:ajax execute="@form" render="moveDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									
+									
+									<h:commandButton id="mrApproveBtnId" onclick="return handleOnAction('#{msgs.q_redirect}','validateEmpSelection(&quot;moveDecisionRequestFormId:curTaskId:reviewersId&quot;)', null);" action="#{moveDecisionRequest.redirectMovementMR()}" value="#{msgs.label_redirect} &nbsp; #{msgs.fa_share}" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'ManagerRedirect'}">
+										<f:ajax execute="@form" render="moveDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									
+									
+									<h:commandButton id="approveSreBtnId" action="#{moveDecisionRequest.approveMovementSRE()}" value="#{msgs.label_review} &nbsp; #{msgs.fa_check}" onclick="return handleOnAction('#{moveDecisionRequest.mode == 1 ? msgs.q_reviewForMovements : msgs.q_reviewSoldiers}');" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'SecondaryReviewerEmp'}">
+										<f:ajax execute="@form" render="moveDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									<h:commandButton id="rejectSreBtnId" onclick="return handleOnAction('#{msgs.q_reject}','validateRefuseAndNotes(0, &quot;moveDecisionRequestFormId:curTaskId:refuseReasonsId&quot;)' ,null);" action="#{moveDecisionRequest.rejectMovementSRE()}" value="#{msgs.label_reject} &nbsp; #{msgs.fa_times}" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'SecondaryReviewerEmp'}">
+										<f:ajax execute="@form" render="moveDecisionRequestFormId:notifyMessagesId" />
+									</h:commandButton>
+									
 
 									<h:commandButton id="printBtnId" action="#{moveDecisionRequest.print()}" value="#{msgs.label_printDecision} &nbsp; #{msgs.fa_print}" styleClass="btn_normal_icon" rendered="#{moveDecisionRequest.role == 'Notification' and moveDecisionRequest.instanceApproved == 1}" />
 
@@ -568,5 +605,6 @@
 	<h:inputHidden id="refuseReasonsManadatoryId" value="#{msgs.error_refuseReasonsManadatory}" />
 	<h:inputHidden id="refuseReasonsEmptyId" value="#{msgs.error_refuseReasonsEmpty}" />
 	<h:inputHidden id="notesManadatoryId" value="#{msgs.error_notesManadatory}" />
+	<h:inputHidden id="empSelectionManadatoryId" value="#{msgs.error_empSelectionManadatory}" />
 </h:body>
 </html>
