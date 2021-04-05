@@ -131,19 +131,26 @@
         }   
         
 	    var locationFlag = getSelectOneRadioValue('missionRequestForm:locationFlagId');
-		if (locationFlag==1){
-				var location = document.getElementById('missionRequestForm:locationId').innerHTML;
-		        if(location == null || location == ''){
-		            alert("#{msgs.error_countryMandatory}");
-		            return false;
-		        } 
-		}  
-
 		var period = document.getElementById('missionRequestForm:periodId').value;
-		if (period == null || period == '' || period == 0 || period &lt; 0) {
-			alert("#{msgs.error_periodRequired}");
-			return false;
-		}
+	    
+		if (locationFlag==1){
+			var location = document.getElementById('missionRequestForm:locationId').innerHTML;
+	        if(location == null || location == ''){
+	            alert("#{msgs.error_countryMandatory}");
+	            return false;
+	        } 
+	        if (period == null || period == '') {
+				alert("#{msgs.error_periodRequired}");
+				return false;
+			}
+		} else {
+			if (period == null || period == '' || period == 0 || period &lt; 0) {
+				alert("#{msgs.error_periodRequired}");
+				return false;
+			}
+		} 
+
+		
 
 		if (locationFlag==1){
 	        var ministeryApprovalNumber = document.getElementById('missionRequestForm:ministeryApprovalNumberId').value;
