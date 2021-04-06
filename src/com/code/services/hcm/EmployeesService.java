@@ -1802,10 +1802,10 @@ public class EmployeesService extends BaseService {
 	    if (employeeExtraTransactionData.getSalaryRankId() == null || employeeExtraTransactionData.getSalaryDegreeId() == null)
 		throw new BusinessException("error_salaryRankMandatory");
 
-	    if (employeeExtraTransactionData.getSalaryRankId() < employee.getSalaryRankId())
+	    if (employee.getSalaryRankId() != null && employeeExtraTransactionData.getSalaryRankId() < employee.getSalaryRankId())
 		throw new BusinessException("error_cantIncreaseSalaryRank");
-	    else if (employeeExtraTransactionData.getSalaryRankId().equals(employee.getSalaryRankId())) {
-		if (employeeExtraTransactionData.getSalaryDegreeId() > employee.getSalaryDegreeId())
+	    else if (employee.getSalaryRankId() != null && employeeExtraTransactionData.getSalaryRankId().equals(employee.getSalaryRankId())) {
+		if (employee.getSalaryDegreeId() != null && employeeExtraTransactionData.getSalaryDegreeId() > employee.getSalaryDegreeId())
 		    throw new BusinessException("error_cantIncreaseSalaryDegree");
 	    }
 	}
