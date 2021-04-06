@@ -923,9 +923,7 @@ public class MissionsWorkFlow extends BaseWorkFlow {
 		throw new BusinessException("error_repeatedEmployee", new Object[] { missionDetailData.getEmpName() });
 
 	    // Check for period
-	    if (missionDetailData.getPeriod() == null ||
-		    (mission.getLocationFlag().equals(LocationFlagsEnum.INTERNAL.getCode()) && missionDetailData.getPeriod().intValue() <= 0) ||
-		    (mission.getLocationFlag().equals(LocationFlagsEnum.EXTERNAL.getCode()) && missionDetailData.getPeriod().intValue() < 0))
+	    if (missionDetailData.getPeriod() == null || missionDetailData.getPeriod().intValue() <= 0)
 		throw new BusinessException("error_periodMandatoryParametrized", new Object[] { missionDetailData.getEmpName() });
 
 	    if (missionDetailData.getExceptionalApprovalDate() != null && (missionDetailData.getExceptionalApprovalNumber() == null || missionDetailData.getExceptionalApprovalNumber().equals("")))
