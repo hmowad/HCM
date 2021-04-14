@@ -95,7 +95,7 @@ public class EmployeeSalaryRankAdjustment extends BaseBacking implements Seriali
 
     public void stopSalaryRankTransaction(int index) {
 	try {
-	    EmployeesService.stopEmployeeDataExtraTransaction(salaryRankList.get(index));
+	    EmployeesService.stopEmployeeDataExtraTransaction(salaryRankList.get(index), employee);
 	    setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	} catch (BusinessException e) {
 	    setServerSideErrorMessages(getParameterizedMessage(e.getMessage(), e.getParams()));

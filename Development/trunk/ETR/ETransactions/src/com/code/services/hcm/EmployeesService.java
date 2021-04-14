@@ -1802,10 +1802,15 @@ public class EmployeesService extends BaseService {
 	    if (employeeExtraTransactionData.getSalaryRankId() == null || employeeExtraTransactionData.getSalaryDegreeId() == null)
 		throw new BusinessException("error_salaryRankMandatory");
 
-	    if (employee.getSalaryRankId() != null && employeeExtraTransactionData.getSalaryRankId() < employee.getSalaryRankId())
+	    if ((employee.getSalaryRankId() == null && employeeExtraTransactionData.getSalaryRankId() < employee.getRankId()) ||
+		    (employee.getSalaryRankId() != null && employeeExtraTransactionData.getSalaryRankId() < employee.getSalaryRankId()))
 		throw new BusinessException("error_cantIncreaseSalaryRank");
-	    else if (employee.getSalaryRankId() != null && employeeExtraTransactionData.getSalaryRankId().equals(employee.getSalaryRankId())) {
-		if (employee.getSalaryDegreeId() != null && employeeExtraTransactionData.getSalaryDegreeId() > employee.getSalaryDegreeId())
+
+	    if ((employee.getSalaryRankId() == null && employeeExtraTransactionData.getSalaryRankId().equals(employee.getRankId())) ||
+		    employee.getSalaryRankId() != null && employeeExtraTransactionData.getSalaryRankId().equals(employee.getSalaryRankId())) { // in case of not changing in rank
+
+		if ((employee.getSalaryDegreeId() == null && employeeExtraTransactionData.getSalaryDegreeId() > employee.getDegreeId()) ||
+			(employee.getSalaryDegreeId() != null && employeeExtraTransactionData.getSalaryDegreeId() > employee.getSalaryDegreeId()))
 		    throw new BusinessException("error_cantIncreaseSalaryDegree");
 	    }
 	}
@@ -1917,7 +1922,7 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    public static void stopEmployeeDataExtraTransaction(EmployeeExtraTransactionData employeeExtraTransactionData, CustomSession... useSession) throws BusinessException {
+    public static void stopEmployeeDataExtraTransaction(EmployeeExtraTransactionData employeeExtraTransactionData, EmployeeData employee, CustomSession... useSession) throws BusinessException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
@@ -1927,7 +1932,6 @@ public class EmployeesService extends BaseService {
 
 	    List<EmployeeExtraTransactionData> employeeExtraTransactions = getEmployeeDataExtraTransactionByEmpIdAndTransactionType(employeeExtraTransactionData.getEmpId(), employeeExtraTransactionData.getTransactionTypeId());
 	    if (employeeExtraTransactions.get(0).getId().longValue() == employeeExtraTransactionData.getId().longValue()) {
-		EmployeeData employee = getEmployeeData(employeeExtraTransactionData.getEmpId());
 		if (employeeExtraTransactionData.getSalaryRankId() != null) {
 		    employee.setSalaryRankId(null);
 		    employee.setSalaryDegreeId(null);
