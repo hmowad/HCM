@@ -903,7 +903,8 @@ public class RecruitmentsService extends BaseService {
 		    if (recruitmentTransaction.getRecruitmentDate() == null)
 			recruitmentTransaction.setRecruitmentDate(HijriDateService.gregToHijriDate(new Date()));
 		    if (recruitmentTransaction.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) || recruitmentTransaction.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode())) {
-			EmployeeLog log = new EmployeeLog.Builder().setJobId(recruitmentTransaction.getJobId()).setDegreeId(recruitmentTransaction.getDegreeId()).setRankId(recruitmentTransaction.getRankId()).setRankTitleId(recruitmentTransaction.getRankTitleId()).setSocialStatus(emp.getSocialStatus()).setOfficialUnitId(emp.getOfficialUnitId()).setGeneralSpecialization(emp.getGeneralSpecialization()).setPhysicalUnitId(emp.getPhysicalUnitId())
+			EmployeeLog log = new EmployeeLog.Builder().setJobId(recruitmentTransaction.getJobId()).setDegreeId(recruitmentTransaction.getDegreeId()).setRankId(recruitmentTransaction.getRankId()).setRankTitleId(recruitmentTransaction.getRankTitleId()).setSocialStatus(emp.getSocialStatus()).setOfficialUnitId(emp.getOfficialUnitId()).setGeneralSpecialization(emp.getGeneralSpecialization())
+				.setPhysicalUnitId((emp.getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && emp.getPhysicalUnitId() == null) ? emp.getOfficialUnitId() : emp.getPhysicalUnitId())
 				.setBasicJobNameId(job.getBasicJobNameId()).constructCommonFields(emp.getEmpId(), FlagsEnum.ON.getCode(), recruitmentTransaction.getDecisionNumber(), recruitmentTransaction.getDecisionDate(), recruitmentTransaction.getRecruitmentDate(), DataAccess.getTableName(RecruitmentTransaction.class)).build();
 			LogService.logEmployeeData(log, session);
 		    }
