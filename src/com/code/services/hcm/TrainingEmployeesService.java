@@ -281,7 +281,7 @@ public class TrainingEmployeesService extends BaseService {
 	    TrainingTransactionDetailData firstTransactionDetail = trainingTransactionDetailDataList == null || trainingTransactionDetailDataList.size() == 0 ? null : trainingTransactionDetailDataList.get(trainingTransactionDetailDataList.size() - 1);
 	    EmployeeData employee = EmployeesService.getEmployeeData(trainingTransactionData.getEmployeeId());
 	    if (employee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
-		if (trainingTransactionData.getTrainingTypeId().equals(TrainingTypesEnum.SCHOLARSHIP.getCode())) {
+		if (trainingTransactionData.getTrainingTypeId().equals(TrainingTypesEnum.SCHOLARSHIP.getCode()) && trainingTransactionDetailDataList != null && trainingTransactionDetailDataList.size() > 0) {
 		    decisionNumber = lastTransactionDetail.getDecisionNumber();
 		    originalDecisionNumber = firstTransactionDetail.getDecisionNumber();
 		    gregDecisionDateString = HijriDateService.hijriToGregDateString(lastTransactionDetail.getDecisionDateString());
