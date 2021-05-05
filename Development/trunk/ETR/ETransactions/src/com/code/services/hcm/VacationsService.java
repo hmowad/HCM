@@ -178,6 +178,20 @@ public class VacationsService extends BaseService {
 		    } else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
 			adminDecisionId = AdminDecisionsEnum.SOLDIERS_COMPELLING_VACATION_REQUEST.getCode();
 		    }
+		} else if (request.getStatus() == RequestTypesEnum.MODIFY.getCode()) {
+		    request = VacationsService.getVacationById(request.getVacationId());
+		    originalVacationDecisionNumber = VacationsService.getVacationLogByVacationIdAndStatus(request.getVacationId(), RequestTypesEnum.NEW.getCode()).getDecisionNumber();
+		    if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
+			adminDecisionId = AdminDecisionsEnum.SOLDIERS_MODIFY_REGULAR_VACATION_REQUEST.getCode();
+		    }
+		} else if (request.getStatus() == RequestTypesEnum.CANCEL.getCode()) {
+		    request = VacationsService.getVacationById(request.getVacationId());
+		    originalVacationDecisionNumber = VacationsService.getVacationLogByVacationIdAndStatus(request.getVacationId(), RequestTypesEnum.NEW.getCode()).getDecisionNumber();
+		    if (request.getVacationTypeId().equals(VacationTypesEnum.REGULAR.getCode())) {
+			adminDecisionId = AdminDecisionsEnum.SOLDIERS_CANCEL_REGULAR_VACATION_REQUEST.getCode();
+		    } else if (request.getVacationTypeId().equals(VacationTypesEnum.COMPELLING.getCode())) {
+			adminDecisionId = AdminDecisionsEnum.SOLDIERS_CANCEL_COMPELLING_VACATION_REQUEST.getCode();
+		    }
 		}
 	    }
 	}
