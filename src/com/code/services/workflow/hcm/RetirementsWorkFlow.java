@@ -476,6 +476,9 @@ public class RetirementsWorkFlow extends BaseWorkFlow {
 
 	for (WFDisclaimerDetail wfDisclaimerDetail : wfDisclaiamerDetails) {
 	    UnitData unitData = UnitsService.getUnitByExactFullName(wfDisclaimerDetail.getManagerUnitFullName());
+	    if (unitData == null) {
+		unitData = UnitsService.getUnitById(wfDisclaimerDetail.getManagerUnitId());
+	    }
 	    unitsIdsString += unitData.getId() + ",";
 	}
 
