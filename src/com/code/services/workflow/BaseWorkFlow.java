@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
+import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.dal.orm.workflow.WFDelegation;
 import com.code.dal.orm.workflow.WFDelegationData;
 import com.code.dal.orm.workflow.WFInstance;
@@ -523,8 +524,13 @@ public abstract class BaseWorkFlow extends BaseService {
 
 		List<String> processesIdsExcludedFromInvalidation = new ArrayList<String>(Arrays.asList(ETRConfigurationService.getProcessesIdsExcludedFromInvalidation().split(",")));
 		if (processesIdsExcludedFromInvalidation.contains(instance.getProcessId() + "")) {
-		    Long originalUnitManagerId = task.getOriginalUnitId() == null ? null : UnitsService.getUnitById(task.getOriginalUnitId()).getPhysicalManagerId();
-		    task.setAssigneeId((originalUnitManagerId == null || originalUnitManagerId.equals(task.getOriginalId())) ? null : originalUnitManagerId); // TODO: to be revised later
+		    Long originalUnitManagerId = null;
+		    if (task.getOriginalUnitId() != null) {
+			UnitData originalUnit = UnitsService.getUnitById(task.getOriginalUnitId());
+			if (originalUnit != null)
+			    originalUnitManagerId = originalUnit.getPhysicalManagerId();
+		    }
+		    task.setAssigneeId((originalUnitManagerId == null || originalUnitManagerId.equals(task.getOriginalId())) ? null : originalUnitManagerId);
 		    task.setOriginalId((originalUnitManagerId == null || originalUnitManagerId.equals(task.getOriginalId())) ? null : originalUnitManagerId);
 		    DataAccess.updateEntity(task, session);
 		} else {
