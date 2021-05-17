@@ -21,7 +21,6 @@ import com.code.enums.QueryNamesEnum;
 import com.code.enums.RequestTypesEnum;
 import com.code.enums.SubVacationTypesEnum;
 import com.code.enums.TerminationReasonsEnum;
-import com.code.enums.UnitTypesEnum;
 import com.code.enums.VacationTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
@@ -666,9 +665,6 @@ public class VacationsBusinessRulesService extends BaseService {
 
 	    if (vacationBeneficiary.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() && request.getLocationFlag().intValue() != LocationFlagsEnum.INTERNAL.getCode())
 		throw new BusinessException("error_vacIsInternalOnly");
-
-	    if (vacationBeneficiary.getCategoryId().longValue() == CategoriesEnum.OFFICERS.getCode() && vacationBeneficiary.getUnitTypeCode().intValue() == UnitTypesEnum.REGION_COMMANDER.getCode())
-		throw new BusinessException("error_fieldVacationIsNotAllowedForRegionCommanders");
 
 	    if (!UnitsService.isFieldUnit(vacationBeneficiary.getPhysicalUnitHKey()))
 		throw new BusinessException("error_fieldVacationIsAllowedForEmployeesAtFieldUnitOnly");

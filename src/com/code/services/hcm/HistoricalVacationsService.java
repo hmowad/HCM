@@ -21,7 +21,6 @@ import com.code.enums.QueryNamesEnum;
 import com.code.enums.RequestTypesEnum;
 import com.code.enums.SubVacationTypesEnum;
 import com.code.enums.TransactionClassesEnum;
-import com.code.enums.UnitTypesEnum;
 import com.code.enums.VacationTypesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
@@ -583,9 +582,6 @@ public class HistoricalVacationsService extends BaseService {
 
 	    if (vacationBeneficiary.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() && historicalVacationTransaction.getLocationFlag().intValue() != LocationFlagsEnum.INTERNAL.getCode())
 		throw new BusinessException("error_vacIsInternalOnly");
-
-	    if (vacationBeneficiary.getCategoryId().longValue() == CategoriesEnum.OFFICERS.getCode() && vacationBeneficiary.getUnitTypeCode().intValue() == UnitTypesEnum.REGION_COMMANDER.getCode())
-		throw new BusinessException("error_fieldVacationIsNotAllowedForRegionCommanders");
 
 	    VacationConfiguration activeVacationConfiguration = VacationsBusinessRulesService.getActiveVacationConfigurations(vacationBeneficiary.getCategoryId(), historicalVacationTransaction.getVacationTypeId()).get(0);
 
