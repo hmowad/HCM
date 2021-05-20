@@ -407,6 +407,7 @@ public class EmployeeData extends BaseEntity implements Serializable {
     private Date lastAnnualRaiseDate;
     private String lastAnnualRaiseDateString;
     private String occupationDescription;
+    private Date insertionDate;
 
     private Employee employee;
 
@@ -1826,6 +1827,17 @@ public class EmployeeData extends BaseEntity implements Serializable {
     public void setOccupationDescription(String occupationDescription) {
 	this.occupationDescription = occupationDescription;
 	employee.setOccupationDescription(occupationDescription);
+    }
+
+    @Basic
+    @Column(name = "INSERTION_DATE")
+    public Date getInsertionDate() {
+	return insertionDate;
+    }
+
+    public void setInsertionDate(Date insertionDate) {
+	this.insertionDate = insertionDate;
+	this.employee.setInsertionDate(insertionDate);
     }
 
     @Transient
