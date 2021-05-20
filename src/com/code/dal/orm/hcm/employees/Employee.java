@@ -102,6 +102,7 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
     private String socialIdCopy;
     private Date lastAnnualRaiseDate;
     private String occupationDescription;
+    private Date insertionDate;
 
     public void setId(Long id) {
 	this.id = id;
@@ -781,6 +782,16 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
 	this.occupationDescription = occupationDescription;
     }
 
+    @Basic
+    @Column(name = "INSERTION_DATE")
+    public Date getInsertionDate() {
+	return insertionDate;
+    }
+
+    public void setInsertionDate(Date insertionDate) {
+	this.insertionDate = insertionDate;
+    }
+
     @Override
     public Long calculateContentId() {
 	return id;
@@ -852,7 +863,8 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
 		"navyFormation:" + navyFormation + AUDIT_SEPARATOR +
 		"socialIdCopy:" + socialIdCopy + AUDIT_SEPARATOR +
 		"lastAnnualRaiseDate" + lastAnnualRaiseDate + AUDIT_SEPARATOR +
-		"occupationDescription" + occupationDescription + AUDIT_SEPARATOR;
+		"occupationDescription" + occupationDescription + AUDIT_SEPARATOR +
+		"insertionDate" + insertionDate + AUDIT_SEPARATOR;
 
     }
 

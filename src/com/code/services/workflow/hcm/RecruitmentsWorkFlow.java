@@ -962,6 +962,9 @@ public class RecruitmentsWorkFlow extends BaseWorkFlow {
 	    if (emp == null)
 		throw new BusinessException("error_employeeDataError");
 
+	    if (emp.getInsertionDate() != null && emp.getInsertionDate().after(recRequests.get(i).getRecruitmentDate() == null ? HijriDateService.getHijriSysDate() : recRequests.get(i).getRecruitmentDate()))
+		throw new BusinessException("error_registerationDateAfterRecruitmentDate");
+
 	    long empStatusId = emp.getStatusId().longValue();
 	    if (emp.getCategoryId() == CategoriesEnum.SOLDIERS.getCode()) {
 		if ((processId == WFProcessesEnum.SOLDIERS_SOLDIER_OR_FIRST_SOLDIER_RECRUITMENT.getCode() || processId == WFProcessesEnum.SOLDIERS_SOLDIER_OR_FIRST_SOLDIER_EXCEPTIONAL_RECRUITMENT.getCode()) && empStatusId != EmployeeStatusEnum.NEW_STUDENT_SOLDIER.getCode())

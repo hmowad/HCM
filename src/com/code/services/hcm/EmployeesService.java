@@ -145,6 +145,7 @@ public class EmployeesService extends BaseService {
 		empData.setCountryId(CountryService.getCountryByCode(CountriesEnum.SAUDI_ARABIA.getCode()).getId());
 
 	    empData.setMovementBlacklistFlag(FlagsEnum.OFF.getCode());
+	    empData.setInsertionDate(HijriDateService.getHijriSysDate());
 
 	    DataAccess.addEntity(empData.getEmployee(), session);
 	    empData.setEmpId(empData.getEmployee().getId());
