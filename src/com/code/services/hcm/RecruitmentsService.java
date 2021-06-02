@@ -933,6 +933,7 @@ public class RecruitmentsService extends BaseService {
 	    }
 	}
 	if (adminDecisionId != null) {
+	    session.flushTransaction();
 	    List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>();
 	    EmployeeData emp = null;
 	    for (RecruitmentTransactionData recruitmentTransactionData : recruitmentTransactions) {
@@ -942,7 +943,6 @@ public class RecruitmentsService extends BaseService {
 	    }
 	    String gregRecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getRecruitmentDateString());
 	    String gregDecDateString = HijriDateService.hijriToGregDateString(recruitmentTransactions.get(0).getDecisionDateString());
-	    session.flushTransaction();
 	    PayrollEngineService.doPayrollIntegration(adminDecisionId, recruitmentTransactions.get(0).getCategoryId(), gregRecDateString, adminDecisionEmployeeDataList, recruitmentTransactions.get(0).getAttachments(),
 		    recruitmentTransactions != null && recruitmentTransactions.size() > 0 && recruitmentTransactions.get(0).getTransUnitFullName() != null ? UnitsService.getUnitByExactFullName(recruitmentTransactions.get(0).getTransUnitFullName()).getId() : UnitsService.getUnitsByType(UnitTypesEnum.PRESIDENCY.getCode()).get(0).getId(), gregDecDateString, DataAccess.getTableName(RecruitmentTransaction.class), resendFlag, FlagsEnum.OFF.getCode(), session);
 
