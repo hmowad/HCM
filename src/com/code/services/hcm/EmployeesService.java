@@ -68,21 +68,21 @@ public class EmployeesService extends BaseService {
     }
 
     // ----------------------- EmployeeData------------------------------------
-    public static void addEmployee(EmployeeData empData, EmployeeQualificationsData employeeQualificationsData, CustomSession... useSession) throws BusinessException {
+    public static void addEmployee(EmployeeData empData, EmployeeQualificationsData employeeQualificationsData, Date insertionDate, CustomSession... useSession) throws BusinessException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
-	    addEmployee(empData, session);
+	    addEmployee(empData, insertionDate, session);
 
 	    employeeQualificationsData.setEmployeeId(empData.getEmpId());
 
 	    addEmployeeQualifications(employeeQualificationsData, empData, session);
 
 	    EmployeeLog log = new EmployeeLog.Builder().setRankId(empData.getRankId()).setSocialStatus(empData.getSocialStatus()).setGeneralSpecialization(empData.getGeneralSpecialization()).setDegreeId(DegreesEnum.FIRST.getCode())
-		    .constructCommonFields(empData.getEmpId(), FlagsEnum.ON.getCode(), null, null, HijriDateService.getHijriSysDate(), DataAccess.getTableName(Employee.class)).build();
+		    .constructCommonFields(empData.getEmpId(), FlagsEnum.ON.getCode(), null, null, insertionDate != null ? insertionDate : HijriDateService.getHijriSysDate(), DataAccess.getTableName(Employee.class)).build();
 	    LogService.logEmployeeData(log, session);
 
 	    if (!isOpenedSession)
@@ -106,7 +106,7 @@ public class EmployeesService extends BaseService {
 	}
     }
 
-    private static void addEmployee(EmployeeData empData, CustomSession... useSession) throws BusinessException {
+    private static void addEmployee(EmployeeData empData, Date insertionData, CustomSession... useSession) throws BusinessException {
 	validateEmployee(empData);
 
 	boolean isOpenedSession = isSessionOpened(useSession);
@@ -145,7 +145,7 @@ public class EmployeesService extends BaseService {
 		empData.setCountryId(CountryService.getCountryByCode(CountriesEnum.SAUDI_ARABIA.getCode()).getId());
 
 	    empData.setMovementBlacklistFlag(FlagsEnum.OFF.getCode());
-	    empData.setInsertionDate(HijriDateService.getHijriSysDate());
+	    empData.setInsertionDate(insertionData != null ? insertionData : HijriDateService.getHijriSysDate());
 
 	    DataAccess.addEntity(empData.getEmployee(), session);
 	    empData.setEmpId(empData.getEmployee().getId());
@@ -1693,7 +1693,7 @@ public class EmployeesService extends BaseService {
 			}
 		    }
 
-		    addEmployee(empData, qualificationsData.get(i), session);
+		    addEmployee(empData, qualificationsData.get(i), null, session);
 		}
 
 		session.commitTransaction();

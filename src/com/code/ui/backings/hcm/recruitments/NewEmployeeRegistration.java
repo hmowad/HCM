@@ -252,7 +252,7 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 	    employee.getEmployee().setSystemUser(this.loginEmpData.getEmpId() + ""); // For Auditing.
 	    employeeQualificationsData.getEmployeeQualifications().setSystemUser(this.loginEmpData.getEmpId() + ""); // For Auditing.
 	    if (employee.getEmpId() == null) {
-		EmployeesService.addEmployee(employee, employeeQualificationsData);
+		EmployeesService.addEmployee(employee, employeeQualificationsData, null);
 	    } else {
 		EmployeesService.updateEmployeeAndHisQualifications(employee, employeeQualificationsData);
 	    }
