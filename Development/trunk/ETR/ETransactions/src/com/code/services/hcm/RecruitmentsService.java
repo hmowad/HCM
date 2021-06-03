@@ -1768,6 +1768,9 @@ public class RecruitmentsService extends BaseService {
     }
 
     public static void handleReRecruitmentRequests(RecruitmentTransactionData recruitmentTransaction, EmployeeData empData, EmployeeQualificationsData employeeQualificationsData, int existingEmployee, CustomSession... useSession) throws BusinessException {
+	if (empData.getEmpId() == null)
+	    empData.setInsertionDate(HijriDateService.addSubHijriDays(recruitmentTransaction.getRecruitmentDate(), -1));
+
 	validateReRecruitmentTransaction(recruitmentTransaction, empData, employeeQualificationsData, existingEmployee);
 
 	boolean isOpenedSession = isSessionOpened(useSession);
@@ -1817,7 +1820,7 @@ public class RecruitmentsService extends BaseService {
 		empData.setRecruitmentDate(recruitmentTransaction.getRecruitmentDate());
 
 	    if (empData.getEmpId() == null)
-		EmployeesService.addEmployee(empData, employeeQualificationsData, session);
+		EmployeesService.addEmployee(empData, employeeQualificationsData, empData.getInsertionDate(), session);
 	    else
 		EmployeesService.updateEmployee(empData, session);
 	    EmployeeLog log = new EmployeeLog.Builder().setJobId(recruitmentTransaction.getJobId()).setDegreeId(recruitmentTransaction.getDegreeId()).setRankId(recruitmentTransaction.getRankId()).setRankTitleId(recruitmentTransaction.getRankTitleId()).setSocialStatus(empData.getSocialStatus()).setOfficialUnitId(empData.getOfficialUnitId()).setGeneralSpecialization(empData.getGeneralSpecialization()).setPhysicalUnitId(empData.getPhysicalUnitId())
@@ -1896,6 +1899,9 @@ public class RecruitmentsService extends BaseService {
 	    throw new BusinessException("error_invalidHijriDate");
 	else if (recruitmentTransaction.getRecruitmentDate().after(HijriDateService.getHijriSysDate()))
 	    throw new BusinessException(recruitmentTransaction.getRecruitmentType() == RecruitmentTypeEnum.RE_RECRUITMENT.getCode() ? "error_rerecruitmentDateBeforeTodayDate" : "error_movementDateBeforeToday");
+
+	if (empData.getInsertionDate() != null && empData.getInsertionDate().after(recruitmentTransaction.getRecruitmentDate() == null ? HijriDateService.getHijriSysDate() : recruitmentTransaction.getRecruitmentDate()))
+	    throw new BusinessException("error_registerationDateAfterRecruitmentDate");
 
 	if (empData.getPromotionDueDate() == null)
 	    throw new BusinessException("error_promotionDateMandatory");
