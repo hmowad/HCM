@@ -518,8 +518,13 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 		    if (servicePeriodYears < ETRConfigurationService.getTerminationsSoldierServicePeriodBeforeTerminationYearsMin())
 			throw new BusinessException("error_soldierServicePeriodBeforeTerminationYearsMin", new Object[] { ETRConfigurationService.getTerminationsSoldierServicePeriodBeforeTerminationYearsMin() });
 
-		    if (periodUntilDesiredTerminationDateByDays < ETRConfigurationService.getTerminationsSoldiersPeriodUntilDesiredTerminationDateDaysMin() || periodUntilDesiredTerminationDateByDays > ETRConfigurationService.getTerminationsSoldiersPeriodUntilDesiredTerminationDateDaysMax())
-			throw new BusinessException("error_desiredTerminationDatePeriodForSoldiers", new Object[] { ETRConfigurationService.getTerminationsSoldiersPeriodUntilDesiredTerminationDateDaysMin(), ETRConfigurationService.getTerminationsSoldiersPeriodUntilDesiredTerminationDateDaysMax() });
+		    if (periodUntilDesiredTerminationDateByDays < ETRConfigurationService.getTerminationsSoldiersPeriodUntilDesiredTerminationDateDaysMin() || periodUntilDesiredTerminationDateByDays > ETRConfigurationService.getTerminationsSoldiersPeriodUntilDesiredTerminationDateDaysMax()) {
+			if (ETRConfigurationService.getTerminationsSoldiersPeriodUntilDesiredTerminationDateDaysMin() == 0)
+			    throw new BusinessException("error_desiredTerminationDatePeriodForSoldiersStartingFromRequestDate", new Object[] { ETRConfigurationService.getTerminationsSoldiersPeriodUntilDesiredTerminationDateDaysMax() });
+
+			else
+			    throw new BusinessException("error_desiredTerminationDatePeriodForSoldiers", new Object[] { ETRConfigurationService.getTerminationsSoldiersPeriodUntilDesiredTerminationDateDaysMin(), ETRConfigurationService.getTerminationsSoldiersPeriodUntilDesiredTerminationDateDaysMax() });
+		    }
 		} else { // Persons and contractors
 		    periodUntilDesiredTerminationDateByDays = HijriDateService.hijriDateDiff(HijriDateService.getHijriSysDate(), wfTermination.getDesiredTerminationDate());
 		    if (periodUntilDesiredTerminationDateByDays < ETRConfigurationService.getTerminationsCiviliansPeriodUntilDesiredTerminationDateDaysMin() || periodUntilDesiredTerminationDateByDays > ETRConfigurationService.getTerminationsCiviliansPeriodUntilDesiredTerminationDateDaysMax())

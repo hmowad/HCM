@@ -1761,6 +1761,9 @@ public class EmployeesService extends BaseService {
 	Country country = CountryService.getCountryByYaqeenName(personInfoDetailedResult.getNationalityDesc());
 	emp.setCountryId(country.getId());
 	emp.setNationality(country.getNationality());
+
+	emp.setBirthDate(HijriDateService.getHijriDate(HijriDateService.gregToHijriDateString(personInfoDetailedResult.getDateOfBirthG().replace('-', '/'))));
+	emp.setServiceTerminationDueDate(TerminationsService.calculateEmpTerminationDueDate(emp.getCategoryId().longValue(), emp.getRankId().longValue(), emp.getBirthDate()));
     }
 
     private static void validateYaqeenMandatoryFields(String socialId, String birthDate) throws BusinessException {
