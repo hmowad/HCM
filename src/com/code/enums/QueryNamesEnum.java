@@ -431,6 +431,10 @@ public enum QueryNamesEnum {
     HCM_GET_PROMOTIONS_DECISIONS("hcm_promotionTransactionData_searchPromotionTransactionsDecisions"),
     HCM_COUNT_PROMOTION_TRANSACTIONS("hcm_promotionTransaction_countPromotionTransactions"),
     HCM_GET_PROMOTION_TRANSACTION_DATA_BY_DECISION_NUMBER_AND_DECISION_DATE("hcm_promotionTransactionData_getPromotionTransactionDataByDecisionDateAndDecisionNumber"),
+    HCM_GET_UNNOTIFIED_OFFICERS_PROMOTION_TRANSACTIONS_DATA_BY_ROYAL_NUMBER_AND_ROYAL_DATE("hcm_promotionTransactionData_getPromotionTransactionDataOfficersUnnotifiedByRoyalDateAndRoyalNumber"),
+    HCM_GET_PROMOTION_TRANSACTIONS_DATA_BY_IDS_AND_UNIT_HKEY_AND_REGION_ID_AND_EMP_ID("hcm_promotionTransactionData_getPromotionTransactionDataByIdsAndUnitHkeyAndRegionIdAndEmpId"),
+
+    HCM_SEARCH_PROMOTION_NOTIFICATION("hcm_promotionNotification_searchPromotionNotification"),
 
     WF_GET_WFPROMOTION_BY_INSTANCE_ID("wf_wfPromotion_getWFPromotionByInstanceId"),
     WF_GET_WFPROMOTIONS_TASKS("wf_wfPromotion_getWFPromotionsTasks"),

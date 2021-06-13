@@ -182,6 +182,7 @@
 		<mapping class="com.code.dal.orm.hcm.promotions.PromotionSeniortyPoints" />
 		<mapping class="com.code.dal.orm.hcm.promotions.PromotionEmployeeDegreeData" />
 		<mapping class="com.code.dal.orm.hcm.promotions.PromotionRankingData" />
+		<mapping class="com.code.dal.orm.hcm.promotions.PromotionNotification" />
 		<mapping class="com.code.dal.orm.workflow.hcm.promotions.WFPromotion" />
 		
 		

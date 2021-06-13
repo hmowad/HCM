@@ -9,13 +9,17 @@ import java.util.Map;
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.employees.EmployeeData;
+import com.code.dal.orm.hcm.organization.units.UnitData;
+import com.code.dal.orm.hcm.promotions.PromotionNotification;
 import com.code.dal.orm.hcm.promotions.PromotionReportData;
 import com.code.dal.orm.hcm.promotions.PromotionReportDetailData;
+import com.code.dal.orm.hcm.promotions.PromotionTransactionData;
 import com.code.dal.orm.workflow.WFInstance;
 import com.code.dal.orm.workflow.WFPosition;
 import com.code.dal.orm.workflow.WFTask;
 import com.code.dal.orm.workflow.hcm.promotions.WFPromotion;
 import com.code.enums.CategoriesEnum;
+import com.code.enums.OfficersPromotionTasksTypeEnum;
 import com.code.enums.PromotionCandidateStatusEnum;
 import com.code.enums.PromotionReportStatusEnum;
 import com.code.enums.PromotionsTypesEnum;
@@ -26,12 +30,15 @@ import com.code.enums.UnitTypesEnum;
 import com.code.enums.WFActionFlagsEnum;
 import com.code.enums.WFInstanceStatusEnum;
 import com.code.enums.WFPositionsEnum;
+import com.code.enums.WFProcessesEnum;
 import com.code.enums.WFTaskActionsEnum;
 import com.code.enums.WFTaskRolesEnum;
 import com.code.exceptions.BusinessException;
 import com.code.exceptions.DatabaseException;
+import com.code.services.config.ETRConfigurationService;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.PromotionsService;
+import com.code.services.hcm.UnitsService;
 import com.code.services.util.CommonService;
 import com.code.services.util.HijriDateService;
 import com.code.services.workflow.BaseWorkFlow;
@@ -431,6 +438,69 @@ public class PromotionsWorkFlow extends BaseWorkFlow {
 
 	Long[] notificationsEmpsIds = computeInstanceNotifications(categoriesIds, 1, instance.getProcessId(), beneficairyEmployeesIds, additionalIds);
 	closeWFInstanceByAction(requester.getEmpId(), instance, smTask, WFTaskActionsEnum.SUPER_SIGN.getCode(), notificationsEmpsIds, session);
+    }
+
+    public static void sendOfficersPromotionNotifications(Long requesterId, List<PromotionTransactionData> promotionTransactions, long processId, String taskUrl) throws BusinessException {
+
+	CustomSession session = DataAccess.getSession();
+	try {
+	    session.beginTransaction();
+
+	    Date curDate = new Date();
+	    Date curHijriDate = HijriDateService.getHijriSysDate();
+
+	    List<Long> employeesIds = new ArrayList<Long>();
+	    for (int i = 0; i < promotionTransactions.size(); i++)
+		employeesIds.add(promotionTransactions.get(i).getEmpId());
+
+	    WFInstance instance = addWFInstance(WFProcessesEnum.OFFICERS_PROMOTION.getCode(), requesterId, curDate, curHijriDate, WFInstanceStatusEnum.DONE.getCode(), null, employeesIds, session);
+
+	    for (int i = 0; i < promotionTransactions.size(); i++) {
+		PromotionNotification promotionNotification = new PromotionNotification();
+		promotionNotification.setInstanceId(instance.getInstanceId());
+		promotionNotification.setTransactionId(promotionTransactions.get(i).getId());
+		DataAccess.addEntity(promotionNotification, session);
+	    }
+
+	    Map<Long, String> notifiedEmployeesIds = getOfficersPromotionNotifiedIdsAndRoles(promotionTransactions);
+	    int i = 0;
+	    for (Map.Entry<Long, String> entry : notifiedEmployeesIds.entrySet()) {
+		WFTask task = addWFTask(instance.getInstanceId(), getDelegate(entry.getKey(), instance.getProcessId(), requesterId), entry.getKey(), curDate, curHijriDate, taskUrl, WFTaskRolesEnum.NOTIFICATION.getCode(), "1." + (i + 1), session);
+		task.setFlexField1(entry.getValue());
+		DataAccess.updateEntity(task, session);
+		i++;
+	    }
+	    session.commitTransaction();
+	} catch (BusinessException e) {
+	    session.rollbackTransaction();
+	    throw e;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    session.rollbackTransaction();
+	    throw new BusinessException("error_general");
+	} finally {
+	    session.close();
+	}
+
+    }
+
+    private static Map<Long, String> getOfficersPromotionNotifiedIdsAndRoles(List<PromotionTransactionData> promotionTransactions) throws BusinessException {
+
+	Map<Long, String> notifiedEmployeesIds = new HashMap<>();
+	for (PromotionTransactionData transaction : promotionTransactions) {
+	    notifiedEmployeesIds.put(transaction.getEmpId(), OfficersPromotionTasksTypeEnum.EMPLOYEE_TASK.getCode()); // add beneficiaries
+	    notifiedEmployeesIds.put(EmployeesService.getEmployeeDirectManager(transaction.getEmpId()).getEmpId(), OfficersPromotionTasksTypeEnum.MANAGER_TASK.getCode()); // add beneficiaries manager
+	    if (!transaction.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode())) // add region commander
+		notifiedEmployeesIds.put(UnitsService.getUnitsByTypeAndRegion(UnitTypesEnum.REGION_COMMANDER.getCode(), transaction.getPhysicalRegionId()).get(0).getPhysicalManagerId(), OfficersPromotionTasksTypeEnum.REGION_COMMANDER_TASK.getCode());
+	}
+
+	String configuredManagersUnits = ETRConfigurationService.getPromotionOfficersNotificationsUnitsIds();
+	List<UnitData> managerUnits = UnitsService.getUnitsByIdsString(configuredManagersUnits);
+
+	for (UnitData unitData : managerUnits) { // add configured managers
+	    notifiedEmployeesIds.put(unitData.getPhysicalManagerId(), OfficersPromotionTasksTypeEnum.CONFIGURED_MANAGER_TASK.getCode());
+	}
+	return notifiedEmployeesIds;
     }
 
     public static void handlePromotionsInvalidation(Long[] instancesIds, CustomSession session) throws BusinessException {

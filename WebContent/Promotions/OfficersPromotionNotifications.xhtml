@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:util="http://java.sun.com/jsf/composite/util" xmlns:code="http://java.sun.com/jsf/composite/code">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet library="css" name="styles.css" />
+	<h:outputStylesheet library="css" name="grid.css" />
+	<h:outputScript name="utilities.js" library="javascript" target="head" />
+	<script type="text/javascript"> 
+	function validateSearchPanel() {
+		decisionId = document.getElementById('officersPromotionNotificationsFormId:searchedRoyalNumberId').value;
+		if (decisionId == null || decisionId == '') {
+			alert("#{msgs.error_royalOrderNumberRequired}");
+			return false;
+		}
+		return true;
+	}
+		
+	</script>
+</h:head>
+<h:body styleClass="screenBg">
+	<h:form id="officersPromotionNotificationsFormId" dir="#{msgs.dir}">
+		<ui:decorate template="/Main/Template.xhtml">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+				<tr>
+					<td width="100%" class="screenTitle">
+						<h:outputText value="#{msgs.title_officersPromotionNotifications}" />
+					</td>
+				</tr>
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.label_promotionData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="searchPanelId">
+							<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<th width="15%">#{msgs.label_royalOrderNumber}</th>
+									<td width="35%">
+										<h:inputText id="searchedRoyalNumberId" value="#{officersPromotionNotifications.royalOrderNumber}" disabled="#{officersPromotionNotifications.role != 'Requester'}"/>
+									</td>
+
+									<th width="15%">#{msgs.label_royalOrderDate}</th>
+									<td width="35%">
+										<util:hijri id="searchedRoyalDateId" value="#{officersPromotionNotifications.royalOrderDate}"  rendered="#{officersPromotionNotifications.role == 'Requester'}"/>
+										<h:outputText value="#{officersPromotionNotifications.royalOrderDateString}"  rendered="#{officersPromotionNotifications.role != 'Requester'}"/>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td>
+						<h:panelGroup rendered="#{officersPromotionNotifications.role == 'Requester'}">
+							<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{officersPromotionNotifications.search()}" styleClass="btn_normal_icon" onclick="return validateSearchPanel();">
+											<f:ajax execute="officersPromotionNotificationsFormId:searchPanelId" render="officersPromotionNotificationsFormId:employeesDataTableId officersPromotionNotificationsFormId:actionsSectionId officersPromotionNotificationsFormId:notifyMessagesId" />
+										</h:commandButton>
+										<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{officersPromotionNotifications.reset()}" styleClass="btn_normal_icon">
+											<f:ajax render="officersPromotionNotificationsFormId:searchPanelId officersPromotionNotificationsFormId:employeesDataTableId officersPromotionNotificationsFormId:actionsSectionId" />
+										</h:commandButton>
+									</td>
+								</tr>
+							</table>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>#{msgs.title_employeesData}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<rich:dataTable id="employeesDataTableId" value="#{officersPromotionNotifications.promotionTransactions}" var="transaction" rows="#{officersPromotionNotifications.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+
+							<rich:column style="width : 3%">
+								<f:facet name="header">#</f:facet>
+						#{index + 1}
+					</rich:column>
+							<rich:column style="width : 20%">
+								<f:facet name="header">#{msgs.label_name}</f:facet>
+								<h:outputText value="#{transaction.name}" />
+							</rich:column>
+							<rich:column style="width : 7%">
+								<f:facet name="header">#{msgs.label_militaryNumber}</f:facet>
+								<h:outputText value="#{transaction.newMilitaryNumber}" />
+							</rich:column>
+							<rich:column style="width : 10%">
+								<f:facet name="header">#{msgs.label_promotedRank}</f:facet>
+								<h:outputText value="#{transaction.newRankDesc}" />
+							</rich:column>
+							<rich:column style="width : 7%">
+								<f:facet name="header">#{msgs.label_promotionDueDate}</f:facet>
+								<h:outputText value="#{transaction.oldDueDateString}" />
+							</rich:column>
+							<rich:column style="width : 25%">
+								<f:facet name="header">#{msgs.label_physicalUnit}</f:facet>
+								<h:outputText value="#{transaction.physicalUnitFullName}" />
+							</rich:column>
+							<rich:column style="width : 25%">
+								<f:facet name="header">#{msgs.label_officialUnit}</f:facet>
+								<h:outputText value="#{transaction.officialUnitFullName}" />
+							</rich:column>
+							<rich:column style="width : 3%;">
+								<f:facet name="header">#{msgs.label_delete}</f:facet>
+								<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{officersPromotionNotifications.deletePromotionTransaction(transaction)}" disabled="#{officersPromotionNotifications.role != 'Requester'}">
+									<f:ajax execute="officersPromotionNotificationsFormId:employeesDataTableId" render="officersPromotionNotificationsFormId:employeesDataTableId officersPromotionNotificationsFormId:actionsSectionId officersPromotionNotificationsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+								</h:commandButton>
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller oncomplete="unMaskScreen()" maxPages="5" fastControls="hide">
+									<f:facet name="first">#{msgs.label_first}</f:facet>
+									<f:facet name="last">#{msgs.label_last}</f:facet>
+									<f:facet name="next">#{msgs.label_next}</f:facet>
+									<f:facet name="previous">#{msgs.label_previous}</f:facet>
+								</rich:dataScroller>
+							</f:facet>
+						</rich:dataTable>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="100%" height="5" />
+				</tr>
+
+				<tr>
+					<td width="100%">
+						<h:panelGroup id="actionsSectionId">
+							<h:panelGroup rendered="#{officersPromotionNotifications.promotionTransactions != null and officersPromotionNotifications.promotionTransactions.size() > 0}">
+								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+											<h:panelGroup rendered="#{officersPromotionNotifications.role == 'Requester'}">
+												<h:commandButton id="sendBtnId" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" action="#{officersPromotionNotifications.sendNotifications()}" styleClass="btn_normal_icon">
+													<f:ajax render="officersPromotionNotificationsFormId:actionsSectionId officersPromotionNotificationsFormId:employeesDataTableId officersPromotionNotificationsFormId:notifyMessagesId" execute="officersPromotionNotificationsFormId:employeesDataTableId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</h:panelGroup>
+											<h:panelGroup rendered="#{officersPromotionNotifications.role == 'Notification'}">
+												<h:commandButton id="nBtnId" action="#{officersPromotionNotifications.closeProcess()}" value="#{msgs.label_notified} &nbsp; #{msgs.fa_check}" styleClass="btn_normal_icon">
+													<f:ajax render="notifyMessagesId" execute="@form" />
+												</h:commandButton>
+											</h:panelGroup>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+					</td>
+				</tr>
+
+			</table>
+		</ui:decorate>
+	</h:form>
+</h:body>
+</html>

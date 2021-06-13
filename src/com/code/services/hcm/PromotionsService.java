@@ -18,6 +18,7 @@ import com.code.dal.orm.hcm.organization.jobs.JobData;
 import com.code.dal.orm.hcm.organization.units.UnitData;
 import com.code.dal.orm.hcm.payroll.PayrollSalary;
 import com.code.dal.orm.hcm.promotions.PromotionEmployeeDegreeData;
+import com.code.dal.orm.hcm.promotions.PromotionNotification;
 import com.code.dal.orm.hcm.promotions.PromotionReport;
 import com.code.dal.orm.hcm.promotions.PromotionReportData;
 import com.code.dal.orm.hcm.promotions.PromotionReportDetail;
@@ -39,6 +40,7 @@ import com.code.enums.EmployeeStatusEnum;
 import com.code.enums.FlagsEnum;
 import com.code.enums.GendersEnum;
 import com.code.enums.JobStatusEnum;
+import com.code.enums.OfficersPromotionTasksTypeEnum;
 import com.code.enums.PromotionCandidateStatusEnum;
 import com.code.enums.PromotionMedicalTestStatusEnum;
 import com.code.enums.PromotionRankDaysEnum;
@@ -399,6 +401,22 @@ public class PromotionsService extends BaseService {
 	} catch (BusinessException e) {
 	    throw e;
 	}
+    }
+
+    public static List<PromotionTransactionData> getEligibleOfficersPromotionTransactionsByInstanceId(Long instanceId, EmployeeData employee, String taskType) throws BusinessException {
+	List<PromotionNotification> promotionNotifications = getPromotionNotificationByInstanceId(instanceId);
+	Long[] transactionsIds = new Long[promotionNotifications.size()];
+	Long regionId = null, empId = null;
+	String unitHkey = null;
+	if (taskType.equals(OfficersPromotionTasksTypeEnum.EMPLOYEE_TASK.getCode()))
+	    empId = employee.getEmpId();
+	else if (taskType.equals(OfficersPromotionTasksTypeEnum.MANAGER_TASK.getCode()))
+	    unitHkey = UnitsService.getHKeyPrefix(employee.getPhysicalUnitHKey());
+	else if (taskType.equals(OfficersPromotionTasksTypeEnum.REGION_COMMANDER_TASK.getCode()))
+	    regionId = employee.getPhysicalRegionId();
+	for (int i = 0; i < promotionNotifications.size(); i++)
+	    transactionsIds[i] = promotionNotifications.get(i).getTransactionId();
+	return getPromotionTransactionsByIdsAndUnitHkeyAndRegionIdAndEmpId(transactionsIds, unitHkey, regionId, empId);
     }
 
     public static byte[] getRankPowerReportDataBytes(List<Integer> netVacant, List<Integer> allowedPromotionCount, List<Integer> loadedBalanceWithdrawnFromPromotion) throws BusinessException {
@@ -4151,6 +4169,58 @@ public class PromotionsService extends BaseService {
 		qParams.put("P_DECISION_DATE", HijriDateService.getHijriDateString(decisionDate));
 	    }
 	    return DataAccess.executeNamedQuery(PromotionTransactionData.class, QueryNamesEnum.HCM_GET_PROMOTION_TRANSACTION_DATA_BY_DECISION_NUMBER_AND_DECISION_DATE.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+
+    }
+
+    public static List<PromotionTransactionData> getUnnotifiedOfficersPromotionTransactionsByRoyalNumberAndRoyalDate(String royalNumber, Date royalDate) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_ROYAL_NUMBER", (royalNumber == null || royalNumber.length() == 0) ? FlagsEnum.ALL.getCode() + "" : royalNumber);
+	    if (royalDate == null) {
+		qParams.put("P_ROYAL_DATE_FLAG", FlagsEnum.ALL.getCode() + "");
+		qParams.put("P_ROYAL_DATE", HijriDateService.getHijriSysDateString());
+	    } else {
+		qParams.put("P_ROYAL_DATE_FLAG", FlagsEnum.ON.getCode() + "");
+		qParams.put("P_ROYAL_DATE", HijriDateService.getHijriDateString(royalDate));
+	    }
+	    return DataAccess.executeNamedQuery(PromotionTransactionData.class, QueryNamesEnum.HCM_GET_UNNOTIFIED_OFFICERS_PROMOTION_TRANSACTIONS_DATA_BY_ROYAL_NUMBER_AND_ROYAL_DATE.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+
+    }
+
+    public static List<PromotionTransactionData> getPromotionTransactionsByIdsAndUnitHkeyAndRegionIdAndEmpId(Long[] transactionsIds, String unitHkey, Long regionId, Long empId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_IDS", transactionsIds);
+	    qParams.put("P_UNIT_HKEY", unitHkey == null ? FlagsEnum.ALL.getCode() + "" : (unitHkey + "%"));
+	    qParams.put("P_REGION_ID", regionId == null ? FlagsEnum.ALL.getCode() : regionId);
+	    qParams.put("P_EMP_ID", empId == null ? FlagsEnum.ALL.getCode() : empId);
+
+	    return DataAccess.executeNamedQuery(PromotionTransactionData.class, QueryNamesEnum.HCM_GET_PROMOTION_TRANSACTIONS_DATA_BY_IDS_AND_UNIT_HKEY_AND_REGION_ID_AND_EMP_ID.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+
+    }
+
+    public static List<PromotionNotification> getPromotionNotificationByInstanceId(Long instanceId) throws BusinessException {
+	return searchPromotionNotification(null, instanceId);
+    }
+
+    private static List<PromotionNotification> searchPromotionNotification(Long transactionId, Long instanceId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_TRANSACTION_ID", transactionId == null ? FlagsEnum.ALL.getCode() : transactionId);
+	    qParams.put("P_INSTANCE_ID", instanceId == null ? FlagsEnum.ALL.getCode() : instanceId);
+	    return DataAccess.executeNamedQuery(PromotionNotification.class, QueryNamesEnum.HCM_SEARCH_PROMOTION_NOTIFICATION.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");

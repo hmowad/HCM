@@ -360,6 +360,10 @@ public class ETRConfigurationService extends BaseService {
 	return configurationMap.get("HCM_WEBSERVICE_WSDL_LOCATION");
     }
 
+    public static String getPromotionOfficersNotificationsUnitsIds() {
+	return configurationMap.get("PROMOTION_OFFICERS_NOTIFICATIONS_UNITS_IDS");
+    }
+
     /*------------------------------------------------------Missions Configurations------------------------------------------------------*/
     public static String getMissionActivationStartDate() {
 	return configurationMap.get("MSN_ACTIVATION_START_DATE");
