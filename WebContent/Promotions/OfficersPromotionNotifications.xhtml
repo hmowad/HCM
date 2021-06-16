@@ -112,7 +112,7 @@
 
 				<tr>
 					<td width="100%">
-						<rich:dataTable id="employeesDataTableId" value="#{officersPromotionNotifications.promotionTransactions}" var="transaction" rows="#{officersPromotionNotifications.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
+						<rich:dataTable id="employeesDataTableId" value="#{officersPromotionNotifications.wfPromotionNotifications}" var="transaction" rows="#{officersPromotionNotifications.pageSize}" rowClasses="gridRowOdd,gridRowEven" rowKeyVar="index" styleClass="gridMaster" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);">
 
 							<rich:column style="width : 3%">
 								<f:facet name="header">#</f:facet>
@@ -120,19 +120,19 @@
 					</rich:column>
 							<rich:column style="width : 20%">
 								<f:facet name="header">#{msgs.label_name}</f:facet>
-								<h:outputText value="#{transaction.name}" />
+								<h:outputText value="#{transaction.empName}" />
 							</rich:column>
 							<rich:column style="width : 7%">
 								<f:facet name="header">#{msgs.label_militaryNumber}</f:facet>
-								<h:outputText value="#{transaction.newMilitaryNumber}" />
+								<h:outputText value="#{transaction.militaryNumber}" />
 							</rich:column>
 							<rich:column style="width : 10%">
 								<f:facet name="header">#{msgs.label_promotedRank}</f:facet>
-								<h:outputText value="#{transaction.newRankDesc}" />
+								<h:outputText value="#{transaction.rankDesc}" />
 							</rich:column>
 							<rich:column style="width : 7%">
 								<f:facet name="header">#{msgs.label_promotionDueDate}</f:facet>
-								<h:outputText value="#{transaction.oldDueDateString}" />
+								<h:outputText value="#{transaction.dueDateString}" />
 							</rich:column>
 							<rich:column style="width : 25%">
 								<f:facet name="header">#{msgs.label_physicalUnit}</f:facet>
@@ -144,7 +144,7 @@
 							</rich:column>
 							<rich:column style="width : 3%;">
 								<f:facet name="header">#{msgs.label_delete}</f:facet>
-								<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{officersPromotionNotifications.deletePromotionTransaction(transaction)}" disabled="#{officersPromotionNotifications.role != 'Requester'}">
+								<h:commandButton value="#{msgs.fa_times}" title="#{msgs.label_delete}" styleClass="btn_icon" action="#{officersPromotionNotifications.deleteWFPromotionNotificationData(transaction)}" disabled="#{officersPromotionNotifications.role != 'Requester'}">
 									<f:ajax execute="officersPromotionNotificationsFormId:employeesDataTableId" render="officersPromotionNotificationsFormId:employeesDataTableId officersPromotionNotificationsFormId:actionsSectionId officersPromotionNotificationsFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 								</h:commandButton>
 							</rich:column>
@@ -167,12 +167,12 @@
 				<tr>
 					<td width="100%">
 						<h:panelGroup id="actionsSectionId">
-							<h:panelGroup rendered="#{officersPromotionNotifications.promotionTransactions != null and officersPromotionNotifications.promotionTransactions.size() > 0}">
+							<h:panelGroup rendered="#{officersPromotionNotifications.wfPromotionNotifications != null and officersPromotionNotifications.wfPromotionNotifications.size() > 0}">
 								<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 									<tr>
 										<td width="100%">
 											<h:panelGroup rendered="#{officersPromotionNotifications.role == 'Requester'}">
-												<h:commandButton id="sendBtnId" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" action="#{officersPromotionNotifications.sendNotifications()}" styleClass="btn_normal_icon">
+												<h:commandButton id="sendBtnId" value="#{msgs.label_send} &nbsp; #{msgs.fa_paper_plane}" action="#{officersPromotionNotifications.initProcess()}" styleClass="btn_normal_icon">
 													<f:ajax render="officersPromotionNotificationsFormId:actionsSectionId officersPromotionNotificationsFormId:employeesDataTableId officersPromotionNotificationsFormId:notifyMessagesId" execute="officersPromotionNotificationsFormId:employeesDataTableId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 												</h:commandButton>
 											</h:panelGroup>

@@ -361,7 +361,7 @@ public class ETRConfigurationService extends BaseService {
     }
 
     public static String getPromotionOfficersNotificationsUnitsIds() {
-	return configurationMap.get("PROMOTION_OFFICERS_NOTIFICATIONS_UNITS_IDS");
+	return configurationMap.get("PRM_OFFICERS_NOTIFICATIONS_UNITS_IDS");
     }
 
     /*------------------------------------------------------Missions Configurations------------------------------------------------------*/

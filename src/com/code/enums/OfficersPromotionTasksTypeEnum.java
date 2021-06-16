@@ -4,7 +4,6 @@ public enum OfficersPromotionTasksTypeEnum {
 
     EMPLOYEE_TASK("EMPLOYEE_TASK"),
     MANAGER_TASK("MANAGER_TASK"),
-    REGION_COMMANDER_TASK("REGION_COMMANDER_TASK"),
     CONFIGURED_MANAGER_TASK("CONFIGURED_MANAGER_TASK");
 
     private String code;
