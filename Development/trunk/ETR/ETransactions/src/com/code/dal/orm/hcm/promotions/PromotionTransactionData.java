@@ -43,23 +43,7 @@ import com.code.services.util.HijriDateService;
 		query = " select d from PromotionTransactionData d " +
 			" where (:P_DECISION_NUMBER = '-1' or d.decisionNumber = :P_DECISION_NUMBER) "
 			+ "and (:P_DECISION_DATE_FLAG = '-1' or to_date(:P_DECISION_DATE, 'MI/MM/YYYY') = d.decisionDate)" +
-			" order by d.decisionDate"),
-
-	@NamedQuery(name = "hcm_promotionTransactionData_getPromotionTransactionDataOfficersUnnotifiedByRoyalDateAndRoyalNumber",
-		query = " select d from PromotionTransactionData d " +
-			" where (d.categoryId = 1) " +
-			" and (:P_ROYAL_NUMBER = '-1' or d.externalDecisionNumber = :P_ROYAL_NUMBER) " +
-			" and (:P_ROYAL_DATE_FLAG = '-1' or to_date(:P_ROYAL_DATE, 'MI/MM/YYYY') = d.externalDecisionDate) " +
-			" and (d.id not in (select n.transactionId from PromotionNotification n )) " +
-			" order by d.externalDecisionDate"),
-
-	@NamedQuery(name = "hcm_promotionTransactionData_getPromotionTransactionDataByIdsAndUnitHkeyAndRegionIdAndEmpId",
-		query = " select d from PromotionTransactionData d " +
-			" where d.id in (:P_IDS) " +
-			" and (:P_EMP_ID = -1 or d.empId = :P_EMP_ID) " +
-			" and (:P_UNIT_HKEY = '-1' or d.physicalUnitHkey like :P_UNIT_HKEY) " +
-			" and (:P_REGION_ID = -1 or d.physicalRegionId = :P_REGION_ID) " +
-			" order by d.externalDecisionDate "),
+			" order by d.decisionDate")
 })
 
 @Entity
@@ -138,12 +122,6 @@ public class PromotionTransactionData extends BaseEntity {
     private String externalCopies;
     private String attachments;
     private Long basedOnTransactionId;
-    private Long physicalUnitId;
-    private String physicalUnitHkey;
-    private String physicalUnitFullName;
-    private Long officialUnitId;
-    private String officialUnitFullName;
-    private Long physicalRegionId;
 
     private PromotionTransaction promotionTransaction;
 
@@ -887,66 +865,6 @@ public class PromotionTransactionData extends BaseEntity {
     public void setBasedOnTransactionId(Long basedOnTransactionId) {
 	this.basedOnTransactionId = basedOnTransactionId;
 	this.promotionTransaction.setBasedOnTransactionId(basedOnTransactionId);
-    }
-
-    @Basic
-    @Column(name = "PHYSICAL_UNIT_FULL_NAME")
-    public String getPhysicalUnitFullName() {
-	return physicalUnitFullName;
-    }
-
-    public void setPhysicalUnitFullName(String physicalUnitFullName) {
-	this.physicalUnitFullName = physicalUnitFullName;
-    }
-
-    @Basic
-    @Column(name = "OFFICIAL_UNIT_FULL_NAME")
-    public String getOfficialUnitFullName() {
-	return officialUnitFullName;
-    }
-
-    public void setOfficialUnitFullName(String officialUnitFullName) {
-	this.officialUnitFullName = officialUnitFullName;
-    }
-
-    @Basic
-    @Column(name = "PHYSICAL_UNIT_ID")
-    public Long getPhysicalUnitId() {
-	return physicalUnitId;
-    }
-
-    public void setPhysicalUnitId(Long physicalUnitId) {
-	this.physicalUnitId = physicalUnitId;
-    }
-
-    @Basic
-    @Column(name = "PHYSICAL_UNIT_HKEY")
-    public String getPhysicalUnitHkey() {
-	return physicalUnitHkey;
-    }
-
-    public void setPhysicalUnitHkey(String physicalUnitHkey) {
-	this.physicalUnitHkey = physicalUnitHkey;
-    }
-
-    @Basic
-    @Column(name = "OFFICIAL_UNIT_ID")
-    public Long getOfficialUnitId() {
-	return officialUnitId;
-    }
-
-    public void setOfficialUnitId(Long officialUnitId) {
-	this.officialUnitId = officialUnitId;
-    }
-
-    @Basic
-    @Column(name = "PHYSICAL_REGION_ID")
-    public Long getPhysicalRegionId() {
-	return physicalRegionId;
-    }
-
-    public void setPhysicalRegionId(Long physicalRegionId) {
-	this.physicalRegionId = physicalRegionId;
     }
 
     @Transient

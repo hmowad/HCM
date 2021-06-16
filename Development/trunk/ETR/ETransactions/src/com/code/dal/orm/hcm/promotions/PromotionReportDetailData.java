@@ -40,7 +40,15 @@ import com.code.services.util.HijriDateService;
 			" and r.status <> 20 " +
 			" and r.promotionTypeId = 1 " +
 			" and pd.empSocialID in (:P_EMPS_SOCIAL_IDS) " +
-			" order by pd.id")
+			" order by pd.id"),
+
+	@NamedQuery(name = "hcm_PromotionReportDetailData_getPromotionReportDetailDataOfficersByRoyalDateAndRoyalNumber",
+		query = " select d from PromotionReportDetailData d, PromotionReport r " +
+			" where (r.categoryId = 1) " +
+			" and (d.reportId = r.id) " +
+			" and (:P_ROYAL_NUMBER = '-1' or d.externalDecisionNumber = :P_ROYAL_NUMBER) " +
+			" and (:P_ROYAL_DATE_FLAG = '-1' or to_date(:P_ROYAL_DATE, 'MI/MM/YYYY') = d.externalDecisionDate) " +
+			" order by d.externalDecisionDate")
 })
 
 @Entity

@@ -7,12 +7,11 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import com.code.dal.orm.hcm.promotions.PromotionTransactionData;
+import com.code.dal.orm.workflow.hcm.promotions.WFPromotionNotificationData;
 import com.code.enums.NavigationEnum;
 import com.code.enums.WFProcessesEnum;
 import com.code.enums.WFTaskRolesEnum;
 import com.code.exceptions.BusinessException;
-import com.code.services.hcm.PromotionsService;
 import com.code.services.util.HijriDateService;
 import com.code.services.workflow.hcm.PromotionsWorkFlow;
 import com.code.ui.backings.base.WFBaseBacking;
@@ -25,7 +24,7 @@ public class OfficersPromotionNotifications extends WFBaseBacking {
     private Date royalOrderDate;
     private String royalOrderDateString;
 
-    private List<PromotionTransactionData> promotionTransactions;
+    private List<WFPromotionNotificationData> wfPromotionNotifications;
 
     private final int pageSize = 10;
 
@@ -37,15 +36,15 @@ public class OfficersPromotionNotifications extends WFBaseBacking {
 	super.init();
 	try {
 	    if (!this.role.equals(WFTaskRolesEnum.REQUESTER.getCode())) {
-		promotionTransactions = PromotionsService.getEligibleOfficersPromotionTransactionsByInstanceId(instance.getInstanceId(), loginEmpData, currentTask.getFlexField1());
-		if (promotionTransactions != null && promotionTransactions.size() > 0) {
-		    royalOrderDate = promotionTransactions.get(0).getExternalDecisionDate();
-		    royalOrderDateString = HijriDateService.getHijriDateString(royalOrderDate);
-		    royalOrderNumber = promotionTransactions.get(0).getExternalDecisionNumber();
+		wfPromotionNotifications = PromotionsWorkFlow.getWFPromotionNotifications(instance.getInstanceId(), loginEmpData, currentTask.getFlexField1());
+		if (wfPromotionNotifications != null && wfPromotionNotifications.size() > 0) {
+		    royalOrderDate = wfPromotionNotifications.get(0).getExternalDecisionDate();
+		    royalOrderDateString = wfPromotionNotifications.get(0).getDueDateString();
+		    royalOrderNumber = wfPromotionNotifications.get(0).getExternalDecisionNumber();
 		}
 
 	    } else {
-		this.processId = WFProcessesEnum.OFFICERS_PROMOTION.getCode();
+		this.processId = WFProcessesEnum.OFFICERS_PROMOTION_NOTIFICATION.getCode();
 		reset();
 	    }
 	} catch (BusinessException e) {
@@ -57,7 +56,7 @@ public class OfficersPromotionNotifications extends WFBaseBacking {
 	try {
 	    royalOrderNumber = "";
 	    royalOrderDate = HijriDateService.getHijriSysDate();
-	    promotionTransactions = new ArrayList<PromotionTransactionData>();
+	    wfPromotionNotifications = new ArrayList<WFPromotionNotificationData>();
 	} catch (BusinessException e) {
 	    e.printStackTrace();
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -66,22 +65,22 @@ public class OfficersPromotionNotifications extends WFBaseBacking {
 
     public void search() {
 	try {
-	    promotionTransactions = PromotionsService.getUnnotifiedOfficersPromotionTransactionsByRoyalNumberAndRoyalDate(royalOrderNumber, royalOrderDate);
+	    wfPromotionNotifications = PromotionsWorkFlow.costructWFPromotionNotifications(royalOrderNumber, royalOrderDate);
 	} catch (BusinessException e) {
 	    e.printStackTrace();
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
     }
 
-    public void deletePromotionTransaction(PromotionTransactionData promotionTransactionData) {
-	promotionTransactions.remove(promotionTransactionData);
-	if (promotionTransactions == null || promotionTransactions.size() == 0)
+    public void deleteWFPromotionNotificationData(WFPromotionNotificationData wfPromotionNotificationData) {
+	wfPromotionNotifications.remove(wfPromotionNotificationData);
+	if (wfPromotionNotifications == null || wfPromotionNotifications.size() == 0)
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
     }
 
-    public String sendNotifications() {
+    public String initProcess() {
 	try {
-	    PromotionsWorkFlow.sendOfficersPromotionNotifications(requester.getEmpId(), promotionTransactions, processId, taskUrl);
+	    PromotionsWorkFlow.initPromotionNotifications(requester.getEmpId(), wfPromotionNotifications, processId, taskUrl);
 	    this.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	    return NavigationEnum.OUTBOX.toString();
 	} catch (BusinessException e) {
@@ -124,12 +123,12 @@ public class OfficersPromotionNotifications extends WFBaseBacking {
 	this.royalOrderDateString = royalOrderDateString;
     }
 
-    public List<PromotionTransactionData> getPromotionTransactions() {
-	return promotionTransactions;
+    public List<WFPromotionNotificationData> getWfPromotionNotifications() {
+	return wfPromotionNotifications;
     }
 
-    public void setPromotionTransactions(List<PromotionTransactionData> promotionTransactions) {
-	this.promotionTransactions = promotionTransactions;
+    public void setWfPromotionNotifications(List<WFPromotionNotificationData> wfPromotionNotifications) {
+	this.wfPromotionNotifications = wfPromotionNotifications;
     }
 
     public int getPageSize() {
