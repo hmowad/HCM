@@ -541,11 +541,15 @@
 										</tr>
 										<tr>
 											<th>#{msgs.label_recruitmentRegion}</th>
-											<td colspan="5">
+											<td colspan="3">
 												<h:selectOneMenu value="#{newEmployeeRegistration.employee.recruitmentRegionId}" disabled="#{newEmployeeRegistration.viewOnly}">
 													<f:selectItem itemLabel="" />
 													<f:selectItems value="#{newEmployeeRegistration.officerRecruitmentRegions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
 												</h:selectOneMenu>
+											</td>
+											<th>#{msgs.label_courseEventJoiningDate}</th>
+											<td>
+												<util:hijri value="#{newEmployeeRegistration.employee.insertionDate}" viewOldRange="true"/>
 											</td>
 										</tr>
 									</h:panelGroup>

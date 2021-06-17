@@ -1820,7 +1820,7 @@ public class RecruitmentsService extends BaseService {
 		empData.setRecruitmentDate(recruitmentTransaction.getRecruitmentDate());
 
 	    if (empData.getEmpId() == null)
-		EmployeesService.addEmployee(empData, employeeQualificationsData, empData.getInsertionDate(), session);
+		EmployeesService.addEmployee(empData, employeeQualificationsData, session);
 	    else
 		EmployeesService.updateEmployee(empData, session);
 	    EmployeeLog log = new EmployeeLog.Builder().setJobId(recruitmentTransaction.getJobId()).setDegreeId(recruitmentTransaction.getDegreeId()).setRankId(recruitmentTransaction.getRankId()).setRankTitleId(recruitmentTransaction.getRankTitleId()).setSocialStatus(empData.getSocialStatus()).setOfficialUnitId(empData.getOfficialUnitId()).setGeneralSpecialization(empData.getGeneralSpecialization()).setPhysicalUnitId(empData.getPhysicalUnitId())

@@ -545,7 +545,7 @@ public class RecruitmentsWorkFlow extends BaseWorkFlow {
 	EmployeeData employee = EmployeesService.getEmployeeData(empId);
 	if (employee == null)
 	    throw new BusinessException("error_employeeDataError");
-	return constructWFRecruitment(processId, employee, basedOnOrderNumber, basedOnOrderDate, null, null, null, null, null, null, null);
+	return constructWFRecruitment(processId, employee, basedOnOrderNumber, basedOnOrderDate, null, null, null, null, employee.getInsertionDate(), null, null);
     }
 
     /**
