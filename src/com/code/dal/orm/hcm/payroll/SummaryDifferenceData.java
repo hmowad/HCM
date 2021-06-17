@@ -15,7 +15,8 @@ import javax.persistence.Table;
 		query = " select d from SummaryDifferenceData d"
 			+ " where d.employeeId = :P_EMP_ID"
 			+ " and (:P_CODE = '-1' or d.code like :P_CODE) "
-			+ " and d.status = :P_STATUS ")
+			+ " and d.status = :P_STATUS "
+			+ " order by d.summaryDate desc")
 })
 @Entity
 @Table(name = "BG_VW_DIFF_SUMMARIES")

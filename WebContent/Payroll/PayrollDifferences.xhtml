@@ -47,7 +47,7 @@
 					<h:panelGroup id="searchPanelId">
 						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 							<tr>
-								<th width="15%">#{msgs.label_compendiumNumber}</th>
+								<th width="15%">#{msgs.label_summaryDifferenceNumber}</th>
 								<td width="85%">
 									<h:inputText id="summaryCodeId" value="#{payrollDifferences.summaryCode}" />
 								</td>
@@ -87,7 +87,7 @@
 					<td width="100%">
 						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
 							<tr>
-								<td>#{msgs.label_selectPayrollDiffForFollowup}</td>
+								<td>#{msgs.label_selectSummaryDifferenceDetailsData}</td>
 							</tr>
 						</table>
 					</td>
@@ -106,11 +106,11 @@
 											<f:facet name="header">
 												<rich:columnGroup>
 													<rich:column rowspan="2">#</rich:column>
-													<rich:column colspan="2">#{msgs.label_compendium}</rich:column>
-													<rich:column colspan="2">#{msgs.label_dispensingOrder}</rich:column>
+													<rich:column colspan="2">#{msgs.label_summaryDifference}</rich:column>
+													<rich:column colspan="2">#{msgs.label_paymentIssueOrder}</rich:column>
 													<rich:column colspan="2">#{msgs.label_paymentOrder}</rich:column>
 													<rich:column colspan="2">#{msgs.label_chequeStep}</rich:column>
-													<rich:column rowspan="2">#{msgs.label_theNet}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_netamount}</rich:column>
 													<rich:column rowspan="2">#{msgs.label_select}</rich:column>
 													<rich:column breakRowBefore="true">#{msgs.label_theNumber}</rich:column>
 													<rich:column>#{msgs.label_date}</rich:column>
