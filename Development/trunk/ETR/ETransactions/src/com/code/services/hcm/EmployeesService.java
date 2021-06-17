@@ -68,21 +68,21 @@ public class EmployeesService extends BaseService {
     }
 
     // ----------------------- EmployeeData------------------------------------
-    public static void addEmployee(EmployeeData empData, EmployeeQualificationsData employeeQualificationsData, Date insertionDate, CustomSession... useSession) throws BusinessException {
+    public static void addEmployee(EmployeeData empData, EmployeeQualificationsData employeeQualificationsData, CustomSession... useSession) throws BusinessException {
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	try {
 	    if (!isOpenedSession)
 		session.beginTransaction();
 
-	    addEmployee(empData, insertionDate, session);
+	    addEmployee(empData, session);
 
 	    employeeQualificationsData.setEmployeeId(empData.getEmpId());
 
 	    addEmployeeQualifications(employeeQualificationsData, empData, session);
 
 	    EmployeeLog log = new EmployeeLog.Builder().setRankId(empData.getRankId()).setSocialStatus(empData.getSocialStatus()).setGeneralSpecialization(empData.getGeneralSpecialization()).setDegreeId(DegreesEnum.FIRST.getCode())
-		    .constructCommonFields(empData.getEmpId(), FlagsEnum.ON.getCode(), null, null, insertionDate != null ? insertionDate : HijriDateService.getHijriSysDate(), DataAccess.getTableName(Employee.class)).build();
+		    .constructCommonFields(empData.getEmpId(), FlagsEnum.ON.getCode(), null, null, empData.getInsertionDate() != null ? empData.getInsertionDate() : HijriDateService.getHijriSysDate(), DataAccess.getTableName(Employee.class)).build();
 	    LogService.logEmployeeData(log, session);
 
 	    if (!isOpenedSession)
@@ -98,15 +98,15 @@ public class EmployeesService extends BaseService {
 	    throw new BusinessException("error_general");
 	} finally {
 	    if (!isOpenedSession) {
-		session.close();
 		if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()) && empData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
-		    doPayrollIntegration(empData.getEmpId(), FlagsEnum.OFF.getCode());
+		    doPayrollIntegration(empData.getEmpId(), FlagsEnum.OFF.getCode(), session);
 		}
+		session.close();
 	    }
 	}
     }
 
-    private static void addEmployee(EmployeeData empData, Date insertionData, CustomSession... useSession) throws BusinessException {
+    private static void addEmployee(EmployeeData empData, CustomSession... useSession) throws BusinessException {
 	validateEmployee(empData);
 
 	boolean isOpenedSession = isSessionOpened(useSession);
@@ -145,7 +145,8 @@ public class EmployeesService extends BaseService {
 		empData.setCountryId(CountryService.getCountryByCode(CountriesEnum.SAUDI_ARABIA.getCode()).getId());
 
 	    empData.setMovementBlacklistFlag(FlagsEnum.OFF.getCode());
-	    empData.setInsertionDate(insertionData != null ? insertionData : HijriDateService.getHijriSysDate());
+	    if (empData.getInsertionDate() == null)
+		empData.setInsertionDate(HijriDateService.getHijriSysDate());
 
 	    DataAccess.addEntity(empData.getEmployee(), session);
 	    empData.setEmpId(empData.getEmployee().getId());
@@ -526,8 +527,13 @@ public class EmployeesService extends BaseService {
 	    throw new BusinessException("error_countryMandatory");
     }
 
-    private static void doPayrollIntegration(Long employeeId, Integer resendFlag) throws BusinessException {
+    private static void doPayrollIntegration(Long employeeId, Integer resendFlag, CustomSession... useSession) throws BusinessException {
 	String gregSysDateString = HijriDateService.hijriToGregDateString(HijriDateService.getHijriSysDateString());
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : null;
+	if (session == null)
+	    throw new BusinessException("error_general");
+	session.flushTransaction();
 	EmployeeData employee = EmployeesService.getEmployeeData(employeeId);
 	List<AdminDecisionEmployeeData> adminDecisionEmployeeDataList = new ArrayList<AdminDecisionEmployeeData>(Arrays.asList(new AdminDecisionEmployeeData(employee.getEmpId(), employee.getName(), null, null, gregSysDateString, gregSysDateString, System.currentTimeMillis() + "", null)));
 	if (employee.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()))
@@ -1693,7 +1699,7 @@ public class EmployeesService extends BaseService {
 			}
 		    }
 
-		    addEmployee(empData, qualificationsData.get(i), null, session);
+		    addEmployee(empData, qualificationsData.get(i), session);
 		}
 
 		session.commitTransaction();
