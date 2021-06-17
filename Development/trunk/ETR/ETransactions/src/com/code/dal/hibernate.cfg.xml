@@ -283,7 +283,8 @@
 		
 		<mapping class="com.code.dal.orm.workflow.hcm.WFDefinitionLetter" />
 
-		<mapping class="com.code.dal.orm.hcm.payroll.EmployeePayrollDifferenceData" />
+		<mapping class="com.code.dal.orm.hcm.payroll.SummaryDifferenceData" />
+		<mapping class="com.code.dal.orm.hcm.payroll.SummaryDifferenceDetailData" />
 		<mapping class="com.code.dal.orm.hcm.payroll.Degree" />
 		<mapping class="com.code.dal.orm.hcm.payroll.PayrollSalary" />
 		<mapping class="com.code.dal.orm.hcm.payroll.EmployeePenalitiesData" />
@@ -303,7 +304,6 @@
 		<mapping class="com.code.dal.orm.integration.payroll.PayrollIntegrationFailureLog" />
 		<mapping class="com.code.dal.orm.integration.payroll.PayrollIntegrationFailureLogData" />
 		
-		<mapping class="com.code.dal.orm.integration.finance.PaidIssueOrderData" />
 		
 		<mapping class="com.code.dal.orm.hcm.generalNews.GeneralNews" />
 		
