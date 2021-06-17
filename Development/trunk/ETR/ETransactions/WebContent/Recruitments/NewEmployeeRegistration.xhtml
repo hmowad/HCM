@@ -291,8 +291,8 @@
 											<h:outputText value="#{newEmployeeRegistration.employee.birthDateString}" rendered="#{newEmployeeRegistration.viewOnly or newEmployeeRegistration.employee.empId != null or newEmployeeRegistration.yaqeenFlag}" />
 										</td>
 										<td width="30%" colspan="2">
-											<h:commandButton action ="#{newEmployeeRegistration.yaqeenInformationRetrieval()}" onclick="return validateYaqeenRetrieval();" value="#{msgs.label_retrieveInformation}" title="#{msgs.label_retrieveInformation}" rendered="#{!newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.empId ==null and !newEmployeeRegistration.yaqeenFlag}" styleClass="btn_normal" >
-												<f:ajax execute="newEmployeeRegistrationFormId:basicDataPanelId" render="newEmployeeRegistrationFormId:basicDataPanelId newEmployeeRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}"/>
+											<h:commandButton action="#{newEmployeeRegistration.yaqeenInformationRetrieval()}" onclick="return validateYaqeenRetrieval();" value="#{msgs.label_retrieveInformation}" title="#{msgs.label_retrieveInformation}" rendered="#{!newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.empId ==null and !newEmployeeRegistration.yaqeenFlag and newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" styleClass="btn_normal">
+												<f:ajax execute="newEmployeeRegistrationFormId:basicDataPanelId" render="newEmployeeRegistrationFormId:basicDataPanelId newEmployeeRegistrationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 											</h:commandButton>
 										</td>
 										<td width="10%" rowspan="4" colspan="1">
@@ -300,81 +300,95 @@
 												onclick="#{!newEmployeeRegistration.viewOnly ? 'getImage('.concat(newEmployeeRegistration.empPhoto == null ? 1 : 0).concat(',').concat(newEmployeeRegistration.employee.empId).concat(');') : 'return false;'}" />
 										</td>
 									</tr>
-									
+
 									<tr>
-										<th width="15%" colspan="1" rowspan="2">
-											#{msgs.label_name}
-										</th>
+										<th width="15%" colspan="1" rowspan="2">#{msgs.label_name}</th>
 										<td width="75%" colspan="5">
-											<h:inputText id="firstNameId" value="#{newEmployeeRegistration.employee.firstName}" maxlength="50"  readonly="true" styleClass="inputDataNormal"/>
+											<h:inputText id="firstNameId" value="#{newEmployeeRegistration.employee.firstName}" maxlength="50" readonly="#{newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 											<h:outputText value=" " />
-											<h:inputText id="secondNameId" value="#{newEmployeeRegistration.employee.secondName}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+											<h:inputText id="secondNameId" value="#{newEmployeeRegistration.employee.secondName}" maxlength="50" readonly="#{newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 											<h:outputText value=" " />
-											<h:inputText id ="thirdNameId" value="#{newEmployeeRegistration.employee.thirdName}"  maxlength="50" readonly="true" styleClass="inputDataNormal" />
+											<h:inputText id="thirdNameId" value="#{newEmployeeRegistration.employee.thirdName}" maxlength="50" readonly="#{newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 											<h:outputText value=" " />
-											<h:inputText id="lastNameId" value="#{newEmployeeRegistration.employee.lastName}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+											<h:inputText id="lastNameId" value="#{newEmployeeRegistration.employee.lastName}" maxlength="50" readonly="#{newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 										</td>
 									</tr>
 									<tr>
 										<td width="75%" colspan="5">
-											<h:inputText id="firstNameEnId" value="#{newEmployeeRegistration.employee.firstNameEn}" maxlength="50"  readonly="true" styleClass="inputDataNormal"/>
+											<h:inputText id="firstNameEnId" value="#{newEmployeeRegistration.employee.firstNameEn}" maxlength="50" readonly="#{newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 											<h:outputText value=" " />
-											<h:inputText id="secondNameEnId" value="#{newEmployeeRegistration.employee.secondNameEn}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+											<h:inputText id="secondNameEnId" value="#{newEmployeeRegistration.employee.secondNameEn}" maxlength="50" readonly="#{newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 											<h:outputText value=" " />
-											<h:inputText id ="thirdNameEnId" value="#{newEmployeeRegistration.employee.thirdNameEn}"  maxlength="50" readonly="true" styleClass="inputDataNormal" />
+											<h:inputText id="thirdNameEnId" value="#{newEmployeeRegistration.employee.thirdNameEn}" maxlength="50" readonly="#{newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 											<h:outputText value=" " />
-											<h:inputText id="lastNameEnId" value="#{newEmployeeRegistration.employee.lastNameEn}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+											<h:inputText id="lastNameEnId" value="#{newEmployeeRegistration.employee.lastNameEn}" maxlength="50" readonly="#{newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 										</td>
 									</tr>
 									<tr>
-										<th width ="15%" colspan="1">
+										<th width="15%" colspan="1">
 											#{msgs.label_socialIdIssueDate}
 											<h:outputText value=" " />
 										</th>
-										<td width ="15%" colspan="1">
-											<h:outputText value="#{newEmployeeRegistration.employee.socialIDIssueDateString}"/>
+										<td width="15%" colspan="1">
+											<util:hijri value="#{newEmployeeRegistration.employee.socialIDIssueDate}" viewOldRange="true" rendered="#{!newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" />
+											<h:outputText value="#{newEmployeeRegistration.employee.socialIDIssueDateString}" rendered="#{newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" />
 										</td>
-										<th width ="15%" colspan="1">
+										<th width="15%" colspan="1">
 											#{msgs.label_issueExpiryDate}
 											<h:outputText value=" " />
 										</th>
-										<td width ="15%" colspan="1">
-											<h:outputText id="expiryDateId" value="#{newEmployeeRegistration.employee.socialIDExpiryDateString}" />
+										<td width="15%" colspan="1">
+											<util:hijri value="#{newEmployeeRegistration.employee.socialIDExpiryDate}" viewOldRange="true" rendered="#{!newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" />
+											<h:outputText id="expiryDateId" value="#{newEmployeeRegistration.employee.socialIDExpiryDateString}" rendered="#{newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" />
 										</td>
-										<th width ="15%" colspan="1">
+										<th width="15%" colspan="1">
 											#{msgs.label_socialIdIssuePlace}
 											<h:outputText value=" " />
 										</th>
-										<td width ="15%" colspan="1">
-											<h:outputText value="#{newEmployeeRegistration.employee.socialIDIssuePlaceDesc}" />
+										<td width="15%" colspan="1">
+											<h:outputText id="socialIdIssuePlaceDescId" value="#{newEmployeeRegistration.employee.socialIDIssuePlaceDesc}" />
+											<h:inputHidden id="socialIdIssuePlaceDescHId" value="#{newEmployeeRegistration.employee.socialIDIssuePlaceDesc}" />
+											<h:inputHidden id="socialIdIssuePlaceIDId" value="#{newEmployeeRegistration.employee.socialIDIssuePlaceID}" />
+											<h:outputText value=" " />
+											<h:commandButton value="#{msgs.fa_external_link}" onclick="getSocialIdIssuePlace(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{!newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" />
+
+
+											<h:outputText value="#{newEmployeeRegistration.employee.socialIDIssuePlaceDesc}" rendered="#{newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" />
 										</td>
 									</tr>
 									<tr>
-										<th width ="15%" colspan="1">
+										<th width="15%" colspan="1">
 											#{msgs.label_birthPlace}
 											<h:outputText value=" " />
 											<font style="color: red;">*</font>
 										</th>
-										<td width ="15%" colspan="1">
+										<td width="15%" colspan="1">
 											<h:inputText id="birthPlaceId" value="#{newEmployeeRegistration.employee.birthPlace}" readonly="#{newEmployeeRegistration.viewOnly}" maxlength="200" styleClass="inputDataLarge" />
-											
+
 										</td>
-										
-										<th width ="15%" colspan="1">#{msgs.label_gender}</th>
-										<td width ="15%" colspan="1">
-											<h:outputText value="#{msgs.label_male}" rendered="#{newEmployeeRegistration.employee.gender == 'M'}" />
-											<h:outputText value="#{msgs.label_female}" rendered="#{newEmployeeRegistration.employee.gender == 'F'}" />
+
+										<th width="15%" colspan="1">#{msgs.label_gender}</th>
+										<td width="15%" colspan="1">
+
+											<h:selectOneMenu id="genderId" value="#{newEmployeeRegistration.employee.gender}" rendered="#{!newEmployeeRegistration.yaqeenIntegrationEnabledFlag}">
+												<f:selectItem itemLabel=" " />
+												<f:selectItem itemLabel="#{msgs.label_male}" itemValue="M" />
+												<f:selectItem itemLabel="#{msgs.label_female}" itemValue="F" />
+											</h:selectOneMenu>
+
+											<h:outputText value="#{msgs.label_male}" rendered="#{newEmployeeRegistration.employee.gender == 'M' and newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" />
+											<h:outputText value="#{msgs.label_female}" rendered="#{newEmployeeRegistration.employee.gender == 'F' and newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" />
 										</td>
-										<th width ="15%" colspan="1">
-											#{msgs.label_nationality}
-										</th>
-										<td width ="15%" colspan="1">
-											<h:inputHidden id="countryIDId" value="#{newEmployeeRegistration.employee.countryId}" />
-											<h:outputText value="#{newEmployeeRegistration.employee.nationality}" />
-										</td>
-							
+										<h:panelGroup rendered="#{newEmployeeRegistration.yaqeenIntegrationEnabledFlag}">
+											<th width="15%" colspan="1">#{msgs.label_nationality}</th>
+											<td width="15%" colspan="1">
+												<h:inputHidden id="countryIDId" value="#{newEmployeeRegistration.employee.countryId}" />
+												<h:outputText value="#{newEmployeeRegistration.employee.nationality}" />
+											</td>
+										</h:panelGroup>
+
 									</tr>
-									
+
 									<tr>
 										<th>#{msgs.label_bloodGroup}</th>
 										<td>
@@ -404,8 +418,8 @@
 												<f:selectItem itemLabel="" />
 												<f:selectItem itemLabel="#{msgs.label_single}" itemValue="1" />
 												<f:selectItem itemLabel="#{msgs.label_married}" itemValue="2" />
-												<f:selectItem itemLabel="#{msgs.label_divorcee}" itemValue="3" /> 
-												<f:selectItem itemLabel="#{msgs.label_widowed}" itemValue="4" /> 
+												<f:selectItem itemLabel="#{msgs.label_divorcee}" itemValue="3" />
+												<f:selectItem itemLabel="#{msgs.label_widowed}" itemValue="4" />
 											</h:selectOneMenu>
 											<h:outputText value="#{msgs.label_single}" rendered="#{newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.socialStatus == 1}" />
 											<h:outputText value="#{msgs.label_married}" rendered="#{newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.socialStatus == 2}" />
@@ -413,7 +427,7 @@
 											<h:outputText value="#{msgs.label_widowed}" rendered="#{newEmployeeRegistration.viewOnly and newEmployeeRegistration.employee.socialStatus == 4}" />
 										</td>
 									</tr>
-								</table>	
+								</table>
 							</h:panelGroup>
 						</td>
 					</tr>

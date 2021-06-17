@@ -247,7 +247,7 @@
 										<font style="color: red;">*</font>
 									</th>
 									<td width="15%" colspan="1">
-										<h:outputText id="socialIDId" value="#{employeesDataView.employee.socialID}" styleClass="inputDataLarge" maxlength="10" />
+										<h:inputText id="socialIDId" value="#{employeesDataView.employee.socialID}" readonly="#{employeesDataView.yaqeenIntegrationEnabledFlag}" styleClass="inputDataLarge" maxlength="10" />
 									</td>
 									<th width="15%" colspan="1">
 										#{msgs.label_birthDate}
@@ -255,10 +255,11 @@
 										<font style="color: red;">*</font>
 									</th>
 									<td width="15%" colspan="1">
-										<h:outputText id="birthDateId" value="#{employeesDataView.employee.birthDateString}" />
+										<util:hijri value="#{employeesDataView.employee.birthDate}" rendered="#{!employeesDataView.yaqeenIntegrationEnabledFlag}" nullable="true" viewOldRange="true" />
+										<h:outputText id="birthDateId" value="#{employeesDataView.employee.birthDateString}" rendered="#{employeesDataView.yaqeenIntegrationEnabledFlag}" />
 									</td>
 									<td width="30%" colspan="2">
-										<h:commandButton action="#{employeesDataView.updateEmployeeDataFromYaqeen()}" value="#{msgs.label_retrieveInformation}" title="#{msgs.label_retrieveInformation}" rendered="#{not employeesDataView.viewOnly or employeesDataView.socialIdNeedToBeUpdated()}" styleClass="btn_normal">
+										<h:commandButton action="#{employeesDataView.updateEmployeeDataFromYaqeen()}" value="#{msgs.label_retrieveInformation}" title="#{msgs.label_retrieveInformation}" rendered="#{(not employeesDataView.viewOnly or employeesDataView.socialIdNeedToBeUpdated()) and employeesDataView.yaqeenIntegrationEnabledFlag}" styleClass="btn_normal">
 											<f:ajax execute="employeesDataViewFormId:basicDataPanelId" render="employeesDataViewFormId:basicDataPanelId employeesDataViewFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 										</h:commandButton>
 									</td>
@@ -270,24 +271,24 @@
 								<tr>
 									<th width="15%" colspan="1" rowspan="2">#{msgs.label_name}</th>
 									<td width="75%" colspan="5">
-										<h:inputText id="firstNameId" value="#{employeesDataView.employee.firstName}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+										<h:inputText id="firstNameId" value="#{employeesDataView.employee.firstName}" maxlength="50" readonly="#{employeesDataView.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 										<h:outputText value=" " />
-										<h:inputText id="secondNameId" value="#{employeesDataView.employee.secondName}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+										<h:inputText id="secondNameId" value="#{employeesDataView.employee.secondName}" maxlength="50" readonly="#{employeesDataView.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 										<h:outputText value=" " />
-										<h:inputText id="thirdNameId" value="#{employeesDataView.employee.thirdName}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+										<h:inputText id="thirdNameId" value="#{employeesDataView.employee.thirdName}" maxlength="50" readonly="#{employeesDataView.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 										<h:outputText value=" " />
-										<h:inputText id="lastNameId" value="#{employeesDataView.employee.lastName}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+										<h:inputText id="lastNameId" value="#{employeesDataView.employee.lastName}" maxlength="50" readonly="#{employeesDataView.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 									</td>
 								</tr>
 								<tr>
 									<td width="75%" colspan="5">
-										<h:inputText id="firstNameEnId" value="#{employeesDataView.employee.firstNameEn}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+										<h:inputText id="firstNameEnId" value="#{employeesDataView.employee.firstNameEn}" maxlength="50" readonly="#{employeesDataView.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 										<h:outputText value=" " />
-										<h:inputText id="secondNameEnId" value="#{employeesDataView.employee.secondNameEn}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+										<h:inputText id="secondNameEnId" value="#{employeesDataView.employee.secondNameEn}" maxlength="50" readonly="#{employeesDataView.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 										<h:outputText value=" " />
-										<h:inputText id="thirdNameEnId" value="#{employeesDataView.employee.thirdNameEn}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+										<h:inputText id="thirdNameEnId" value="#{employeesDataView.employee.thirdNameEn}" maxlength="50" readonly="#{employeesDataView.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 										<h:outputText value=" " />
-										<h:inputText id="lastNameEnId" value="#{employeesDataView.employee.lastNameEn}" maxlength="50" readonly="true" styleClass="inputDataNormal" />
+										<h:inputText id="lastNameEnId" value="#{employeesDataView.employee.lastNameEn}" maxlength="50" readonly="#{employeesDataView.yaqeenIntegrationEnabledFlag}" styleClass="inputDataNormal" />
 									</td>
 								</tr>
 								<tr>
@@ -296,21 +297,29 @@
 										<h:outputText value=" " />
 									</th>
 									<td width="15%" colspan="1">
-										<h:outputText value="#{employeesDataView.employee.socialIDIssueDateString}" />
+										<util:hijri value="#{employeesDataView.employee.socialIDIssueDate}" viewOldRange="true" rendered="#{!employeesDataView.yaqeenIntegrationEnabledFlag}" />
+										<h:outputText value="#{employeesDataView.employee.socialIDIssueDateString}" rendered="#{employeesDataView.yaqeenIntegrationEnabledFlag}" />
 									</td>
 									<th width="15%" colspan="1">
 										#{msgs.label_issueExpiryDate}
 										<h:outputText value=" " />
 									</th>
 									<td width="15%" colspan="1">
-										<h:outputText id="expiryDateId" value="#{employeesDataView.employee.socialIDExpiryDateString}" />
+										<util:hijri value="#{employeesDataView.employee.socialIDExpiryDate}" viewOldRange="true" rendered="#{!employeesDataView.yaqeenIntegrationEnabledFlag}" />
+										<h:outputText id="expiryDateId" value="#{employeesDataView.employee.socialIDExpiryDateString}" rendered="#{employeesDataView.yaqeenIntegrationEnabledFlag}" />
 									</td>
 									<th width="15%" colspan="1">
 										#{msgs.label_socialIdIssuePlace}
 										<h:outputText value=" " />
 									</th>
 									<td width="15%" colspan="1">
-										<h:outputText value="#{employeesDataView.employee.socialIDIssuePlaceDesc}" />
+										<h:outputText id="socialIdIssuePlaceDescId" value="#{employeesDataView.employee.socialIDIssuePlaceDesc}" />
+										<h:inputHidden id="socialIdIssuePlaceDescHId" value="#{employeesDataView.employee.socialIDIssuePlaceDesc}" />
+										<h:inputHidden id="socialIdIssuePlaceIDId" value="#{employeesDataView.employee.socialIDIssuePlaceID}" />
+										<h:outputText value=" " />
+										<h:commandButton value="#{msgs.fa_external_link}" onclick="getSocialIdIssuePlace(); return false;" title="#{msgs.label_select}" styleClass="btn_icon" rendered="#{!employeesDataView.yaqeenIntegrationEnabledFlag}" />
+
+										<h:outputText value="#{employeesDataView.employee.socialIDIssuePlaceDesc}" rendered="#{employeesDataView.yaqeenIntegrationEnabledFlag}" />
 									</td>
 								</tr>
 								<tr>
@@ -325,13 +334,21 @@
 
 									<th width="15%" colspan="1">#{msgs.label_gender}</th>
 									<td width="15%" colspan="1">
-										<h:outputText value="#{msgs.label_male}" rendered="#{employeesDataView.employee.gender == 'M'}" />
-										<h:outputText value="#{msgs.label_female}" rendered="#{employeesDataView.employee.gender == 'F'}" />
+										<h:selectOneMenu id="genderId" value="#{employeesDataView.employee.gender}" rendered="#{!employeesDataView.yaqeenIntegrationEnabledFlag}">
+											<f:selectItem itemLabel=" " />
+											<f:selectItem itemLabel="#{msgs.label_male}" itemValue="M" />
+											<f:selectItem itemLabel="#{msgs.label_female}" itemValue="F" />
+										</h:selectOneMenu>
+
+										<h:outputText value="#{msgs.label_male}" rendered="#{employeesDataView.employee.gender == 'M' and employeesDataView.yaqeenIntegrationEnabledFlag}" />
+										<h:outputText value="#{msgs.label_female}" rendered="#{employeesDataView.employee.gender == 'F' and employeesDataView.yaqeenIntegrationEnabledFlag}" />
 									</td>
-									<th width="15%" colspan="1">#{msgs.label_nationality}</th>
-									<td width="15%" colspan="1">
-										<h:outputText value="#{employeesDataView.employee.nationality}" />
-									</td>
+									<h:panelGroup rendered="#{employeesDataView.yaqeenIntegrationEnabledFlag}">
+										<th width="15%" colspan="1">#{msgs.label_nationality}</th>
+										<td width="15%" colspan="1">
+											<h:outputText value="#{employeesDataView.employee.nationality}" />
+										</td>
+									</h:panelGroup>
 
 								</tr>
 
@@ -367,7 +384,7 @@
 									</td>
 									<th>#{msgs.label_profession}</th>
 									<td>
-										<h:outputText value="#{employeesDataView.employee.occupationDescription}"/>
+										<h:outputText value="#{employeesDataView.employee.occupationDescription}" />
 									</td>
 								</tr>
 							</table>
@@ -829,13 +846,13 @@
 										</td>
 										<th width="15%">#{msgs.label_ipPhoneExt}</th>
 										<td width="20%">
-											<h:inputText value="#{employeesDataView.employee.ipPhoneExt}"  maxlength="6" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
+											<h:inputText value="#{employeesDataView.employee.ipPhoneExt}" maxlength="6" styleClass="inputDataLarge" onkeypress="return isDigit(event);" />
 										</td>
 									</tr>
 									<tr>
 										<th width="15%">#{msgs.label_privateMobileNumber}</th>
 										<td width="20%">
-											<h:inputText id="privateMobileNumberId" value="#{employeesDataView.employee.privateMobileNumber}"  styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
+											<h:inputText id="privateMobileNumberId" value="#{employeesDataView.employee.privateMobileNumber}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
 										</td>
 										<th width="15%">#{msgs.label_directPhoneNumber}</th>
 										<td width="50%" colspan="2">
@@ -845,7 +862,7 @@
 									<tr>
 										<th width="15%">#{msgs.label_officialMobileNumber}</th>
 										<td width="25%">
-											<h:inputText id="officialMobileNumberId" value="#{employeesDataView.employee.officialMobileNumber}"  styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
+											<h:inputText id="officialMobileNumberId" value="#{employeesDataView.employee.officialMobileNumber}" styleClass="inputDataLarge" maxlength="10" onkeypress="return isDigit(event);" />
 										</td>
 										<th width="15%">#{msgs.label_shieldMobileNumber}</th>
 										<td width="25%">
