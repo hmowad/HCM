@@ -23,6 +23,7 @@ import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
 import com.code.enums.RanksEnum;
 import com.code.exceptions.BusinessException;
+import com.code.services.config.ETRConfigurationService;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.TrainingSetupService;
 import com.code.services.security.SecurityService;
@@ -51,6 +52,7 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
     private boolean viewOnly;
     private boolean employeeHasRecruitmentRequest;
     private boolean yaqeenFlag = false;
+    private boolean yaqeenIntegrationEnabledFlag;
 
     private int pageSize = 10;
 
@@ -188,6 +190,7 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 	}
 
 	qualificationLevels = TrainingSetupService.getAllQualificationLevels();
+	yaqeenIntegrationEnabledFlag = (ETRConfigurationService.getYaqeenEnabledFlag() != null && ETRConfigurationService.getYaqeenEnabledFlag().equals(FlagsEnum.ON.getCode())) ? true : false;
 
 	if (employee == null)
 	    resetForm();
@@ -381,6 +384,14 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 
     public void setYaqeenFlag(boolean yaqeenFlag) {
 	this.yaqeenFlag = yaqeenFlag;
+    }
+
+    public boolean isYaqeenIntegrationEnabledFlag() {
+	return yaqeenIntegrationEnabledFlag;
+    }
+
+    public void setYaqeenIntegrationEnabledFlag(boolean yaqeenIntegrationEnabledFlag) {
+	this.yaqeenIntegrationEnabledFlag = yaqeenIntegrationEnabledFlag;
     }
 
 }

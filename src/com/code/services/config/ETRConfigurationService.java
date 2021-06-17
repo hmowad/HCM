@@ -844,6 +844,10 @@ public class ETRConfigurationService extends BaseService {
 	setConfigValue(externalServiceAuthCode, externalServiceAuthValue, null);
     }
 
+    public static Integer getYaqeenEnabledFlag() {
+	return Integer.parseInt(configurationMap.get("YAQEEN_ENABLED_FLAG"));
+    }
+
     public static String getYaqeenSystemCode() {
 	return getETRConfigByCode("SYSTEM_CODE_FOR_YAQEEN").getValue();
     }

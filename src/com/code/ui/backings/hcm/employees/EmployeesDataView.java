@@ -24,6 +24,7 @@ import com.code.enums.MenuActionsEnum;
 import com.code.enums.MenuCodesEnum;
 import com.code.enums.RegionsEnum;
 import com.code.exceptions.BusinessException;
+import com.code.services.config.ETRConfigurationService;
 import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.PayrollsService;
 import com.code.services.hcm.TrainingSetupService;
@@ -55,6 +56,8 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
     private boolean nonSaudiDoctorContractorFlag;
     private EmployeeMedicalStaffData employeeMedicalStaffData;
 
+    private boolean yaqeenIntegrationEnabledFlag;
+
     public EmployeesDataView() {
 	init();
     }
@@ -67,6 +70,7 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 	    employeeQualificationsData = EmployeesService.getEmployeeQualificationsByEmpId(loginEmpData.getEmpId());
 	    viewOnly = true;
 	    viewSaveBtnForYaqeen = socialIdNeedToBeUpdated();
+	    yaqeenIntegrationEnabledFlag = (ETRConfigurationService.getYaqeenEnabledFlag() != null && ETRConfigurationService.getYaqeenEnabledFlag().equals(FlagsEnum.ON.getCode())) ? true : false;
 
 	    EmployeeData empParam;
 	    EmployeeQualificationsData employeeQualificationsDataParam;
@@ -357,6 +361,14 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 
     public void setViewSaveBtnForYaqeen(boolean viewSaveBtnForYaqeen) {
 	this.viewSaveBtnForYaqeen = viewSaveBtnForYaqeen;
+    }
+
+    public boolean isYaqeenIntegrationEnabledFlag() {
+	return yaqeenIntegrationEnabledFlag;
+    }
+
+    public void setYaqeenIntegrationEnabledFlag(boolean yaqeenIntegrationEnabledFlag) {
+	this.yaqeenIntegrationEnabledFlag = yaqeenIntegrationEnabledFlag;
     }
 
 }
