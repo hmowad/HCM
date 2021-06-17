@@ -9,9 +9,10 @@ import com.code.dal.DataAccess;
 import com.code.dal.orm.hcm.payroll.Degree;
 import com.code.dal.orm.hcm.payroll.EmployeeAllowancesData;
 import com.code.dal.orm.hcm.payroll.EmployeeBonusesData;
-import com.code.dal.orm.hcm.payroll.EmployeePayrollDifferenceData;
 import com.code.dal.orm.hcm.payroll.EmployeePenalitiesData;
 import com.code.dal.orm.hcm.payroll.PayrollSalary;
+import com.code.dal.orm.hcm.payroll.SummaryDifferenceData;
+import com.code.dal.orm.hcm.payroll.SummaryDifferenceDetailData;
 import com.code.enums.FlagsEnum;
 import com.code.enums.QueryNamesEnum;
 import com.code.exceptions.BusinessException;
@@ -22,17 +23,33 @@ public class PayrollsService extends BaseService {
     private PayrollsService() {
     }
 
-    public static List<EmployeePayrollDifferenceData> getEmployeePayrollDifferences(Long empId, int transactionStatus, String elementDescription) throws BusinessException {
-	return searchEmployeePayrollDifferences(empId, transactionStatus, elementDescription);
+    public static List<SummaryDifferenceData> getSummaryPayrollDifferencesBySummaryCodeAndEmployeeIdAndOrderStatus(String summaryCode, Long empId, int orderStatus) throws BusinessException {
+	return searchSummaryPayrollDifferences(summaryCode, empId, orderStatus);
     }
 
-    private static List<EmployeePayrollDifferenceData> searchEmployeePayrollDifferences(Long empId, int transactionStatus, String elementDescription) throws BusinessException {
+    private static List<SummaryDifferenceData> searchSummaryPayrollDifferences(String summaryCode, Long empId, int orderStatus) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_CODE", (summaryCode == null || summaryCode.equals("")) ? (FlagsEnum.ALL.getCode() + "") : ("%" + summaryCode + "%"));
+	    qParams.put("P_STATUS", orderStatus);
 	    qParams.put("P_EMP_ID", empId);
-	    qParams.put("P_TRANSACTION_STATUS", transactionStatus);
-	    qParams.put("P_ELEMENT_DESC", (elementDescription == null || elementDescription.equals("")) ? FlagsEnum.ALL.getCode() + "" : "%" + elementDescription + "%");
-	    return DataAccess.executeNamedQuery(EmployeePayrollDifferenceData.class, QueryNamesEnum.HCM_GET_PAYROLL_DIFF_BY_TRANS_STATUS.getCode(), qParams);
+	    return DataAccess.executeNamedQuery(SummaryDifferenceData.class, QueryNamesEnum.HCM_GET_SUMMARY_PAYROLL_DIFF_BY_SUMMARY_CODE_AND_EMPLOYEE_ID_AND_ORDER_STATUS.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    public static List<SummaryDifferenceDetailData> getSummaryDifferenceDetailDataBySummaryCodeAndEmployeeId(String summaryCode, Long empId) throws BusinessException {
+	return searchSummaryDifferenceDetailData(summaryCode, empId);
+    }
+
+    private static List<SummaryDifferenceDetailData> searchSummaryDifferenceDetailData(String summaryCode, Long empId) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_CODE", summaryCode);
+	    qParams.put("P_EMP_ID", empId);
+	    return DataAccess.executeNamedQuery(SummaryDifferenceDetailData.class, QueryNamesEnum.HCM_GET_SUMMARY_DIFFERENCE_DETAIL_DATA_BY_SUMMARY_CODE_AND_EMPLOYEE_ID.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
 	    throw new BusinessException("error_general");

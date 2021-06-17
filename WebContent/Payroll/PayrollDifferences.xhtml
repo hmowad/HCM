@@ -44,15 +44,17 @@
 
 				<tr>
 					<td>
+					<h:panelGroup id="searchPanelId">
 						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 							<tr>
-								<th width="15%">#{msgs.label_elementDescription}</th>
+								<th width="15%">#{msgs.label_compendiumNumber}</th>
 								<td width="85%">
-									<h:inputText id="elementDescId" value="#{payrollDifferences.elementDescription}" />
+									<h:inputText id="summaryCodeId" value="#{payrollDifferences.summaryCode}" />
 								</td>
 							</tr>
 
 						</table>
+						</h:panelGroup>
 					</td>
 				</tr>
 
@@ -65,12 +67,12 @@
 						<table class="actionsSection" border="0" cellpadding="0" cellspacing="0">
 							<tr>
 								<td width="100%">
-									<h:commandButton value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{payrollDifferences.search}" styleClass="btn_normal_icon">
-										<f:ajax render="payrollDifferencesFormId:payrollDiffId payrollDifferencesFormId:amountSumId payrollDifferencesFormId:issueOrderPanelId" execute="elementDescId" />
-									</h:commandButton>
-									<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{payrollDifferences.resetForm}" styleClass="btn_normal_icon">
-										<f:ajax render="payrollDifferencesFormId:elementDescId payrollDifferencesFormId:payrollDiffId payrollDifferencesFormId:amountSumId payrollDifferencesFormId:issueOrderPanelId" />
-									</h:commandButton>
+										<h:commandButton id="searchBtnId" value="#{msgs.label_search} &nbsp; #{msgs.fa_search}" action="#{payrollDifferences.search()}" styleClass="btn_normal_icon">
+										<f:ajax render="payrollDifferencesFormId:SummaryPayrollDiffId summaryDifferenceDetailDataListTitleDataPanelId payrollDifferencesFormId:summaryDifferenceDetailDataListPanelId payrollDifferencesFormId:notifyMessagesId" execute="payrollDifferencesFormId:searchPanelId" />
+										</h:commandButton>
+										<h:commandButton value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" action="#{payrollDifferences.resetForm()}" styleClass="btn_normal_icon">
+											<f:ajax render="payrollDifferencesFormId:searchPanelId payrollDifferencesFormId:SummaryPayrollDiffId summaryDifferenceDetailDataListTitleDataPanelId payrollDifferencesFormId:summaryDifferenceDetailDataListPanelId payrollDifferencesFormId:notifyMessagesId"/>
+										</h:commandButton>
 								</td>
 							</tr>
 						</table>
@@ -80,7 +82,7 @@
 				<tr>
 					<td width="100%" height="5" />
 				</tr>
-
+				
 				<tr>
 					<td width="100%">
 						<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
@@ -96,183 +98,160 @@
 				</tr>
 
 				<tr>
-					<td align="center" width="100%">
-						<rich:dataTable id="payrollDiffId" rowKeyVar="index" var="payrollDiff" value="#{payrollDifferences.payrollDifferencesList}" rows="#{payrollDifferences.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
-							<rich:column>
-								<f:facet name="header">#</f:facet>
-	                                #{index + 1}
-	                            </rich:column>
-							<rich:column>
-								<f:facet name="header">#{msgs.label_issueOrderData}</f:facet>
-								<h:commandButton onclick="" value="#{msgs.fa_check_square}" action="#{payrollDifferences.selectPayrollDiff(payrollDiff)}" title="#{msgs.label_select}" styleClass="btn_icon">
-									<f:ajax render="payrollDifferencesFormId:issueOrderPanelId payrollDifferencesFormId:notifyMessagesId" />
-								</h:commandButton>
-							</rich:column>
-							<rich:column>
-								<f:facet name="header">
-									<h:outputText value="#{msgs.label_elementDescription}" />
-								</f:facet>
-								<h:outputText value="#{payrollDiff.elementDescription}" />
-							</rich:column>
-							<rich:column>
-								<f:facet name="header">
-									<h:outputText value="#{msgs.label_decisionNumber}" />
-								</f:facet>
-								<h:outputText value="#{payrollDiff.decesionNumber}" />
-							</rich:column>
-							<rich:column>
-								<f:facet name="header">
-									<h:outputText value="#{msgs.label_decisionDate}" />
-								</f:facet>
-								<h:outputText value="#{payrollDiff.decesionDate}" />
-							</rich:column>
-							<rich:column>
-								<f:facet name="header">
-									<h:outputText value="#{msgs.label_elementStartDate}" />
-								</f:facet>
-								<h:outputText value="#{payrollDiff.elementStartDate}" />
-							</rich:column>
-							<rich:column>
-								<f:facet name="header">
-									<h:outputText value="#{msgs.label_elementEndDate}" />
-								</f:facet>
-								<h:outputText value="#{payrollDiff.elementEndDate}" />
-							</rich:column>
-							<rich:column>
-								<f:facet name="header">
-									<h:outputText value="#{msgs.label_amount}" />
-								</f:facet>
-								<h:outputText value="#{payrollDiff.totalAmount}" />
-							</rich:column>
-							<f:facet name="footer">
-								<rich:dataScroller oncomplete="unMaskScreen()" fastControls="hide">
-									<f:facet name="first"> #{msgs.label_first} </f:facet>
-									<f:facet name="last"> #{msgs.label_last} </f:facet>
-									<f:facet name="next"> #{msgs.label_next} </f:facet>
-									<f:facet name="previous"> #{msgs.label_previous} </f:facet>
-								</rich:dataScroller>
-							</f:facet>
-						</rich:dataTable>
-					</td>
-				</tr>
-
-				<tr>
-					<td width="100%" height="5" />
-				</tr>
-
-				<tr>
-					<td width="100%">
-						<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+					<td align="center" width="100%" colspan="1">
+					<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
 							<tr>
-								<td width="60"></td>
-								<th width="20%">
-									<h:outputText value="#{msgs.label_amountSum}" />
-								</th>
-								<td width="20%">
-									<h:outputText id="amountSumId" value="#{payrollDifferences.amountSum}" />
+								<td width="100%">
+						<rich:dataTable id="SummaryPayrollDiffId" rowKeyVar="index" var="SummaryPayrollDiff" value="#{payrollDifferences.summaryDifferencesList}" rows="#{payrollDifferences.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+											<f:facet name="header">
+												<rich:columnGroup>
+													<rich:column rowspan="2">#</rich:column>
+													<rich:column colspan="2">#{msgs.label_compendium}</rich:column>
+													<rich:column colspan="2">#{msgs.label_dispensingOrder}</rich:column>
+													<rich:column colspan="2">#{msgs.label_paymentOrder}</rich:column>
+													<rich:column colspan="2">#{msgs.label_chequeStep}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_theNet}</rich:column>
+													<rich:column rowspan="2">#{msgs.label_select}</rich:column>
+													<rich:column breakRowBefore="true">#{msgs.label_theNumber}</rich:column>
+													<rich:column>#{msgs.label_date}</rich:column>
+													<rich:column>#{msgs.label_theNumber}</rich:column>
+													<rich:column>#{msgs.label_date}</rich:column>
+													<rich:column>#{msgs.label_theNumber}</rich:column>
+													<rich:column>#{msgs.label_date}</rich:column>
+													<rich:column>#{msgs.label_theNumber}</rich:column>
+													<rich:column>#{msgs.label_date}</rich:column>
+												</rich:columnGroup>
+											</f:facet>
+											<rich:column style="width:9%">
+												#{index + 1}
+											</rich:column>
+											<rich:column style="width:9%">
+												<h:outputText value="#{SummaryPayrollDiff.code}" />
+											</rich:column>
+											<rich:column style="width:9%">
+												<h:outputText value="#{SummaryPayrollDiff.summaryDate}" />
+											</rich:column>
+											<rich:column style="width:9%">
+												<h:outputText value="#{SummaryPayrollDiff.orderNumber}" />
+											</rich:column>
+											<rich:column style="width:9%">
+												<h:outputText value="#{SummaryPayrollDiff.orderDate}" />
+											</rich:column>
+											<rich:column style="width:9%">
+												<h:outputText value="#{SummaryPayrollDiff.paymentOrderNumber}" />
+											</rich:column>
+											<rich:column style="width:9%">
+												<h:outputText value="#{SummaryPayrollDiff.paymentOrderDate}" />
+											</rich:column>
+											<rich:column style="width:9%">
+												<h:outputText value="#{SummaryPayrollDiff.chequeNumber}" />
+											</rich:column>
+											<rich:column style="width:9%">
+												<h:outputText value="#{SummaryPayrollDiff.chequeDate}" />
+											</rich:column>
+											<rich:column style="width:9">
+												<h:outputText value="#{SummaryPayrollDiff.netAmount}" />
+											</rich:column>
+											<rich:column style="width:9%">
+												<h:commandButton onclick="" value="#{msgs.fa_check_square}" action="#{payrollDifferences.selectSummaryPayrollDiff(SummaryPayrollDiff)}" title="#{msgs.label_select}" styleClass="btn_icon">
+													<f:ajax render="payrollDifferencesFormId:summaryDifferenceDetailDataListTitleDataPanelId payrollDifferencesFormId:summaryDifferenceDetailDataListPanelId payrollDifferencesFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+												</h:commandButton>
+											</rich:column>
+											<f:facet name="footer">
+												<rich:dataScroller fastControls="hide" oncomplete="#{rich:component('reload')}.hide()" maxPages="5">
+													<f:facet name="first">
+												#{msgs.label_first}
+                                            </f:facet>
+													<f:facet name="last">
+                                                #{msgs.label_last}
+                                            </f:facet>
+													<f:facet name="next">
+                                                #{msgs.label_next}
+                                            </f:facet>
+													<f:facet name="previous">
+                                                #{msgs.label_previous}
+                                            </f:facet>
+												</rich:dataScroller>
+											</f:facet>
+									</rich:dataTable>
 								</td>
 							</tr>
 						</table>
 					</td>
 				</tr>
-
 				<tr>
 					<td width="100%" height="5" />
 				</tr>
-
-
 				<tr>
-					<td width="100%" valign="top">
-						<h:panelGroup id="issueOrderPanelId">
-							<h:panelGroup rendered="#{payrollDifferences.selectedPayrollDiff != null}">
-								<table border="0" cellpadding="0" cellspacing="0" width="100%">
-									<tr>
-										<td width="100%">
-											<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
-												<tr>
-													<td>#{msgs.label_issueOrderData} - #{msgs.label_transactionNumber}: #{payrollDifferences.selectedPayrollDiff.decesionNumber}</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-
-									<tr>
-										<td width="100%" height="5" />
-									</tr>
-
-									<tr>
-										<td width="100%">
-
-											<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
-												<tr>
-													<th width="8%"></th>
-
-													<th width="23%" class="#{payrollDifferences.selectedPayrollDiff.summarySerial == null ? 'stepOff' : (payrollDifferences.issueOrderData.orderNumber != null ? 'stepOff_c' : 'stepOn')}">#{msgs.label_noIssueOrderDataStep}</th>
-
-													<th width="23%" class="#{payrollDifferences.issueOrderData.orderNumber == null ? 'stepOff' : (payrollDifferences.issueOrderData.paymentOrderNumber != null ? 'stepOff_c' : 'stepOn')}">#{msgs.label_orderStep}</th>
-
-													<th width="23%" class="#{payrollDifferences.issueOrderData.paymentOrderNumber == null ? 'stepOff' : (payrollDifferences.issueOrderData.chequeNumber != null ? 'stepOff_c' : 'stepOn')}">#{msgs.label_paymentOrderStep}</th>
-
-													<th width="23%" class="#{payrollDifferences.issueOrderData.chequeNumber == null ? 'stepOff' : 'stepOn'}">#{msgs.label_chequeStep}</th>
-												</tr>
-
-												<tr>
-													<th class="stepOff_c">
-														<h:outputText value="#{msgs.label_theNumber}" />
-													</th>
-
-													<td>
-														<h:outputText value="#{payrollDifferences.selectedPayrollDiff.summarySerial != null ? payrollDifferences.selectedPayrollDiff.summarySerial : payrollDifferences.emptyCellString}" />
-													</td>
-
-													<td>
-														<h:outputText value="#{payrollDifferences.issueOrderData.orderNumber != null ? payrollDifferences.issueOrderData.orderNumber : payrollDifferences.emptyCellString}" />
-													</td>
-
-													<td>
-														<h:outputText value="#{payrollDifferences.issueOrderData.paymentOrderNumber != null ? payrollDifferences.issueOrderData.paymentOrderNumber : payrollDifferences.emptyCellString}" />
-													</td>
-
-													<td>
-														<h:outputText value="#{payrollDifferences.issueOrderData.chequeNumber != null ? payrollDifferences.issueOrderData.chequeNumber : payrollDifferences.emptyCellString}" />
-													</td>
-												</tr>
-
-												<tr>
-													<th class="stepOff_c">
-														<h:outputText value="#{msgs.label_date}" />
-													</th>
-
-													<td>
-														<h:outputText value="#{payrollDifferences.emptyCellString}" />
-													</td>
-
-													<td>
-														<h:outputText value="#{payrollDifferences.issueOrderData.orderDateString != null ? payrollDifferences.issueOrderData.orderDateString : payrollDifferences.emptyCellString}" />
-													</td>
-
-													<td>
-														<h:outputText value="#{payrollDifferences.issueOrderData.paymentOrderDateString != null ? payrollDifferences.issueOrderData.paymentOrderDateString : payrollDifferences.emptyCellString}" />
-													</td>
-
-													<td>
-														<h:outputText value="#{payrollDifferences.issueOrderData.chequeDateString != null ? payrollDifferences.issueOrderData.chequeDateString : payrollDifferences.emptyCellString}" />
-													</td>
-												</tr>
-
-											</table>
-										</td>
-									</tr>
-								</table>
+					<td width="100%">
+						<h:panelGroup id="summaryDifferenceDetailDataListTitleDataPanelId">
+							<h:panelGroup rendered="#{payrollDifferences.selectedSummaryPayrollDiff!=null}">
+									<table class="sectionTitle" border="0" cellpadding="0" cellspacing="0">
+										<tr>
+											<td>#{msgs.label_transactionDetails}</td>
+										</tr>
+									</table>
 							</h:panelGroup>
 						</h:panelGroup>
 					</td>
 				</tr>
 
 				<tr>
-					<td width="100%" height="15" />
+					<td width="100%" height="5" />
 				</tr>
 
+				<tr>
+					<td align="center" width="100%">
+						<h:panelGroup id="summaryDifferenceDetailDataListPanelId">
+							<h:panelGroup rendered="#{payrollDifferences.selectedSummaryPayrollDiff!=null}">
+								<table class="sectionContent" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%">
+												<rich:dataTable  id="payrollDiffId" rowKeyVar="index" var="summaryDifferenceDetail" value="#{payrollDifferences.summaryDifferenceDetailDataList}" rows="#{payrollDifferences.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
+													<rich:column>
+														<f:facet name="header">#</f:facet>
+							                                #{index + 1}
+							                            </rich:column>
+													<rich:column>
+														<f:facet name="header">
+															<h:outputText value="#{msgs.label_elementDescription}" />
+														</f:facet>
+														<h:outputText value="#{summaryDifferenceDetail.elementDescription}" />
+													</rich:column>
+													<rich:column>
+														<f:facet name="header">
+															<h:outputText value="#{msgs.label_elementStartDate}" />
+														</f:facet>
+														<h:outputText value="#{summaryDifferenceDetail.elementStartDate}" />
+													</rich:column>
+													<rich:column>
+														<f:facet name="header">
+															<h:outputText value="#{msgs.label_elementEndDate}" />
+														</f:facet>
+														<h:outputText value="#{summaryDifferenceDetail.elementEndDate}" />
+													</rich:column>
+													<rich:column>
+														<f:facet name="header">
+															<h:outputText value="#{msgs.label_amount}" />
+														</f:facet>
+														<h:outputText value="#{summaryDifferenceDetail.totalAmount}" />
+													</rich:column>
+													<f:facet name="footer">
+														<rich:dataScroller oncomplete="unMaskScreen()" fastControls="hide">
+															<f:facet name="first"> #{msgs.label_first} </f:facet>
+															<f:facet name="last"> #{msgs.label_last} </f:facet>
+															<f:facet name="next"> #{msgs.label_next} </f:facet>
+															<f:facet name="previous"> #{msgs.label_previous} </f:facet>
+														</rich:dataScroller>
+													</f:facet>
+												</rich:dataTable>
+											</td>
+										</tr>
+									</table>
+								</h:panelGroup>
+							</h:panelGroup>
+					</td>
+				</tr>
 			</table>
 		</ui:decorate>
 	</h:form>

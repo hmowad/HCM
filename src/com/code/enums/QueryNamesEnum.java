@@ -131,7 +131,8 @@ public enum QueryNamesEnum {
 
     HCM_GET_VACATION_LOG_BY_VACATION_ID_AND_STATUS("hcm_vacationLog_getVacationLogByVacationIdAndStatus"),
     /* ************************************************ Payroll ********************************************************** */
-    HCM_GET_PAYROLL_DIFF_BY_TRANS_STATUS("hcm_EmployeePayrollDifferenceData_getPayrollDiffByTrnsStatus"),
+    HCM_GET_SUMMARY_PAYROLL_DIFF_BY_SUMMARY_CODE_AND_EMPLOYEE_ID_AND_ORDER_STATUS("hcm_SummaryPayrollDifferenceData_getSummaryPayrollDiffBySummaryCodeAndEmployeeIdAndOrderStatus"),
+    HCM_GET_SUMMARY_DIFFERENCE_DETAIL_DATA_BY_SUMMARY_CODE_AND_EMPLOYEE_ID("hcm_SummaryDifferenceDetailData_getSummaryDifferenceDetailDataBySummaryCodeAndEmployeeId"),
 
     HCM_GET_ALL_DEGREES("hcm_degree_getAllDegrees"),
     HCM_SEARCH_PAYROLL_SALARIES("hcm_payrollSalary_searchPayrollSalary"),
@@ -142,9 +143,6 @@ public enum QueryNamesEnum {
     HCM_GET_EMPLOYEE_BONUSES_BY_ID("hcm_employeeBonusesData_getEmployeeBonusesData"),
     HCM_GET_EMPLOYEE_ALLOWANCES_BY_ID("hcm_employeeAllowancesData_getEmployeeAllowancesData"),
     HCM_GET_END_OF_LADDER_FOR_ALL_RANKS_OFF_CATEGORY("hcm_payrollSalary_getEndOfLadderForAllRanksOfCategory"),
-    /* ************************************************ Finance ****************************************************** */
-    FIN_GET_PAID_ISSUE_ORDERS("fin_PaidIssueOrderData_getPaidIssueOrder"),
-
     /* ************************************************ Units ********************************************************** */
     HCM_GET_UNIT_TYPE("hcm_unitType_getUnitType"),
 

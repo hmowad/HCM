@@ -1,36 +1,32 @@
 package com.code.ui.backings.hcm.payroll;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import com.code.dal.orm.hcm.payroll.EmployeePayrollDifferenceData;
-import com.code.dal.orm.integration.finance.PaidIssueOrderData;
+import com.code.dal.orm.hcm.payroll.SummaryDifferenceData;
+import com.code.dal.orm.hcm.payroll.SummaryDifferenceDetailData;
 import com.code.enums.FlagsEnum;
 import com.code.exceptions.BusinessException;
 import com.code.services.hcm.PayrollsService;
-import com.code.services.integration.FinanceService;
 import com.code.ui.backings.base.BaseBacking;
 
 @ManagedBean(name = "payrollDifferences")
 @ViewScoped
 public class PayrollDifferences extends BaseBacking implements Serializable {
 
-    private List<EmployeePayrollDifferenceData> payrollDifferencesList;
-    private String elementDescription;
-    private float amountSum = 0;
+    private List<SummaryDifferenceData> summaryDifferencesList;
+    private String summaryCode;
+    private SummaryDifferenceData selectedSummaryPayrollDiff;
+    private List<SummaryDifferenceDetailData> summaryDifferenceDetailDataList;
 
     private int pageSize = 10;
     private int mode = 0;
 
-    private EmployeePayrollDifferenceData selectedPayrollDiff;
-    private PaidIssueOrderData issueOrderData;
-    private final static String EMPTY_CELL_STRING = "- -";
-
     public PayrollDifferences() {
+
 	mode = Integer.valueOf(getRequest().getParameter("mode"));
 	if (mode == FlagsEnum.OFF.getCode()) {
 	    super.setScreenTitle(getMessage("title_currentEmployeePayrollDifferences"));
@@ -38,50 +34,39 @@ public class PayrollDifferences extends BaseBacking implements Serializable {
 	    super.setScreenTitle(getMessage("title_paidEmployeePayrollDifferences"));
 	}
 	resetForm();
+
     }
 
     public void resetForm() {
-	elementDescription = "";
+	summaryCode = "";
 	search();
     }
 
     public void search() {
+	selectedSummaryPayrollDiff = null;
+	summaryDifferenceDetailDataList = null;
+	getSelectedDifferencesForLoginEmployee();
+    }
+
+    public void getSelectedDifferencesForLoginEmployee() {
 	try {
-	    payrollDifferencesList = PayrollsService.getEmployeePayrollDifferences(this.loginEmpData.getEmpId(), mode, elementDescription);
-	    calculateAmountSum();
+	    summaryDifferencesList = PayrollsService.getSummaryPayrollDifferencesBySummaryCodeAndEmployeeIdAndOrderStatus(summaryCode, this.loginEmpData.getEmpId(), mode);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
-
-	selectedPayrollDiff = null;
-	issueOrderData = null;
     }
 
-    private void calculateAmountSum() {
-	amountSum = 0;
-	for (EmployeePayrollDifferenceData payrollDifferences : payrollDifferencesList) {
-	    amountSum += payrollDifferences.getTotalAmount() == null ? 0 : payrollDifferences.getTotalAmount();
-	}
-    }
-
-    public void selectPayrollDiff(EmployeePayrollDifferenceData payrollDiff) {
+    public void selectSummaryPayrollDiff(SummaryDifferenceData summaryDifferenceData) {
 	try {
-	    selectedPayrollDiff = payrollDiff;
-	    if (payrollDiff.getSummarySerial() != null)
-		issueOrderData = FinanceService.getPaidIssueOrder(payrollDiff.getSummarySerial());
-	    
-	    if (payrollDiff.getSummarySerial() == null || issueOrderData == null)
-		issueOrderData = new PaidIssueOrderData();
+	    selectedSummaryPayrollDiff = summaryDifferenceData;
+	    if (summaryDifferenceData.getCode() != null && !summaryDifferenceData.getCode().isEmpty())
+		summaryDifferenceDetailDataList = PayrollsService.getSummaryDifferenceDetailDataBySummaryCodeAndEmployeeId(summaryDifferenceData.getCode(), this.loginEmpData.getEmpId());
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
-	    
-	    selectedPayrollDiff = null;
-	    issueOrderData = null;
-	}
-    }
 
-    public List<EmployeePayrollDifferenceData> getPayrollDifferencesList() {
-	return payrollDifferencesList;
+	    selectedSummaryPayrollDiff = null;
+	    summaryDifferenceDetailDataList = null;
+	}
     }
 
     public int getPageSize() {
@@ -92,44 +77,35 @@ public class PayrollDifferences extends BaseBacking implements Serializable {
 	this.pageSize = pageSize;
     }
 
-    public double getAmountSum() {
-	DecimalFormat twoDForm = new DecimalFormat("#.##");
-	return Double.valueOf(twoDForm.format(amountSum));
+    public String getSummaryCode() {
+	return summaryCode;
     }
 
-    public void setAmountSum(float amountSum) {
-	this.amountSum = amountSum;
+    public void setSummaryCode(String summaryCode) {
+	this.summaryCode = summaryCode;
     }
 
-    public EmployeePayrollDifferenceData getSelectedPayrollDiff() {
-	return selectedPayrollDiff;
+    public List<SummaryDifferenceData> getSummaryDifferencesList() {
+	return summaryDifferencesList;
     }
 
-    public void setSelectedPayrollDiff(EmployeePayrollDifferenceData selectedPayrollDiff) {
-	this.selectedPayrollDiff = selectedPayrollDiff;
+    public SummaryDifferenceData getSelectedSummaryPayrollDiff() {
+	return selectedSummaryPayrollDiff;
     }
 
-    public PaidIssueOrderData getIssueOrderData() {
-	return issueOrderData;
+    public void setSelectedSummaryPayrollDiff(SummaryDifferenceData selectedSummaryPayrollDiff) {
+	this.selectedSummaryPayrollDiff = selectedSummaryPayrollDiff;
     }
 
-    public void setIssueOrderData(PaidIssueOrderData issueOrderData) {
-	this.issueOrderData = issueOrderData;
+    public List<SummaryDifferenceDetailData> getSummaryDifferenceDetailDataList() {
+	return summaryDifferenceDetailDataList;
     }
 
-    public String getElementDescription() {
-	return elementDescription;
-    }
-
-    public void setElementDescription(String elementDescription) {
-	this.elementDescription = elementDescription;
+    public void setSummaryDifferenceDetailDataList(List<SummaryDifferenceDetailData> summaryDifferenceDetailDataList) {
+	this.summaryDifferenceDetailDataList = summaryDifferenceDetailDataList;
     }
 
     public int getMode() {
 	return mode;
-    }
-
-    public String getEmptyCellString() {
-	return EMPTY_CELL_STRING;
     }
 }
