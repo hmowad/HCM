@@ -487,7 +487,10 @@ public class PromotionsWorkFlow extends BaseWorkFlow {
 	Map<Long, String> notifiedEmployeesIds = new HashMap<>();
 	for (WFPromotionNotificationData wfPromotionNotificationData : promotionNotificationsData) {
 	    notifiedEmployeesIds.put(wfPromotionNotificationData.getEmpId(), OfficersPromotionTasksTypeEnum.EMPLOYEE_TASK.getCode()); // add beneficiaries
-	    notifiedEmployeesIds.put(EmployeesService.getEmployeeDirectManager(wfPromotionNotificationData.getEmpId()).getEmpId(), OfficersPromotionTasksTypeEnum.MANAGER_TASK.getCode()); // add beneficiaries manager
+
+	    EmployeeData employeeManager = EmployeesService.getEmployeeDirectManager(wfPromotionNotificationData.getEmpId());
+	    if (employeeManager != null)
+		notifiedEmployeesIds.put(employeeManager.getEmpId(), OfficersPromotionTasksTypeEnum.MANAGER_TASK.getCode()); // add beneficiaries manager
 	}
 
 	String configuredManagersUnits = ETRConfigurationService.getPromotionOfficersNotificationsUnitsIds();
