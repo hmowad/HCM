@@ -126,8 +126,7 @@
 			return true;
 		}
 		
-		function validate(mode) {
-			expiryDateIdValue = document.getElementById('newEmployeeRegistrationFormId:expiryDateId').innerHTML;
+		function validate(mode, yaqeenEnabledFlag) {
 			birthPlaceValue = document.getElementById('newEmployeeRegistrationFormId:birthPlaceId').value;
 
 			generalSpecialization = document.getElementById('newEmployeeRegistrationFormId:generalSpecializationId');
@@ -143,10 +142,22 @@
 			qualificationLevelIdValue = document.getElementById('newEmployeeRegistrationFormId:qualificationLevelIDId').value;
 			personsCategories = document.getElementById('newEmployeeRegistrationFormId:personsCategoriesId');
 
-			if(expiryDateIdValue == null || expiryDateIdValue == '') {
-				alert("#{msgs.error_retrieveDataFromYaqeen}");
-				return false;
+			if(mode == 1) {
+				courseEventJoiningDateValue = document.getElementById('newEmployeeRegistrationFormId:courseEventJoiningDateId:day').value;
+				if(courseEventJoiningDateValue == 0) {
+					alert("#{msgs.error_courseEventJoiningDateMandatory}");
+					return false;
+				}
 			}
+
+			if(yaqeenEnabledFlag) {
+				expiryDateIdValue = document.getElementById('newEmployeeRegistrationFormId:expiryDateId');
+				if(expiryDateIdValue == null || expiryDateIdValue.innerHTML == null || expiryDateIdValue.innerHTML == '') {
+					alert("#{msgs.error_retrieveDataFromYaqeen}");
+					return false;
+				}
+			}
+			
 
 			if(birthPlaceValue == null || birthPlaceValue == '') {
 				alert("#{msgs.error_birthPlaceMandatory}");
@@ -547,9 +558,13 @@
 													<f:selectItems value="#{newEmployeeRegistration.officerRecruitmentRegions}" var="region" itemLabel="#{region.description}" itemValue="#{region.id}" />
 												</h:selectOneMenu>
 											</td>
-											<th>#{msgs.label_courseEventJoiningDate}</th>
+											<th>
+												#{msgs.label_courseEventJoiningDate}
+												<h:outputText value=" " />
+												<font style="color: red;">*</font>
+											</th>
 											<td>
-												<util:hijri value="#{newEmployeeRegistration.employee.insertionDate}" viewOldRange="true"/>
+												<util:hijri id="courseEventJoiningDateId" value="#{newEmployeeRegistration.employee.insertionDate}" nullable="true" viewOldRange="true"/>
 											</td>
 										</tr>
 									</h:panelGroup>
@@ -758,7 +773,7 @@
 										<tr>
 											<td width="100%">
 												<h:commandButton id="saveBtnId" action="#{newEmployeeRegistration.save()}" value="#{msgs.label_save} &nbsp; #{msgs.fa_floppy_o}" styleClass="btn_normal_icon" rendered="#{(newEmployeeRegistration.updateMode and !newEmployeeRegistration.viewOnly) or (!newEmployeeRegistration.updateMode and newEmployeeRegistration.employee.empId == null)}"
-													onclick="return handleOnAction('#{newEmployeeRegistration.mode == 2 and newEmployeeRegistration.updateMode and newEmployeeRegistration.employee.exceptionalRecruitmentFlag == 0 and newEmployeeRegistration.employee.gender == 'M' ? msgs.q_updateSoldiersWarning : msgs.q_save}', 'validate(#{newEmployeeRegistration.mode})');">
+													onclick="return handleOnAction('#{newEmployeeRegistration.mode == 2 and newEmployeeRegistration.updateMode and newEmployeeRegistration.employee.exceptionalRecruitmentFlag == 0 and newEmployeeRegistration.employee.gender == 'M' ? msgs.q_updateSoldiersWarning : msgs.q_save}', 'validate(#{newEmployeeRegistration.mode}, #{newEmployeeRegistration.yaqeenIntegrationEnabledFlag})');">
 													<f:ajax execute="newEmployeeRegistrationFormId:basicDataPanelId newEmployeeRegistrationFormId:jobDataPanelId newEmployeeRegistrationFormId:qualificationDataPanelId newEmployeeRegistrationFormId:communicationDataPanelId" render="newEmployeeRegistrationFormId:actionsPanelId newEmployeeRegistrationFormId:imageId newEmployeeRegistrationFormId:notifyMessagesId newEmployeeRegistrationFormId:basicDataPanelId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 												</h:commandButton>
 												<h:commandButton action="#{newEmployeeRegistration.resetForm()}" value="#{msgs.label_reset} &nbsp; #{msgs.fa_refresh}" styleClass="btn_normal_icon" rendered="#{!newEmployeeRegistration.updateMode}">

@@ -84,6 +84,9 @@ public class EmployeesService extends BaseService {
 	    EmployeeLog log = new EmployeeLog.Builder().setRankId(empData.getRankId()).setSocialStatus(empData.getSocialStatus()).setGeneralSpecialization(empData.getGeneralSpecialization()).setDegreeId(DegreesEnum.FIRST.getCode())
 		    .constructCommonFields(empData.getEmpId(), FlagsEnum.ON.getCode(), null, null, empData.getInsertionDate() != null ? empData.getInsertionDate() : HijriDateService.getHijriSysDate(), DataAccess.getTableName(Employee.class)).build();
 	    LogService.logEmployeeData(log, session);
+	    if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()) && empData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
+		doPayrollIntegration(empData.getEmpId(), FlagsEnum.OFF.getCode(), session);
+	    }
 
 	    if (!isOpenedSession)
 		session.commitTransaction();
@@ -98,9 +101,6 @@ public class EmployeesService extends BaseService {
 	    throw new BusinessException("error_general");
 	} finally {
 	    if (!isOpenedSession) {
-		if (PayrollEngineService.getIntegrationWithAllowanceAndDeductionFlag().equals(FlagsEnum.ON.getCode()) && empData.getCategoryId().equals(CategoriesEnum.OFFICERS.getCode())) {
-		    doPayrollIntegration(empData.getEmpId(), FlagsEnum.OFF.getCode(), session);
-		}
 		session.close();
 	    }
 	}
