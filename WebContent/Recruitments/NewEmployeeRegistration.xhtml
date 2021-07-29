@@ -357,7 +357,7 @@
 											<h:outputText value=" " />
 										</th>
 										<td width="15%" colspan="1">
-											<h:outputText id="socialIdIssuePlaceDescId" value="#{newEmployeeRegistration.employee.socialIDIssuePlaceDesc}" />
+											<h:outputText id="socialIdIssuePlaceDescId" value="#{newEmployeeRegistration.employee.socialIDIssuePlaceDesc}" rendered="#{!newEmployeeRegistration.yaqeenIntegrationEnabledFlag}" />
 											<h:inputHidden id="socialIdIssuePlaceDescHId" value="#{newEmployeeRegistration.employee.socialIDIssuePlaceDesc}" />
 											<h:inputHidden id="socialIdIssuePlaceIDId" value="#{newEmployeeRegistration.employee.socialIDIssuePlaceID}" />
 											<h:outputText value=" " />
