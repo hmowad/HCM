@@ -62,6 +62,7 @@ import com.code.services.log.LogService;
 import com.code.services.util.CommonService;
 import com.code.services.util.CountryService;
 import com.code.services.util.HijriDateService;
+import com.code.services.util.Log4jService;
 
 public class EmployeesService extends BaseService {
     private EmployeesService() {
@@ -1718,6 +1719,7 @@ public class EmployeesService extends BaseService {
 
     /************************************************************** Yaqeen integration **************************************************************/
     public static PersonInfoDetailedResult retrieveEmployeeInfoFromYaqeen(String socialId, String birthDate, String loginSocialId, String clientIpAddress) throws BusinessException {
+	Log4jService.traceInfo(EmployeesService.class, "start of retrieveEmployeeInfoFromYaqeen()");
 	validateYaqeenMandatoryFields(socialId, birthDate);
 	try {
 	    PersonInfoRequest personInfoRequest = new PersonInfoRequest();
@@ -1728,8 +1730,10 @@ public class EmployeesService extends BaseService {
 	    personInfoRequest.setClientIpAddress(clientIpAddress);
 	    String systemCode = ETRConfigurationService.getYaqeenSystemCode();
 	    personInfoRequest.setSystemCode(systemCode);
+	    Log4jService.traceInfo(EmployeesService.class, "trying to retrieve data from yaqeen");
 	    Yakeen4BorderGuardService yakeen4BorderGuardService = new Yakeen4BorderGuardService();
 	    YaqeenServices yaqeenService = yakeen4BorderGuardService.getYakeen4BorderGuardPort();
+	    Log4jService.traceInfo(EmployeesService.class, "end of retrieveEmployeeInfoFromYaqeen()");
 	    return yaqeenService.getPersonInfoDetailed(personInfoRequest);
 	} catch (Exception e) {
 	    if (e instanceof BusinessException)
@@ -1744,7 +1748,9 @@ public class EmployeesService extends BaseService {
     }
 
     public static void updateEmployeeDataFromYaqeen(EmployeeData emp, String loginEmployeeSocialId, String clientIpAddress) throws BusinessException {
+	Log4jService.traceInfo(EmployeesService.class, "start of updateEmployeeDataFromYaqeen()");
 	PersonInfoDetailedResult personInfoDetailedResult = retrieveEmployeeInfoFromYaqeen(emp.getSocialID(), emp.getBirthDateString(), loginEmployeeSocialId, clientIpAddress);
+	Log4jService.traceInfo(EmployeesService.class, "personInfoDetailedResult retrieved successfully");
 
 	emp.setFirstName(personInfoDetailedResult.getFirstName());
 	emp.setSecondName(personInfoDetailedResult.getFatherName());
@@ -1755,6 +1761,8 @@ public class EmployeesService extends BaseService {
 	emp.setThirdNameEn(personInfoDetailedResult.getEnglishThirdName());
 	emp.setLastNameEn(personInfoDetailedResult.getEnglishLastName());
 
+	Log4jService.traceInfo(EmployeesService.class, "employeeName saved successfully");
+
 	emp.setSocialIDIssueDate(HijriDateService.getHijriDate(personInfoDetailedResult.getIdIssueDateH().replace('-', '/')));
 	emp.setSocialIDExpiryDate(HijriDateService.getHijriDate(personInfoDetailedResult.getIdExpiryDateH().replace('-', '/')));
 	emp.setGender(personInfoDetailedResult.getGender().toString());
@@ -1763,22 +1771,28 @@ public class EmployeesService extends BaseService {
 	List<SocialIdIssuePlace> socialIdIssuePlace = CommonService.getSocialIdIssuePlacesByExactDescription(personInfoDetailedResult.getIdIssuePlace().getValue());
 	emp.setSocialIDIssuePlaceDesc(socialIdIssuePlace == null || socialIdIssuePlace.isEmpty() ? null : socialIdIssuePlace.get(0).getDescription());
 	emp.setSocialIDIssuePlaceID(socialIdIssuePlace == null || socialIdIssuePlace.isEmpty() ? null : socialIdIssuePlace.get(0).getId());
-
+	Log4jService.traceInfo(EmployeesService.class, "employee basic info saved successfully");
 	Country country = CountryService.getCountryByYaqeenName(personInfoDetailedResult.getNationalityDesc());
 	emp.setCountryId(country.getId());
 	emp.setNationality(country.getNationality());
 
 	emp.setBirthDate(HijriDateService.getHijriDate(HijriDateService.gregToHijriDateString(personInfoDetailedResult.getDateOfBirthG().replace('-', '/'))));
 	emp.setServiceTerminationDueDate(TerminationsService.calculateEmpTerminationDueDate(emp.getCategoryId().longValue(), emp.getRankId().longValue(), emp.getBirthDate()));
+	Log4jService.traceInfo(EmployeesService.class, "end of updateEmployeeDataFromYaqeen()");
     }
 
     private static void validateYaqeenMandatoryFields(String socialId, String birthDate) throws BusinessException {
+	Log4jService.traceInfo(EmployeesService.class, "start of validateYaqeenMandatoryFields()");
+
 	if (socialId == null || socialId.trim().equals(""))
 	    throw new BusinessException("error_socialIDMandatory");
 	if (socialId.length() != 10)
 	    throw new BusinessException("error_invalidSocialID");
 	if (birthDate == null || birthDate.equals(""))
 	    throw new BusinessException("error_birthDateMandatory");
+
+	Log4jService.traceInfo(EmployeesService.class, "end of validateYaqeenMandatoryFields()");
+
     }
 
     public static boolean isSocialIdExpired(EmployeeData employeeData) throws BusinessException {
