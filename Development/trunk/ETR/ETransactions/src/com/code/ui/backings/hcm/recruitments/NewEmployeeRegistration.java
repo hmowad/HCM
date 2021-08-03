@@ -28,6 +28,7 @@ import com.code.services.hcm.EmployeesService;
 import com.code.services.hcm.TrainingSetupService;
 import com.code.services.security.SecurityService;
 import com.code.services.util.CommonService;
+import com.code.services.util.Log4jService;
 import com.code.services.workflow.hcm.RecruitmentsWorkFlow;
 import com.code.ui.backings.base.BaseBacking;
 
@@ -275,8 +276,10 @@ public class NewEmployeeRegistration extends BaseBacking implements Serializable
 
     public void yaqeenInformationRetrieval() {
 	try {
+	    Log4jService.traceInfo(NewEmployeeRegistration.class, "Start of yaqeenInformationRetrieval() method");
 	    EmployeesService.updateEmployeeDataFromYaqeen(employee, this.loginEmpData.getSocialID(), getClientIpAddress());
 	    yaqeenFlag = true;
+	    Log4jService.traceInfo(NewEmployeeRegistration.class, "End of yaqeenInformationRetrieval() method");
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
