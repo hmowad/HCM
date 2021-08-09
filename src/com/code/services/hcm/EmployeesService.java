@@ -1776,8 +1776,10 @@ public class EmployeesService extends BaseService {
 	emp.setCountryId(country.getId());
 	emp.setNationality(country.getNationality());
 
-	emp.setBirthDate(HijriDateService.getHijriDate(HijriDateService.gregToHijriDateString(personInfoDetailedResult.getDateOfBirthG().replace('-', '/'))));
-	emp.setServiceTerminationDueDate(TerminationsService.calculateEmpTerminationDueDate(emp.getCategoryId().longValue(), emp.getRankId().longValue(), emp.getBirthDate()));
+	if (emp.getEmpId() != null) {
+	    emp.setBirthDate(HijriDateService.getHijriDate(HijriDateService.gregToHijriDateString(personInfoDetailedResult.getDateOfBirthG().replace('-', '/'))));
+	    emp.setServiceTerminationDueDate(TerminationsService.calculateEmpTerminationDueDate(emp.getCategoryId().longValue(), emp.getRankId().longValue(), emp.getBirthDate()));
+	}
 	Log4jService.traceInfo(EmployeesService.class, "end of updateEmployeeDataFromYaqeen()");
     }
 
