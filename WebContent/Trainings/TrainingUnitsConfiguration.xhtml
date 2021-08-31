@@ -38,81 +38,84 @@
 				<tr>
 					<td align="center" width="100%">
 						<rich:dataTable id="TrainingUnitsDataListId" rowKeyVar="index" var="trainingUnitData" value="#{trainingUnitsConfiguration.trainingUnitsData}" rows="#{trainingUnitsConfiguration.pageSize}" onrowclick="changeSelectedRowStyle(this);" onrowmouseover="changeRowOverStyle(this);" onrowmouseout="resetRowOverStyle(this);" rowClasses="gridRowOdd,gridRowEven" styleClass="gridMaster">
-							<rich:column style="width : 20%">
+							<rich:column style="width : 23%">
 								<f:facet name="header">#{msgs.label_trainingUnit}</f:facet>
 								<h:outputText value="#{trainingUnitData.name}" />
 							</rich:column>
-							<rich:column style="width : 8%">
+							<rich:column style="width : 7%">
 								<f:facet name="header">#{msgs.label_thePresidency}</f:facet>
 								<h:commandButton action="#{trainingUnitsConfiguration.manipulateRegionsTrainingConfig('GENERAL_DIRECTORATE_OF_BORDER_GUARDS', trainingUnitData)}" title="#{trainingUnitsConfiguration.isNominationAllowed('GENERAL_DIRECTORATE_OF_BORDER_GUARDS', trainingUnitData) ? msgs.label_disallowNomination : msgs.label_allowNomination}" value="#{trainingUnitsConfiguration.isNominationAllowed('GENERAL_DIRECTORATE_OF_BORDER_GUARDS', trainingUnitData) ? msgs.fa_toggle_on : msgs.fa_toggle_off} "
 									disabled="#{trainingUnitsConfiguration.isDisabled('GENERAL_DIRECTORATE_OF_BORDER_GUARDS', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('GENERAL_DIRECTORATE_OF_BORDER_GUARDS', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}" onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('GENERAL_DIRECTORATE_OF_BORDER_GUARDS', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
 									<f:ajax render="trainingUnitsConfigurationFormId:TrainingUnitsDataListId trainingUnitsConfigurationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 								</h:commandButton>
 							</rich:column>
-							<rich:column style="width : 8%">
+							<rich:column style="width : 7%">
 								<f:facet name="header">#{msgs.label_makkahElMokarama}</f:facet>
 								<h:commandButton action="#{trainingUnitsConfiguration.manipulateRegionsTrainingConfig('MAKKAH_ALMOKARRAMAH_REGION', trainingUnitData)}" title="#{trainingUnitsConfiguration.isNominationAllowed('MAKKAH_ALMOKARRAMAH_REGION', trainingUnitData) ? msgs.label_disallowNomination : msgs.label_allowNomination}" value="#{trainingUnitsConfiguration.isNominationAllowed('MAKKAH_ALMOKARRAMAH_REGION', trainingUnitData) ? msgs.fa_toggle_on : msgs.fa_toggle_off} "
 									disabled="#{trainingUnitsConfiguration.isDisabled('MAKKAH_ALMOKARRAMAH_REGION', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('MAKKAH_ALMOKARRAMAH_REGION', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}" onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('MAKKAH_ALMOKARRAMAH_REGION', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
 									<f:ajax render="trainingUnitsConfigurationFormId:TrainingUnitsDataListId trainingUnitsConfigurationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 								</h:commandButton>
 							</rich:column>
-							<rich:column style="width : 8%">
+							<rich:column style="width : 7%">
 								<f:facet name="header">#{msgs.label_jazan}</f:facet>
 								<h:commandButton action="#{trainingUnitsConfiguration.manipulateRegionsTrainingConfig('JAZAN_REGION', trainingUnitData)}" title="#{trainingUnitsConfiguration.isNominationAllowed('JAZAN_REGION', trainingUnitData) ? msgs.label_disallowNomination : msgs.label_allowNomination}" value="#{trainingUnitsConfiguration.isNominationAllowed('JAZAN_REGION', trainingUnitData) ? msgs.fa_toggle_on : msgs.fa_toggle_off} "
 									disabled="#{trainingUnitsConfiguration.isDisabled('JAZAN_REGION', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('JAZAN_REGION', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}" onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('JAZAN_REGION', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
 									<f:ajax render="trainingUnitsConfigurationFormId:TrainingUnitsDataListId trainingUnitsConfigurationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 								</h:commandButton>
 							</rich:column>
-							<rich:column style="width : 8%">
+							<rich:column style="width : 7%">
 								<f:facet name="header">#{msgs.label_najran}</f:facet>
 								<h:commandButton action="#{trainingUnitsConfiguration.manipulateRegionsTrainingConfig('NAJRAN_REGION', trainingUnitData)}" title="#{trainingUnitsConfiguration.isNominationAllowed('NAJRAN_REGION', trainingUnitData) ? msgs.label_disallowNomination : msgs.label_allowNomination}" value="#{trainingUnitsConfiguration.isNominationAllowed('NAJRAN_REGION', trainingUnitData) ? msgs.fa_toggle_on : msgs.fa_toggle_off} "
 									disabled="#{trainingUnitsConfiguration.isDisabled('NAJRAN_REGION', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('NAJRAN_REGION', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}" onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('NAJRAN_REGION', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
 									<f:ajax render="trainingUnitsConfigurationFormId:TrainingUnitsDataListId trainingUnitsConfigurationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 								</h:commandButton>
 							</rich:column>
-							<rich:column style="width : 8%">
+							<rich:column style="width : 7%">
 								<f:facet name="header">#{msgs.label_aseer}</f:facet>
 								<h:commandButton action="#{trainingUnitsConfiguration.manipulateRegionsTrainingConfig('ASEER_REGION', trainingUnitData)}" title="#{trainingUnitsConfiguration.isNominationAllowed('ASEER_REGION', trainingUnitData) ? msgs.label_disallowNomination : msgs.label_allowNomination}" value="#{trainingUnitsConfiguration.isNominationAllowed('ASEER_REGION', trainingUnitData) ? msgs.fa_toggle_on : msgs.fa_toggle_off} "
 									disabled="#{trainingUnitsConfiguration.isDisabled('ASEER_REGION', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('ASEER_REGION', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}" onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('ASEER_REGION', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
 									<f:ajax render="trainingUnitsConfigurationFormId:TrainingUnitsDataListId trainingUnitsConfigurationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 								</h:commandButton>
 							</rich:column>
-							<rich:column style="width : 8%">
+							<rich:column style="width : 7%">
 								<f:facet name="header">#{msgs.label_elMadinaElMonawra}</f:facet>
 								<h:commandButton action="#{trainingUnitsConfiguration.manipulateRegionsTrainingConfig('ALMADEENAH_ALMONAWRAH_REGION', trainingUnitData)}" title="#{trainingUnitsConfiguration.isNominationAllowed('ALMADEENAH_ALMONAWRAH_REGION', trainingUnitData) ? msgs.label_disallowNomination : msgs.label_allowNomination}" value="#{trainingUnitsConfiguration.isNominationAllowed('ALMADEENAH_ALMONAWRAH_REGION', trainingUnitData) ? msgs.fa_toggle_on : msgs.fa_toggle_off} "
 									disabled="#{trainingUnitsConfiguration.isDisabled('ALMADEENAH_ALMONAWRAH_REGION', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('ALMADEENAH_ALMONAWRAH_REGION', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}" onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('ALMADEENAH_ALMONAWRAH_REGION', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
 									<f:ajax render="trainingUnitsConfigurationFormId:TrainingUnitsDataListId trainingUnitsConfigurationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 								</h:commandButton>
 							</rich:column>
-							<rich:column style="width : 8%">
+							<rich:column style="width : 7%">
 								<f:facet name="header">#{msgs.label_elJoof}</f:facet>
 								<h:commandButton action="#{trainingUnitsConfiguration.manipulateRegionsTrainingConfig('ALJOOF_REGION', trainingUnitData)}" title="#{trainingUnitsConfiguration.isNominationAllowed('ALJOOF_REGION', trainingUnitData) ? msgs.label_disallowNomination : msgs.label_allowNomination}" value="#{trainingUnitsConfiguration.isNominationAllowed('ALJOOF_REGION', trainingUnitData) ? msgs.fa_toggle_on : msgs.fa_toggle_off} "
-									disabled="#{trainingUnitsConfiguration.isDisabled('ALJOOF_REGION', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('ALJOOF_REGION', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}"
-									onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('ALJOOF_REGION', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
+									disabled="#{trainingUnitsConfiguration.isDisabled('ALJOOF_REGION', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('ALJOOF_REGION', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}" onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('ALJOOF_REGION', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
 									<f:ajax render="trainingUnitsConfigurationFormId:TrainingUnitsDataListId trainingUnitsConfigurationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 								</h:commandButton>
 							</rich:column>
-							<rich:column style="width : 8%">
+							<rich:column style="width : 7%">
 								<f:facet name="header">#{msgs.label_tabouk}</f:facet>
 								<h:commandButton action="#{trainingUnitsConfiguration.manipulateRegionsTrainingConfig('TABOOK_REGION', trainingUnitData)}" title="#{trainingUnitsConfiguration.isNominationAllowed('TABOOK_REGION', trainingUnitData) ? msgs.label_disallowNomination : msgs.label_allowNomination}" value="#{trainingUnitsConfiguration.isNominationAllowed('TABOOK_REGION', trainingUnitData) ? msgs.fa_toggle_on : msgs.fa_toggle_off} "
-									disabled="#{trainingUnitsConfiguration.isDisabled('TABOOK_REGION', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('TABOOK_REGION', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}"
-									onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('TABOOK_REGION', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
+									disabled="#{trainingUnitsConfiguration.isDisabled('TABOOK_REGION', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('TABOOK_REGION', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}" onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('TABOOK_REGION', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
 									<f:ajax render="trainingUnitsConfigurationFormId:TrainingUnitsDataListId trainingUnitsConfigurationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 								</h:commandButton>
 							</rich:column>
-							<rich:column style="width : 8%">
+							<rich:column style="width : 7%">
 								<f:facet name="header">#{msgs.label_elSharqya}</f:facet>
 								<h:commandButton action="#{trainingUnitsConfiguration.manipulateRegionsTrainingConfig('EASTERN_REGION', trainingUnitData)}" title="#{trainingUnitsConfiguration.isNominationAllowed('EASTERN_REGION', trainingUnitData) ? msgs.label_disallowNomination : msgs.label_allowNomination}" value="#{trainingUnitsConfiguration.isNominationAllowed('EASTERN_REGION', trainingUnitData) ? msgs.fa_toggle_on : msgs.fa_toggle_off} "
-									disabled="#{trainingUnitsConfiguration.isDisabled('EASTERN_REGION', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('EASTERN_REGION', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}"
-									onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('EASTERN_REGION', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
+									disabled="#{trainingUnitsConfiguration.isDisabled('EASTERN_REGION', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('EASTERN_REGION', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}" onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('EASTERN_REGION', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
 									<f:ajax render="trainingUnitsConfigurationFormId:TrainingUnitsDataListId trainingUnitsConfigurationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 								</h:commandButton>
 							</rich:column>
-							<rich:column style="width : 8%">
+							<rich:column style="width : 7%">
 								<f:facet name="header">#{msgs.label_elShamalya}</f:facet>
 								<h:commandButton action="#{trainingUnitsConfiguration.manipulateRegionsTrainingConfig('NORTHERN_REGION', trainingUnitData)}" title="#{trainingUnitsConfiguration.isNominationAllowed('NORTHERN_REGION', trainingUnitData) ? msgs.label_disallowNomination : msgs.label_allowNomination}" value="#{trainingUnitsConfiguration.isNominationAllowed('NORTHERN_REGION', trainingUnitData) ? msgs.fa_toggle_on : msgs.fa_toggle_off} "
-									disabled="#{trainingUnitsConfiguration.isDisabled('NORTHERN_REGION', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('NORTHERN_REGION', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}"
-									onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('NORTHERN_REGION', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
+									disabled="#{trainingUnitsConfiguration.isDisabled('NORTHERN_REGION', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('NORTHERN_REGION', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}" onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('NORTHERN_REGION', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
+									<f:ajax render="trainingUnitsConfigurationFormId:TrainingUnitsDataListId trainingUnitsConfigurationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
+								</h:commandButton>
+							</rich:column>
+							<rich:column style="width : 7%">
+								<f:facet name="header">#{msgs.label_academy}</f:facet>
+								<h:commandButton action="#{trainingUnitsConfiguration.manipulateRegionsTrainingConfig('ACADEMY', trainingUnitData)}" title="#{trainingUnitsConfiguration.isNominationAllowed('ACADEMY', trainingUnitData) ? msgs.label_disallowNomination : msgs.label_allowNomination}" value="#{trainingUnitsConfiguration.isNominationAllowed('ACADEMY', trainingUnitData) ? msgs.fa_toggle_on : msgs.fa_toggle_off} "
+									disabled="#{trainingUnitsConfiguration.isDisabled('ACADEMY', trainingUnitData)}" styleClass="#{trainingUnitsConfiguration.isNominationAllowed('ACADEMY', trainingUnitData) ? 'btn_toggleOn' :  'btn_toggleOff'}" onclick="return confirm('#{trainingUnitsConfiguration.isNominationAllowed('ACADEMY', trainingUnitData) ? msgs.q_disallowNomination : msgs.q_allowNomination}');">
 									<f:ajax render="trainingUnitsConfigurationFormId:TrainingUnitsDataListId trainingUnitsConfigurationFormId:notifyMessagesId" onevent="function(e){if(e.status == 'complete') unMaskScreen();}" />
 								</h:commandButton>
 							</rich:column>
