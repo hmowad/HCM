@@ -389,7 +389,7 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 				    completeWFTask(smTask, WFTaskActionsEnum.SUPER_SIGN.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(currentDirectManager.getManagerId(), instance.getProcessId(), requester.getEmpId()), currentDirectManager.getManagerId(), smTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), "1", session);
 			    }
 			    // cases that require approval of vice president
-			    else if (terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_DISMISS.getCode() || terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_LOSS.getCode() || terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_ABSENCE.getCode()) {
+			    else if (terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_DISMISS.getCode() || terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_LOSS.getCode()) {
 				if (unitTypeCode >= UnitTypesEnum.PRESIDENCY.getCode())
 				    closeTerminationWorkFlow(requester, instance, wfTermination, terminationRecordData, terminationRecordDetailDataList, smTask, transactionTypeId, session);
 				else {
@@ -399,8 +399,9 @@ public class TerminationsWorkflow extends BaseWorkFlow {
 				    completeWFTask(smTask, WFTaskActionsEnum.SUPER_SIGN.getCode(), curDate, curHijriDate, instance.getInstanceId(), getDelegate(currentDirectManager.getManagerId(), instance.getProcessId(), requester.getEmpId()), currentDirectManager.getManagerId(), smTask.getTaskUrl(), WFTaskRolesEnum.SIGN_MANAGER.getCode(), "1", session);
 				}
 			    }
-			    // cases that require approval of region commander
-			    else if (terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_REACHING_RETIREMENT_AGE.getCode() || terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_DEATH.getCode() || terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_LACK_MEDICAL_FITNESS.getCode() || terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_FOREIGNER_MARRIAGE.getCode()) {
+			    // cases that require approval of assistant
+			    else if (terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_REACHING_RETIREMENT_AGE.getCode() || terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_DEATH.getCode() || terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_LACK_MEDICAL_FITNESS.getCode() || terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_FOREIGNER_MARRIAGE.getCode()
+				    || terminationRecordData.getReasonId().longValue() == TerminationReasonsEnum.SOLDIERS_ABSENCE.getCode()) {
 				if (unitTypeCode >= UnitTypesEnum.ASSISTANT.getCode())
 				    closeTerminationWorkFlow(requester, instance, wfTermination, terminationRecordData, terminationRecordDetailDataList, smTask, transactionTypeId, session);
 				else {
