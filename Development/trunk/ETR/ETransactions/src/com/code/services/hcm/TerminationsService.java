@@ -1889,6 +1889,8 @@ public class TerminationsService extends BaseService {
 		if (!sameUnitFlag)
 		    empPhysicalUnit = UnitsService.getUnitById(employees.get(i).getPhysicalUnitId());
 
+		employees.get(i).setServiceTerminationRegionId(employees.get(i).getPhysicalRegionId());
+		employees.get(i).setServiceTerminationUnitId(employees.get(i).getPhysicalUnitId());
 		employees.get(i).setStatusId(EmployeeStatusEnum.SERVICE_TERMINATED.getCode());
 		employees.get(i).setPhysicalUnitId(null);
 		employees.get(i).setJobId(null);

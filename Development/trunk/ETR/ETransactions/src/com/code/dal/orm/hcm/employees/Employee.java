@@ -103,6 +103,8 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
     private Date lastAnnualRaiseDate;
     private String occupationDescription;
     private Date insertionDate;
+    private Long serviceTerminationUnitId;
+    private Long serviceTerminationRegionId;
 
     public void setId(Long id) {
 	this.id = id;
@@ -790,6 +792,26 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
 
     public void setInsertionDate(Date insertionDate) {
 	this.insertionDate = insertionDate;
+    }
+
+    @Basic
+    @Column(name = "SERVICE_TERMINATION_UNIT_ID")
+    public Long getServiceTerminationUnitId() {
+	return serviceTerminationUnitId;
+    }
+
+    public void setServiceTerminationUnitId(Long serviceTerminationUnitId) {
+	this.serviceTerminationUnitId = serviceTerminationUnitId;
+    }
+
+    @Basic
+    @Column(name = "SERVICE_TERMINATION_REGION_ID")
+    public Long getServiceTerminationRegionId() {
+	return serviceTerminationRegionId;
+    }
+
+    public void setServiceTerminationRegionId(Long serviceTerminationRegionId) {
+	this.serviceTerminationRegionId = serviceTerminationRegionId;
     }
 
     @Override

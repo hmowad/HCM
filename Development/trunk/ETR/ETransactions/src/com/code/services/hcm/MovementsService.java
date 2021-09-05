@@ -666,6 +666,8 @@ public class MovementsService extends BaseService {
 		}
 
 		if (movementTransaction.getLocationFlag().intValue() == FlagsEnum.ON.getCode()) {
+		    emp.setServiceTerminationRegionId(emp.getPhysicalRegionId());
+		    emp.setServiceTerminationUnitId(emp.getPhysicalUnitId());
 		    emp.setStatusId(EmployeeStatusEnum.MOVED_EXTERNALLY.getCode());
 		    emp.setJobId(null);
 		    emp.setPhysicalUnitId(null);

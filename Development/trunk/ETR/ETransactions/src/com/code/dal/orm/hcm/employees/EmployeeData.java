@@ -70,9 +70,11 @@ import com.code.services.util.HijriDateService;
 			" and (:P_UNIT_FULL_NAME = '-1' or (e.physicalUnitFullName like :P_UNIT_FULL_NAME or e.officialUnitFullName like :P_UNIT_FULL_NAME)) " +
 			" and (:P_MILITARY_NUMBER = -1 or e.militaryNumber = :P_MILITARY_NUMBER) " +
 			" and (:P_SEQUENCE_NUMBER = -1 or e.sequenceNumber = :P_SEQUENCE_NUMBER) " +
-			" and (:P_REGION_ID = -1 or (e.physicalRegionId = :P_REGION_ID or e.officialRegionId = :P_REGION_ID )) " +
+			" and (e.statusId in (50,70) or (:P_REGION_ID = -1 or (e.physicalRegionId = :P_REGION_ID or e.officialRegionId = :P_REGION_ID ))) " +
+			" and (e.statusId not in (50,70) or (:P_REGION_ID = -1 or (e.serviceTerminationRegionId = :P_REGION_ID ))) " +
 			" and (:P_SOCIAL_ID = '-1' or e.socialID = :P_SOCIAL_ID) " +
-			" and (:P_UNIT_ID = -1 or ( e.physicalUnitId = :P_UNIT_ID or e.officialUnitId = :P_UNIT_ID )) " +
+			" and (e.statusId in (50,70) or (:P_UNIT_ID = -1 or ( e.physicalUnitId = :P_UNIT_ID or e.officialUnitId = :P_UNIT_ID ))) " +
+			" and (e.statusId not in (50,70) or (:P_UNIT_ID = -1 or ( e.serviceTerminationUnitId = :P_UNIT_ID ))) " +
 			" and (:P_MINOR_SPEC_ID = -1 or e.minorSpecId = :P_MINOR_SPEC_ID) " +
 			" and (:P_GENDER = '-1' or e.gender = :P_GENDER) " +
 			" order by e.militaryNumber, e.rankId, e.recruitmentDate, e.name "),
@@ -408,6 +410,8 @@ public class EmployeeData extends BaseEntity implements Serializable {
     private String lastAnnualRaiseDateString;
     private String occupationDescription;
     private Date insertionDate;
+    private Long serviceTerminationUnitId;
+    private Long serviceTerminationRegionId;
 
     private Employee employee;
 
@@ -1838,6 +1842,28 @@ public class EmployeeData extends BaseEntity implements Serializable {
     public void setInsertionDate(Date insertionDate) {
 	this.insertionDate = insertionDate;
 	this.employee.setInsertionDate(insertionDate);
+    }
+
+    @Basic
+    @Column(name = "SERVICE_TERMINATION_UNIT_ID")
+    public Long getServiceTerminationUnitId() {
+	return serviceTerminationUnitId;
+    }
+
+    public void setServiceTerminationUnitId(Long serviceTerminationUnitId) {
+	this.serviceTerminationUnitId = serviceTerminationUnitId;
+	this.employee.setServiceTerminationUnitId(serviceTerminationUnitId);
+    }
+
+    @Basic
+    @Column(name = "SERVICE_TERMINATION_REGION_ID")
+    public Long getServiceTerminationRegionId() {
+	return serviceTerminationRegionId;
+    }
+
+    public void setServiceTerminationRegionId(Long serviceTerminationRegionId) {
+	this.serviceTerminationRegionId = serviceTerminationRegionId;
+	this.employee.setServiceTerminationRegionId(serviceTerminationRegionId);
     }
 
     @Transient

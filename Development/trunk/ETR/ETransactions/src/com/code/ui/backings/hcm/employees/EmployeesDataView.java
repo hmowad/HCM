@@ -82,7 +82,7 @@ public class EmployeesDataView extends BaseBacking implements Serializable {
 		if (empParam == null)
 		    throw new BusinessException("error_employeeDataError");
 
-		if (loginEmpData.getPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() && !(loginEmpData.getPhysicalRegionId().equals(empParam.getPhysicalRegionId()) || loginEmpData.getPhysicalRegionId().equals(empParam.getOfficialRegionId()))) {
+		if (loginEmpData.getPhysicalRegionId() != RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode() && !(loginEmpData.getPhysicalRegionId().equals(empParam.getPhysicalRegionId()) || loginEmpData.getPhysicalRegionId().equals(empParam.getOfficialRegionId()) || loginEmpData.getPhysicalRegionId().equals(empParam.getServiceTerminationRegionId()))) {
 		    employee = null;
 		    employeeQualificationsData = null;
 		    throw new BusinessException("error_employeeDataError");
