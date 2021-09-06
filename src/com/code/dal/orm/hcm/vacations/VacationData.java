@@ -62,7 +62,6 @@ import com.code.services.util.HijriDateService;
 	@NamedQuery(name = "hcm_vacationData_transactions_history",
 		query = " select v from VacationData v " +
 			" where v.empId = :P_EMP_ID " +
-			" and v.status <> 4 " +
 			" order by startDate desc")
 })
 @Entity
@@ -76,6 +75,7 @@ public class VacationData extends BaseEntity {
     private String vacationTypeDescription;
     private Integer subVacationType;
     private String subVacationTypeDescription;
+    private String vacationTransactionTypeDescription;
     private Integer paidVacationType;
     private Integer locationFlag;
     private String location;
@@ -143,6 +143,16 @@ public class VacationData extends BaseEntity {
     @Column(name = "SUB_VACATION_TYPE_DESCRIPTION")
     public String getSubVacationTypeDescription() {
 	return subVacationTypeDescription;
+    }
+
+    @Basic
+    @Column(name = "VACATION_TRANSACTION_TYPE_DESC")
+    public String getVacationTransactionTypeDescription() {
+	return vacationTransactionTypeDescription;
+    }
+
+    public void setVacationTransactionTypeDescription(String vacationTransactionTypeDescription) {
+	this.vacationTransactionTypeDescription = vacationTransactionTypeDescription;
     }
 
     @Basic
