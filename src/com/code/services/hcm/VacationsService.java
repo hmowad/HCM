@@ -245,8 +245,10 @@ public class VacationsService extends BaseService {
 			    request.getVacationTypeId(), FlagsEnum.ALL.getCode(), new String[] { request.getStartDateString() }, new String[] { request.getEndDateString() },
 			    request.getStatus().equals(RequestTypesEnum.MODIFY.getCode()) ? request.getVacationId() : null, null);
 	}
-	if (ETRConfigurationService.getVacationRequestRequireJoining() == FlagsEnum.ON.getCode() && request.getStatus() == RequestTypesEnum.NEW.getCode())
+	if (ETRConfigurationService.getVacationRequestRequireJoining() == FlagsEnum.ON.getCode() && request.getStatus() == RequestTypesEnum.NEW.getCode()) {
 	    VacationsBusinessRulesService.validatePreviousVacationJoining(vacationBeneficiary.getEmpId(), vacationBeneficiary.getCategoryId(), request.getStartDate());
+	    VacationsBusinessRulesService.validateCurrentAndFutureVacation(vacationBeneficiary.getEmpId());
+	}
 
 	if (request.getStatus() == RequestTypesEnum.MODIFY.getCode() || request.getStatus() == RequestTypesEnum.CANCEL.getCode())
 	    VacationsBusinessRulesService.validateModifyAndCancelEVacation(request.getVacationId(), request.getStatus(), skipEVacationValidation);
