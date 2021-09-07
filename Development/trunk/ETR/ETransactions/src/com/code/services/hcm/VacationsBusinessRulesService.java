@@ -1486,6 +1486,12 @@ public class VacationsBusinessRulesService extends BaseService {
 	    throw new BusinessException("error_previousVacationWithoutJoiningDate");
     }
 
+    protected static void validateCurrentAndFutureVacation(long vacationBeneficiaryId) throws BusinessException {
+	VacationData lastFutureVacationData = getLastVacationAfterCurrentDate(vacationBeneficiaryId);
+	if (lastFutureVacationData != null)
+	    throw new BusinessException("error_futureVacationExists");
+    }
+
     protected static void validateVacationJoiningData(boolean validateDataOnlyFlag, Long empId, Long vacationTypeId, Integer subVacationType, String endDateString, Integer exceededDays) throws BusinessException {
 	if (exceededDays == null || exceededDays < 0)
 	    throw new BusinessException("error_exceededDaysPositive");
@@ -2394,6 +2400,10 @@ public class VacationsBusinessRulesService extends BaseService {
 	return getLastVacationBeforeSpecificDate(empId, withoutJoiningFlag, HijriDateService.getHijriSysDateString());
     }
 
+    protected static VacationData getLastVacationAfterCurrentDate(long empId) throws BusinessException {
+	return getLastVacationAfterSpecificDate(empId, HijriDateService.getHijriSysDateString());
+    }
+
     /**
      * Gets the last vacation either with or without joining date before a specific date for an employee.
      * 
@@ -2411,6 +2421,20 @@ public class VacationsBusinessRulesService extends BaseService {
 	    qParams.put("P_WITHOUT_JOINING_FLAG", withoutJoiningFlag ? FlagsEnum.ON.getCode() : FlagsEnum.ALL.getCode());
 
 	    List<VacationData> result = DataAccess.executeNamedQuery(VacationData.class, QueryNamesEnum.HCM_GET_LAST_VACATION_DATA_BEFORE_SPECIFIC_DATE.getCode(), qParams);
+	    return result.isEmpty() ? null : result.get(0);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
+    private static VacationData getLastVacationAfterSpecificDate(long empId, String date) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_EMP_ID", empId);
+	    qParams.put("P_DATE", date);
+
+	    List<VacationData> result = DataAccess.executeNamedQuery(VacationData.class, QueryNamesEnum.HCM_GET_LAST_VACATION_DATA_AFTER_SPECIFIC_DATE.getCode(), qParams);
 	    return result.isEmpty() ? null : result.get(0);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();

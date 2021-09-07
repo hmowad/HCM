@@ -46,6 +46,12 @@ import com.code.services.util.HijriDateService;
 			" and (:P_WITHOUT_JOINING_FLAG = -1 or (:P_WITHOUT_JOINING_FLAG = 1 and v.joiningDate is null))" +
 			" and v.endDate = (select max(vac.endDate) from Vacation vac where vac.empId = :P_EMP_ID and vac.status <> 4 and (:P_WITHOUT_JOINING_FLAG = -1 or (:P_WITHOUT_JOINING_FLAG = 1 and vac.joiningDate is null)) and vac.endDate < to_date(:P_DATE, 'MI/MM/YYYY') ) "),
 
+	@NamedQuery(name = "hcm_vacationData_getLastVacationAfterSpecificDate",
+		query = " select v from VacationData v " +
+			" where v.empId = :P_EMP_ID " +
+			" and v.status <> 4 " +
+			" and v.endDate = (select max(vac.endDate) from Vacation vac where vac.empId = :P_EMP_ID and vac.status <> 4 and vac.endDate >= to_date(:P_DATE, 'MI/MM/YYYY') ) "),
+
 	@NamedQuery(name = "hcm_vacationData_getUnitCurrentVacationsData",
 		query = "select v from VacationData v " +
 			"where v.currentEmployeePhysicalUnitId in (select id from UnitData where hKey like :P_PREFIX_HKEY) and v.status <> 4 " +
