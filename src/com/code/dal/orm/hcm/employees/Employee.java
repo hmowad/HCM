@@ -886,7 +886,9 @@ public class Employee extends AuditEntity implements Serializable, InsertableAud
 		"socialIdCopy:" + socialIdCopy + AUDIT_SEPARATOR +
 		"lastAnnualRaiseDate" + lastAnnualRaiseDate + AUDIT_SEPARATOR +
 		"occupationDescription" + occupationDescription + AUDIT_SEPARATOR +
-		"insertionDate" + insertionDate + AUDIT_SEPARATOR;
+		"insertionDate" + insertionDate + AUDIT_SEPARATOR +
+		"serviceTerminationUnitId" + serviceTerminationUnitId + AUDIT_SEPARATOR +
+		"serviceTerminationRegionId" + serviceTerminationRegionId + AUDIT_SEPARATOR;
 
     }
 
