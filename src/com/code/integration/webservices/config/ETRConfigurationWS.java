@@ -25,8 +25,8 @@ public class ETRConfigurationWS {
 	ABOUT_US("HCM_ABOUT_US_URL"), // https://fg.gov.sa/Arabic/AboutUs.aspx
 	BORDER_CROSSINGS("HCM_BORDER_CROSSINGS_URL"), // https://fg.gov.sa/Arabic/BorderCrossings.aspx
 
-	PORT_SECURITY_SERVICES("HCM_PORT_SECURITY_SERVICES_URL"), // TODO https://www.zawil.com.sa/
-	FISHING_AND_PICNIC_SERVICES("HCM_FISHING_AND_PICNIC_SERVICES_URL"), // TODO https://www.zawil.com.sa/
+	PORT_SECURITY_SERVICES("HCM_PORT_SECURITY_SERVICES_URL"), // https://www.zawil.com.sa/bg2/#/login
+	FISHING_AND_PICNIC_SERVICES("HCM_FISHING_AND_PICNIC_SERVICES_URL"), // https://www.zawil.com.sa/fne/#/ar/web/login
 	// ZAWIL("HCM_ZAWIL_URL"), // https://www.zawil.com.sa/
 	EXPERIENCES("HCM_EXPERIENCES_URL"), // https://eservices.fg.gov.sa/WCV
 	JOBS("HCM_JOBS_URL"), // https://jobs.fg.gov.sa/
@@ -34,7 +34,8 @@ public class ETRConfigurationWS {
 	SEARCH_EMPLOYEE("HCM_SEARCH_EMPLOYEE_URL"), // https://fg.gov.sa/Arabic/SearchEmployee.aspx
 
 	MARITIME_SAFETY_INFORMATION("HCM_MARITIME_SAFETY_INFORMATION_URL"), // https://fg.gov.sa/Arabic/MaritimeSafety_Informations.aspx
-	MARITIME_SAFETY_GALLERY_DETAILS("HCM_MARITIME_SAFETY_GALLERY_DETAILS_URL"), // https://eservices.fg.gov.sa/Notifications/FGSeaScience
+	MARITIME_SAFETY_GALLERY_DETAILS("HCM_MARITIME_SAFETY_GALLERY_DETAILS_URL"), // https://www.fg.gov.sa/Arabic/MaritimeSafety.aspx
+	HCM_DUTY_MARTYRS_URL("HCM_HCM_DUTY_MARTYRS_URL"), // https://www.fg.gov.sa/Arabic/DutyMartyrs.aspx
 
 	TWITTER("HCM_TWITTER_URL"), // http://www.twitter.com/bg994/
 	YOUTUBE("HCM_YOUTUBE_URL"), // https://www.youtube.com/bg994/
@@ -89,6 +90,8 @@ public class ETRConfigurationWS {
 		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.MARITIME_SAFETY_INFORMATION.getCode())));
 	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.MARITIME_SAFETY_GALLERY_DETAILS.getCode(),
 		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.MARITIME_SAFETY_GALLERY_DETAILS.getCode())));
+	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.HCM_DUTY_MARTYRS_URL.getCode(),
+		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.HCM_DUTY_MARTYRS_URL.getCode())));
 	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.TWITTER.getCode(),
 		    ETRConfigurationService.getETRConfigValueByCode(ConfigCodesEnum.TWITTER.getCode())));
 	    configurationURLs.add(new WSConfigurationURLItem(ConfigCodesEnum.YOUTUBE.getCode(),
