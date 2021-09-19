@@ -35,7 +35,7 @@ public class ETRConfigurationWS {
 
 	MARITIME_SAFETY_INFORMATION("HCM_MARITIME_SAFETY_INFORMATION_URL"), // https://fg.gov.sa/Arabic/MaritimeSafety_Informations.aspx
 	MARITIME_SAFETY_GALLERY_DETAILS("HCM_MARITIME_SAFETY_GALLERY_DETAILS_URL"), // https://www.fg.gov.sa/Arabic/MaritimeSafety.aspx
-	HCM_DUTY_MARTYRS_URL("HCM_HCM_DUTY_MARTYRS_URL"), // https://www.fg.gov.sa/Arabic/DutyMartyrs.aspx
+	HCM_DUTY_MARTYRS_URL("HCM_DUTY_MARTYRS_URL"), // https://www.fg.gov.sa/Arabic/DutyMartyrs.aspx
 
 	TWITTER("HCM_TWITTER_URL"), // http://www.twitter.com/bg994/
 	YOUTUBE("HCM_YOUTUBE_URL"), // https://www.youtube.com/bg994/
