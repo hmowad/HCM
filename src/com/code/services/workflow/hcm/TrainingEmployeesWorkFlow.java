@@ -1349,7 +1349,7 @@ public class TrainingEmployeesWorkFlow extends BaseWorkFlow {
 
 	trainingTransactionDetailData.setTrainingTransactionId(trainingTransactionId);
 	trainingTransactionDetailData.setDecisionRegionId(decisionRegionId);
-	trainingTransactionDetailData.setDecisionApprovedId(decisionApprovedId);
+	trainingTransactionDetailData.setDecisionApprovedId(originalDecisionApprovedId);
 	trainingTransactionDetailData.setOriginalDecisionApprovedId(originalDecisionApprovedId);
 	trainingTransactionDetailData.setTransactionTypeId(transactionTypeId);
 
