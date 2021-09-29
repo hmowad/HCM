@@ -91,9 +91,9 @@ public class ScholarshipDecisionRequest extends TrainingAndScholarshipBase {
     public void print() {
 	try {
 	    long decisionType = CommonService.getTransactionTypeByCodeAndClass(TransactionTypesEnum.TRN_NEW_DECISION.getCode(), TransactionClassesEnum.TRAININGS.getCode()).getId();
-	    List<TrainingTransactionDetailData> transactionDetails = TrainingEmployeesService.getTrainingTransactionDetailForScholarshipInquery(new Long[] { TrainingTypesEnum.SCHOLARSHIP.getCode() },
+	    List<TrainingTransactionDetailData> transactionDetails = TrainingEmployeesService.getTrainingTransactionDetailForScholarshipInqueryByMinistryDecisionNumberAndMinistryDecisonDate(new Long[] { TrainingTypesEnum.SCHOLARSHIP.getCode() },
 		    new Integer[] { TraineeStatusEnum.SCHOLARSHIP.getCode(), TraineeStatusEnum.SCHOLARSHIP_EXTENSION.getCode(), TraineeStatusEnum.SCHOLARSHIP_CANCELLATION.getCode(), TraineeStatusEnum.SCHOLARSHIP_TERMINATION.getCode() },
-		    beneficiary.getEmpId(), decisionType, null);
+		    beneficiary.getEmpId(), decisionType, null, wfTraining.getMinistryDecisionNumber(), wfTraining.getMinistryDecisionDate());
 	    // List<TrainingTransactionDetailData> transactionDetails = TrainingEmployeesService.getTrainingTransactionDetailDataByTrainingTransactionId(transactionId);
 	    TrainingTransactionDetailData trainingTransactionDetail = transactionDetails.get(0);
 	    printScholarshipDecision(trainingTransactionDetail.getId(), trainingTransactionDetail.getTransactionTypeId());

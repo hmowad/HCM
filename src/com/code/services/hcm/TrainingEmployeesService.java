@@ -1262,18 +1262,22 @@ public class TrainingEmployeesService extends BaseService {
 
     // ---------------------------------------------------------queries --------------------------------------
     public static List<TrainingTransactionDetailData> getTrainingTransactionDetailDataByTrainingTransactionId(long trainingTransactionId) throws BusinessException {
-	return searchTrainingTransactionDetail(null, null, null, trainingTransactionId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, null);
+	return searchTrainingTransactionDetail(null, null, null, trainingTransactionId, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, null, null, null);
     }
 
     public static List<TrainingTransactionDetailData> getTrainingTransactionDetailForScholarshipInquery(Long[] trainigTypesIds, Integer[] traineeStatusIds, long employeeId, long transactionTypeId, String decisionNumber) throws BusinessException {
-	return searchTrainingTransactionDetail(transactionTypeId == FlagsEnum.ALL.getCode() ? null : new Long[] { transactionTypeId }, trainigTypesIds, traineeStatusIds, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), employeeId, null, null, null, decisionNumber);
+	return searchTrainingTransactionDetail(transactionTypeId == FlagsEnum.ALL.getCode() ? null : new Long[] { transactionTypeId }, trainigTypesIds, traineeStatusIds, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), employeeId, null, null, null, decisionNumber, null, null);
+    }
+
+    public static List<TrainingTransactionDetailData> getTrainingTransactionDetailForScholarshipInqueryByMinistryDecisionNumberAndMinistryDecisonDate(Long[] trainigTypesIds, Integer[] traineeStatusIds, long employeeId, long transactionTypeId, String decisionNumber, String ministryDecisionNumber, Date ministryDecisionDate) throws BusinessException {
+	return searchTrainingTransactionDetail(transactionTypeId == FlagsEnum.ALL.getCode() ? null : new Long[] { transactionTypeId }, trainigTypesIds, traineeStatusIds, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), employeeId, null, null, null, decisionNumber, ministryDecisionNumber, ministryDecisionDate);
     }
 
     public static List<TrainingTransactionDetailData> getTrainingTransactionDetailsForEmployeesDecision(Long[] transactionTypeIds, long trainingUnitId, long employeeId, String employeePhysicalUnitHKey, Date startDateFrom, Date startDateTo) throws BusinessException {
-	return searchTrainingTransactionDetail(transactionTypeIds, null, null, FlagsEnum.ALL.getCode(), trainingUnitId, employeeId, employeePhysicalUnitHKey, startDateFrom, startDateTo, null);
+	return searchTrainingTransactionDetail(transactionTypeIds, null, null, FlagsEnum.ALL.getCode(), trainingUnitId, employeeId, employeePhysicalUnitHKey, startDateFrom, startDateTo, null, null, null);
     }
 
-    private static List<TrainingTransactionDetailData> searchTrainingTransactionDetail(Long[] transactionTypeIds, Long[] trainigTypesIds, Integer[] traineeStatusIds, long trainingTransactionId, long trainingUnitId, long employeeId, String employeePhysicalUnitHKey, Date startDateFrom, Date startDateTo, String decisionNumber) throws BusinessException {
+    private static List<TrainingTransactionDetailData> searchTrainingTransactionDetail(Long[] transactionTypeIds, Long[] trainigTypesIds, Integer[] traineeStatusIds, long trainingTransactionId, long trainingUnitId, long employeeId, String employeePhysicalUnitHKey, Date startDateFrom, Date startDateTo, String decisionNumber, String ministryDecisionNumber, Date ministryDecisionDate) throws BusinessException {
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
 	    qParams.put("P_TRAINING_TRANSACTION_ID", trainingTransactionId);
@@ -1318,6 +1322,16 @@ public class TrainingEmployeesService extends BaseService {
 	    qParams.put("P_TRAINING_UNIT_ID", trainingUnitId);
 
 	    qParams.put("P_EMP_PHYSC_UNIT_HKEY", (employeePhysicalUnitHKey == null || employeePhysicalUnitHKey.length() == 0) ? FlagsEnum.ALL.getCode() + "" : UnitsService.getHKeyPrefix(employeePhysicalUnitHKey) + '%');
+
+	    qParams.put("P_MINISTRY_DECISION_NUMBER", ministryDecisionNumber == null || ministryDecisionNumber.trim().length() == 0 ? FlagsEnum.ALL.getCode() + "" : ministryDecisionNumber);
+
+	    if (ministryDecisionDate != null) {
+		qParams.put("P_MINISTRY_DECISION_DATE_FLAG", FlagsEnum.ON.getCode());
+		qParams.put("P_MINISTRY_DECISION_DATE", HijriDateService.getHijriDateString(ministryDecisionDate));
+	    } else {
+		qParams.put("P_MINISTRY_DECISION_DATE_FLAG", FlagsEnum.ALL.getCode());
+		qParams.put("P_MINISTRY_DECISION_DATE", HijriDateService.getHijriSysDateString());
+	    }
 
 	    return DataAccess.executeNamedQuery(TrainingTransactionDetailData.class, QueryNamesEnum.HCM_SEARCH_TRAINING_TRANSACTIONS_DETAIL_DATA.getCode(), qParams);
 	} catch (DatabaseException e) {
