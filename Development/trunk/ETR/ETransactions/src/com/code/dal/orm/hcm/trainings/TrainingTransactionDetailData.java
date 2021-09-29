@@ -30,6 +30,8 @@ import com.code.services.util.HijriDateService;
 			"AND (:P_EMP_PHYSC_UNIT_HKEY ='-1' or td.employeePhysicalUnitHKey LIKE :P_EMP_PHYSC_UNIT_HKEY)" +
 			"AND (:P_START_DATE_FROM_FLAG = -1 or td.actualStartDate >= to_date(:P_START_DATE_FROM, 'MI/MM/YYYY') ) " +
 			"AND (:P_START_DATE_TO_FLAG = -1 or td.actualStartDate <= to_date(:P_START_DATE_TO, 'MI/MM/YYYY'))" +
+			"AND (:P_MINISTRY_DECISION_NUMBER ='-1' or td.ministryDecisionNumber like :P_MINISTRY_DECISION_NUMBER ) " +
+			"AND (:P_MINISTRY_DECISION_DATE_FLAG = -1 or td.ministryDecisionDate = to_date(:P_MINISTRY_DECISION_DATE, 'MI/MM/YYYY') ) " +
 			" order by td.decisionDate,td.id DESC")
 
 })
