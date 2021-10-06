@@ -531,7 +531,7 @@ public class EmployeesService extends BaseService {
     private static void doPayrollIntegration(Long employeeId, Integer resendFlag, CustomSession... useSession) throws BusinessException {
 	String gregSysDateString = HijriDateService.hijriToGregDateString(HijriDateService.getHijriSysDateString());
 	boolean isOpenedSession = isSessionOpened(useSession);
-	CustomSession session = isOpenedSession ? useSession[0] : null;
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
 	if (session == null)
 	    throw new BusinessException("error_general");
 	session.flushTransaction();
