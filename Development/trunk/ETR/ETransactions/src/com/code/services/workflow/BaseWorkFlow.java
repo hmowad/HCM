@@ -441,7 +441,7 @@ public abstract class BaseWorkFlow extends BaseService {
 
 	    DataAccess.addEntity(task, session);
 
-	    PushNotificationRestClient.pushNotification(assigneeId, assigneeWfRole);
+	    PushNotificationRestClient.pushNotification(task.getTaskId(), assigneeId, assigneeWfRole);
 
 	    return task;
 	} catch (Exception e) {

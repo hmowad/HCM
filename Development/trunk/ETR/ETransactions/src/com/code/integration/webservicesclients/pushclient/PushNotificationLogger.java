@@ -1,6 +1,7 @@
 package com.code.integration.webservicesclients.pushclient;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -15,6 +16,7 @@ public class PushNotificationLogger implements ClientRequestFilter, ClientRespon
 	System.out.println("$$$$$ ClientRequestFilter:ClientRequestContext: URI: " + request.getUri());
 	System.out.println("$$$$$ ClientRequestFilter:ClientRequestContext: Header: " + HttpHeaders.AUTHORIZATION + ":" + request.getHeaderString(HttpHeaders.AUTHORIZATION));
 	System.out.println("$$$$$ ClientRequestFilter:ClientRequestContext: Body: " + request.getEntity().toString());
+	System.out.println("$$$$$ ClientRequestFilter:ClientRequestContext: Request Time: " + new Date());
     }
 
     @Override
@@ -25,6 +27,7 @@ public class PushNotificationLogger implements ClientRequestFilter, ClientRespon
 
 	System.out.println("##################################################");
 	System.out.println("##### ClientResponseFilter:ClientResponseContext: Header: " + response.toString());
+	System.out.println("##### ClientRequestFilter:ClientRequestContext: Response Time: " + new Date());
 
 	byte[] arr = new byte[5000];
 	response.getEntityStream().read(arr);
