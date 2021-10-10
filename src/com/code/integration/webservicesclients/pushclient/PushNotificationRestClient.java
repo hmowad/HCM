@@ -40,10 +40,10 @@ public class PushNotificationRestClient {
 	}
     }
 
-    public static void pushNotification(long notifierId, String assigneeWfRole) {
-	String message = BaseService.getMessage("notify_newTask");
+    public static void pushNotification(Long taskId, long notifierId, String assigneeWfRole) {
+	String message = BaseService.getParameterizedMessage("notify_newTask", taskId + "");
 	if (WFTaskRolesEnum.NOTIFICATION.getCode().equals(assigneeWfRole))
-	    message = BaseService.getMessage("notify_newNotification");
+	    message = BaseService.getParameterizedMessage("notify_newNotification", taskId + "");
 
 	pushNotificationMessage(notifierId, message);
     }
