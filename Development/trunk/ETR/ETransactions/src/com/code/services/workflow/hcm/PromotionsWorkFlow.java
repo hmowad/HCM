@@ -3,8 +3,10 @@ package com.code.services.workflow.hcm;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.code.dal.CustomSession;
 import com.code.dal.DataAccess;
@@ -485,7 +487,9 @@ public class PromotionsWorkFlow extends BaseWorkFlow {
     private static Map<Long, String> getOfficersPromotionNotifiedEmpsIdsAndRoles(List<WFPromotionNotificationData> promotionNotificationsData) throws BusinessException {
 
 	Map<Long, String> notifiedEmployeesIds = new HashMap<>();
+	Set<Long> includedRegionIds = new HashSet<Long>();
 	for (WFPromotionNotificationData wfPromotionNotificationData : promotionNotificationsData) {
+	    includedRegionIds.add(wfPromotionNotificationData.getPhysicalRegionId());
 	    notifiedEmployeesIds.put(wfPromotionNotificationData.getEmpId(), OfficersPromotionTasksTypeEnum.EMPLOYEE_TASK.getCode()); // add beneficiaries
 
 	    EmployeeData employeeManager = EmployeesService.getEmployeeDirectManager(wfPromotionNotificationData.getEmpId());
@@ -497,7 +501,8 @@ public class PromotionsWorkFlow extends BaseWorkFlow {
 	List<UnitData> managerUnits = UnitsService.getUnitsByIdsString(configuredManagersUnits);
 
 	for (UnitData unitData : managerUnits) { // add configured managers
-	    notifiedEmployeesIds.put(unitData.getPhysicalManagerId(), OfficersPromotionTasksTypeEnum.CONFIGURED_MANAGER_TASK.getCode());
+	    if (unitData.getRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) || includedRegionIds.contains(unitData.getRegionId()))
+		notifiedEmployeesIds.put(unitData.getPhysicalManagerId(), OfficersPromotionTasksTypeEnum.CONFIGURED_MANAGER_TASK.getCode());
 	}
 	return notifiedEmployeesIds;
     }
@@ -838,6 +843,7 @@ public class PromotionsWorkFlow extends BaseWorkFlow {
 		wfPromotionNotificationData.setDueDateString(empData.getPromotionDueDateString());
 		wfPromotionNotificationData.setPhysicalUnitFullName(empData.getPhysicalUnitFullName());
 		wfPromotionNotificationData.setOfficialUnitFullName(empData.getOfficialUnitFullName());
+		wfPromotionNotificationData.setPhysicalRegionId(empData.getPhysicalRegionId());
 
 		wfPromotionNotifications.add(wfPromotionNotificationData);
 	    }
