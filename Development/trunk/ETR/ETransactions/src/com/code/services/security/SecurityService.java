@@ -321,6 +321,20 @@ public class SecurityService extends BaseService {
 	return false;
     }
 
+    public static List<Menu> getEmployeeMenusShowInMobile(Long empId, Integer showInMobile) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_EMP_ID", empId);
+	    qParams.put("P_MODULE_ID", Long.parseLong(getConfig("module")));
+	    qParams.put("P_SHOW_IN_MOBILE", showInMobile);
+
+	    return DataAccess.executeNamedQuery(Menu.class, QueryNamesEnum.SEC_GET_EMP_MENUS_SHOW_IN_MOBILE.getCode(), qParams);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_loadingUserMenu");
+	}
+    }
+
     // --------------------------------------------------------------------------------------------------------------
     // WF Task Security.
     public static String getUserWFTaskUrl(long assigneeId, String taskUrl, long taskId) {

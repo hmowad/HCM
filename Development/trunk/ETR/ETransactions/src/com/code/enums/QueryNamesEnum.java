@@ -266,6 +266,7 @@ public enum QueryNamesEnum {
     SEC_GET_EMP_MENUS("sec_menu_getEmployeeMenus"),
     SEC_GET_EXTERNAL_MENUS("sec_menu_getExternalMenus"),
     SEC_GET_EMPLOYEE_DECISION_PRIVILEGE("sec_employeeDecisionPrivilege_getEmployeeDecisionPrivilege"),
+    SEC_GET_EMP_MENUS_SHOW_IN_MOBILE("sec_menu_getEmployeeMenusShowInMobile"),
     SEC_SEARCH_DECISION_PRIVILEGE_DATA("sec_decisionPrivilegeData_searchDecisionPrivilegeData"),
     SEC_COUNT_DECISION_PRIVILEGE_DATA("sec_decisionPrivilegeData_countDecisionPrivilegeData"),
 
@@ -550,6 +551,7 @@ public enum QueryNamesEnum {
     HCM_EMPLOYEE_LOG_GET_LAST_EMPLOYEE_LOG("hcm_employeeLog_getLastEmployeeLog"),
     /* ****************************************** General News ************************************************ */
     HCM_GET_GENERAL_NEWS("hcm_generalNews_getGeneralNews"),
+    HCM_COUNT_GENERAL_NEWS("hcm_generalNews_countGeneralNews"),
 
     /* ******************************************* Rankings ****************************************************** */
     HCM_RANKINGS_SEARCH_RANKINGS("hcm_rankings_searchRankings"),
