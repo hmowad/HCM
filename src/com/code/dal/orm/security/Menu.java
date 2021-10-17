@@ -10,6 +10,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 
 @NamedQueries({
 	@NamedQuery(name = "sec_menu_getEmployeeMenus",
@@ -26,7 +27,17 @@ import javax.persistence.Transient;
 			" where m.externalMenu = 1 " +
 			" and m.activeFlag = 1 " +
 			" and m.moduleId = :P_MODULE_ID" +
-			" order by m.orderBy ")
+			" order by m.orderBy "),
+
+	@NamedQuery(name = "sec_menu_getEmployeeMenusShowInMobile",
+		query = " select m from Menu m, EmployeeMenu em " +
+			" where m.menuId = em.menuId " +
+			"   and em.empId = :P_EMP_ID " +
+			"   and m.menuType in (1,2,3) " +
+			"   and m.moduleId = :P_MODULE_ID " +
+			"   and (:P_SHOW_IN_MOBILE = -1 or m.showInMobile = :P_SHOW_IN_MOBILE) " +
+			"   and m.activeFlag = 1 " +
+			" order by m.orderBy "),
 })
 
 @Entity
@@ -44,6 +55,7 @@ public class Menu {
     private Long moduleId;
     private String arabicName;
     private String englishName;
+    private Integer showInMobile;
     private List<Menu> subMenus;
 
     @Id
@@ -164,6 +176,17 @@ public class Menu {
 
     public void setEnglishName(String englishName) {
 	this.englishName = englishName;
+    }
+
+    @Basic
+    @Column(name = "SHOW_IN_MOBILE")
+    @XmlTransient
+    public Integer getShowInMobile() {
+	return showInMobile;
+    }
+
+    public void setShowInMobile(Integer showInMobile) {
+	this.showInMobile = showInMobile;
     }
 
     @Transient

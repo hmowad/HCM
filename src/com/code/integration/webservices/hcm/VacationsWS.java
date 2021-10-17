@@ -83,6 +83,36 @@ public class VacationsWS {
 	return response;
     }
 
+    @WebMethod(operationName = "getLastVacationWithoutJoiningDate")
+    @WebResult(name = "lastVacationWithoutJoiningDateResponse")
+    public WSVacationResponse getLastVacationWithoutJoiningDate(@WebParam(name = "sessionId") String sessionId, @WebParam(name = "employeeId") long employeeId) {
+
+	WSVacationResponse response = new WSVacationResponse();
+	if (!WSSessionsManagementService.maintainSession(sessionId, employeeId, response))
+	    return response;
+
+	try {
+	    VacationData lastVacationData = VacationsService.getLastVacationWithoutJoiningDate(employeeId);
+	    if (lastVacationData == null)
+		throw new BusinessException("error_noPrevVacation");
+
+	    Vacation lastVacation = new Vacation();
+	    lastVacation.setVacationId(lastVacationData.getId());
+	    lastVacation.setStartDateString(lastVacationData.getStartDateString());
+	    lastVacation.setEndDateString(lastVacationData.getEndDateString());
+	    lastVacation.setPeriod(lastVacationData.getPeriod());
+
+	    response.setVacation(lastVacation);
+	    response.setMessage(BaseService.getMessage("notify_successOperation"));
+	} catch (Exception e) {
+	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_noVacationWithoutJoiningDate"));
+	    if (!(e instanceof BusinessException))
+		e.printStackTrace();
+	}
+	return response;
+    }
+
     @WebMethod(operationName = "inquireSickVacationBalanceForHIS")
     @WebResult(name = "inquireSickVacationBalanceForHISResponse")
     public WSVacationBalanceInquiryResponse inquireSickVacationBalanceForHIS(@WebParam(name = "employeeSocialId") String employeeSocialId, @WebParam(name = "balanceInquiryDateString") String balanceInquiryDateString) {

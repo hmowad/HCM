@@ -99,7 +99,6 @@ public class Country extends BaseEntity implements Serializable {
 
     @Basic
     @Column(name = "EMBASSY_NAME")
-    @XmlTransient
     public String getEmbassyName() {
 	return embassyName;
     }

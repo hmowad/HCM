@@ -15,6 +15,7 @@ import com.code.dal.orm.workflow.WFInstance;
 import com.code.dal.orm.workflow.WFTask;
 import com.code.dal.orm.workflow.hcm.vacations.WFVacation;
 import com.code.enums.CategoriesEnum;
+import com.code.enums.FlagsEnum;
 import com.code.enums.LocationFlagsEnum;
 import com.code.enums.RequestTypesEnum;
 import com.code.enums.SubVacationTypesEnum;
@@ -209,6 +210,74 @@ public class VacationsWorkFlowWS {
 	    }
 	}
 	return response;
+    }
+
+    @WebMethod(operationName = "initVacationJoining")
+    @WebResult(name = "initVacationJoiningResponse")
+    public WSResponseBase initVacationJoining(@WebParam(name = "sessionId") String sessionId, @WebParam(name = "requesterId") long requesterId,
+	    @WebParam(name = "beneficiaryId") long beneficiaryId, @WebParam(name = "vacationId") long vacationId,
+	    @WebParam(name = "exceededDays") Integer exceededDays, @WebParam(name = "notes") String notes) {
+	return initVacationJoiningWorkFlow(sessionId, requesterId, beneficiaryId, vacationId, exceededDays, notes);
+
+    }
+
+    private WSResponseBase initVacationJoiningWorkFlow(String sessionId, long requesterId, long beneficiaryId, long vacationId, Integer exceededDays, String notes) {
+
+	WSResponseBase response = new WSResponseBase();
+	if (!WSSessionsManagementService.maintainSession(sessionId, requesterId, response))
+	    return response;
+
+	try {
+	    EmployeeData requester = EmployeesService.getEmployeeData(requesterId);
+	    EmployeeData beneficiary = (requesterId == beneficiaryId) ? requester : EmployeesService.getEmployeeData(beneficiaryId);
+
+	    Vacation vacation = VacationsService.getVacationById(vacationId);
+
+	    WFVacation vacRequest = new WFVacation();
+	    vacRequest.setRequestType(RequestTypesEnum.NEW.getCode());
+	    vacRequest.setOldVacationId(vacation.getVacationId());
+	    vacRequest.setVacationTypeId(vacation.getVacationTypeId());
+	    vacRequest.setSubVacationType(vacation.getSubVacationType());
+	    vacRequest.setStartDate(vacation.getStartDate());
+	    vacRequest.setEndDate(vacation.getEndDate());
+	    vacRequest.setPeriod(vacation.getPeriod());
+	    vacRequest.setLocationFlag(vacation.getLocationFlag());
+	    vacRequest.setLocation(vacation.getLocation());
+	    vacRequest.setExceededDays((exceededDays == null || exceededDays == FlagsEnum.ALL.getCode()) ? 0 : exceededDays);
+	    vacRequest.setNotes(notes);
+
+	    String[] proceeeIdAndTaskURL = getProcessIdAndTaskURLVacJoining(requester.getCategoryId()).split(",");
+
+	    VacationsWorkFlow.initVacationJoining(requester, beneficiary, vacRequest, Long.parseLong(proceeeIdAndTaskURL[0]), null, proceeeIdAndTaskURL[1]);
+
+	    response.setMessage(BaseService.getMessage("notify_successOperation"));
+	} catch (Exception e) {
+	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
+
+	    if (e instanceof BusinessException)
+		response.setMessage(BaseService.getParameterizedMessage(e.getMessage(), ((BusinessException) e).getParams()));
+	    else {
+		response.setMessage(BaseService.getMessage("error_integrationError"));
+		e.printStackTrace();
+	    }
+	}
+	return response;
+    }
+
+    private static String getProcessIdAndTaskURLVacJoining(long categoryId) {
+
+	long processId = 0;
+	if (categoryId == CategoriesEnum.OFFICERS.getCode()) {
+	    processId = WFProcessesEnum.OFFICERS_VACATION_JOINING.getCode();
+	} else if (categoryId == CategoriesEnum.SOLDIERS.getCode()) {
+	    processId = WFProcessesEnum.SOLDIERS_VACATION_JOINING.getCode();
+	} else {
+	    processId = WFProcessesEnum.CIVILIANS_VACATION_JOINING.getCode();
+	}
+
+	String taskUrl = "/Vacations/VacationJoining.jsf?rootOpened=" + ETRConfigurationService.getFollowingProcessesMenuId();
+
+	return processId + "," + taskUrl;
     }
 
     /*------------------------------------------------ Validations --------------------------------------------------*/

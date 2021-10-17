@@ -221,6 +221,10 @@ public class DataAccess {
 	return executeQuery(dataClass, null, null, nativeQueryBuffer, parameters, useSession);
     }
 
+    public static <T> List<T> executeNamedQueryWithPagination(String queryName, Integer offset, Integer pageSize, Map<String, Object> parameters) throws DatabaseException {
+	return executeQueryWithPagination(queryName, null, null, offset, pageSize, parameters);
+    }
+
     @SuppressWarnings("unchecked")
     private static <T> List<T> executeQuery(Class<T> dataClass, String queryName, StringBuffer dynamicQueryBuffer, StringBuffer nativeQueryBuffer, Map<String, Object> parameters, CustomSession... useSession) throws DatabaseException {
 	boolean isOpenedSession = false;
@@ -237,6 +241,61 @@ public class DataAccess {
 		q = session.createQuery(dynamicQueryBuffer.toString());
 	    else if (nativeQueryBuffer != null)
 		q = session.createSQLQuery(nativeQueryBuffer.toString());
+
+	    if (parameters != null) {
+		for (String paramName : parameters.keySet()) {
+		    Object value = parameters.get(paramName);
+
+		    if (value instanceof Integer)
+			q.setInteger(paramName, (Integer) value);
+		    else if (value instanceof String)
+			q.setString(paramName, (String) value);
+		    else if (value instanceof Long)
+			q.setLong(paramName, (Long) value);
+		    else if (value instanceof Float)
+			q.setFloat(paramName, (Float) value);
+		    else if (value instanceof Double)
+			q.setDouble(paramName, (Double) value);
+		    else if (value instanceof Date)
+			q.setDate(paramName, (Date) value);
+		    else if (value instanceof Object[])
+			q.setParameterList(paramName, (Object[]) value);
+		}
+	    }
+
+	    List<T> result = q.list();
+
+	    if (result == null || result.size() == 0)
+		result = new ArrayList<T>();
+
+	    return result;
+	} catch (Exception e) {
+	    throw new DatabaseException(e.getMessage());
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> List<T> executeQueryWithPagination(String queryName, StringBuffer dynamicQueryBuffer, StringBuffer nativeQueryBuffer, Integer offset, Integer pageSize, Map<String, Object> parameters, CustomSession... useSession) throws DatabaseException {
+	boolean isOpenedSession = false;
+	if (useSession != null && useSession.length > 0)
+	    isOpenedSession = true;
+
+	Session session = isOpenedSession ? useSession[0].getSession() : sessionFactory.openSession();
+
+	try {
+
+	    Query q = null;
+	    if (queryName != null)
+		q = session.getNamedQuery(queryName);
+	    else if (dynamicQueryBuffer != null)
+		q = session.createQuery(dynamicQueryBuffer.toString());
+	    else if (nativeQueryBuffer != null)
+		q = session.createSQLQuery(nativeQueryBuffer.toString());
+
+	    q.setMaxResults(pageSize).setFirstResult(offset);
 
 	    if (parameters != null) {
 		for (String paramName : parameters.keySet()) {

@@ -23,7 +23,11 @@ import com.code.services.util.HijriDateService;
 	@NamedQuery(name = "hcm_generalNews_getGeneralNews",
 		query = " select gn from GeneralNews gn " +
 			" where gn.publishFlag = 1 " +
-			" order by gn.newsDate desc ")
+			" order by gn.newsDate desc "),
+
+	@NamedQuery(name = "hcm_generalNews_countGeneralNews",
+		query = " select count(gn) from GeneralNews gn " +
+			" where gn.publishFlag = 1 ")
 })
 
 @Entity

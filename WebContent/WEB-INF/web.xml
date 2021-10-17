@@ -294,6 +294,16 @@
 		<url-pattern>/AirlinesReservationsWS</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>DefinitionLettersWSHttpPort</servlet-name>
+		<servlet-class>com.code.integration.webservices.hcm.DefinitionLettersWS</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DefinitionLettersWSHttpPort</servlet-name>
+		<url-pattern>/DefinitionLettersWS</url-pattern>
+	</servlet-mapping>
+	
 	<servlet>  
     	<servlet-name>Jersey REST Service</servlet-name>  
     	<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>  
