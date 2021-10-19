@@ -104,6 +104,12 @@
 										</td>
 									</tr>
 									<tr>
+										<th width="20%">#{msgs.label_region}</th>
+										<td width="30%">
+											<h:selectOneMenu disabled="#{annualRaiseRegistration.viewAdminFlag}" value="#{annualRaiseRegistration.annualRaise.regionId}">
+												<f:selectItems value="#{annualRaiseRegistration.regions}" var="r" itemLabel="#{r.description}" itemValue="#{r.id}" />
+											</h:selectOneMenu>
+										</td>
 										<th width="20%">#{msgs.label_remarks}</th>
 										<td width="30%">
 											<h:inputTextarea value="#{annualRaiseRegistration.annualRaise.remarks}" readonly="#{annualRaiseRegistration.viewAdminFlag}" styleClass="inputDataSuperLarge" maxlength="500" />

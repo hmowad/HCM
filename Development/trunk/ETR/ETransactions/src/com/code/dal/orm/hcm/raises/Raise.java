@@ -28,6 +28,7 @@ import com.code.services.util.HijriDateService;
 			" and (:P_TYPE = -1 or r.type = :P_TYPE)" +
 			" and (:P_STATUS_FLAG = -1 or r.status IN (:P_STATUS) )" +
 			" and (:P_CATEGORY_ID = -1 or r.categoryId = :P_CATEGORY_ID)" +
+			" and (:P_REGION_ID = -1 or r.regionId = :P_REGION_ID)" +
 			" and (:P_DECISION_DATE_FROM_FLAG = -1 or r.decisionDate >= (TO_DATE(:P_DECISION_DATE_FROM, 'MI/MM/YYYY')))" +
 			" and (:P_DECISION_DATE_TO_FLAG = -1 or r.decisionDate <= (TO_DATE(:P_DECISION_DATE_TO, 'MI/MM/YYYY')))" +
 			" and (:P_EXECUTION_DATE_FROM_FLAG = -1 or r.executionDate >= (TO_DATE(:P_EXECUTION_DATE_FROM, 'MI/MM/YYYY')))" +
@@ -37,8 +38,9 @@ import com.code.services.util.HijriDateService;
 	@NamedQuery(name = "hcm_raise_getDeservedEmployees",
 		query = "select ed from EmployeeData ed" +
 			" where (:P_EMP_ID = -1 or ed.empId = :P_EMP_ID ) " +
-			" and (ed.statusId between 15 and 45)" +
+			" and (ed.statusId between 12 and 45)" +
 			" and (:P_CATEGORY_ID = ed.categoryId)" +
+			" and (:P_REGION_ID = -1 or ed.officialRegionId = :P_REGION_ID ) " +
 			" and (to_date(:P_ACTUAL_EXECUTION_DATE, 'MI/MM/YYYY') >" +
 			" (select CASE WHEN max(rt.executionDate) IS NULL " +
 			" then to_date('1/1/1300', 'MI/MM/YYYY') " +
@@ -51,8 +53,9 @@ import com.code.services.util.HijriDateService;
 
 	@NamedQuery(name = "hcm_raise_getUnDeservedEmployees",
 		query = "select ed from EmployeeData ed" +
-			" where (ed.statusId between 15 and 45)" +
+			" where (ed.statusId between 12 and 45)" +
 			" and (:P_CATEGORY_ID= ed.categoryId)" +
+			" and (:P_REGION_ID = -1 or ed.officialRegionId = :P_REGION_ID ) " +
 			" and (" +
 			" (to_date(:P_ACTUAL_EXECUTION_DATE, 'MI/MM/YYYY') <" +
 			" (select CASE WHEN max(rt.executionDate) IS NULL " +
@@ -76,6 +79,7 @@ public class Raise extends AuditEntity implements InsertableAuditEntity, Updatab
     private Integer type;
     private Integer status;
     private Long categoryId;
+    private Long regionId;
     private String remarks;
     private String reasons;
     private String decisionDateString;
@@ -155,6 +159,16 @@ public class Raise extends AuditEntity implements InsertableAuditEntity, Updatab
 
     public void setCategoryId(Long categoryId) {
 	this.categoryId = categoryId;
+    }
+
+    @Basic
+    @Column(name = "REGION_ID")
+    public Long getRegionId() {
+	return regionId;
+    }
+
+    public void setRegionId(Long regionId) {
+	this.regionId = regionId;
     }
 
     @Basic

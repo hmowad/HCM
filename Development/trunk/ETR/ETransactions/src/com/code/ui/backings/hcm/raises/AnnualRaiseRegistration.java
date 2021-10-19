@@ -9,6 +9,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import com.code.dal.orm.hcm.Category;
+import com.code.dal.orm.hcm.organization.Region;
 import com.code.dal.orm.hcm.raises.Raise;
 import com.code.dal.orm.hcm.raises.RaiseEmployeeData;
 import com.code.enums.CategoriesEnum;
@@ -32,6 +33,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
     // private long category;
     private Raise annualRaise;
     private List<Category> categoriesList;
+    private List<Region> regions;
     private List<RaiseEmployeeData> raiseEmployees;
     private RaiseEmployeeData raiseEmployee;
     private List<RaiseEmployeeData> updateRaiseEmployees;
@@ -80,6 +82,7 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
 	categoriesList = CommonService.getAllCategories();
 	categoriesList.remove(5);
+	regions = CommonService.getAllRegions();
 	for (Iterator<Category> i = categoriesList.iterator(); i.hasNext();) {
 	    Category category = i.next();
 	    if ((category.getId() == CategoriesEnum.CONTRACTORS.getCode())) {
@@ -225,6 +228,14 @@ public class AnnualRaiseRegistration extends BaseBacking implements Serializable
 
     public void setCategoriesList(List<Category> categoriesList) {
 	this.categoriesList = categoriesList;
+    }
+
+    public List<Region> getRegions() {
+	return regions;
+    }
+
+    public void setRegions(List<Region> regions) {
+	this.regions = regions;
     }
 
     public List<RaiseEmployeeData> getRaiseEmployees() {
