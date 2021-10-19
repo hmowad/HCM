@@ -60,6 +60,7 @@ public class RaiseEmployeeData extends BaseEntity {
     private Long empRankId;
     private String empRankDesc;
     private String empJobRankDesc;
+    private Long empRegionId;
     private RaiseEmployee raiseEmployee;
 
     public RaiseEmployeeData() {
@@ -345,6 +346,16 @@ public class RaiseEmployeeData extends BaseEntity {
 
     public void setEmpRankDesc(String empRankDesc) {
 	this.empRankDesc = empRankDesc;
+    }
+
+    @Basic
+    @Column(name = "EMP_REGION_ID")
+    public Long getEmpRegionId() {
+	return empRegionId;
+    }
+
+    public void setEmpRegionId(Long empRegionId) {
+	this.empRegionId = empRegionId;
     }
 
     @Transient
