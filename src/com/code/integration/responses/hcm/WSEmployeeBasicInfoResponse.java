@@ -13,8 +13,9 @@ public class WSEmployeeBasicInfoResponse {
     private String shieldMobileNumber;
     private String ipPhoneExt;
     private String email;
+    private byte[] photo;
 
-    public WSEmployeeBasicInfoResponse(String name, String managerName, String jobDesc, String socialID, String physicalUnitFullName, String officialMobileNumber, String directPhoneNumber, String privateMobileNumber, String phoneExt, String shieldMobileNumber, String ipPhoneExt, String email) {
+    public WSEmployeeBasicInfoResponse(String name, String managerName, String jobDesc, String socialID, String physicalUnitFullName, String officialMobileNumber, String directPhoneNumber, String privateMobileNumber, String phoneExt, String shieldMobileNumber, String ipPhoneExt, String email, byte[] photo) {
 	this.name = name;
 	this.managerName = managerName;
 	this.jobDesc = jobDesc;
@@ -27,6 +28,7 @@ public class WSEmployeeBasicInfoResponse {
 	this.shieldMobileNumber = shieldMobileNumber;
 	this.ipPhoneExt = ipPhoneExt;
 	this.email = email;
+	this.photo = photo;
     }
 
     public String getName() {
@@ -123,6 +125,14 @@ public class WSEmployeeBasicInfoResponse {
 
     public void setEmail(String email) {
 	this.email = email;
+    }
+
+    public byte[] getPhoto() {
+	return photo;
+    }
+
+    public void setPhoto(byte[] photo) {
+	this.photo = photo;
     }
 
 }
