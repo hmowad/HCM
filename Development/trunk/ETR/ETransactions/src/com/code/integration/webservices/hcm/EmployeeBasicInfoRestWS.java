@@ -9,6 +9,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.code.dal.orm.hcm.employees.EmployeeData;
+import com.code.dal.orm.hcm.employees.EmployeePhoto;
 import com.code.exceptions.BusinessException;
 import com.code.integration.responses.hcm.WSEmployeeBasicInfoResponse;
 import com.code.services.BaseService;
@@ -24,10 +25,12 @@ public class EmployeeBasicInfoRestWS {
     public Response getEmployeeBasicInfoByEmployeeId(@QueryParam("employeeId") String employeeId) {
 	try {
 	    EmployeeData employee = EmployeesService.getEmployeeData(Long.parseLong(employeeId));
+	    EmployeePhoto employeePhoto = EmployeesService.getEmployeePhotoByEmpId(Long.parseLong(employeeId));
+	    byte[] photo = employeePhoto != null ? employeePhoto.getPhoto() : null;
 	    if (employee == null)
 		throw new BusinessException("error_employeeDataError");
 	    Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
-	    return Response.status(Status.OK).entity(gson.toJson(new WSEmployeeBasicInfoResponse(employee.getName(), employee.getManagerName(), employee.getJobDesc(), employee.getSocialID(), employee.getPhysicalUnitFullName(), employee.getOfficialMobileNumber(), employee.getDirectPhoneNumber(), employee.getPrivateMobileNumber(), employee.getPhoneExt(), employee.getShieldMobileNumber(), employee.getIpPhoneExt(), employee.getEmail()))).build();
+	    return Response.status(Status.OK).entity(gson.toJson(new WSEmployeeBasicInfoResponse(employee.getName(), employee.getManagerName(), employee.getJobDesc(), employee.getSocialID(), employee.getPhysicalUnitFullName(), employee.getOfficialMobileNumber(), employee.getDirectPhoneNumber(), employee.getPrivateMobileNumber(), employee.getPhoneExt(), employee.getShieldMobileNumber(), employee.getIpPhoneExt(), employee.getEmail(), photo))).build();
 	} catch (Exception e) {
 	    if (e instanceof BusinessException)
 		return Response.status(Status.EXPECTATION_FAILED.getStatusCode()).entity(BaseService.getMessage(e.getMessage())).build();
