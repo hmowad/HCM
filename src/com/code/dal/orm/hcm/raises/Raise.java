@@ -38,9 +38,9 @@ import com.code.services.util.HijriDateService;
 	@NamedQuery(name = "hcm_raise_getDeservedEmployees",
 		query = "select ed from EmployeeData ed" +
 			" where (:P_EMP_ID = -1 or ed.empId = :P_EMP_ID ) " +
-			" and (ed.statusId between 12 and 45)" +
+			" and (ed.statusId between 15 and 45)" +
 			" and (:P_CATEGORY_ID = ed.categoryId)" +
-			" and (:P_REGION_ID = -1 or ed.officialRegionId = :P_REGION_ID ) " +
+			" and (:P_REGION_ID = -1 or ed.physicalRegionId = :P_REGION_ID ) " +
 			" and (to_date(:P_ACTUAL_EXECUTION_DATE, 'MI/MM/YYYY') >" +
 			" (select CASE WHEN max(rt.executionDate) IS NULL " +
 			" then to_date('1/1/1300', 'MI/MM/YYYY') " +
@@ -53,9 +53,9 @@ import com.code.services.util.HijriDateService;
 
 	@NamedQuery(name = "hcm_raise_getUnDeservedEmployees",
 		query = "select ed from EmployeeData ed" +
-			" where (ed.statusId between 12 and 45)" +
+			" where (ed.statusId between 15 and 45)" +
 			" and (:P_CATEGORY_ID= ed.categoryId)" +
-			" and (:P_REGION_ID = -1 or ed.officialRegionId = :P_REGION_ID ) " +
+			" and (:P_REGION_ID = -1 or ed.physicalRegionId = :P_REGION_ID ) " +
 			" and (" +
 			" (to_date(:P_ACTUAL_EXECUTION_DATE, 'MI/MM/YYYY') <" +
 			" (select CASE WHEN max(rt.executionDate) IS NULL " +
