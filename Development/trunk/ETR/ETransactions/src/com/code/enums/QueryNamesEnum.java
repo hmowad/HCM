@@ -91,6 +91,7 @@ public enum QueryNamesEnum {
     /* ************************************************ Vacations ********************************************************** */
 
     HCM_GET_VACATION_TYPES("hcm_vacType_getVacationTypes"),
+    HCM_SEARCH_VACATION_TYPES("hcm_vacType_searchVacationTypes"),
 
     HCM_GET_VACATION_BY_ID("hcm_vacation_getVacationById"),
     HCM_SEARCH_VACATIONS("hcm_vacation_searchVacations"),
