@@ -856,6 +856,32 @@ public class VacationsService extends BaseService {
 	}
     }
 
+    public static boolean isValidVacationType(long categoryId, int vacationTypeCode) throws BusinessException {
+	List<VacationType> vacationsTypes = searchVacationTypes(categoryId, vacationTypeCode);
+	if (vacationsTypes == null || vacationsTypes.size() == 0)
+	    return false;
+	return true;
+    }
+
+    /**
+     * Searches all vacation types from the database.
+     * 
+     * @return List contains all the {@link VacationType} objects
+     * @throws BusinessException
+     *             of any error occurs
+     */
+    private static List<VacationType> searchVacationTypes(long categoryId, int vacationTypeCode) throws BusinessException {
+	try {
+	    Map<String, Object> qParams = new HashMap<String, Object>();
+	    qParams.put("P_CATEGORY_ID", categoryId == FlagsEnum.ALL.getCode() ? FlagsEnum.ALL.getCode() + "" : "%," + categoryId + ",%");
+	    qParams.put("P_VACATION_TYPE_CODE", vacationTypeCode);
+	    return DataAccess.executeNamedQuery(VacationType.class, QueryNamesEnum.HCM_SEARCH_VACATION_TYPES.getCode(), qParams);
+	} catch (DatabaseException e) {
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	}
+    }
+
     /*----------------------------------------------------- Vacation Configuration --------------------------------------*/
 
     public static void modifyVacationConfiguration(VacationConfiguration vacationConfiguration, VacationConfiguration originalVacationConfiguration, CustomSession... useSession) throws BusinessException {

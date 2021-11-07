@@ -20,6 +20,11 @@ import com.code.dal.orm.BaseEntity;
 	@NamedQuery(name = "hcm_vacType_getVacationTypes",
 		query = " select v from VacationType v " +
 			" where (:P_CATEGORY_ID = '-1' or v.allowedCategoriesIds like :P_CATEGORY_ID) " +
+			" order by v.vacationTypeId "),
+	@NamedQuery(name = "hcm_vacType_searchVacationTypes",
+		query = " select v from VacationType v " +
+			" where (:P_CATEGORY_ID = '-1' or v.allowedCategoriesIds like :P_CATEGORY_ID) " +
+			" and (:P_VACATION_TYPE_CODE = -1 or v.vacationTypeCode = :P_VACATION_TYPE_CODE) " +
 			" order by v.vacationTypeId ")
 })
 @Entity
