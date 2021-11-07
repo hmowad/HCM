@@ -990,7 +990,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		    boolean isRequest = isRequestProcess(instance.getProcessId(), movementRequests.get(0).getCategoryId());
 		    if (!isRequest && !movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !movementRequests.get(0).getCategoryId().equals(CategoriesEnum.SOLDIERS.getCode()) && !checkIfEmployeeExistsInWFPositionUnit(movementRequests.get(0).getCategoryId(), requester, movementRequests.get(0).getMovementTypeId()))
 			throw new BusinessException("error_unAuthorizedRequester");
-		    List<WFTask> includedSRETasks = getWFInstanceTasksByRole(instance.getInstanceId(), WFTaskRolesEnum.SECONDARY_REVIEWER_EMP.getCode());
+		    List<WFTask> includedSRETasks = getWFInstanceTasksByRole(instance.getInstanceId(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode());
 		    if (movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !requester.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) &&
 			    movementRequests.get(0).getLocationFlag().equals(LocationFlagsEnum.INTERNAL.getCode()) && checkIfEmployeesInHighRanks(movementRequests) && (includedSRETasks == null || includedSRETasks.size() == 0))
 			throw new BusinessException("error_cantAddHigherRanks");
