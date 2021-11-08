@@ -17,6 +17,7 @@ import com.code.exceptions.BusinessException;
 import com.code.integration.responses.hcm.WSVacationBalanceInquiryResponse;
 import com.code.integration.responses.hcm.WSVacationResponse;
 import com.code.integration.responses.hcm.WSVacationsResponse;
+import com.code.integration.responses.hcm.WSVacationsTransactionsResponse;
 import com.code.integration.responses.util.WSPrintResponse;
 import com.code.services.BaseService;
 import com.code.services.hcm.EmployeesService;
@@ -190,4 +191,46 @@ public class VacationsWS {
 	return response;
     }
 
+    @WebMethod(operationName = "getVacationsTransactions")
+    @WebResult(name = "vacationsTransactionsResponse")
+    public WSVacationsTransactionsResponse getVacationsTransactions(@WebParam(name = "sessionId") String sessionId, @WebParam(name = "employeeId") long employeeId) {
+
+	WSVacationsTransactionsResponse response = new WSVacationsTransactionsResponse();
+	if (!WSSessionsManagementService.maintainSession(sessionId, employeeId, response))
+	    return response;
+
+	try {
+	    List<VacationData> vacationsTransactionsList = VacationsService.getVacationTransactionsHistory(employeeId);
+	    response.setVacationsTransactions(vacationsTransactionsList);
+	    response.setMessage(BaseService.getMessage("notify_successOperation"));
+	} catch (Exception e) {
+	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_getVacationsData"));
+	    if (!(e instanceof BusinessException))
+		e.printStackTrace();
+	}
+	return response;
+    }
+
+    @WebMethod(operationName = "printJoiningDocument")
+    @WebResult(name = "printJoiningDocumentResponse")
+    public WSPrintResponse printJoiningDocument(@WebParam(name = "sessionId") String sessionId, @WebParam(name = "employeeId") long employeeId,
+	    @WebParam(name = "vacationId") long vacationId) {
+
+	WSPrintResponse response = new WSPrintResponse();
+	if (!WSSessionsManagementService.maintainSession(sessionId, employeeId, response))
+	    return response;
+
+	try {
+	    byte[] bytes = VacationsService.getJoiningDocumentBytes(vacationId);
+	    response.setPrintBytes(bytes);
+	    response.setMessage(BaseService.getMessage("notify_successOperation"));
+	} catch (Exception e) {
+	    response.setStatus(WSResponseStatusEnum.FAILED.getCode());
+	    response.setMessage(BaseService.getMessage(e instanceof BusinessException ? e.getMessage() : "error_printVacationJoiningDocument"));
+	    if (!(e instanceof BusinessException))
+		e.printStackTrace();
+	}
+	return response;
+    }
 }
