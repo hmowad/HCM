@@ -289,6 +289,8 @@ public class VacationsWorkFlowWS {
 
     /*------------------------------------------------ Actions V2 ------------------------------------------------------*/
 
+    @WebMethod(operationName = "initVacationRequest_v2")
+    @WebResult(name = "initVacationRequestResponse")
     public WSResponseBase initVacationRequest_V2(@WebParam(name = "sessionId") String sessionId, @WebParam(name = "requesterId") long requesterId,
 	    @WebParam(name = "beneficiaryId") long beneficiaryId,
 	    @WebParam(name = "vacationTypeId") long vacationTypeId, @WebParam(name = "subVacationType") Integer subVacationType,
