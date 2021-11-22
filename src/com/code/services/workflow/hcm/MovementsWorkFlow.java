@@ -131,7 +131,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		} else {
 
 		    if (movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !requester.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) &&
-			    movementRequests.get(0).getLocationFlag().equals(LocationFlagsEnum.INTERNAL.getCode()) && checkIfEmployeesInHighRanks(movementRequests))
+			    movementRequests.get(0).getLocationFlag().equals(LocationFlagsEnum.INTERNAL.getCode()) && checkIfEmployeesInHighRanksOrInCertainPositions(movementRequests))
 			addWFTask(instance.getInstanceId(), getDelegate(requester.getManagerId(), processId, requester.getEmpId()), requester.getManagerId(), curDate, curHijriDate, taskUrl, WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode(), "1", session);
 		    else
 			addWFTask(instance.getInstanceId(), getDelegate(requester.getManagerId(), processId, requester.getEmpId()), requester.getManagerId(), curDate, curHijriDate, taskUrl, WFTaskRolesEnum.SIGN_MANAGER.getCode(), "1", session);
@@ -155,9 +155,10 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 	}
     }
 
-    private static Boolean checkIfEmployeesInHighRanks(List<WFMovementData> movementRequests) throws BusinessException {
+    private static Boolean checkIfEmployeesInHighRanksOrInCertainPositions(List<WFMovementData> movementRequests) throws BusinessException {
 	for (WFMovementData wfMovementData : movementRequests) {
-	    if (wfMovementData.getEmployeeRankId() < RanksEnum.MAJOR.getCode())
+	    EmployeeData employee = EmployeesService.getEmployeeData(wfMovementData.getEmployeeId());
+	    if (wfMovementData.getEmployeeRankId() < RanksEnum.MAJOR.getCode() || MovementsService.checkIfEmployeeExistsInCertainPositions(employee))
 		return true;
 	}
 	return false;
@@ -992,7 +993,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 			throw new BusinessException("error_unAuthorizedRequester");
 		    List<WFTask> includedSRETasks = getWFInstanceTasksByRole(instance.getInstanceId(), WFTaskRolesEnum.SECONDARY_SIGN_MANAGER.getCode());
 		    if (movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !requester.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) &&
-			    movementRequests.get(0).getLocationFlag().equals(LocationFlagsEnum.INTERNAL.getCode()) && checkIfEmployeesInHighRanks(movementRequests) && (includedSRETasks == null || includedSRETasks.size() == 0))
+			    movementRequests.get(0).getLocationFlag().equals(LocationFlagsEnum.INTERNAL.getCode()) && checkIfEmployeesInHighRanksOrInCertainPositions(movementRequests) && (includedSRETasks == null || includedSRETasks.size() == 0))
 			throw new BusinessException("error_cantAddHigherRanks");
 
 		    validateMovementRequests(movementRequests, requester, instance.getInstanceId(), instance.getProcessId(), reTask, false, isRequest ? MovementTransactionViewsEnum.REQUEST.getCode() : MovementTransactionViewsEnum.DECISION.getCode());
@@ -1285,7 +1286,7 @@ public class MovementsWorkFlow extends BaseWorkFlow {
 		long originalId = requester.getEmpId();
 		if (isRequestProcess(instance.getProcessId(), movementRequests.get(0).getCategoryId().longValue()) ||
 			(movementRequests.get(0).getCategoryId().equals(CategoriesEnum.OFFICERS.getCode()) && !requester.getPhysicalRegionId().equals(RegionsEnum.GENERAL_DIRECTORATE_OF_BORDER_GUARDS.getCode()) &&
-				movementRequests.get(0).getLocationFlag().equals(LocationFlagsEnum.INTERNAL.getCode()) && checkIfEmployeesInHighRanks(movementRequests))) {
+				movementRequests.get(0).getLocationFlag().equals(LocationFlagsEnum.INTERNAL.getCode()) && checkIfEmployeesInHighRanksOrInCertainPositions(movementRequests))) {
 		    WFTask reviewerTask = getWFInstanceTasksByRole(instance.getInstanceId(), WFTaskRolesEnum.REVIEWER_EMP.getCode()).get(0);
 		    originalId = reviewerTask.getOriginalId();
 		}
