@@ -362,7 +362,7 @@ public class RaisesService extends BaseService {
     }
 
     private static void validateRaiseBusiness(Raise raise) throws BusinessException {
-	List<Raise> raisesList = getRaises(raise.getId() == null ? FlagsEnum.ALL.getCode() : raise.getId(), raise.getDecisionDate(), raise.getDecisionNumber(), FlagsEnum.ALL.getCode(), raise.getRegionId());
+	List<Raise> raisesList = getRaises(raise.getId() == null ? FlagsEnum.ALL.getCode() : raise.getId(), raise.getDecisionDate(), raise.getDecisionNumber(), FlagsEnum.ALL.getCode(), raise.getRegionId(), raise.getCategoryId());
 	if (raisesList.size() != 0)
 	    throw new BusinessException("error_decisionNumberAndDecisionDateCannotBeRepeatedForTheSameRegion");
 	if (raise.getType() == RaiseTypesEnum.ANNUAL.getCode()) {
@@ -411,8 +411,8 @@ public class RaisesService extends BaseService {
      * @return array list of raises objects
      * @throws BusinessException
      */
-    private static List<Raise> getRaises(long excludedId, Date decisionDate, String decisionNumber, long type, Long regionId) throws BusinessException {
-	return searchRaises(excludedId, FlagsEnum.ALL.getCode(), decisionDate, decisionDate, decisionNumber, null, null, FlagsEnum.ALL.getCode(), type, null, regionId);
+    private static List<Raise> getRaises(long excludedId, Date decisionDate, String decisionNumber, long type, Long regionId, Long categoryId) throws BusinessException {
+	return searchRaises(excludedId, FlagsEnum.ALL.getCode(), decisionDate, decisionDate, decisionNumber, null, null, categoryId, type, null, regionId);
     }
 
     private static List<Raise> getInitialRaiseForTheSameCategory(long categoryId) throws BusinessException {
