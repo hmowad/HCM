@@ -984,7 +984,7 @@ public abstract class BaseWorkFlow extends BaseService {
 
     /********************************************** Delegation Methods **********************************************/
 
-    public static void saveWFDelegation(long empId, long delegateId, Long processId, Long unitId, String hKey, List<WFDelegationData> totalDelegationList, List<WFDelegationData> partialDelegationList) throws BusinessException {
+    public static void saveWFDelegation(long empId, long delegateId, Long processId, Long unitId, String hKey, List<WFDelegationData> totalDelegationList, List<WFDelegationData> partialDelegationList, CustomSession... useSession) throws BusinessException {
 	if (empId == delegateId)
 	    throw new BusinessException("error_CannotDelegateToYourself");
 
@@ -1006,17 +1006,7 @@ public abstract class BaseWorkFlow extends BaseService {
 		}
 	    }
 
-	    if (partialDelegationList != null) {
-		for (WFDelegationData delegation : partialDelegationList) {
-		    if (delegation.getDelegateId().equals(delegateId)) {
-			if (delegation.getUnitId() == null) {
-			    throw new BusinessException("error_TotalAndPartialAllUnitsSameEmployeeDelegationConflict");
-			} else {
-			    throw new BusinessException("error_TotalAndPartialAllUnitsSpecificUnitSameEmployeeDelegationConflict");
-			}
-		    }
-		}
-	    }
+	    
 	}
 
 	// Total Delegation, Specific Unit.
@@ -1043,19 +1033,6 @@ public abstract class BaseWorkFlow extends BaseService {
 		}
 	    }
 
-	    if (partialDelegationList != null) {
-		for (WFDelegationData delegation : partialDelegationList) {
-		    if (delegation.getDelegateId().equals(delegateId)) {
-			if (delegation.getUnitId() != null) {
-			    if (delegation.getUnitId().equals(unitId)) {
-				throw new BusinessException("error_TotalAndPartialSameUnitSameEmployeeDelegationConflict");
-			    } else if (isHierarchical(hKey, delegation.getUnitHKey())) {
-				throw new BusinessException("error_TotalAndPartialParentUnitSameEmployeeDelegationConflict");
-			    }
-			}
-		    }
-		}
-	    }
 	}
 
 	// Partial Delegation, All Units.
@@ -1139,9 +1116,37 @@ public abstract class BaseWorkFlow extends BaseService {
 	delegation.setSystemUser(empId + ""); // For Auditing
 
 	try {
-	    DataAccess.addEntity(delegation);
+	    DataAccess.addEntity(delegation, useSession);
 	} catch (DatabaseException e) {
 	    throw new BusinessException("error_duplicatedDelegation");
+	}
+    }
+
+    public static void saveTotalWFDelegation(long empId, long delegateId, Long unitId, String hKey, List<WFDelegationData> totalDelegationList, List<WFDelegationData> partialDelegationList, CustomSession... useSession) throws BusinessException {
+
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+
+	    BaseWorkFlow.saveWFDelegation(empId, delegateId, null, unitId, hKey, totalDelegationList, partialDelegationList, session);
+	    if (partialDelegationList != null && partialDelegationList.size() > 0)
+		BaseWorkFlow.deleteRelatedPartialDelegations(partialDelegationList, empId, delegateId, unitId, hKey, session);
+	    if (!isOpenedSession)
+		session.commitTransaction();
+
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+	    if (e instanceof BusinessException)
+		throw (BusinessException) e;
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
 	}
     }
 
@@ -1168,6 +1173,44 @@ public abstract class BaseWorkFlow extends BaseService {
 	    delegation.setId(delegationId);
 	    delegation.setSystemUser(empId + ""); // For Auditing
 	    DataAccess.deleteEntity(delegation, session);
+
+	    if (!isOpenedSession)
+		session.commitTransaction();
+
+	} catch (Exception e) {
+	    if (!isOpenedSession)
+		session.rollbackTransaction();
+	    e.printStackTrace();
+	    throw new BusinessException("error_general");
+	} finally {
+	    if (!isOpenedSession)
+		session.close();
+	}
+    }
+
+    public static void deleteRelatedPartialDelegations(List<WFDelegationData> partialDelegationList, long empId, long delegateId, Long unitId, String hKey, CustomSession... useSession) throws BusinessException {
+
+	boolean isOpenedSession = isSessionOpened(useSession);
+	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
+
+	try {
+	    if (!isOpenedSession)
+		session.beginTransaction();
+	    List<WFDelegationData> deletedWFDelegationDataList = new ArrayList<>();
+	    for (int i = 0; i < partialDelegationList.size(); i++) {
+		if (partialDelegationList.get(i).getDelegateId().equals(delegateId) && (partialDelegationList.get(i).getUnitId() == null || partialDelegationList.get(i).getUnitId().equals(unitId) || isHierarchical(hKey, partialDelegationList.get(i).getUnitHKey()))) {
+		    WFDelegation delegation = new WFDelegation();
+		    delegation.setId(partialDelegationList.get(i).getId());
+		    delegation.setSystemUser(empId + ""); // For Auditing
+		    DataAccess.deleteEntity(delegation, session);
+		    deletedWFDelegationDataList.add(partialDelegationList.get(i));
+		}
+	    }
+	    if (deletedWFDelegationDataList != null && deletedWFDelegationDataList.size() > 0) {
+		for (WFDelegationData deletedWFDelegationData : deletedWFDelegationDataList) {
+		    partialDelegationList.remove(deletedWFDelegationData);
+		}
+	    }
 
 	    if (!isOpenedSession)
 		session.commitTransaction();

@@ -113,7 +113,12 @@
 							</rich:column>
 
 							<rich:column>
-								<f:facet name="header">#{msgs.label_select}</f:facet>
+								<f:facet name="header">
+									#{msgs.label_selectAll} 
+									<h:commandButton rendered="#{processesMiniSearch.mode == 1}" action="#{processesMiniSearch.addAllSearchList()}" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon">
+										<f:ajax render="searchProcessForm:processListId searchProcessForm:selectedProcessListId searchProcessForm:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
+									</h:commandButton>
+								</f:facet>
 									<h:commandButton rendered="#{processesMiniSearch.mode == 1}" action="#{processesMiniSearch.addSelectedProcess(row)}" value="#{msgs.fa_check_square}" title="#{msgs.label_select}" styleClass="btn_icon">
 										<f:ajax render="searchProcessForm:processListId searchProcessForm:selectedProcessListId searchProcessForm:notifyMessagesId" onevent="function(e){if(e.status == 'complete') #{rich:component('reload')}.hide();}" />
 									</h:commandButton>
