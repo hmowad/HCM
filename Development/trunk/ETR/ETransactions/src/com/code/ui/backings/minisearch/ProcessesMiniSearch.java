@@ -37,7 +37,7 @@ public class ProcessesMiniSearch extends BaseBacking implements Serializable {
 	try {
 	    if (eservicesFlag == FlagsEnum.OFF.getCode()) {
 		processesGroups = BaseWorkFlow.getWFProcessesGroups();
-	    } else if (eservicesFlag == FlagsEnum.ON.getCode()){
+	    } else if (eservicesFlag == FlagsEnum.ON.getCode()) {
 		processesGroups = EServicesBaseWorkFlowService.getEservicesProcessGroups();
 	    }
 	} catch (BusinessException e) {
@@ -71,6 +71,13 @@ public class ProcessesMiniSearch extends BaseBacking implements Serializable {
     public void addSelectedProcess(WFProcess process) {
 	selectedProcessList.add(process);
 	searchProcessList.remove(process);
+    }
+
+    public void addAllSearchList() {
+	for (WFProcess searchProcess : searchProcessList) {
+	    selectedProcessList.add(searchProcess);
+	}
+	searchProcessList = new ArrayList<>();
     }
 
     public void removeSelectedProcess(WFProcess process) {

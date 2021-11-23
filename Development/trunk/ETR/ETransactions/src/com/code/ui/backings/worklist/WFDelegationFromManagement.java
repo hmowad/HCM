@@ -64,10 +64,8 @@ public class WFDelegationFromManagement extends BaseBacking implements Serializa
     public void saveTotalDelegation() {
 	if (searchEmployee != null) {
 	    try {
-		BaseWorkFlow.saveWFDelegation(curEmployee.getEmpId(), searchEmployee.getEmpId(), null, searchUnit.getId(), searchUnit.gethKey(), totalDelegationList, partialDelegationList);
-
+		BaseWorkFlow.saveTotalWFDelegation(curEmployee.getEmpId(), searchEmployee.getEmpId(), searchUnit.getId(), searchUnit.gethKey(), totalDelegationList, partialDelegationList);
 		totalDelegationList = BaseWorkFlow.getWFTotalDelegationsFrom(curEmployee.getEmpId());
-
 		super.setServerSideSuccessMessages(getMessage("notify_successOperation"));
 	    } catch (Exception e) {
 		super.setServerSideErrorMessages(getMessage(e.getMessage()));
