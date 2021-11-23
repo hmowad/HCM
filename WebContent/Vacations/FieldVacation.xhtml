@@ -249,7 +249,7 @@
 										<h:outputText id="endDateId" value="#{fieldVacation.vacRequest.endDateString}" />
 									</td>
 								</tr>
-								<h:panelGroup rendered="#{fieldVacation.vacationMode == 1}">
+								<h:panelGroup>
 									<tr>
 										<th width="15%">#{msgs.label_location}</th>
 										<td width="35%">
@@ -268,14 +268,6 @@
 										<td width="35%">
 											<h:outputText id="locationId" value="#{fieldVacation.vacRequest.location}" />
 											<h:inputHidden id="countriesNamesId" value="#{fieldVacation.vacRequest.location}" />
-										</td>
-									</tr>
-								</h:panelGroup>
-								<h:panelGroup rendered="#{fieldVacation.vacationMode == 2}">
-									<tr>
-										<th width="15%">#{msgs.label_location}</th>
-										<td width="85%" colspan="3">
-											<h:outputText value="#{msgs.label_locIn}" />
 										</td>
 									</tr>
 								</h:panelGroup>
