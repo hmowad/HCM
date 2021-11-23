@@ -663,9 +663,6 @@ public class VacationsBusinessRulesService extends BaseService {
 	    if (vacationBeneficiary.getCategoryId() != CategoriesEnum.OFFICERS.getCode() && vacationBeneficiary.getCategoryId() != CategoriesEnum.SOLDIERS.getCode())
 		throw new BusinessException("error_vacationTypeIsNotAllowedForThisCategory");
 
-	    if (vacationBeneficiary.getCategoryId() == CategoriesEnum.SOLDIERS.getCode() && request.getLocationFlag().intValue() != LocationFlagsEnum.INTERNAL.getCode())
-		throw new BusinessException("error_vacIsInternalOnly");
-
 	    if (!UnitsService.isFieldUnit(vacationBeneficiary.getPhysicalUnitHKey()))
 		throw new BusinessException("error_fieldVacationIsAllowedForEmployeesAtFieldUnitOnly");
 
