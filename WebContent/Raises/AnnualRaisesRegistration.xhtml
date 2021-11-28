@@ -11,8 +11,10 @@
 		function getEmployee(){
 			var decisionDateString = document.getElementById('annualRaiseRegistrationFormId:raiseDecisionDateStringId').value;
 			var decisionNumber = document.getElementById('annualRaiseRegistrationFormId:raiseDecisionNumberId').value;
+			var regionId = document.getElementById('annualRaiseRegistrationFormId:raiseRegionIDId').value;
+			var categoryId = document.getElementById('annualRaiseRegistrationFormId:raiseCategoryIDId').value;
 			deservedEmpsForAnnualRaiseMiniSearch('#{request.contextPath}',
-					'handleEmpMiniSearhResult(ret)', decisionDateString, decisionNumber);
+					'handleEmpMiniSearhResult(ret)', decisionDateString, decisionNumber, regionId, categoryId);
 		}
 
 		function handleEmpMiniSearhResult(ret) {
@@ -180,6 +182,8 @@
 														<h:inputHidden id="employeeIDId" value="#{annualRaiseRegistration.selectedEmpId}" />
 														<h:inputHidden id="raiseDecisionDateStringId" value="#{annualRaiseRegistration.annualRaise.decisionDateString}" />
 														<h:inputHidden id="raiseDecisionNumberId" value="#{annualRaiseRegistration.annualRaise.decisionNumber}" />
+														<h:inputHidden id="raiseRegionIDId" value="#{annualRaiseRegistration.annualRaise.regionId}" />
+														<h:inputHidden id="raiseCategoryIDId" value="#{annualRaiseRegistration.annualRaise.categoryId}" />
 													</td>
 												</tr>
 											</table>

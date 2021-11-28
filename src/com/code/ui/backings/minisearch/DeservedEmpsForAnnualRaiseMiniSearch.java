@@ -25,6 +25,8 @@ public class DeservedEmpsForAnnualRaiseMiniSearch extends BaseBacking implements
     private String searchSocialId;
     private String decisionDate;
     private String decisionNumber;
+    private Long regionId;
+    private Long categoryId;
     private Integer[] deservedFlagValues;
     private int rowsCount = 10;
     private List<RaiseEmployeeData> searchEmployeeList;
@@ -36,12 +38,16 @@ public class DeservedEmpsForAnnualRaiseMiniSearch extends BaseBacking implements
 	    decisionDate = getRequest().getParameter("decisionDateString");
 	if (getRequest().getParameter("decisionNumber") != null)
 	    decisionNumber = getRequest().getParameter("decisionNumber");
+	if (getRequest().getParameter("regionId") != null)
+	    regionId = Long.parseLong(getRequest().getParameter("regionId"));
+	if (getRequest().getParameter("categoryId") != null)
+	    categoryId = Long.parseLong(getRequest().getParameter("categoryId"));
     }
 
     public void searchEmployee() {
 	try {
 	    Long militaryNumber = (long) ((searchMilitaryNumber == null || searchMilitaryNumber.isEmpty()) ? FlagsEnum.ALL.getCode() : Integer.parseInt(searchMilitaryNumber));
-	    searchEmployeeList = RaisesService.getAnnualRaiseDeservedEmployees(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, militaryNumber, decisionDate, decisionNumber, deservedFlagValues);
+	    searchEmployeeList = RaisesService.getAnnualRaiseDeservedEmployees(searchSocialId, searchEmpName, searchJobDesc, searchUnitFullName, militaryNumber, decisionDate, decisionNumber, deservedFlagValues, regionId, categoryId);
 	} catch (BusinessException e) {
 	    super.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -101,6 +107,22 @@ public class DeservedEmpsForAnnualRaiseMiniSearch extends BaseBacking implements
 
     public void setDecisionNumber(String decisionNumber) {
 	this.decisionNumber = decisionNumber;
+    }
+
+    public Long getRegionId() {
+	return regionId;
+    }
+
+    public void setRegionId(Long regionId) {
+	this.regionId = regionId;
+    }
+
+    public Long getCategoryId() {
+	return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+	this.categoryId = categoryId;
     }
 
     public List<RaiseEmployeeData> getSearchEmployeeList() {
