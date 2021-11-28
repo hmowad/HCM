@@ -366,7 +366,7 @@ public class RaisesService extends BaseService {
 	if (raisesList.size() != 0)
 	    throw new BusinessException("error_decisionNumberAndDecisionDateCannotBeRepeatedForTheSameRegion");
 	if (raise.getType() == RaiseTypesEnum.ANNUAL.getCode()) {
-	    List<Raise> initialRaise = getInitialRaiseForTheSameCategory(raise.getCategoryId());
+	    List<Raise> initialRaise = getInitialRaiseForTheSameCategory(raise.getCategoryId(), raise.getRegionId());
 	    if (!initialRaise.isEmpty() && raise.getId() == null)
 		throw new BusinessException("error_cannotSaveTwoInitialAnnualRaiseForTheSameCategory");
 
@@ -415,8 +415,8 @@ public class RaisesService extends BaseService {
 	return searchRaises(excludedId, FlagsEnum.ALL.getCode(), decisionDate, decisionDate, decisionNumber, null, null, categoryId, type, null, regionId);
     }
 
-    private static List<Raise> getInitialRaiseForTheSameCategory(long categoryId) throws BusinessException {
-	return searchRaises(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, null, null, categoryId, RaiseTypesEnum.ANNUAL.getCode(), new Integer[] { RaiseStatusEnum.INITIAL.getCode(), RaiseStatusEnum.CONFIRMED.getCode() }, null);
+    private static List<Raise> getInitialRaiseForTheSameCategory(long categoryId, Long regionId) throws BusinessException {
+	return searchRaises(FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), null, null, null, null, null, categoryId, RaiseTypesEnum.ANNUAL.getCode(), new Integer[] { RaiseStatusEnum.INITIAL.getCode(), RaiseStatusEnum.CONFIRMED.getCode() }, regionId);
     }
 
     /**
@@ -634,7 +634,7 @@ public class RaisesService extends BaseService {
 		if (!isOpenedSession)
 		    session.beginTransaction();
 		if (raiseEmployeeDataToUpdateList.get(0).getRaiseType() == RaiseTypesEnum.ANNUAL.getCode()) {
-		    List<RaiseEmployeeData> deservedEmp = getAnnualRaiseDeservedEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), raiseEmployeeDataToUpdateList.get(0).getRaiseDecisionDateString(), raiseEmployeeDataToUpdateList.get(0).getRaiseDecisionNumber(), new Integer[] { RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode() });
+		    List<RaiseEmployeeData> deservedEmp = getAnnualRaiseDeservedEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), raiseEmployeeDataToUpdateList.get(0).getRaiseDecisionDateString(), raiseEmployeeDataToUpdateList.get(0).getRaiseDecisionNumber(), new Integer[] { RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode() }, raise.getRegionId(), raise.getCategoryId());
 		    if (deservedEmp.size() == raiseEmployeeDataToUpdateList.size())
 			throw new BusinessException("error_annualRaiseMustHaveAtLeastOneDeservedEmployee");
 		}
@@ -958,7 +958,7 @@ public class RaisesService extends BaseService {
 	    Map<Long, EmployeeData> currExculeddedForEndOfLadder = new HashMap<>();
 	    Map<Long, RaiseEmployeeData> prevExcludedforEndOfLadder = new HashMap<>();
 	    Map<Long, RaiseEmployeeData> prevDeservedEmps = new HashMap<>();
-	    List<RaiseEmployeeData> prevDeservedEmpData = getAnnualRaiseDeservedEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), raise.getDecisionDateString(), raise.getDecisionNumber(), new Integer[] { RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode() });
+	    List<RaiseEmployeeData> prevDeservedEmpData = getAnnualRaiseDeservedEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), raise.getDecisionDateString(), raise.getDecisionNumber(), new Integer[] { RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode() }, raise.getRegionId(), raise.getCategoryId());
 	    Map<Long, Long> rankDegreesHashMap = getEndOfLadderDegreesMap(raise.getCategoryId());
 
 	    boolean atLeastOneDeserved = false;
@@ -976,11 +976,12 @@ public class RaisesService extends BaseService {
 		throw new BusinessException("error_annualRaiseMustHaveAtLeastOneDeservedEmployee");
 	    }
 	    for (EmployeeData emp : allDeservedEmployees) {
-		if (!emp.getDegreeId().equals(rankDegreesHashMap.get(emp.getRankId()))) {
-		    currDeservedEmps.put(emp.getEmpId(), emp);
-		} else {
+		if (emp.getDegreeId().equals(rankDegreesHashMap.get(emp.getRankId())) || emp.getDegreeId() > rankDegreesHashMap.get(emp.getRankId())) {
 		    currExculeddedForEndOfLadder.put(emp.getEmpId(), emp);
+		} else {
+		    currDeservedEmps.put(emp.getEmpId(), emp);
 		}
+
 	    }
 	    if (!areEqualRaiseEmployeeMaps(currExculeddedForEndOfLadder, prevExcludedforEndOfLadder) || !areEqualRaiseEmployeeMaps(currDeservedEmps, prevDeservedEmps)) {
 		raise.setDirtyFlag(true);
@@ -1031,7 +1032,7 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      */
     public static List<RaiseEmployeeData> getRaiseEmployeeByRaiseId(long raiseId) throws BusinessException {
-	return searchRaiseEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), null, null, null, raiseId, FlagsEnum.ALL.getCode());
+	return searchRaiseEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), null, null, null, raiseId, FlagsEnum.ALL.getCode(), null, null);
     }
 
     /**
@@ -1043,7 +1044,7 @@ public class RaisesService extends BaseService {
      */
     public static List<RaiseEmployeeData> getEndOfLadderAndExcludedForAnotherReasonEmployees(long raiseId) throws BusinessException {
 	Integer[] deservedFlagValues = new Integer[] { RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode() };
-	return searchRaiseEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), null, null, deservedFlagValues, raiseId, FlagsEnum.ALL.getCode());
+	return searchRaiseEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), null, null, deservedFlagValues, raiseId, FlagsEnum.ALL.getCode(), null, null);
     }
 
     /**
@@ -1055,7 +1056,7 @@ public class RaisesService extends BaseService {
      * @throws BusinessException
      */
     public static List<RaiseEmployeeData> getRaiseEmployeeByRaiseIdAndEmpId(long raiseId, long empId) throws BusinessException {
-	return searchRaiseEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), null, null, null, raiseId, empId);
+	return searchRaiseEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), null, null, null, raiseId, empId, null, null);
     }
 
     /**
@@ -1072,8 +1073,8 @@ public class RaisesService extends BaseService {
      * @return array list of raiseEmployee objects
      * @throws BusinessException
      */
-    public static List<RaiseEmployeeData> getAnnualRaiseDeservedEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, String decisionDateString, String decisionNumber, Integer[] deservedFlagValues) throws BusinessException {
-	return searchRaiseEmployees(socialId, empName, jobDesc, physicalUnitFullName, empNumber, HijriDateService.getHijriDate(decisionDateString), decisionNumber, deservedFlagValues, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode());
+    public static List<RaiseEmployeeData> getAnnualRaiseDeservedEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, String decisionDateString, String decisionNumber, Integer[] deservedFlagValues, Long regionId, Long categoryId) throws BusinessException {
+	return searchRaiseEmployees(socialId, empName, jobDesc, physicalUnitFullName, empNumber, HijriDateService.getHijriDate(decisionDateString), decisionNumber, deservedFlagValues, FlagsEnum.ALL.getCode(), FlagsEnum.ALL.getCode(), regionId, categoryId);
     }
 
     /**
@@ -1092,7 +1093,7 @@ public class RaisesService extends BaseService {
      * @return array list of raiseEmployee objects
      * @throws BusinessException
      */
-    private static List<RaiseEmployeeData> searchRaiseEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, Date decisionDate, String decisionNumber, Integer[] deservedFlagValues, long raiseId, long empId) throws BusinessException {
+    private static List<RaiseEmployeeData> searchRaiseEmployees(String socialId, String empName, String jobDesc, String physicalUnitFullName, long empNumber, Date decisionDate, String decisionNumber, Integer[] deservedFlagValues, long raiseId, long empId, Long regionId, Long categoryId) throws BusinessException {
 	Map<String, Object> qParams = new HashMap<String, Object>();
 	try {
 	    qParams.put("P_SOCIAL_ID", (socialId == null || socialId.equals("")) ? FlagsEnum.ALL.getCode() + "" : socialId);
@@ -1117,6 +1118,9 @@ public class RaisesService extends BaseService {
 	    }
 	    qParams.put("P_RAISE_ID", raiseId);
 	    qParams.put("P_RAISE_EMP_ID", empId);
+	    qParams.put("P_REGION_ID", regionId == null ? FlagsEnum.ALL.getCode() : regionId);
+	    qParams.put("P_CATEGORY_ID", categoryId == null ? FlagsEnum.ALL.getCode() : categoryId);
+
 	    return DataAccess.executeNamedQuery(RaiseEmployeeData.class, QueryNamesEnum.HCM_SEARCH_RAISE_EMPLOYEES.getCode(), qParams);
 	} catch (DatabaseException e) {
 	    e.printStackTrace();
@@ -1359,7 +1363,7 @@ public class RaisesService extends BaseService {
 	validateRaiseStatus(raise);
 	boolean isOpenedSession = isSessionOpened(useSession);
 	CustomSession session = isOpenedSession ? useSession[0] : DataAccess.getSession();
-	List<RaiseEmployeeData> allEmployees = getAnnualRaiseDeservedEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), raise.getDecisionDateString(), raise.getDecisionNumber(), new Integer[] { RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode() });
+	List<RaiseEmployeeData> allEmployees = getAnnualRaiseDeservedEmployees(null, null, null, null, FlagsEnum.ALL.getCode(), raise.getDecisionDateString(), raise.getDecisionNumber(), new Integer[] { RaiseEmployeesTypesEnum.DESERVED_EMPLOYEES.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_ANOTHER_REASON.getCode(), RaiseEmployeesTypesEnum.EXCLUDED_EMPLOYEES_FOR_END_OF_LADDER.getCode() }, raise.getRegionId(), raise.getCategoryId());
 	List<RaiseTransactionLog> raiseTransactionsLog = new ArrayList<>();
 	List<RaiseTransaction> raiseTransactions = new ArrayList<>();
 	try {

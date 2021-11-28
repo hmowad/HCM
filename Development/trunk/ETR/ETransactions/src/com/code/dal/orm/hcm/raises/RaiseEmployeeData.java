@@ -24,6 +24,8 @@ import com.code.services.util.HijriDateService;
 			" and (:P_JOB_DESC = '-1' or r.empJobName like :P_JOB_DESC ) " +
 			" and (:P_PHYSICAL_UNIT_FULL_NAME = '-1' or r.empPhysicalUnitName like :P_PHYSICAL_UNIT_FULL_NAME ) " +
 			" and (:P_EMP_NUMBER = -1 or r.empNumber = :P_EMP_NUMBER) " +
+			" and (:P_REGION_ID = -1 or r.empRegionId = :P_REGION_ID) " +
+			" and (:P_CATEGORY_ID = -1 or r.raiseCategoryId = :P_CATEGORY_ID) " +
 			" and (:P_DECISION_NUMBER = '-1' or r.raiseDecisionNumber = :P_DECISION_NUMBER) " +
 			" and (:P_DECISION_DATE_FLAG = -1 or r.raiseDecisionDate = (TO_DATE(:P_DECISION_DATE, 'MI/MM/YYYY')))" +
 			" and (:P_DESERVED_FLAG_VALUES_FLAG = -1 or r.empDeservedFlag in ( :P_DESERVED_FLAG_VALUES )) " +
