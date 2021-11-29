@@ -35,6 +35,7 @@ public class PromotionsReports extends BaseBacking {
     private Boolean scaleUpFlag;
     private Long unitId;
     private Long minorSpecsId;
+    private String decisionNumber;
 
     public PromotionsReports() {
 	init();
@@ -81,6 +82,7 @@ public class PromotionsReports extends BaseBacking {
 	    decisionDateFrom = null;
 	    decisionDateTo = HijriDateService.getHijriSysDate();
 	    scaleUpFlag = false;
+	    decisionNumber = null;
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
 	}
@@ -110,7 +112,7 @@ public class PromotionsReports extends BaseBacking {
 		setServerSideErrorMessages(getMessage("error_fromDecisionDateViolation"));
 		return;
 	    }
-	    byte[] bytes = PromotionsService.getPromotionsReport(reportType, (long) mode, rankId, regionId, promotionDueDateFrom, promotionDueDateTo, decisionDateFrom, decisionDateTo, scaleUpFlag, promotionDate, unitId == null ? FlagsEnum.ALL.getCode() : unitId, minorSpecsId == null ? FlagsEnum.ALL.getCode() : minorSpecsId);
+	    byte[] bytes = PromotionsService.getPromotionsReport(reportType, (long) mode, rankId, regionId, promotionDueDateFrom, promotionDueDateTo, decisionDateFrom, decisionDateTo, scaleUpFlag, promotionDate, unitId == null ? FlagsEnum.ALL.getCode() : unitId, minorSpecsId == null ? FlagsEnum.ALL.getCode() : minorSpecsId, decisionNumber);
 	    super.print(bytes);
 	} catch (BusinessException e) {
 	    this.setServerSideErrorMessages(getMessage(e.getMessage()));
@@ -230,6 +232,14 @@ public class PromotionsReports extends BaseBacking {
 
     public void setMinorSpecsId(Long minorSpecsId) {
 	this.minorSpecsId = minorSpecsId;
+    }
+
+    public String getDecisionNumber() {
+	return decisionNumber;
+    }
+
+    public void setDecisionNumber(String decisionNumber) {
+	this.decisionNumber = decisionNumber;
     }
 
 }

@@ -821,7 +821,7 @@ public class PromotionsService extends BaseService {
      * @throws BusinessException
      * @see {@link RegionsEnum}
      */
-    public static byte[] getPromotionsReport(int reportType, long categoryId, long rankId, long regionId, Date promotionDueDateFrom, Date promotionDueDateTo, Date decisionDateFrom, Date decisionDateTo, Boolean scaleUpFlag, Date promotionDate, Long unitId, Long minorSpecsId) throws BusinessException {
+    public static byte[] getPromotionsReport(int reportType, long categoryId, long rankId, long regionId, Date promotionDueDateFrom, Date promotionDueDateTo, Date decisionDateFrom, Date decisionDateTo, Boolean scaleUpFlag, Date promotionDate, Long unitId, Long minorSpecsId, String decisionNumber) throws BusinessException {
 
 	try {
 	    Map<String, Object> qParams = new HashMap<String, Object>();
@@ -871,24 +871,30 @@ public class PromotionsService extends BaseService {
 		qParams.put("P_OFFICIAL_REGION_SHORT_DESC", regionId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : CommonService.getRegionById(regionId).getShortDescription());
 		qParams.put("P_RANK_DESC", rankId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : CommonService.getRankById(rankId).getDescription());
 
-		if (reportType == 20)
+		if (reportType == 20) {
+		    qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.trim().isEmpty()) ? (FlagsEnum.ALL.getCode() + "") : decisionNumber);
 		    reportName = ReportNamesEnum.PROMOTIONS_PROMOTED_INQUIRY.getCode();
-		else if (reportType == 30) {
-		    if (promotionDate != null) {
-			qParams.put("P_PROMOTION_DATE_FLAG", FlagsEnum.ON.getCode());
-			qParams.put("P_PROMOTION_DATE", HijriDateService.getHijriDateString(promotionDate));
-		    } else {
-			qParams.put("P_PROMOTION_DATE_FLAG", FlagsEnum.ALL.getCode());
-			qParams.put("P_PROMOTION_DATE", null);
-		    }
-
-		    if (scaleUpFlag)
-			qParams.put("P_SCALE_UP_FLAG", FlagsEnum.ON.getCode());
-		    else
-			qParams.put("P_SCALE_UP_FLAG", FlagsEnum.OFF.getCode());
+		} else if (reportType == 30) {
 		    qParams.put("P_UNIT_DESC", unitId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : UnitsService.getUnitById(unitId).getFullName());
 		    qParams.put("P_MINOR_SPECS_DESC", minorSpecsId == FlagsEnum.ALL.getCode() ? (FlagsEnum.ALL.getCode() + "") : SpecializationsService.getMinorSpecializationsByIdsString(minorSpecsId + "").get(0).getDescription());
-		    reportName = ReportNamesEnum.PROMOTIONS_PROMOTED_STATISTICAL_INQUIRY.getCode();
+		    if (categoryId == 1) {
+			qParams.put("P_DECISION_NUMBER", (decisionNumber == null || decisionNumber.trim().isEmpty()) ? (FlagsEnum.ALL.getCode() + "") : decisionNumber);
+			reportName = ReportNamesEnum.PROMOTIONS_PROMOTED_OFFICERS_STATISTICAL_INQUIRY.getCode();
+		    } else {
+			if (promotionDate != null) {
+			    qParams.put("P_PROMOTION_DATE_FLAG", FlagsEnum.ON.getCode());
+			    qParams.put("P_PROMOTION_DATE", HijriDateService.getHijriDateString(promotionDate));
+			} else {
+			    qParams.put("P_PROMOTION_DATE_FLAG", FlagsEnum.ALL.getCode());
+			    qParams.put("P_PROMOTION_DATE", null);
+			}
+
+			if (scaleUpFlag)
+			    qParams.put("P_SCALE_UP_FLAG", FlagsEnum.ON.getCode());
+			else
+			    qParams.put("P_SCALE_UP_FLAG", FlagsEnum.OFF.getCode());
+			reportName = ReportNamesEnum.PROMOTIONS_PROMOTED_STATISTICAL_INQUIRY.getCode();
+		    }
 		}
 	    }
 	    return getReportData(reportName, qParams);
