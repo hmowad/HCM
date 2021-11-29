@@ -168,6 +168,16 @@
 													</td>
 												</tr>
 											</h:panelGroup>
+											<h:panelGroup rendered="#{(promotionsReports.reportType == 20  || promotionsReports.reportType == 30) and promotionsReports.mode == 1}">
+												<tr>
+													<th width="15%">
+														<h:outputText value="#{msgs.label_decisionNumber}" />
+													</th>
+													<td width="35%">
+														<h:inputText id="decisionNumberId" value="#{promotionsReports.decisionNumber}" />
+													</td>
+												</tr>
+											</h:panelGroup>
 											<h:panelGroup id="scaleUpPanelId" rendered="#{promotionsReports.reportType == 30 and promotionsReports.mode == 2}">
 												<tr>
 													<th width="15%">
